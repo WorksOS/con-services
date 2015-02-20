@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http;
 
 namespace LandfillService.WebApi.ApiClients
 {
@@ -52,7 +53,7 @@ namespace LandfillService.WebApi.ApiClients
         {
             code = c;
         }
-    };
+    }
 
     public class ForemanApiClient
     {
@@ -72,15 +73,14 @@ namespace LandfillService.WebApi.ApiClients
         private string Request<TParams>(string endpoint, TParams parameters)  
         {
             System.Diagnostics.Debug.WriteLine("In ForemanApiClient::Request");
+
+            // Force syncronous processing by calling .Result
             var response = client.PostAsJsonAsync(endpoint, parameters).Result;
 
             System.Diagnostics.Debug.WriteLine(response.ToString());
 
-            // TODO: It would be good to propagate "unauthorised" responses out to the client so it can redirect the user to the login page; 
-            // so the exception needs to include that information somehow.
             if (!response.IsSuccessStatusCode)
                 throw new ForemanApiException(response.StatusCode, response.ReasonPhrase);
-                //throw new Exception("Failed a " + endpoint + " request to the Foreman API: " + response.ToString());
 
             System.Diagnostics.Debug.WriteLine("POST request succeeded");
 
@@ -94,7 +94,8 @@ namespace LandfillService.WebApi.ApiClients
         private T ParseResponse<T>(string response)
         {
             System.Diagnostics.Debug.WriteLine("In ForemanApiClient::ParseResponse");
-            // chop out the "d" property wrapper which is added to every response, and parse the remaining substring
+
+            // chop out the "d" property wrapper which is added to every Foreman API response, and parse the remaining substring
             var resObj = JsonConvert.DeserializeObject<T>(response.Substring(5, response.Length - 6),
                  new JsonSerializerSettings
                  {
@@ -106,7 +107,6 @@ namespace LandfillService.WebApi.ApiClients
                  });
 
             return resObj;
-
         }
 
         public string Login(Credentials credentials)

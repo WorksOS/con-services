@@ -12,15 +12,13 @@ namespace LandfillService.WebApi.Controllers
     [RoutePrefix("api/v1/users")]
     public class UsersController : ApiController
     {
-        private ForemanApiClient foremanApiClient = new ForemanApiClient(); 
+        private ForemanApiClient foremanApiClient = new ForemanApiClient();
 
-        [Route("login")]
-        [AllowAnonymous]
-        public IHttpActionResult Login([FromBody] Credentials credentials)
+        private IHttpActionResult ForemanRequest(Func<IHttpActionResult> body)
         {
             try
             {
-                return Ok(foremanApiClient.Login(credentials));
+                return body();
             }
             catch (ForemanApiException e)
             {
@@ -28,21 +26,33 @@ namespace LandfillService.WebApi.Controllers
             }
         }
 
+
+        [Route("login")]
+        [AllowAnonymous]
+        public IHttpActionResult Login([FromBody] Credentials credentials)
+        {
+            return ForemanRequest(() => Ok(foremanApiClient.Login(credentials)));
+
+            //try
+            //{
+            //    return Ok(foremanApiClient.Login(credentials));
+            //}
+            //catch (ForemanApiException e)
+            //{
+            //    return Content(e.code, e.Message);
+            //}
+        }
+
         [Route("logout")]
         public IHttpActionResult Logout()
         {
-            System.Diagnostics.Debug.WriteLine("Logging out session " + Request.Headers.GetValues("SessionID").First());
-
-            try
+            return ForemanRequest(() =>
             {
+                System.Diagnostics.Debug.WriteLine("Logging out session " + Request.Headers.GetValues("SessionID").First());
                 foremanApiClient.Logout(Request.Headers.GetValues("SessionId").First());
                 // TODO: invalidate the session in the DB
                 return Ok();
-            }
-            catch (ForemanApiException e)
-            {
-                return Content(e.code, e.Message);
-            }
+            });
         }
     }
 }
