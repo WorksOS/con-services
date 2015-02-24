@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace LandfillService.WebApi.Models
 {
     public class Credentials
     {
         public string userName { get; set; }
+        
+        [JsonIgnore]
         public string password { get; set; }
     }
 

@@ -12,6 +12,8 @@ using LandfillService.WebApi.Models;
 using LandfillService.WebApi.ApiClients;
 using System.Collections;
 using System.Web.Hosting;
+using LandfillService.Common.Contracts;
+using LandfillService.Common;
 
 namespace LandfillService.WebApi.Controllers
 {
@@ -38,8 +40,6 @@ namespace LandfillService.WebApi.Controllers
         public IHttpActionResult Get()
         {
             return ForemanRequest(() => Ok(foremanApiClient.GetProjects(Request.Headers.GetValues("SessionId").First())));
-
-            //return new Project[] { new Project() {id = 543, name = "Dump"}, new Project() {id = 544, name = "Dumpling"} };
         }
 
         // Get project data for a given project
@@ -66,35 +66,6 @@ namespace LandfillService.WebApi.Controllers
                 });
             }
             return entries.ToArray(); 
-
-            //var client = new HttpClient();
-            //client.BaseAddress = new Uri("https://dev-mobile.vss-eng.com/foreman/Secure/ForemanSvc.svc/");
-            //client.DefaultRequestHeaders.Accept.Clear();
-            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            ////System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => { return true; };
-
-            
-            //System.Diagnostics.Debug.WriteLine("Making POST request");
-
-            //// by calling .Result you are performing a synchronous call
-            //var response = client.PostAsJsonAsync("GetProjects", new {sessionID = "177c3b4c0b854c26b017deb53debef2f"}).Result;
-
-            //System.Diagnostics.Debug.WriteLine(response.ToString());
-
-            //if (!response.IsSuccessStatusCode)
-            //    return "<error>";
-
-            //System.Diagnostics.Debug.WriteLine("POST request succeeded");
-
-            //var responseContent = response.Content;
-
-            //// by calling .Result you are synchronously reading the result
-            //var res = responseContent.ReadAsStringAsync().Result;
-
-            //System.Diagnostics.Debug.WriteLine(res);
-            
-            //return res;
         }
 
         // POST api/projects
@@ -145,6 +116,9 @@ namespace LandfillService.WebApi.Controllers
             GetMissingVolumes();
 
             System.Diagnostics.Debug.WriteLine("Finished posting weights");
+
+            //throw new ServiceException(HttpStatusCode.BadGateway, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "ERROR!!!"));
+            //throw new InvalidOperationException("UH OH");
             return Ok();
         }
 
