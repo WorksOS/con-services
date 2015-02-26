@@ -8,10 +8,32 @@ using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Filters;
 using log4net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace LandfillService.Common
 {
+    public class SkipPropResolver : DefaultContractResolver
+    {
+        private readonly string propName;
+
+        public SkipPropResolver(string propName)
+        {
+            this.propName = propName;
+        }
+
+        protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
+        {
+            IList<JsonProperty> properties = base.CreateProperties(type, memberSerialization);
+
+            // only serializer properties that start with the specified character
+            properties = properties.Where(p => !p.PropertyName.Equals(propName)).ToList();
+            return properties;
+        }
+    }
+
     /// <summary>
     /// Main class for logging of all service activities
     /// </summary>
@@ -20,7 +42,7 @@ namespace LandfillService.Common
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly int MAX_RESULT_SIZE = 1500;
 
-
+        private static readonly IContractResolver propResolver = new SkipPropResolver("password");
 
         public static void LogMessageHandler(string correlationId, string requestInfo, byte[] message)
         {
@@ -51,8 +73,8 @@ namespace LandfillService.Common
                             firstArg = false;
                         else
                             builder.Append(",");
-
-                        string json = JsonConvert.SerializeObject(arg);
+                        
+                        string json = JsonConvert.SerializeObject(arg, new JsonSerializerSettings { ContractResolver = propResolver });
 
                         if (json.Length > MAX_RESULT_SIZE)
                         {
