@@ -45,6 +45,7 @@ namespace LandfillService.WebApi.ApiClients
             client.Dispose();
         }
 
+        //TODO: log requests and responses
         private async Task<string> Request<TParams>(string endpoint, TParams parameters)  
         {
             System.Diagnostics.Debug.WriteLine("In RaptorApiClient::Request to " + endpoint + " with " + parameters);

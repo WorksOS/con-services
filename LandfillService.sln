@@ -9,6 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LandfillService.Tests", "La
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LandfillService.Common", "Common\LandfillService.Common.csproj", "{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LandfillService.AcceptanceTests", "LandfillService.AcceptanceTests\LandfillService.AcceptanceTests.csproj", "{111E1767-DB5B-4F5F-8620-45F779ED95CE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2} = {7C668FB5-BAD8-4D01-89AD-8F957BC614B2}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +32,10 @@ Global
 		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

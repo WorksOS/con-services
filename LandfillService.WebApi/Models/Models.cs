@@ -7,7 +7,7 @@ namespace LandfillService.WebApi.Models
     {
         public string userName { get; set; }
         
-        [JsonIgnore]
+        //[JsonIgnore]
         public string password { get; set; }
     }
 
