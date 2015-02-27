@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using log4net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Web.Http.Controllers;
 using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Filters;
-using log4net;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Collections.Generic;
-using System.Linq;
 
 
 namespace LandfillService.Common
@@ -50,6 +49,39 @@ namespace LandfillService.Common
             log.IfInfoFormat("R {0}:{1} Data: {2}", correlationId, requestInfo, Encoding.UTF8.GetString(message));
         }
 
+
+        public static void LogRequest<T>(string component, string method, string url, T parameters)
+        {
+            try
+            { 
+                string json = JsonConvert.SerializeObject(parameters, new JsonSerializerSettings { ContractResolver = propResolver });
+                if (json.Length > MAX_RESULT_SIZE)
+                    json = string.Format("(TRUNCATED){0}", json.Substring(0, MAX_RESULT_SIZE));
+
+                log.IfInfo(String.Format("E {0}:{1} Request: {2}", component, method, url));
+                log.IfInfo(String.Format("B {0}:{1} ({2})", component, method, json));
+
+            }
+            catch (Exception e)
+            {
+                log.Warn("Unexpected error logging method call", e);
+                log.IfInfoFormat("B {0}:{1}(???????????????????)", component, method);
+            }
+        }
+
+        public static void LogResponse(string component, string method, string url, HttpResponseMessage response)
+        {
+            try
+            { 
+                log.IfInfo(String.Format("E {0}:{1} Response: {2} | {3}", component, method, response.StatusCode, response.Content.ReadAsStringAsync().Result));
+                
+            }
+            catch (Exception e)
+            {
+                log.Warn("Unexpected error logging method call", e);
+                log.IfInfoFormat("B {0}:{1}(???????????????????)", component, method);
+            }
+        }
         /// <summary>
         /// Logs the action.
         /// </summary>

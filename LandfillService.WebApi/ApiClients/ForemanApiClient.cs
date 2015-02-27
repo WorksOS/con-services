@@ -1,4 +1,5 @@
-﻿using LandfillService.WebApi.Models;
+﻿using LandfillService.Common;
+using LandfillService.WebApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -7,10 +8,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http;
 
 namespace LandfillService.WebApi.ApiClients
 {
@@ -74,6 +74,8 @@ namespace LandfillService.WebApi.ApiClients
         {
             System.Diagnostics.Debug.WriteLine("In ForemanApiClient::Request");
 
+            LoggerSvc.LogRequest(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, parameters);
+
             // Force syncronous processing by calling .Result
             var response = client.PostAsJsonAsync(endpoint, parameters).Result;
 
@@ -83,6 +85,7 @@ namespace LandfillService.WebApi.ApiClients
                 throw new ForemanApiException(response.StatusCode, response.ReasonPhrase);
 
             System.Diagnostics.Debug.WriteLine("POST request succeeded");
+            LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
 
             var responseContent = response.Content;
 
