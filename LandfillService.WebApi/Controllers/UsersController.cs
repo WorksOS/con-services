@@ -49,7 +49,7 @@ namespace LandfillService.WebApi.Controllers
             return ForemanRequest(() =>
             {
                 System.Diagnostics.Debug.WriteLine("Logging out session " + Request.Headers.GetValues("SessionID").First());
-                foremanApiClient.Logout(Request.Headers.GetValues("SessionId").First());
+                foremanApiClient.Logout(Request.Headers.GetValues("SessionID").First());
                 // TODO: invalidate the session in the DB
                 return Ok();
             });
