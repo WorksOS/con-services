@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -33,7 +34,7 @@ namespace LandfillService.WebApi.ApiClients
         {
             //client = new HttpClient(new LoggingHandler(new HttpClientHandler()));
             client = new HttpClient();
-            client.BaseAddress = new Uri("http://rpt1.bna.trimble-wco.com:17001/api/v1/");
+            client.BaseAddress = new Uri(ConfigurationManager.AppSettings["RaptorApiUrl"] ?? "/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 

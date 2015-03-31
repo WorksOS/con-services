@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -47,11 +48,11 @@ namespace LandfillService.WebApi.ApiClients
 
     public class ForemanApiException : ApplicationException
     {
-        public HttpStatusCode code { get; set; }
+        public HttpStatusCode Code { get; set; }
 
         public ForemanApiException(HttpStatusCode c, string message) : base(message)
         {
-            code = c;
+            Code = c;
         }
     }
 
@@ -63,7 +64,8 @@ namespace LandfillService.WebApi.ApiClients
         {
             //client = new HttpClient(new LoggingHandler(new HttpClientHandler()));
             client = new HttpClient();
-            client.BaseAddress = new Uri("https://dev-mobile.vss-eng.com/foreman/Secure/ForemanSvc.svc/");
+            System.Diagnostics.Debug.WriteLine("ForemanApiUrl: " + (ConfigurationManager.AppSettings["ForemanApiUrl"] ?? "/"));
+            client.BaseAddress = new Uri(ConfigurationManager.AppSettings["ForemanApiUrl"] ?? "/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
