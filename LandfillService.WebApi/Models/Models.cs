@@ -11,11 +11,25 @@ namespace LandfillService.WebApi.Models
         public string password { get; set; }
     }
 
-    public class Project
+    public class User
     {
-        public int id { get; set; }
+        public uint userId { get; set; }
         public string name { get; set; }
     }
+
+    public class Session
+    {
+        public string sessionId { get; set; }
+        public uint userId { get; set; }
+        public User user { get; set; }
+    }
+
+    public class Project
+    {
+        public uint id { get; set; }
+        public string name { get; set; }
+    }
+
 
     public class WeightEntry
     {

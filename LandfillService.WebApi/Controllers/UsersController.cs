@@ -13,6 +13,7 @@ namespace LandfillService.WebApi.Controllers
     public class UsersController : ApiController
     {
         private ForemanApiClient foremanApiClient = new ForemanApiClient();
+        private LandfillDb db = new LandfillDb();
 
         private IHttpActionResult ForemanRequest(Func<IHttpActionResult> body)
         {
@@ -22,7 +23,7 @@ namespace LandfillService.WebApi.Controllers
             }
             catch (ForemanApiException e)
             {
-                return Content(e.code, e.Message);
+                return Content(e.Code, e.Message);
             }
         }
 
@@ -31,7 +32,13 @@ namespace LandfillService.WebApi.Controllers
         [AllowAnonymous]
         public IHttpActionResult Login([FromBody] Credentials credentials)
         {
-            return ForemanRequest(() => Ok(foremanApiClient.Login(credentials)));
+            return ForemanRequest(() => 
+            {
+                var response = foremanApiClient.Login(credentials);
+                var user = LandfillDb.CreateOrGetUser(credentials);
+                LandfillDb.SaveSession(user, response);
+                return Ok(response);
+            });
 
             //try
             //{
@@ -48,9 +55,10 @@ namespace LandfillService.WebApi.Controllers
         {
             return ForemanRequest(() =>
             {
-                System.Diagnostics.Debug.WriteLine("Logging out session " + Request.Headers.GetValues("SessionID").First());
-                foremanApiClient.Logout(Request.Headers.GetValues("SessionID").First());
-                // TODO: invalidate the session in the DB
+                var sessionId = Request.Headers.GetValues("SessionID").First();
+                System.Diagnostics.Debug.WriteLine("Logging out session " + sessionId);
+                foremanApiClient.Logout(sessionId);
+                LandfillDb.DeleteSession(sessionId);
                 return Ok();
             });
         }

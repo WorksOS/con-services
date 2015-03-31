@@ -50,6 +50,11 @@ namespace LandfillService.Common
         }
 
 
+        public static void LogMessage(string component, string method, string url, string message)
+        {
+            log.IfInfoFormat("M {0}:{1} Request: {2} Message: {3}", component, method, url, message);
+        }
+
         public static void LogRequest<T>(string component, string method, string url, T parameters)
         {
             try

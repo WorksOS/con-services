@@ -23,7 +23,7 @@ namespace LandfillService.WebApi.Controllers
         private ForemanApiClient foremanApiClient = new ForemanApiClient();
         //private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
-        private IHttpActionResult ForemanRequest(Func<IHttpActionResult> body)
+        private IHttpActionResult ForemanRequest(string sessionId, Func<IHttpActionResult> body)
         {
             try
             {
@@ -31,7 +31,9 @@ namespace LandfillService.WebApi.Controllers
             }
             catch (ForemanApiException e)
             {
-                return Content(e.code, e.Message);
+                if (e.Code == HttpStatusCode.Unauthorized)
+                    LandfillDb.DeleteSession(sessionId);
+                return Content(e.Code, e.Message);
             }
         }
 
@@ -39,7 +41,8 @@ namespace LandfillService.WebApi.Controllers
         [Route("")]
         public IHttpActionResult Get()
         {
-            return ForemanRequest(() => Ok(foremanApiClient.GetProjects(Request.Headers.GetValues("SessionId").First())));
+            var sessionId = Request.Headers.GetValues("SessionId").First();
+            return ForemanRequest(sessionId, () => Ok(foremanApiClient.GetProjects(sessionId)));
         }
 
         // Get project data for a given project
@@ -108,7 +111,7 @@ namespace LandfillService.WebApi.Controllers
             foreach (var entry in entries)
             {
                 System.Diagnostics.Debug.WriteLine(entry.ToString());
-                // TODO: validate the entry: format of data(?); discard entries older than 2 years   
+                // TODO: validate the entry: format of data(?)
                 // TODO: save the entry
                 
                 GetVolumeInBackground(entry);

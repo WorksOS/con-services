@@ -1,5 +1,6 @@
 ﻿using LandfillService.Common;
 using LandfillService.Common.Contracts;
+using LandfillService.WebApi.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,16 @@ namespace LandfillService.WebApi
 
             System.Diagnostics.Debug.WriteLine("Authorising user: " + context.Request.Headers.GetValues("SessionID").First());
 
-            // TODO: authorise the user - check that the request is for a valid project
+            string sessionId = context.Request.Headers.GetValues("SessionID").First();
+            var result = LandfillDb.GetSession(sessionId);
+            if (result == null || result.HasErrors)
+            {
+                LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, context.Request.RequestUri.ToString(), "Invalid session " + sessionId);
+                return false;
+            }
+           
+
+            // TODO: authorise the user - check that the session is valid and the request is for a valid project
 
             return true;
         }
