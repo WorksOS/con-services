@@ -35,10 +35,14 @@ namespace LandfillService.WebApi
             System.Diagnostics.Debug.WriteLine("Authorising user: " + context.Request.Headers.GetValues("SessionID").First());
 
             string sessionId = context.Request.Headers.GetValues("SessionID").First();
-            var result = LandfillDb.GetSession(sessionId);
-            if (result == null || result.HasErrors)
+            
+            try
             {
-                LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, context.Request.RequestUri.ToString(), "Invalid session " + sessionId);
+                LandfillDb.GetSession(sessionId);
+            }
+            catch (ApplicationException e)
+            {
+                LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, context.Request.RequestUri.ToString(), e.Message);
                 return false;
             }
            

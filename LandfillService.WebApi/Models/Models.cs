@@ -13,15 +13,15 @@ namespace LandfillService.WebApi.Models
 
     public class User
     {
-        public uint userId { get; set; }
+        public uint id { get; set; }
         public string name { get; set; }
     }
 
     public class Session
     {
-        public string sessionId { get; set; }
+        public string id { get; set; }
         public uint userId { get; set; }
-        public User user { get; set; }
+        //public User user { get; set; }
     }
 
     public class Project

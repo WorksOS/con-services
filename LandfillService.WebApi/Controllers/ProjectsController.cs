@@ -42,13 +42,34 @@ namespace LandfillService.WebApi.Controllers
         public IHttpActionResult Get()
         {
             var sessionId = Request.Headers.GetValues("SessionId").First();
-            return ForemanRequest(sessionId, () => Ok(foremanApiClient.GetProjects(sessionId)));
+            return ForemanRequest(sessionId, () => 
+            {
+                var projects = foremanApiClient.GetProjects(sessionId);
+                LandfillDb.SaveProjects(sessionId, projects);
+                return Ok(projects);
+            });
         }
 
         // Get project data for a given project
         [Route("{id}")]
         public IEnumerable<DayEntry> Get(int id)
         {
+            var sessionId = Request.Headers.GetValues("SessionId").First();
+            
+            ForemanRequest(sessionId, () =>
+            {
+                var projects = foremanApiClient.GetProjects(sessionId);
+                LandfillDb.SaveProjects(sessionId, projects);
+                return Ok(projects);
+            });
+
+            var project = LandfillDb.GetProjects(sessionId).Where(p => p.id == id);
+
+            if (project == null)
+                return new List<DayEntry>();
+
+            // TODO: Get project list and check request validity
+            
             var totalDays = 730;
             var startDate = DateTime.Today.AddDays(-totalDays);
 
@@ -107,6 +128,8 @@ namespace LandfillService.WebApi.Controllers
         [Route("{id}/weights")]
         public IHttpActionResult PostWeights(int id, [FromBody] WeightEntry[] entries)
         {
+            // TODO: Get project list and check request validity
+
             //TODO: how to respond to the client immediately, and THEN launch volume requests?
             foreach (var entry in entries)
             {
