@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Either.cs" />
     <Compile Include="Logging\ContractExecutionResult.cs" />
     <Compile Include="Logging\InternalServerErrorResult.cs" />
     <Compile Include="Logging\Log4netExtensions.cs" />

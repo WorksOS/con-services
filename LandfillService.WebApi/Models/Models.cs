@@ -28,6 +28,7 @@ namespace LandfillService.WebApi.Models
     {
         public uint id { get; set; }
         public string name { get; set; }
+        public string timeZone { get; set; }
     }
 
 
@@ -50,8 +51,8 @@ namespace LandfillService.WebApi.Models
     {
         public DateTime date { get; set; }
         public bool entryPresent { get; set; }
-        public int density { get; set; }
-        public int weight { get; set; }
+        public double density { get; set; }
+        public double weight { get; set; }
     }
 
     public class VolumeFilter

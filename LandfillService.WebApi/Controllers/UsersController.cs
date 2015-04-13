@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Web.Hosting;
 using System.Web.Http;
 
 namespace LandfillService.WebApi.Controllers
@@ -23,18 +25,29 @@ namespace LandfillService.WebApi.Controllers
             }
             catch (ForemanApiException e)
             {
-                if (e.Code == HttpStatusCode.Unauthorized)
+                if (e.code == HttpStatusCode.Unauthorized)
                     LandfillDb.DeleteSession(sessionId);
-                return Content(e.Code, e.Message);
+                return Content(e.code, e.Message);
             }
         }
 
+        private void DeleteStaleSessionsInBackground()
+        {
+            HostingEnvironment.QueueBackgroundWorkItem((CancellationToken cancel) =>
+            {
+                LandfillDb.DeleteStaleSessions();
+            });
+        }
 
         [Route("login")]
         [AllowAnonymous]
         public IHttpActionResult Login([FromBody] Credentials credentials)
         {
             var sessionId = Request.Headers.GetValues("SessionID").First();
+
+            if (new Random().Next(100) % 100 < 5)  // occasionally, delete stale sessions
+                DeleteStaleSessionsInBackground();
+
             return ForemanRequest(sessionId, () => 
             {
                 var response = foremanApiClient.Login(credentials);

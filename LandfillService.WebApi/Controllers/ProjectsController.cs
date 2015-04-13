@@ -31,10 +31,35 @@ namespace LandfillService.WebApi.Controllers
             }
             catch (ForemanApiException e)
             {
-                if (e.Code == HttpStatusCode.Unauthorized)
+                if (e.code == HttpStatusCode.Unauthorized)
                     LandfillDb.DeleteSession(sessionId);
-                return Content(e.Code, e.Message);
+                return Content(e.code, e.Message);
             }
+        }
+
+
+        private IEither<IHttpActionResult, IEnumerable<Project>> GetProjects(string sessionId)
+        {
+            try
+            {
+                var projects = foremanApiClient.GetProjects(sessionId);
+                LandfillDb.SaveProjects(sessionId, projects);
+                return Either.Right<IHttpActionResult, IEnumerable<Project>>(projects);
+            }
+            catch (ForemanApiException e)
+            {
+                if (e.code == HttpStatusCode.Unauthorized)
+                    LandfillDb.DeleteSession(sessionId);
+                return Either.Left<IHttpActionResult, IEnumerable<Project>>(Content(e.code, e.Message));
+            }
+        }
+
+        private IEither<IHttpActionResult, IEnumerable<Project>>  PerhapsUpdateProjectList(string sessionId)
+        {
+            if (LandfillDb.GetProjectListAgeInHours(sessionId) < 1)
+                return Either.Right<IHttpActionResult, IEnumerable<Project>>(LandfillDb.GetProjects(sessionId));
+
+            return GetProjects(sessionId);
         }
 
         // Get a list of available projects
@@ -42,54 +67,55 @@ namespace LandfillService.WebApi.Controllers
         public IHttpActionResult Get()
         {
             var sessionId = Request.Headers.GetValues("SessionId").First();
-            return ForemanRequest(sessionId, () => 
-            {
-                var projects = foremanApiClient.GetProjects(sessionId);
-                LandfillDb.SaveProjects(sessionId, projects);
-                return Ok(projects);
-            });
+
+            return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects => Ok(projects));
         }
 
         // Get project data for a given project
         [Route("{id}")]
-        public IEnumerable<DayEntry> Get(int id)
+        public IHttpActionResult Get(uint id)
         {
             var sessionId = Request.Headers.GetValues("SessionId").First();
-            
-            ForemanRequest(sessionId, () =>
+
+            return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects => 
             {
-                var projects = foremanApiClient.GetProjects(sessionId);
-                LandfillDb.SaveProjects(sessionId, projects);
-                return Ok(projects);
+                try
+                {
+                    var project = projects.Where(p => p.id == id).First();
+                    return Ok(LandfillDb.GetEntries(project));
+                }
+                catch (InvalidOperationException)
+                {
+                    return Ok(new List<DayEntry>());
+                }
             });
 
-            var project = LandfillDb.GetProjects(sessionId).Where(p => p.id == id);
-
-            if (project == null)
-                return new List<DayEntry>();
-
-            // TODO: Get project list and check request validity
-            
-            var totalDays = 730;
-            var startDate = DateTime.Today.AddDays(-totalDays);
-
-            var entries = new List<DayEntry>();
-            var rnd = new Random();
 
 
-            foreach (int i in Enumerable.Range(0, totalDays))
-            {
-                bool skip = (i < 728 && rnd.Next(5) % 6 == 0);
+            //var totalDays = 730;
+            //var startDate = DateTime.Today.AddDays(-totalDays);
 
-                entries.Add(new DayEntry
-                {
-                    date = DateTime.Today.AddDays(-totalDays + i),
-                    entryPresent = !skip,
-                    density = skip ? 0 : rnd.Next(1200, 1600),
-                    weight = skip ? 0 : rnd.Next(500, 800)
-                });
-            }
-            return entries.ToArray(); 
+            //var entries = new List<DayEntry>();
+
+            ////if (id == 544)
+            ////    return entries.ToArray();
+
+            //var rnd = new Random();
+
+
+            //foreach (int i in Enumerable.Range(0, totalDays))
+            //{
+            //    bool skip = (i < 728 && rnd.Next(5) % 6 == 0);
+
+            //    entries.Add(new DayEntry
+            //    {
+            //        date = DateTime.Today.AddDays(-totalDays + i),
+            //        entryPresent = !skip,
+            //        density = skip ? 0 : rnd.Next(1200, 1600),
+            //        weight = skip ? 0 : rnd.Next(500, 800)
+            //    });
+            //}
+            //return entries.ToArray(); 
         }
 
         // POST api/projects
@@ -97,55 +123,89 @@ namespace LandfillService.WebApi.Controllers
         //{
         //}
 
-        private void GetVolumeInBackground(WeightEntry entry)
+        private void GetVolumeInBackground(Project project, WeightEntry entry)
         {
             HostingEnvironment.QueueBackgroundWorkItem(async (CancellationToken cancel) =>
+            {
+                try
                 {
-                    try
+                    //TODO: test with a single client instance - shouldn't need one per request
+                    using (var raptorApiClient = new RaptorApiClient())
                     {
-                        //TODO: test with a single client instance - shouldn't need one per request
-                        using (var raptorApiClient = new RaptorApiClient())
-                        {
-                            var res = await raptorApiClient.GetVolumesAsync(entry.date);
-                            System.Diagnostics.Debug.WriteLine("Volume res:" + res);
-                            System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill - res.Cut));
-                        }
+                        var res = await raptorApiClient.GetVolumesAsync(project, entry.date);
+                        System.Diagnostics.Debug.WriteLine("Volume res:" + res);
+                        System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill - res.Cut));
+
+                        LandfillDb.SaveVolume(project.id, entry.date, res.Fill - res.Cut);
                     }
-                    catch (Exception e)
+                }
+                catch (RaptorApiException e)
+                {
+                    if (e.code == HttpStatusCode.BadRequest)
                     {
-                        System.Diagnostics.Debug.Write("Exception while retrieving volumes: " + e);
+                        // this response code is returned when the volume isn't available (e.g. the time range
+                        // is outside project extents); the assumption is that's the only reason we will
+                        // receive a 400 Bad Request 
+                        System.Diagnostics.Debug.Write("RaptorApiException while retrieving volumes: " + e);
+                        LandfillDb.MarkVolumeNotAvailable(project.id, entry.date);
+
+                        // TESTING CODE
+                        // Volume range in m3 should be ~ [478, 1020]
+                        LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478);
                     }
-                });
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.Write("Exception while retrieving volumes: " + e);
+                    LandfillDb.MarkVolumeNotRetrieved(project.id, entry.date);
+                }
+            });
         }
 
-        private void GetMissingVolumes()
+        private void GetMissingVolumesInBackground(Project project)
         {
-            //TODO: request any volumes which the service hasn't been able to obtain previously
-            // In order to avoid duplicate requests, I need to mark any dates where the volume was requested successfully but isn't available from Raptor
+            var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project.id);
+            System.Diagnostics.Debug.Write("Dates without volumes: {0}", dates.ToString());
+
+            foreach (var date in dates)
+            {
+                GetVolumeInBackground(project, new WeightEntry { date = date, weight = 0 });
+            }
         }
 
         // Submit weights to the project API
         [Route("{id}/weights")]
-        public IHttpActionResult PostWeights(int id, [FromBody] WeightEntry[] entries)
+        public IHttpActionResult PostWeights(uint id, [FromBody] WeightEntry[] entries)
         {
             // TODO: Get project list and check request validity
+            var sessionId = Request.Headers.GetValues("SessionId").First();
 
-            //TODO: how to respond to the client immediately, and THEN launch volume requests?
-            foreach (var entry in entries)
+            return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects =>
             {
-                System.Diagnostics.Debug.WriteLine(entry.ToString());
-                // TODO: validate the entry: format of data(?)
-                // TODO: save the entry
-                
-                GetVolumeInBackground(entry);
-            };
-            GetMissingVolumes();
+                var project = projects.Where(p => p.id == id).First();
 
-            System.Diagnostics.Debug.WriteLine("Finished posting weights");
+                foreach (var entry in entries)
+                {
+                    System.Diagnostics.Debug.WriteLine(entry.ToString());
 
-            //throw new ServiceException(HttpStatusCode.BadGateway, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "ERROR!!!"));
-            //throw new InvalidOperationException("UH OH");
-            return Ok();
+                    TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(LandfillDb.TimeZone.IanaToWindows(project.timeZone));
+                    var utcDateTime = TimeZoneInfo.ConvertTimeToUtc(entry.date, timeZone);
+
+                    if (entry.weight >= 0 && utcDateTime <= DateTime.Today.AddDays(-1).ToUniversalTime())
+                        LandfillDb.SaveEntry(id, entry);
+
+                    // TODO: validate the entry: format of data(?)
+
+                    GetVolumeInBackground(project, entry);
+                };
+                GetMissingVolumesInBackground(project);
+
+                System.Diagnostics.Debug.WriteLine("Finished posting weights");
+
+                //throw new ServiceException(HttpStatusCode.BadGateway, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "ERROR!!!"));
+                //throw new InvalidOperationException("UH OH");
+                return Ok();
+            });
         }
 
         // DELETE api/values/5

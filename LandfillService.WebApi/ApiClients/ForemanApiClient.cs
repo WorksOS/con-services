@@ -48,11 +48,11 @@ namespace LandfillService.WebApi.ApiClients
 
     public class ForemanApiException : ApplicationException
     {
-        public HttpStatusCode Code { get; set; }
+        public HttpStatusCode code { get; set; }
 
         public ForemanApiException(HttpStatusCode c, string message) : base(message)
         {
-            Code = c;
+            code = c;
         }
     }
 

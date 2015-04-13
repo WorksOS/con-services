@@ -85,14 +85,20 @@ namespace LandfillService.WebApi.ApiClients
             return resObj;
         }
 
-        public async Task<SummaryVolumesResult> GetVolumesAsync(DateTime date)
+        public async Task<SummaryVolumesResult> GetVolumesAsync(Project project, DateTime date)
         {
+            // TODO: retrieve correct time zone from the Foreman API
+            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(LandfillDb.TimeZone.IanaToWindows(project.timeZone));
+            var utcDateTime = TimeZoneInfo.ConvertTimeToUtc(date, timeZone);
+
+            System.Diagnostics.Debug.WriteLine("UTC time range in volume request: {0} - {1}", utcDateTime.ToString(), utcDateTime.AddDays(1).ToString());
+
             var volumeParams = new VolumeParams()
             {
-                projectId = 544,
+                projectId = project.id,
                 volumeCalcType = 4,
-                baseFilter = new VolumeFilter() { startUTC = new DateTime(2012, 10, 31), endUTC = new DateTime(2012, 11, 01), returnEarliest = true, gpsAccuracy = 1 },
-                topFilter = new VolumeFilter() { startUTC = new DateTime(2012, 10, 31), endUTC = new DateTime(2012, 11, 01), returnEarliest = false, gpsAccuracy = 1 }
+                baseFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = true, gpsAccuracy = 1 },
+                topFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = false, gpsAccuracy = 1 }
             };
             return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", volumeParams));
         }
