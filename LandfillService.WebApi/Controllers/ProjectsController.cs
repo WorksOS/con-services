@@ -21,7 +21,7 @@ namespace LandfillService.WebApi.Controllers
     public class ProjectsController : ApiController
     {
         private ForemanApiClient foremanApiClient = new ForemanApiClient();
-        //private RaptorApiClient raptorApiClient = new RaptorApiClient();
+        private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
         private IHttpActionResult ForemanRequest(string sessionId, Func<IHttpActionResult> body)
         {
@@ -82,6 +82,7 @@ namespace LandfillService.WebApi.Controllers
                 try
                 {
                     var project = projects.Where(p => p.id == id).First();
+                    GetMissingVolumesInBackground(project);  // retry volume requests which weren't successful before
                     return Ok(LandfillDb.GetEntries(project));
                 }
                 catch (InvalidOperationException)
@@ -123,54 +124,75 @@ namespace LandfillService.WebApi.Controllers
         //{
         //}
 
-        private void GetVolumeInBackground(Project project, WeightEntry entry)
+        private async Task GetVolumeInBackground(Project project, WeightEntry entry)
         {
-            HostingEnvironment.QueueBackgroundWorkItem(async (CancellationToken cancel) =>
+            try
             {
-                try
-                {
-                    //TODO: test with a single client instance - shouldn't need one per request
-                    using (var raptorApiClient = new RaptorApiClient())
-                    {
-                        var res = await raptorApiClient.GetVolumesAsync(project, entry.date);
-                        System.Diagnostics.Debug.WriteLine("Volume res:" + res);
-                        System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill - res.Cut));
+                //TODO: test with a single client instance - shouldn't need one per request
+                //using (var raptorApiClient = new RaptorApiClient())
+                //{
+                    var res = await raptorApiClient.GetVolumesAsync(project, entry.date);
+                    System.Diagnostics.Debug.WriteLine("Volume res:" + res);
+                    System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill - res.Cut));
 
-                        LandfillDb.SaveVolume(project.id, entry.date, res.Fill - res.Cut);
-                    }
-                }
-                catch (RaptorApiException e)
+                    LandfillDb.SaveVolume(project.id, entry.date, res.Fill - res.Cut);
+                //}
+            }
+            catch (RaptorApiException e)
+            {
+                if (e.code == HttpStatusCode.BadRequest)
                 {
-                    if (e.code == HttpStatusCode.BadRequest)
-                    {
-                        // this response code is returned when the volume isn't available (e.g. the time range
-                        // is outside project extents); the assumption is that's the only reason we will
-                        // receive a 400 Bad Request 
-                        System.Diagnostics.Debug.Write("RaptorApiException while retrieving volumes: " + e);
-                        LandfillDb.MarkVolumeNotAvailable(project.id, entry.date);
+                    // this response code is returned when the volume isn't available (e.g. the time range
+                    // is outside project extents); the assumption is that's the only reason we will
+                    // receive a 400 Bad Request 
+                    System.Diagnostics.Debug.Write("RaptorApiException while retrieving volumes: " + e);
+                    LandfillDb.MarkVolumeNotAvailable(project.id, entry.date);
 
-                        // TESTING CODE
-                        // Volume range in m3 should be ~ [478, 1020]
-                        LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478);
-                    }
+                    // TESTING CODE
+                    // Volume range in m3 should be ~ [478, 1020]
+                    //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478);
                 }
-                catch (Exception e)
-                {
-                    System.Diagnostics.Debug.Write("Exception while retrieving volumes: " + e);
+                else
                     LandfillDb.MarkVolumeNotRetrieved(project.id, entry.date);
-                }
-            });
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.Write("Exception while retrieving volumes: " + e);
+                LandfillDb.MarkVolumeNotRetrieved(project.id, entry.date);
+                throw;
+            }
         }
 
         private void GetMissingVolumesInBackground(Project project)
         {
             var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project.id);
             System.Diagnostics.Debug.Write("Dates without volumes: {0}", dates.ToString());
+            var entries = dates.Select(date => new WeightEntry { date = date, weight = 0 });
+            GetVolumesInBackground(project, entries);
 
-            foreach (var date in dates)
+            // TODO: restart after exponentially increasing delay (using Task.Delay?)
+
+            //foreach (var date in dates)
+            //{
+            //    GetVolumeInBackground(project, new WeightEntry { date = date, weight = 0 });
+            //}
+        }
+
+        private void GetVolumesInBackground(Project project, IEnumerable<WeightEntry> entries)
+        {
+            HostingEnvironment.QueueBackgroundWorkItem(async (CancellationToken cancel) =>
             {
-                GetVolumeInBackground(project, new WeightEntry { date = date, weight = 0 });
-            }
+                const int parallelRequestCount = 10;
+
+                for (var offset = 0; offset <= entries.Count() / parallelRequestCount; offset++)
+                {
+                    var tasks = entries.Skip(offset * parallelRequestCount).Take(parallelRequestCount).Select(entry => GetVolumeInBackground(project, entry));
+                    await Task.WhenAll(tasks);
+                }
+
+                GetMissingVolumesInBackground(project);
+                //HostingEnvironment.QueueBackgroundWorkItem((CancellationToken) => GetMissingVolumesInBackground(project));
+            });
         }
 
         // Submit weights to the project API
@@ -184,6 +206,8 @@ namespace LandfillService.WebApi.Controllers
             {
                 var project = projects.Where(p => p.id == id).First();
 
+
+                var validEntries = new List<WeightEntry>();
                 foreach (var entry in entries)
                 {
                     System.Diagnostics.Debug.WriteLine(entry.ToString());
@@ -192,13 +216,17 @@ namespace LandfillService.WebApi.Controllers
                     var utcDateTime = TimeZoneInfo.ConvertTimeToUtc(entry.date, timeZone);
 
                     if (entry.weight >= 0 && utcDateTime <= DateTime.Today.AddDays(-1).ToUniversalTime())
+                    {
                         LandfillDb.SaveEntry(id, entry);
+                        validEntries.Add(entry);
+                    }
 
                     // TODO: validate the entry: format of data(?)
 
-                    GetVolumeInBackground(project, entry);
+                    //GetVolumeInBackground(project, entry);
                 };
-                GetMissingVolumesInBackground(project);
+                //GetMissingVolumesInBackground(project);
+                GetVolumesInBackground(project, validEntries);
 
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
 

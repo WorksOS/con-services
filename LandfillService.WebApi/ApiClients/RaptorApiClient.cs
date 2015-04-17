@@ -1,4 +1,5 @@
-﻿using LandfillService.WebApi.Models;
+﻿using LandfillService.Common;
+using LandfillService.WebApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -37,6 +39,7 @@ namespace LandfillService.WebApi.ApiClients
             client.BaseAddress = new Uri(ConfigurationManager.AppSettings["RaptorApiUrl"] ?? "/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.Timeout = TimeSpan.FromSeconds(60 * 60);
 
             //System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => { return true; };
         }
@@ -51,6 +54,8 @@ namespace LandfillService.WebApi.ApiClients
         {
             System.Diagnostics.Debug.WriteLine("In RaptorApiClient::Request to " + endpoint + " with " + parameters);
 
+            LoggerSvc.LogRequest(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, parameters);
+
             // Force syncronous processing by calling .Result
             var response = await client.PostAsJsonAsync(endpoint, parameters);
 
@@ -58,6 +63,7 @@ namespace LandfillService.WebApi.ApiClients
                 throw new RaptorApiException(response.StatusCode, response.ReasonPhrase);
 
             System.Diagnostics.Debug.WriteLine("POST request succeeded");
+            LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
 
             var responseContent = response.Content;
 
@@ -97,8 +103,8 @@ namespace LandfillService.WebApi.ApiClients
             {
                 projectId = project.id,
                 volumeCalcType = 4,
-                baseFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = true, gpsAccuracy = 1 },
-                topFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = false, gpsAccuracy = 1 }
+                baseFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = true },
+                topFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = false }
             };
             return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", volumeParams));
         }

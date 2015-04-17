@@ -232,14 +232,13 @@ namespace LandfillService.WebApi.Models
         {
             WithConnection<object>((conn) =>
             {
-                var command = @"update entries set volume = greatest(@volume, 0), volumeNotRetrieved = 0, volumeNotAvailable = 0 
-                                where projectId = @projectId and date = @date";
-
                 // replace negative volumes with 0; they are possible (e.g. due to extra compaction 
                 // without new material coming in) but don't make sense in the context of the application
+                var command = @"update entries set volume = greatest(@volume, 0.0), volumeNotRetrieved = 0, volumeNotAvailable = 0 
+                                where projectId = @projectId and date = @date";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
-                    new MySqlParameter("@volume", Math.Max(volume, 0.0)),
+                    new MySqlParameter("@volume", volume),
                     new MySqlParameter("@projectId", projectId),
                     new MySqlParameter("@date", date));
 
