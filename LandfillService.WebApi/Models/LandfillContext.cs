@@ -138,7 +138,7 @@ namespace LandfillService.WebApi.Models
         {
             InTransaction<object>((conn) =>
             {
-                var command = "delete from usersProjects where userId = (select userId from sessions where sessionId = @sessionId)";
+                var command = "delete from usersprojects where userId = (select userId from sessions where sessionId = @sessionId)";
                 MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@sessionId", sessionId));
 
                 foreach (var project in projects)
@@ -148,9 +148,9 @@ namespace LandfillService.WebApi.Models
                     MySqlHelper.ExecuteNonQuery(conn, command,
                         new MySqlParameter("@projectId", project.id),
                         new MySqlParameter("@name", project.name),
-                        new MySqlParameter("@timeZone", LandfillDb.TimeZone.WindowsToIana("Mountain Standard Time")));
+                        new MySqlParameter("@timeZone", project.timeZoneName));
 
-                    command = @"insert into usersProjects (userId, projectId) 
+                    command = @"insert into usersprojects (userId, projectId) 
                                 values ((select userId from sessions where sessionId = @sessionId), @projectId)";
 
                     MySqlHelper.ExecuteNonQuery(conn, command,
@@ -174,7 +174,7 @@ namespace LandfillService.WebApi.Models
             return InTransaction((conn) =>
             {
                 var command = @"select * from projects where projectId in 
-                                (select projectId from usersProjects where userId = (select userId from sessions where sessionId = @sessionId)) 
+                                (select projectId from usersprojects where userId = (select userId from sessions where sessionId = @sessionId)) 
                                 order by name";
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@sessionId", sessionId)))
                 {
@@ -183,7 +183,7 @@ namespace LandfillService.WebApi.Models
                     {
                         projects.Add(new Project { id = reader.GetUInt32(reader.GetOrdinal("projectId")), 
                                                    name = reader.GetString(reader.GetOrdinal("name")),
-                                                   timeZone = reader.GetString(reader.GetOrdinal("timeZone")) });
+                                                   timeZoneName = reader.GetString(reader.GetOrdinal("timeZone")) });
                     }
                     //reader.Close();
                     return projects;
@@ -317,7 +317,7 @@ namespace LandfillService.WebApi.Models
                     order by date";
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, 
-                    new MySqlParameter("@projectId", project.id), new MySqlParameter("@timeZone", project.timeZone)))
+                    new MySqlParameter("@projectId", project.id), new MySqlParameter("@timeZone", project.timeZoneName)))
                 {
                     const double POUNDS_PER_TON = 2000.0;
                     const double M3_PER_YD3 = 0.7645555;
@@ -353,48 +353,6 @@ namespace LandfillService.WebApi.Models
                 }
             });
         }
-
-        #endregion
-
-        #region(TimeZones)
-
-        public class TimeZone
-        {
-            // This will return the Windows zone that matches the IANA zone, if one exists.
-            public static string IanaToWindows(string ianaZoneId)
-            {
-                var utcZones = new[] { "Etc/UTC", "Etc/UCT" };
-                if (utcZones.Contains(ianaZoneId, StringComparer.OrdinalIgnoreCase))
-                    return "UTC";
-
-                var tzdbSource = NodaTime.TimeZones.TzdbDateTimeZoneSource.Default;
-
-                // resolve any link, since the CLDR doesn't necessarily use canonical IDs
-                var links = tzdbSource.CanonicalIdMap
-                  .Where(x => x.Value.Equals(ianaZoneId, StringComparison.OrdinalIgnoreCase))
-                  .Select(x => x.Key);
-
-                var mappings = tzdbSource.WindowsMapping.MapZones;
-                var item = mappings.FirstOrDefault(x => x.TzdbIds.Any(links.Contains));
-                if (item == null) return null;
-                return item.WindowsId;
-            }
-
-            // This will return the "primary" IANA zone that matches the given windows zone.
-            // If the primary zone is a link, it then resolves it to the canonical ID.
-            public static string WindowsToIana(string windowsZoneId)
-            {
-                if (windowsZoneId.Equals("UTC", StringComparison.OrdinalIgnoreCase))
-                    return "Etc/UTC";
-
-                var tzdbSource = NodaTime.TimeZones.TzdbDateTimeZoneSource.Default;
-                var tzi = TimeZoneInfo.FindSystemTimeZoneById(windowsZoneId);
-                var tzid = tzdbSource.MapTimeZoneId(tzi);
-                return tzdbSource.CanonicalIdMap[tzid];
-            }
-
-        }
-
 
         #endregion
 

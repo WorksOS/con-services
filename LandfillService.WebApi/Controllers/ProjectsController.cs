@@ -14,6 +14,7 @@ using System.Collections;
 using System.Web.Hosting;
 using LandfillService.Common.Contracts;
 using LandfillService.Common;
+using NodaTime;
 
 namespace LandfillService.WebApi.Controllers
 {
@@ -43,6 +44,7 @@ namespace LandfillService.WebApi.Controllers
             try
             {
                 var projects = foremanApiClient.GetProjects(sessionId);
+                System.Diagnostics.Debug.WriteLine(projects);
                 LandfillDb.SaveProjects(sessionId, projects);
                 return Either.Right<IHttpActionResult, IEnumerable<Project>>(projects);
             }
@@ -82,7 +84,7 @@ namespace LandfillService.WebApi.Controllers
                 try
                 {
                     var project = projects.Where(p => p.id == id).First();
-                    GetMissingVolumesInBackground(project);  // retry volume requests which weren't successful before
+                    GetMissingVolumesInBackground(sessionId, project);  // retry volume requests which weren't successful before
                     return Ok(LandfillDb.GetEntries(project));
                 }
                 catch (InvalidOperationException)
@@ -124,14 +126,15 @@ namespace LandfillService.WebApi.Controllers
         //{
         //}
 
-        private async Task GetVolumeInBackground(Project project, WeightEntry entry)
+        private async Task GetVolumeInBackground(string sessionId, Project project, WeightEntry entry)
         {
             try
             {
                 //TODO: test with a single client instance - shouldn't need one per request
                 //using (var raptorApiClient = new RaptorApiClient())
                 //{
-                    var res = await raptorApiClient.GetVolumesAsync(project, entry.date);
+                    var res = await raptorApiClient.GetVolumesAsync(sessionId, project, entry.date);
+
                     System.Diagnostics.Debug.WriteLine("Volume res:" + res);
                     System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill - res.Cut));
 
@@ -163,12 +166,12 @@ namespace LandfillService.WebApi.Controllers
             }
         }
 
-        private void GetMissingVolumesInBackground(Project project)
+        private void GetMissingVolumesInBackground(string sessionId, Project project)
         {
             var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project.id);
             System.Diagnostics.Debug.Write("Dates without volumes: {0}", dates.ToString());
             var entries = dates.Select(date => new WeightEntry { date = date, weight = 0 });
-            GetVolumesInBackground(project, entries);
+            GetVolumesInBackground(sessionId, project, entries);
 
             // TODO: restart after exponentially increasing delay (using Task.Delay?)
 
@@ -178,7 +181,7 @@ namespace LandfillService.WebApi.Controllers
             //}
         }
 
-        private void GetVolumesInBackground(Project project, IEnumerable<WeightEntry> entries)
+        private void GetVolumesInBackground(string sessionId, Project project, IEnumerable<WeightEntry> entries)
         {
             HostingEnvironment.QueueBackgroundWorkItem(async (CancellationToken cancel) =>
             {
@@ -186,11 +189,11 @@ namespace LandfillService.WebApi.Controllers
 
                 for (var offset = 0; offset <= entries.Count() / parallelRequestCount; offset++)
                 {
-                    var tasks = entries.Skip(offset * parallelRequestCount).Take(parallelRequestCount).Select(entry => GetVolumeInBackground(project, entry));
+                    var tasks = entries.Skip(offset * parallelRequestCount).Take(parallelRequestCount).Select(entry => GetVolumeInBackground(sessionId, project, entry));
                     await Task.WhenAll(tasks);
                 }
 
-                GetMissingVolumesInBackground(project);
+                GetMissingVolumesInBackground(sessionId, project);
                 //HostingEnvironment.QueueBackgroundWorkItem((CancellationToken) => GetMissingVolumesInBackground(project));
             });
         }
@@ -212,8 +215,13 @@ namespace LandfillService.WebApi.Controllers
                 {
                     System.Diagnostics.Debug.WriteLine(entry.ToString());
 
-                    TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(LandfillDb.TimeZone.IanaToWindows(project.timeZone));
-                    var utcDateTime = TimeZoneInfo.ConvertTimeToUtc(entry.date, timeZone);
+                    var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
+                    var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(entry.date.Year, entry.date.Month, entry.date.Day, 0, 0));
+                    var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();
+
+                    //TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZone.IanaToWindows(project.timeZoneName));
+                    //var utcDateTime = TimeZoneInfo.ConvertTimeToUtc(
+                    //    new DateTime(entry.date.Year, entry.date.Month, entry.date.Day, 0, 0, 0, 0, DateTimeKind.Local), timeZone);
 
                     if (entry.weight >= 0 && utcDateTime <= DateTime.Today.AddDays(-1).ToUniversalTime())
                     {
@@ -226,7 +234,7 @@ namespace LandfillService.WebApi.Controllers
                     //GetVolumeInBackground(project, entry);
                 };
                 //GetMissingVolumesInBackground(project);
-                GetVolumesInBackground(project, validEntries);
+                GetVolumesInBackground(sessionId, project, validEntries);
 
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
 

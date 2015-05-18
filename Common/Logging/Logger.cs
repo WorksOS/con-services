@@ -77,9 +77,12 @@ namespace LandfillService.Common
         public static void LogResponse(string component, string method, string url, HttpResponseMessage response)
         {
             try
-            { 
-                log.IfInfo(String.Format("E {0}:{1} Response: {2} | {3}", component, method, response.StatusCode, response.Content.ReadAsStringAsync().Result));
-                
+            {
+                string responseStr = response.Content.ReadAsStringAsync().Result;
+                if (responseStr.Length > MAX_RESULT_SIZE)
+                    responseStr = string.Format("(TRUNCATED){0}", responseStr.Substring(0, MAX_RESULT_SIZE));
+    
+                log.IfInfo(String.Format("E {0}:{1} Response: {2} | {3}", component, method, response.StatusCode, responseStr));
             }
             catch (Exception e)
             {

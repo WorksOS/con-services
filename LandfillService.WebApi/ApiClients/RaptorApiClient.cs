@@ -2,6 +2,7 @@
 using LandfillService.WebApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -10,6 +11,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -34,14 +36,11 @@ namespace LandfillService.WebApi.ApiClients
 
         public RaptorApiClient()
         {
-            //client = new HttpClient(new LoggingHandler(new HttpClientHandler()));
             client = new HttpClient();
             client.BaseAddress = new Uri(ConfigurationManager.AppSettings["RaptorApiUrl"] ?? "/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.Timeout = TimeSpan.FromSeconds(60 * 60);
-
-            //System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => { return true; };
         }
 
         public void Dispose()
@@ -49,18 +48,25 @@ namespace LandfillService.WebApi.ApiClients
             client.Dispose();
         }
 
-        //TODO: log requests and responses
-        private async Task<string> Request<TParams>(string endpoint, TParams parameters)  
+        private async Task<string> Request<TParams>(string endpoint, string sessionId, TParams parameters)  
         {
             System.Diagnostics.Debug.WriteLine("In RaptorApiClient::Request to " + endpoint + " with " + parameters);
 
             LoggerSvc.LogRequest(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, parameters);
 
-            // Force syncronous processing by calling .Result
-            var response = await client.PostAsJsonAsync(endpoint, parameters);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint);
+            request.Headers.Add("Authorization", "VL " + sessionId);
+            request.Content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
+
+            
+            // Syncronous processing can be forced by calling .Result
+            var response = await client.SendAsync(request); //client.PostAsJsonAsync(endpoint, parameters);
 
             if (!response.IsSuccessStatusCode)
+            {
+                LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
                 throw new RaptorApiException(response.StatusCode, response.ReasonPhrase);
+            }
 
             System.Diagnostics.Debug.WriteLine("POST request succeeded");
             LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
@@ -91,11 +97,14 @@ namespace LandfillService.WebApi.ApiClients
             return resObj;
         }
 
-        public async Task<SummaryVolumesResult> GetVolumesAsync(Project project, DateTime date)
+        public async Task<SummaryVolumesResult> GetVolumesAsync(string sessionId, Project project, DateTime date)
         {
-            // TODO: retrieve correct time zone from the Foreman API
-            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(LandfillDb.TimeZone.IanaToWindows(project.timeZone));
-            var utcDateTime = TimeZoneInfo.ConvertTimeToUtc(date, timeZone);
+            //TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZone.IanaToWindows(project.timeZoneName));
+            //var utcDateTime = TimeZoneInfo.ConvertTimeToUtc(date, timeZone);
+
+            var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
+            var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(date.Year, date.Month, date.Day, 0, 0));
+            var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();
 
             System.Diagnostics.Debug.WriteLine("UTC time range in volume request: {0} - {1}", utcDateTime.ToString(), utcDateTime.AddDays(1).ToString());
 
@@ -106,7 +115,7 @@ namespace LandfillService.WebApi.ApiClients
                 baseFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = true },
                 topFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = false }
             };
-            return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", volumeParams));
+            return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", sessionId, volumeParams));
         }
 
     }

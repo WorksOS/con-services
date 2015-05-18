@@ -64,7 +64,6 @@ namespace LandfillService.WebApi.ApiClients
         {
             //client = new HttpClient(new LoggingHandler(new HttpClientHandler()));
             client = new HttpClient();
-            System.Diagnostics.Debug.WriteLine("ForemanApiUrl: " + (ConfigurationManager.AppSettings["ForemanApiUrl"] ?? "/"));
             client.BaseAddress = new Uri(ConfigurationManager.AppSettings["ForemanApiUrl"] ?? "/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -84,7 +83,10 @@ namespace LandfillService.WebApi.ApiClients
             System.Diagnostics.Debug.WriteLine(response.ToString());
 
             if (!response.IsSuccessStatusCode)
+            {
+                LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
                 throw new ForemanApiException(response.StatusCode, response.ReasonPhrase);
+            }
 
             System.Diagnostics.Debug.WriteLine("POST request succeeded");
             LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
@@ -127,7 +129,12 @@ namespace LandfillService.WebApi.ApiClients
 
         public IEnumerable<Project> GetProjects(string sessionId)
         {
-            return ParseResponse<Project[]>(Request("GetProjects", new { sessionID = sessionId })).OrderBy(p => p.name);
+            var resp = ParseResponse<Project[]>(Request("GetProjects", new { sessionID = sessionId }));
+            
+            return resp
+                .Select(p => { p.timeZoneName = TimeZone.WindowsToIana(p.timeZoneName); return p; })
+                .ToList()
+                .OrderBy(p => p.name);
 
             //var response = client.PostAsJsonAsync("GetProjects", new { sessionID = sessionId }).Result;
 

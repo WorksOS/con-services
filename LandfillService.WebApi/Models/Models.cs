@@ -28,7 +28,7 @@ namespace LandfillService.WebApi.Models
     {
         public uint id { get; set; }
         public string name { get; set; }
-        public string timeZone { get; set; }
+        public string timeZoneName { get; set; }
     }
 
 
