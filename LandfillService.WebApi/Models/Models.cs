@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace LandfillService.WebApi.Models
 {
@@ -29,6 +30,7 @@ namespace LandfillService.WebApi.Models
         public uint id { get; set; }
         public string name { get; set; }
         public string timeZoneName { get; set; }
+        public bool retrievingVolumes { get; set; }
     }
 
 
@@ -53,6 +55,12 @@ namespace LandfillService.WebApi.Models
         public bool entryPresent { get; set; }
         public double density { get; set; }
         public double weight { get; set; }
+    }
+
+    public class ProjectData
+    {
+        public IEnumerable<DayEntry> entries { get; set; }
+        public bool retrievingVolumes { get; set; }
     }
 
     public class VolumeFilter

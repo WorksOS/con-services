@@ -27,6 +27,7 @@ namespace LandfillService.WebApi.Models
     public class LandfillDb
     {
         private static string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
+        private static int lockTimeout = 1; // hour
 
         private static T WithConnection<T>(Func<MySqlConnection, T> body)
         {
@@ -143,7 +144,8 @@ namespace LandfillService.WebApi.Models
 
                 foreach (var project in projects)
                 {
-                    command = @"insert into projects (projectId, name, timeZone) values (@projectId, @name, @timeZone)
+                    command = @"insert into projects (projectId, name, timeZone, retrievalStartedAt) 
+                                values (@projectId, @name, @timeZone, date_sub(now(), interval 10 year))
                                     on duplicate key update name = @name, timeZone = @timeZone";
                     MySqlHelper.ExecuteNonQuery(conn, command,
                         new MySqlParameter("@projectId", project.id),
@@ -199,6 +201,35 @@ namespace LandfillService.WebApi.Models
                                 from users where userId = (select userId from sessions where sessionId = @sessionId)";
                 var result = MySqlHelper.ExecuteScalar(conn, command, new MySqlParameter("@sessionId", sessionId)); 
                 return Convert.ToUInt32(result);
+            });
+        }
+
+        public static bool RetrievalInProgress(Project project)
+        {
+            return WithConnection((conn) =>
+            {
+                var command = @"select count(*) from projects 
+                                where projectId = @projectId and (retrievalStartedAt >= date_sub(now(), interval " + lockTimeout.ToString() + " hour) or " +
+                                "(select count(*) from entries where projectId = @projectId and volume is null and volumeNotAvailable = 0) > 0)";
+
+                var count = MySqlHelper.ExecuteScalar(conn, command, new MySqlParameter("@projectId", project.id));
+                return Convert.ToUInt32(count) > 0;
+            });
+        }
+
+        public static bool LockForRetrieval(Project project, bool shouldLock = true)
+        {
+            return WithConnection((conn) =>
+            {
+                var command = shouldLock ? 
+                    @"update projects set retrievalStartedAt = now()
+                      where projectId = @projectId and retrievalStartedAt < date_sub(now(), interval " + lockTimeout.ToString() + " hour)"
+                    :
+                    @"update projects set retrievalStartedAt = date_sub(now(), interval 10 year)
+                      where projectId = @projectId and retrievalStartedAt >= date_sub(now(), interval " + lockTimeout.ToString() + " hour)";
+
+                var rowsAffected = MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@projectId", project.id));
+                return rowsAffected > 0;
             });
         }
 
