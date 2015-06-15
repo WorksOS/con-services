@@ -8,22 +8,6 @@ using System.Web;
 
 namespace LandfillService.WebApi.Models
 {
-    //[DbConfigurationType(typeof(MySqlEFConfiguration))]
-    //public class LandfillContext : DbContext
-    //{
-    //    public LandfillContext() : base("name=LandfillContext")
-    //    {
-    //    }
- 
-    //    public DbSet<Session> Sessions { get; set; }
-
-    //    void OnCreateModel()
-    //    {
-    //        // this is supposed to help recover from transient connection issues:s
-    //        //SetExecutionStrategy(MySqlProviderInvariantName.ProviderName, () => new MySqlExecutionStrategy());
-    //    }
-    //}
-
     public class LandfillDb
     {
         private static string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
@@ -63,20 +47,19 @@ namespace LandfillService.WebApi.Models
 
         #region(UsersAndSessions)
 
-        public static User CreateOrGetUser(Credentials credentials)
+        public static User CreateOrGetUser(string userName)
         {
             return WithConnection((conn) =>
             {
                 // supply a dummy value for projectsRetrievedAt such that it indicates that projects have to be retrieved
                 var command = "insert ignore into users (name, projectsRetrievedAt) values (@name, date_sub(now(), interval 10 year))";
-                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@name", credentials.userName));
+                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@name", userName));
 
                 command = "select * from users where name = @name";
-                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@name", credentials.userName)))
+                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@name", userName)))
                 {
                     reader.Read();
                     var user = new User { id = reader.GetUInt32(reader.GetOrdinal("userId")), name = reader.GetString(reader.GetOrdinal("name")) };
-                    //reader.Close();
                     return user;
                 }
             });
@@ -165,8 +148,6 @@ namespace LandfillService.WebApi.Models
                             where userId = (select userId from sessions where sessionId = @sessionId)";
                 MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@sessionId", sessionId));
 
-                //MySqlHelper.ExecuteNonQuery(conn, "select * from notatables");
-
                 return null;
             });
         }
@@ -187,7 +168,6 @@ namespace LandfillService.WebApi.Models
                                                    name = reader.GetString(reader.GetOrdinal("name")),
                                                    timeZoneName = reader.GetString(reader.GetOrdinal("timeZone")) });
                     }
-                    //reader.Close();
                     return projects;
                 }
             });
@@ -319,7 +299,6 @@ namespace LandfillService.WebApi.Models
                     {
                         dates.Add(reader.GetDateTime(0));
                     }
-                    //reader.Close();
                     return dates;
                 }
             });
@@ -329,11 +308,8 @@ namespace LandfillService.WebApi.Models
         {
             return WithConnection((conn) =>
             {
-//                var command = @"select * from entries where projectId = @projectId and 
-//                                volume is not null and volumeNotRetrieved = 0 and volumeNotAvailable = 0
-//                                order by date";
-
-                // The subquery generates a list of dates for the last two years
+                // The subquery generates a list of dates for the last two years so that the query returns all dates 
+                // regardless of what entries are available for the project
                 var command = @"select dates.date, entries.weight, entries.volume
                     from (
                         select cast(convert_tz(curdate(), @@global.time_zone, @timeZone) as date)  - interval (-1 + a.a + (10 * b.a) + (100 * c.a)) day as date

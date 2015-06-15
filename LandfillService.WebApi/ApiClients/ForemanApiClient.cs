@@ -116,10 +116,14 @@ namespace LandfillService.WebApi.ApiClients
             return resObj;
         }
 
-        //TODO: log requests and responses
         public string Login(Credentials credentials)
         {
             return ParseResponse<string>(Request("Login", new { username = credentials.userName, password = credentials.password }));
+        }
+
+        public string LoginWithKey(string key)
+        {
+            return ParseResponse<string>(Request("LoginWithKey", new { key = key }));
         }
 
         public void Logout(string sessionId)

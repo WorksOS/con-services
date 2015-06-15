@@ -12,6 +12,14 @@ namespace LandfillService.WebApi.Models
         public string password { get; set; }
     }
 
+    public class VlCredentials
+    {
+        public string userName { get; set; }
+
+        //[JsonIgnore]
+        public string key { get; set; }
+    }
+
     public class User
     {
         public uint id { get; set; }
@@ -22,7 +30,6 @@ namespace LandfillService.WebApi.Models
     {
         public string id { get; set; }
         public uint userId { get; set; }
-        //public User user { get; set; }
     }
 
     public class Project

@@ -51,7 +51,25 @@ namespace LandfillService.WebApi.Controllers
             return ForemanRequest(sessionId, () => 
             {
                 var response = foremanApiClient.Login(credentials);
-                var user = LandfillDb.CreateOrGetUser(credentials);
+                var user = LandfillDb.CreateOrGetUser(credentials.userName);
+                LandfillDb.SaveSession(user, response);
+                return Ok(response);
+            });
+        }
+
+        [Route("login/vl")]
+        [AllowAnonymous]
+        public IHttpActionResult LoginVl([FromBody] VlCredentials credentials)
+        {
+            var sessionId = Request.Headers.GetValues("SessionID").First();
+
+            if (new Random().Next(100) % 100 < 5)  // occasionally, delete stale sessions
+                DeleteStaleSessionsInBackground();
+
+            return ForemanRequest(sessionId, () =>
+            {
+                var response = foremanApiClient.LoginWithKey(credentials.key);
+                var user = LandfillDb.CreateOrGetUser(credentials.userName);
                 LandfillDb.SaveSession(user, response);
                 return Ok(response);
             });
