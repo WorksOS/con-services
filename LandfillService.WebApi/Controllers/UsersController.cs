@@ -39,6 +39,11 @@ namespace LandfillService.WebApi.Controllers
             });
         }
 
+        /// <summary>
+        /// Logs the user in via the Foreman API using the supplied credentials.
+        /// </summary>
+        /// <param name="request">The parameters for login request</param>
+        /// <returns>Session ID to be used in subsequent requests</returns>
         [Route("login")]
         [AllowAnonymous]
         public IHttpActionResult Login([FromBody] Credentials credentials)
@@ -57,6 +62,11 @@ namespace LandfillService.WebApi.Controllers
             });
         }
 
+        /// <summary>
+        /// Logs the user in via the Foreman API using the supplied one-time key.
+        /// </summary>
+        /// <param name="request">The parameters for login request</param>
+        /// <returns>Session ID to be used in subsequent requests</returns>
         [Route("login/vl")]
         [AllowAnonymous]
         public IHttpActionResult LoginVl([FromBody] VlCredentials credentials)
@@ -75,6 +85,11 @@ namespace LandfillService.WebApi.Controllers
             });
         }
 
+        /// <summary>
+        /// Logs the user out via the Foreman API.
+        /// </summary>
+        /// <param name="request">The parameters for login request</param>
+        /// <returns></returns>
         [Route("logout")]
         public IHttpActionResult Logout()
         {

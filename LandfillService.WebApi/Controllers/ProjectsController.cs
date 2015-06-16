@@ -65,7 +65,11 @@ namespace LandfillService.WebApi.Controllers
             return GetProjects(sessionId);
         }
 
-        // Get a list of available projects
+        /// <summary>
+        /// Returns the list of projects avaialable to the user.
+        /// </summary>
+        /// <param name="request">Session ID</param>
+        /// <returns>List of available projects</returns>
         [Route("")]
         public IHttpActionResult Get()
         {
@@ -106,7 +110,11 @@ namespace LandfillService.WebApi.Controllers
 
         }
 
-        // Get project data for a given project
+        /// <summary>
+        /// Returns the last two years worth of project data for a given project.
+        /// </summary>
+        /// <param name="request">Project ID, session ID</param>
+        /// <returns>List of data entries for each day in the last two years</returns>
         [Route("{id}")]
         public IHttpActionResult Get(uint id)
         {
@@ -135,10 +143,6 @@ namespace LandfillService.WebApi.Controllers
 
         }
 
-        // POST api/projects
-        //public void Post([FromBody]string value)
-        //{
-        //}
 
         private async Task GetVolumeInBackground(string sessionId, Project project, WeightEntry entry)
         {
@@ -215,7 +219,11 @@ namespace LandfillService.WebApi.Controllers
             });
         }
 
-        // Submit weights to the project API
+        /// <summary>
+        /// Saves weights submitted in the request.
+        /// </summary>
+        /// <param name="request">Project ID, Session ID, array of weight entries</param>
+        /// <returns>Project data and status of volume retrieval</returns>
         [Route("{id}/weights")]
         public IHttpActionResult PostWeights(uint id, [FromBody] WeightEntry[] entries)
         {
@@ -262,10 +270,5 @@ namespace LandfillService.WebApi.Controllers
 
             });
         }
-
-        // DELETE api/values/5
-        //public void Delete(int id)
-        //{
-        //}
     }
 }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Web.Http;
@@ -113,6 +114,8 @@ namespace LandfillService.WebApi
 
 
             // Web API configuration and services
+            config.Formatters.Clear();
+            config.Formatters.Insert(0, new JsonMediaTypeFormatter());
             config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
 
             // Web API routes
