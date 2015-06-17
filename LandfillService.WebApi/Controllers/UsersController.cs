@@ -15,7 +15,6 @@ namespace LandfillService.WebApi.Controllers
     public class UsersController : ApiController
     {
         private ForemanApiClient foremanApiClient = new ForemanApiClient();
-        private LandfillDb db = new LandfillDb();
 
         /// <summary>
         /// Wraps a request to the Foreman API & deletes the session if invalid

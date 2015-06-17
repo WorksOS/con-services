@@ -87,6 +87,9 @@ Only one retry task can be running at a time. The project is "locked" for
 retrying so that additional tasks aren't created. The lock expires within 
 an hour so the assumption is that the task always completes before that. 
 
+All projects are unlocked when the service is started as they could be 
+left in a locked state when the service terminated.
+
 Note: If a retry task is triggered while a normal volume retrieval
 task is running, it can result in redundant requests to Raptor. This is 
 a design tradeoff as the probability of it happening is low due to the 
@@ -111,12 +114,6 @@ received from the Foreman API to IANA format, and only dealing with IANA
 time zones in the rest of the system. 
 
 NodaTime library is used to deal with time zone manipulation. 
-
-Note that time zone conversions can be ambiguous in some (rare) situations
-such as daylight saving time shifts, and NodaTime "best effort" conversion 
-will be applied in those cases. However, as the system deals with full days, 
-+/- 1 hour time discrepancies around midnight are not expected to be an issue 
-in practice.
 
 
 == Miscellaneous

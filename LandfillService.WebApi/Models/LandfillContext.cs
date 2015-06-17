@@ -90,7 +90,7 @@ namespace LandfillService.WebApi.Models
         {
             WithConnection<object>((conn) =>
             {
-                var command = "insert into sessions (userId, sessionId) values (@userId, @sessionId)";
+                var command = "insert ignore into sessions (userId, sessionId) values (@userId, @sessionId)";
                 MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@userId", user.id), new MySqlParameter("@sessionId", sessionId));
                 return null;
             });
@@ -275,6 +275,21 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Unlocks all projects for volume retrieval (only expected to be called at service startup)
+        /// </summary>
+        /// <returns></returns>
+        public static void UnlockAllProjects()
+        {
+            WithConnection<object>((conn) =>
+            {
+                var command = @"update projects set retrievalStartedAt = date_sub(now(), interval 10 year)";
+                MySqlHelper.ExecuteNonQuery(conn, command);
+                return null;
+            });
+        }
+
+
         #endregion
 
         #region(Entries)
@@ -413,12 +428,11 @@ namespace LandfillService.WebApi.Models
                         cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b
                         cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
                     ) dates
-                    left join entries on dates.date = entries.date and entries.projectId = @projectId and 
-                                         entries.volume is not null and entries.volumeNotRetrieved = 0 and entries.volumeNotAvailable = 0
+                    left join entries on dates.date = entries.date and entries.projectId = @projectId
                     where dates.date between cast(convert_tz(curdate(), @@global.time_zone, @timeZone) as date) - interval 2 year - interval 1 day and 
                                              cast(convert_tz(curdate(), @@global.time_zone, @timeZone) as date) - interval 1 day
                     order by date";
-
+                
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, 
                     new MySqlParameter("@projectId", project.id), new MySqlParameter("@timeZone", project.timeZoneName)))
                 {
@@ -440,7 +454,7 @@ namespace LandfillService.WebApi.Models
                         else
                         {
                             double density = 0.0;
-                            if (reader.GetDouble(reader.GetOrdinal("volume")) > EPSILON)
+                            if (!reader.IsDBNull(reader.GetOrdinal("volume")) && reader.GetDouble(reader.GetOrdinal("volume")) > EPSILON)
                                 density = reader.GetDouble(reader.GetOrdinal("weight")) * POUNDS_PER_TON * M3_PER_YD3 / reader.GetDouble(reader.GetOrdinal("volume"));
                             entries.Add(new DayEntry
                             {

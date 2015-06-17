@@ -25,6 +25,11 @@ namespace LandfillService.WebApi.Controllers
         private ForemanApiClient foremanApiClient = new ForemanApiClient();
         private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
+        public ProjectsController()
+        {
+            LandfillDb.UnlockAllProjects();  // if the service terminates, some projects can be left locked for volume retrieval; unlock them
+        }
+
         /// <summary>
         /// Wraps a request to the Foreman API & deletes the session if invalid
         /// </summary>
