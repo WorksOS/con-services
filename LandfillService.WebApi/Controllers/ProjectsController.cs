@@ -25,6 +25,12 @@ namespace LandfillService.WebApi.Controllers
         private ForemanApiClient foremanApiClient = new ForemanApiClient();
         private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
+        /// <summary>
+        /// Wraps a request to the Foreman API & deletes the session if invalid
+        /// </summary>
+        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <param name="body">Code to execute</param>
+        /// <returns>The result of executing body() or error details</returns>
         private IHttpActionResult ForemanRequest(string sessionId, Func<IHttpActionResult> body)
         {
             try
@@ -40,6 +46,11 @@ namespace LandfillService.WebApi.Controllers
         }
 
 
+        /// <summary>
+        /// Attempts to retrieve a list of projects from the Foreman API and save it in the landfill DB; deletes the session if invalid
+        /// </summary>
+        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <returns>A list of projects or error details</returns>
         private IEither<IHttpActionResult, IEnumerable<Project>> GetProjects(string sessionId)
         {
             try
@@ -57,7 +68,12 @@ namespace LandfillService.WebApi.Controllers
             }
         }
 
-        private IEither<IHttpActionResult, IEnumerable<Project>>  PerhapsUpdateProjectList(string sessionId)
+        /// <summary>
+        /// Retrieves a list of projects either from the landfill DB (if less than one hour old) or from the Foreman API
+        /// </summary>
+        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <returns>A list of projects or error details</returns>
+        private IEither<IHttpActionResult, IEnumerable<Project>> PerhapsUpdateProjectList(string sessionId)
         {
             if (LandfillDb.GetProjectListAgeInHours(sessionId) < 1)
                 return Either.Right<IHttpActionResult, IEnumerable<Project>>(LandfillDb.GetProjects(sessionId));
@@ -66,9 +82,8 @@ namespace LandfillService.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns the list of projects avaialable to the user.
+        /// Returns the list of projects avaialable to the user
         /// </summary>
-        /// <param name="request">Session ID</param>
         /// <returns>List of available projects</returns>
         [Route("")]
         public IHttpActionResult Get()
@@ -78,15 +93,16 @@ namespace LandfillService.WebApi.Controllers
             return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects => Ok(projects));
         }
 
+        /// <summary>
+        /// TEST CODE: generate random project data entries 
+        /// </summary>
+        /// <returns>Random project data entries</returns>
         private IEnumerable<DayEntry> GetRandomEntries()
         {
             var totalDays = 730;
             var startDate = DateTime.Today.AddDays(-totalDays);
 
             var entries = new List<DayEntry>();
-
-            //if (id == 544)
-            //    return entries.ToArray();
 
             var rnd = new Random();
 
@@ -107,21 +123,19 @@ namespace LandfillService.WebApi.Controllers
                 });
             }
             return entries.ToArray(); 
-
         }
 
         /// <summary>
         /// Returns the last two years worth of project data for a given project.
         /// </summary>
-        /// <param name="request">Project ID, session ID</param>
-        /// <returns>List of data entries for each day in the last two years</returns>
+        /// <param name="id">Project ID</param>
+        /// <returns>List of data entries for each day in the last two years and the status of volume retrieval for the project</returns>
         [Route("{id}")]
         public IHttpActionResult Get(uint id)
         {
             // Get the available data
             // Kick off missing volumes retrieval IF not already running
             // Check if there are missing volumes and indicate to the client
-
 
             var sessionId = Request.Headers.GetValues("SessionId").First();
 
@@ -132,7 +146,6 @@ namespace LandfillService.WebApi.Controllers
                     var project = projects.Where(p => p.id == id).First();
                     GetMissingVolumesInBackground(sessionId, project);  // retry volume requests which weren't successful before
 
-                    //GetRandomEntries()
                     return Ok(new ProjectData { entries = LandfillDb.GetEntries(project), retrievingVolumes = LandfillDb.RetrievalInProgress(project) });
                 }
                 catch (InvalidOperationException)
@@ -144,6 +157,13 @@ namespace LandfillService.WebApi.Controllers
         }
 
 
+        /// <summary>
+        /// Retrieves volume summary from Raptor and saves it to the landfill DB
+        /// </summary>
+        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <param name="project">Project</param>
+        /// <param name="entry">Weight entry from the client</param>
+        /// <returns></returns>
         private async Task GetVolumeInBackground(string sessionId, Project project, WeightEntry entry)
         {
             try
@@ -180,6 +200,12 @@ namespace LandfillService.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Retries volume summary retrieval from Raptor for volumes marked not retrieved
+        /// </summary>
+        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <param name="project">Project</param>
+        /// <returns></returns>
         private void GetMissingVolumesInBackground(string sessionId, Project project)
         {
             // get a "lock" on the project so that only a single background task at a time is retrieving 
@@ -190,19 +216,27 @@ namespace LandfillService.WebApi.Controllers
             {
                 var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project.id);
                 System.Diagnostics.Debug.Write("Dates without volumes: {0}", dates.ToString());
-                var entries = dates.Select(date => new WeightEntry { date = date, weight = 0 });
+                var entries = dates.Select(date => new WeightEntry { date = date, weight = 0 }); // generate fake WeightEntry objects from dates
                 GetVolumesInBackground(sessionId, project, entries, () =>
                 {
-                    var retrievalWasInProgress = LandfillDb.LockForRetrieval(project, false);
+                    var retrievalWasInProgress = LandfillDb.LockForRetrieval(project, false);  // "unlock" the project
                     if (!retrievalWasInProgress)
                         LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + project.id.ToString(),
                             "Project wasn't locked for retrieval when it should have been");
                 });
             }
             else
-                System.Diagnostics.Debug.Write("Retrieval of missing volumes already in progress");
+                System.Diagnostics.Debug.Write("Retrieval of missing volumes already in progress");  // this would indicate a bug
         }
 
+        /// <summary>
+        /// Retrieves volumes via a background task in batches of 10 parallel requests
+        /// </summary>
+        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <param name="project">Project</param>
+        /// <param name="entries">Weight entries (providing dates to request)</param>
+        /// <param name="onComplete">Code to execute on completion</param>
+        /// <returns></returns>
         private void GetVolumesInBackground(string sessionId, Project project, IEnumerable<WeightEntry> entries, Action onComplete)
         {
             HostingEnvironment.QueueBackgroundWorkItem(async (CancellationToken cancel) =>
@@ -222,18 +256,17 @@ namespace LandfillService.WebApi.Controllers
         /// <summary>
         /// Saves weights submitted in the request.
         /// </summary>
-        /// <param name="request">Project ID, Session ID, array of weight entries</param>
+        /// <param name="id">Project ID</param>
+        /// <param name="entries">array of weight entries</param>
         /// <returns>Project data and status of volume retrieval</returns>
         [Route("{id}/weights")]
         public IHttpActionResult PostWeights(uint id, [FromBody] WeightEntry[] entries)
         {
-            // TODO: Get project list and check request validity
             var sessionId = Request.Headers.GetValues("SessionId").First();
 
             return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects =>
             {
                 var project = projects.Where(p => p.id == id).First();
-
 
                 var validEntries = new List<WeightEntry>();
                 foreach (var entry in entries)
@@ -243,12 +276,6 @@ namespace LandfillService.WebApi.Controllers
                     var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
                     var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(entry.date.Year, entry.date.Month, entry.date.Day, 0, 0));
                     var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();
-
-                    //   There doesn't seem to be a standard way to convert a time from an arbitrary time zone to UTC 
-                    //   This was my best attempt which didn't work:
-                    //TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZone.IanaToWindows(project.timeZoneName));
-                    //var utcDateTime = TimeZoneInfo.ConvertTimeToUtc(
-                    //    new DateTime(entry.date.Year, entry.date.Month, entry.date.Day, 0, 0, 0, 0, DateTimeKind.Local), timeZone);
 
                     if (entry.weight >= 0 && utcDateTime <= DateTime.Today.AddDays(-1).ToUniversalTime())
                     {
@@ -264,8 +291,6 @@ namespace LandfillService.WebApi.Controllers
 
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
 
-                //throw new ServiceException(HttpStatusCode.BadGateway, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "ERROR!!!"));
-                //throw new InvalidOperationException("UH OH");
                 return Ok(new ProjectData { entries = LandfillDb.GetEntries(project), retrievingVolumes = true });
 
             });

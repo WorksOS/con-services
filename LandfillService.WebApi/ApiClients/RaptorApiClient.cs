@@ -30,6 +30,9 @@ namespace LandfillService.WebApi.ApiClients
         }
     }
 
+    /// <summary>
+    /// Handles requests to the Raptor API
+    /// </summary>
     public class RaptorApiClient : IDisposable
     {
         private HttpClient client;
@@ -48,6 +51,13 @@ namespace LandfillService.WebApi.ApiClients
             client.Dispose();
         }
 
+        /// <summary>
+        /// Makes a JSON POST request to the Foreman API
+        /// </summary>
+        /// <param name="endpoint">URL path fragment for the request</param>
+        /// <param name="sessionId">session ID provided by the Foreman API</param>
+        /// <param name="parameters">JSON parameters</param>
+        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
         private async Task<string> Request<TParams>(string endpoint, string sessionId, TParams parameters)  
         {
             System.Diagnostics.Debug.WriteLine("In RaptorApiClient::Request to " + endpoint + " with " + parameters);
@@ -60,7 +70,7 @@ namespace LandfillService.WebApi.ApiClients
 
             
             // Syncronous processing can be forced by calling .Result
-            var response = await client.SendAsync(request); //client.PostAsJsonAsync(endpoint, parameters);
+            var response = await client.SendAsync(request); 
 
             if (!response.IsSuccessStatusCode)
             {
@@ -73,13 +83,15 @@ namespace LandfillService.WebApi.ApiClients
 
             var responseContent = response.Content;
 
-            // by calling .Result you are synchronously reading the result
             var res = await responseContent.ReadAsStringAsync();
-            System.Diagnostics.Debug.WriteLine("Response: " + res);
-
             return res;
         }
 
+        /// <summary>
+        /// Parses a JSON response from the Raptor API
+        /// </summary>
+        /// <param name="response">response string</param>
+        /// <returns>Response string converted to the given type</returns>
         private T ParseResponse<T>(string response)
         {
             System.Diagnostics.Debug.WriteLine("In RaptorApiClient::ParseResponse");
@@ -97,11 +109,16 @@ namespace LandfillService.WebApi.ApiClients
             return resObj;
         }
 
+
+        /// <summary>
+        /// Retrieves volume summary information for a given project and date
+        /// </summary>
+        /// <param name="sessionId">session ID provided by the Foreman API</param>
+        /// <param name="project">VisionLink project to retrieve volumes for</param>
+        /// <param name="date">Date to retrieve volumes for (in project time zone)</param>
+        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
         public async Task<SummaryVolumesResult> GetVolumesAsync(string sessionId, Project project, DateTime date)
         {
-            //TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZone.IanaToWindows(project.timeZoneName));
-            //var utcDateTime = TimeZoneInfo.ConvertTimeToUtc(date, timeZone);
-
             var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
             var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(date.Year, date.Month, date.Day, 0, 0));
             var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();

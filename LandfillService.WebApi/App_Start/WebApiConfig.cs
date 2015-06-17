@@ -18,15 +18,13 @@ using System.Web.Http.Filters;
 
 namespace LandfillService.WebApi
 {
+    /// <summary>
+    /// Verifies the session ID
+    /// </summary>
     public class AuthNAuthZ : AuthorizeAttribute
     {
         protected override bool IsAuthorized(HttpActionContext context)
         {
-            //var principal =
-            //  context.Request.GetRequestContext().Principal as ClaimsPrincipal;
-            //return principal.Claims.Any(c => c.Type ==
-            //  "http://yourschema/identity/claims/admin"
-            //  && c.Value == "true");
             if (!context.Request.Headers.Contains("SessionID"))
             {
                 System.Diagnostics.Debug.WriteLine("Unauthorised: missing SessionID header");
@@ -47,9 +45,6 @@ namespace LandfillService.WebApi
                 return false;
             }
            
-
-            // TODO: authorise the user - check that the session is valid and the request is for a valid project
-
             return true;
         }
     }
@@ -113,7 +108,7 @@ namespace LandfillService.WebApi
             config.Filters.Add(new HandleSerializationErrorAttribute());
 
 
-            // Web API configuration and services
+            // Web API configuration and services: allow JSON only
             config.Formatters.Clear();
             config.Formatters.Insert(0, new JsonMediaTypeFormatter());
             config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
@@ -121,12 +116,7 @@ namespace LandfillService.WebApi
             // Web API routes
             config.MapHttpAttributeRoutes();
 
-            //config.Routes.MapHttpRoute(
-            //    name: "DefaultApi",
-            //    routeTemplate: "api/{controller}/{id}",
-            //    defaults: new { id = RouteParameter.Optional }
-            //);
-
+            // Log exceptions
             config.Services.Add(typeof(IExceptionLogger),
                 new TraceSourceExceptionLogger(new
                 TraceSource(Assembly.GetExecutingAssembly().FullName, SourceLevels.All)));

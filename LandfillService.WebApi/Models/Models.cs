@@ -75,7 +75,6 @@ namespace LandfillService.WebApi.Models
         public DateTime startUTC;
         public DateTime endUTC;
         public bool returnEarliest;
-        //public int gpsAccuracy;
 
         /// <summary>
         /// ToString override
@@ -84,7 +83,6 @@ namespace LandfillService.WebApi.Models
         public override string ToString()
         {
             return String.Format("startUTC:{0}, endUTC:{1}, returnEarliest:{2}", startUTC, endUTC, returnEarliest);
-            //return String.Format("startUTC:{0}, endUTC:{1}, returnEarliest:{2}, gpsAccuracy:{3}", startUTC, endUTC, returnEarliest, gpsAccuracy);
         }
 
     }

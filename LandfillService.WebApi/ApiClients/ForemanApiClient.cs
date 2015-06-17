@@ -15,37 +15,6 @@ using System.Threading.Tasks;
 
 namespace LandfillService.WebApi.ApiClients
 {
-    public class LoggingHandler : DelegatingHandler
-    {
-        public LoggingHandler(HttpMessageHandler innerHandler)
-            : base(innerHandler)
-        {
-        }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            System.Diagnostics.Debug.WriteLine("Request:");
-            System.Diagnostics.Debug.WriteLine(request.ToString());
-            if (request.Content != null)
-            {
-                System.Diagnostics.Debug.WriteLine(await request.Content.ReadAsStringAsync());
-            }
-            System.Diagnostics.Debug.WriteLine("\n");
-
-            HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
-
-            System.Diagnostics.Debug.WriteLine("Response:");
-            System.Diagnostics.Debug.WriteLine(response.ToString());
-            if (response.Content != null)
-                System.Diagnostics.Debug.WriteLine(await response.Content.ReadAsStringAsync());
-            else
-                System.Diagnostics.Debug.WriteLine("<No content in the response>");
-            System.Diagnostics.Debug.WriteLine("\n");
-
-            return response;
-        }
-    }
-
     public class ForemanApiException : ApplicationException
     {
         public HttpStatusCode code { get; set; }
@@ -56,21 +25,27 @@ namespace LandfillService.WebApi.ApiClients
         }
     }
 
+    /// <summary>
+    /// Handles requests to the Foreman API
+    /// </summary>
     public class ForemanApiClient
     {
         private HttpClient client;
 
         public ForemanApiClient()
         {
-            //client = new HttpClient(new LoggingHandler(new HttpClientHandler()));
             client = new HttpClient();
             client.BaseAddress = new Uri(ConfigurationManager.AppSettings["ForemanApiUrl"] ?? "/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            //System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => { return true; };
         }
 
+        /// <summary>
+        /// Makes a JSON POST request to the Foreman API
+        /// </summary>
+        /// <param name="endpoint">URL path fragment for the request</param>
+        /// <param name="parameters">JSON parameters</param>
+        /// <returns>Response as a string; throws an exception if request is not successful</returns>
         private string Request<TParams>(string endpoint, TParams parameters)  
         {
             System.Diagnostics.Debug.WriteLine("In ForemanApiClient::Request");
@@ -98,6 +73,11 @@ namespace LandfillService.WebApi.ApiClients
             return res;
         }
 
+        /// <summary>
+        /// Parses a JSON response from the Foreman API
+        /// </summary>
+        /// <param name="response">response string</param>
+        /// <returns>Response string converted to the given type</returns>
         private T ParseResponse<T>(string response)
         {
             System.Diagnostics.Debug.WriteLine("In ForemanApiClient::ParseResponse");
@@ -133,40 +113,12 @@ namespace LandfillService.WebApi.ApiClients
 
         public IEnumerable<Project> GetProjects(string sessionId)
         {
-            var resp = ParseResponse<Project[]>(Request("GetProjects", new { sessionID = sessionId, landfillOnly = true }));
+            var resp = ParseResponse<Project[]>(Request("GetProjects", new { sessionID = sessionId, landfillOnly = false }));
             
             return resp
                 .Select(p => { p.timeZoneName = TimeZone.WindowsToIana(p.timeZoneName); return p; })
                 .ToList()
                 .OrderBy(p => p.name);
-
-            //var response = client.PostAsJsonAsync("GetProjects", new { sessionID = sessionId }).Result;
-
-            //System.Diagnostics.Debug.WriteLine(response.ToString());
-
-            //// TODO: It would be good to propagate "unauthorised" responses out to the client so it can redirect the user to the login page; 
-            //// so the exception needs to include that information somehow.
-            //if (!response.IsSuccessStatusCode)
-            //    throw new Exception("Unable to retrieve projects from the Foreman API: " + response.ToString());
-
-            //System.Diagnostics.Debug.WriteLine("POST request succeeded");
-
-            //var responseContent = response.Content;
-
-            //// by calling .Result you are synchronously reading the result
-            //var res = responseContent.ReadAsStringAsync().Result;
-
-            //var projects = JsonConvert.DeserializeObject<Project[]>(res,
-            //     new JsonSerializerSettings
-            //     {
-            //         Error = delegate(object sender, ErrorEventArgs args)
-            //         {
-            //             System.Diagnostics.Debug.WriteLine(args.ErrorContext.Error.Message);
-            //             args.ErrorContext.Handled = true;
-            //         }
-            //     });
-
-            //return projects;
         } 
     }
 }

@@ -13,6 +13,11 @@ namespace LandfillService.WebApi.Models
         private static string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
         private static int lockTimeout = 1; // hour
 
+        /// <summary>
+        /// Wrapper for generating a MySQL connection
+        /// </summary>
+        /// <param name="body">Code to execute</param>
+        /// <returns>The result of executing body()</returns>
         private static T WithConnection<T>(Func<MySqlConnection, T> body)
         {
             using (var conn = new MySqlConnection(connString))
@@ -24,6 +29,11 @@ namespace LandfillService.WebApi.Models
             }
         }
 
+        /// <summary>
+        /// Wrapper for executing MySQL queries/statements in a DB transaction; rolls back the transaction in case of errors
+        /// </summary>
+        /// <param name="body">Code to execute</param>
+        /// <returns>The result of executing body()</returns>
         private static T InTransaction<T>(Func<MySqlConnection, T> body) 
         {
             return WithConnection<T>((conn) =>
@@ -47,6 +57,11 @@ namespace LandfillService.WebApi.Models
 
         #region(UsersAndSessions)
 
+        /// <summary>
+        /// Retrieves the user object for a given name (and creates a DB record if needed)
+        /// </summary>
+        /// <param name="userName">User name</param>
+        /// <returns>User object</returns>
         public static User CreateOrGetUser(string userName)
         {
             return WithConnection((conn) =>
@@ -65,6 +80,12 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Saves the session ID for a given user
+        /// </summary>
+        /// <param name="user">User object</param>
+        /// <param name="sessionId">Session ID</param>
+        /// <returns></returns>
         public static void SaveSession(User user, string sessionId)
         {
             WithConnection<object>((conn) =>
@@ -75,6 +96,11 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Deletes the given session ID from the DB
+        /// </summary>
+        /// <param name="sessionId">Session ID</param>
+        /// <returns></returns>
         public static void DeleteSession(string sessionId)
         {
             WithConnection<object>((conn) =>
@@ -85,6 +111,10 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Deletes sessions older than 30 days from the DB
+        /// </summary>
+        /// <returns></returns>
         public static void DeleteStaleSessions()
         {
             WithConnection<object>((conn) =>
@@ -95,6 +125,11 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Retrieves the session with a given ID
+        /// </summary>
+        /// <param name="sessionId">Session ID</param>
+        /// <returns>Session object</returns>
         public static Session GetSession(string sessionId)
         {
             return WithConnection((conn) =>
@@ -108,7 +143,6 @@ namespace LandfillService.WebApi.Models
                         throw new ApplicationException("Invalid session " + sessionId);
                     }
                     var session = new Session { id = reader.GetString(reader.GetOrdinal("sessionId")), userId = reader.GetUInt32(reader.GetOrdinal("userId")) };
-                    //reader.Close();
                     return session;
                 }
             });
@@ -118,10 +152,17 @@ namespace LandfillService.WebApi.Models
 
         #region(Projects)
 
+        /// <summary>
+        /// Saves a list of projects to the DB
+        /// </summary>
+        /// <param name="sessionId">Session ID used to associate projects with a user</param>
+        /// <param name="projects">List of projects</param>
+        /// <returns></returns>
         public static void SaveProjects(string sessionId, IEnumerable<Project> projects)
         {
             InTransaction<object>((conn) =>
             {
+                // delete any existing projects associated with the user
                 var command = "delete from usersprojects where userId = (select userId from sessions where sessionId = @sessionId)";
                 MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@sessionId", sessionId));
 
@@ -152,6 +193,11 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Retrieves a list of projects for a given user (via session ID)
+        /// </summary>
+        /// <param name="sessionId">Session ID used to associate projects with a user</param>
+        /// <returns>A list of projects</returns>
         public static IEnumerable<Project> GetProjects(string sessionId)
         {
             return InTransaction((conn) =>
@@ -173,6 +219,11 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Retrieves the age of the project list for a given user (found via session ID)
+        /// </summary>
+        /// <param name="sessionId">Session ID used to associate projects with a user</param>
+        /// <returns>Age of project list in hours</returns>
         public static ulong GetProjectListAgeInHours(string sessionId)
         {
             return WithConnection((conn) =>
@@ -184,6 +235,11 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Returns the status of volume retrieval for a project
+        /// </summary>
+        /// <param name="project">Project</param>
+        /// <returns>true if volume retrieval is in progress, false otherwise</returns>
         public static bool RetrievalInProgress(Project project)
         {
             return WithConnection((conn) =>
@@ -197,6 +253,12 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Locks or unlocks a project for volume retrieval (only one retrieval process at a time should be happening for a given project)
+        /// </summary>
+        /// <param name="project">Project</param>
+        /// <param name="shouldLock">true to lock, false to unlock</param>
+        /// <returns>true if successful, false otherwise</returns>
         public static bool LockForRetrieval(Project project, bool shouldLock = true)
         {
             return WithConnection((conn) =>
@@ -217,14 +279,16 @@ namespace LandfillService.WebApi.Models
 
         #region(Entries)
 
+        /// <summary>
+        /// Saves a weight entry for a given project
+        /// </summary>
+        /// <param name="project">Project</param>
+        /// <param name="entry">Weight entry from the client</param>
+        /// <returns></returns>
         public static void SaveEntry(uint projectId, WeightEntry entry)
         {
             WithConnection<object>((conn) =>
             {
-                // on update, the id has to be updated in order to get the correct value out of last_insert_id() later
-//                var command = @"insert into entries (projectId, date, weight) values (@projectId, @date, @weight) 
-//                              on duplicate key update entryId = last_insert_id(entryId), weight = @weight";
-
                 var command = @"insert into entries (projectId, date, weight) values (@projectId, @date, @weight) 
                                 on duplicate key update weight = @weight";
 
@@ -233,12 +297,18 @@ namespace LandfillService.WebApi.Models
                     new MySqlParameter("@date", entry.date),
                     new MySqlParameter("@weight", entry.weight));
 
-                //command = "select last_insert_id()";  // last id is tracked on a per-connection basis
-                //var entryId = (uint)MySqlHelper.ExecuteScalar(conn, command);
                 return null;
             });
         }
 
+
+        /// <summary>
+        /// Saves a volume for a given project and date
+        /// </summary>
+        /// <param name="projectId">Project ID</param>
+        /// <param name="date">Date</param>
+        /// <param name="volume">Volume</param>
+        /// <returns></returns>
         public static void SaveVolume(uint projectId, DateTime date, double volume)
         {
             WithConnection<object>((conn) =>
@@ -257,6 +327,12 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Marks an entry with "volume not retrieved" so it can be retried later
+        /// </summary>
+        /// <param name="projectId">Project id</param>
+        /// <param name="date">Date of the entry</param>
+        /// <returns></returns>
         public static void MarkVolumeNotRetrieved(uint projectId, DateTime date)
         {
             WithConnection<object>((conn) =>
@@ -271,6 +347,12 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Marks an entry with "volume not available" to indicate that there is no volume information in Raptor for that date
+        /// </summary>
+        /// <param name="projectId">Project ID</param>
+        /// <param name="date">Date of the entry</param>
+        /// <returns></returns>
         public static void MarkVolumeNotAvailable(uint projectId, DateTime date)
         {
             WithConnection<object>((conn) =>
@@ -286,6 +368,11 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Retrieves a list of dates for which volumes couldn't be retrieved previously (used to retry retrieval)
+        /// </summary>
+        /// <param name="projectId">Project ID</param>
+        /// <returns>A list of dates</returns>
         public static IEnumerable<DateTime> GetDatesWithVolumesNotRetrieved(uint projectId)
         {
             return WithConnection((conn) =>
@@ -304,6 +391,11 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+        /// <summary>
+        /// Retrieves data entries for a given project
+        /// </summary>
+        /// <param name="project">Project</param>
+        /// <returns>A list of data entries</returns>
         public static IEnumerable<DayEntry> GetEntries(Project project)
         {
             return WithConnection((conn) =>
@@ -355,7 +447,6 @@ namespace LandfillService.WebApi.Models
                             });
                         }
                      }
-                    //reader.Close();
                     return entries;
                 }
             });

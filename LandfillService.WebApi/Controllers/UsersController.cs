@@ -17,6 +17,12 @@ namespace LandfillService.WebApi.Controllers
         private ForemanApiClient foremanApiClient = new ForemanApiClient();
         private LandfillDb db = new LandfillDb();
 
+        /// <summary>
+        /// Wraps a request to the Foreman API & deletes the session if invalid
+        /// </summary>
+        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <param name="body">Code to execute</param>
+        /// <returns>The result of executing body() or error details</returns>
         private IHttpActionResult ForemanRequest(string sessionId, Func<IHttpActionResult> body)
         {
             try
@@ -31,6 +37,11 @@ namespace LandfillService.WebApi.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Deletes stale sessions via a background task
+        /// </summary>
+        /// <returns></returns>
         private void DeleteStaleSessionsInBackground()
         {
             HostingEnvironment.QueueBackgroundWorkItem((CancellationToken cancel) =>
@@ -40,9 +51,10 @@ namespace LandfillService.WebApi.Controllers
         }
 
         /// <summary>
-        /// Logs the user in via the Foreman API using the supplied credentials.
+        /// Gets a session ID for the supplied credentials from the Foreman API, creates the user in the DB if needed and saves the session to the DB;
+        /// possibly deletes stale sessions
         /// </summary>
-        /// <param name="request">The parameters for login request</param>
+        /// <param name="credentials">User name and password</param>
         /// <returns>Session ID to be used in subsequent requests</returns>
         [Route("login")]
         [AllowAnonymous]
@@ -63,9 +75,10 @@ namespace LandfillService.WebApi.Controllers
         }
 
         /// <summary>
-        /// Logs the user in via the Foreman API using the supplied one-time key.
+        /// Gets a session ID for the supplied one-time key from the Foreman API, creates the user in the DB if needed and saves the session to the DB;
+        /// possibly deletes stale sessions
         /// </summary>
-        /// <param name="request">The parameters for login request</param>
+        /// <param name="credentials">User name and one-time key</param>
         /// <returns>Session ID to be used in subsequent requests</returns>
         [Route("login/vl")]
         [AllowAnonymous]
@@ -86,9 +99,8 @@ namespace LandfillService.WebApi.Controllers
         }
 
         /// <summary>
-        /// Logs the user out via the Foreman API.
+        /// Logs the user out via the Foreman API and deletes the session from the DB
         /// </summary>
-        /// <param name="request">The parameters for login request</param>
         /// <returns></returns>
         [Route("logout")]
         public IHttpActionResult Logout()

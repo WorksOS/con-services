@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace LandfillService.WebApi
 {
+    /// <summary>
+    /// Encapsulates time zone conversion functions
+    /// </summary>
     public class TimeZone
     {
         // This will return the Windows zone that matches the IANA zone, if one exists.
