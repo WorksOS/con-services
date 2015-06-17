@@ -377,7 +377,11 @@ namespace LandfillService.WebApi.Models
         {
             return WithConnection((conn) =>
             {
-                var command = "select date from entries where projectId = @projectId and volumeNotRetrieved = 1";
+                // selects dates where volume retrieval failed OR was never completed OR hasn't yet happened;
+                // note that this can cause overlap with newly added dates which are currently waiting to be handled by 
+                // a volume retrieval task; this is acceptable because the probability of such overlap is expected to be low
+                // BUT it allows the service to tolerate background tasks dying
+                var command = "select date from entries where projectId = @projectId and (volumeNotRetrieved = 1 or (volume is null and volumeNotAvailable = 0))";
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", projectId)))
                 {
