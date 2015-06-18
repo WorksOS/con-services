@@ -115,6 +115,11 @@ time zones in the rest of the system.
 
 NodaTime library is used to deal with time zone manipulation. 
 
+== Deployment
+
+The source contains a file called App.config with URLs for the APIs. 
+These should be set by the build script according to the environment 
+the service is deployed to.
 
 == Miscellaneous
 
