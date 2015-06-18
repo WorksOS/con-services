@@ -104,6 +104,8 @@ update the UI with this new data).
 
 == Time zones
 
+The server and the database time are expected to be set to UTC.
+
 Dates sent by the client are assumed to be in the project time zone.
 
 There is a discrepancy with time zones: the Foreman API returns project 
