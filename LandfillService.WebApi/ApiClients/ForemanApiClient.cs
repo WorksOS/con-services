@@ -113,7 +113,7 @@ namespace LandfillService.WebApi.ApiClients
 
         public IEnumerable<Project> GetProjects(string sessionId)
         {
-            var resp = ParseResponse<Project[]>(Request("GetProjects", new { sessionID = sessionId, landfillOnly = false }));
+            var resp = ParseResponse<Project[]>(Request("GetProjects", new { sessionID = sessionId, landfillOnly = true }));
             
             return resp
                 .Select(p => { p.timeZoneName = TimeZone.WindowsToIana(p.timeZoneName); return p; })

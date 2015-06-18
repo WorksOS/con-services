@@ -152,6 +152,8 @@ namespace LandfillService.WebApi.Controllers
                     GetMissingVolumesInBackground(sessionId, project);  // retry volume requests which weren't successful before
 
                     return Ok(new ProjectData { entries = LandfillDb.GetEntries(project), retrievingVolumes = LandfillDb.RetrievalInProgress(project) });
+                    // TEST CODE: use this to test chart updates on the client
+                    //return Ok(new ProjectData { entries = GetRandomEntries(), retrievingVolumes = true });
                 }
                 catch (InvalidOperationException)
                 {
