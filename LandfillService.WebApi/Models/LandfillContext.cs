@@ -8,6 +8,9 @@ using System.Web;
 
 namespace LandfillService.WebApi.Models
 {
+    /// <summary>
+    /// Encapsulates DB queries
+    /// </summary>
     public class LandfillDb
     {
         private static string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;

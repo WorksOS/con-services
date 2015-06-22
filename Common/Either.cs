@@ -29,7 +29,7 @@ namespace LandfillService.Common
     }
 
     /// <summary>
-    /// Static helper class for Either
+    /// Static helper class for Either, a class for encapsulating a value of one of the two types 
     /// </summary>
     public static class Either
     {

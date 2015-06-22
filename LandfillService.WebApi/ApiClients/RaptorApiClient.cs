@@ -19,7 +19,9 @@ using System.Web.Http;
 
 namespace LandfillService.WebApi.ApiClients
 {
-
+    /// <summary>
+    /// This exception can be thrown when the Raptor API returns an unsuccessful response (which needs to be propagated to the client)
+    /// </summary>
     public class RaptorApiException : ApplicationException
     {
         public HttpStatusCode code { get; set; }
@@ -31,7 +33,7 @@ namespace LandfillService.WebApi.ApiClients
     }
 
     /// <summary>
-    /// Handles requests to the Raptor API
+    /// A wrapper around HttpClient to handle requests to the Raptor API
     /// </summary>
     public class RaptorApiClient : IDisposable
     {

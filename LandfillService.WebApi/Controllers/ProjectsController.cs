@@ -19,6 +19,9 @@ using System.Reflection;
 
 namespace LandfillService.WebApi.Controllers
 {
+    /// <summary>
+    /// Handles project related requests
+    /// </summary>
     [RoutePrefix("api/v1/projects")]
     public class ProjectsController : ApiController
     {

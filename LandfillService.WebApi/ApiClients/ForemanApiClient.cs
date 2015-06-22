@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 
 namespace LandfillService.WebApi.ApiClients
 {
+    /// <summary>
+    /// This exception can be thrown when the Foreman API returns an unsuccessful response (which needs to be propagated to the client)
+    /// </summary>
     public class ForemanApiException : ApplicationException
     {
         public HttpStatusCode code { get; set; }
@@ -26,7 +29,7 @@ namespace LandfillService.WebApi.ApiClients
     }
 
     /// <summary>
-    /// Handles requests to the Foreman API
+    /// A wrapper around HttpClient to handle requests to the Foreman API
     /// </summary>
     public class ForemanApiClient
     {

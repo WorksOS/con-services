@@ -11,6 +11,9 @@ using System.Web.Http;
 
 namespace LandfillService.WebApi.Controllers
 {
+    /// <summary>
+    /// Handles user related requests
+    /// </summary>
     [RoutePrefix("api/v1/users")]
     public class UsersController : ApiController
     {

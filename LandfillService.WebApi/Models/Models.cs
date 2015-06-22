@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace LandfillService.WebApi.Models
 {
+    /// <summary>
+    /// User credentials submitted for login
+    /// </summary>
     public class Credentials
     {
         public string userName { get; set; }
@@ -12,6 +15,9 @@ namespace LandfillService.WebApi.Models
         public string password { get; set; }
     }
 
+    /// <summary>
+    /// User credentials submitted for login via VisionLink link
+    /// </summary>
     public class VlCredentials
     {
         public string userName { get; set; }
@@ -20,30 +26,41 @@ namespace LandfillService.WebApi.Models
         public string key { get; set; }
     }
 
+    /// <summary>
+    /// User representation
+    /// </summary>
     public class User
     {
         public uint id { get; set; }
         public string name { get; set; }
     }
 
+    /// <summary>
+    /// Session representation
+    /// </summary>
     public class Session
     {
         public string id { get; set; }
         public uint userId { get; set; }
     }
 
+    /// <summary>
+    /// Project representation
+    /// </summary>
     public class Project
     {
         public uint id { get; set; }
         public string name { get; set; }
-        public string timeZoneName { get; set; }
-        public bool retrievingVolumes { get; set; }
+        public string timeZoneName { get; set; }      // project time zone name
+        public bool retrievingVolumes { get; set; }   // is the service retrieving volumes for this project?
     }
 
-
+    /// <summary>
+    /// Weight entry submitted by the user
+    /// </summary>
     public class WeightEntry
     {
-        public DateTime date { get; set; }
+        public DateTime date { get; set; }          // date of the entry; always in the project time zone
         public double weight { get; set; }
 
         /// <summary>
@@ -56,25 +73,35 @@ namespace LandfillService.WebApi.Models
         }
     }
 
+    /// <summary>
+    /// Data entry for a given date - part of project data sent to the client 
+    /// </summary>
     public class DayEntry
     {
         public DateTime date { get; set; }
-        public bool entryPresent { get; set; }
-        public double density { get; set; }
+        public bool entryPresent { get; set; }    // true if the entry has at least the weight value
+        public double density { get; set; }       // weight / volume
         public double weight { get; set; }
     }
 
+
+    /// <summary>
+    /// Encapsulates project data sent to the client 
+    /// </summary>
     public class ProjectData
     {
         public IEnumerable<DayEntry> entries { get; set; }
-        public bool retrievingVolumes { get; set; }
+        public bool retrievingVolumes { get; set; }          // is the service currently retrieving volumes for this project?
     }
 
+    /// <summary>
+    /// Filter for volume summary requests sent to the Raptor API; see Raptor API documentation for details
+    /// </summary>
     public class VolumeFilter
     {
         public DateTime startUTC;
         public DateTime endUTC;
-        public bool returnEarliest;
+        public bool returnEarliest;     
 
         /// <summary>
         /// ToString override
@@ -87,6 +114,9 @@ namespace LandfillService.WebApi.Models
 
     }
 
+    /// <summary>
+    /// Volume calculation parameters sent to the Raptor API; see Raptor API documentation for details
+    /// </summary>
     public class VolumeParams
     {
         public long projectId;
@@ -105,6 +135,10 @@ namespace LandfillService.WebApi.Models
 
     }
 
+
+    /// <summary>
+    /// 3D bounding box - returned in volume summary results from the Raptor API
+    /// </summary>
     public class BoundingBox3DGrid
     {
         /// <summary>
@@ -139,6 +173,9 @@ namespace LandfillService.WebApi.Models
     }
 
 
+    /// <summary>
+    /// Volume summary entry returned from the Raptor API
+    /// </summary>
     public class SummaryVolumesResult 
     {
         /// <summary>
