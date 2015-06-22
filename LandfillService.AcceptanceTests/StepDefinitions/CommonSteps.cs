@@ -38,6 +38,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
         }
 
         protected HttpResponseMessage Login(Credentials credentials)
