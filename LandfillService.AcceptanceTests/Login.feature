@@ -8,8 +8,16 @@ Scenario: Login with good credentials
 	When login goodCredentials
 	Then match response SessionId
 
+Scenario: Login with invalid username
+	When login invalidUsername
+	Then match response (Error 401)
+
 Scenario: Login with bad credentials
 	When login badCredentials
+	Then match response (Error 401)
+
+Scenario: Login with no credentials
+	When login noCredentials
 	Then match response (Error 401)
 
 Scenario: Logout
@@ -20,11 +28,11 @@ Scenario: Logout
 Scenario: Logout then request
 	When login goodCredentials
 	And logout
-	And getProjects
+	And get list of projects
 	Then match response (Error 401)
 	And not $ null response 
 
 Scenario: Request with bad session
 	When use badSession
-	And getProjects
+	And get list of projects
 	Then match response (Error 401)

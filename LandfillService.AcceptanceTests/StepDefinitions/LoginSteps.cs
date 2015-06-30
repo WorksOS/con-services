@@ -24,13 +24,12 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "users/logout"), Method = HttpMethod.Post };
             sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
             request.Headers.Add("SessionID", sessionId);
-
             response = httpClient.SendAsync(request).Result;
 
             System.Diagnostics.Debug.WriteLine(response.ToString());
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
-            Task.Delay(10000).Wait();
+            //Task.Delay(10000).Wait();
 
             //ScenarioContext.Current.Pending();
         }
@@ -47,7 +46,5 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         {
             Assert.IsTrue(response.IsSuccessStatusCode && new Regex(@"\w{32}").IsMatch(response.Content.ReadAsStringAsync().Result));
         }
-
-
     }
 }
