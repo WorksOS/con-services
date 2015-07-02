@@ -36,6 +36,7 @@ Global
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.DeployToFolderForDev|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
+		{92FF1118-05E9-4AB9-AE92-5866976881CA}.DeployToFolderForDev|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -47,6 +48,7 @@ Global
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.DeployToFolderForDev|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
+		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.DeployToFolderForDev|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
