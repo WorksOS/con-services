@@ -1,5 +1,5 @@
 ﻿Feature: Data
-	I should be able to get data from the API.
+	I should be able to request and post data to the landfill service / Web API.
 
 Background: 
 	Given login goodCredentials
@@ -10,11 +10,27 @@ Scenario: Get a list of projects
 	And check the (Project 1384) is in the list
 
 Scenario: Get project data
-	Given Get project data for project (Project 1384)
+	Given Get project data for project (1384)
 	Then match response (Ok 200)
-	And check there is 729 days worth of data for project (Project 1384)
+	And check there is 729 days worth of data for project (1384)
 
-Scenario: Add a weight entry for a day
-	When adding a (weight 12345 tonnes) for project (Project 1384) five days ago
+Scenario: Add a weight entry for a day, five days ago
+	When adding a random weight for project (1384) five days ago
 	Then match response (Ok 200)
-	And check the (weight 12345 tonnes) has been added to the project (Project 1384) for five days ago
+	And check the random weight has been added to the project (1384) for five days ago
+
+Scenario: Add five weight entries for a five days
+	When adding five random weights for project (1384) ten days ago
+	Then match response (Ok 200)
+	And check the five random weights has been added each day to the project (1384) 
+
+Scenario: Check the density for a specific date (2015-04-04)  
+	Given Get project data for project (1384)
+	Then match response (Ok 200)
+	And check the density is (1733.9488621406767) for the date (2015-04-04) 
+
+Scenario: Update the weight for a specific date (2015-04-06) then revert back to original 
+	When updating a weight (6666) tonnes for project (1384) for date (2015-04-06) 
+	Then match response (Ok 200)
+	And check the density is calculated with a volume of (3129.9334339477587) for the date (2015-04-06) 
+

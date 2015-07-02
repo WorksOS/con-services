@@ -26,10 +26,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             {"badCredentials", new Credentials { userName = "akorban", password = "badpassword" } },
             {"noCredentials", new Credentials { userName = "", password = "" } }
         };
-        //public static Credentials goodCredentials = new Credentials() { userName = "akorban", password = "Bullshit1!" };
-        //public static Credentials badCredentials = new Credentials() { userName = "akorban", password = "badpassword" };
-
-        
     }
 
     [Binding]

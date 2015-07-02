@@ -20,7 +20,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         public void WhenLogout()
         {
             response = Login(Config.credentials["goodCredentials"]);
-
             var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "users/logout"), Method = HttpMethod.Post };
             sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
             request.Headers.Add("SessionID", sessionId);
@@ -28,10 +27,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
 
             System.Diagnostics.Debug.WriteLine(response.ToString());
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-
-            //Task.Delay(10000).Wait();
-
-            //ScenarioContext.Current.Pending();
         }
 
 
