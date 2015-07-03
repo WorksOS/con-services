@@ -20,6 +20,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         public double randomWeight;
         public static DateTime dateFiveDaysAgo = DateTime.Now.AddDays(-5);
 
+        #region Private methods 
         /// <summary>
         /// Set up the weight for one day
         /// </summary>
@@ -34,6 +35,11 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             return weightForOneDay;
         }
 
+        /// <summary>
+        /// Set up the wait for one day with a random weight
+        /// </summary>
+        /// <param name="oneDayDate">A valid date</param>
+        /// <returns>One random weight entry</returns>
         private WeightEntry[] SetUpOneWeightForOneDay(DateTime oneDayDate)
         {
             // Set the weights 
@@ -81,6 +87,52 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             };
             return weightForOneDay;
         }
+
+        /// <summary>
+        /// Check the dayEntry is for the correct date and it has a weight and density
+        /// </summary>
+        /// <param name="expectedVolume"></param>
+        /// <param name="dateOfDensityCheck"></param>
+        /// <param name="dayEntry"></param>
+        private static void CheckTheDayEntryIsValid(double expectedVolume, DateTime dateOfDensityCheck, DayEntry dayEntry)
+        {
+            if (dayEntry.date.ToShortDateString() != dateOfDensityCheck.ToShortDateString())
+            {
+                Assert.Fail("Did not find the posted date:" + dateOfDensityCheck.ToShortDateString() +
+                            " or date in DB:" + dayEntry.date.ToShortDateString());
+            }
+            else
+            {
+                if (dayEntry.weight == 0)
+                { Assert.Fail("Weight is zero so density cannot be calculated."); }
+
+                if (dayEntry.density == 0)
+                { Assert.Fail("Density is zero so it cannot be compared."); }
+
+                CalculateDensityAndCompare(expectedVolume, dayEntry);
+            }
+        }
+        /// <summary>
+        /// Calculate the density
+        /// </summary>
+        /// <param name="expectedVolume"></param>
+        /// <param name="dayEntry"></param>
+        private static void CalculateDensityAndCompare(double expectedVolume, DayEntry dayEntry)
+        {
+            const double POUNDS_PER_TON = 2000.0;
+            const double M3_PER_YD3 = 0.7645555;
+            double calculatedDensity = dayEntry.weight * POUNDS_PER_TON * M3_PER_YD3 / expectedVolume;
+
+            if (Math.Round(dayEntry.density, 4) != Math.Round(calculatedDensity, 4))
+            {
+                Assert.Fail("Density is not as expected. density from response:" + dayEntry.density +
+                            " does not equal expected:" + calculatedDensity);
+            }
+        }
+
+        #endregion 
+
+        #region Scenairo tests
 
         [Given(@"Get a list of all projects")]
         public async void GivenGetAListOfAllProjects()
@@ -235,12 +287,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             System.Diagnostics.Debug.WriteLine(response.ToString());
         }
 
-        [Then(@"check the density is calculated with a volume of \((.*)\) for the date \((.*)(.*)\)")]
-        public void ThenCheckTheDensityIsCalculatedWithAVolumeOfForTheDate(Decimal p0, string p1, int p2)
-        {
-            ScenarioContext.Current.Pending();
-        }
-
         [Then(@"check the density is calculated with a volume of \((.*)\) for the date \((.*)\)")]
         public void ThenCheckTheDensityIsCalculatedAsForTheDate(double expectedVolume, DateTime dateOfDensityCheck)
         {
@@ -261,46 +307,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             }
         }
 
-        /// <summary>
-        /// Check the dayEntry is for the correct date and it has a weight and density
-        /// </summary>
-        /// <param name="expectedVolume"></param>
-        /// <param name="dateOfDensityCheck"></param>
-        /// <param name="dayEntry"></param>
-        private static void CheckTheDayEntryIsValid(double expectedVolume, DateTime dateOfDensityCheck, DayEntry dayEntry)
-        {
-            if (dayEntry.date.ToShortDateString() != dateOfDensityCheck.ToShortDateString())
-            {
-                Assert.Fail("Did not find the posted date:" + dateOfDensityCheck.ToShortDateString() +
-                            " or date in DB:" + dayEntry.date.ToShortDateString());
-            }
-            else
-            {
-                if (dayEntry.weight == 0)
-                    { Assert.Fail("Weight is zero so density cannot be calculated.");  }
-                
-                if (dayEntry.density == 0)
-                    { Assert.Fail("Density is zero so it cannot be compared.");  }
-
-                CalculateDensityAndCompare(expectedVolume, dayEntry);
-            }
-        }
-        /// <summary>
-        /// Calculate the density
-        /// </summary>
-        /// <param name="expectedVolume"></param>
-        /// <param name="dayEntry"></param>
-        private static void CalculateDensityAndCompare(double expectedVolume, DayEntry dayEntry)
-        {
-            const double POUNDS_PER_TON = 2000.0;
-            const double M3_PER_YD3 = 0.7645555;
-            double calculatedDensity = dayEntry.weight * POUNDS_PER_TON * M3_PER_YD3 / expectedVolume;
-
-            if (Math.Round(dayEntry.density,4) != Math.Round(calculatedDensity,4))
-            {
-                Assert.Fail("Density is not as expected. density from response:" + dayEntry.density +
-                            " does not equal expected:" + calculatedDensity);
-            }
-        }
+        #endregion
     }
 }
