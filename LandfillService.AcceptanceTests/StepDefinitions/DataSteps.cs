@@ -296,7 +296,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             const double M3_PER_YD3 = 0.7645555;
             double calculatedDensity = dayEntry.weight * POUNDS_PER_TON * M3_PER_YD3 / expectedVolume;
 
-            if (dayEntry.density != calculatedDensity)
+            if (Math.Round(dayEntry.density,4) != Math.Round(calculatedDensity,4))
             {
                 Assert.Fail("Density is not as expected. density from response:" + dayEntry.density +
                             " does not equal expected:" + calculatedDensity);
