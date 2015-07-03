@@ -302,7 +302,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
                 CheckTheDayEntryIsValid(expectedVolume, dateOfDensityCheck, dayEntry.First<DayEntry>());
             }
         }
-
         #endregion
     }
 }
