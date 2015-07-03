@@ -1,16 +1,12 @@
-﻿using LandfillService.WebApi.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Net.Http.Headers;
 using System.Text;
 using TechTalk.SpecFlow;
+using LandfillService.WebApi.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LandfillService.AcceptanceTests.StepDefinitions
 {
@@ -167,7 +163,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectId), Method = HttpMethod.Get };
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
-            var projectData = await response.Content.ReadAsAsync<ProjectData>();
+            var projectData = await response.Content.ReadAsAsync<ProjectData>();           
         }
 
         [Then(@"check there is (.*) days worth of data for project \((.*)\)")]

@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using TechTalk.SpecFlow;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using LandfillService.WebApi.Models;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 
 namespace LandfillService.AcceptanceTests.StepDefinitions
 {
