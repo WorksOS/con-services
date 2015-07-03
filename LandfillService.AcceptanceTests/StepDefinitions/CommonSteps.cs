@@ -31,17 +31,31 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
 
         protected CommonSteps()
         {
-            httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Accept.Clear();
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
+            try
+            {
+                httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         protected HttpResponseMessage Login(Credentials credentials)
         {
-            response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login", credentials).Result;
-            System.Diagnostics.Debug.WriteLine(response.ToString());
-            sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+            try
+            {
+                response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login", credentials).Result;
+                sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+                return response;
+            }
+            catch (Exception)
+            {
+                
+            }
             return response;
         }
 
