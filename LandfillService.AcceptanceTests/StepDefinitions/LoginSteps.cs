@@ -69,9 +69,16 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
             // Try and get the projects. Should cause exception
-            var projects = await response.Content.ReadAsAsync<Project[]>();
-            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
-            Assert.IsNotNull(allProjects, " Projects should not be available after logging out");
+            try
+            {
+                var projects = await response.Content.ReadAsAsync<Project[]>();
+                List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
+                Assert.IsNotNull(allProjects, " Projects should not be available");
+            }
+            catch (Exception)
+            {
+                System.Diagnostics.Debug.WriteLine(response.ToString());
+            }                
         }
 
         [When("logout")]

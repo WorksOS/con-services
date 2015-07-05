@@ -80,7 +80,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Login.feature</DependentUpon>
     </Compile>
-    <Compile Include="StepDefinitions\CommonSteps.cs" />
+    <Compile Include="StepDefinitions\Config.cs" />
     <Compile Include="StepDefinitions\DataSteps.cs" />
     <Compile Include="StepDefinitions\LoginSteps.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
