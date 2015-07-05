@@ -20,6 +20,8 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         protected HttpResponseMessage response;
         protected string sessionId;
 
+        #region initialise
+
         [ClassInitialize()]
         public void DataStepsInitialize() { }
 
@@ -44,6 +46,10 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             httpClient.Dispose();
         }
 
+        #endregion
+
+
+        #region Scenairo tests
 
         [StepDefinition("login (.+)")]
         public void WhenLogin(string credKey)
@@ -116,5 +122,8 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         {
             Assert.IsTrue(response.IsSuccessStatusCode && new Regex(@"\w{32}").IsMatch(response.Content.ReadAsStringAsync().Result));
         }
+    
+        #endregion
+
     }
 }

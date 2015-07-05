@@ -13,9 +13,9 @@ namespace LandfillService.Tests.Controllers
     [TestClass]
     public class ValuesControllerTest
     {
-        [TestMethod]
-        public void Get()
-        {
+        //[TestMethod]
+        //public void Get()
+        //{
             //// Arrange
             //ProjectsController controller = new ProjectsController();
 
@@ -27,11 +27,11 @@ namespace LandfillService.Tests.Controllers
             //Assert.AreEqual(2, result.Count());
             //Assert.AreEqual("value1", result.ElementAt(0));
             //Assert.AreEqual("value2", result.ElementAt(1));
-        }
+        //}
 
-        [TestMethod]
-        public void GetById()
-        {
+        //[TestMethod]
+        //public void GetById()
+        //{
             // Arrange
             //ProjectsController controller = new ProjectsController();
 
@@ -40,11 +40,11 @@ namespace LandfillService.Tests.Controllers
 
             //// Assert
             //Assert.AreEqual("value", result);
-        }
+        //}
 
-        [TestMethod]
-        public void Post()
-        {
+        //[TestMethod]
+        //public void Post()
+        //{
             //// Arrange
             //ProjectsController controller = new ProjectsController();
 
@@ -52,7 +52,7 @@ namespace LandfillService.Tests.Controllers
             //controller.Post("value");
 
             // Assert
-        }
+        //}
 
     }
 }

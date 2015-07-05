@@ -16,11 +16,12 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
     public class DataSteps 
     {
         public double randomWeight;
-        public static DateTime dateFiveDaysAgo = DateTime.Now.AddDays(-5);
+        public static DateTime dateFiveDaysAgo = DateTime.UtcNow.AddDays(-5);
         protected HttpClient httpClient;
         protected HttpResponseMessage response;
         protected string sessionId;
 
+        #region initialise
         [ClassInitialize()]
         public void DataStepsInitialize() { }
 
@@ -45,36 +46,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             httpClient.Dispose();
         }
 
-
-        [StepDefinition("login (.+)")]
-        public void WhenLogin(string credKey)
-        {
-            Login(Config.credentials[credKey]);
-        }
-
-        [Then(@"match response \(\w+ (.+)\)")]
-        public void ThenMatchCode(int expectedCode)
-        {
-            Assert.AreEqual(expectedCode, (int)response.StatusCode, "HTTP response status codes not matching expected");
-        }
-
-        [Then(@"not \$ null response")]
-        public void ThenNotNullResponse()
-        {
-            Assert.IsTrue(response.Content.ReadAsStringAsync().Result.Length > 0);
-        }
-
-        [When(@"get list of projects")]
-        public async void WhenGetListOfProjects()
-        {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
-            request.Headers.Add("SessionID", sessionId);
-            response = httpClient.SendAsync(request).Result;
-            // Try and get the projects. Should cause exception
-            var projects = await response.Content.ReadAsAsync<Project[]>();
-            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
-            Assert.IsNotNull(allProjects, " Projects should not be available after logging out");
-        }
+        #endregion
 
 
         #region Private methods 
@@ -122,11 +94,11 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
 
             WeightEntry[] weightForFiveDays = new WeightEntry[] 
             { 
-                new WeightEntry (){date = DateTime.Now.AddDays(-11), weight = randomWeight},
-                new WeightEntry (){date = DateTime.Now.AddDays(-10), weight = randomWeight}, 
-                new WeightEntry (){date = DateTime.Now.AddDays(-9), weight = randomWeight}, 
-                new WeightEntry (){date = DateTime.Now.AddDays(-8), weight = randomWeight}, 
-                new WeightEntry (){date = DateTime.Now.AddDays(-7), weight = randomWeight} 
+                new WeightEntry (){date = DateTime.UtcNow.AddDays(-11), weight = randomWeight},
+                new WeightEntry (){date = DateTime.UtcNow.AddDays(-10), weight = randomWeight}, 
+                new WeightEntry (){date = DateTime.UtcNow.AddDays(-9), weight = randomWeight}, 
+                new WeightEntry (){date = DateTime.UtcNow.AddDays(-8), weight = randomWeight}, 
+                new WeightEntry (){date = DateTime.UtcNow.AddDays(-7), weight = randomWeight} 
             };
             return weightForFiveDays;
         }
@@ -190,6 +162,36 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         #endregion 
 
         #region Scenairo tests
+
+        [StepDefinition("login (.+)")]
+        public void WhenLogin(string credKey)
+        {
+            Login(Config.credentials[credKey]);
+        }
+
+        [Then(@"match response \(\w+ (.+)\)")]
+        public void ThenMatchCode(int expectedCode)
+        {
+            Assert.AreEqual(expectedCode, (int)response.StatusCode, "HTTP response status codes not matching expected");
+        }
+
+        [Then(@"not \$ null response")]
+        public void ThenNotNullResponse()
+        {
+            Assert.IsTrue(response.Content.ReadAsStringAsync().Result.Length > 0);
+        }
+
+        [When(@"get list of projects")]
+        public async void WhenGetListOfProjects()
+        {
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
+            request.Headers.Add("SessionID", sessionId);
+            response = httpClient.SendAsync(request).Result;
+            // Try and get the projects. Should cause exception
+            var projects = await response.Content.ReadAsAsync<Project[]>();
+            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
+            Assert.IsNotNull(allProjects, " Projects should not be available after logging out");
+        }
 
         [Given(@"Get a list of all projects")]
         public async void GivenGetAListOfAllProjects()
@@ -301,7 +303,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var fiveDayEntries = from dayEntryWeight in projectData.entries
-                                 where dayEntryWeight.date >= DateTime.Now.AddDays(-12) && dayEntryWeight.date <= DateTime.Now.AddDays(-7)
+                                 where dayEntryWeight.date >= DateTime.UtcNow.AddDays(-12) && dayEntryWeight.date <= DateTime.UtcNow.AddDays(-7)
                                  select dayEntryWeight.weight;
 
             foreach (var dayEntryWeight in fiveDayEntries)

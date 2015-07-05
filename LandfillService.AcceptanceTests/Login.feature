@@ -14,7 +14,7 @@ Scenario: Login with invalid username
 
 Scenario: Login with bad credentials
 	When login badCredentials
-	Then match response (Error 403)
+	Then match response (Error 401)
 
 Scenario: Login with no credentials
 	When login noCredentials
