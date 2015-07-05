@@ -57,11 +57,19 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             Assert.AreEqual(expectedCode, (int)response.StatusCode, "HTTP response status codes not matching expected");
         }
 
-        [Then(@"not \$ null response")]
+        [Then(@"not null response")]
         public void ThenNotNullResponse()
         {
             Assert.IsTrue(response.Content.ReadAsStringAsync().Result.Length > 0);
         }
+
+        [When(@"not null response")]
+        public void WhenNotNullResponse()
+        {
+            Assert.IsTrue(response.Content.ReadAsStringAsync().Result.Length > 0);
+        }
+
+
 
         [When(@"get list of projects")]
         public async void WhenGetListOfProjects()
@@ -74,7 +82,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
 
                 // Try and get the projects. Should cause exception
                 var projects = await response.Content.ReadAsAsync<Project[]>();
-                List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);                
+                List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
             }
             catch (Exception)
             {
