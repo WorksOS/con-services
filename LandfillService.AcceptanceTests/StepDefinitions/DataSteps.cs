@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using TechTalk.SpecFlow;
 using LandfillService.WebApi.Models;
@@ -11,10 +12,69 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace LandfillService.AcceptanceTests.StepDefinitions
 {
     [Binding, Scope(Feature = "Data")]
-    public class DataSteps : CommonSteps
+    public class DataSteps 
     {
         public double randomWeight;
         public static DateTime dateFiveDaysAgo = DateTime.Now.AddDays(-5);
+        protected HttpClient httpClient;
+        protected HttpResponseMessage response;
+        protected string sessionId;
+
+        [ClassInitialize()]
+        public void DataStepsInitialize() { }
+
+        [ClassCleanup()]
+        public static void DataStepsCleanup() { }
+
+        [TestInitialize]
+        protected HttpResponseMessage Login(Credentials credentials)
+        {
+            httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);       
+            response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login", credentials).Result;
+            sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+            return response;
+        }
+
+        [TestCleanup()]
+        public void TestCleanup() 
+        {
+            httpClient.Dispose();
+        }
+
+
+        [StepDefinition("login (.+)")]
+        public void WhenLogin(string credKey)
+        {
+            Login(Config.credentials[credKey]);
+        }
+
+        [Then(@"match response \(\w+ (.+)\)")]
+        public void ThenMatchCode(int expectedCode)
+        {
+            Assert.AreEqual(expectedCode, (int)response.StatusCode, "HTTP response status codes not matching expected");
+        }
+
+        [Then(@"not \$ null response")]
+        public void ThenNotNullResponse()
+        {
+            Assert.IsTrue(response.Content.ReadAsStringAsync().Result.Length > 0);
+        }
+
+        [When(@"get list of projects")]
+        public async void WhenGetListOfProjects()
+        {
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
+            request.Headers.Add("SessionID", sessionId);
+            response = httpClient.SendAsync(request).Result;
+            // Try and get the projects. Should cause exception
+            var projects = await response.Content.ReadAsAsync<Project[]>();
+            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
+            Assert.IsNotNull(allProjects, " Projects should not be available after logging out");
+        }
+
 
         #region Private methods 
         /// <summary>
@@ -137,7 +197,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
             var projects = await response.Content.ReadAsAsync<Project[]>();
-            ScenarioContext.Current.Pending();
         }
 
         [Then(@"check the \(Project (.*)\) is in the list")]

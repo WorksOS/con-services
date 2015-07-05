@@ -22,78 +22,58 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         };
     }
 
-    [Binding]
-    public class CommonSteps
-    {
-        protected HttpClient httpClient;
-        protected HttpResponseMessage response;
-        protected string sessionId;
+    //[Binding]
+    //public class CommonSteps
+    //{
+    //    protected HttpClient httpClient;
+    //    protected HttpResponseMessage response;
+    //    protected string sessionId;
 
-        protected CommonSteps()
-        {
-            try
-            {
-                httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
-            }
-            catch (Exception)
-            {
 
-            }
-        }
+    //    protected CommonSteps()
+    //    {
+    //        httpClient = new HttpClient();
+    //        httpClient.DefaultRequestHeaders.Accept.Clear();
+    //        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    //        httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
+    //    }
 
-        protected HttpResponseMessage Login(Credentials credentials)
-        {
-            try
-            {
-                response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login", credentials).Result;
-                sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
-                return response;
-            }
-            catch (Exception)
-            {
-                
-            }
-            return response;
-        }
+    //    [TestInitialize]
+    //    protected HttpResponseMessage Login(Credentials credentials)
+    //    {
+    //        response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login", credentials).Result;
+    //        sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+    //        return response;
+    //    }
 
-        [StepDefinition("login (.+)")]
-        public void WhenLogin(string credKey)
-        {
-            Login(Config.credentials[credKey]);
-        }
+    //    [StepDefinition("login (.+)")]
+    //    public void WhenLogin(string credKey)
+    //    {
+    //        Login(Config.credentials[credKey]);
+    //    }
 
-        [Then(@"match response \(\w+ (.+)\)")]
-        public void ThenMatchCode(int expectedCode)
-        {
-            Assert.AreEqual(expectedCode, (int)response.StatusCode,"HTTP response status codes not matching expected");
-        }
+    //    [Then(@"match response \(\w+ (.+)\)")]
+    //    public void ThenMatchCode(int expectedCode)
+    //    {
+    //        Assert.AreEqual(expectedCode, (int)response.StatusCode,"HTTP response status codes not matching expected");
+    //    }
 
-        [Then(@"not \$ null response")]
-        public void ThenNotNullResponse()
-        {
-            Assert.IsTrue(response.Content.ReadAsStringAsync().Result.Length > 0);
-        }
+    //    [Then(@"not \$ null response")]
+    //    public void ThenNotNullResponse()
+    //    {
+    //        Assert.IsTrue(response.Content.ReadAsStringAsync().Result.Length > 0);
+    //    }
 
-        [When(@"get list of projects")]
-        public async void WhenGetListOfProjects()
-        {
-            try
-            {
-                var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
-                request.Headers.Add("SessionID", sessionId);
-                response = httpClient.SendAsync(request).Result;
-                // Try and get the projects. Should cause exception
-                var projects = await response.Content.ReadAsAsync<Project[]>();
-                List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
-                Assert.IsNotNull(allProjects, " Projects should not be available after logging out");
-            }
-            catch (Exception)
-            {
-                // If it has failed with an exception then the test has passed
-            }
-        }
-    }
+    //    [When(@"get list of projects")]
+    //    public async void WhenGetListOfProjects()
+    //    {
+    //        var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
+    //        request.Headers.Add("SessionID", sessionId);
+    //        response = httpClient.SendAsync(request).Result;
+    //        // Try and get the projects. Should cause exception
+    //        var projects = await response.Content.ReadAsAsync<Project[]>();
+    //        List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
+    //        Assert.IsNotNull(allProjects, " Projects should not be available after logging out");
+    //    }
+    //}
 }

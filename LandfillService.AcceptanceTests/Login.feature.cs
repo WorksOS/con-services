@@ -111,7 +111,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 16
  testRunner.When("login badCredentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 17
- testRunner.Then("match response (Error 403)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("match response (Error 401)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
