@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace LandfillService.AcceptanceTests.StepDefinitions
 {
     [Binding, Scope(Feature = "Data")]
+    [TestClass()]
     public class DataSteps 
     {
         public double randomWeight;

@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace LandfillService.AcceptanceTests.StepDefinitions
 {
     [Binding, Scope(Feature = "Login")]
+    [TestClass()]
     public class LoginSteps 
     {
         protected HttpClient httpClient;
@@ -65,20 +66,21 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         [When(@"get list of projects")]
         public async void WhenGetListOfProjects()
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
-            request.Headers.Add("SessionID", sessionId);
-            response = httpClient.SendAsync(request).Result;
-            // Try and get the projects. Should cause exception
             try
             {
+                var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
+                request.Headers.Add("SessionID", sessionId);
+                response = httpClient.SendAsync(request).Result;
+
+                // Try and get the projects. Should cause exception
                 var projects = await response.Content.ReadAsAsync<Project[]>();
-                List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
-                Assert.IsNotNull(allProjects, " Projects should not be available");
+                List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);                
             }
             catch (Exception)
             {
-                System.Diagnostics.Debug.WriteLine(response.ToString());
-            }                
+                return;
+            }
+            Assert.IsNotNull(" Projects should not be available and the test can see them"); 
         }
 
         [When("logout")]
