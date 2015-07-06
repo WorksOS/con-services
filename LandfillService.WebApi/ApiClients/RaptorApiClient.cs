@@ -121,13 +121,14 @@ namespace LandfillService.WebApi.ApiClients
         /// <returns>Response as a string; throws an exception if the request is not successful</returns>
         public async Task<SummaryVolumesResult> GetVolumesAsync(string sessionId, Project project, DateTime date)
         {
-    /*        var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
-            var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(date.Year, date.Month, date.Day, 0, 0));
-            var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();
-      */
-          //use only utc dates and times in the service contracts. Ignore time for now.
+          TimeZoneInfo hwZone = TimeZoneInfo.FindSystemTimeZoneById(project.timeZoneName);
 
-           var utcDateTime = date.Date;
+/*            var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
+            var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(date.Year, date.Month, date.Day, 0, 0));
+            var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();*/
+      
+          //use only utc dates and times in the service contracts. Ignore time for now.
+          var utcDateTime = date.Date.Add(hwZone.BaseUtcOffset);
            System.Diagnostics.Debug.WriteLine("UTC time range in volume request: {0} - {1}", utcDateTime.ToString(), utcDateTime.AddDays(1).ToString());
 
             var volumeParams = new VolumeParams()
