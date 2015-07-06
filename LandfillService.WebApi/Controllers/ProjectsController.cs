@@ -283,11 +283,13 @@ namespace LandfillService.WebApi.Controllers
                 {
                     System.Diagnostics.Debug.WriteLine(entry.ToString());
 
-                    var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
+                    /*var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
                     var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(entry.date.Year, entry.date.Month, entry.date.Day, 0, 0));
-                    var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();
+                    var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();*/
+                  //use only UTC here
+                  var utcDateTime = DateTime.UtcNow;
 
-                    if (entry.weight >= 0 && utcDateTime <= DateTime.Today.AddDays(-1).ToUniversalTime())
+                    if (entry.weight >= 0 && utcDateTime <= DateTime.UtcNow.Date.AddDays(-1))
                     {
                         LandfillDb.SaveEntry(id, entry);
                         validEntries.Add(entry);

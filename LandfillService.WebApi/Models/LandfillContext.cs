@@ -70,7 +70,7 @@ namespace LandfillService.WebApi.Models
             return WithConnection((conn) =>
             {
                 // supply a dummy value for projectsRetrievedAt such that it indicates that projects have to be retrieved
-                var command = "insert ignore into users (name, projectsRetrievedAt) values (@name, date_sub(now(), interval 10 year))";
+                var command = "insert ignore into users (name, projectsRetrievedAt) values (@name, date_sub(UTC_TIMESTAMP(), interval 10 year))";
                 MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@name", userName));
 
                 command = "select * from users where name = @name";
@@ -122,7 +122,7 @@ namespace LandfillService.WebApi.Models
         {
             WithConnection<object>((conn) =>
             {
-                var command = "delete from sessions where createdAt < date_sub(now(), interval 30 day)";
+              var command = "delete from sessions where createdAt < date_sub(UTC_TIMESTAMP(), interval 30 day)";
                 MySqlHelper.ExecuteNonQuery(conn, command);
                 return null;
             });
@@ -172,7 +172,7 @@ namespace LandfillService.WebApi.Models
                 foreach (var project in projects)
                 {
                     command = @"insert into projects (projectId, name, timeZone, retrievalStartedAt) 
-                                values (@projectId, @name, @timeZone, date_sub(now(), interval 10 year))
+                                values (@projectId, @name, @timeZone, date_sub(UTC_TIMESTAMP(), interval 10 year))
                                     on duplicate key update name = @name, timeZone = @timeZone";
                     MySqlHelper.ExecuteNonQuery(conn, command,
                         new MySqlParameter("@projectId", project.id),
@@ -188,7 +188,7 @@ namespace LandfillService.WebApi.Models
 
                 }
 
-                command = @"update users set projectsRetrievedAt = now()
+                command = @"update users set projectsRetrievedAt = UTC_TIMESTAMP()
                             where userId = (select userId from sessions where sessionId = @sessionId)";
                 MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@sessionId", sessionId));
 
@@ -231,7 +231,7 @@ namespace LandfillService.WebApi.Models
         {
             return WithConnection((conn) =>
             {
-                var command = @"select timestampdiff(hour, projectsRetrievedAt, now()) as hours 
+                var command = @"select timestampdiff(hour, projectsRetrievedAt, UTC_TIMESTAMP()) as hours 
                                 from users where userId = (select userId from sessions where sessionId = @sessionId)";
                 var result = MySqlHelper.ExecuteScalar(conn, command, new MySqlParameter("@sessionId", sessionId)); 
                 return Convert.ToUInt32(result);
@@ -248,7 +248,7 @@ namespace LandfillService.WebApi.Models
             return WithConnection((conn) =>
             {
                 var command = @"select count(*) from projects 
-                                where projectId = @projectId and (retrievalStartedAt >= date_sub(now(), interval " + lockTimeout.ToString() + " hour) or " +
+                                where projectId = @projectId and (retrievalStartedAt >= date_sub(UTC_TIMESTAMP(), interval " + lockTimeout.ToString() + " hour) or " +
                                 "(select count(*) from entries where projectId = @projectId and volume is null and volumeNotAvailable = 0) > 0)";
 
                 var count = MySqlHelper.ExecuteScalar(conn, command, new MySqlParameter("@projectId", project.id));
@@ -267,11 +267,11 @@ namespace LandfillService.WebApi.Models
             return WithConnection((conn) =>
             {
                 var command = shouldLock ? 
-                    @"update projects set retrievalStartedAt = now()
-                      where projectId = @projectId and retrievalStartedAt < date_sub(now(), interval " + lockTimeout.ToString() + " hour)"
+                    @"update projects set retrievalStartedAt = UTC_TIMESTAMP()
+                      where projectId = @projectId and retrievalStartedAt < date_sub(UTC_TIMESTAMP(), interval " + lockTimeout.ToString() + " hour)"
                     :
-                    @"update projects set retrievalStartedAt = date_sub(now(), interval 10 year)
-                      where projectId = @projectId and retrievalStartedAt >= date_sub(now(), interval " + lockTimeout.ToString() + " hour)";
+                    @"update projects set retrievalStartedAt = date_sub(UTC_TIMESTAMP(), interval 10 year)
+                      where projectId = @projectId and retrievalStartedAt >= date_sub(UTC_TIMESTAMP(), interval " + lockTimeout.ToString() + " hour)";
 
                 var rowsAffected = MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@projectId", project.id));
                 return rowsAffected > 0;
@@ -286,7 +286,7 @@ namespace LandfillService.WebApi.Models
         {
             WithConnection<object>((conn) =>
             {
-                var command = @"update projects set retrievalStartedAt = date_sub(now(), interval 10 year)";
+                var command = @"update projects set retrievalStartedAt = date_sub(UTC_TIMESTAMP(), interval 10 year)";
                 MySqlHelper.ExecuteNonQuery(conn, command);
                 return null;
             });
@@ -426,14 +426,14 @@ namespace LandfillService.WebApi.Models
                 // regardless of what entries are available for the project
                 var command = @"select dates.date, entries.weight, entries.volume
                     from (
-                        select cast(convert_tz(curdate(), @@global.time_zone, @timeZone) as date)  - interval (-1 + a.a + (10 * b.a) + (100 * c.a)) day as date
+                        select cast(utc_date() as date)  - interval (-1 + a.a + (10 * b.a) + (100 * c.a)) day as date
                         from (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as a
                         cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b
                         cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
                     ) dates
                     left join entries on dates.date = entries.date and entries.projectId = @projectId
-                    where dates.date between cast(convert_tz(curdate(), @@global.time_zone, @timeZone) as date) - interval 2 year - interval 1 day and 
-                                             cast(convert_tz(curdate(), @@global.time_zone, @timeZone) as date) - interval 1 day
+                    where dates.date between cast(utc_date() as date) - interval 2 year - interval 1 day and 
+                                             cast(utc_date() as date) - interval 1 day
                     order by date";
                 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, 
