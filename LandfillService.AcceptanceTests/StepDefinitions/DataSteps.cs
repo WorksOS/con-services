@@ -17,13 +17,14 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
     {
         public double randomWeight;
         public static DateTime dateFiveDaysAgo = DateTime.UtcNow.AddDays(-5);
+        public static DateTime dateYesterday = DateTime.UtcNow.AddDays(-1);
         public static DateTime dateToday = DateTime.UtcNow;
         public static DateTime dateTomorrow = DateTime.UtcNow.AddDays(1);
         protected HttpClient httpClient;
         protected HttpResponseMessage response;
         protected string sessionId;
 
-        #region initialise
+        #region Initialise
         [ClassInitialize()]
         public void DataStepsInitialize() { }
 
@@ -74,7 +75,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         {
             // Set the weights 
             Random random = new Random();
-            randomWeight = random.Next(4444, 5000);
+            randomWeight = random.Next(3444, 5000);
 
             WeightEntry[] weightForOneDay = new WeightEntry[] 
             { 
@@ -192,12 +193,14 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
 
             if (!dayEntry.Any())
             {
-                Assert.Fail("Did not find the weight it just posted. Weight:" + randomWeight + " for Date:" + dateOfCheck.ToShortDateString());
+                Log.WriteLineFormat("Did not find any entries for {0} for the >= date {1}", randomWeight, dateOfCheck.AddDays(-2));
+                Assert.Fail("Did not find any weights for the one it just posted. Weight:" + randomWeight + " for Date:" + dateOfCheck.ToShortDateString());
             }
             else
             {
                 if (dayEntry.First<DayEntry>().weight != randomWeight || dayEntry.First<DayEntry>().date.ToShortDateString() != dateOfCheck.ToShortDateString())
                 {
+                    Log.WriteLineFormat("Did not find the entries with the same weight as {0} for the >= date {1}", randomWeight, dateOfCheck.AddDays(-2));
                     Assert.Fail("Did not find the weight it just posted. Posted weight:" + randomWeight + " weight in DB:" + dayEntry.First<DayEntry>().weight +
                                 " or for posted date:" + dateOfCheck.ToShortDateString() + " or date in DB:" + dayEntry.First<DayEntry>().date.ToShortDateString());
                 }
@@ -311,13 +314,11 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             WeightEntry[] weightForFiveDays = SetUpFiveWeightsForUpload();
             request.Content = new StringContent(JsonConvert.SerializeObject(weightForFiveDays), Encoding.UTF8, "application/json");
             response = httpClient.SendAsync(request).Result;
-            System.Diagnostics.Debug.WriteLine(response.ToString());
         }
 
         [Then(@"check the five random weights has been added each day to the project \((.*)\)")]
         public void ThenCheckTheFiveRandomWeightsHasBeenAddedEachDayToTheProject(int projectId)
         {
-            System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var fiveDayEntries = from dayEntryWeight in projectData.entries
                                  where dayEntryWeight.date >= DateTime.UtcNow.AddDays(-12) && dayEntryWeight.date <= DateTime.UtcNow.AddDays(-7)
@@ -335,7 +336,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         [Then(@"check the density is \((.*)\) for the date \((.*)\)")]
         public void ThenCheckTheDensityIsForTheDate(double expectedDensity, DateTime dateOfDensityCheck)
         {
-            System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var dayEntry = from day in projectData.entries
                            where day.date.ToShortDateString() == dateOfDensityCheck.ToShortDateString()
@@ -358,7 +358,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             }
             request.Content = new StringContent(JsonConvert.SerializeObject(SetUpOneWeightForOneDay(dateWeightUpdate,weight)), Encoding.UTF8, "application/json");
             response = httpClient.SendAsync(request).Result;
-            System.Diagnostics.Debug.WriteLine(response.ToString());
         }
 
         [Then(@"check the density is calculated with a volume of \((.*)\) for the date \((.*)\)")]
@@ -380,6 +379,20 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         }
 
         // Expanding the tests to test ranges and negative tests
+
+        [When(@"adding a random weight for project \((.*)\) yesterday")]
+        public void WhenAddingARandomWeightForProjectYesterday(int projectId)
+        {
+            Log.Write("Adding a weight for date yesterday: " + dateYesterday.ToString());
+            AddAWeightToAProjectForADay(projectId, dateYesterday);
+        }
+
+        [Then(@"check the random weight has been added to the project \((.*)\) for yesterday")]
+        public void ThenCheckTheRandomWeightHasBeenAddedToTheProjectForYesterday(int projectId)
+        {
+            CheckTheWeightHasBeenAddedToTheProject(dateYesterday);
+        }
+
         [When(@"adding a random weight for project \((.*)\) today")]
         public void WhenAddingARandomWeightForProjectToday(int projectId)
         {
@@ -396,15 +409,15 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         [When(@"adding a random weight for project \((.*)\) tomorrow")]
         public void WhenAddingARandomWeightForProjectTomorrow(int projectId)
         {
+            Log.Write("Adding a weight for date tomorrow: " + dateTomorrow.ToString());
             AddAWeightToAProjectForADay(projectId, dateTomorrow);
         }
 
         [Then(@"check the random weight has been added to the project \((.*)\) for tomorrow")]
         public void ThenCheckTheRandomWeightHasBeenAddedToTheProjectForTomorrow(int projectId)
-        {
+        {            
             CheckTheWeightHasBeenAddedToTheProject(dateTomorrow);
         }
-
 
         #endregion
     }
