@@ -34,3 +34,14 @@ Scenario: Update the weight for a specific date (2015-04-06) then revert back to
 	Then match response (Ok 200)
 	And check the density is calculated with a volume of (3129.9334339477587) for the date (2015-04-06) 
 
+# Add some range tests negative tests at calling the web service
+
+Scenario: Add a weight entry for a today
+	When adding a random weight for project (1384) today
+	Then match response (Ok 200)
+	And check the random weight has been added to the project (1384) for today
+
+Scenario: Add a weight entry for a tomorrow
+	When adding a random weight for project (1384) tomorrow
+	Then match response (Ok 200)
+	And check the random weight has been added to the project (1384) for tomorrow

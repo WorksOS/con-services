@@ -17,6 +17,8 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
     {
         public double randomWeight;
         public static DateTime dateFiveDaysAgo = DateTime.UtcNow.AddDays(-5);
+        public static DateTime dateToday = DateTime.UtcNow;
+        public static DateTime dateTomorrow = DateTime.UtcNow.AddDays(1);
         protected HttpClient httpClient;
         protected HttpResponseMessage response;
         protected string sessionId;
@@ -47,7 +49,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         }
 
         #endregion
-
 
         #region Private methods 
         /// <summary>
@@ -159,6 +160,49 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             }
         }
 
+        /// <summary>
+        /// Add a weight to a project for a date
+        /// </summary>
+        /// <param name="projectId">Valid project id</param>
+        /// <param name="dateOfWeight">A date between today and two years ago</param>
+        private void AddAWeightToAProjectForADay(int projectId, DateTime dateOfWeight)
+        {
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
+            request.Headers.Add("SessionID", sessionId);
+
+            if (sessionId.Contains("Code"))
+            {
+                Assert.Inconclusive("Unable to establish a session. Check MySQL database connection");
+                ScenarioContext.Current.Pending();
+            }
+            request.Content = new StringContent(JsonConvert.SerializeObject(SetUpOneWeightForOneDay(dateOfWeight)), Encoding.UTF8, "application/json");
+            response = httpClient.SendAsync(request).Result;
+        }
+
+        /// <summary>
+        /// Check the weight is in the response from date in question
+        /// </summary>
+        /// <param name="dateOfCheck">Date to check in the response</param>
+        private void CheckTheWeightHasBeenAddedToTheProject(DateTime dateOfCheck)
+        {
+            var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
+            var dayEntry = from day in projectData.entries
+                           where day.date >= dateOfCheck.AddDays(-2) && day.weight == randomWeight
+                           select day;
+
+            if (!dayEntry.Any())
+            {
+                Assert.Fail("Did not find the weight it just posted. Weight:" + randomWeight + " for Date:" + dateOfCheck.ToShortDateString());
+            }
+            else
+            {
+                if (dayEntry.First<DayEntry>().weight != randomWeight || dayEntry.First<DayEntry>().date.ToShortDateString() != dateOfCheck.ToShortDateString())
+                {
+                    Assert.Fail("Did not find the weight it just posted. Posted weight:" + randomWeight + " weight in DB:" + dayEntry.First<DayEntry>().weight +
+                                " or for posted date:" + dateOfCheck.ToShortDateString() + " or date in DB:" + dayEntry.First<DayEntry>().date.ToShortDateString());
+                }
+            }
+        }
         #endregion 
 
         #region Scenairo tests
@@ -245,40 +289,13 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         [When(@"adding a random weight for project \((.*)\) five days ago")]
         public void WhenAddingAWeightTonnesForProjectFiveDaysAgo(int projectId)
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
-            request.Headers.Add("SessionID", sessionId);
-
-            if (sessionId.Contains("Code"))
-            {
-                Assert.Inconclusive("Unable to establish a session. Check MySQL database connection");
-                ScenarioContext.Current.Pending();
-            }
-            request.Content = new StringContent(JsonConvert.SerializeObject(SetUpOneWeightForOneDay(dateFiveDaysAgo)), Encoding.UTF8, "application/json");
-            response = httpClient.SendAsync(request).Result;
-            System.Diagnostics.Debug.WriteLine(response.ToString());
+            AddAWeightToAProjectForADay(projectId, dateFiveDaysAgo);
         }
 
         [Then(@"check the random weight has been added to the project \((.*)\) for five days ago")]
         public void ThenCheckTheWeightTonnesHasBeenAddedToTheProjectForFiveDaysAgo(int projectId)
         {
-            System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
-            var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
-            var dayEntry = from day in projectData.entries
-                           where day.date >= dateFiveDaysAgo.AddDays(-2) && day.weight == randomWeight
-                           select day;
-
-            if (!dayEntry.Any())
-            {
-                Assert.Fail("Did not find the weight it just posted. Weight:" + randomWeight + " for Date:" + dateFiveDaysAgo.ToShortDateString());
-            }
-            else
-            {
-                if (dayEntry.First<DayEntry>().weight != randomWeight || dayEntry.First<DayEntry>().date.ToShortDateString() != dateFiveDaysAgo.ToShortDateString())
-                {
-                    Assert.Fail("Did not find the weight it just posted. Posted weight:" + randomWeight + " weight in DB:" + dayEntry.First<DayEntry>().weight + 
-                                " or for posted date:" + dateFiveDaysAgo.ToShortDateString() + " or date in DB:" + dayEntry.First<DayEntry>().date.ToShortDateString());
-                }
-            }
+            CheckTheWeightHasBeenAddedToTheProject(dateFiveDaysAgo);
         }
 
         [When(@"adding five random weights for project \((.*)\) ten days ago")]
@@ -335,7 +352,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         {
             var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
-
             if (sessionId.Contains("Code"))
             {
                 Assert.Inconclusive("Unable to establish a session. Check MySQL database connection");
@@ -348,9 +364,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         [Then(@"check the density is calculated with a volume of \((.*)\) for the date \((.*)\)")]
         public void ThenCheckTheDensityIsCalculatedAsForTheDate(double expectedVolume, DateTime dateOfDensityCheck)
         {
-            System.Diagnostics.Debug.WriteLine(response.Content.ReadAsStringAsync().Result);
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
-
             var dayEntry = from day in projectData.entries
                            where day.date.ToShortDateString() == dateOfDensityCheck.ToShortDateString()
                            select day;
@@ -364,6 +378,34 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
                 CheckTheDayEntryIsValid(expectedVolume, dateOfDensityCheck, dayEntry.First<DayEntry>());
             }
         }
+
+        // Expanding the tests to test ranges and negative tests
+        [When(@"adding a random weight for project \((.*)\) today")]
+        public void WhenAddingARandomWeightForProjectToday(int projectId)
+        {
+            Log.Write("Adding a weight for today: " + dateToday.ToString());
+            AddAWeightToAProjectForADay(projectId, dateToday);
+        }
+
+        [Then(@"check the random weight has been added to the project \((.*)\) for today")]
+        public void ThenCheckTheRandomWeightHasBeenAddedToTheProjectForToday(int projectId)
+        {
+            CheckTheWeightHasBeenAddedToTheProject(dateToday);
+        }
+
+        [When(@"adding a random weight for project \((.*)\) tomorrow")]
+        public void WhenAddingARandomWeightForProjectTomorrow(int projectId)
+        {
+            AddAWeightToAProjectForADay(projectId, dateTomorrow);
+        }
+
+        [Then(@"check the random weight has been added to the project \((.*)\) for tomorrow")]
+        public void ThenCheckTheRandomWeightHasBeenAddedToTheProjectForTomorrow(int projectId)
+        {
+            CheckTheWeightHasBeenAddedToTheProject(dateTomorrow);
+        }
+
+
         #endregion
     }
 }

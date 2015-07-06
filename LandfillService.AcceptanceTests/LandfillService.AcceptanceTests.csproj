@@ -75,12 +75,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Data.feature</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Log.cs" />
     <Compile Include="Login.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Login.feature</DependentUpon>
     </Compile>
-    <Compile Include="StepDefinitions\Config.cs" />
+    <Compile Include="Helpers\Config.cs" />
     <Compile Include="StepDefinitions\DataSteps.cs" />
     <Compile Include="StepDefinitions\LoginSteps.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
