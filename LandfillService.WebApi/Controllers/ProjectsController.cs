@@ -287,9 +287,8 @@ namespace LandfillService.WebApi.Controllers
                     var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(entry.date.Year, entry.date.Month, entry.date.Day, 0, 0));
                     var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();*/
                   //use only UTC here
-                  var utcDateTime = DateTime.UtcNow;
 
-                    if (entry.weight >= 0 && utcDateTime <= DateTime.UtcNow.Date.AddDays(-1))
+                    if (entry.weight >= 0 && entry.date.Date <= DateTime.UtcNow.Date.AddDays(-1))
                     {
                         LandfillDb.SaveEntry(id, entry);
                         validEntries.Add(entry);
