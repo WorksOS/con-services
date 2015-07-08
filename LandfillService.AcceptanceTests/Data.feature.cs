@@ -177,11 +177,11 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Update the weight for a specific date (2015-04-06) then revert back to original")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Update the weight for a specific date (2015-04-06)")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Data")]
-        public virtual void UpdateTheWeightForASpecificDate2015_04_06ThenRevertBackToOriginal()
+        public virtual void UpdateTheWeightForASpecificDate2015_04_06()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update the weight for a specific date (2015-04-06) then revert back to original", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update the weight for a specific date (2015-04-06)", ((string[])(null)));
 #line 32
 this.ScenarioSetup(scenarioInfo);
 #line 4

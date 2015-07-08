@@ -29,7 +29,7 @@ Scenario: Check the density for a specific date (2015-04-04)
 	Then match response (Ok 200)
 	And check the density is (1733.9488621406767) for the date (2015-04-04) 
 
-Scenario: Update the weight for a specific date (2015-04-06) then revert back to original 
+Scenario: Update the weight for a specific date (2015-04-06) 
 	When updating a weight (6666) tonnes for project (1384) for date (2015-04-06) 
 	Then match response (Ok 200)
 	And check the density is calculated with a volume of (3129.9334339477587) for the date (2015-04-06) 
