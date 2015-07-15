@@ -42,12 +42,19 @@
     <OutputPath>bin\DeployToFolderForDev\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForT01|AnyCPU'">
+    <OutputPath>bin\DeployToFolderForT01\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="TechTalk.SpecFlow, Version=1.9.0.77, Culture=neutral, PublicKeyToken=0778194805d6db41, processorArchitecture=MSIL">
@@ -89,6 +96,12 @@
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
+    </None>
+    <None Include="App.DeployToFolderForDev.config" >
+      <DependentUpon>App.config</DependentUpon>
+    </None>
+    <None Include="App.DeployToFolderForT01.config" >
+      <DependentUpon>App.config</DependentUpon>
     </None>
     <None Include="Data.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -144,4 +157,11 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+<UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v12.0\Web\Microsoft.Web.Publishing.Tasks.dll" />
+<Target Name="AfterBuild">
+  <TransformXml Source="App.config"
+                Transform="App.$(Configuration).config"
+                Destination="$(OutputPath)\$(AssemblyName).$(OutputType).config" />
+</Target>
+
 </Project>
