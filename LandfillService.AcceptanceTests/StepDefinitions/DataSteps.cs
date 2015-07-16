@@ -341,9 +341,9 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
                            where day.date.ToShortDateString() == dateOfDensityCheck.ToShortDateString()
                            select day.density;
 
-            if (dayEntry.First() != expectedDensity)
+            if ( Math.Round(dayEntry.First(),4) !=  Math.Round(expectedDensity,4))
             {
-                Assert.Fail("density retrieve from response:" + dayEntry.First().ToString() + " does not equal expected:" + expectedDensity);
+                Assert.Fail("density retrieve from response:" + Math.Round(dayEntry.First(), 4) + " does not equal expected:" + Math.Round(expectedDensity, 4));
             } 
         }
 

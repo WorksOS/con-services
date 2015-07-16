@@ -27,7 +27,7 @@ Scenario: Add five weight entries for a five days
 Scenario: Check the density for a specific date (2015-04-04)  
 	Given Get project data for project (1384)
 	Then match response (Ok 200)
-	And check the density is (1733.9488621406767) for the date (2015-04-04) 
+	And check the density is (1582.91241710074) for the date (2015-04-04) 
 
 Scenario: Update the weight for a specific date (2015-04-06) 
 	When updating a weight (6666) tonnes for project (1384) for date (2015-04-06) 
