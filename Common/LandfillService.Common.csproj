@@ -34,6 +34,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForDev|AnyCPU'">
     <OutputPath>bin\DeployToFolderForDev\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForT01|AnyCPU'">
+    <OutputPath>bin\DeployToFolderForT01\</OutputPath>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>

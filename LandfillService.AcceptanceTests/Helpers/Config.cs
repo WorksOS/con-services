@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
     public class Config
     {
         //public static string ServiceUrl = "http://localhost:59674/api/v1/";
-        public static string ServiceUrl = "http://10.210.246.188/LandfillService/api/v1/";
+        public static string ServiceUrl = ConfigurationManager.AppSettings["LandFillServiceApiUrl"];
         public static Dictionary<string, Credentials> credentials = new Dictionary<string, Credentials>()
         {
             {"goodCredentials", new Credentials { userName = "dglassenbury", password = "Visionlink15_" } },
