@@ -37,3 +37,9 @@ Scenario: Request with bad session
 	And use badSession
 	And get list of projects
 	Then not null response 
+
+Scenario: Logon with a token key to emulate selecting project in visionlink
+	Given I have retrieve a token from the project monitoring api 
+	When I logon with the token 
+	And get list of projects
+	Then match response (Ok 200)

@@ -13,6 +13,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
     {
         //public static string ServiceUrl = "http://localhost:59674/api/v1/";
         public static string ServiceUrl = ConfigurationManager.AppSettings["LandFillServiceApiUrl"];
+        public static string PMServiceUrl = ConfigurationManager.AppSettings["ProjectMonitoringApiUrl"];
         public static Dictionary<string, Credentials> credentials = new Dictionary<string, Credentials>()
         {
             {"goodCredentials", new Credentials { userName = "dglassenbury", password = "Visionlink15_" } },

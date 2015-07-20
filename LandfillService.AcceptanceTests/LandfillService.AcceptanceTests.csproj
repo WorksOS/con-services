@@ -53,6 +53,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.105.1.0\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Net.Http" />
@@ -83,6 +86,7 @@
       <DependentUpon>Data.feature</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Log.cs" />
+    <Compile Include="Helpers\LogonKey.cs" />
     <Compile Include="Login.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -97,10 +101,10 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="App.DeployToFolderForDev.config" >
+    <None Include="App.DeployToFolderForDev.config">
       <DependentUpon>App.config</DependentUpon>
     </None>
-    <None Include="App.DeployToFolderForT01.config" >
+    <None Include="App.DeployToFolderForT01.config">
       <DependentUpon>App.config</DependentUpon>
     </None>
     <None Include="Data.feature">
@@ -157,11 +161,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-<UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v12.0\Web\Microsoft.Web.Publishing.Tasks.dll" />
-<Target Name="AfterBuild">
-  <TransformXml Source="App.config"
-                Transform="App.$(Configuration).config"
-                Destination="$(OutputPath)\$(AssemblyName).$(OutputType).config" />
-</Target>
-
+  <UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v12.0\Web\Microsoft.Web.Publishing.Tasks.dll" />
+  <Target Name="AfterBuild">
+    <TransformXml Source="App.config" Transform="App.$(Configuration).config" Destination="$(OutputPath)\$(AssemblyName).$(OutputType).config" />
+  </Target>
 </Project>

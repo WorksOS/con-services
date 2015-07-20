@@ -9,6 +9,8 @@ using TechTalk.SpecFlow;
 using LandfillService.WebApi.Models;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using LandfillService.AcceptanceTests.Helpers;
+using System.Text;
 
 namespace LandfillService.AcceptanceTests.StepDefinitions
 {
@@ -19,6 +21,8 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         protected HttpClient httpClient;
         protected HttpResponseMessage response;
         protected string sessionId;
+        protected string logonkey;
+        protected string accesstoken;
 
         #region initialise
 
@@ -75,8 +79,6 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             Assert.IsTrue(response.Content.ReadAsStringAsync().Result.Length > 0);
         }
 
-
-
         [When(@"get list of projects")]
         public async void WhenGetListOfProjects()
         {
@@ -119,11 +121,33 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
 
         [Then("match response SessionId")]
         public void ThenMatchSessionId()
-        {
+        {            
             Assert.IsTrue(response.IsSuccessStatusCode && new Regex(@"\w{32}").IsMatch(response.Content.ReadAsStringAsync().Result));
         }
-    
-        #endregion
 
+
+        /// <summary>
+        /// This is for logging in using a token. This is the way they will logon using visionlink.
+        /// </summary>
+        [Given(@"I have retrieve a token from the project monitoring api")]
+        public void GivenIHaveRetrieveATokenFromTheProjectMonitoringApi()
+        {            
+            LogonKey logonTokenKey = new LogonKey();
+            logonkey = logonTokenKey.GetKeyToken();
+        }
+
+        [When(@"I logon with the token")]
+        public void WhenILogonWithTheToken()
+        {
+            VlCredentials vlcredentials = new VlCredentials { userName = "dglassenbury", key = logonkey };
+            httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
+            response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login/vl", vlcredentials).Result;
+            sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+            //Assert.IsTrue(sessionId.Length == 32, "Logon test has failed: Response status cd:" + response.StatusCode + " and session id:" + sessionId);
+        }
+        #endregion
     }
 }
