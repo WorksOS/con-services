@@ -16,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using NodaTime.TimeZones;
 
 namespace LandfillService.WebApi.ApiClients
 {
@@ -121,7 +122,7 @@ namespace LandfillService.WebApi.ApiClients
         /// <returns>Response as a string; throws an exception if the request is not successful</returns>
         public async Task<SummaryVolumesResult> GetVolumesAsync(string sessionId, Project project, DateTime date)
         {
-          TimeZoneInfo hwZone = TimeZoneInfo.FindSystemTimeZoneById(project.timeZoneName);
+          TimeZoneInfo hwZone = GetTimeZoneInfoForTzdbId(project.timeZoneName);
 
 /*            var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
             var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(date.Year, date.Month, date.Day, 0, 0));
@@ -139,6 +140,15 @@ namespace LandfillService.WebApi.ApiClients
                 topFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = false }
             };
             return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", sessionId, volumeParams));
+        }
+
+
+        private TimeZoneInfo GetTimeZoneInfoForTzdbId(string tzdbId)
+        {
+          var mappings = TzdbDateTimeZoneSource.Default.WindowsMapping.MapZones;
+          var map = mappings.FirstOrDefault(x =>
+              x.TzdbIds.Any(z => z.Equals(tzdbId, StringComparison.OrdinalIgnoreCase)));
+          return map == null ? null : TimeZoneInfo.FindSystemTimeZoneById(map.WindowsId);
         }
 
     }
