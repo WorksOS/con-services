@@ -251,7 +251,7 @@ namespace LandfillService.WebApi.Controllers
         {
             HostingEnvironment.QueueBackgroundWorkItem(async (CancellationToken cancel) =>
             {
-                const int parallelRequestCount = 10;
+                const int parallelRequestCount = 1;
 
                 for (var offset = 0; offset <= entries.Count() / parallelRequestCount; offset++)
                 {
