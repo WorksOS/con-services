@@ -464,9 +464,9 @@ namespace LandfillService.WebApi.Models
                             double density = 0.0;
                             if (!reader.IsDBNull(reader.GetOrdinal("volume")) && reader.GetDouble(reader.GetOrdinal("volume")) > EPSILON)
                               if (units == UnitsTypeEnum.Metric)
-                                density = reader.GetDouble(reader.GetOrdinal("weight"))  / reader.GetDouble(reader.GetOrdinal("volume"));
+                                density = reader.GetDouble(reader.GetOrdinal("weight")) * 1000 / reader.GetDouble(reader.GetOrdinal("volume"));
                               else
-                                density = reader.GetDouble(reader.GetOrdinal("weight")) * M3_PER_YD3 / reader.GetDouble(reader.GetOrdinal("volume"));
+                                density = reader.GetDouble(reader.GetOrdinal("weight")) * M3_PER_YD3 * POUNDS_PER_TON / reader.GetDouble(reader.GetOrdinal("volume"));
                             entries.Add(new DayEntry
                             {
                                 date = reader.GetDateTime(reader.GetOrdinal("date")),
