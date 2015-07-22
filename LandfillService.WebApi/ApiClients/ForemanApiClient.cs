@@ -122,6 +122,21 @@ namespace LandfillService.WebApi.ApiClients
                 .Select(p => { p.timeZoneName = TimeZone.WindowsToIana(p.timeZoneName); return p; })
                 .ToList()
                 .OrderBy(p => p.name);
-        } 
+        }
+
+      public UnitsTypeEnum GetUserUnits(string sessionId)
+      {
+        var resp = ParseResponse<ForemanUserPreferences>(Request("GetUserPreferences", new { sessionID = sessionId }));
+        return (UnitsTypeEnum)resp.UnitsTypeID;
+      }
+
     }
+
+    public enum UnitsTypeEnum
+  {
+    None = -1,
+    US = 0,
+    Metric = 1,
+    Imperial = 2
+  }
 }

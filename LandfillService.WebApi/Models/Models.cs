@@ -4,6 +4,102 @@ using System.Collections.Generic;
 
 namespace LandfillService.WebApi.Models
 {
+
+  public class ForemanUserPreferences
+  {
+    private string locale = null;
+    private string timeZoneName = null;
+    private int unitsTypeID = -1;
+    private int assetLabelType = -1;
+    private string dateTimeFormat = null;
+    private string dateSeparator = null;
+    private string timeSeparator = null;
+    private int clockIndicator = -1;
+    private string currencySymbol = null;
+    private string numberFormat = null;
+    private string thousandsSeparator = null;
+    private string decimalSeparator = null;
+    private long userID = -1;
+
+    public string Locale
+    {
+      get { return locale; }
+      set { locale = value; }
+    }
+
+    public string TimeZoneName
+    {
+      get { return timeZoneName; }
+      set { timeZoneName = value; }
+    }
+
+    public int UnitsTypeID
+    {
+      get { return unitsTypeID; }
+      set { unitsTypeID = value; }
+    }
+
+    public int AssetLabelType
+    {
+      get { return assetLabelType; }
+      set { assetLabelType = value; }
+    }
+
+    public string DateTimeFormat
+    {
+      get { return dateTimeFormat; }
+      set { dateTimeFormat = value; }
+    }
+
+    public string DateSeparator
+    {
+      get { return dateSeparator; }
+      set { dateSeparator = value; }
+    }
+
+    public string TimeSeparator
+    {
+      get { return timeSeparator; }
+      set { timeSeparator = value; }
+    }
+
+    public int ClockIndicator
+    {
+      get { return clockIndicator; }
+      set { clockIndicator = value; }
+    }
+
+    public string CurrencySymbol
+    {
+      get { return currencySymbol; }
+      set { currencySymbol = value; }
+    }
+
+    public string NumberFormat
+    {
+      get { return numberFormat; }
+      set { numberFormat = value; }
+    }
+
+    public string ThousandsSeparator
+    {
+      get { return thousandsSeparator; }
+      set { thousandsSeparator = value; }
+    }
+    
+    public string DecimalSeparator
+    {
+      get { return decimalSeparator; }
+      set { decimalSeparator = value; }
+    }
+
+    public long UserID
+    {
+      get { return userID; }
+      set { userID = value; }
+    }
+  }
+
     /// <summary>
     /// User credentials submitted for login
     /// </summary>
@@ -33,6 +129,7 @@ namespace LandfillService.WebApi.Models
     {
         public uint id { get; set; }
         public string name { get; set; }
+        public uint unitsId { get; set; }
     }
 
     /// <summary>

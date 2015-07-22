@@ -65,19 +65,23 @@ namespace LandfillService.WebApi.Models
         /// </summary>
         /// <param name="userName">User name</param>
         /// <returns>User object</returns>
-        public static User CreateOrGetUser(string userName)
+        public static User CreateOrGetUser(string userName, int units)
         {
             return WithConnection((conn) =>
             {
                 // supply a dummy value for projectsRetrievedAt such that it indicates that projects have to be retrieved
-                var command = "insert ignore into users (name, projectsRetrievedAt) values (@name, date_sub(UTC_TIMESTAMP(), interval 10 year))";
-                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@name", userName));
+                var command = "insert ignore into users (name, projectsRetrievedAt, unitsId) values (@name, date_sub(UTC_TIMESTAMP(), interval 10 year), @units)";
+                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@name", userName), new MySqlParameter("@units", units));
 
                 command = "select * from users where name = @name";
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@name", userName)))
                 {
                     reader.Read();
-                    var user = new User { id = reader.GetUInt32(reader.GetOrdinal("userId")), name = reader.GetString(reader.GetOrdinal("name")) };
+                    var user = new User
+                               {
+                                   id = reader.GetUInt32(reader.GetOrdinal("userId")), name = reader.GetString(reader.GetOrdinal("name")),
+                                   unitsId = reader.GetUInt32(reader.GetOrdinal("unitsId"))
+                               };
                     return user;
                 }
             });
