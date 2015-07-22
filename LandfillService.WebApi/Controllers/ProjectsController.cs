@@ -303,7 +303,9 @@ namespace LandfillService.WebApi.Controllers
 
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
 
-                return Ok(new ProjectData { entries = LandfillDb.GetEntries(project), retrievingVolumes = true });
+
+
+                return Ok(new ProjectData { entries = LandfillDb.GetEntries(project, LandfillDb.GetUnits(sessionId)), retrievingVolumes = true });
 
             });
         }
