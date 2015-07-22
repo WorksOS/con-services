@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Web;
+using LandfillService.WebApi.ApiClients;
 
 namespace LandfillService.WebApi.Models
 {
@@ -422,7 +423,7 @@ namespace LandfillService.WebApi.Models
         /// </summary>
         /// <param name="project">Project</param>
         /// <returns>A list of data entries</returns>
-        public static IEnumerable<DayEntry> GetEntries(Project project)
+        public static IEnumerable<DayEntry> GetEntries(Project project, UnitsTypeEnum units)
         {
             return WithConnection((conn) =>
             {
@@ -462,7 +463,10 @@ namespace LandfillService.WebApi.Models
                         {
                             double density = 0.0;
                             if (!reader.IsDBNull(reader.GetOrdinal("volume")) && reader.GetDouble(reader.GetOrdinal("volume")) > EPSILON)
-                                density = reader.GetDouble(reader.GetOrdinal("weight")) * POUNDS_PER_TON * M3_PER_YD3 / reader.GetDouble(reader.GetOrdinal("volume"));
+                              if (units == UnitsTypeEnum.Metric)
+                                density = reader.GetDouble(reader.GetOrdinal("weight"))  / reader.GetDouble(reader.GetOrdinal("volume"));
+                              else
+                                density = reader.GetDouble(reader.GetOrdinal("weight")) * M3_PER_YD3 / reader.GetDouble(reader.GetOrdinal("volume"));
                             entries.Add(new DayEntry
                             {
                                 date = reader.GetDateTime(reader.GetOrdinal("date")),
@@ -479,6 +483,20 @@ namespace LandfillService.WebApi.Models
 
         #endregion
 
+      public static UnitsTypeEnum GetUnits(string sessionId)
+      {
+        return (UnitsTypeEnum) WithConnection((conn) =>
+                                              {
+
+                                                var command = "select unitsId from users left join landfill.sessions on users.userId = sessions.userId where sessions.sessionId = @sessionId";
+
+                                                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@sessionId", sessionId)))
+                                                {
+                                                  reader.Read();
+                                                  return reader.GetUInt16(0);
+                                                }
+                                              });
+      }
     }
 
 }

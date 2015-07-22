@@ -146,6 +146,7 @@ namespace LandfillService.WebApi.Controllers
             // Check if there are missing volumes and indicate to the client
 
             var sessionId = Request.Headers.GetValues("SessionId").First();
+          UnitsTypeEnum units = LandfillDb.GetUnits(sessionId);
 
             return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects => 
             {
@@ -154,7 +155,7 @@ namespace LandfillService.WebApi.Controllers
                     var project = projects.Where(p => p.id == id).First();
                     GetMissingVolumesInBackground(sessionId, project);  // retry volume requests which weren't successful before
 
-                    return Ok(new ProjectData { entries = LandfillDb.GetEntries(project), retrievingVolumes = LandfillDb.RetrievalInProgress(project) });
+                    return Ok(new ProjectData { entries = LandfillDb.GetEntries(project,units), retrievingVolumes = LandfillDb.RetrievalInProgress(project) });
                     // TEST CODE: use this to test chart updates on the client
                     //return Ok(new ProjectData { entries = GetRandomEntries(), retrievingVolumes = true });
                 }
