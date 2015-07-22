@@ -181,9 +181,9 @@ namespace LandfillService.WebApi.Controllers
                 var res = await raptorApiClient.GetVolumesAsync(sessionId, project, entry.date);
 
                 System.Diagnostics.Debug.WriteLine("Volume res:" + res);
-                System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill - res.Cut));
+                System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill ));
 
-                LandfillDb.SaveVolume(project.id, entry.date, res.Fill - res.Cut);
+                LandfillDb.SaveVolume(project.id, entry.date, res.Fill );
             }
             catch (RaptorApiException e)
             {
