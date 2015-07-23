@@ -338,7 +338,7 @@ namespace LandfillService.WebApi.Models
             {
                 // replace negative volumes with 0; they are possible (e.g. due to extra compaction 
                 // without new material coming in) but don't make sense in the context of the application
-                var command = @"update entries set volume = greatest(@volume, 0.0), volumeNotRetrieved = 0, volumeNotAvailable = 0 
+              var command = @"update entries set volume = greatest(@volume, 0.0), volumeNotRetrieved = 0, volumeNotAvailable = 0, volumesUpdatedTimestamp = UTC_TIMESTAMP()
                                 where projectId = @projectId and date = @date";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
@@ -404,7 +404,7 @@ namespace LandfillService.WebApi.Models
                 // note that this can cause overlap with newly added dates which are currently waiting to be handled by 
                 // a volume retrieval task; this is acceptable because the probability of such overlap is expected to be low
                 // BUT it allows the service to tolerate background tasks dying
-                var command = "select date from entries where projectId = @projectId and (volumeNotRetrieved = 1 or (volume is null and volumeNotAvailable = 0))";
+              var command = "select date from entries where projectId = @projectId and (volumeNotRetrieved = 1 or (volume is null and volumeNotAvailable = 0) or (volumesUpdatedTimestamp is null) or ( (volumesUpdatedTimestamp < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) and (volumesUpdatedTimestamp > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", projectId)))
                 {
