@@ -21,6 +21,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         protected HttpClient httpClient;
         protected HttpResponseMessage response;
         protected string sessionId;
+        protected string responseParse;
         protected string logonkey;
         protected string accesstoken;
 
@@ -40,7 +41,11 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
             response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login", credentials).Result;
-            sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+            responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+            if (responseParse.Length > 32)
+            {
+                sessionId = responseParse.Substring(0, 32);
+            }
             return response;
         }
 
@@ -102,9 +107,8 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         [When("logout")]
         public void WhenLogout()
         {
-            response = Login(Config.credentials["goodCredentials"]);
+         //   response = Login(Config.credentials["goodCredentials"]);
             var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "users/logout"), Method = HttpMethod.Post };
-            sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
 
