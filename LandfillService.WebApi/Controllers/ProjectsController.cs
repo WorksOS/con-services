@@ -156,8 +156,21 @@ namespace LandfillService.WebApi.Controllers
                 {
                     var project = projects.Where(p => p.id == id).First();
                   //  GetMissingVolumesInBackground(sessionId, project);  // retry volume requests which weren't successful before
+                  var entries = new ProjectData
+                                {
+                                    entries = LandfillDb.GetEntries(project, units),
+                                    retrievingVolumes = LandfillDb.RetrievalInProgress(project)
+                                };
 
-                    return Ok(new ProjectData { entries = LandfillDb.GetEntries(project,units), retrievingVolumes = LandfillDb.RetrievalInProgress(project) });
+                  for (int i = 1; i < entries.entries.Count(); i++)
+                  {
+                    if (entries.entries.ElementAt(i).density == 0)
+                    {
+                      entries.entries.ElementAt(i).density = entries.entries.ElementAt(i-1).density;
+                    }
+                  }
+
+                  return Ok(entries);
                     // TEST CODE: use this to test chart updates on the client
                     //return Ok(new ProjectData { entries = GetRandomEntries(), retrievingVolumes = true });
                 }
