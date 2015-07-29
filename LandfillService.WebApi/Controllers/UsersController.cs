@@ -95,7 +95,7 @@ namespace LandfillService.WebApi.Controllers
             return ForemanRequest(sessionId, () =>
             {
                 var response = foremanApiClient.LoginWithKey(credentials.key);
-                var prefs = foremanApiClient.GetUserUnits(sessionId);
+                var prefs = foremanApiClient.GetUserUnits(response);
                 var user = LandfillDb.CreateOrGetUser(credentials.userName, (int)prefs);
                 LandfillDb.SaveSession(user, response);
                 return Ok(String.Format("{0}${1}", response, prefs));
