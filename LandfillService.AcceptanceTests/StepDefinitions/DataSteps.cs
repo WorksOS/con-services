@@ -22,6 +22,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         public static DateTime dateTomorrow = DateTime.UtcNow.AddDays(1);
         protected HttpClient httpClient;
         protected HttpResponseMessage response;
+        protected string responseParse;
         protected string sessionId;
 
         #region Initialise
@@ -39,7 +40,11 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);       
             response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login", credentials).Result;
-            sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+            responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+            if (responseParse.Length > 32)
+            {
+                sessionId = responseParse.Substring(0, 32);
+            }
             return response;
         }
 
@@ -75,7 +80,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         {
             // Set the weights 
             Random random = new Random();
-            randomWeight = random.Next(3444, 5000);
+            randomWeight = random.Next(2200, 3300);
 
             WeightEntry[] weightForOneDay = new WeightEntry[] 
             { 
@@ -92,7 +97,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         {
             // Set the weights 
             Random random = new Random();
-            randomWeight = random.Next(5200, 5300);
+            randomWeight = random.Next(2200, 3300);
 
             WeightEntry[] weightForFiveDays = new WeightEntry[] 
             { 
@@ -125,7 +130,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         /// <param name="expectedVolume"></param>
         /// <param name="dateOfDensityCheck"></param>
         /// <param name="dayEntry"></param>
-        private static void CheckTheDayEntryIsValid(double expectedVolume, DateTime dateOfDensityCheck, DayEntry dayEntry)
+        private static void CheckTheDayEntryIsValid(double expectedDensity, DateTime dateOfDensityCheck, DayEntry dayEntry)
         {
             if (dayEntry.date.ToShortDateString() != dateOfDensityCheck.ToShortDateString())
             {
@@ -140,7 +145,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
                 if (dayEntry.density == 0)
                 { Assert.Fail("Density is zero so it cannot be compared."); }
 
-                CalculateDensityAndCompare(expectedVolume, dayEntry);
+                CompareDensity(expectedDensity, dayEntry);
             }
         }
         /// <summary>
@@ -148,16 +153,12 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         /// </summary>
         /// <param name="expectedVolume"></param>
         /// <param name="dayEntry"></param>
-        private static void CalculateDensityAndCompare(double expectedVolume, DayEntry dayEntry)
+        private static void CompareDensity(double expectedDensity, DayEntry dayEntry)
         {
-            const double POUNDS_PER_TON = 2000.0;
-            const double M3_PER_YD3 = 0.7645555;
-            double calculatedDensity = dayEntry.weight * POUNDS_PER_TON * M3_PER_YD3 / expectedVolume;
-
-            if (Math.Round(dayEntry.density, 4) != Math.Round(calculatedDensity, 4))
+            if (Math.Round(dayEntry.density, 4) != Math.Round(expectedDensity, 4))
             {
                 Assert.Fail("Density is not as expected. density from response:" + dayEntry.density +
-                            " does not equal expected:" + calculatedDensity);
+                            " does not equal expected:" + expectedDensity);
             }
         }
 
@@ -254,11 +255,10 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         {
             List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
             if (allProjects != null)
-            {                
-                if(allProjects.Any(prj => prj.id != projectId))
-                {
-                    Assert.Fail("Project " + projectId + " does not exist ");
-                }
+            {
+                if (allProjects.Any(prj => prj.id == projectId))
+                    { return; }
+                Assert.Fail("Project " + projectId + " does not exist list. Number of projects in list is " + allProjects.Count); 
             }
             else
             {
@@ -360,8 +360,9 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             response = httpClient.SendAsync(request).Result;
         }
 
-        [Then(@"check the density is calculated with a volume of \((.*)\) for the date \((.*)\)")]
-        public void ThenCheckTheDensityIsCalculatedAsForTheDate(double expectedVolume, DateTime dateOfDensityCheck)
+
+        [Then(@"check the density is re-calculated as \((.*)\) for the date \((.*)\)")]
+        public void ThenCheckTheDensityIsCalculatedAsForTheDate(double expectedDensity, DateTime dateOfDensityCheck)
         {
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var dayEntry = from day in projectData.entries
@@ -374,7 +375,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             }
             else
             {
-                CheckTheDayEntryIsValid(expectedVolume, dateOfDensityCheck, dayEntry.First<DayEntry>());
+                CheckTheDayEntryIsValid(expectedDensity, dateOfDensityCheck, dayEntry.First<DayEntry>());
             }
         }
 

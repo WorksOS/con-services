@@ -157,11 +157,11 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Check the density for a specific date (2015-04-04)")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Check the density for a specific date (2015-04-10)")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Data")]
-        public virtual void CheckTheDensityForASpecificDate2015_04_04()
+        public virtual void CheckTheDensityForASpecificDate2015_04_10()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Check the density for a specific date (2015-04-04)", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Check the density for a specific date (2015-04-10)", ((string[])(null)));
 #line 27
 this.ScenarioSetup(scenarioInfo);
 #line 4
@@ -171,7 +171,7 @@ this.FeatureBackground();
 #line 29
  testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 30
- testRunner.And("check the density is (1582.91241710074) for the date (2015-04-04)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("check the density is (920.5065090879602) for the date (2015-04-10)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -187,12 +187,33 @@ this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 33
- testRunner.When("updating a weight (6666) tonnes for project (1384) for date (2015-04-06)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("updating a weight (3000) tonnes for project (1384) for date (2015-04-06)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 34
  testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 35
- testRunner.And("check the density is calculated with a volume of (3129.9334339477587) for the dat" +
-                    "e (2015-04-06)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("check the density is re-calculated as (1227.67110616317) for the date (2015-04-06" +
+                    ")", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Update the weight for a specific date (2015-04-06) back to original")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Data")]
+        public virtual void UpdateTheWeightForASpecificDate2015_04_06BackToOriginal()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update the weight for a specific date (2015-04-06) back to original", ((string[])(null)));
+#line 37
+this.ScenarioSetup(scenarioInfo);
+#line 4
+this.FeatureBackground();
+#line 38
+ testRunner.When("updating a weight (3239.58) tonnes for project (1384) for date (2015-04-06)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 39
+ testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 40
+ testRunner.And("check the density is re-calculated as (1325.71292070136) for the date (2015-04-06" +
+                    ")", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -203,15 +224,15 @@ this.FeatureBackground();
         public virtual void AddAWeightEntryForAYesterday()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add a weight entry for a yesterday", ((string[])(null)));
-#line 38
+#line 43
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 39
+#line 44
  testRunner.When("adding a random weight for project (1384) yesterday", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 40
+#line 45
  testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 41
+#line 46
  testRunner.And("check the random weight has been added to the project (1384) for yesterday", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -223,13 +244,13 @@ this.FeatureBackground();
         public virtual void AddAWeightEntryForAToday()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add a weight entry for a today", ((string[])(null)));
-#line 43
+#line 48
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 44
+#line 49
  testRunner.When("adding a random weight for project (1384) today", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 45
+#line 50
  testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -241,13 +262,13 @@ this.FeatureBackground();
         public virtual void AddAWeightEntryForATomorrow()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add a weight entry for a tomorrow", ((string[])(null)));
-#line 47
+#line 52
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 48
+#line 53
  testRunner.When("adding a random weight for project (1384) tomorrow", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 49
+#line 54
  testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
