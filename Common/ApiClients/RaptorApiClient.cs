@@ -129,15 +129,15 @@ namespace LandfillService.WebApi.ApiClients
             var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();*/
       
           //use only utc dates and times in the service contracts. Ignore time for now.
-          var utcDateTime = date.Date.Add(hwZone.BaseUtcOffset);
+          var utcDateTime = date.Date.Add(-hwZone.BaseUtcOffset);
            System.Diagnostics.Debug.WriteLine("UTC time range in volume request: {0} - {1}", utcDateTime.ToString(), utcDateTime.AddDays(1).ToString());
 
             var volumeParams = new VolumeParams()
             {
                 projectId = project.id,
                 volumeCalcType = 4,
-                baseFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = true },
-                topFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1), returnEarliest = false }
+                baseFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1).AddMinutes(-1), returnEarliest = true },
+                topFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1).AddMinutes(-1), returnEarliest = false }
             };
             return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", sessionId, volumeParams));
         }

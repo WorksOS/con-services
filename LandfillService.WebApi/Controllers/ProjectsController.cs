@@ -147,13 +147,15 @@ namespace LandfillService.WebApi.Controllers
 
             var sessionId = Request.Headers.GetValues("SessionId").First();
           UnitsTypeEnum units = LandfillDb.GetUnits(sessionId);
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(),
+    "Retreiving density" + " units settings is: "+units.ToString());
 
             return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects => 
             {
                 try
                 {
                     var project = projects.Where(p => p.id == id).First();
-                    GetMissingVolumesInBackground(sessionId, project);  // retry volume requests which weren't successful before
+                  //  GetMissingVolumesInBackground(sessionId, project);  // retry volume requests which weren't successful before
 
                     return Ok(new ProjectData { entries = LandfillDb.GetEntries(project,units), retrievingVolumes = LandfillDb.RetrievalInProgress(project) });
                     // TEST CODE: use this to test chart updates on the client
@@ -296,10 +298,10 @@ namespace LandfillService.WebApi.Controllers
                     }
                 };
 
-                GetVolumesInBackground(sessionId, project, validEntries, () =>
+           /*     GetVolumesInBackground(sessionId, project, validEntries, () =>
                 {
                     GetMissingVolumesInBackground(sessionId, project);
-                });
+                });*/
 
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
 
