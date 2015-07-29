@@ -27,17 +27,17 @@ Scenario: Add five weight entries for a five days
 Scenario: Check the density for a specific date (2015-04-10)  
 	Given Get project data for project (1384)
 	Then match response (Ok 200)
-	And check the density is (920.5065090879602) for the date (2015-04-10) 
+	And check the density is (866.3804) for the date (2015-04-10) 
 
 Scenario: Update the weight for a specific date (2015-04-06) 
 	When updating a weight (3000) tonnes for project (1384) for date (2015-04-06) 
 	Then match response (Ok 200)
-	And check the density is re-calculated as (1227.67110616317) for the date (2015-04-06) 
+	And check the density is re-calculated as (821.618681856186) for the date (2015-04-06) 
 
 Scenario: Update the weight for a specific date (2015-04-06) back to original
 	When updating a weight (3239.58) tonnes for project (1384) for date (2015-04-06) 
 	Then match response (Ok 200)
-	And check the density is re-calculated as (1325.71292070136) for the date (2015-04-06) 
+	And check the density is re-calculated as (887.233149789221) for the date (2015-04-06) 
 
 # Add some range tests negative tests at calling the web service
 Scenario: Add a weight entry for a yesterday

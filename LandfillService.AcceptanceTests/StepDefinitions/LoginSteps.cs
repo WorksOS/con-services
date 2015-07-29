@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using LandfillService.AcceptanceTests.Helpers;
 using System.Text;
+using System.Configuration;
 
 namespace LandfillService.AcceptanceTests.StepDefinitions
 {
@@ -143,7 +144,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         [When(@"I logon with the token")]
         public void WhenILogonWithTheToken()
         {
-            VlCredentials vlcredentials = new VlCredentials { userName = "dglassenbury", key = logonkey };
+            VlCredentials vlcredentials = new VlCredentials { userName = ConfigurationManager.AppSettings["UserName"], key = logonkey };
             httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

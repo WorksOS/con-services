@@ -12,6 +12,7 @@ using System.Net;
 using System.IO;
 using System.Net.Http.Formatting;
 using RestSharp;
+using System.Configuration;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
@@ -51,7 +52,7 @@ namespace LandfillService.AcceptanceTests.Helpers
 
         private string CallProjectMonitoringAndGetTheAccessToken()
         {
-            string tokenkey = "grant_type=password&username=dglassenbury&password=Visionlink15_";
+            string tokenkey = "grant_type=password&username=" + ConfigurationManager.AppSettings["UserName"] + "&password=" + ConfigurationManager.AppSettings["Password"];
             var client = new RestClient(Config.PMServiceUrl + "/token");
             var request = new RestRequest(Method.POST);
             request.AddParameter("text/json", tokenkey, ParameterType.RequestBody);
