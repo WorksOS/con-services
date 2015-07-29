@@ -16,7 +16,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         public static string PMServiceUrl = ConfigurationManager.AppSettings["ProjectMonitoringApiUrl"];
         public static Dictionary<string, Credentials> credentials = new Dictionary<string, Credentials>()
         {
-            {"goodCredentials", new Credentials { userName = "dglassenbury", password = "Visionlink15_" } },
+            {"goodCredentials", new Credentials { userName = ConfigurationManager.AppSettings["UserName"] , password = ConfigurationManager.AppSettings["Password"] }},
             {"invalidUsername", new Credentials { userName = "rubbish", password = "zzzzzzzzz123456" } },            
             {"badCredentials", new Credentials { userName = "akorban", password = "badpassword" } },
             {"noCredentials", new Credentials { userName = "", password = "" } }

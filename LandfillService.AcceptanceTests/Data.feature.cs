@@ -171,7 +171,7 @@ this.FeatureBackground();
 #line 29
  testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 30
- testRunner.And("check the density is (920.5065090879602) for the date (2015-04-10)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("check the density is (866.3804) for the date (2015-04-10)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -191,7 +191,7 @@ this.FeatureBackground();
 #line 34
  testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 35
- testRunner.And("check the density is re-calculated as (1227.67110616317) for the date (2015-04-06" +
+ testRunner.And("check the density is re-calculated as (821.618681856186) for the date (2015-04-06" +
                     ")", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -212,7 +212,7 @@ this.FeatureBackground();
 #line 39
  testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 40
- testRunner.And("check the density is re-calculated as (1325.71292070136) for the date (2015-04-06" +
+ testRunner.And("check the density is re-calculated as (887.233149789221) for the date (2015-04-06" +
                     ")", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
