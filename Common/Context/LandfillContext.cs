@@ -5,7 +5,6 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Web;
-using LandfillService.WebApi.ApiClients;
 
 namespace LandfillService.WebApi.Models
 {
@@ -73,6 +72,10 @@ namespace LandfillService.WebApi.Models
                 // supply a dummy value for projectsRetrievedAt such that it indicates that projects have to be retrieved
                 var command = "insert ignore into users (name, projectsRetrievedAt, unitsId) values (@name, date_sub(UTC_TIMESTAMP(), interval 10 year), @units)";
                 MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@name", userName), new MySqlParameter("@units", units));
+
+                command = "update users set unitsId = @units where name = @name";
+                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@name", userName), new MySqlParameter("@units", units));
+
 
                 command = "select * from users where name = @name";
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@name", userName)))
@@ -370,6 +373,28 @@ namespace LandfillService.WebApi.Models
             });
         }
 
+
+      public static List<Project> GetListOfAvailableProjects()
+      {
+        return InTransaction((conn) =>
+        {
+          var command = @"SELECT distinct prj.projectId, prj.timeZone FROM landfill.projects as prj left join landfill.entries as etr on prj.projectId = etr.projectId where weight is not null;";
+          using (var reader = MySqlHelper.ExecuteReader(conn, command))
+          {
+            var projects = new List<Project>();
+            while (reader.Read())
+            {
+              projects.Add(new Project
+              {
+                id = reader.GetUInt32(reader.GetOrdinal("projectId")),
+                timeZoneName = reader.GetString(reader.GetOrdinal("timeZone"))
+              });
+            }
+            return projects;
+          }
+        });
+      }
+
         /// <summary>
         /// Marks an entry with "volume not available" to indicate that there is no volume information in Raptor for that date
         /// </summary>
@@ -380,7 +405,7 @@ namespace LandfillService.WebApi.Models
         {
             WithConnection<object>((conn) =>
             {
-                var command = @"update entries set volumeNotAvailable = 1, volumeNotRetrieved = 0 
+              var command = @"update entries set volumeNotAvailable = 1, volumeNotRetrieved = 0, volumesUpdatedTimestamp = UTC_TIMESTAMP()
                                 where projectId = @projectId and date = @date";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,

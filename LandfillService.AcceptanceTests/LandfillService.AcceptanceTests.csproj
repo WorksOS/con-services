@@ -118,6 +118,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\LandfillService.Common.csproj">
+      <Project>{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}</Project>
+      <Name>LandfillService.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LandfillService.WebApi\LandfillService.WebApi.csproj">
       <Project>{7c668fb5-bad8-4d01-89ad-8f957bc614b2}</Project>
       <Name>LandfillService.WebApi</Name>
