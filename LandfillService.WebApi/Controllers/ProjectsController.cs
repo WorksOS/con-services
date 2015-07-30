@@ -162,13 +162,13 @@ namespace LandfillService.WebApi.Controllers
                                     retrievingVolumes = LandfillDb.RetrievalInProgress(project)
                                 };
 
-                  for (int i = 1; i < entries.entries.Count(); i++)
+               /*   for (int i = 1; i < entries.entries.Count(); i++)
                   {
                     if (entries.entries.ElementAt(i).density == 0)
                     {
                       entries.entries.ElementAt(i).density = entries.entries.ElementAt(i-1).density;
                     }
-                  }
+                  }*/
 
                   return Ok(entries);
                     // TEST CODE: use this to test chart updates on the client
