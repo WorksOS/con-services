@@ -150,7 +150,12 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
             response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login/vl", vlcredentials).Result;
-            sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+            responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+            if (responseParse.Length > 32)
+            {
+                sessionId = responseParse.Substring(0, 32);
+            }
+           // sessionId = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
             //Assert.IsTrue(sessionId.Length == 32, "Logon test has failed: Response status cd:" + response.StatusCode + " and session id:" + sessionId);
         }
         #endregion
