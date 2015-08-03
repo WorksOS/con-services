@@ -64,10 +64,10 @@ Global
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForDev|Any CPU.ActiveCfg = Release|Any CPU
-		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForDev|Any CPU.Build.0 = Release|Any CPU
-		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForT01|Any CPU.ActiveCfg = Debug|Any CPU
-		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForT01|Any CPU.Build.0 = Debug|Any CPU
+		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForDev|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
+		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForDev|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
+		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForT01|Any CPU.ActiveCfg = DeployToFolderForT01|Any CPU
+		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForT01|Any CPU.Build.0 = DeployToFolderForT01|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
