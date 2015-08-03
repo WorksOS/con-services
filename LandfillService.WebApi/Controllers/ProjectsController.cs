@@ -294,18 +294,22 @@ namespace LandfillService.WebApi.Controllers
             {
                 var project = projects.Where(p => p.id == id).First();
 
+
+                var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
+                DateTime utcNow = DateTime.UtcNow;
+                Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
+                DateTime yesterdayInProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).AddDays(-1);
+  
+                System.Diagnostics.Debug.WriteLine("yesterdayInProjTimeZone=" + yesterdayInProjTimeZone.ToString());
+
                 var validEntries = new List<WeightEntry>();
                 foreach (var entry in entries)
                 {
-                    System.Diagnostics.Debug.WriteLine(entry.ToString());
+                  bool valid = entry.weight >= 0 && entry.date.Date <= yesterdayInProjTimeZone.Date;
+                    System.Diagnostics.Debug.WriteLine(entry.ToString() + "--->" + valid);
 
-                    /*var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
-                    var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(entry.date.Year, entry.date.Month, entry.date.Day, 0, 0));
-                    var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();*/
-                  //use only UTC here
-
-                    if (entry.weight >= 0 && entry.date.Date <= DateTime.UtcNow.Date.AddDays(-1))
-                    {
+                    if (valid)
+                    { 
                         LandfillDb.SaveEntry(id, entry);
                         validEntries.Add(entry);
                     }
