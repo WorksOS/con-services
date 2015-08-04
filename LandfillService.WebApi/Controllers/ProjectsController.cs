@@ -315,10 +315,10 @@ namespace LandfillService.WebApi.Controllers
                     }
                 };
 
-           /*     GetVolumesInBackground(sessionId, project, validEntries, () =>
+                GetVolumesInBackground(sessionId, project, validEntries, () =>
                 {
-                    GetMissingVolumesInBackground(sessionId, project);
-                });*/
+                   // GetMissingVolumesInBackground(sessionId, project);
+                });
 
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
 
