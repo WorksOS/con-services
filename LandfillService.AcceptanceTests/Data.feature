@@ -15,14 +15,14 @@ Scenario: Get project data
 	And check there is 729 days worth of data for project (1384)
 
 Scenario: Add a weight entry for a day, five days ago
-	When adding a random weight for project (1384) five days ago
+	When adding a random weight for project (1384) five days ago in timezone 'America/Chicago'
 	Then match response (Ok 200)
-	And check the random weight has been added to the project (1384) for five days ago
+	And check the random weight has been added to the project (1384) for five days ago in timezone 'America/Chicago'
 
 Scenario: Add five weight entries for a five days
-	When adding five random weights for project (1384) ten days ago
+	When adding five random weights for project (1384) ten days ago in timezone 'America/Chicago'
 	Then match response (Ok 200)
-	And check the five random weights has been added each day to the project (1384) 
+	And check the five random weights has been added each day to the project (1384) in timezone 'America/Chicago'
 
 Scenario: Check the density for a specific date (2015-04-10)  
 	Given Get project data for project (1384)
@@ -39,17 +39,16 @@ Scenario: Update the weight for a specific date (2015-04-06) back to original
 	Then match response (Ok 200)
 	And check the density is re-calculated as (887.233149789221) for the date (2015-04-06) 
 
-# Add some range tests negative tests at calling the web service
 Scenario: Add a weight entry for a yesterday
-	When adding a random weight for project (1384) yesterday
+	When adding a random weight for project (1384) yesterday in timezone 'America/Chicago'
 	Then match response (Ok 200)
-	And check the random weight has been added to the project (1384) for yesterday
-
+	And check the random weight has been added to the project (1384) for yesterday in timezone 'America/Chicago'
+# Add some range tests negative tests at calling the web service
 Scenario: Add a weight entry for a today
-	When adding a random weight for project (1384) today
+	When adding a random weight for project (1384) today in timezone 'America/Chicago'
 	Then match response (Ok 200)
 
 Scenario: Add a weight entry for a tomorrow
-	When adding a random weight for project (1384) tomorrow
+	When adding a random weight for project (1384) tomorrow in timezone 'America/Chicago'
 	Then match response (Ok 200)
 
