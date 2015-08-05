@@ -19,7 +19,7 @@ Scenario: Add a weight entry for a day, five days ago
 	Then match response (Ok 200)
 	And check the random weight has been added to the project (1384) for five days ago in timezone 'America/Chicago'
 
-Scenario: Add five weight entries for a five days
+Scenario: Add five random weights entries for ten days ago
 	When adding five random weights for project (1384) ten days ago in timezone 'America/Chicago'
 	Then match response (Ok 200)
 	And check the five random weights has been added each day to the project (1384) in timezone 'America/Chicago'

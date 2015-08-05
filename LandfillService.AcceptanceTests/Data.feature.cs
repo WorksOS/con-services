@@ -139,11 +139,11 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Add five weight entries for a five days")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Add five random weights entries for ten days ago")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Data")]
-        public virtual void AddFiveWeightEntriesForAFiveDays()
+        public virtual void AddFiveRandomWeightsEntriesForTenDaysAgo()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add five weight entries for a five days", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add five random weights entries for ten days ago", ((string[])(null)));
 #line 22
 this.ScenarioSetup(scenarioInfo);
 #line 4

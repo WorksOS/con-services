@@ -486,7 +486,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             SetAllDates(timeZone);
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var fiveDayEntries = from dayEntryWeight in projectData.entries
-                                 where dayEntryWeight.date >= DateTime.UtcNow.AddDays(-12) && dayEntryWeight.date <= DateTime.UtcNow.AddDays(-7)
+                                 where dayEntryWeight.date >=  dateToday.AddDays(-12) && dayEntryWeight.date <= dateToday.AddDays(-7)
                                  select dayEntryWeight.weight;
 
             foreach (var dayEntryWeight in fiveDayEntries)
