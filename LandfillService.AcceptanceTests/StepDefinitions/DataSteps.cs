@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using TechTalk.SpecFlow;
 using LandfillService.WebApi.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,6 +25,9 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         protected HttpResponseMessage response;
         protected string responseParse;
         protected string sessionId;
+
+        private int projectID;
+        private string projectTimeZone;
 
         #region Initialise
         [ClassInitialize()]
@@ -220,6 +224,15 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             }
         }
 
+        private async Task GetProjectData()
+        {
+            var requestdata = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectID), Method = HttpMethod.Get };
+            requestdata.Headers.Add("SessionID", sessionId);
+            response = httpClient.SendAsync(requestdata).Result;
+            var projectData = await response.Content.ReadAsAsync<ProjectData>();
+        }
+
+
         /// <summary>
         /// Converts an Olson time zone ID to a Windows time zone ID.
         /// </summary>
@@ -377,6 +390,30 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             Login(Config.credentials[credKey]);
         }
 
+
+        [Given(@"Get Project data for '(.*)'")]
+        public async void GivenGetProjectDataFor(string projectName)
+        {
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
+            request.Headers.Add("SessionID", sessionId);
+            response = httpClient.SendAsync(request).Result;
+            // Try and get the projects. Should cause exception
+            var projects = await response.Content.ReadAsAsync<Project[]>();
+            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
+            foreach (var proj in allProjects)
+            {
+                if (proj.name.Trim().ToLower() == projectName.Trim().ToLower())
+                {
+                    projectID = Convert.ToInt32(proj.id);
+                    projectTimeZone = proj.timeZoneName;
+                    SetAllDates(projectTimeZone);
+                    await GetProjectData(); 
+                    return;
+                }
+            }
+            Assert.Fail("Project " + projectName + " does not exist list. Number of projects in list is " + allProjects.Count);
+        }
+
         [Then(@"match response \(\w+ (.+)\)")]
         public void ThenMatchCode(int expectedCode)
         {
@@ -410,15 +447,15 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             var projects = await response.Content.ReadAsAsync<Project[]>();
         }
 
-        [Then(@"check the \(Project (.*)\) is in the list")]
-        public void ThenCheckTheProjectIsInTheList(int projectId)
+        [Then(@"check the project '(.*)' is in the list")]
+        public void ThenCheckTheProjectIsInTheList(string testProjectName)
         {
             List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
             if (allProjects != null)
             {
-                if (allProjects.Any(prj => prj.id == projectId))
+                if (allProjects.Any(prj => prj.name == testProjectName))
                     { return; }
-                Assert.Fail("Project " + projectId + " does not exist list. Number of projects in list is " + allProjects.Count); 
+                Assert.Fail("Project " + testProjectName + " does not exist list. Number of projects in list is " + allProjects.Count); 
             }
             else
             {
@@ -426,49 +463,36 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             }
         }
 
-        [Given(@"Get project data for project \((.*)\)")]
-        public async void GivenGetProjectDataForProject(int projectId)
-        {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectId), Method = HttpMethod.Get };
-            request.Headers.Add("SessionID", sessionId);
-            response = httpClient.SendAsync(request).Result;
-            var projectData = await response.Content.ReadAsAsync<ProjectData>();           
-        }
-
-        [Then(@"check there is (.*) days worth of data for project \((.*)\)")]
-        public void ThenCheckThereIsDaysWorthOfDataForProject(int dayslimit, int projectId)
+        [Then(@"check there is (.*) days worth of data")]
+        public void ThenCheckThereIsDaysWorthOfData(int dayslimit)
         {
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             if (projectData != null)
             {
-                Assert.IsTrue(projectData.entries.Count() > dayslimit, "There wasn't " + dayslimit + " days worth of data for project " + projectId + ". Entries = " + projectData.entries.Count());
+                Assert.IsTrue(projectData.entries.Count() > dayslimit, "There wasn't " + dayslimit + " days worth of data for project " + projectID + ". Entries = " + projectData.entries.Count());
             }
             else
             {
-                Assert.Fail("There wasn't any data for project " + projectId);
+                Assert.Fail("There wasn't any data for project " + projectID);
             }
         }
 
-        [When(@"adding a random weight for project \((.*)\) five days ago in timezone '(.*)'")]
-        public void WhenAddingARandomWeightForProjectFiveDaysAgoInTimezone(int projectId, string timeZone)
+        [When(@"adding a random weight for five days ago")]
+        public void WhenAddingARandomWeightForFiveDaysAgo()
         {
-            SetAllDates(timeZone);
-            AddAWeightToAProjectForADay(projectId, dateFiveDaysAgo);
+            AddAWeightToAProjectForADay(projectID, dateFiveDaysAgo);
         }
 
-        [Then(@"check the random weight has been added to the project \((.*)\) for five days ago in timezone '(.*)'")]
-        public void ThenCheckTheRandomWeightHasBeenAddedToTheProjectForFiveDaysAgoInTimezone(int projectId, string timeZone)
+        [Then(@"check the random weight has been added for five days ago")]
+        public void ThenCheckTheRandomWeightHasBeenAddedForFiveDaysAgo()
         {
-            SetAllDates(timeZone);
             CheckTheWeightHasBeenAddedToTheProject(dateFiveDaysAgo);
         }
 
-
-        [When(@"adding five random weights for project \((.*)\) ten days ago in timezone '(.*)'")]
-        public void WhenAddingFiveRandomWeightsForProjectTenDaysAgoInTimezone(int projectId, string timeZone)
+        [When(@"adding five random weights for ten days ago")]
+        public void WhenAddingFiveRandomWeightsForTenDaysAgo()
         {
-            SetAllDates(timeZone);
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectID + "/weights"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
             if (sessionId.Contains("Code"))
             {
@@ -480,10 +504,9 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             response = httpClient.SendAsync(request).Result;
         }
 
-        [Then(@"check the five random weights has been added each day to the project \((.*)\) in timezone '(.*)'")]
-        public void ThenCheckTheFiveRandomWeightsHasBeenAddedEachDayToTheProjectInTimezone(int projectId, string timeZone)
+        [Then(@"check the five random weights has been added each day")]
+        public void ThenCheckTheFiveRandomWeightsHasBeenAddedEachDay()
         {
-            SetAllDates(timeZone);
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var fiveDayEntries = from dayEntryWeight in projectData.entries
                                  where dayEntryWeight.date >=  dateToday.AddDays(-12) && dayEntryWeight.date <= dateToday.AddDays(-7)
@@ -497,6 +520,14 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
                 }
             } 
         }
+
+        [Given(@"Get project data for the date \((.*)\)")]
+        public async void GivenGetProjectDataForTheDate(DateTime dateOfDensityCheck)
+        {
+            await GetProjectData(); 
+        }
+
+
 
         [Then(@"check the density is \((.*)\) for the date \((.*)\)")]
         public void ThenCheckTheDensityIsForTheDate(double expectedDensity, DateTime dateOfDensityCheck)
@@ -512,16 +543,17 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             } 
         }
 
-        [When(@"updating a weight \((.*)\) tonnes for project \((.*)\) for date \((.*)\)")]
-        public void WhenUpdatingAWeightTonnesForProjectForDate(double weight, int projectId, DateTime dateWeightUpdate)
+
+        [When(@"updating a weight \((.*)\) tonnes for date \((.*)\)")]
+        public void WhenUpdatingAWeightTonnesForDate(double weight, DateTime dateWeightUpdate)
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectID + "/weights"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
             if (sessionId.Contains("Code"))
             {
                 Assert.Inconclusive("Unable to establish a session. Check MySQL database connection");
             }
-            request.Content = new StringContent(JsonConvert.SerializeObject(SetUpOneWeightForOneDay(dateWeightUpdate,weight)), Encoding.UTF8, "application/json");
+            request.Content = new StringContent(JsonConvert.SerializeObject(SetUpOneWeightForOneDay(dateWeightUpdate, weight)), Encoding.UTF8, "application/json");
             response = httpClient.SendAsync(request).Result;
         }
 
@@ -545,36 +577,29 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         }
 
         // Expanding the tests to test ranges and negative tests
-        [When(@"adding a random weight for project \((.*)\) yesterday in timezone '(.*)'")]
-        public void WhenAddingARandomWeightForProjectYesterdayInTimezone(int projectId, string timeZone)
+        [When(@"adding a random weight for yesterday")]
+        public void WhenAddingARandomWeightForYesterday()
         {
-            SetAllDates(timeZone);
-            Log.Write("Adding a weight for date yesterday: " + dateYesterday.ToString());
-            AddAWeightToAProjectForADay(projectId, dateYesterday);
+            AddAWeightToAProjectForADay(projectID, dateYesterday);
         }
 
-
-        [Then(@"check the random weight has been added to the project \((.*)\) for yesterday in timezone '(.*)'")]
-        public void ThenCheckTheRandomWeightHasBeenAddedToTheProjectForYesterdayInTimezone(int projectId, string timeZone)
+        [Then(@"check the random weight has been added for yesterday")]
+        public void ThenCheckTheRandomWeightHasBeenAddedForYesterday()
         {
-            SetAllDates(timeZone);
             CheckTheWeightHasBeenAddedToTheProject(dateYesterday);
         }
 
-        [When(@"adding a random weight for project \((.*)\) today in timezone '(.*)'")]
-        public void WhenAddingARandomWeightForProjectTodayInTimezone(int projectId, string timeZone)
+        [When(@"adding a random weight for today")]
+        public void WhenAddingARandomWeightForToday()
         {
-            SetAllDates(timeZone);
-            Log.Write("Adding a weight for today: " + dateToday.ToString());
-            AddAWeightToAProjectForADay(projectId, dateToday);
+             AddAWeightToAProjectForADay(projectID, dateToday);
         }
 
-        [When(@"adding a random weight for project \((.*)\) tomorrow in timezone '(.*)'")]
-        public void WhenAddingARandomWeightForProjectTomorrowInTimezone(int projectId, string timeZone)
+
+        [When(@"adding a random weight for tomorrow")]
+        public void WhenAddingARandomWeightForTomorrow()
         {
-            SetAllDates(timeZone);
-            Log.Write("Adding a weight for date tomorrow: " + dateTomorrow.ToString());
-            AddAWeightToAProjectForADay(projectId, dateTomorrow);
+            AddAWeightToAProjectForADay(projectID, dateTomorrow);
         }
 
         #endregion
