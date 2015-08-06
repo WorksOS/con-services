@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using LandfillService.WebApi.Models;
-using System.Net.Http.Headers;
-using Newtonsoft.Json;
 using LandfillService.AcceptanceTests.StepDefinitions;
-using System.Net;
-using System.IO;
-using System.Net.Http.Formatting;
 using RestSharp;
 using System.Configuration;
 
