@@ -1,0 +1,315 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using log4net;
+using Microsoft.Practices.ObjectBuilder2;
+using Microsoft.Practices.Unity;
+using TagFileHarvester.Implementation;
+using TagFileHarvester.Interfaces;
+using TagFileHarvester.Models;
+using TAGProcServiceDecls;
+
+namespace TagFileHarvester.TaskQueues
+{
+  public class OrgProcessorTask
+  {
+    private IUnityContainer Container { get; set; }
+    private ILog log;
+    private readonly ConcurrentDictionary<Task, Tuple<Organization, CancellationTokenSource>> orgsTracker;
+
+    public OrgProcessingResult Result
+    {
+      get { return this.result; }
+    }
+
+    //each org should have it's own queue of threads processing files
+    private readonly Organization org;
+    private readonly CancellationTokenSource cancellationToken;
+    private readonly ConcurrentBag<Task> fileTasks;
+    private readonly OrgProcessingResult result;
+    private ConcurrentBag<FileRepository.TagFile> filenames;
+    private ConcurrentBag<FileRepository.TagFile> failuredFiles;
+
+    public OrgProcessorTask(IUnityContainer container, Organization org, CancellationTokenSource cancellationToken, ConcurrentDictionary<Task, Tuple<Organization, CancellationTokenSource>> orgsList)
+    {
+      result = new OrgProcessingResult();
+      Container = container;
+      this.org = org;
+      result.Reset();
+      this.cancellationToken = cancellationToken;
+      fileTasks = new ConcurrentBag<Task>();
+      log = container.Resolve<ILog>();
+      filenames = new ConcurrentBag<FileRepository.TagFile>();
+      failuredFiles = new ConcurrentBag<FileRepository.TagFile>();
+      orgsTracker = orgsList;
+    }
+
+
+    public OrgProcessingResult ProcessOrg(bool SingleCycle = false, Action<OrgProcessorTask> onOrgProcessed = null)
+    {
+      bool repositoryError = false;
+      DateTime bookmark=DateTime.MinValue;
+
+      if (cancellationToken.IsCancellationRequested) return result;
+
+      //Resolve all dependencies here
+      var bookmarkManager = Container.Resolve<IBookmarkManager>();
+      var fileRepository = Container.Resolve<IFileRepository>();
+      var harvesterTasks = Container.Resolve<IHarvesterTasks>();
+
+      try
+        {
+          //Clear previous results
+          while (!filenames.IsEmpty)
+          {
+            FileRepository.TagFile someItem;
+            filenames.TryTake(out someItem);
+          }
+          result.Reset();
+          while (!failuredFiles.IsEmpty)
+          {
+            FileRepository.TagFile someItem;
+            failuredFiles.TryTake(out someItem);
+          }
+
+          if (bookmarkManager.GetBookmark(org).OrgIsDisabled)
+          {
+            log.InfoFormat("Org {0} is disabled.", org.shortName);
+            return result;
+          }
+
+          bookmarkManager
+              .SetBookmarkInProgress(org, true)
+              .SetBookmarkLastCycleStartDateTime(org, DateTime.UtcNow)
+              .WriteBookmarksAsync();
+
+          bookmark =bookmarkManager
+                      .GetBookmark(this.org).BookmarkUTC;
+          log.DebugFormat("Got bookmark {0} for org {1}", bookmark, org.shortName);
+
+          //Make sure that all files are processed
+         if (bookmark != DateTime.MinValue)
+            bookmark.Subtract(TimeSpan.FromMinutes(30));
+
+          //We need to get list of folder recursevly here
+          try
+          {
+          var folders = fileRepository
+              .ListFolders(org, bookmark).ToList();
+
+          //this could be a long time to get files, so check if we are requested to stop
+            if (cancellationToken.IsCancellationRequested) return result;
+
+              this.log.DebugFormat("Found {0} folders for org {1}", folders.Count(), this.org.shortName);
+              var files = folders.SelectMany(f =>
+                  fileRepository
+                      .ListFiles(this.org, f, bookmark)).ToList();
+
+              this.log.DebugFormat("Found {0} files for org {1}", files.Count(), this.org.shortName);
+
+              files.OrderBy(t => t.createdUTC).Take(OrgsHandler.NumberOfFilesInPackage)
+                  .ForEach(i => this.filenames.Add(i));
+            
+
+            log.DebugFormat("Got {0} files for org {1}", filenames.Count, org.shortName);
+          }
+          catch (Exception ex)
+          {
+            repositoryError = true;
+            log.WarnFormat("Repository error occured for org {0}, could not get files or folders from TCC Exception: {1}", org.shortName, ex.Message);
+          }
+
+          //If we are good with the repository proceed with files
+          if (!repositoryError && filenames.Count > 0)
+          {
+
+
+            //this could be a long time to get files, so check if we are requested to stop
+            if (cancellationToken.IsCancellationRequested) return result;
+
+            //foreach filenames here - build chain of tasks and track execution
+
+            filenames.ForEach(f =>
+                              {
+                                fileTasks.Add(harvesterTasks
+                                    .StartNewLimitedConcurrency<TAGProcServiceDecls.TTAGProcServerProcessResult?>(
+                                        () =>
+                                        {
+                                          var localresult = new TagFileProcessTask(Container,
+                                              this.cancellationToken.Token)
+                                              .ProcessTagfile(f.fullName, this.org);
+
+                                          result.AggregateOrgResult(localresult);
+                                          if (localresult == null ||
+                                              localresult ==
+                                              TTAGProcServerProcessResult
+                                                  .tpsprOnSubmissionBaseConnectionFailure ||
+                                              localresult ==
+                                              TTAGProcServerProcessResult
+                                                  .tpsprOnSubmissionResultConnectionFailure)
+                                          {
+                                            repositoryError = true;
+                                            failuredFiles.Add(f);
+                                          }
+                                          // raise flag that we have at least one failured file
+                                          log.DebugFormat(
+                                              "TagFile {0} processed with result {1}",
+                                              f.fullName, localresult.ToString());
+                                          return localresult;
+                                        }, this.cancellationToken.Token));
+                              });
+
+
+            //And schedule processing of found tagfiles
+            if (!Task.WaitAll(fileTasks.ToArray(), OrgsHandler.TagFileSubmitterTasksTimeout))
+            {
+              log.WarnFormat("Filetasks ran out of time for completion for org {0}", org.shortName);
+              repositoryError = true;
+            }
+
+            //cleanup tasks
+            while (!fileTasks.IsEmpty)
+            {
+              Task someItem;
+              fileTasks.TryTake(out someItem);
+            }
+
+            //Now we need to update bookmark
+            if (repositoryError) //Don't update bookmark
+            {
+              if (failuredFiles.Count > 0)
+              {
+                log.DebugFormat(
+                    "Found failured files. First failured file has timestamp {0} and last file in chunk timestamp was {1}",
+                    failuredFiles.Min(f => f.createdUTC), filenames.Max(f => f.createdUTC));
+                log.WarnFormat("Submit file error occured for org {0}, rolling back bookmark to {1}",
+                    org.shortName, failuredFiles.Min(f=>f.createdUTC));
+                bookmarkManager
+                    .SetBookmarkUTC(org, failuredFiles.Min(f => f.createdUTC).AddSeconds(-1))
+                    .WriteBookmarksAsync();
+              }
+              else
+              {
+                //Something very bad happened here, ignoring everything and trying next time from the scratch
+                log.WarnFormat("Get file list error occured for org {0}, rolling back bookmark to initial {1}",
+                    org.shortName,
+                    bookmark);
+                bookmarkManager
+                    .SetBookmarkUTC(org, bookmark)
+                    .WriteBookmarksAsync();
+              }
+              //if we have failured files in the list - tell repository that cache is dirty and carry on with getting the list of files once again. 
+              //This will force all failed files to be listed from TCC and reprocessed. Don't shift bookmark again
+              fileRepository.CleanCache(org);
+            }
+            else
+            {
+              //Update bookmark only if we are sure that we have retreived list of files
+              //Set bookmark 10 min before the last file only if we have succeseeded with retreiving the files
+              log.DebugFormat("Setting bookmark to {0} for org {1}", filenames.Max(f => f.createdUTC),
+                  org.shortName);
+              bookmarkManager
+                  .SetBookmarkUTC(org, filenames.Max(f=>f.createdUTC))
+                  .WriteBookmarksAsync();
+              fileRepository.RemoveObsoleteFilesFromCache(org, filenames.ToList());
+            }
+          }
+
+          bookmarkManager
+                .SetBookmarkLastCycleStopDateTime(org, DateTime.UtcNow)
+                .SetBookmarkInProgress(org, false)
+                .SetBookmarkLastFilesError(org, result.ErroneousFiles)
+                .SetBookmarkLastFilesRefused(org, result.RefusedFiles)
+                .SetBookmarkLastFilesProcessed(org, result.ProcessedFiles)
+                .IncBookmarkCyclesCompleted(org)
+                .WriteBookmarksAsync();
+
+          log.InfoFormat("Org {0} cycle completed. Submitted files {1} Refused files {2} Errors {3}", org.shortName,
+              result.ProcessedFiles, result.RefusedFiles, result.ErroneousFiles);
+
+          //Run callback action
+          try
+          {
+            if (onOrgProcessed != null)
+              onOrgProcessed.Invoke(this);
+          }
+          catch (Exception ex)
+          {
+            log.Error("Failed while calling back",ex);
+          }
+
+          if (SingleCycle) return result;
+        }
+        catch (Exception ex)
+        {
+          //Rollback bookmark
+          log.ErrorFormat("Exception while processing org {0} occured {1}, rolling back bookmark to {2}", org.shortName, ex.Message, bookmark);
+          log.Error("Exception is", ex);
+          bookmarkManager
+                .SetBookmarkInProgress(org, false)
+                .SetBookmarkUTC(org, bookmark)
+                .WriteBookmarksAsync();
+          return result;
+        }
+
+      //reschedule here my execution if cancellation is not requested
+      bookmarkManager
+          .SetBookmarkInProgress(org, false)
+          .WriteBookmarksAsync();
+
+      if (!cancellationToken.IsCancellationRequested)
+      {
+        log.InfoFormat("Rescheduling processing of org {0}", org.shortName);
+        this.orgsTracker.TryAdd(harvesterTasks.StartNewLimitedConcurrency2(() =>
+        {
+          //sleep only if there is nothing to process. Otherwise process everything we could have
+          if (!fileRepository.IsAnythingInCahe(org))
+          {
+            log.DebugFormat("Sleeping for the org {0}", org.shortName);
+            Task.Delay(OrgsHandler.OrgProcessingDelay, cancellationToken.Token).Wait();
+          }
+
+          ProcessOrg(false,
+              (t) =>
+              {
+                log
+                    .InfoFormat("Tasks status is {0} in Queue1 and {1} in Queue2 on {2} Threads",
+                          harvesterTasks.Status().Item1,
+                          harvesterTasks.Status().Item2, OrgsHandler.GetUsedThreads());
+              });
+        }, cancellationToken.Token), new Tuple<Organization, CancellationTokenSource>(org,cancellationToken));
+
+      }
+      return result;
+    }
+
+  }
+
+  public class OrgProcessingResult
+  {
+    public int RefusedFiles;
+    public int ProcessedFiles;
+    public int ErroneousFiles;
+    private readonly object resultLocker = new object();
+
+    public void AggregateOrgResult(TAGProcServiceDecls.TTAGProcServerProcessResult? result)
+    {
+      lock (resultLocker)
+      {
+        if (result == null) { ErroneousFiles++; return; }
+        if (result == TTAGProcServerProcessResult.tpsprOK) { ProcessedFiles++; return; }
+        RefusedFiles++;
+      }
+    }
+
+    public void Reset()
+    {
+      RefusedFiles = 0;
+      ProcessedFiles = 0;
+      ErroneousFiles = 0;
+    }
+  }
+}
