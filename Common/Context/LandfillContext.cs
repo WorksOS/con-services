@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Web;
+using NodaTime;
 
 namespace LandfillService.WebApi.Models
 {
@@ -452,58 +453,70 @@ namespace LandfillService.WebApi.Models
         {
             return WithConnection((conn) =>
             {
-                // The subquery generates a list of dates for the last two years so that the query returns all dates 
-                // regardless of what entries are available for the project
-                var command = @"select dates.date, entries.weight, entries.volume
-                    from (
-                        select cast(utc_date() as date)  - interval (-1 + a.a + (10 * b.a) + (100 * c.a)) day as date
-                        from (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as a
-                        cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as b
-                        cross join (select 0 as a union all select 1 union all select 2 union all select 3 union all select 4 union all select 5 union all select 6 union all select 7 union all select 8 union all select 9) as c
-                    ) dates
-                    left join entries on dates.date = entries.date and entries.projectId = @projectId
-                    where dates.date between cast(utc_date() as date) - interval 2 year - interval 1 day and 
-                                             cast(utc_date() as date) - interval 1 day
+                //Create last 2 years of dates in project time zone
+                var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
+                DateTime utcNow = DateTime.UtcNow;
+                Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
+                DateTime todayinProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;
+                //Date range is 2 years ago to yesterday
+                DateTime twoYearsAgo = todayinProjTimeZone.AddYears(-2);
+                DateTime yesterday = todayinProjTimeZone.AddDays(-1);
+                var dateRange = GetDateRange(twoYearsAgo, yesterday);
+
+                var entriesLookup = (from dr in dateRange
+                                     select new DayEntry
+                                          {
+                                              date = dr.Date,
+                                              entryPresent = false,
+                                              weight = 0.0,
+                                              density = 0.0
+                                          }).ToDictionary(k => k.date, v => v);
+                //Now get the actual data and merge
+                var command = @"select entries.date, entries.weight, entries.volume
+                    from entries 
+                    where entries.date >= cast(@startDate as date) and entries.date <= cast(@endDate as date)
+                          and entries.projectId = @projectId
                     order by date";
-                
-                using (var reader = MySqlHelper.ExecuteReader(conn, command, 
-                    new MySqlParameter("@projectId", project.id), new MySqlParameter("@timeZone", project.timeZoneName)))
+
+                using (var reader = MySqlHelper.ExecuteReader(conn, command,
+                  new MySqlParameter("@projectId", project.id), 
+                  new MySqlParameter("@startDate", twoYearsAgo), 
+                  new MySqlParameter("@endDate", yesterday)))
                 {
                     const double POUNDS_PER_TON = 2000.0;
                     const double M3_PER_YD3 = 0.7645555;
                     const double EPSILON = 0.001;
 
-                    var entries = new List<DayEntry>();
                     while (reader.Read())
                     {
-                        if (reader.IsDBNull(reader.GetOrdinal("weight")))
-                            entries.Add(new DayEntry
-                            {
-                                date = reader.GetDateTime(reader.GetOrdinal("date")),
-                                entryPresent = false,
-                                weight = 0.0,
-                                density = 0.0
-                            });
-                        else
-                        {
-                            double density = 0.0;
-                            if (!reader.IsDBNull(reader.GetOrdinal("volume")) && reader.GetDouble(reader.GetOrdinal("volume")) > EPSILON)
+                          DateTime date = reader.GetDateTime(reader.GetOrdinal("date"));
+                          DayEntry entry = entriesLookup[date];
+                          entry.entryPresent = true;
+                          entry.weight = reader.GetDouble(reader.GetOrdinal("weight"));
+                          double density = 0.0;
+                          if (!reader.IsDBNull(reader.GetOrdinal("volume")) && reader.GetDouble(reader.GetOrdinal("volume")) > EPSILON)
                               if (units == UnitsTypeEnum.Metric)
                                 density = reader.GetDouble(reader.GetOrdinal("weight")) * 1000 / reader.GetDouble(reader.GetOrdinal("volume"));
                               else
                                 density = reader.GetDouble(reader.GetOrdinal("weight")) * M3_PER_YD3 * POUNDS_PER_TON / reader.GetDouble(reader.GetOrdinal("volume"));
-                            entries.Add(new DayEntry
-                            {
-                                date = reader.GetDateTime(reader.GetOrdinal("date")),
-                                entryPresent = true,
-                                weight = reader.GetDouble(reader.GetOrdinal("weight")),
-                                density = density
-                            });
-                        }
-                     }
-                    return entries;
+                          entry.density = density;                        
+                    }
+
+                  return entriesLookup.Select(v => v.Value).ToList();
                 }
             });
+        }
+
+        public static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
+        {
+          if (endDate < startDate)
+            throw new ArgumentException("endDate must be greater than or equal to startDate");
+
+          while (startDate <= endDate)
+          {
+            yield return startDate;
+            startDate = startDate.AddDays(1);
+          }
         }
 
         #endregion
