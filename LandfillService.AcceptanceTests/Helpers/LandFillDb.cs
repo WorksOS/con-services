@@ -36,13 +36,16 @@ namespace LandfillService.AcceptanceTests.Helpers
                 return res;
             }
         }
-
+        /// <summary>
+        /// Get all the volume entries from the mySQL database for the pass year
+        /// </summary>
+        /// <param name="project"></param>
+        /// <param name="units"></param>
+        /// <returns></returns>
         public List<DayEntryAll> GetEntries(Project project, UnitsTypeEnum units)
         {
             return WithConnection((conn) =>
             {
-                // The subquery generates a list of dates for the last two years so that the query returns all dates 
-                // regardless of what entries are available for the project
                 var command = @"select dates.date, entries.weight, entries.volume
                     from (
                         select cast(utc_date() as date)  - interval (-1 + a.a + (10 * b.a) + (100 * c.a)) day as date
@@ -54,10 +57,6 @@ namespace LandfillService.AcceptanceTests.Helpers
                     where dates.date between cast(utc_date() as date) - interval 1 year - interval 1 day and 
                                              cast(utc_date() as date) 
                     order by date";
-
-       //                             where dates.date between cast(utc_date() as date) - interval 2 year - interval 1 day and 
-       //                                      cast(utc_date() as date) - interval 1 day
-
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", project.id), new MySqlParameter("@timeZone", project.timeZoneName)))
                 {
@@ -73,38 +72,11 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="reader"></param>
         /// <returns></returns>
         private List<DayEntryAll> AddEntriesFromMySqlDatabase(UnitsTypeEnum units, MySqlDataReader reader)
-        {
-            double density = 0.0;
+        {            
             var entries = new List<DayEntryAll>();
             try
-            {                
-                while (reader.Read())
-                {
-                    if (reader.IsDBNull(reader.GetOrdinal("weight")) || (reader.IsDBNull(reader.GetOrdinal("volume"))))
-                    {
-
-                    }
-                    else
-                    {
-
-                        if (!reader.IsDBNull(reader.GetOrdinal("volume")) && reader.GetDouble(reader.GetOrdinal("volume")) > EPSILON)
-                        {
-                            if (units == UnitsTypeEnum.Metric)
-                                density = reader.GetDouble(reader.GetOrdinal("weight")) * 1000 / reader.GetDouble(reader.GetOrdinal("volume"));
-                            else
-                                density = reader.GetDouble(reader.GetOrdinal("weight")) * M3_PER_YD3 * POUNDS_PER_TON / reader.GetDouble(reader.GetOrdinal("volume"));
-
-                            entries.Add(new DayEntryAll
-                            {
-                                date = reader.GetDateTime(reader.GetOrdinal("date")),
-                                entryPresent = true,
-                                weight = reader.GetDouble(reader.GetOrdinal("weight")),
-                                density = density,
-                                volume = reader.GetDouble(reader.GetOrdinal("volume"))
-                            });
-                        }
-                    }
-                }
+            {
+                IterateThroughMySqlDataReader(units, reader, entries);
             }
             catch (Exception ex)
             {
@@ -112,6 +84,71 @@ namespace LandfillService.AcceptanceTests.Helpers
             }
 
             return entries;
+        }
+
+        /// <summary>
+        /// Iterate through the results of the query on the mySQL database
+        /// </summary>
+        /// <param name="units">Type of units</param>
+        /// <param name="reader">mysql data reader</param>
+        /// <param name="entries">All entries</param>
+        private void IterateThroughMySqlDataReader(UnitsTypeEnum units, MySqlDataReader reader, List<DayEntryAll> entries)
+        {
+            while (reader.Read())
+            {
+                if (reader.IsDBNull(reader.GetOrdinal("weight")) || (reader.IsDBNull(reader.GetOrdinal("volume"))))
+                {
+                    continue;
+                }
+                else
+                {
+                    if (reader.GetDouble(reader.GetOrdinal("volume")) > EPSILON)
+                    {
+                        DateTime entryDate = reader.GetDateTime(reader.GetOrdinal("date"));
+                        double entryWeight = reader.GetDouble(reader.GetOrdinal("weight"));
+                        double entryVolume = reader.GetDouble(reader.GetOrdinal("volume"));
+                        AddANewDayEntryToCollection(units, entries, entryDate, entryWeight, entryVolume);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Add an entry with the weight, density and volume in entries collection
+        /// </summary>
+        /// <param name="units">Units type - metric or imperial</param>
+        /// <param name="entries">Entries collection</param>
+        /// <param name="entryDate">Date</param>
+        /// <param name="entryWeight">Daily weight</param>
+        /// <param name="entryVolume">Daily volume</param>
+        private void AddANewDayEntryToCollection(UnitsTypeEnum units, List<DayEntryAll> entries, DateTime entryDate, double entryWeight, double entryVolume)
+        {
+            double density = CalculateTheDensity(units, entryWeight, entryVolume);
+            entries.Add(new DayEntryAll
+            {
+                date = entryDate,
+                entryPresent = true,
+                weight = entryWeight,
+                density = density,
+                volume = entryVolume
+            });
+        }
+
+        /// <summary>
+        /// Calculate the exact density
+        /// </summary>
+        /// <param name="units">In units</param>
+        /// <param name="entryWeight">Weight from mySql</param>
+        /// <param name="entryVolume">Volume from mySql</param>
+        /// <returns>density</returns>
+        private double CalculateTheDensity(UnitsTypeEnum units, double entryWeight, double entryVolume)
+        {
+            double density = 0;
+            if (units == UnitsTypeEnum.Metric)
+                density = entryWeight * 1000 / entryVolume;
+            else
+                density = entryWeight * M3_PER_YD3 * POUNDS_PER_TON / entryVolume;
+            return density;
         }
     }
 }
