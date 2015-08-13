@@ -79,7 +79,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForT02|AnyCPU'">
-    <OutputPath>bin\DeployToFolderForT02\</OutputPath>
+    <OutputPath>..\Deploy_Production\LandFillDataSync\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
