@@ -28,8 +28,8 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         protected string unitsSetting;
 
         private UnitsTypeEnum unitsEnum;
-        private int projectID;
-        private string projectTimeZone;
+        private int projectId;
+        private string timeZoneFromProject;
         private Project currentProject;
 
         private const double POUNDS_PER_TON = 2000.0;
@@ -50,7 +50,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);       
-            response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login", credentials).Result;
+            response = httpClient.PostAsJsonAsync(Config.serviceUrl + "users/login", credentials).Result;
             responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
             Assert.IsFalse(responseParse.Contains("<html>"),"Failed to login - Is Foreman unavailable?");
             SetUpSessionAndUnits(responseParse);
@@ -66,7 +66,10 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         #endregion
 
         #region Private methods 
-
+        /// <summary>
+        /// Break up the session response from forman. This has the session id and the unit type
+        /// </summary>
+        /// <param name="inResponse"></param>
         private void SetUpSessionAndUnits(string inResponse)
         {
             if (inResponse.Length < 32)
@@ -91,7 +94,10 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             }
         }
 
-
+        /// <summary>
+        /// Set up all the dates used in the tests.
+        /// </summary>
+        /// <param name="projectTimeZone"></param>
         private void SetAllDates (string projectTimeZone)
         {
             TimeZoneInfo hwZone = OlsonTimeZoneToTimeZoneInfo(projectTimeZone);
@@ -107,6 +113,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         /// Set up the weight for one day
         /// </summary>
         /// <param name="oneDayDate">The date you want the weight set up for</param>
+        /// <param name="weight">Random weight for the day</param>
         /// <returns>One Weightentry</returns>
         private WeightEntry[] SetUpOneWeightForOneDay(DateTime oneDayDate,double weight)
         {
@@ -156,73 +163,16 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             return weightForFiveDays;
         }
 
-
-        /// <summary>
-        /// Sets up 1 weights and load upthat are loaded up to web service
-        /// </summary>
-        /// <returns>Five entries of in array of weight entry</returns>
-        private WeightEntry[] SetUpFiveWeightsForUpload(DateTime specificDate, double specificWeight)
-        {
-            WeightEntry[] weightForOneDay = new WeightEntry[] 
-            { 
-                new WeightEntry (){date = specificDate, weight = specificWeight}
-            };
-            return weightForOneDay;
-        }
-
-        /// <summary>
-        /// Check the dayEntry is for the correct date and it has a weight and density
-        /// </summary>
-        /// <param name="expectedVolume"></param>
-        /// <param name="dateOfDensityCheck"></param>
-        /// <param name="dayEntry"></param>
-        private static void CheckTheDayEntryIsValid(double expectedDensity, DateTime dateOfDensityCheck, DayEntry dayEntry)
-        {
-            if (dayEntry.date.ToShortDateString() != dateOfDensityCheck.ToShortDateString())
-            {
-                Assert.Fail("Did not find the posted date:" + dateOfDensityCheck.ToShortDateString() +
-                            " or date in DB:" + dayEntry.date.ToShortDateString());
-            }
-            else
-            {
-                if (dayEntry.weight == 0)
-                { Assert.Fail("Weight is zero so density cannot be calculated."); }
-
-                if (dayEntry.density == 0)
-                { Assert.Fail("Density is zero so it cannot be compared."); }
-
-                CompareDensity(expectedDensity, dayEntry);
-            }
-        }
-        /// <summary>
-        /// Calculate the density
-        /// </summary>
-        /// <param name="expectedVolume"></param>
-        /// <param name="dayEntry"></param>
-        private static void CompareDensity(double expectedDensity, DayEntry dayEntry)
-        {
-            if (Math.Round(dayEntry.density, 4) != Math.Round(expectedDensity, 4))
-            {
-                Assert.Fail("Density is not as expected. density from response:" + dayEntry.density +
-                            " does not equal expected:" + expectedDensity);
-            }
-        }
-
         /// <summary>
         /// Add a weight to a project for a date
         /// </summary>
-        /// <param name="projectId">Valid project id</param>
+        /// <param name="idFromProject">Valid project id</param>
         /// <param name="dateOfWeight">A date between today and two years ago</param>
-        private void AddAWeightToAProjectForADay(int projectId, DateTime dateOfWeight)
+        private void AddAWeightToAProjectForADay(int idFromProject, DateTime dateOfWeight)
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects/" + idFromProject + "/weights"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
-
-            if (sessionId.Contains("Code"))
-            {
-                Assert.Inconclusive("Unable to establish a session. Check MySQL database connection");
-                ScenarioContext.Current.Pending();
-            }
+            Assert.IsFalse(sessionId.Contains("Code"), "Unable to establish a session. Check MySQL database connection");
             request.Content = new StringContent(JsonConvert.SerializeObject(SetUpOneWeightForOneDay(dateOfWeight)), Encoding.UTF8, "application/json");
             response = httpClient.SendAsync(request).Result;
         }
@@ -230,26 +180,20 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         /// <summary>
         /// Check the weight is in the response from date in question
         /// </summary>
-        /// <param name="dateOfCheck">Date to check in the response</param>
+        /// <param name="dateOfCheck">EntryDate to check in the response</param>
         private void CheckTheWeightHasBeenAddedToTheProject(DateTime dateOfCheck)
         {
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var dayEntry = from day in projectData.entries
-                           where day.date >= dateOfCheck.AddDays(-2) && day.weight == randomWeight
+                           where day.date >= dateOfCheck.AddDays(-2) && Math.Abs(day.weight - randomWeight) < EPSILON
                            select day;
 
-            if (!dayEntry.Any())
-            {                
-                Assert.Fail("Did not find any weights for the one it just posted. Weight:" + randomWeight + " for Date:" + dateOfCheck.ToShortDateString());
-            }
-            else
-            {
-                if (dayEntry.First<DayEntry>().weight != randomWeight || dayEntry.First<DayEntry>().date.ToShortDateString() != dateOfCheck.ToShortDateString())
-                {                    
-                    Assert.Fail("Did not find the weight it just posted. Posted weight:" + randomWeight + " weight in DB:" + dayEntry.First<DayEntry>().weight +
-                                " or for posted date:" + dateOfCheck.ToShortDateString() + " or date in DB:" + dayEntry.First<DayEntry>().date.ToShortDateString());
-                }
-            }
+            // There is no day entry
+            Assert.IsNotNull(dayEntry, "Did not find any weights for the one it just posted. Weight:" + randomWeight + " for EntryDate:" + dateOfCheck.ToShortDateString());
+            // Weights are not equal
+            Assert.AreEqual(dayEntry.First().weight, randomWeight, "Did not find the weight it just posted. Posted weight:" + randomWeight + " weight in DB:" + dayEntry.First<DayEntry>().weight);
+            // EntryDate's are equal
+            Assert.AreEqual(dayEntry.First().date.ToShortDateString(), dateOfCheck.ToShortDateString(), " Posted not equal to database. Expected: " + dateOfCheck.ToShortDateString() + " Actual date in DB:" + dayEntry.First<DayEntry>().date.ToShortDateString());
         }
 
         /// <summary>
@@ -257,10 +201,10 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         /// </summary>
         private void GetProjectData()
         {
-            var requestdata = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectID), Method = HttpMethod.Get };
+            var requestdata = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects/" + projectId), Method = HttpMethod.Get };
             requestdata.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(requestdata).Result;
-            var projectData = response.Content.ReadAsAsync<ProjectData>();
+           // var projectData = response.Content.ReadAsAsync<ProjectData>();
         }
 
         /// <summary>
@@ -276,9 +220,9 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
                 if (proj.name.Trim().ToLower() == projectName.Trim().ToLower())
                 {
                     currentProject = proj;
-                    projectID = Convert.ToInt32(proj.id);
-                    projectTimeZone = proj.timeZoneName;
-                    SetAllDates(projectTimeZone);
+                    projectId = Convert.ToInt32(proj.id);
+                    timeZoneFromProject = proj.timeZoneName;
+                    SetAllDates(timeZoneFromProject);
                     GetProjectData();
                     return true;
                 }
@@ -421,7 +365,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
                 { "Pacific/Tongatapu", "Tonga Standard Time" }
             };
 
-            var windowsTimeZoneId = default(string);
+            string windowsTimeZoneId;
             var windowsTimeZone = default(TimeZoneInfo);
             if (olsonWindowsTimes.TryGetValue(olsonTimeZoneId, out windowsTimeZoneId))
             {
@@ -435,15 +379,15 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         /// <summary>
         /// Retrieve all the values from the mySQL database that have a volume and a weight. Then return the day we are after.
         /// </summary>
-        /// <param name="inDate">Date searching for</param>
+        /// <param name="inDate">EntryDate searching for</param>
         /// <returns>Day of from entries table - Has the weight, volume and density</returns>
         private DayEntryAll GetEntriesFromMySqlDb(DateTime inDate)
         {
-            LandFillMySqlDb landfillMySqlDB = new LandFillMySqlDb();
-            var allEntries = landfillMySqlDB.GetEntries(currentProject, unitsEnum);
+            LandFillMySqlDb landfillMySqlDb = new LandFillMySqlDb();
+            var allEntries = landfillMySqlDb.GetEntries(currentProject, unitsEnum);
             foreach (var day in allEntries)
             {
-                if (inDate.Date == day.date)
+                if (inDate.Date == day.EntryDate)
                 {
                     return day;
                 }
@@ -462,13 +406,13 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         }
 
         [Given(@"Get Project data for '(.*)'")]
-        public async void GivenGetProjectDataFor(string projectName)
+        public void GivenGetProjectDataFor(string projectName)
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
             // Try and get the projects. Should cause exception
-            var projects = await response.Content.ReadAsAsync<Project[]>();
+        //    var projects = await response.Content.ReadAsAsync<Project[]>();
             List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);            
             Assert.IsTrue(GetTheDetailsForTheSpecificProject(projectName, allProjects),"Project " + projectName + " does not exist list. Number of projects in list is " + allProjects.Count);
         }
@@ -479,47 +423,23 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             Assert.AreEqual(expectedCode, (int)response.StatusCode, "HTTP response status codes not matching expected");
         }
 
-        [Then(@"not \$ null response")]
-        public void ThenNotNullResponse()
-        {
-            Assert.IsTrue(response.Content.ReadAsStringAsync().Result.Length > 0);
-        }
-
-        [When(@"get list of projects")]
-        public async void WhenGetListOfProjects()
-        {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
-            request.Headers.Add("SessionID", sessionId);
-            response = httpClient.SendAsync(request).Result;
-            // Try and get the projects. Should cause exception
-            var projects = await response.Content.ReadAsAsync<Project[]>();
-            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
-            Assert.IsNotNull(allProjects, " Projects should not be available after logging out");
-        }
-
         [Given(@"Get a list of all projects")]
-        public async void GivenGetAListOfAllProjects()
+        public void GivenGetAListOfAllProjects()
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
-            var projects = await response.Content.ReadAsAsync<Project[]>();
+           // var projects = await response.Content.ReadAsAsync<Project[]>();
         }
 
         [Then(@"check the project '(.*)' is in the list")]
         public void ThenCheckTheProjectIsInTheList(string testProjectName)
         {
             List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
-            if (allProjects != null)
-            {
-                if (allProjects.Any(prj => prj.name == testProjectName))
-                    { return; }
-                Assert.Fail("Project " + testProjectName + " does not exist list. Number of projects in list is " + allProjects.Count); 
-            }
-            else
-            {
-                Assert.Fail("Cannot find any projects ");
-            }
+            Assert.IsNotNull(allProjects, "There are no projects in the project list");
+            if (allProjects.Any(prj => prj.name == testProjectName))
+                 { return; }
+            Assert.Fail("Project " + testProjectName + " does not exist list. Number of projects in list is " + allProjects.Count);
         }
 
         [Then(@"check there is (.*) days worth of data")]
@@ -528,18 +448,18 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             if (projectData != null)
             {
-                Assert.IsTrue(projectData.entries.Count() > dayslimit, "There wasn't " + dayslimit + " days worth of data for project " + projectID + ". Entries = " + projectData.entries.Count());
+                Assert.IsTrue(projectData.entries.Count() > dayslimit, "There wasn't " + dayslimit + " days worth of data for project " + projectId + ". Entries = " + projectData.entries.Count());
             }
             else
             {
-                Assert.Fail("There wasn't any data for project " + projectID);
+                Assert.Fail("There wasn't any data for project " + projectId);
             }
         }
 
         [When(@"adding a random weight for five days ago")]
         public void WhenAddingARandomWeightForFiveDaysAgo()
         {
-            AddAWeightToAProjectForADay(projectID, dateFiveDaysAgo);
+            AddAWeightToAProjectForADay(projectId, dateFiveDaysAgo);
         }
 
         [Then(@"check the random weight has been added for five days ago")]
@@ -551,7 +471,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         [When(@"adding five random weights for ten days ago")]
         public void WhenAddingFiveRandomWeightsForTenDaysAgo()
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectID + "/weights"), Method = HttpMethod.Post };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
             if (sessionId.Contains("Code"))
             {
@@ -573,10 +493,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
 
             foreach (var dayEntryWeight in fiveDayEntries)
             {
-                if (dayEntryWeight != randomWeight)
-                {
-                    Assert.Fail("Weight retrieve from response:" + dayEntryWeight + " does not equal expected:" + randomWeight);
-                }
+                Assert.AreEqual(dayEntryWeight, randomWeight, "Weight retrieve from response:" + dayEntryWeight + " does not equal expected:" + randomWeight);
             } 
         }
 
@@ -590,28 +507,26 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
                 Assert.Fail("Cannot find any entry in the MySQL database for that day");
             }
 
-            double calculatedDensity = 0;
+            double calculatedDensity;
             if (unitsEnum == UnitsTypeEnum.Metric)
-            { calculatedDensity = dayOfDensityCheck.weight * 1000 / dayOfDensityCheck.volume; }
+            { calculatedDensity = dayOfDensityCheck.Weight * 1000 / dayOfDensityCheck.Volume; }
             else
-            { calculatedDensity = dayOfDensityCheck.weight * M3_PER_YD3 * POUNDS_PER_TON / dayOfDensityCheck.volume; }
+            { calculatedDensity = dayOfDensityCheck.Weight * M3_PER_YD3 * POUNDS_PER_TON / dayOfDensityCheck.Volume; }
 
             var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var dayEntry = from day in projectData.entries
                            where day.date.ToShortDateString() == dateOfDensityCheck.ToShortDateString()
                            select day.density;
 
-            if (Math.Round(dayEntry.First(), 4) != Math.Round(calculatedDensity, 4))
-            {
-                Assert.Fail("density retrieve from response:" + Math.Round(dayEntry.First(), 4) + " does not equal calculated expected:" + Math.Round(calculatedDensity, 4) + " The volume is: "
-                            + dayOfDensityCheck.volume.ToString() + " and weight is:" + dayOfDensityCheck.weight);
-            } 
+            Assert.AreEqual(Math.Round(dayEntry.First(), 4), Math.Round(calculatedDensity, 4), "density retrieve from response:" + Math.Round(dayEntry.First(), 4) + " does not equal calculated expected:" + Math.Round(calculatedDensity, 4) + " The volume is: "
+                            + dayOfDensityCheck.Volume + " and weight is:" + dayOfDensityCheck.Weight);
+
         }
 
         [When(@"updating a weight \((.*)\) tonnes for date \((.*)\)")]
         public void WhenUpdatingAWeightTonnesForDate(double weight, DateTime dateWeightUpdate)
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects/" + projectID + "/weights"), Method = HttpMethod.Post };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
             if (sessionId.Contains("Code"))
             {
@@ -621,28 +536,10 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             response = httpClient.SendAsync(request).Result;
         }
 
-
-        //[Then(@"check the density is re-calculated as \((.*)\) for the date \((.*)\)")]
-        //public void ThenCheckTheDensityIsCalculatedAsForTheDate(double expectedDensity, DateTime dateOfDensityCheck)
-        //{
-        //    var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
-        //    var dayEntry = from day in projectData.entries
-        //                   where day.date.ToShortDateString() == dateOfDensityCheck.ToShortDateString()
-        //                   select day;
-
-        //    if (!dayEntry.Any())
-        //    {
-        //        Assert.Fail("Did not find any entries in the for selected date:" + dateOfDensityCheck.ToShortDateString());
-        //    }
-        //    else
-        //    {
-        //        CheckTheDayEntryIsValid(expectedDensity, dateOfDensityCheck, dayEntry.First<DayEntry>());
-        //    }
-        //}
         [When(@"adding a random weight for yesterday")]
         public void WhenAddingARandomWeightForYesterday()
         {
-            AddAWeightToAProjectForADay(projectID, dateYesterday);
+            AddAWeightToAProjectForADay(projectId, dateYesterday);
         }
 
         [Then(@"check the random weight has been added for yesterday")]
@@ -654,13 +551,13 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         [When(@"adding a random weight for today")]
         public void WhenAddingARandomWeightForToday()
         {
-             AddAWeightToAProjectForADay(projectID, dateToday);
+             AddAWeightToAProjectForADay(projectId, dateToday);
         }
 
         [When(@"adding a random weight for tomorrow")]
         public void WhenAddingARandomWeightForTomorrow()
         {
-            AddAWeightToAProjectForADay(projectID, dateTomorrow);
+            AddAWeightToAProjectForADay(projectId, dateTomorrow);
         }
 
         #endregion

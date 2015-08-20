@@ -75,10 +75,8 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="TechTalk.SpecFlow, Version=1.9.0.77, Culture=neutral, PublicKeyToken=0778194805d6db41, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SpecFlow.1.9.0\lib\net35\TechTalk.SpecFlow.dll</HintPath>
@@ -155,10 +153,6 @@
     <ProjectReference Include="..\Common\LandfillService.Common.csproj">
       <Project>{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}</Project>
       <Name>LandfillService.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LandfillService.WebApi\LandfillService.WebApi.csproj">
-      <Project>{7c668fb5-bad8-4d01-89ad-8f957bc614b2}</Project>
-      <Name>LandfillService.WebApi</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

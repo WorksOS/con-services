@@ -8,16 +8,16 @@ namespace LandfillService.AcceptanceTests.Helpers
 {
     public class DayEntryAll
     {
-        public DateTime date { get; set; }
-        public bool entryPresent { get; set; }    // true if the entry has at least the weight value
-        public double density { get; set; }       // weight / volume        
-        public double weight { get; set; }
-        public double volume { get; set; }
+        public DateTime EntryDate { get; set; }
+        public bool EntryPresent { get; set; }    // true if the entry has at least the weight value
+        public double Density { get; set; }       // weight / volume        
+        public double Weight { get; set; }
+        public double Volume { get; set; }
     }
 
     public class LandFillMySqlDb
     {
-        private string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
+        private readonly string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
         private const double POUNDS_PER_TON = 2000.0;
         private const double M3_PER_YD3 = 0.7645555;
         private const double EPSILON = 0.001;
@@ -44,7 +44,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <returns></returns>
         public List<DayEntryAll> GetEntries(Project project, UnitsTypeEnum units)
         {
-            return WithConnection((conn) =>
+            return WithConnection(conn =>
             {
                 var command = @"select dates.date, entries.weight, entries.volume
                     from (
@@ -98,7 +98,6 @@ namespace LandfillService.AcceptanceTests.Helpers
             {
                 if (reader.IsDBNull(reader.GetOrdinal("weight")) || (reader.IsDBNull(reader.GetOrdinal("volume"))))
                 {
-                    continue;
                 }
                 else
                 {
@@ -118,7 +117,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// </summary>
         /// <param name="units">Units type - metric or imperial</param>
         /// <param name="entries">Entries collection</param>
-        /// <param name="entryDate">Date</param>
+        /// <param name="entryDate">EntryDate</param>
         /// <param name="entryWeight">Daily weight</param>
         /// <param name="entryVolume">Daily volume</param>
         private void AddANewDayEntryToCollection(UnitsTypeEnum units, List<DayEntryAll> entries, DateTime entryDate, double entryWeight, double entryVolume)
@@ -126,11 +125,11 @@ namespace LandfillService.AcceptanceTests.Helpers
             double density = CalculateTheDensity(units, entryWeight, entryVolume);
             entries.Add(new DayEntryAll
             {
-                date = entryDate,
-                entryPresent = true,
-                weight = entryWeight,
-                density = density,
-                volume = entryVolume
+                EntryDate = entryDate,
+                EntryPresent = true,
+                Weight = entryWeight,
+                Density = density,
+                Volume = entryVolume
             });
         }
 
@@ -143,7 +142,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <returns>density</returns>
         private double CalculateTheDensity(UnitsTypeEnum units, double entryWeight, double entryVolume)
         {
-            double density = 0;
+            double density;
             if (units == UnitsTypeEnum.Metric)
                 density = entryWeight * 1000 / entryVolume;
             else
