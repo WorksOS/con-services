@@ -74,12 +74,12 @@ namespace LandfillService.AcceptanceTests
         public virtual void LoginWithGoodCredentials()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Login with good credentials", ((string[])(null)));
-#line 7
+#line 4
 this.ScenarioSetup(scenarioInfo);
-#line 8
+#line 5
  testRunner.When("login goodCredentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 9
- testRunner.Then("match response SessionId", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 6
+ testRunner.And("get list of projects", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -90,11 +90,11 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void LoginWithInvalidUsername()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Login with invalid username", ((string[])(null)));
-#line 11
+#line 8
 this.ScenarioSetup(scenarioInfo);
-#line 12
+#line 9
  testRunner.When("login invalidUsername", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 13
+#line 10
  testRunner.Then("match response (Error 401)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -106,11 +106,11 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void LoginWithBadCredentials()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Login with bad credentials", ((string[])(null)));
-#line 15
+#line 12
 this.ScenarioSetup(scenarioInfo);
-#line 16
+#line 13
  testRunner.When("login badCredentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 17
+#line 14
  testRunner.Then("match response (Error 401)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -122,11 +122,11 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void LoginWithNoCredentials()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Login with no credentials", ((string[])(null)));
-#line 19
+#line 16
 this.ScenarioSetup(scenarioInfo);
-#line 20
+#line 17
  testRunner.When("login noCredentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 21
+#line 18
  testRunner.Then("match response (Error 401)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -138,13 +138,13 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void Logout()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Logout", ((string[])(null)));
-#line 23
+#line 20
 this.ScenarioSetup(scenarioInfo);
-#line 24
+#line 21
  testRunner.When("login goodCredentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 25
+#line 22
  testRunner.And("logout", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 26
+#line 23
  testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -156,17 +156,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void LogoutThenRequest()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Logout then request", ((string[])(null)));
-#line 28
+#line 25
 this.ScenarioSetup(scenarioInfo);
-#line 29
+#line 26
  testRunner.When("login goodCredentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 30
+#line 27
  testRunner.And("logout", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 31
- testRunner.And("get list of projects", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 32
+#line 28
+ testRunner.And("try get list of projects", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 29
  testRunner.Then("match response (Error 401)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 33
+#line 30
  testRunner.And("not null response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -178,15 +178,15 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void RequestWithBadSession()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Request with bad session", ((string[])(null)));
-#line 35
+#line 32
 this.ScenarioSetup(scenarioInfo);
-#line 36
+#line 33
  testRunner.When("login noCredentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 37
+#line 34
  testRunner.And("use badSession", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 38
- testRunner.And("get list of projects", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 39
+#line 35
+ testRunner.And("try get list of projects", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 36
  testRunner.Then("not null response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -198,16 +198,14 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void LogonWithATokenKeyToEmulateSelectingProjectInVisionlink()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Logon with a token key to emulate selecting project in visionlink", ((string[])(null)));
-#line 41
+#line 38
 this.ScenarioSetup(scenarioInfo);
-#line 42
+#line 39
  testRunner.Given("I have retrieve a token from the project monitoring api", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 43
+#line 40
  testRunner.When("I logon with the token", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 44
+#line 41
  testRunner.And("get list of projects", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 45
- testRunner.Then("match response (Ok 200)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

@@ -17,12 +17,11 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
     [TestClass()]
     public class LoginSteps 
     {
-        protected HttpClient httpClient;
-        protected HttpResponseMessage response;
-        protected string sessionId;
-        protected string responseParse;
-        protected string logonkey;
-        protected string accesstoken;
+        private HttpClient httpClient;
+        private HttpResponseMessage response;
+        private string sessionId;
+        private string responseParse;
+        private string logonkey;
 
         #region initialise
 
@@ -39,7 +38,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
-            response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login", credentials).Result;
+            response = httpClient.PostAsJsonAsync(Config.serviceUrl + "users/login", credentials).Result;
             responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
             if (responseParse.Length > 32)
             {
@@ -84,34 +83,34 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         }
 
         [When(@"get list of projects")]
-        public async void WhenGetListOfProjects()
+        public void WhenGetListOfProjects()
         {
-            try
-            {
-                var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "projects"), Method = HttpMethod.Get };
-                request.Headers.Add("SessionID", sessionId);
-                response = httpClient.SendAsync(request).Result;
-
-                // Try and get the projects. Should cause exception
-                var projects = await response.Content.ReadAsAsync<Project[]>();
-                List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
-            }
-            catch (Exception)
-            {
-                return;
-            }
-            Assert.IsNotNull(" Projects should not be available and the test can see them"); 
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
+            request.Headers.Add("SessionID", sessionId);
+            response = httpClient.SendAsync(request).Result;
+            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
+            Assert.IsNotNull(allProjects, "The list of projects cannot be found. They should be available");
         }
+
+        [When(@"try get list of projects")]
+        public void WhenTryGetListOfProjects()
+        {
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
+            request.Headers.Add("SessionID", sessionId);
+            response = httpClient.SendAsync(request).Result;
+            if (!response.IsSuccessStatusCode) 
+                {return;}
+
+            Assert.Fail("The list of projects should not be available but the call was successful:" + response.Content.ReadAsStringAsync().Result);
+        }
+
 
         [When("logout")]
         public void WhenLogout()
         {
-         //   response = Login(Config.credentials["goodCredentials"]);
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.ServiceUrl + "users/logout"), Method = HttpMethod.Post };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "users/logout"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
-
-            System.Diagnostics.Debug.WriteLine(response.ToString());
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -147,7 +146,7 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
-            response = httpClient.PostAsJsonAsync(Config.ServiceUrl + "users/login/vl", vlcredentials).Result;
+            response = httpClient.PostAsJsonAsync(Config.serviceUrl + "users/login/vl", vlcredentials).Result;
             responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
             if (responseParse.Length > 32)
             {
