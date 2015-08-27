@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LandfillService.WebApi", "LandfillService.WebApi\LandfillService.WebApi.csproj", "{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}"
 EndProject
@@ -27,6 +27,8 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		DeployToFolderForBeta|Any CPU = DeployToFolderForBeta|Any CPU
 		DeployToFolderForDev|Any CPU = DeployToFolderForDev|Any CPU
+		DeployToFolderForProd|Any CPU = DeployToFolderForProd|Any CPU
+		DeployToFolderForRelease|Any CPU = DeployToFolderForRelease|Any CPU
 		DeployToFolderForT01|Any CPU = DeployToFolderForT01|Any CPU
 		DeployToFolderForT02|Any CPU = DeployToFolderForT02|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -38,6 +40,10 @@ Global
 		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}.DeployToFolderForBeta|Any CPU.Build.0 = DeployToFolderForBeta|Any CPU
 		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}.DeployToFolderForDev|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
 		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}.DeployToFolderForDev|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
+		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}.DeployToFolderForProd|Any CPU.ActiveCfg = DeployToFolderForProd|Any CPU
+		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}.DeployToFolderForProd|Any CPU.Build.0 = DeployToFolderForProd|Any CPU
+		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}.DeployToFolderForRelease|Any CPU.ActiveCfg = DeployToFolderForRelease|Any CPU
+		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}.DeployToFolderForRelease|Any CPU.Build.0 = DeployToFolderForRelease|Any CPU
 		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}.DeployToFolderForT01|Any CPU.ActiveCfg = DeployToFolderForT01|Any CPU
 		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}.DeployToFolderForT01|Any CPU.Build.0 = DeployToFolderForT01|Any CPU
 		{7C668FB5-BAD8-4D01-89AD-8F957BC614B2}.DeployToFolderForT02|Any CPU.ActiveCfg = DeployToFolderForT02|Any CPU
@@ -50,6 +56,8 @@ Global
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.DeployToFolderForBeta|Any CPU.Build.0 = DeployToFolderForBeta|Any CPU
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.DeployToFolderForDev|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.DeployToFolderForDev|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
+		{92FF1118-05E9-4AB9-AE92-5866976881CA}.DeployToFolderForProd|Any CPU.ActiveCfg = DeployToFolderForProd|Any CPU
+		{92FF1118-05E9-4AB9-AE92-5866976881CA}.DeployToFolderForRelease|Any CPU.ActiveCfg = DeployToFolderForRelease|Any CPU
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.DeployToFolderForT01|Any CPU.ActiveCfg = DeployToFolderForT01|Any CPU
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.DeployToFolderForT01|Any CPU.Build.0 = DeployToFolderForT01|Any CPU
 		{92FF1118-05E9-4AB9-AE92-5866976881CA}.DeployToFolderForT02|Any CPU.ActiveCfg = DeployToFolderForT02|Any CPU
@@ -62,6 +70,10 @@ Global
 		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.DeployToFolderForBeta|Any CPU.Build.0 = DeployToFolderForBeta|Any CPU
 		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.DeployToFolderForDev|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
 		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.DeployToFolderForDev|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
+		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.DeployToFolderForProd|Any CPU.ActiveCfg = DeployToFolderForProd|Any CPU
+		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.DeployToFolderForProd|Any CPU.Build.0 = DeployToFolderForProd|Any CPU
+		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.DeployToFolderForRelease|Any CPU.ActiveCfg = DeployToFolderForRelease|Any CPU
+		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.DeployToFolderForRelease|Any CPU.Build.0 = DeployToFolderForRelease|Any CPU
 		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.DeployToFolderForT01|Any CPU.ActiveCfg = DeployToFolderForT01|Any CPU
 		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.DeployToFolderForT01|Any CPU.Build.0 = DeployToFolderForT01|Any CPU
 		{BC7A519A-3DD6-4EB2-95A7-C8917F79AC15}.DeployToFolderForT02|Any CPU.ActiveCfg = DeployToFolderForT02|Any CPU
@@ -74,6 +86,8 @@ Global
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.DeployToFolderForBeta|Any CPU.Build.0 = DeployToFolderForBeta|Any CPU
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.DeployToFolderForDev|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.DeployToFolderForDev|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
+		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.DeployToFolderForProd|Any CPU.ActiveCfg = DeployToFolderForProd|Any CPU
+		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.DeployToFolderForRelease|Any CPU.ActiveCfg = DeployToFolderForRelease|Any CPU
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.DeployToFolderForT01|Any CPU.ActiveCfg = DeployToFolderForT01|Any CPU
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.DeployToFolderForT01|Any CPU.Build.0 = DeployToFolderForT01|Any CPU
 		{111E1767-DB5B-4F5F-8620-45F779ED95CE}.DeployToFolderForT02|Any CPU.ActiveCfg = DeployToFolderForT02|Any CPU
@@ -86,6 +100,10 @@ Global
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForBeta|Any CPU.Build.0 = DeployToFolderForBeta|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForDev|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForDev|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
+		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForProd|Any CPU.ActiveCfg = DeployToFolderForProd|Any CPU
+		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForProd|Any CPU.Build.0 = DeployToFolderForProd|Any CPU
+		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForRelease|Any CPU.ActiveCfg = DeployToFolderForRelease|Any CPU
+		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForRelease|Any CPU.Build.0 = DeployToFolderForRelease|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForT01|Any CPU.ActiveCfg = DeployToFolderForT01|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForT01|Any CPU.Build.0 = DeployToFolderForT01|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.DeployToFolderForT02|Any CPU.ActiveCfg = DeployToFolderForT02|Any CPU

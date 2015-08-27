@@ -241,6 +241,12 @@
     <None Include="Web.DeployToFolderForBeta.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <None Include="Web.DeployToFolderForProd.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.DeployToFolderForRelease.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.DeployToFolderForT01.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -284,6 +290,18 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForT02|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>App_Data\LandfillService.xml</DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForRelease|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DocumentationFile>App_Data\LandfillService.xml</DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForProd|AnyCPU'">
     <OutputPath>bin\</OutputPath>
     <DocumentationFile>App_Data\LandfillService.xml</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
