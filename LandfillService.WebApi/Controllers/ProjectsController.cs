@@ -31,6 +31,7 @@ namespace LandfillService.WebApi.Controllers
         public ProjectsController()
         {
             LandfillDb.UnlockAllProjects();  // if the service terminates, some projects can be left locked for volume retrieval; unlock them
+            LandfillDb.AddDaysToSubscriptionExpiryToProjects();
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace LandfillService.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns the list of projects avaialable to the user
+        /// Returns the list of projects available to the user
         /// </summary>
         /// <returns>List of available projects</returns>
         [Route("")]
@@ -148,7 +149,7 @@ namespace LandfillService.WebApi.Controllers
             var sessionId = Request.Headers.GetValues("SessionId").First();
           UnitsTypeEnum units = LandfillDb.GetUnits(sessionId);
           LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(),
-    "Retreiving density" + " units settings is: "+units.ToString());
+    "Retrieving density" + " units settings is: "+units.ToString());
 
             return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects => 
             {

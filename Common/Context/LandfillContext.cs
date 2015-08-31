@@ -180,13 +180,15 @@ namespace LandfillService.WebApi.Models
 
                 foreach (var project in projects)
                 {
-                    command = @"insert into projects (projectId, name, timeZone, retrievalStartedAt) 
-                                values (@projectId, @name, @timeZone, date_sub(UTC_TIMESTAMP(), interval 10 year))
+                  command = @"insert into projects (projectId, name, timeZone, retrievalStartedAt, daysToSubscriptionExpiry) 
+                                values (@projectId, @name, @timeZone, date_sub(UTC_TIMESTAMP(), interval 10 year), @daysToSubscriptionExpiry)
                                     on duplicate key update name = @name, timeZone = @timeZone";
-                    MySqlHelper.ExecuteNonQuery(conn, command,
-                        new MySqlParameter("@projectId", project.id),
-                        new MySqlParameter("@name", project.name),
-                        new MySqlParameter("@timeZone", project.timeZoneName));
+ 
+                  MySqlHelper.ExecuteNonQuery(conn, command,
+                      new MySqlParameter("@projectId", project.id),
+                      new MySqlParameter("@name", project.name),
+                      new MySqlParameter("@timeZone", project.timeZoneName),
+                      new MySqlParameter("@daysToSubscriptionExpiry", project.daysToSubscriptionExpiry));
 
                     command = @"insert into usersprojects (userId, projectId) 
                                 values ((select userId from sessions where sessionId = @sessionId), @projectId)";
@@ -222,14 +224,38 @@ namespace LandfillService.WebApi.Models
                     var projects = new List<Project>();
                     while (reader.Read())
                     {
+                      int indxExpiry = reader.GetOrdinal("daysToSubscriptionExpiry");
+                      bool hasExpiry = !reader.IsDBNull(indxExpiry);
+
                         projects.Add(new Project { id = reader.GetUInt32(reader.GetOrdinal("projectId")), 
                                                    name = reader.GetString(reader.GetOrdinal("name")),
-                                                   timeZoneName = reader.GetString(reader.GetOrdinal("timeZone")) });
+                                                   timeZoneName = reader.GetString(reader.GetOrdinal("timeZone")),
+                                                   daysToSubscriptionExpiry = hasExpiry ? reader.GetInt32(indxExpiry) : (int?)null
+                        });
                     }
                     return projects;
                 }
             });
         }
+
+   
+
+      public static void AddDaysToSubscriptionExpiryToProjects()
+      {
+          WithConnection<object>((conn) =>
+          {
+            var command = @"select count(*) from information_schema.columns
+                          where table_schema = 'landfill' and table_name = 'projects' and column_name = 'daysToSubscriptionExpiry'";
+            var result = MySqlHelper.ExecuteScalar(conn, command);
+            bool exists = Convert.ToUInt32(result) > 0;
+            if (!exists)
+            {
+              command = @"alter table projects add daysToSubscriptionExpiry int";//nullable
+              result = MySqlHelper.ExecuteNonQuery(conn, command);
+            }
+            return null;
+          });
+      }
 
         /// <summary>
         /// Retrieves the age of the project list for a given user (found via session ID)

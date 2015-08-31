@@ -150,6 +150,7 @@ namespace LandfillService.WebApi.Models
         public string name { get; set; }
         public string timeZoneName { get; set; }      // project time zone name
         public bool retrievingVolumes { get; set; }   // is the service retrieving volumes for this project?
+        public int? daysToSubscriptionExpiry { get; set; }
     }
 
     /// <summary>
