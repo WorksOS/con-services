@@ -182,7 +182,7 @@ namespace LandfillService.WebApi.Models
                 {
                   command = @"insert into projects (projectId, name, timeZone, retrievalStartedAt, daysToSubscriptionExpiry) 
                                 values (@projectId, @name, @timeZone, date_sub(UTC_TIMESTAMP(), interval 10 year), @daysToSubscriptionExpiry)
-                                    on duplicate key update name = @name, timeZone = @timeZone";
+                                    on duplicate key update name = @name, timeZone = @timeZone, daysToSubscriptionExpiry = @daysToSubscriptionExpiry";
  
                   MySqlHelper.ExecuteNonQuery(conn, command,
                       new MySqlParameter("@projectId", project.id),
