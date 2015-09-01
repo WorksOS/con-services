@@ -159,6 +159,7 @@ namespace LandfillService.WebApi.Controllers
                   //  GetMissingVolumesInBackground(sessionId, project);  // retry volume requests which weren't successful before
                   var entries = new ProjectData
                                 {
+                                    project = project,
                                     entries = LandfillDb.GetEntries(project, units),
                                     retrievingVolumes = LandfillDb.RetrievalInProgress(project)
                                 };
@@ -295,7 +296,6 @@ namespace LandfillService.WebApi.Controllers
             {
                 var project = projects.Where(p => p.id == id).First();
 
-
                 var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
                 DateTime utcNow = DateTime.UtcNow;
                 Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
@@ -325,7 +325,12 @@ namespace LandfillService.WebApi.Controllers
 
 
 
-                return Ok(new ProjectData { entries = LandfillDb.GetEntries(project, LandfillDb.GetUnits(sessionId)), retrievingVolumes = true });
+                return Ok(new ProjectData
+                          {
+                              project = project,
+                              entries = LandfillDb.GetEntries(project, LandfillDb.GetUnits(sessionId)), 
+                              retrievingVolumes = true
+                          });
 
             });
         }
