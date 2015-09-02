@@ -149,7 +149,7 @@ namespace LandfillService.WebApi.Models
         public uint id { get; set; }
         public string name { get; set; }
         public string timeZoneName { get; set; }      // project time zone name
-        public bool retrievingVolumes { get; set; }   // is the service retrieving volumes for this project?
+        public int? daysToSubscriptionExpiry { get; set; }
     }
 
     /// <summary>
@@ -189,6 +189,7 @@ namespace LandfillService.WebApi.Models
     {
         public IEnumerable<DayEntry> entries { get; set; }
         public bool retrievingVolumes { get; set; }          // is the service currently retrieving volumes for this project?
+        public Project project { get; set; }   
     }
 
     /// <summary>

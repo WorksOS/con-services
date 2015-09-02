@@ -31,6 +31,7 @@ namespace LandfillService.WebApi.Controllers
         public ProjectsController()
         {
             LandfillDb.UnlockAllProjects();  // if the service terminates, some projects can be left locked for volume retrieval; unlock them
+            LandfillDb.AddDaysToSubscriptionExpiryToProjects();
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace LandfillService.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns the list of projects avaialable to the user
+        /// Returns the list of projects available to the user
         /// </summary>
         /// <returns>List of available projects</returns>
         [Route("")]
@@ -148,7 +149,7 @@ namespace LandfillService.WebApi.Controllers
             var sessionId = Request.Headers.GetValues("SessionId").First();
           UnitsTypeEnum units = LandfillDb.GetUnits(sessionId);
           LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(),
-    "Retreiving density" + " units settings is: "+units.ToString());
+    "Retrieving density" + " units settings is: "+units.ToString());
 
             return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects => 
             {
@@ -158,6 +159,7 @@ namespace LandfillService.WebApi.Controllers
                   //  GetMissingVolumesInBackground(sessionId, project);  // retry volume requests which weren't successful before
                   var entries = new ProjectData
                                 {
+                                    project = project,
                                     entries = LandfillDb.GetEntries(project, units),
                                     retrievingVolumes = LandfillDb.RetrievalInProgress(project)
                                 };
@@ -294,7 +296,6 @@ namespace LandfillService.WebApi.Controllers
             {
                 var project = projects.Where(p => p.id == id).First();
 
-
                 var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
                 DateTime utcNow = DateTime.UtcNow;
                 Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
@@ -324,7 +325,12 @@ namespace LandfillService.WebApi.Controllers
 
 
 
-                return Ok(new ProjectData { entries = LandfillDb.GetEntries(project, LandfillDb.GetUnits(sessionId)), retrievingVolumes = true });
+                return Ok(new ProjectData
+                          {
+                              project = project,
+                              entries = LandfillDb.GetEntries(project, LandfillDb.GetUnits(sessionId)), 
+                              retrievingVolumes = true
+                          });
 
             });
         }
