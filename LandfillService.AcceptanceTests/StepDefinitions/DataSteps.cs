@@ -395,6 +395,13 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             return null;
         }
 
+
+        private Project GetProjectFromMySqlDb(uint projectId)
+        {
+            LandFillMySqlDb landfillMySqlDb = new LandFillMySqlDb();
+            return landfillMySqlDb.GetProject(projectId);
+        }
+
         #endregion 
 
         #region Scenairo tests
@@ -449,6 +456,21 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             if (projectData != null)
             {
                 Assert.IsTrue(projectData.entries.Count() > dayslimit, "There wasn't " + dayslimit + " days worth of data for project " + projectId + ". Entries = " + projectData.entries.Count());
+            }
+            else
+            {
+                Assert.Fail("There wasn't any data for project " + projectId);
+            }
+        }
+
+        [Then(@"compare the subscription expiry days left to mySql database")]
+        public void ThenCompareTheSubscriptionExpiryDaysLeftToMySqlDatabase()
+        {
+            var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
+            if (projectData != null)
+            {
+                var projectDetails = GetProjectFromMySqlDb(projectData.project.id);
+                Assert.IsTrue(projectDetails.daysToSubscriptionExpiry == projectData.project.daysToSubscriptionExpiry, "The subscription expiry days left does not equal mySql database. Expected:" + projectData.project.daysToSubscriptionExpiry + " Actual:" + projectDetails.daysToSubscriptionExpiry);
             }
             else
             {
@@ -559,6 +581,8 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
         {
             AddAWeightToAProjectForADay(projectId, dateTomorrow);
         }
+
+
 
         #endregion
     }
