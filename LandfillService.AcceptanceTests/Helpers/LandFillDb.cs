@@ -64,6 +64,38 @@ namespace LandfillService.AcceptanceTests.Helpers
                 }
             });
         }
+        
+        /// <summary>
+        /// Using the project ID retrieve all the details for the project for the mySql database
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns>Project</returns>
+        public Project GetProject(uint projectId)
+        {
+            return WithConnection(conn =>
+            {
+                var command = @"SELECT * FROM landfill.projects where projectId=" + projectId;
+
+                using (var reader = MySqlHelper.ExecuteReader(conn, command))
+                {
+                    return GetProjectDetailsFromMySql(reader);
+                }
+            });
+        }
+
+        private Project GetProjectDetailsFromMySql(MySqlDataReader reader)
+        {
+            Project projectDetails = new Project();
+            while (reader.Read())
+            {
+                projectDetails.id = reader.GetUInt32("projectId");
+                projectDetails.name = reader.GetString("name");
+                projectDetails.timeZoneName = reader.GetString("timeZone");
+                projectDetails.daysToSubscriptionExpiry = reader.GetInt32("daysToSubscriptionExpiry");
+                break;
+            }
+            return projectDetails;
+        }
 
         /// <summary>
         /// Add the entries into a list with the volumes
@@ -149,5 +181,7 @@ namespace LandfillService.AcceptanceTests.Helpers
                 density = entryWeight * M3_PER_YD3 * POUNDS_PER_TON / entryVolume;
             return density;
         }
+
+
     }
 }

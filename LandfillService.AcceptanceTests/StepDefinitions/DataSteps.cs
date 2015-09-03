@@ -395,7 +395,11 @@ namespace LandfillService.AcceptanceTests.StepDefinitions
             return null;
         }
 
-
+        /// <summary>
+        /// Get the details from the SQL data base for the project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
         private Project GetProjectFromMySqlDb(uint projectId)
         {
             LandFillMySqlDb landfillMySqlDb = new LandFillMySqlDb();

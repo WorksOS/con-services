@@ -16,6 +16,10 @@ Scenario: Get project data
 	Then match response (Ok 200)
 	And check there is 729 days worth of data
 
+Scenario: Get subscription expiry days left
+	Given Get Project data for 'Casella-Stanley Landfill'
+	Then compare the subscription expiry days left to mySql database
+
 #Checking the density values
 Scenario: Check the density for a specific date (2015-04-10)  
 	Given Get Project data for 'Casella-Stanley Landfill'
