@@ -49,25 +49,25 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForBeta|AnyCPU'">
-    <OutputPath>bin\DeployToFolderForBeta\</OutputPath>
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForT02|AnyCPU'">
-    <OutputPath>bin\DeployToFolderForT02\</OutputPath>
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForRelease|AnyCPU'">
-    <OutputPath>bin\DeployToFolderForRelease\</OutputPath>
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForProd|AnyCPU'">
-    <OutputPath>bin\DeployToFolderForProd\</OutputPath>
+    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
