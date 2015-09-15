@@ -17,6 +17,7 @@ bld/
 [Oo]bj/
 *.boltdata/
 [Pp]ackages/
+Deploy_Production/
 
 # Roslyn cache directories
 *.ide/
