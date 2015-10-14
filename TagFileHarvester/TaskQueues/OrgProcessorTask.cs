@@ -90,15 +90,26 @@ namespace TagFileHarvester.TaskQueues
                       .GetBookmark(this.org).BookmarkUTC;
           log.DebugFormat("Got bookmark {0} for org {1}", bookmark, org.shortName);
 
+          var scanTime = bookmarkManager.GetBookmark(this.org).LastTCCScanDateTime;
+
           //Make sure that all files are processed
          if (bookmark != DateTime.MinValue)
-            bookmark.Subtract(TimeSpan.FromMinutes(30));
+            bookmark.Subtract(OrgsHandler.BookmarkTolerance);
+
+          //if scanning occured outside period of tolerance - use scanning time as a bookmark
+          if (scanTime < bookmark && OrgsHandler.EnableHardScanningLogic)
+          {
+            log.Warn("Hard scanning logic enabled.");
+            bookmark = scanTime;
+          }
 
           //We need to get list of folder recursevly here
           try
           {
+          bool fromCache = false;
           var folders = fileRepository
-              .ListFolders(org, bookmark).ToList();
+              .ListFolders(org, bookmark, out fromCache).ToList();
+
 
           //this could be a long time to get files, so check if we are requested to stop
             if (cancellationToken.IsCancellationRequested) return result;
@@ -110,9 +121,17 @@ namespace TagFileHarvester.TaskQueues
 
               this.log.DebugFormat("Found {0} files for org {1}", files.Count(), this.org.shortName);
 
+              if (!fromCache)
+                bookmarkManager.SetBookmarkLastTCCScanTimeUTC(org, DateTime.UtcNow).WriteBookmarksAsync();
+
+              //this could be a long time to get files, so check if we are requested to stop
+              if (cancellationToken.IsCancellationRequested) return result;       
+
               files.OrderBy(t => t.createdUTC).Take(OrgsHandler.NumberOfFilesInPackage)
                   .ForEach(i => this.filenames.Add(i));
-            
+
+              //this could be a long time to get files, so check if we are requested to stop
+              if (cancellationToken.IsCancellationRequested) return result;            
 
             log.DebugFormat("Got {0} files for org {1}", filenames.Count, org.shortName);
           }
@@ -164,7 +183,7 @@ namespace TagFileHarvester.TaskQueues
 
 
             //And schedule processing of found tagfiles
-            if (!Task.WaitAll(fileTasks.ToArray(), OrgsHandler.TagFileSubmitterTasksTimeout))
+            if (!Task.WaitAll(fileTasks.ToArray(), (int)OrgsHandler.TagFileSubmitterTasksTimeout.TotalMilliseconds, cancellationToken.Token))
             {
               log.WarnFormat("Filetasks ran out of time for completion for org {0}", org.shortName);
               repositoryError = true;
@@ -188,7 +207,7 @@ namespace TagFileHarvester.TaskQueues
                 log.WarnFormat("Submit file error occured for org {0}, rolling back bookmark to {1}",
                     org.shortName, failuredFiles.Min(f=>f.createdUTC));
                 bookmarkManager
-                    .SetBookmarkUTC(org, failuredFiles.Min(f => f.createdUTC).AddSeconds(-1))
+                    .SetBookmarkUTC(org, failuredFiles.Min(f => f.createdUTC).Subtract(OrgsHandler.BadFilesToleranceRollback))
                     .WriteBookmarksAsync();
               }
               else

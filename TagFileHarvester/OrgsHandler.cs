@@ -41,6 +41,11 @@ namespace TagFileHarvester
     private static ILog log;
 
     public static IUnityContainer Container { get; private set; }
+    public static TimeSpan BookmarkTolerance  { get; set; }
+    public static bool EnableHardScanningLogic { get; set; }
+    public static TimeSpan BadFilesToleranceRollback { get; set; }
+    public static bool CacheEnabled { get; set; }
+    public static bool FilenameDumpEnabled { get; set; }
 
     public static void Clean()
     {

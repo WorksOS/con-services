@@ -110,7 +110,12 @@ namespace TagFileHarvester
       OrgsHandler.TCCRequestTimeout = TagFileHarvesterServiceSettings.Default.TCCRequestTimeout;
       OrgsHandler.NumberOfFilesInPackage = TagFileHarvesterServiceSettings.Default.NumberOfFilesInPackage;
       OrgsHandler.OrgProcessingDelay = TagFileHarvesterServiceSettings.Default.OrgProcessingDelay;
-      
+      OrgsHandler.BookmarkTolerance = TagFileHarvesterServiceSettings.Default.BookmarkTolerance;
+      OrgsHandler.EnableHardScanningLogic = TagFileHarvesterServiceSettings.Default.EnableHardScanningLogic;
+      OrgsHandler.BadFilesToleranceRollback = TagFileHarvesterServiceSettings.Default.BadFilesToleranceRollback;
+      OrgsHandler.CacheEnabled = TagFileHarvesterServiceSettings.Default.CacheEnabled;
+      OrgsHandler.FilenameDumpEnabled = TagFileHarvesterServiceSettings.Default.FilenameDumpEnabled;
+
       Log.Debug("TagFileHarvester.Start: Entered Start()");
       //register dependencies here
       OrgsHandler.Initialize(new UnityContainer().RegisterType<IFileRepository, FileRepository>()
@@ -123,7 +128,7 @@ namespace TagFileHarvester
       XMLBookMarkManager.Log = Log;
       //here we need to sync filespaces and tasks
       SyncTimer = new System.Threading.Timer(OrgsHandler.CheckAvailableOrgs);
-      SyncTimer.Change(TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(1));
+      SyncTimer.Change(TimeSpan.FromSeconds(5), TagFileHarvesterServiceSettings.Default.RefreshOrgsDelay);
       Log.Info("TagFileHarvester.Started.");
     }
 
