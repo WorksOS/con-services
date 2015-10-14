@@ -48,6 +48,37 @@ namespace BookMark
                     element.Value = newDateTime.ToString("yyyy-MM-dd") + "T00:00:00";
                 }
             }
+
+            var cutDownDocument = RemoveAllElementsThatDidNotGetUpdated(selectedBookMarks, xDoc);
+            return cutDownDocument;
+        }
+
+        /// <summary>
+        /// Remove all the elements that weren't updated
+        /// </summary>
+        /// <param name="selectedBookMarks"></param>
+        /// <param name="xDoc"></param>
+        /// <returns></returns>
+        private XDocument RemoveAllElementsThatDidNotGetUpdated(List<XmlBookMark> selectedBookMarks, XDocument xDoc)
+        {
+            IEnumerable<XElement> selectXml = xDoc.Descendants("KeysAndValues");
+            bool isThere = false;
+            while (true)
+            {
+                foreach (XElement xBm in selectXml)
+                {
+                    isThere = xBm.Descendants("Key").Select(node => selectedBookMarks.Any(p => p.Customer == node.Value)).FirstOrDefault();
+                    if (!isThere)
+                    {
+                        xBm.Remove();
+                        break;
+                    }
+                }
+                if (isThere) // All done.
+                {
+                    break;
+                }
+            }
             return xDoc;
         }
 
