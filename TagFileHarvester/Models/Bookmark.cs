@@ -14,6 +14,8 @@ namespace TagFileHarvester.Models
 
     public DateTime LastUpdateDateTime { get; set; }
 
+    public DateTime LastTCCScanDateTime { get; set; }
+
     public DateTime LastCycleStartDateTime
     {
       get { return this.lastCycleStartDateTime; }

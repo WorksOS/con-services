@@ -24,5 +24,6 @@ namespace TagFileHarvester.Interfaces
     void StartDataExport();
     IBookmarkManager IncBookmarkCyclesCompleted(Organization org);
     void StopDataExport();
+    IBookmarkManager SetBookmarkLastTCCScanTimeUTC(Organization org, DateTime utcNow);
   }
 }

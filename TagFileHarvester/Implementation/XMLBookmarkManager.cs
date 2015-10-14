@@ -321,6 +321,24 @@ namespace TagFileHarvester.Implementation
       return this;
     }
 
+    public IBookmarkManager SetBookmarkLastTCCScanTimeUTC(Organization org, DateTime utcNow)
+    {
+      //Make this thread safe.
+      lock (lockContext)
+      {
+        if (bookmarks.ToDictionary().ContainsKey(org.shortName))
+          this.bookmarks.ToDictionary()[org.shortName].LastTCCScanDateTime = utcNow;
+        else
+          bookmarks.KeysAndValues.Add(new DictionaryProxy<string, Bookmark>.KeyAndValue()
+          {
+            Key = org.shortName,
+            Value = new Bookmark() { LastTCCScanDateTime = utcNow }
+          });
+      }
+      SetBookmarkLastUpdateDateTime(org, DateTime.UtcNow);
+      return this;
+    }
+
     public IBookmarkManager SetBookmarkInProgress(Organization org, bool value)
     {
       //Make this thread safe.

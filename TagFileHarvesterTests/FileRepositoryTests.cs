@@ -31,7 +31,8 @@ namespace TagFileHarvesterTests
     {
       FileRepository.Log = log;
       FileRepository repository = new FileRepository();
-      List<string> folders = repository.ListFolders(new Organization { filespaceId = filespaceId }, lastUTC);
+      bool fromCache;
+      List<string> folders = repository.ListFolders(new Organization { filespaceId = filespaceId }, lastUTC, out fromCache);
     }
 
     [TestMethod]
