@@ -36,10 +36,11 @@ namespace TagFileHarvesterTests.MockRepositories
       return orgs;
     }
 
-    public List<string> ListFolders(Organization org, DateTime lastModifiedUTC)
+    public List<string> ListFolders(Organization org, DateTime lastModifiedUTC, out bool fromCache)
     {
       var result = Enumerable.Repeat(RandomString(), 15).Select(s => RandomString()).ToList();
       result.Add(String.Empty);
+      fromCache = false;
       return result;
     }
 

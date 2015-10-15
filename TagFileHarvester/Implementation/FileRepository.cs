@@ -152,7 +152,7 @@ namespace TagFileHarvester.Implementation
       return orgs;
     }
 
-    public List<string> ListFolders(Organization org, DateTime lastModifiedUTC)
+    public List<string> ListFolders(Organization org, DateTime lastModifiedUTC, out bool fromCache)
     {
       Log.DebugFormat("ListFolders: org={0} {1}, lastModfiedUTC={2}", org.shortName, org.filespaceId, lastModifiedUTC);
       //Get top level list of folders from root
@@ -160,9 +160,10 @@ namespace TagFileHarvester.Implementation
       {
         Log.DebugFormat("ListFolders: Found something in cache for org {0}, building folder list from it", org.shortName);
         var keys = cache.Keys.Where(k => k.Contains(org.shortName + "$")).ToList();
+        fromCache = true;
         return keys.Select(key => key.Substring(key.LastIndexOf('$') + 1)).ToList();
       }
-
+      fromCache = false;
       return GetFolders(org, lastModifiedUTC, "/");
     }
 
@@ -257,16 +258,25 @@ namespace TagFileHarvester.Implementation
         return new List<TagFile>();
       }
 
-      //Update cache here
-      if (!cache.ContainsKey(GetCacheKey(org, path)))
-        cache.GetOrAdd(GetCacheKey(org, path), new List<TagFile>());
+      if (OrgsHandler.CacheEnabled)
+      {
+        //Update cache here
+        if (!cache.ContainsKey(GetCacheKey(org, path)))
+          cache.GetOrAdd(GetCacheKey(org, path), new List<TagFile>());
 
-   
 
-      //Add files to cache
-      Log.DebugFormat(
-              "Adding new {0} files to cache",files.Count());
-      cache[GetCacheKey(org, path)].AddRange(files);
+
+        //Add files to cache
+        Log.DebugFormat(
+          "Adding new {0} files to cache", files.Count());
+        cache[GetCacheKey(org, path)].AddRange(files);
+      }
+
+      if (OrgsHandler.FilenameDumpEnabled)
+      {
+        Log.DebugFormat("Dumping filenames for org {0} created after UTC {1} for folder {2}",org.shortName,createdAfterUTC,path );
+        files.ForEach(f=>Log.DebugFormat("{0} : {1}",f.fullName, f.createdUTC));
+      }
 
       return files;
     }
