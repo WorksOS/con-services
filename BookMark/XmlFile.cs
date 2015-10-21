@@ -91,7 +91,12 @@ namespace BookMark
         public List<XmlBookMark> ReadXmlData(string fileName)
         {
             XDocument xDoc = XDocument.Load(fileName);
-            var elementsToUpdate = xDoc.Descendants().Where(o => (o.Name == "BookmarkUTC" || o.Name == "Key" || o.Name == "LastUpdateDateTime" || o.Name == "LastFilesProcessed" || o.Name == "LastFilesErrorneous") && !o.HasElements);
+            var elementsToUpdate = xDoc.Descendants().Where(o => (o.Name == "BookmarkUTC" ||
+                                                                    o.Name == "Key" || 
+                                                                    o.Name == "LastUpdateDateTime" || 
+                                                                    o.Name == "LastFilesProcessed" || 
+                                                                    o.Name == "LastFilesErrorneous" || 
+                                                                    o.Name == "TotalFilesProcessed") && !o.HasElements);
             List<XmlBookMark> xmlBookMarkList = LoadXmlBookMarksIntoAList(elementsToUpdate);
             return xmlBookMarkList;
         }
@@ -129,6 +134,9 @@ namespace BookMark
                         break;
                     case "LastFilesErrorneous":
                         xmlBookMark.LastFilesErrorneous = element.Value;
+                        break;
+                    case "TotalFilesProcessed":
+                        xmlBookMark.TotalFilesProcessed = element.Value;
                         xmlBookMarkList.Add(xmlBookMark);
                         xmlBookMark = new XmlBookMark();
                         break;
