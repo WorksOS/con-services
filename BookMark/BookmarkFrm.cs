@@ -67,8 +67,14 @@ namespace BookMark
             dgvBookmarks.Refresh();
             foreach (var xmlitem in inListofBookMarks)
             {
-                dgvBookmarks.Rows.Add(false, xmlitem.Customer, xmlitem.BookmarkUtc, xmlitem.LastUpdateDateTime,
-                    xmlitem.LastFilesProcessed,xmlitem.LastFilesErrorneous);
+                dgvBookmarks.Rows.Add(false, 
+                                        xmlitem.Customer, 
+                                        xmlitem.BookmarkUtc, 
+                                        xmlitem.LastUpdateDateTime,
+                                        xmlitem.LastFilesProcessed,
+                                        xmlitem.LastFilesErrorneous,
+                                        xmlitem.TotalFilesProcessed
+                                        );
             }
         }
 
