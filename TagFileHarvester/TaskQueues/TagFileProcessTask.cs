@@ -32,9 +32,13 @@ namespace TagFileHarvester.TaskQueues
         log.DebugFormat("Processing file {0} for org {1}", tagFilename, org.shortName);
         Stream file = unityContainer.Resolve<IFileRepository>().GetFile(org, tagFilename);
         if (file == null) return null;
+        if (token.IsCancellationRequested)
+          return null;
         log.DebugFormat("Submittting file {0} for org {1}", tagFilename, org.shortName);
         TTAGProcServerProcessResult result =
             unityContainer.Resolve<ITAGProcessorClient>().SubmitTAGFileToTAGFileProcessor(org.orgId, Path.GetFileName(tagFilename), file);
+        if (token.IsCancellationRequested)
+          return null;
         if (OrgsHandler.TCCArchiveFiles && result==TTAGProcServerProcessResult.tpsprOK)
         {
           log.DebugFormat("Archiving file {0} for org {1}", tagFilename, org.shortName);

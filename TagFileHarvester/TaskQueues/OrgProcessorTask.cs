@@ -60,6 +60,8 @@ namespace TagFileHarvester.TaskQueues
       var fileRepository = Container.Resolve<IFileRepository>();
       var harvesterTasks = Container.Resolve<IHarvesterTasks>();
 
+      var filetasksCancel = new CancellationTokenSource();
+      
       try
         {
           //Clear previous results
@@ -158,7 +160,7 @@ namespace TagFileHarvester.TaskQueues
                                         () =>
                                         {
                                           var localresult = new TagFileProcessTask(Container,
-                                              this.cancellationToken.Token)
+                                              filetasksCancel.Token)
                                               .ProcessTagfile(f.fullName, this.org);
 
                                           result.AggregateOrgResult(localresult);
@@ -178,7 +180,7 @@ namespace TagFileHarvester.TaskQueues
                                               "TagFile {0} processed with result {1}",
                                               f.fullName, localresult.ToString());
                                           return localresult;
-                                        }, this.cancellationToken.Token));
+                                        }, filetasksCancel.Token));
                               });
 
 
@@ -199,6 +201,7 @@ namespace TagFileHarvester.TaskQueues
             //Now we need to update bookmark
             if (repositoryError) //Don't update bookmark
             {
+              filetasksCancel.Cancel();
               if (failuredFiles.Count > 0)
               {
                 log.DebugFormat(
