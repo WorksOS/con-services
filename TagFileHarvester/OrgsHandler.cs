@@ -28,7 +28,8 @@ namespace TagFileHarvester
     public static TimeSpan TCCRequestTimeout;
     public static int NumberOfFilesInPackage;
     public static TimeSpan OrgProcessingDelay;
-
+    public static TimeSpan FolderSearchTimeSpan;
+    public static bool UseModifyTimeInsteadOfCreateTime;
 
 
 

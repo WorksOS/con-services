@@ -115,6 +115,9 @@ namespace TagFileHarvester
       OrgsHandler.BadFilesToleranceRollback = TagFileHarvesterServiceSettings.Default.BadFilesToleranceRollback;
       OrgsHandler.CacheEnabled = TagFileHarvesterServiceSettings.Default.CacheEnabled;
       OrgsHandler.FilenameDumpEnabled = TagFileHarvesterServiceSettings.Default.FilenameDumpEnabled;
+      OrgsHandler.FolderSearchTimeSpan = TagFileHarvesterServiceSettings.Default.FolderSearchTimeSpan;
+      OrgsHandler.UseModifyTimeInsteadOfCreateTime =
+        TagFileHarvesterServiceSettings.Default.UseModifyTimeInsteadOfCreateTime;
 
       Log.Debug("TagFileHarvester.Start: Entered Start()");
       //register dependencies here
