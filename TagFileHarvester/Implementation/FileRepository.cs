@@ -410,6 +410,10 @@ namespace TagFileHarvester.Implementation
                   lPath = string.Format("{0}/{1}", path, folderEntry.entryName);
 
                 DateTime lastChanged = GetLastChangedTime(org.filespaceId, lPath);
+                if (lastModifiedUTC == DateTime.MinValue)
+                {
+                  folders.Add(string.Format("/{0}", folderEntry.entryName));
+                } else
                 if (lastChanged > lastModifiedUTC.Subtract(OrgsHandler.FolderSearchTimeSpan))
                 {
                   folders.Add(string.Format("/{0}", folderEntry.entryName));
