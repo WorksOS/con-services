@@ -353,7 +353,7 @@ namespace TagFileHarvester.Implementation
         RenResult renResult = result as RenResult;
         if (renResult != null)
         {
-          if (renResult.success)
+          if (renResult.success || renResult.errorid.Contains("INVALID_OPERATION_FILE_IS_LOCKED"))
           {
             return true;
           }
