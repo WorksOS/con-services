@@ -47,6 +47,7 @@ namespace TagFileHarvester.TaskQueues
       var fileTasks = new List<Task>();
       var filenames = new List<FileRepository.TagFile>();
       var failuredFiles = new List<FileRepository.TagFile>();
+      var processedFiles = new List<FileRepository.TagFile>();
 
       bool repositoryError = false;
       DateTime bookmark=DateTime.MinValue;
@@ -134,6 +135,8 @@ namespace TagFileHarvester.TaskQueues
             log.WarnFormat("Repository error occured for org {0}, could not get files or folders from TCC Exception: {1}", org.shortName, ex.Message);
           }
 
+        var filelistlock = new object();
+
           //If we are good with the repository proceed with files
           if (!repositoryError && filenames.Count > 0)
           {
@@ -151,24 +154,28 @@ namespace TagFileHarvester.TaskQueues
                   var localresult = new TagFileProcessTask(Container,
                     filetasksCancel.Token)
                     .ProcessTagfile(f.fullName, org);
-
-                  result.AggregateOrgResult(localresult);
-                  if (localresult == null ||
-                      localresult ==
-                      TTAGProcServerProcessResult
-                        .tpsprOnSubmissionBaseConnectionFailure ||
-                      localresult ==
-                      TTAGProcServerProcessResult
-                        .tpsprOnSubmissionResultConnectionFailure)
+                  lock (filelistlock)
                   {
-                    repositoryError = true;
-                    failuredFiles.Add(f);
+                    result.AggregateOrgResult(localresult);
+                    if (localresult == null ||
+                        localresult ==
+                        TTAGProcServerProcessResult
+                          .tpsprOnSubmissionBaseConnectionFailure ||
+                        localresult ==
+                        TTAGProcServerProcessResult
+                          .tpsprOnSubmissionResultConnectionFailure)
+                    {
+                      repositoryError = true;
+                      failuredFiles.Add(f);
+                    }
+                    else
+                      processedFiles.Add(f);
+                    // raise flag that we have at least one failured file
+                    log.DebugFormat(
+                      "TagFile {0} processed with result {1}",
+                      f.fullName, localresult);
+                    return localresult;
                   }
-                  // raise flag that we have at least one failured file
-                  log.DebugFormat(
-                    "TagFile {0} processed with result {1}",
-                    f.fullName, localresult);
-                  return localresult;
                 }, filetasksCancel.Token)));
 
 
@@ -215,12 +222,12 @@ namespace TagFileHarvester.TaskQueues
             {
               //Update bookmark only if we are sure that we have retreived list of files
               //Set bookmark 10 min before the last file only if we have succeseeded with retreiving the files
-              log.DebugFormat("Setting bookmark to {0} for org {1}", filenames.Max(f => f.createdUTC),
+              log.DebugFormat("Setting bookmark to {0} for org {1}", processedFiles.Max(f => f.createdUTC),
                   org.shortName);
               bookmarkManager
-                  .SetBookmarkUTC(org, filenames.Max(f=>f.createdUTC))
+                  .SetBookmarkUTC(org, processedFiles.Max(f => f.createdUTC))
                   .WriteBookmarksAsync();
-              fileRepository.RemoveObsoleteFilesFromCache(org, filenames.ToList());
+              fileRepository.RemoveObsoleteFilesFromCache(org, processedFiles);
             }
           }
 
