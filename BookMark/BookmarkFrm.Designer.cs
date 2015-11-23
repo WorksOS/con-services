@@ -34,11 +34,6 @@
             this.btnUpdate = new System.Windows.Forms.Button();
             this.lbSuccess = new System.Windows.Forms.Label();
             this.dgvBookmarks = new System.Windows.Forms.DataGridView();
-            this.monthCalendar = new System.Windows.Forms.MonthCalendar();
-            this.grpSave = new System.Windows.Forms.GroupBox();
-            this.rbtAll = new System.Windows.Forms.RadioButton();
-            this.rbtSelected = new System.Windows.Forms.RadioButton();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.ColSelect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Organisation = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BookMark = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -46,6 +41,11 @@
             this.LastFilesProcessed = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LastFilesErrorneous = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TotalFilesProcessed = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.monthCalendar = new System.Windows.Forms.MonthCalendar();
+            this.grpSave = new System.Windows.Forms.GroupBox();
+            this.rbtAll = new System.Windows.Forms.RadioButton();
+            this.rbtSelected = new System.Windows.Forms.RadioButton();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvBookmarks)).BeginInit();
             this.grpSave.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -117,6 +117,55 @@
             this.dgvBookmarks.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvBookmarks.Size = new System.Drawing.Size(1039, 552);
             this.dgvBookmarks.TabIndex = 5;
+            //this.dgvBookmarks.RowStateChanged += new System.Windows.Forms.DataGridViewRowStateChangedEventHandler(this.dgvBookmarks_RowStateChanged);
+            this.dgvBookmarks.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dgvBookmarks_KeyPress);
+            // 
+            // ColSelect
+            // 
+            this.ColSelect.FalseValue = "";
+            this.ColSelect.HeaderText = "Select";
+            this.ColSelect.IndeterminateValue = "";
+            this.ColSelect.Name = "ColSelect";
+            this.ColSelect.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.ColSelect.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.ColSelect.TrueValue = "";
+            this.ColSelect.Width = 60;
+            // 
+            // Organisation
+            // 
+            this.Organisation.HeaderText = "Organisation";
+            this.Organisation.Name = "Organisation";
+            this.Organisation.Width = 150;
+            // 
+            // BookMark
+            // 
+            this.BookMark.HeaderText = "Book Mark";
+            this.BookMark.Name = "BookMark";
+            this.BookMark.Width = 180;
+            // 
+            // LastUpdated
+            // 
+            this.LastUpdated.HeaderText = "Last Updated";
+            this.LastUpdated.Name = "LastUpdated";
+            this.LastUpdated.Width = 150;
+            // 
+            // LastFilesProcessed
+            // 
+            this.LastFilesProcessed.HeaderText = "Last Files Processed";
+            this.LastFilesProcessed.Name = "LastFilesProcessed";
+            this.LastFilesProcessed.Width = 150;
+            // 
+            // LastFilesErrorneous
+            // 
+            this.LastFilesErrorneous.HeaderText = "Last Files Errorneous";
+            this.LastFilesErrorneous.Name = "LastFilesErrorneous";
+            this.LastFilesErrorneous.Width = 150;
+            // 
+            // TotalFilesProcessed
+            // 
+            this.TotalFilesProcessed.HeaderText = "Total Files Processed";
+            this.TotalFilesProcessed.Name = "TotalFilesProcessed";
+            this.TotalFilesProcessed.Width = 150;
             // 
             // monthCalendar
             // 
@@ -181,53 +230,6 @@
             this.groupBox1.Size = new System.Drawing.Size(242, 568);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
-            // 
-            // ColSelect
-            // 
-            this.ColSelect.FalseValue = "";
-            this.ColSelect.HeaderText = "Select";
-            this.ColSelect.IndeterminateValue = "";
-            this.ColSelect.Name = "ColSelect";
-            this.ColSelect.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.ColSelect.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.ColSelect.TrueValue = "";
-            this.ColSelect.Width = 60;
-            // 
-            // Organisation
-            // 
-            this.Organisation.HeaderText = "Organisation";
-            this.Organisation.Name = "Organisation";
-            this.Organisation.Width = 150;
-            // 
-            // BookMark
-            // 
-            this.BookMark.HeaderText = "Book Mark";
-            this.BookMark.Name = "BookMark";
-            this.BookMark.Width = 180;
-            // 
-            // LastUpdated
-            // 
-            this.LastUpdated.HeaderText = "Last Updated";
-            this.LastUpdated.Name = "LastUpdated";
-            this.LastUpdated.Width = 150;
-            // 
-            // LastFilesProcessed
-            // 
-            this.LastFilesProcessed.HeaderText = "Last Files Processed";
-            this.LastFilesProcessed.Name = "LastFilesProcessed";
-            this.LastFilesProcessed.Width = 150;
-            // 
-            // LastFilesErrorneous
-            // 
-            this.LastFilesErrorneous.HeaderText = "Last Files Errorneous";
-            this.LastFilesErrorneous.Name = "LastFilesErrorneous";
-            this.LastFilesErrorneous.Width = 150;
-            // 
-            // TotalFilesProcessed
-            // 
-            this.TotalFilesProcessed.HeaderText = "Total Files Processed";
-            this.TotalFilesProcessed.Name = "TotalFilesProcessed";
-            this.TotalFilesProcessed.Width = 150;
             // 
             // BookmarkFrm
             // 
