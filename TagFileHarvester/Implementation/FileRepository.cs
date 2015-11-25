@@ -353,7 +353,7 @@ namespace TagFileHarvester.Implementation
         RenResult renResult = result as RenResult;
         if (renResult != null)
         {
-          if (renResult.success)
+          if (renResult.success || renResult.errorid.Contains("INVALID_OPERATION_FILE_IS_LOCKED"))
           {
             return true;
           }
@@ -410,7 +410,11 @@ namespace TagFileHarvester.Implementation
                   lPath = string.Format("{0}/{1}", path, folderEntry.entryName);
 
                 DateTime lastChanged = GetLastChangedTime(org.filespaceId, lPath);
-                if (lastChanged > lastModifiedUTC)
+                if (lastModifiedUTC == DateTime.MinValue)
+                {
+                  folders.Add(string.Format("/{0}", folderEntry.entryName));
+                } else
+                if (lastChanged > lastModifiedUTC.Subtract(OrgsHandler.FolderSearchTimeSpan))
                 {
                   folders.Add(string.Format("/{0}", folderEntry.entryName));
                 }
@@ -551,13 +555,27 @@ namespace TagFileHarvester.Implementation
           }
         }
       }
-      else if (entry.leaf && entry.createTime > createdAfterUTC)
+      else if (OrgsHandler.UseModifyTimeInsteadOfCreateTime)
       {
-        files.Add(new TagFile
-                  {
-                      fullName = string.Format("{0}/{1}", path, entry.entryName),
-                      createdUTC = entry.createTime
-                  });                 
+        if (entry.leaf && entry.modifyTime > createdAfterUTC)
+        {
+          files.Add(new TagFile
+          {
+            fullName = string.Format("{0}/{1}", path, entry.entryName),
+            createdUTC = entry.createTime
+          });
+        }
+      }
+      else
+      {
+        if (entry.leaf && entry.createTime > createdAfterUTC)
+        {
+          files.Add(new TagFile
+          {
+            fullName = string.Format("{0}/{1}", path, entry.entryName),
+            createdUTC = entry.createTime
+          });
+        }
       }
     }
 

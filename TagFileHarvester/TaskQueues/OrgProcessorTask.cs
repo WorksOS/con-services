@@ -18,7 +18,7 @@ namespace TagFileHarvester.TaskQueues
   {
     private IUnityContainer Container { get; set; }
     private ILog log;
-    private readonly ConcurrentDictionary<Task, Tuple<Organization, CancellationTokenSource>> orgsTracker;
+    private readonly Dictionary<Task, Tuple<Organization, CancellationTokenSource>> orgsTracker;
 
     public OrgProcessingResult Result
     {
@@ -28,28 +28,27 @@ namespace TagFileHarvester.TaskQueues
     //each org should have it's own queue of threads processing files
     private readonly Organization org;
     private readonly CancellationTokenSource cancellationToken;
-    private readonly ConcurrentBag<Task> fileTasks;
     private readonly OrgProcessingResult result;
-    private ConcurrentBag<FileRepository.TagFile> filenames;
-    private ConcurrentBag<FileRepository.TagFile> failuredFiles;
 
-    public OrgProcessorTask(IUnityContainer container, Organization org, CancellationTokenSource cancellationToken, ConcurrentDictionary<Task, Tuple<Organization, CancellationTokenSource>> orgsList)
+    public OrgProcessorTask(IUnityContainer container, Organization org, CancellationTokenSource cancellationToken, Dictionary<Task, Tuple<Organization, CancellationTokenSource>> orgsList)
     {
       result = new OrgProcessingResult();
       Container = container;
       this.org = org;
       result.Reset();
       this.cancellationToken = cancellationToken;
-      fileTasks = new ConcurrentBag<Task>();
       log = container.Resolve<ILog>();
-      filenames = new ConcurrentBag<FileRepository.TagFile>();
-      failuredFiles = new ConcurrentBag<FileRepository.TagFile>();
       orgsTracker = orgsList;
     }
 
 
     public OrgProcessingResult ProcessOrg(bool SingleCycle = false, Action<OrgProcessorTask> onOrgProcessed = null)
     {
+      var fileTasks = new List<Task>();
+      var filenames = new List<FileRepository.TagFile>();
+      var failuredFiles = new List<FileRepository.TagFile>();
+      var processedFiles = new List<FileRepository.TagFile>();
+
       bool repositoryError = false;
       DateTime bookmark=DateTime.MinValue;
 
@@ -60,20 +59,15 @@ namespace TagFileHarvester.TaskQueues
       var fileRepository = Container.Resolve<IFileRepository>();
       var harvesterTasks = Container.Resolve<IHarvesterTasks>();
 
+      var filetasksCancel = new CancellationTokenSource();
+      
       try
         {
           //Clear previous results
-          while (!filenames.IsEmpty)
-          {
-            FileRepository.TagFile someItem;
-            filenames.TryTake(out someItem);
-          }
+          filenames.Clear();
+          fileTasks.Clear();
           result.Reset();
-          while (!failuredFiles.IsEmpty)
-          {
-            FileRepository.TagFile someItem;
-            failuredFiles.TryTake(out someItem);
-          }
+          failuredFiles.Clear();
 
           if (bookmarkManager.GetBookmark(org).OrgIsDisabled)
           {
@@ -87,14 +81,14 @@ namespace TagFileHarvester.TaskQueues
               .WriteBookmarksAsync();
 
           bookmark =bookmarkManager
-                      .GetBookmark(this.org).BookmarkUTC;
+                      .GetBookmark(org).BookmarkUTC;
           log.DebugFormat("Got bookmark {0} for org {1}", bookmark, org.shortName);
 
-          var scanTime = bookmarkManager.GetBookmark(this.org).LastTCCScanDateTime;
+          var scanTime = bookmarkManager.GetBookmark(org).LastTCCScanDateTime;
 
           //Make sure that all files are processed
          if (bookmark != DateTime.MinValue)
-            bookmark.Subtract(OrgsHandler.BookmarkTolerance);
+            bookmark = bookmark.Subtract(OrgsHandler.BookmarkTolerance);
 
           //if scanning occured outside period of tolerance - use scanning time as a bookmark
           if (scanTime < bookmark && OrgsHandler.EnableHardScanningLogic)
@@ -114,12 +108,12 @@ namespace TagFileHarvester.TaskQueues
           //this could be a long time to get files, so check if we are requested to stop
             if (cancellationToken.IsCancellationRequested) return result;
 
-              this.log.DebugFormat("Found {0} folders for org {1}", folders.Count(), this.org.shortName);
+              log.DebugFormat("Found {0} folders for org {1}", folders.Count(), org.shortName);
               var files = folders.SelectMany(f =>
                   fileRepository
-                      .ListFiles(this.org, f, bookmark)).ToList();
+                      .ListFiles(org, f, bookmark)).ToList();
 
-              this.log.DebugFormat("Found {0} files for org {1}", files.Count(), this.org.shortName);
+              log.DebugFormat("Found {0} files for org {1}", files.Count(), org.shortName);
 
               if (!fromCache)
                 bookmarkManager.SetBookmarkLastTCCScanTimeUTC(org, DateTime.UtcNow).WriteBookmarksAsync();
@@ -128,7 +122,7 @@ namespace TagFileHarvester.TaskQueues
               if (cancellationToken.IsCancellationRequested) return result;       
 
               files.OrderBy(t => t.createdUTC).Take(OrgsHandler.NumberOfFilesInPackage)
-                  .ForEach(i => this.filenames.Add(i));
+                  .ForEach(filenames.Add);
 
               //this could be a long time to get files, so check if we are requested to stop
               if (cancellationToken.IsCancellationRequested) return result;            
@@ -141,6 +135,8 @@ namespace TagFileHarvester.TaskQueues
             log.WarnFormat("Repository error occured for org {0}, could not get files or folders from TCC Exception: {1}", org.shortName, ex.Message);
           }
 
+        var filelistlock = new object();
+
           //If we are good with the repository proceed with files
           if (!repositoryError && filenames.Count > 0)
           {
@@ -151,35 +147,36 @@ namespace TagFileHarvester.TaskQueues
 
             //foreach filenames here - build chain of tasks and track execution
 
-            filenames.ForEach(f =>
-                              {
-                                fileTasks.Add(harvesterTasks
-                                    .StartNewLimitedConcurrency<TAGProcServiceDecls.TTAGProcServerProcessResult?>(
-                                        () =>
-                                        {
-                                          var localresult = new TagFileProcessTask(Container,
-                                              this.cancellationToken.Token)
-                                              .ProcessTagfile(f.fullName, this.org);
-
-                                          result.AggregateOrgResult(localresult);
-                                          if (localresult == null ||
-                                              localresult ==
-                                              TTAGProcServerProcessResult
-                                                  .tpsprOnSubmissionBaseConnectionFailure ||
-                                              localresult ==
-                                              TTAGProcServerProcessResult
-                                                  .tpsprOnSubmissionResultConnectionFailure)
-                                          {
-                                            repositoryError = true;
-                                            failuredFiles.Add(f);
-                                          }
-                                          // raise flag that we have at least one failured file
-                                          log.DebugFormat(
-                                              "TagFile {0} processed with result {1}",
-                                              f.fullName, localresult.ToString());
-                                          return localresult;
-                                        }, this.cancellationToken.Token));
-                              });
+            filenames.ForEach(f => fileTasks.Add(harvesterTasks
+              .StartNewLimitedConcurrency(
+                () =>
+                {
+                  var localresult = new TagFileProcessTask(Container,
+                    filetasksCancel.Token)
+                    .ProcessTagfile(f.fullName, org);
+                  lock (filelistlock)
+                  {
+                    result.AggregateOrgResult(localresult);
+                    if (localresult == null ||
+                        localresult ==
+                        TTAGProcServerProcessResult
+                          .tpsprOnSubmissionBaseConnectionFailure ||
+                        localresult ==
+                        TTAGProcServerProcessResult
+                          .tpsprOnSubmissionResultConnectionFailure)
+                    {
+                      repositoryError = true;
+                      failuredFiles.Add(f);
+                    }
+                    else
+                      processedFiles.Add(f);
+                    // raise flag that we have at least one failured file
+                    log.DebugFormat(
+                      "TagFile {0} processed with result {1}",
+                      f.fullName, localresult);
+                    return localresult;
+                  }
+                }, filetasksCancel.Token)));
 
 
             //And schedule processing of found tagfiles
@@ -190,15 +187,12 @@ namespace TagFileHarvester.TaskQueues
             }
 
             //cleanup tasks
-            while (!fileTasks.IsEmpty)
-            {
-              Task someItem;
-              fileTasks.TryTake(out someItem);
-            }
-
+            fileTasks.Clear();
+    
             //Now we need to update bookmark
             if (repositoryError) //Don't update bookmark
             {
+              filetasksCancel.Cancel();
               if (failuredFiles.Count > 0)
               {
                 log.DebugFormat(
@@ -228,12 +222,12 @@ namespace TagFileHarvester.TaskQueues
             {
               //Update bookmark only if we are sure that we have retreived list of files
               //Set bookmark 10 min before the last file only if we have succeseeded with retreiving the files
-              log.DebugFormat("Setting bookmark to {0} for org {1}", filenames.Max(f => f.createdUTC),
+              log.DebugFormat("Setting bookmark to {0} for org {1}", processedFiles.Max(f => f.createdUTC),
                   org.shortName);
               bookmarkManager
-                  .SetBookmarkUTC(org, filenames.Max(f=>f.createdUTC))
+                  .SetBookmarkUTC(org, processedFiles.Max(f => f.createdUTC))
                   .WriteBookmarksAsync();
-              fileRepository.RemoveObsoleteFilesFromCache(org, filenames.ToList());
+              fileRepository.RemoveObsoleteFilesFromCache(org, processedFiles);
             }
           }
 
@@ -282,24 +276,28 @@ namespace TagFileHarvester.TaskQueues
       if (!cancellationToken.IsCancellationRequested)
       {
         log.InfoFormat("Rescheduling processing of org {0}", org.shortName);
-        this.orgsTracker.TryAdd(harvesterTasks.StartNewLimitedConcurrency2(() =>
-        {
-          //sleep only if there is nothing to process. Otherwise process everything we could have
-          if (!fileRepository.IsAnythingInCahe(org))
-          {
-            log.DebugFormat("Sleeping for the org {0}", org.shortName);
-            Task.Delay(OrgsHandler.OrgProcessingDelay, cancellationToken.Token).Wait();
-          }
+        //delete current task from org tacker and add a new one
 
-          ProcessOrg(false,
-              (t) =>
-              {
-                log
-                    .InfoFormat("Tasks status is {0} in Queue1 and {1} in Queue2 on {2} Threads",
-                          harvesterTasks.Status().Item1,
-                          harvesterTasks.Status().Item2, OrgsHandler.GetUsedThreads());
-              });
-        }, cancellationToken.Token), new Tuple<Organization, CancellationTokenSource>(org,cancellationToken));
+        lock (OrgsHandler.OrgListLocker)
+        {
+          orgsTracker.Remove(orgsTracker.First(t => t.Value.Item1.shortName == org.shortName).Key);
+
+          orgsTracker.Add(harvesterTasks.StartNewLimitedConcurrency2(() =>
+          {
+            //sleep only if there is nothing to process. Otherwise process everything we could have
+            if (!fileRepository.IsAnythingInCahe(org))
+            {
+              log.DebugFormat("Sleeping for the org {0}", org.shortName);
+              Task.Delay(OrgsHandler.OrgProcessingDelay, cancellationToken.Token).Wait(cancellationToken.Token);
+            }
+
+            ProcessOrg(false,
+              t => log
+                .InfoFormat("Tasks status is {0} in Queue1 and {1} in Queue2 on {2} Threads",
+                  harvesterTasks.Status().Item1,
+                  harvesterTasks.Status().Item2, OrgsHandler.GetUsedThreads()));
+          }, cancellationToken.Token), new Tuple<Organization, CancellationTokenSource>(org, cancellationToken));
+        }
 
       }
       return result;
@@ -312,11 +310,11 @@ namespace TagFileHarvester.TaskQueues
     public int RefusedFiles;
     public int ProcessedFiles;
     public int ErroneousFiles;
-    private readonly object resultLocker = new object();
+    private readonly object _resultLocker = new object();
 
-    public void AggregateOrgResult(TAGProcServiceDecls.TTAGProcServerProcessResult? result)
+    public void AggregateOrgResult(TTAGProcServerProcessResult? result)
     {
-      lock (resultLocker)
+      lock (_resultLocker)
       {
         if (result == null) { ErroneousFiles++; return; }
         if (result == TTAGProcServerProcessResult.tpsprOK) { ProcessedFiles++; return; }

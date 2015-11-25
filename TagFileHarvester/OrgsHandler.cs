@@ -28,16 +28,17 @@ namespace TagFileHarvester
     public static TimeSpan TCCRequestTimeout;
     public static int NumberOfFilesInPackage;
     public static TimeSpan OrgProcessingDelay;
+    public static TimeSpan FolderSearchTimeSpan;
+    public static bool UseModifyTimeInsteadOfCreateTime;
 
 
 
-
-    public static ConcurrentDictionary<System.Threading.Tasks.Task,Tuple<Organization, CancellationTokenSource>> OrgProcessingTasks 
+    public static Dictionary<System.Threading.Tasks.Task,Tuple<Organization, CancellationTokenSource>> OrgProcessingTasks 
     {
       get { return orgProcessingTasks; }
     }
 
-    private static readonly ConcurrentDictionary<System.Threading.Tasks.Task, Tuple<Organization, CancellationTokenSource>> orgProcessingTasks = new ConcurrentDictionary<System.Threading.Tasks.Task, Tuple<Organization, CancellationTokenSource>>();
+    private static readonly Dictionary<System.Threading.Tasks.Task, Tuple<Organization, CancellationTokenSource>> orgProcessingTasks = new Dictionary<System.Threading.Tasks.Task, Tuple<Organization, CancellationTokenSource>>();
     private static ILog log;
 
     public static IUnityContainer Container { get; private set; }
@@ -46,6 +47,8 @@ namespace TagFileHarvester
     public static TimeSpan BadFilesToleranceRollback { get; set; }
     public static bool CacheEnabled { get; set; }
     public static bool FilenameDumpEnabled { get; set; }
+
+    public static readonly object OrgListLocker = new object();
 
     public static void Clean()
     {
@@ -84,41 +87,44 @@ namespace TagFileHarvester
     private static void MergeAndProcessOrgs(List<Organization> orgs)
     {
       //Filter out all stopped\completed tasks
-
-      Tuple<Organization, CancellationTokenSource> temp;
-      OrgProcessingTasks.Where(o => o.Key.IsCompleted || o.Key.IsFaulted || o.Key.IsCanceled).Select(d=>d.Key).ForEach(d=>OrgProcessingTasks.TryRemove(d,out temp));
-      log.InfoFormat("Currently processing orgs: {0} ", OrgProcessingTasks.Select(o => o.Value.Item1).DefaultIfEmpty(new Organization())
-          .Select(t => t.shortName).Aggregate((current, next) => current + ", " + next));
-      log.DebugFormat("Tasks status when trying to add new orgs is {0} in Queue1 and {1} in Queue2 on {2} Threads",
-                 Container.Resolve<IHarvesterTasks>().Status().Item1,
-                 Container.Resolve<IHarvesterTasks>().Status().Item2, GetUsedThreads() );
-      //do merge here - if there is no org in the list of tasks - build it. If there is no org but there in the list but there is a task - kill the task
-      orgs.Where(o => !OrgProcessingTasks.Select(t => t.Value.Item1).Contains(o)).ForEach(o =>
-                {
-                  log.InfoFormat("Adding {0} org for processing", o.shortName);
-                  var cancellationToken = new CancellationTokenSource();
-                  OrgProcessingTasks.TryAdd(Container.Resolve<IHarvesterTasks>().StartNewLimitedConcurrency2(() =>
-                                   {
-                                     new OrgProcessorTask(Container, o, cancellationToken,OrgProcessingTasks).ProcessOrg(false,
-                                         (t) =>
-                                         {
-                                           log
-                                               .InfoFormat("Tasks status is {0} in Queue1 and {1} in Queue2 on {2} Threads",
-                                                   Container.Resolve<IHarvesterTasks>().Status().Item1,
-                                                   Container.Resolve<IHarvesterTasks>().Status().Item2, GetUsedThreads());
-                                         });
-                                   }, cancellationToken.Token),new Tuple<Organization, CancellationTokenSource>(o, cancellationToken));
-                });
-      //Reversed situation - org has been removed from filespaces but there is a task - cancel it
-      if (OrgProcessingTasks.Any(o => !orgs.Contains(o.Value.Item1)))
+      lock (OrgListLocker)
       {
-        OrgProcessingTasks.Where(o => !orgs.Contains(o.Value.Item1)).ForEach(o => o.Value.Item2.Cancel());
-        log.InfoFormat("Removing {0} org from processing",
+        OrgProcessingTasks.Where(o => o.Key.IsCompleted || o.Key.IsFaulted || o.Key.IsCanceled)
+          .Select(d => d.Key)
+          .ForEach(d => OrgProcessingTasks.Remove(d));
+        log.InfoFormat("Currently processing orgs: {0} ",
+          OrgProcessingTasks.Select(o => o.Value.Item1).DefaultIfEmpty(new Organization())
+            .Select(t => t.shortName).Aggregate((current, next) => current + ", " + next));
+        log.DebugFormat("Tasks status when trying to add new orgs is {0} in Queue1 and {1} in Queue2 on {2} Threads",
+          Container.Resolve<IHarvesterTasks>().Status().Item1,
+          Container.Resolve<IHarvesterTasks>().Status().Item2, GetUsedThreads());
+        //do merge here - if there is no org in the list of tasks - build it. If there is no org but there in the list but there is a task - kill the task
+        orgs.Where(o => !OrgProcessingTasks.Select(t => t.Value.Item1).Contains(o)).ForEach(o =>
+        {
+          log.InfoFormat("Adding {0} org for processing", o.shortName);
+          var cancellationToken = new CancellationTokenSource();
+          OrgProcessingTasks.Add(Container.Resolve<IHarvesterTasks>().StartNewLimitedConcurrency2(() =>
+          {
+            new OrgProcessorTask(Container, o, cancellationToken, OrgProcessingTasks).ProcessOrg(false,
+              t => log
+                .InfoFormat("Tasks status is {0} in Queue1 and {1} in Queue2 on {2} Threads",
+                  Container.Resolve<IHarvesterTasks>().Status().Item1,
+                  Container.Resolve<IHarvesterTasks>().Status().Item2, GetUsedThreads()));
+          }, cancellationToken.Token), new Tuple<Organization, CancellationTokenSource>(o, cancellationToken));
+        });
+        //Reversed situation - org has been removed from filespaces but there is a task - cancel it
+        if (OrgProcessingTasks.Any(o => !orgs.Contains(o.Value.Item1)))
+        {
+          OrgProcessingTasks.Where(o => !orgs.Contains(o.Value.Item1)).ForEach(o => o.Value.Item2.Cancel());
+          log.InfoFormat("Removing {0} org from processing",
             OrgProcessingTasks.Select(o => o.Value.Item1)
-                .Where(y => !orgs.Contains(y))
-                .Select(t => t.shortName)
-                .Aggregate((current, next) => current + ", " + next));
-        OrgProcessingTasks.Where(o => !orgs.Contains(o.Value.Item1)).Select(d=>d.Key).ForEach(t => OrgProcessingTasks.TryRemove(t, out temp));
+              .Where(y => !orgs.Contains(y))
+              .Select(t => t.shortName)
+              .Aggregate((current, next) => current + ", " + next));
+          OrgProcessingTasks.Where(o => !orgs.Contains(o.Value.Item1))
+            .Select(d => d.Key)
+            .ForEach(t => OrgProcessingTasks.Remove(t));
+        }
       }
     }
 

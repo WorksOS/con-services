@@ -48,6 +48,37 @@ namespace BookMark
                     element.Value = newDateTime.ToString("yyyy-MM-dd") + "T00:00:00";
                 }
             }
+
+            var cutDownDocument = RemoveAllElementsThatDidNotGetUpdated(selectedBookMarks, xDoc);
+            return cutDownDocument;
+        }
+
+        /// <summary>
+        /// Remove all the elements that weren't updated
+        /// </summary>
+        /// <param name="selectedBookMarks"></param>
+        /// <param name="xDoc"></param>
+        /// <returns></returns>
+        private XDocument RemoveAllElementsThatDidNotGetUpdated(List<XmlBookMark> selectedBookMarks, XDocument xDoc)
+        {
+            IEnumerable<XElement> selectXml = xDoc.Descendants("KeysAndValues");
+            bool isThere = false;
+            while (true)
+            {
+                foreach (XElement xBm in selectXml)
+                {
+                    isThere = xBm.Descendants("Key").Select(node => selectedBookMarks.Any(p => p.Customer == node.Value)).FirstOrDefault();
+                    if (!isThere)
+                    {
+                        xBm.Remove();
+                        break;
+                    }
+                }
+                if (isThere) // All done.
+                {
+                    break;
+                }
+            }
             return xDoc;
         }
 
@@ -60,7 +91,12 @@ namespace BookMark
         public List<XmlBookMark> ReadXmlData(string fileName)
         {
             XDocument xDoc = XDocument.Load(fileName);
-            var elementsToUpdate = xDoc.Descendants().Where(o => (o.Name == "BookmarkUTC" || o.Name == "Key" || o.Name == "LastUpdateDateTime" || o.Name == "LastFilesProcessed" || o.Name == "LastFilesErrorneous") && !o.HasElements);
+            var elementsToUpdate = xDoc.Descendants().Where(o => (o.Name == "BookmarkUTC" ||
+                                                                    o.Name == "Key" || 
+                                                                    o.Name == "LastUpdateDateTime" || 
+                                                                    o.Name == "LastFilesProcessed" || 
+                                                                    o.Name == "LastFilesErrorneous" || 
+                                                                    o.Name == "TotalFilesProcessed") && !o.HasElements);
             List<XmlBookMark> xmlBookMarkList = LoadXmlBookMarksIntoAList(elementsToUpdate);
             return xmlBookMarkList;
         }
@@ -98,6 +134,9 @@ namespace BookMark
                         break;
                     case "LastFilesErrorneous":
                         xmlBookMark.LastFilesErrorneous = element.Value;
+                        break;
+                    case "TotalFilesProcessed":
+                        xmlBookMark.TotalFilesProcessed = element.Value;
                         xmlBookMarkList.Add(xmlBookMark);
                         xmlBookMark = new XmlBookMark();
                         break;
