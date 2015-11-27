@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -8,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web;
+using System.Web.Mvc;
 using LandfillService.WebApi.Models;
 using LandfillService.WebApi.ApiClients;
 using System.Collections;
@@ -16,13 +18,14 @@ using LandfillService.Common.Contracts;
 using LandfillService.Common;
 using NodaTime;
 using System.Reflection;
+using VSS.VisionLink.Utilization.Repositories;
 
 namespace LandfillService.WebApi.Controllers
 {
     /// <summary>
     /// Handles project related requests
     /// </summary>
-    [RoutePrefix("api/v1/projects")]
+    [System.Web.Http.RoutePrefix("api/v1/projects")]
     public class ProjectsController : ApiController
     {
         private ForemanApiClient foremanApiClient = new ForemanApiClient();
@@ -78,6 +81,26 @@ namespace LandfillService.WebApi.Controllers
         }
 
         /// <summary>
+        /// Attempts to retrieve a list of projects from the Foreman API and save it in the landfill DB; deletes the session if invalid
+        /// </summary>
+        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <returns>A list of projects or error details</returns>
+        private IEither<IHttpActionResult, IEnumerable<VSS.VisionLink.Utilization.Common.Models.Project>> GetAllProjects()
+        {
+          try
+          {
+            var repo = new ProjectRepository(ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString);
+            var projects = repo.GetProjects();
+            System.Diagnostics.Debug.WriteLine(projects);
+            return Either.Right<IHttpActionResult, IEnumerable<VSS.VisionLink.Utilization.Common.Models.Project>>(projects);
+          }
+          catch (ForemanApiException e)
+          {
+            return Either.Left<IHttpActionResult, IEnumerable<VSS.VisionLink.Utilization.Common.Models.Project>>(Content(e.code, e.Message));
+          }
+        }
+
+        /// <summary>
         /// Retrieves a list of projects either from the landfill DB (if less than one hour old) or from the Foreman API
         /// </summary>
         /// <param name="sessionId">Session ID provided by the Foreman API</param>
@@ -94,12 +117,22 @@ namespace LandfillService.WebApi.Controllers
         /// Returns the list of projects available to the user
         /// </summary>
         /// <returns>List of available projects</returns>
-        [Route("")]
+        [System.Web.Http.Route("")]
         public IHttpActionResult Get()
         {
             var sessionId = Request.Headers.GetValues("SessionId").First();
 
             return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects => Ok(projects));
+        }
+
+        /// <summary>
+        /// Returns the list of projects available to the user
+        /// </summary>
+        /// <returns>List of available projects</returns>
+        [System.Web.Http.Route("/NG")]
+        public IHttpActionResult GetNG()
+        {
+          return GetAllProjects().Case(errorResponse => errorResponse, Ok);
         }
 
         /// <summary>
@@ -139,7 +172,7 @@ namespace LandfillService.WebApi.Controllers
         /// </summary>
         /// <param name="id">Project ID</param>
         /// <returns>List of data entries for each day in the last two years and the status of volume retrieval for the project</returns>
-        [Route("{id}")]
+        [System.Web.Http.Route("{id}")]
         public IHttpActionResult Get(uint id)
         {
             // Get the available data
@@ -287,7 +320,7 @@ namespace LandfillService.WebApi.Controllers
         /// <param name="id">Project ID</param>
         /// <param name="entries">array of weight entries</param>
         /// <returns>Project data and status of volume retrieval</returns>
-        [Route("{id}/weights")]
+        [System.Web.Http.Route("{id}/weights")]
         public IHttpActionResult PostWeights(uint id, [FromBody] WeightEntry[] entries)
         {
             var sessionId = Request.Headers.GetValues("SessionId").First();

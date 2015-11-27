@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using KafkaNet.Common;
@@ -176,6 +177,19 @@ namespace VSS.VisionLink.Utilization.Repositories
               WHERE projectUid = @projectUid AND IsDeleted=0"
           , new { projectUid }
         ).FirstOrDefault();
+      PerhapsCloseConnection();
+      return project;
+    }
+
+    public IEnumerable<Project> GetProjects()
+    {
+      PerhapsOpenConnection();
+      var project = Connection.Query<Project>
+        (@"SELECT 
+                 projectUid, name, projectId, timeZone, customerUid, subscriptionUid, 
+                  daysToSubscriptionExpiry, lastActionedUtc, IsDeleted
+              FROM projects
+              WHERE  IsDeleted=0");
       PerhapsCloseConnection();
       return project;
     }

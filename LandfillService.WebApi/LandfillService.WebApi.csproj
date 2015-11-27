@@ -259,6 +259,18 @@
       <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
       <Name>LandfillService.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VSS.VisionLink.Utilization.Common.Interfaces\VSS.VisionLink.Landfill.Common.Interfaces.csproj">
+      <Project>{44CD2027-F652-4EDE-BFED-2C9555D56440}</Project>
+      <Name>VSS.VisionLink.Landfill.Common.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.VisionLink.Utilization.Common.Models\VSS.VisionLink.Landfill.Common.Models.csproj">
+      <Project>{ebca4af6-ceac-45a1-8014-5e40a24cbc67}</Project>
+      <Name>VSS.VisionLink.Landfill.Common.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.VisionLink.Utilization.Repositories\VSS.VisionLink.Landfill.Repositories.csproj">
+      <Project>{80B92674-9BB2-4131-8053-701757F9EB03}</Project>
+      <Name>VSS.VisionLink.Landfill.Repositories</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
