@@ -29,6 +29,7 @@ bld/
 [Oo]bj/ 
 _ReSharper*/
 [Tt]est[Rr]esult*
+deploy/
 
 # Track ToolsFolder
 !tools/OpenCover/tools/x64/
@@ -144,7 +145,7 @@ publish/
 *.azurePubxml
 # TODO: Comment the next line if you want to checkin your web deploy settings 
 # but database connection strings (with potential passwords) will be unencrypted
-*.pubxml
+#*.pubxml
 *.publishproj
 
 # NuGet Packages
@@ -199,3 +200,4 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 /packages
+
