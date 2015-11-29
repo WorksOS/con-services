@@ -129,7 +129,7 @@ namespace LandfillService.WebApi.Controllers
         /// Returns the list of projects available to the user
         /// </summary>
         /// <returns>List of available projects</returns>
-        [System.Web.Http.Route("/NG")]
+        [System.Web.Http.Route("NG")]
         public IHttpActionResult GetNG()
         {
           return GetAllProjects().Case(errorResponse => errorResponse, Ok);

@@ -32,6 +32,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForDev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DeployToFolderForDev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
@@ -65,8 +74,27 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
-      <HintPath>..\..\VSS.VisionLink.Utilization\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.FleetSummary">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.FleetSummary.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.Geocoding">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Geocoding.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.Geofence">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Geofence.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.Identity">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Identity.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.Notifications">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Notifications.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.Telematics">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Telematics.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +125,10 @@
     <ProjectReference Include="..\VSS.VisionLink.Utilization.Common.Utilities\VSS.VisionLink.Landfill.Common.Utilities.csproj">
       <Project>{486582b2-bf40-457e-943b-2350880854bc}</Project>
       <Name>VSS.VisionLink.Landfill.Common.Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.VisionLink.Utilization.Repositories\VSS.VisionLink.Landfill.Repositories.csproj">
+      <Project>{80b92674-9bb2-4131-8053-701757f9eb03}</Project>
+      <Name>VSS.VisionLink.Landfill.Repositories</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
