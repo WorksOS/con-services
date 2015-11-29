@@ -559,6 +559,13 @@
             <param name="sessionId">Session ID provided by the Foreman API</param>
             <returns>A list of projects or error details</returns>
         </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetAllProjects">
+            <summary>
+            Attempts to retrieve a list of projects from the Foreman API and save it in the landfill DB; deletes the session if invalid
+            </summary>
+            <param name="sessionId">Session ID provided by the Foreman API</param>
+            <returns>A list of projects or error details</returns>
+        </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PerhapsUpdateProjectList(System.String)">
             <summary>
             Retrieves a list of projects either from the landfill DB (if less than one hour old) or from the Foreman API
@@ -567,6 +574,12 @@
             <returns>A list of projects or error details</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get">
+            <summary>
+            Returns the list of projects available to the user
+            </summary>
+            <returns>List of available projects</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetNG">
             <summary>
             Returns the list of projects available to the user
             </summary>
