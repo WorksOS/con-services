@@ -80,11 +80,27 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
+    <Reference Include="VSS.VisionLink.Interfaces.Events.FleetSummary">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.FleetSummary.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.Geocoding">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Geocoding.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.Geofence">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Geofence.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.Identity">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Identity.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
     </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.Notifications">
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Notifications.dll</HintPath>
+    </Reference>
     <Reference Include="VSS.VisionLink.Interfaces.Events.Telematics">
-      <HintPath>..\..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Telematics.dll</HintPath>
+      <HintPath>..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Telematics.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
