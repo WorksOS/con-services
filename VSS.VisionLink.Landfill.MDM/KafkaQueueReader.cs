@@ -99,15 +99,15 @@ namespace VSS.VisionLink.Utilization.DataFeed
     {
       Log.DebugFormat("Resolving bookmark for IAssetEvent kafka topic {0}", kafkaTopic);
       var bookmarkType = BookmarkTypeEnum.None;
-      if (kafkaTopic.Contains("CreateAssetEvent"))
+      if (kafkaTopic.Contains("CreateProjectEvent"))
       {
         bookmarkType = BookmarkTypeEnum.CreateAssetEvent;
       }
-      else if (kafkaTopic.Contains("UpdateAssetEvent"))
+      else if (kafkaTopic.Contains("UpdateProjectEvent"))
       {
         bookmarkType = BookmarkTypeEnum.UpdateAssetEvent;
       }
-      else if (kafkaTopic.Contains("DeleteAssetEvent"))
+      else if (kafkaTopic.Contains("DeleteProjectEvent"))
       {
         bookmarkType = BookmarkTypeEnum.DeleteAssetEvent;
       }
