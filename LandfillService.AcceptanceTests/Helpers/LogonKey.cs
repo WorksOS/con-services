@@ -1,5 +1,4 @@
 ﻿using System;
-using LandfillService.AcceptanceTests.StepDefinitions;
 using RestSharp;
 using System.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

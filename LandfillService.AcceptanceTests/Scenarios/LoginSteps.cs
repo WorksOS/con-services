@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
-using TechTalk.SpecFlow;
-using LandfillService.WebApi.Models;
-using Newtonsoft.Json;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using LandfillService.AcceptanceTests.Helpers;
-using System.Configuration;
+using LandfillService.WebApi.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using TechTalk.SpecFlow;
 
-namespace LandfillService.AcceptanceTests.StepDefinitions
+namespace LandfillService.AcceptanceTests.Scenarios
 {
     [Binding, Scope(Feature = "Login")]
     [TestClass()]
