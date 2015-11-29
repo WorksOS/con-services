@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using VSS.VisionLink.Landfill.Common.Models;
 using VSS.VisionLink.Utilization.Common.Models;
 
 namespace VSS.VisionLink.Utilization.Common.Interfaces

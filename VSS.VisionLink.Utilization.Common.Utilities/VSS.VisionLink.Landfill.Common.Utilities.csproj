@@ -7,8 +7,8 @@
     <ProjectGuid>{486582B2-BF40-457E-943B-2350880854BC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VSS.VisionLink.Utilization.Common.Utilities</RootNamespace>
-    <AssemblyName>VSS.VisionLink.Utilization.Common.Utilities</AssemblyName>
+    <RootNamespace>VSS.VisionLink.Landfill.Common.Utilities</RootNamespace>
+    <AssemblyName>VSS.VisionLink.Landfill.Common.Utilities</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -108,9 +108,9 @@
       <HintPath>..\packages\C5.2.3.0.1\lib\net40\C5.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\log4net.2.0.4\lib\net45-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>

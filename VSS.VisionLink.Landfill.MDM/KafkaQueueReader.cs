@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using log4net;
 using Microsoft.Practices.Unity;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Landfill.Common.Models;
 using VSS.VisionLink.Utilization.Common.Interfaces;
 using VSS.VisionLink.Utilization.Common.Models;
 using VSS.VisionLink.Utilization.Common.Utilities;
@@ -101,15 +102,15 @@ namespace VSS.VisionLink.Utilization.DataFeed
       var bookmarkType = BookmarkTypeEnum.None;
       if (kafkaTopic.Contains("CreateProjectEvent"))
       {
-        bookmarkType = BookmarkTypeEnum.CreateAssetEvent;
+        bookmarkType = BookmarkTypeEnum.CreateAssetEventOffset;
       }
       else if (kafkaTopic.Contains("UpdateProjectEvent"))
       {
-        bookmarkType = BookmarkTypeEnum.UpdateAssetEvent;
+        bookmarkType = BookmarkTypeEnum.UpdateAssetEventOffset;
       }
       else if (kafkaTopic.Contains("DeleteProjectEvent"))
       {
-        bookmarkType = BookmarkTypeEnum.DeleteAssetEvent;
+        bookmarkType = BookmarkTypeEnum.DeleteAssetEventOffset;
       }
       else if (kafkaTopic.Contains("HoursEvent"))
       {

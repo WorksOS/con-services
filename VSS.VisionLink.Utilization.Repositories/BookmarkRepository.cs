@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using VSS.VisionLink.Landfill.Common.Models;
 using VSS.VisionLink.Utilization.Common.Interfaces;
 using VSS.VisionLink.Utilization.Common.Models;
 

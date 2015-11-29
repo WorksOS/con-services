@@ -1,4 +1,6 @@
-﻿namespace VSS.VisionLink.Utilization.Common.Models
+﻿using VSS.VisionLink.Landfill.Common.Models;
+
+namespace VSS.VisionLink.Utilization.Common.Models
 {
   public class Bookmark
   {

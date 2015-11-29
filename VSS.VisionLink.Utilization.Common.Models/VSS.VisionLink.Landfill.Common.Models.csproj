@@ -7,8 +7,8 @@
     <ProjectGuid>{EBCA4AF6-CEAC-45A1-8014-5E40A24CBC67}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VSS.VisionLink.Utilization.Common.Models</RootNamespace>
-    <AssemblyName>VSS.VisionLink.Utilization.Common.Models</AssemblyName>
+    <RootNamespace>VSS.VisionLink.Landfill.Common.Models</RootNamespace>
+    <AssemblyName>VSS.VisionLink.Landfill.Common.Models</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -115,10 +115,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VSS.VisionLink.Interfaces.Events.Telematics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.Telematics.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Project.cs" />

@@ -4,7 +4,7 @@ using System.Text;
 using log4net.Appender;
 using log4net.Layout;
 
-namespace VSS.VisionLink.Utilization.Common.Utilities
+namespace VSS.VisionLink.Landfill.Common.Utilities
 {
   public class LogAppender : RollingFileAppender
   {
