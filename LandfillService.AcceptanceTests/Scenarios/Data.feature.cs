@@ -11,7 +11,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace LandfillService.AcceptanceTests
+namespace LandfillService.AcceptanceTests.Scenarios
 {
     using TechTalk.SpecFlow;
     
@@ -48,7 +48,7 @@ namespace LandfillService.AcceptanceTests
             if (((TechTalk.SpecFlow.FeatureContext.Current != null) 
                         && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "Data")))
             {
-                LandfillService.AcceptanceTests.DataFeature.FeatureSetup(null);
+                LandfillService.AcceptanceTests.Scenarios.DataFeature.FeatureSetup(null);
             }
         }
         

@@ -15,9 +15,9 @@ namespace LandfillService.AcceptanceTests.Helpers
         public double Volume { get; set; }
     }
 
-    public class LandFillMySqlDb
+    public static class LandFillMySqlDb
     {
-        private readonly string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
+        private static readonly string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
         private const double POUNDS_PER_TON = 2000.0;
         private const double M3_PER_YD3 = 0.7645555;
         private const double EPSILON = 0.001;
@@ -26,7 +26,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// </summary>
         /// <param name="body">Code to execute</param>
         /// <returns>The result of executing body()</returns>
-        private T WithConnection<T>(Func<MySqlConnection, T> body)
+        private static T WithConnection<T>(Func<MySqlConnection, T> body)
         {
             using (var conn = new MySqlConnection(connString))
             {
@@ -42,7 +42,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="project"></param>
         /// <param name="units"></param>
         /// <returns></returns>
-        public List<DayEntryAll> GetEntries(Project project, UnitsTypeEnum units)
+        public static List<DayEntryAll> GetEntries(Project project, UnitsTypeEnum units)
         {
             return WithConnection(conn =>
             {
@@ -70,7 +70,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// </summary>
         /// <param name="projectId"></param>
         /// <returns>Project</returns>
-        public Project GetProject(uint projectId)
+        public static Project GetProject(int projectId)
         {
             return WithConnection(conn =>
             {
@@ -83,7 +83,7 @@ namespace LandfillService.AcceptanceTests.Helpers
             });
         }
 
-        private Project GetProjectDetailsFromMySql(MySqlDataReader reader)
+        private static Project GetProjectDetailsFromMySql(MySqlDataReader reader)
         {
             Project projectDetails = new Project();
             while (reader.Read())
@@ -103,7 +103,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="units"></param>
         /// <param name="reader"></param>
         /// <returns></returns>
-        private List<DayEntryAll> AddEntriesFromMySqlDatabase(UnitsTypeEnum units, MySqlDataReader reader)
+        private static List<DayEntryAll> AddEntriesFromMySqlDatabase(UnitsTypeEnum units, MySqlDataReader reader)
         {            
             var entries = new List<DayEntryAll>();
             try
@@ -124,7 +124,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="units">Type of units</param>
         /// <param name="reader">mysql data reader</param>
         /// <param name="entries">All entries</param>
-        private void IterateThroughMySqlDataReader(UnitsTypeEnum units, MySqlDataReader reader, List<DayEntryAll> entries)
+        private static void IterateThroughMySqlDataReader(UnitsTypeEnum units, MySqlDataReader reader, List<DayEntryAll> entries)
         {
             while (reader.Read())
             {
@@ -152,7 +152,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="entryDate">EntryDate</param>
         /// <param name="entryWeight">Daily weight</param>
         /// <param name="entryVolume">Daily volume</param>
-        private void AddANewDayEntryToCollection(UnitsTypeEnum units, List<DayEntryAll> entries, DateTime entryDate, double entryWeight, double entryVolume)
+        private static void AddANewDayEntryToCollection(UnitsTypeEnum units, List<DayEntryAll> entries, DateTime entryDate, double entryWeight, double entryVolume)
         {
             double density = CalculateTheDensity(units, entryWeight, entryVolume);
             entries.Add(new DayEntryAll
@@ -172,7 +172,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="entryWeight">Weight from mySql</param>
         /// <param name="entryVolume">Volume from mySql</param>
         /// <returns>density</returns>
-        private double CalculateTheDensity(UnitsTypeEnum units, double entryWeight, double entryVolume)
+        private static double CalculateTheDensity(UnitsTypeEnum units, double entryWeight, double entryVolume)
         {
             double density;
             if (units == UnitsTypeEnum.Metric)
