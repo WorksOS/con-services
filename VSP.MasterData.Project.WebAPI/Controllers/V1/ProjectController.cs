@@ -152,7 +152,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     /// <response code="200">Ok</response>
     /// <response code="500">Internal Server Error</response>
     [HttpPost]
-    [Route("")]
+    [Route("AssociateCustomer")]
     public IHttpActionResult AssociateCustomerProject([FromBody] AssociateProjectCustomer customerProject)
     {
       try
@@ -177,7 +177,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     /// <response code="200">Ok</response>
     /// <response code="500">Internal Server Error</response>
     [HttpPost]
-    [Route("")]
+    [Route("DissociateCustomer")]
     public IHttpActionResult DissociateCustomerProject([FromBody] DissociateProjectCustomer customerProject)
     {
       try
