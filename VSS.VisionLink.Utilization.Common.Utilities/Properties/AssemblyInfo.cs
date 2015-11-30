@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("VSS.VisionLink.Utilization.Common.Utilities")]
+[assembly: AssemblyTitle("VSS.VisionLink.Landfill.Common.Utilities")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Trimble Navigation New Zealand")]
-[assembly: AssemblyProduct("VSS.VisionLink.Utilization.Common.Utilities")]
+[assembly: AssemblyProduct("VSS.VisionLink.Landfill.Common.Utilities")]
 [assembly: AssemblyCopyright("Copyright © Trimble Navigation New Zealand 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

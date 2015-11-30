@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Utilization.Common.Interfaces
+﻿namespace VSS.VisionLink.Landfill.Common.Interfaces
 {
   /// <summary>
   ///   Interface provides access to kafka queue provider

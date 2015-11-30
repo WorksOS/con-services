@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Configuration;
 
-namespace VSS.VisionLink.Utilization.Common.Utilities
+namespace VSS.VisionLink.Landfill.Common.Utilities
 {
   public static class ConfigSettings
   {

@@ -4,13 +4,11 @@ using System.Reflection;
 using System.Threading.Tasks;
 using log4net;
 using Microsoft.Practices.Unity;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Landfill.Common.Interfaces;
 using VSS.VisionLink.Landfill.Common.Models;
-using VSS.VisionLink.Utilization.Common.Interfaces;
-using VSS.VisionLink.Utilization.Common.Models;
-using VSS.VisionLink.Utilization.Common.Utilities;
+using VSS.VisionLink.Landfill.Common.Utilities;
 
-namespace VSS.VisionLink.Utilization.DataFeed
+namespace VSS.VisionLink.Landfill.DataFeed
 {
   /// <summary>
   ///   Class used to read kafka queue. Contains tasks to this asynchronously
@@ -102,44 +100,23 @@ namespace VSS.VisionLink.Utilization.DataFeed
       var bookmarkType = BookmarkTypeEnum.None;
       if (kafkaTopic.Contains("CreateProjectEvent"))
       {
-        bookmarkType = BookmarkTypeEnum.CreateAssetEventOffset;
+        bookmarkType = BookmarkTypeEnum.CreateAssetEvent;
       }
       else if (kafkaTopic.Contains("UpdateProjectEvent"))
       {
-        bookmarkType = BookmarkTypeEnum.UpdateAssetEventOffset;
+        bookmarkType = BookmarkTypeEnum.UpdateAssetEvent;
       }
       else if (kafkaTopic.Contains("DeleteProjectEvent"))
       {
-        bookmarkType = BookmarkTypeEnum.DeleteAssetEventOffset;
+        bookmarkType = BookmarkTypeEnum.DeleteAssetEvent;
       }
-      else if (kafkaTopic.Contains("HoursEvent"))
-      {
-        bookmarkType = BookmarkTypeEnum.RuntimeHoursOffset;
-      }
-      else if (kafkaTopic.Contains("EngineOperatingStatusEvent"))
-      {
-        bookmarkType = BookmarkTypeEnum.EngineStatusOffset;
-      }
-      else if (kafkaTopic.Contains("MovingEvent"))
-      {
-        bookmarkType = BookmarkTypeEnum.MovingOffset;
-      }
-      else if (kafkaTopic.Contains("SwitchStateEvent"))
-      {
-        bookmarkType = BookmarkTypeEnum.SwitchStateOffset;
-      }
-      else if (kafkaTopic.Contains("OdometerEvent"))
-      {
-        bookmarkType = BookmarkTypeEnum.OdometerMeterOffset;
-      }
-
       Log.DebugFormat("Bookmark type {0}", bookmarkType);
       return bookmarkType;
     }
 
     public async Task<bool> ReadNextEvent()
     {
-      Log.DebugFormat("UtilizationDataFeed: about to read next message of type {0}", typeof (T));
+      Log.DebugFormat("Landfill MDM: about to read next message of type {0}", typeof(T));
       long offset = 0;
       var task = new Task<T>(() => kafkaQueue.GetNextItem(out offset));
       task.Start();

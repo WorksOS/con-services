@@ -11,9 +11,9 @@ using KafkaNet.Protocol;
 using log4net;
 using Newtonsoft.Json;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Utilization.Common.Interfaces;
+using VSS.VisionLink.Landfill.Common.Interfaces;
 
-namespace VSS.VisionLink.Utilization.Common.Utilities
+namespace VSS.VisionLink.Landfill.Common.Utilities
 {
   public class KafkaProjectEventQueue<T> : KafkaQueue<T>, IKafkaQueue<T> where T : IProjectEvent
   {

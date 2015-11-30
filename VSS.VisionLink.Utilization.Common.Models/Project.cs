@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Utilization.Common.Models
+namespace VSS.VisionLink.Landfill.Common.Models
 {
   public class Project
   {

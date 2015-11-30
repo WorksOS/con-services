@@ -5,10 +5,10 @@ using Dapper;
 using KafkaNet.Common;
 using VSS.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Utilization.Common.Interfaces;
-using VSS.VisionLink.Utilization.Common.Models;
+using VSS.VisionLink.Landfill.Common.Interfaces;
+using VSS.VisionLink.Landfill.Common.Models;
 
-namespace VSS.VisionLink.Utilization.Repositories
+namespace VSS.VisionLink.Landfill.Repositories
 {
 
   public class ProjectRepository : RepositoryBase, IProjectRepository

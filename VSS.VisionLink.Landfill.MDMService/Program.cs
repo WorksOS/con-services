@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using log4net;
 using Microsoft.Practices.Unity;
 using Topshelf;
 using Topshelf.Runtime;
 using VSS.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Utilization.Common.Interfaces;
-using VSS.VisionLink.Utilization.Common.Utilities;
-using VSS.VisionLink.Utilization.DataFeed;
-using VSS.VisionLink.Utilization.Repositories;
+using VSS.VisionLink.Landfill.Common.Interfaces;
+using VSS.VisionLink.Landfill.Common.Utilities;
+using VSS.VisionLink.Landfill.DataFeed;
+using VSS.VisionLink.Landfill.Repositories;
 
 namespace VSS.VisionLink.Landfill.MDMService
 {

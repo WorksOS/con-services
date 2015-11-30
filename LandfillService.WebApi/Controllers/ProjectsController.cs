@@ -18,7 +18,7 @@ using LandfillService.Common.Contracts;
 using LandfillService.Common;
 using NodaTime;
 using System.Reflection;
-using VSS.VisionLink.Utilization.Repositories;
+using VSS.VisionLink.Landfill.Repositories;
 
 namespace LandfillService.WebApi.Controllers
 {
@@ -85,18 +85,18 @@ namespace LandfillService.WebApi.Controllers
         /// </summary>
         /// <param name="sessionId">Session ID provided by the Foreman API</param>
         /// <returns>A list of projects or error details</returns>
-        private IEither<IHttpActionResult, IEnumerable<VSS.VisionLink.Utilization.Common.Models.Project>> GetAllProjects()
+        private IEither<IHttpActionResult, IEnumerable<VSS.VisionLink.Landfill.Common.Models.Project>> GetAllProjects()
         {
           try
           {
             var repo = new ProjectRepository(ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString);
             var projects = repo.GetProjects();
             System.Diagnostics.Debug.WriteLine(projects);
-            return Either.Right<IHttpActionResult, IEnumerable<VSS.VisionLink.Utilization.Common.Models.Project>>(projects);
+            return Either.Right<IHttpActionResult, IEnumerable<VSS.VisionLink.Landfill.Common.Models.Project>>(projects);
           }
           catch (ForemanApiException e)
           {
-            return Either.Left<IHttpActionResult, IEnumerable<VSS.VisionLink.Utilization.Common.Models.Project>>(Content(e.code, e.Message));
+            return Either.Left<IHttpActionResult, IEnumerable<VSS.VisionLink.Landfill.Common.Models.Project>>(Content(e.code, e.Message));
           }
         }
 

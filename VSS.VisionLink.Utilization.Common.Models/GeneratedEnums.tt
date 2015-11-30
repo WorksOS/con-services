@@ -118,7 +118,7 @@ namespace <#= project.Properties.Item("DefaultNamespace").Value #><#= namespaceN
       names = connection.Query<string>
         (@"SELECT table_name FROM information_schema.tables 
            WHERE table_type = 'base table' 
-           AND table_schema='Utilization'
+           AND table_schema='Landfill'
            AND table_name LIKE '%Enum'"        
         ).ToList();
     }

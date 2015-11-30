@@ -2,11 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Reflection;
 using log4net;
+using VSS.VisionLink.Landfill.Common.Models;
 using VSS.VisionLink.Landfill.MDM.Interfaces;
-using VSS.VisionLink.Utilization.Common.Models;
-using VSS.VisionLink.Utilization.DataFeed.Interfaces;
 
-namespace VSS.VisionLink.Utilization.DataFeed
+namespace VSS.VisionLink.Landfill.MDM
 {
   /// <summary>
   ///   Builds pipeline of rules to be executed against inbound events

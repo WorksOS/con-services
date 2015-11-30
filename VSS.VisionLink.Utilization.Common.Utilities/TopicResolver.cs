@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections;
 
-namespace VSS.VisionLink.Utilization.Common.Utilities
+namespace VSS.VisionLink.Landfill.Common.Utilities
 {
   /// <summary>
   ///   This class resolves topic name to specific Kafka queue
@@ -20,7 +19,7 @@ namespace VSS.VisionLink.Utilization.Common.Utilities
       {
         var typename =
           string.Format(
-            "VSS.VisionLink.Utilization.Common.Interfaces.IKafkaQueue`1[[{0},{1}]],VSS.VisionLink.Utilization.Common.Interfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "VSS.VisionLink.Landfill.Common.Interfaces.IKafkaQueue`1[[{0},{1}]],VSS.VisionLink.Landfill.Common.Interfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
             topicName,
             "VSS.VisionLink.Interfaces.Events.Telematics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
         T =
@@ -30,7 +29,7 @@ namespace VSS.VisionLink.Utilization.Common.Utilities
         {
           typename =
             string.Format(
-            "VSS.VisionLink.Utilization.Common.Interfaces.IKafkaQueue`1[[{0},{1}]],VSS.VisionLink.Utilization.Common.Interfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+            "VSS.VisionLink.Landfill.Common.Interfaces.IKafkaQueue`1[[{0},{1}]],VSS.VisionLink.Landfill.Common.Interfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
             topicName,
             "VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
           T =

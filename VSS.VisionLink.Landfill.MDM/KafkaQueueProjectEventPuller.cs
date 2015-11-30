@@ -7,12 +7,12 @@ using log4net;
 using Microsoft.Practices.Unity;
 using VSS.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Utilization.Common.Interfaces;
-using VSS.VisionLink.Utilization.Common.Models;
-using VSS.VisionLink.Utilization.DataFeed.Interfaces;
+using VSS.VisionLink.Landfill.Common.Interfaces;
+using VSS.VisionLink.Landfill.Common.Models;
+using VSS.VisionLink.Landfill.MDM;
+using VSS.VisionLink.Landfill.MDM.Interfaces;
 
-namespace VSS.VisionLink.Utilization.DataFeed
+namespace VSS.VisionLink.Landfill.DataFeed
 {
 
   #region KafkaQueueProjectEventPuller

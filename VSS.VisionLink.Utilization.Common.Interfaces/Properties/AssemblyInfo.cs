@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("VSS.VisionLink.Utilization.Common.Interfaces")]
+[assembly: AssemblyTitle("VSS.VisionLink.Landfill.Common.Interfaces")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("VSS.VisionLink.Utilization.Common.Interfaces")]
+[assembly: AssemblyProduct("VSS.VisionLink.Landfill.Common.Interfaces")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

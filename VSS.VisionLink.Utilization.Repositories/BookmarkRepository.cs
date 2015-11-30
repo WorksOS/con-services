@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using VSS.VisionLink.Landfill.Common.Interfaces;
 using VSS.VisionLink.Landfill.Common.Models;
-using VSS.VisionLink.Utilization.Common.Interfaces;
-using VSS.VisionLink.Utilization.Common.Models;
+using VSS.VisionLink.Landfill.Repositories;
 
-namespace VSS.VisionLink.Utilization.Repositories
+namespace VSS.VisionLink.Landfill.Repositories
 {
   public class BookmarkRepository : RepositoryBase, IBookmarkRepository
   {

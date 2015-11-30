@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Utilization.DataFeed.Interfaces
+namespace VSS.VisionLink.Landfill.MDM.Interfaces
 {
   public interface IKafkaQueuePuller
   {

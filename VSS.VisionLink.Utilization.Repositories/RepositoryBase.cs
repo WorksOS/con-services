@@ -4,7 +4,7 @@ using System.Reflection;
 using log4net;
 using MySql.Data.MySqlClient;
 
-namespace VSS.VisionLink.Utilization.Repositories
+namespace VSS.VisionLink.Landfill.Repositories
 {
   public class RepositoryBase
   {

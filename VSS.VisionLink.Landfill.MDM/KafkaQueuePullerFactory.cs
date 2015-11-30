@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
 using log4net;
 using Microsoft.Practices.Unity;
-using VSS.VisionLink.Utilization.DataFeed.Interfaces;
+using VSS.VisionLink.Landfill.DataFeed;
+using VSS.VisionLink.Landfill.MDM.Interfaces;
 
-namespace VSS.VisionLink.Utilization.DataFeed
+namespace VSS.VisionLink.Landfill.DataFeed
 {
   public class KafkaQueuePullerFactory
   {
