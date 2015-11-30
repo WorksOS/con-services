@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using LandfillService.WebApi.Models;
+using Utilization.AcceptanceTests.Utils.Common;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
     public class StepSupport
     {
+        private static readonly Random rndNumber = new Random();
+        private static readonly object syncLock = new object();
+
         /// <summary>
         /// Get the unit type from response from forman. 
         /// </summary>
@@ -289,6 +295,36 @@ namespace LandfillService.AcceptanceTests.Helpers
             return windowsTimeZone;
         }
 
+        public static int RandomNumber(int min, int max)
+        {
+            lock (syncLock)
+            {
+                return rndNumber.Next(min, max);
+            }
+        }
+
+        /// <summary>
+        /// Build a random number using date's and random generator. This is used aas the asset ID on the 
+        /// </summary>
+        /// <returns>16 character random string prefixed</returns>
+        public string GetRandomNumber()
+        {
+            var rnd = RandomNumber(1, 987654321);
+            var unique = DateTime.Now.Year + DateTime.Now.DayOfYear +
+                        GetNumbersOnly(DateTime.Now.TimeOfDay + DateTime.Now.Millisecond.ToString()) +
+                        rnd;
+            return unique.Length <= 16 ? unique : unique.Substring(0, 16);
+        }
+
+        /// <summary>
+        /// Get only the numbers
+        /// </summary>
+        /// <param name="input">String of text with numbers</param>
+        /// <returns>The numbers only</returns>
+        private static string GetNumbersOnly(string input)
+        {
+            return new string(input.Where(char.IsDigit).ToArray());
+        }
 
     }
 }
