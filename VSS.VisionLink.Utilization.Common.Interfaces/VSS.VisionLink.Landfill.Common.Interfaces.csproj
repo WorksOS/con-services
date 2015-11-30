@@ -7,8 +7,8 @@
     <ProjectGuid>{44CD2027-F652-4EDE-BFED-2C9555D56440}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VSS.VisionLink.Utilization.Common.Interfaces</RootNamespace>
-    <AssemblyName>VSS.VisionLink.Utilization.Common.Interfaces</AssemblyName>
+    <RootNamespace>VSS.VisionLink.Landfill.Common.Interfaces</RootNamespace>
+    <AssemblyName>VSS.VisionLink.Landfill.Common.Interfaces</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

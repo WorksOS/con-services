@@ -3,7 +3,7 @@ using System.Collections;
 using System.IO;
 using log4net.ObjectRenderer;
 
-namespace VSS.VisionLink.Utilization.Common.Utilities
+namespace VSS.VisionLink.Landfill.Common.Utilities
 {
   public class ExceptionRenderer : IObjectRenderer
   {

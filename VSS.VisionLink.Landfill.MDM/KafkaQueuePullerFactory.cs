@@ -20,10 +20,10 @@ namespace VSS.VisionLink.Utilization.DataFeed
       if (kafkaTopicName.Contains("CreateProjectEvent"))
         return new KafkaQueueCreateProjectEventPuller(container, kafkaTopicName);
 
-      if (kafkaTopicName.Contains("UpdateAssetEvent"))
+      if (kafkaTopicName.Contains("UpdateProjectEvent"))
         return new KafkaQueueUpdateProjectEventPuller(container, kafkaTopicName);
 
-      if (kafkaTopicName.Contains("DeleteAssetEvent"))
+      if (kafkaTopicName.Contains("DeleteProjectEvent"))
         return new KafkaQueueDeleteProjectEventPuller(container, kafkaTopicName);
 
       Log.ErrorFormat("Exception as Kafka topic '{0}' does not exist!", kafkaTopicName);

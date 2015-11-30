@@ -17,7 +17,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-namespace VSS.VisionLink.Utilization.Common.Models  
+namespace VSS.VisionLink.Landfill.Common.Models  
 {
     public enum BookmarkTypeEnum
     {
@@ -29,9 +29,10 @@ namespace VSS.VisionLink.Utilization.Common.Models
       EngineStatusOffset=5,
       SwitchStateOffset=6,
       OdometerMeterOffset=7,
-      CreateAssetEvent=8,
-      UpdateAssetEvent=9,
-      DeleteAssetEvent=10,
+      CreateAssetEventOffset=8,
+      UpdateAssetEventOffset=9,
+      DeleteAssetEventOffset=10,
+      ServiceMeterAdjustmentOffset=11,
       Test=255
     }
 
