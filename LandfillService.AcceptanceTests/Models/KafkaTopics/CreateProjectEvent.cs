@@ -1,8 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using LandfillService.AcceptanceTests.Interfaces;
 
-namespace LandfillService.AcceptanceTests.Models
+namespace LandfillService.AcceptanceTests.Models.KafkaTopics
 {
     public class CreateProjectEvent : IProjectEvent
     {

@@ -73,11 +73,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutomationCore.API.Framework">
-      <HintPath>..\..\VSS.VisionLink.Utilization\AcceptanceTests\Utilization.AcceptanceTests\External References\AutomationCore.API.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="AutomationCore.Shared">
-      <HintPath>..\..\VSS.VisionLink.Utilization\AcceptanceTests\Utilization.AcceptanceTests\External References\AutomationCore.Shared.dll</HintPath>
+    <Reference Include="AutomationCore.API.Framework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>External References\AutomationCore.API.Framework.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.9.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.9.7\lib\net45\MySql.Data.dll</HintPath>
@@ -95,15 +93,11 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="TechTalk.SpecFlow, Version=1.9.0.77, Culture=neutral, PublicKeyToken=0778194805d6db41, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\SpecFlow.1.9.0\lib\net35\TechTalk.SpecFlow.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
-      <HintPath>..\..\VSS.VisionLink.Interfaces\VSS.VisionLink.Interfaces\Events.MasterData\bin\Debug\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Choose>
@@ -126,10 +120,12 @@
     <Compile Include="Helpers\Poster.cs" />
     <Compile Include="Helpers\ServiceResponse.cs" />
     <Compile Include="Helpers\StepSupport.cs" />
-    <Compile Include="Helpers\IMessage.cs" />
+    <Compile Include="Interfaces\IMessage.cs" />
     <Compile Include="Helpers\Kafka.cs" />
     <Compile Include="Helpers\UtilizationServicesClientUtil.cs" />
+    <Compile Include="Interfaces\IProjectEvent.cs" />
     <Compile Include="Models\KafkaTopics\CreateProjectEvent.cs" />
+    <Compile Include="Models\ProjectType.cs" />
     <Compile Include="Scenarios\Data.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -204,6 +200,14 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\MasterDataProjects\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="External References\AutomationCore.API.Framework.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="External References\AutomationCore.Shared.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

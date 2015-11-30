@@ -5,6 +5,7 @@ using KafkaNet.Protocol;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using LandfillService.AcceptanceTests.Models;
+using LandfillService.AcceptanceTests.Models.KafkaTopics;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
@@ -53,7 +54,7 @@ namespace LandfillService.AcceptanceTests.Helpers
                         ProjectStartDate = DateTime.Today.AddMonths(-3),
                         ProjectName = eventRow["ProjectName"] + uniqueNumber,
                         ProjectTimezone = eventRow["TimeZone"],
-                        ProjectType = eventRow["Type"] == "LandFill" ? VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.LandFill : VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.Full3D,
+                        ProjectType = eventRow["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D,
                     //    ProjectID = Convert.ToInt32(uniqueNumber),
                         ProjectUID = new Guid(),
                         ReceivedUTC = DateTime.UtcNow
