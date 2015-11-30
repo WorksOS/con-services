@@ -16,9 +16,9 @@ namespace LandfillService.AcceptanceTests.Scenarios
     [TestClass()]
     public class DataSteps 
     {
-        protected HttpClient HttpClient;
-        protected HttpResponseMessage Response;
-        protected string ResponseParse;
+        protected HttpClient httpClient;
+        protected HttpResponseMessage response;
+        protected string responseParse;
         private string sessionId;
         private UnitsTypeEnum unitsEnum;
         private double weightAdded;
@@ -42,22 +42,22 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [TestInitialize]
         protected HttpResponseMessage Login(Credentials credentials)
         {
-            HttpClient = new HttpClient();
-            HttpClient.DefaultRequestHeaders.Accept.Clear();
-            HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            HttpClient.DefaultRequestHeaders.Add("SessionID", sessionId);       
-            Response = HttpClient.PostAsJsonAsync(Config.serviceUrl + "users/login", credentials).Result;
-            ResponseParse = Response.Content.ReadAsStringAsync().Result.Replace("\"", "");
-            Assert.IsFalse(ResponseParse.Contains("<html>"),"Failed to login - Is Foreman unavailable?");
-            sessionId = stepSupport.GetSessionIdFromResponse(ResponseParse);
-            unitsEnum = stepSupport.GetWeightUnitsFromResponse(ResponseParse);
-            return Response;
+            httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);       
+            response = httpClient.PostAsJsonAsync(Config.serviceUrl + "users/login", credentials).Result;
+            responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+            Assert.IsFalse(responseParse.Contains("<html>"),"Failed to login - Is Foreman unavailable?");
+            sessionId = stepSupport.GetSessionIdFromResponse(responseParse);
+            unitsEnum = stepSupport.GetWeightUnitsFromResponse(responseParse);
+            return response;
         }
 
         [TestCleanup()]
         public void TestCleanup() 
         {
-            HttpClient.Dispose();
+            httpClient.Dispose();
         }
 
         #endregion
@@ -77,7 +77,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             WeightEntry[] weightEntry = stepSupport.SetUpOneWeightForOneDay(dateOfWeight);
             weightAdded = weightEntry[0].weight;
             request.Content = new StringContent(JsonConvert.SerializeObject(weightEntry), Encoding.UTF8, "application/json");
-            Response = HttpClient.SendAsync(request).Result;
+            response = httpClient.SendAsync(request).Result;
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         /// <param name="dateOfCheck">EntryDate to check in the response</param>
         private void CheckTheWeightHasBeenAddedToTheProject(DateTime dateOfCheck)
         {
-            var projectData = JsonConvert.DeserializeObject<ProjectData>(Response.Content.ReadAsStringAsync().Result);
+            var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var dayEntry = from day in projectData.entries
                            where day.date >= dateOfCheck.AddDays(-2).Date && Math.Abs(day.weight - weightAdded) < EPSILON
                            select day;
@@ -107,7 +107,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         {
             var requestdata = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects/" + projectId), Method = HttpMethod.Get };
             requestdata.Headers.Add("SessionID", sessionId);
-            Response = HttpClient.SendAsync(requestdata).Result;
+            response = httpClient.SendAsync(requestdata).Result;
         }
 
         /// <summary>
@@ -167,17 +167,17 @@ namespace LandfillService.AcceptanceTests.Scenarios
         {
             var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
             request.Headers.Add("SessionID", sessionId);
-            Response = HttpClient.SendAsync(request).Result;
+            response = httpClient.SendAsync(request).Result;
             // Try and get the projects. Should cause exception
         //    var projects = await response.Content.ReadAsAsync<Project[]>();
-            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(Response.Content.ReadAsStringAsync().Result);            
+            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);            
             Assert.IsTrue(GetProjectDetailsFromListOfProjects(projectName, allProjects),"Project " + projectName + " does not exist list. Number of projects in list is " + allProjects.Count);
         }
 
         [Then(@"match response \(\w+ (.+)\)")]
         public void ThenMatchCode(int expectedCode)
         {
-            Assert.AreEqual(expectedCode, (int)Response.StatusCode, "HTTP response status codes not matching expected");
+            Assert.AreEqual(expectedCode, (int)response.StatusCode, "HTTP response status codes not matching expected");
         }
 
         [Given(@"Get a list of all projects")]
@@ -185,14 +185,14 @@ namespace LandfillService.AcceptanceTests.Scenarios
         {
             var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
             request.Headers.Add("SessionID", sessionId);
-            Response = HttpClient.SendAsync(request).Result;
+            response = httpClient.SendAsync(request).Result;
            // var projects = await response.Content.ReadAsAsync<Project[]>();
         }
 
         [Then(@"check the project '(.*)' is in the list")]
         public void ThenCheckTheProjectIsInTheList(string testProjectName)
         {
-            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(Response.Content.ReadAsStringAsync().Result);
+            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
             Assert.IsNotNull(allProjects, "There are no projects in the project list");
             if (allProjects.Any(prj => prj.name == testProjectName))
                  { return; }
@@ -202,7 +202,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [Then(@"check there is (.*) days worth of data")]
         public void ThenCheckThereIsDaysWorthOfData(int dayslimit)
         {
-            var projectData = JsonConvert.DeserializeObject<ProjectData>(Response.Content.ReadAsStringAsync().Result);
+            var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             if (projectData != null)
             {
                 Assert.IsTrue(projectData.entries.Count() > dayslimit, "There wasn't " + dayslimit + " days worth of data for project " + projectId + ". Entries = " + projectData.entries.Count());
@@ -216,7 +216,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [Then(@"compare the subscription expiry days left to mySql database")]
         public void ThenCompareTheSubscriptionExpiryDaysLeftToMySqlDatabase()
         {
-            var projectData = JsonConvert.DeserializeObject<ProjectData>(Response.Content.ReadAsStringAsync().Result);
+            var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             if (projectData != null)
             {
                 var projectDetails = LandFillMySqlDb.GetProject((int)projectData.project.id);
@@ -253,13 +253,13 @@ namespace LandfillService.AcceptanceTests.Scenarios
             WeightEntry[] weightForFiveDays = stepSupport.SetUpFiveWeightsForUpload(stepSupport.GetTodayForTimeZone(timeZoneFromProject));
             weightAdded = weightForFiveDays[0].weight;
             request.Content = new StringContent(JsonConvert.SerializeObject(weightForFiveDays), Encoding.UTF8, "application/json");
-            Response = HttpClient.SendAsync(request).Result;
+            response = httpClient.SendAsync(request).Result;
         }
 
         [Then(@"check the five random weights has been added each day")]
         public void ThenCheckTheFiveRandomWeightsHasBeenAddedEachDay()
         {
-            var projectData = JsonConvert.DeserializeObject<ProjectData>(Response.Content.ReadAsStringAsync().Result);
+            var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var dateToday = stepSupport.GetTodayForTimeZone(timeZoneFromProject);
             var fiveDayEntries = from dayEntryWeight in projectData.entries
                                  where dayEntryWeight.date >=  dateToday.AddDays(-12) && dayEntryWeight.date <= dateToday.AddDays(-7)
@@ -287,7 +287,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             else
                 { calculatedDensity = dayOfDensityCheck.Weight * M3_PER_YD3 * POUNDS_PER_TON / dayOfDensityCheck.Volume; }
 
-            var projectData = JsonConvert.DeserializeObject<ProjectData>(Response.Content.ReadAsStringAsync().Result);
+            var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
             var dayEntry = from day in projectData.entries
                            where day.date.ToShortDateString() == dateOfDensityCheck.ToShortDateString()
                            select day.density;
@@ -308,7 +308,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
                 Assert.Inconclusive("Unable to establish a session. Check MySQL database connection");
             }
             request.Content = new StringContent(JsonConvert.SerializeObject(stepSupport.SetUpOneWeightForOneDay(dateWeightUpdate, weight)), Encoding.UTF8, "application/json");
-            Response = HttpClient.SendAsync(request).Result;
+            response = httpClient.SendAsync(request).Result;
         }
 
         [When(@"adding a random weight for yesterday")]
