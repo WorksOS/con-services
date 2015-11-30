@@ -123,7 +123,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     /// <remarks>Create new project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
-    [Route("")]
+    [Route("Restore")]
     [HttpPost]
     public IHttpActionResult RestoreProject([FromBody] RestoreProjectEvent project)
     {
