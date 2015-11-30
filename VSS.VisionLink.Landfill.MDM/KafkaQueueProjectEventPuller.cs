@@ -98,6 +98,11 @@ namespace VSS.VisionLink.Landfill.DataFeed
         return "UpdateAssetEvent";
       if (evt is DeleteProjectEvent)
         return "DeleteAssetEvent";
+      if (evt is AssociateProjectCustomer)
+        return "AssociateProjectCustomerEvent";
+      if (evt is DissociateProjectCustomer)
+        return "DissociateProjectCustomerEvent";
+
       return "Unknown";
     }
     
@@ -134,6 +139,30 @@ namespace VSS.VisionLink.Landfill.DataFeed
   public class KafkaQueueDeleteProjectEventPuller : KafkaQueueProjectEventPuller
   {
     public KafkaQueueDeleteProjectEventPuller(UnityContainer dependencyContainer, string kafkaTopicName)
+      : base(dependencyContainer, kafkaTopicName)
+    {
+    }
+  }
+
+  #endregion
+
+  #region KafkaQueueAssociateProjectCustomerEventPuller
+
+  public class KafkaQueueAssociateProjectCustomerEventPuller : KafkaQueueProjectEventPuller
+  {
+    public KafkaQueueAssociateProjectCustomerEventPuller(UnityContainer dependencyContainer, string kafkaTopicName)
+      : base(dependencyContainer, kafkaTopicName)
+    {
+    }
+  }
+
+  #endregion
+
+  #region KafkaQueueDissociateProjectCustomerEventPuller
+
+  public class KafkaQueueDissociateProjectCustomerEventPuller : KafkaQueueProjectEventPuller
+  {
+    public KafkaQueueDissociateProjectCustomerEventPuller(UnityContainer dependencyContainer, string kafkaTopicName)
       : base(dependencyContainer, kafkaTopicName)
     {
     }

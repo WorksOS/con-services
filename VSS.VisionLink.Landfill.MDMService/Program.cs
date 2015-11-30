@@ -8,6 +8,7 @@ using Microsoft.Practices.Unity;
 using Topshelf;
 using Topshelf.Runtime;
 using VSS.Interfaces.Events.MasterData.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Landfill.Common.Interfaces;
 using VSS.VisionLink.Landfill.Common.Utilities;
 using VSS.VisionLink.Landfill.DataFeed;
@@ -81,9 +82,13 @@ namespace VSS.VisionLink.Landfill.MDMService
       container.RegisterType<IKafkaQueue<UpdateProjectEvent>, KafkaProjectEventQueue<UpdateProjectEvent>>();
       container.RegisterType<IKafkaQueue<DeleteProjectEvent>, KafkaProjectEventQueue<DeleteProjectEvent>>();
 
+      container.RegisterType<IKafkaQueue<CreateSubscriptionEvent>, KafkaSubscriptionEventQueue<CreateSubscriptionEvent>>();
+      container.RegisterType<IKafkaQueue<UpdateSubscriptionEvent>, KafkaSubscriptionEventQueue<UpdateSubscriptionEvent>>();
+
       var connectionString = ConfigSettings.GetConnectionString("VSPDB");
       container.RegisterType<IBookmarkRepository, BookmarkRepository>(new InjectionConstructor(connectionString));
       container.RegisterType<IProjectRepository, ProjectRepository>(new InjectionConstructor(connectionString));
+      container.RegisterType<ISubscriptionRepository, SubscriptionRepository>(new InjectionConstructor(connectionString));
 
       cancelationTokenSource = new CancellationTokenSource();
 
