@@ -100,15 +100,23 @@ namespace VSS.VisionLink.Landfill.DataFeed
       var bookmarkType = BookmarkTypeEnum.None;
       if (kafkaTopic.Contains("CreateProjectEvent"))
       {
-        bookmarkType = BookmarkTypeEnum.CreateAssetEvent;
+        bookmarkType = BookmarkTypeEnum.CreateProjectEvent;
       }
       else if (kafkaTopic.Contains("UpdateProjectEvent"))
       {
-        bookmarkType = BookmarkTypeEnum.UpdateAssetEvent;
+        bookmarkType = BookmarkTypeEnum.UpdateProjectEvent;
       }
       else if (kafkaTopic.Contains("DeleteProjectEvent"))
       {
-        bookmarkType = BookmarkTypeEnum.DeleteAssetEvent;
+        bookmarkType = BookmarkTypeEnum.DeleteProjectEvent;
+      }
+      else if (kafkaTopic.Contains("CreateSubscriptionEvent"))
+      {
+        bookmarkType = BookmarkTypeEnum.CreateSubscriptionEv;
+      }
+      else if (kafkaTopic.Contains("UpdateSubscriptionEvent"))
+      {
+        bookmarkType = BookmarkTypeEnum.UpdateSubscriptionEv;
       }
       Log.DebugFormat("Bookmark type {0}", bookmarkType);
       return bookmarkType;
