@@ -77,7 +77,7 @@ namespace VSS.VisionLink.Landfill.DataFeed
 
     protected virtual void RegisterRules(RulePipelineExecutor<IProjectEvent> ruleExecutor)
     {
-     
+      ruleExecutor.RegisterRule(new ValidateProjectRule());
     }
 
 

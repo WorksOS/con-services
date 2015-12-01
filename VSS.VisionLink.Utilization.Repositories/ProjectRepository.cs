@@ -30,7 +30,7 @@ namespace VSS.VisionLink.Landfill.Repositories
       {
         var projectEvent = (CreateProjectEvent)evt;
         project.projectId = projectEvent.ProjectID;
-        project.name = projectEvent.ProjectTimeName;
+        project.name = projectEvent.ProjectName;
         project.timeZone = projectEvent.ProjectTimezone;
         project.projectUid = projectEvent.ProjectUID.ToString();
         project.lastActionedUtc = projectEvent.ActionUTC;
@@ -40,7 +40,7 @@ namespace VSS.VisionLink.Landfill.Repositories
       {
         var projectEvent = (UpdateProjectEvent)evt;
         project.projectUid = projectEvent.ProjectUID.ToString();
-        project.name = projectEvent.ProjectTimeName;
+        project.name = projectEvent.ProjectName;
         project.timeZone = projectEvent.ProjectTimezone;
         project.lastActionedUtc = projectEvent.ActionUTC;
         eventType = "UpdateProjectEvent";
