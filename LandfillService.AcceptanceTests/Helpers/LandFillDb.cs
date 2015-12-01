@@ -36,6 +36,41 @@ namespace LandfillService.AcceptanceTests.Helpers
                 return res;
             }
         }
+
+
+        public static string ExecuteMySqlQueryResult(string connectionString, string queryString)
+        {
+
+            string queryResult = null;
+            using (MySqlConnection mySqlConnection = new MySqlConnection(connectionString))
+            {
+                mySqlConnection.Open();
+                MySqlCommand mySqlCommand = new MySqlCommand(queryString, mySqlConnection);
+                MySqlDataReader mySqlDataReader = mySqlCommand.ExecuteReader();
+
+                while (mySqlDataReader.Read())
+                {
+                    queryResult = mySqlDataReader[0].ToString();
+                }
+            }
+            return queryResult;
+        }
+
+        public static void ExecuteMySqlCommand(string connectionString, string commandString)
+        {
+            using (MySqlConnection mySqlConnection = new MySqlConnection(connectionString))
+            {
+                //Open connection 
+                mySqlConnection.Open();
+
+                MySqlCommand mySqlCommand = new MySqlCommand(commandString, mySqlConnection);
+                mySqlCommand.ExecuteNonQuery();
+            }
+
+        }
+
+
+
         /// <summary>
         /// Get all the volume entries from the mySQL database for the pass year
         /// </summary>
@@ -82,6 +117,16 @@ namespace LandfillService.AcceptanceTests.Helpers
                 }
             });
         }
+
+        /// <summary>
+        /// Get the highest project Id in the mySql table
+        /// </summary>
+        /// <returns>projcet ID</returns>
+        public static int GetTheHighestProjectId()
+        {
+            return Convert.ToInt32(ExecuteMySqlQueryResult(connString,"SELECT max(projectId) FROM landfill.projects"));
+        }
+
 
         private static Project GetProjectDetailsFromMySql(MySqlDataReader reader)
         {

@@ -41,7 +41,8 @@ namespace LandfillService.AcceptanceTests.Helpers
         {
             string messageStr = "";
             string topic = "";
-            
+            Guid guid = Guid.NewGuid();
+
             switch (eventType)
             {
                 #region CreateAssetEvent
@@ -55,9 +56,9 @@ namespace LandfillService.AcceptanceTests.Helpers
                         ProjectName = eventRow["ProjectName"] + uniqueNumber,
                         ProjectTimezone = eventRow["TimeZone"],
                         ProjectType = eventRow["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D,
-                    //    ProjectID = Convert.ToInt32(uniqueNumber),
-                        ProjectUID = new Guid(),
-                        ReceivedUTC = DateTime.UtcNow
+                        ProjectID = LandFillMySqlDb.GetTheHighestProjectId(),
+                        ProjectUID = guid,
+                        ReceivedUTC = DateTime.UtcNow                        
                     };
                     
                     messageStr = JsonConvert.SerializeObject(createProjectEvent,new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
