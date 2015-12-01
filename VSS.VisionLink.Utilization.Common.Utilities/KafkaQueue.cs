@@ -23,6 +23,15 @@ namespace VSS.VisionLink.Landfill.Common.Utilities
     }
   }
 
+  public class KafkaSubscriptionEventQueue<T> : KafkaQueue<T>, IKafkaQueue<T> where T : ISubscriptionEvent
+  {
+    public KafkaSubscriptionEventQueue(string kafkaTopic, int offset = 0)
+      : base(kafkaTopic, offset)
+    {
+    }
+  }
+
+
   public abstract class KafkaQueue<T>
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

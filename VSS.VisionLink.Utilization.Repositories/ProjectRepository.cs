@@ -30,7 +30,7 @@ namespace VSS.VisionLink.Landfill.Repositories
       {
         var projectEvent = (CreateProjectEvent)evt;
         project.projectId = projectEvent.ProjectID;
-        project.name = projectEvent.ProjectTimeName;
+        project.name = projectEvent.ProjectName;
         project.timeZone = projectEvent.ProjectTimezone;
         project.projectUid = projectEvent.ProjectUID.ToString();
         project.lastActionedUtc = projectEvent.ActionUTC;
@@ -40,7 +40,7 @@ namespace VSS.VisionLink.Landfill.Repositories
       {
         var projectEvent = (UpdateProjectEvent)evt;
         project.projectUid = projectEvent.ProjectUID.ToString();
-        project.name = projectEvent.ProjectTimeName;
+        project.name = projectEvent.ProjectName;
         project.timeZone = projectEvent.ProjectTimezone;
         project.lastActionedUtc = projectEvent.ActionUTC;
         eventType = "UpdateProjectEvent";
@@ -51,6 +51,23 @@ namespace VSS.VisionLink.Landfill.Repositories
         project.projectUid = projectEvent.ProjectUID.ToString();
         project.lastActionedUtc = projectEvent.ActionUTC;
         eventType = "DeleteProjectEvent";
+      }
+      else if (evt is AssociateProjectCustomer)
+      {
+        var projectEvent = (AssociateProjectCustomer)evt;
+        project.projectUid = projectEvent.ProjectUID.ToString();
+        project.customerUid = projectEvent.CustomerUID.ToString();
+        project.lastActionedUtc = projectEvent.ActionUTC;
+        eventType = "AssociateProjectCustomerEvent";
+      }
+      else if (evt is DissociateProjectCustomer)
+      {
+        //TODO Do we realy need to support this?
+        var projectEvent = (DissociateProjectCustomer)evt;
+        project.projectUid = projectEvent.ProjectUID.ToString();
+        project.customerUid = projectEvent.CustomerUID.ToString();
+        project.lastActionedUtc = projectEvent.ActionUTC;
+        eventType = "DissociateProjectCustomerEvent";
       }
       
       upsertedCount = await UpsertProjectDetail(project, eventType);
@@ -95,10 +112,43 @@ namespace VSS.VisionLink.Landfill.Repositories
         {
           upsertedCount = await DeleteProject(project, existing);
         }
+
+        if (eventType == "AssociateProjectCustomerEvent")
+        {
+          upsertedCount = await AssociateProject(project, existing);
+        }
+
         log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
         PerhapsCloseConnection();
         return upsertedCount;
       }
+    }
+
+    private async Task<int> AssociateProject(Project project, Project existing)
+    {
+      if (existing != null)
+      {
+        if (project.lastActionedUtc >= existing.lastActionedUtc)
+        {
+          const string update =
+            @"UPDATE projects                
+                SET customerUid = @customerUid,
+                  lastActionedUTC = @lastActionedUtc
+              WHERE projectUid = @projectUid";
+          return await Connection.ExecuteAsync(update, project);
+        }
+        else
+        {
+          log.DebugFormat("ProjectRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
+            existing.lastActionedUtc, project.lastActionedUtc);
+        }
+      }
+      else
+      {
+        log.DebugFormat("ProjectRepository: can't update as none existing newActionedUTC {0}",
+          project.lastActionedUtc);
+      }
+      return await Task.FromResult(0);
     }
 
     private async Task<int> CreateProject(Project project)

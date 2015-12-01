@@ -101,10 +101,13 @@
     <Compile Include="Interfaces\IMDMRule.cs" />
     <Compile Include="Interfaces\IKafkaQueuePuller.cs" />
     <Compile Include="KafkaQueueProjectEventPuller.cs" />
+    <Compile Include="KafkaQueueSubscriptionEventPuller.cs" />
     <Compile Include="KafkaQueuePullerFactory.cs" />
     <Compile Include="KafkaQueueReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RulePipelineExecutor.cs" />
+    <Compile Include="ValidateProjectRule.cs" />
+    <Compile Include="ValidateSubscriptionRule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

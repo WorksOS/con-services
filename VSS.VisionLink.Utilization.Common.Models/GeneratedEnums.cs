@@ -32,6 +32,11 @@ namespace VSS.VisionLink.Landfill.Common.Models
     CreateAssetEvent = 8,
     UpdateAssetEvent = 9,
     DeleteAssetEvent = 10,
+    CreateProjectEvent = 11,
+    UpdateProjectEvent = 12,
+    DeleteProjectEvent = 13,
+    CreateSubscriptionEv = 14,
+    UpdateSubscriptionEv = 15,
     Test = 255
   }
 }

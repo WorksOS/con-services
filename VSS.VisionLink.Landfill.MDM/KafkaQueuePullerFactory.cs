@@ -24,6 +24,12 @@ namespace VSS.VisionLink.Landfill.DataFeed
       if (kafkaTopicName.Contains("UpdateProjectEvent"))
         return new KafkaQueueUpdateProjectEventPuller(container, kafkaTopicName);
 
+      if (kafkaTopicName.Contains("CreateSubscriptionEvent"))
+        return new KafkaQueueCreateSubscriptionEventPuller(container, kafkaTopicName);
+
+      if (kafkaTopicName.Contains("UpdateSubscriptionEvent"))
+        return new KafkaQueueUpdateSubscriptionEventPuller(container, kafkaTopicName);
+
       if (kafkaTopicName.Contains("DeleteProjectEvent"))
         return new KafkaQueueDeleteProjectEventPuller(container, kafkaTopicName);
 
