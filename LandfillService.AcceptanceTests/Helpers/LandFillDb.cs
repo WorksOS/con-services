@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Threading;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
@@ -125,6 +126,27 @@ namespace LandfillService.AcceptanceTests.Helpers
         public static int GetTheHighestProjectId()
         {
             return Convert.ToInt32(ExecuteMySqlQueryResult(connString,"SELECT max(projectId) FROM landfill.projects"));
+        }
+
+
+        /// <summary>
+        /// Check my SQL database to see if if the landfill project is there. 
+        /// </summary>
+        /// <param name="projectName">project name</param>
+        public static bool WaitForProjectToBeCreated(string projectName)
+        {
+            int timeElapsed = 0;
+            const int timeout = 10000;
+            string queryStr = string.Format("SELECT COUNT(*) FROM landfill.projects WHERE name = '{0}'",  projectName);
+            while (Convert.ToInt32(ExecuteMySqlQueryResult(connString, queryStr)) < 1)
+            {
+                Console.WriteLine("Wait for mySQL landfill projects to show - " + DateTime.Now + " project name: " + projectName);
+                Thread.Sleep(200);
+                timeElapsed += 200;
+                if (timeElapsed > timeout)
+                    { return false; }
+            }
+            return true;
         }
 
 

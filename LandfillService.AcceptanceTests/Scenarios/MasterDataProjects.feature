@@ -7,7 +7,7 @@ Background:
 @Manual @Sanity @Positive
 @MasterDataProjects
 Scenario: Create a new landfill project 
-Given I inject the following projects master data events
+Given I inject the following CreateProject master data events
 | DaysToExpire | Boundaries | ProjectName    | Type     | TimeZone        |
 | 10           | boundary   | AcceptanceTest | LandFill | America/Chicago |
 When I request the project details from landfill web api 

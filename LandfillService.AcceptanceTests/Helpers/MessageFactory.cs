@@ -56,7 +56,7 @@ namespace LandfillService.AcceptanceTests.Helpers
                         ProjectName = eventRow["ProjectName"] + uniqueNumber,
                         ProjectTimezone = eventRow["TimeZone"],
                         ProjectType = eventRow["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D,
-                        ProjectID = LandFillMySqlDb.GetTheHighestProjectId(),
+                        ProjectID = LandFillMySqlDb.GetTheHighestProjectId() + 1,
                         ProjectUID = guid,
                         ReceivedUTC = DateTime.UtcNow                        
                     };

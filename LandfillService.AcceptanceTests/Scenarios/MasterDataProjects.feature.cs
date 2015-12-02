@@ -107,7 +107,7 @@ this.FeatureBackground();
                         "LandFill",
                         "America/Chicago"});
 #line 10
-testRunner.Given("I inject the following projects master data events", ((string)(null)), table1, "Given ");
+testRunner.Given("I inject the following CreateProject master data events", ((string)(null)), table1, "Given ");
 #line 13
 testRunner.When("I request the project details from landfill web api", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
