@@ -142,7 +142,7 @@ namespace TagFileHarvester
       OrgsHandler.Container.Resolve<IBookmarkManager>().StopDataExport();
       OrgsHandler.OrgProcessingTasks.ForEach(t=>t.Value.Item2.Cancel());
       Log.InfoFormat("TagFileHarvester.Waiting for {0} tasks....",(OrgsHandler.OrgProcessingTasks.Count));
-      Task.WaitAll(OrgsHandler.OrgProcessingTasks.Select(t => t.Key).ToArray(),TimeSpan.FromMinutes(5));
+      Task.WaitAll(OrgsHandler.OrgProcessingTasks.Select(t => t.Key).ToArray(),TimeSpan.FromMinutes(1));
       Log.Info("TagFileHarvester.Stopped.");
 
     }
