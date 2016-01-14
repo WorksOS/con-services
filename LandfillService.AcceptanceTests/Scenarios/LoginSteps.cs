@@ -34,15 +34,22 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [TestInitialize]
         protected HttpResponseMessage Login(Credentials credentials)
         {
-            httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Accept.Clear();
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
-            response = httpClient.PostAsJsonAsync(Config.serviceUrl + "users/login", credentials).Result;
-            responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
-            if (responseParse.Length > 32)
+            try
             {
-                sessionId = responseParse.Substring(0, 32);
+                httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
+                response = httpClient.PostAsJsonAsync(Config.serviceUrl + "users/login", credentials).Result;
+                responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
+                if (responseParse.Length > 32)
+                {
+                    sessionId = responseParse.Substring(0, 32);
+                }
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Failed to login with creditials. Exception:" + ex.Message);
             }
             return response;
         }

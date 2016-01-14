@@ -122,9 +122,9 @@
     <Compile Include="Helpers\StepSupport.cs" />
     <Compile Include="Interfaces\IMessage.cs" />
     <Compile Include="Helpers\Kafka.cs" />
-    <Compile Include="Helpers\UtilizationServicesClientUtil.cs" />
+    <Compile Include="Helpers\ServicesClientUtil.cs" />
     <Compile Include="Interfaces\IProjectEvent.cs" />
-    <Compile Include="Models\KafkaTopics\CreateProjectEvent.cs" />
+    <Compile Include="Models\KafkaTopics\ProjectEvent.cs" />
     <Compile Include="Models\ProjectType.cs" />
     <Compile Include="Scenarios\Data.feature.cs">
       <AutoGen>True</AutoGen>
@@ -198,9 +198,7 @@
       <Name>kafka-net</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\MasterDataProjects\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="External References\AutomationCore.API.Framework.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

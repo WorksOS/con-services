@@ -334,9 +334,6 @@ namespace LandfillService.AcceptanceTests.Scenarios
         {
             AddAWeightToAProjectForADay(projectId, stepSupport.GetTomorrowForTimeZone(timeZoneFromProject));
         }
-
-
-
         #endregion
     }
 }

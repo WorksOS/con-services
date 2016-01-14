@@ -3,7 +3,6 @@ using System.Configuration;
 using KafkaNet;
 using KafkaNet.Model;
 using KafkaNet.Protocol;
-using Newtonsoft.Json;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
@@ -36,19 +35,6 @@ namespace LandfillService.AcceptanceTests.Helpers
                 }
                 return instance;
             }
-        }
-
-        /// <summary>
-        /// Send a message to Kafka
-        /// </summary>
-        /// <param name="topicName">Can be any topic</param>
-        /// <param name="message"></param>
-        public void SendMessageToKafka(string topicName, string message)
-        {
-            //Thread.Sleep(1000);
-            var sendTask = kafkaProducer.SendMessageAsync(topicName, new[] { new Message(message) });
-            sendTask.Wait();
-           // var response = sendTask.Result;
         }
 
         /// <summary>

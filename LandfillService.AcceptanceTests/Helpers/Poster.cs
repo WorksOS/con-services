@@ -3,7 +3,6 @@ using System.Net;
 using AutomationCore.API.Framework.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using Utilization.AcceptanceTests.Utils.Common;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
@@ -104,7 +103,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         {
             // JSON has problems(tries to be clever) with serializing date and times. We have use JsonSerializerSettings to set no time zone.
             string requestBodyString = JsonConvert.SerializeObject(Request, new JsonSerializerSettings{ DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
-            RawResponse = UtilizationServicesClientUtil.DoHttpRequest(Uri, "POST", RestClientConfig.JsonMediaType, requestBodyString);
+            RawResponse = ServicesClientUtil.DoHttpRequest(Uri, "POST", RestClientConfig.JsonMediaType, requestBodyString);
 
             if (RawResponse == null)
             {

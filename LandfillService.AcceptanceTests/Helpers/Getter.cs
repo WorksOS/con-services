@@ -1,12 +1,10 @@
-﻿using AutomationCore.API.Framework.Library;
+﻿using System;
+using System.Net;
+using AutomationCore.API.Framework.Library;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Net;
 
-
-namespace Utilization.AcceptanceTests.Utils.Common
+namespace LandfillService.AcceptanceTests.Helpers
 {
 
     /// <summary>
@@ -100,7 +98,7 @@ namespace Utilization.AcceptanceTests.Utils.Common
         /// <returns>Request response.</returns>
         private TResponse DoRequest(HttpStatusCode expectedHttpCode)
         {
-            RawResponse = UtilizationServicesClientUtil.DoHttpRequest(Uri, "GET", RestClientConfig.JsonMediaType, null);
+            RawResponse = ServicesClientUtil.DoHttpRequest(Uri, "GET", RestClientConfig.JsonMediaType, null);
 
             if (RawResponse == null)
             {
@@ -108,11 +106,9 @@ namespace Utilization.AcceptanceTests.Utils.Common
                 {
                     throw new Exception("The request did not get any response at all.");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-         //           log.Error(LogFormatter.Format(e.Message, LogFormatter.ContentType.Error), e);
                     Assert.Fail("Test Failed - the request did not get any response at all.");
-                    throw;
                 }      
             }
             else if (expectedHttpCode != RawResponse.HttpCode)
@@ -121,10 +117,9 @@ namespace Utilization.AcceptanceTests.Utils.Common
                 {
                     throw new Exception("The HttpCode returned is incorrect.");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-           //         log.Error(LogFormatter.Format(e.Message, LogFormatter.ContentType.Error), e);
-                    Assert.Fail(String.Format("Test Failed - expected {0}, but got {1} instead. Response = {2}", expectedHttpCode, RawResponse.HttpCode, RawResponse.ResponseBody));
+                    Assert.Fail("Test Failed - expected {0}, but got {1} instead. Response = {2}", expectedHttpCode, RawResponse.HttpCode, RawResponse.ResponseBody);
                 }
             }
 

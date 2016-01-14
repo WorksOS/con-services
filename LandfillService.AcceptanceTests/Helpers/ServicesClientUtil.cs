@@ -1,13 +1,11 @@
-﻿using System;
+﻿using System.IO;
+using System.Net;
 using System.Text;
 using AutomationCore.API.Framework.Library;
-using System.Net;
-using System.IO;
 
-
-namespace Utilization.AcceptanceTests.Utils.Common
+namespace LandfillService.AcceptanceTests.Helpers
 {
-    public class UtilizationServicesClientUtil : RestClientUtil
+    public class ServicesClientUtil : RestClientUtil
     {
      //   private static readonly ILog log = LogManager.GetLogger(typeof(UtilizationServicesClientUtil));
 
@@ -94,19 +92,15 @@ namespace Utilization.AcceptanceTests.Utils.Common
             string mediaType, string payloadData)
         {
             HttpWebResponse httpResponse = null;
-
-            WebHeaderCollection responseHeader = null;
-            HttpStatusCode httpResponseCode;
-            string responseString = null;
-
             httpResponse = DoHttpRequest(resourceUri, httpMethod, mediaType, mediaType, payloadData);
 
             if (httpResponse != null)
             {
-                responseHeader = httpResponse.Headers;
-                httpResponseCode = httpResponse.StatusCode;
+                var responseHeader = httpResponse.Headers;
+                var httpResponseCode = httpResponse.StatusCode;
 
                 // Get the response body string for debug message
+                string responseString = null;
                 using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
                     responseString = streamReader.ReadToEnd();
 

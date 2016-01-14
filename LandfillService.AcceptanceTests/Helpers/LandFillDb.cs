@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Threading;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
@@ -36,6 +37,41 @@ namespace LandfillService.AcceptanceTests.Helpers
                 return res;
             }
         }
+
+
+        public static string ExecuteMySqlQueryResult(string connectionString, string queryString)
+        {
+
+            string queryResult = null;
+            using (MySqlConnection mySqlConnection = new MySqlConnection(connectionString))
+            {
+                mySqlConnection.Open();
+                MySqlCommand mySqlCommand = new MySqlCommand(queryString, mySqlConnection);
+                MySqlDataReader mySqlDataReader = mySqlCommand.ExecuteReader();
+
+                while (mySqlDataReader.Read())
+                {
+                    queryResult = mySqlDataReader[0].ToString();
+                }
+            }
+            return queryResult;
+        }
+
+        public static void ExecuteMySqlCommand(string connectionString, string commandString)
+        {
+            using (MySqlConnection mySqlConnection = new MySqlConnection(connectionString))
+            {
+                //Open connection 
+                mySqlConnection.Open();
+
+                MySqlCommand mySqlCommand = new MySqlCommand(commandString, mySqlConnection);
+                mySqlCommand.ExecuteNonQuery();
+            }
+
+        }
+
+
+
         /// <summary>
         /// Get all the volume entries from the mySQL database for the pass year
         /// </summary>
@@ -82,6 +118,37 @@ namespace LandfillService.AcceptanceTests.Helpers
                 }
             });
         }
+
+        /// <summary>
+        /// Get the highest project Id in the mySql table
+        /// </summary>
+        /// <returns>projcet ID</returns>
+        public static int GetTheHighestProjectId()
+        {
+            return Convert.ToInt32(ExecuteMySqlQueryResult(connString,"SELECT max(projectId) FROM landfill.projects"));
+        }
+
+
+        /// <summary>
+        /// Check my SQL database to see if if the landfill project is there. 
+        /// </summary>
+        /// <param name="projectName">project name</param>
+        public static bool WaitForProjectToBeCreated(string projectName)
+        {
+            int timeElapsed = 0;
+            const int timeout = 10000;
+            var queryStr = string.Format("SELECT COUNT(*) FROM landfill.projects WHERE name = '{0}'",  projectName);
+            while (Convert.ToInt32(ExecuteMySqlQueryResult(connString, queryStr)) < 1)
+            {
+                Console.WriteLine("Wait for mySQL landfill projects to show - " + DateTime.Now + " project name: " + projectName);
+                Thread.Sleep(200);
+                timeElapsed += 200;
+                if (timeElapsed > timeout)
+                    { return false; }
+            }
+            return true;
+        }
+
 
         private static Project GetProjectDetailsFromMySql(MySqlDataReader reader)
         {
