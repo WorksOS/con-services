@@ -18,20 +18,8 @@ namespace VSS.VisionLink.Landfill.DataFeed
         return null;
       }
 
-      if (kafkaTopicName.Contains("CreateProjectEvent"))
-        return new KafkaQueueCreateProjectEventPuller(container, kafkaTopicName);
-
-      if (kafkaTopicName.Contains("UpdateProjectEvent"))
-        return new KafkaQueueUpdateProjectEventPuller(container, kafkaTopicName);
-
-      if (kafkaTopicName.Contains("CreateSubscriptionEvent"))
-        return new KafkaQueueCreateSubscriptionEventPuller(container, kafkaTopicName);
-
-      if (kafkaTopicName.Contains("UpdateSubscriptionEvent"))
-        return new KafkaQueueUpdateSubscriptionEventPuller(container, kafkaTopicName);
-
-      if (kafkaTopicName.Contains("DeleteProjectEvent"))
-        return new KafkaQueueDeleteProjectEventPuller(container, kafkaTopicName);
+      if (kafkaTopicName.Contains("IProjectEvent"))
+        return new KafkaQueueProjectEventPuller(container, kafkaTopicName);
 
       Log.ErrorFormat("Exception as Kafka topic '{0}' does not exist!", kafkaTopicName);
       return null;

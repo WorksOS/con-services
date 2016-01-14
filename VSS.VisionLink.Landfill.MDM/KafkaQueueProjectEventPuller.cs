@@ -5,19 +5,19 @@ using System.Threading.Tasks;
 using KafkaNet.Common;
 using log4net;
 using Microsoft.Practices.Unity;
+using Newtonsoft.Json.Linq;
 using VSS.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Landfill.Common.Interfaces;
 using VSS.VisionLink.Landfill.Common.Models;
+using VSS.VisionLink.Landfill.Common.Utilities;
 using VSS.VisionLink.Landfill.MDM;
 using VSS.VisionLink.Landfill.MDM.Interfaces;
 
 namespace VSS.VisionLink.Landfill.DataFeed
 {
 
-  #region KafkaQueueProjectEventPuller
-
-  public abstract class KafkaQueueProjectEventPuller : IKafkaQueuePuller
+  public class KafkaQueueProjectEventPuller : IKafkaQueuePuller
   {
     private static readonly AsyncLock Locker = new AsyncLock();
 
@@ -25,7 +25,7 @@ namespace VSS.VisionLink.Landfill.DataFeed
     private readonly UnityContainer container;
     private readonly string kafkaTopic;
 
-    protected KafkaQueueProjectEventPuller(UnityContainer dependencyContainer, string kafkaTopicName)
+    public KafkaQueueProjectEventPuller(UnityContainer dependencyContainer, string kafkaTopicName)
     {
       container = dependencyContainer;
       kafkaTopic = kafkaTopicName;
@@ -93,11 +93,11 @@ namespace VSS.VisionLink.Landfill.DataFeed
     private string EventName(IProjectEvent evt)
     {
       if (evt is CreateProjectEvent)
-        return "CreateAssetEvent";
+        return "CreateProjectEvent";
       if (evt is UpdateProjectEvent)
-        return "UpdateAssetEvent";
+        return "UpdateProjectEvent";
       if (evt is DeleteProjectEvent)
-        return "DeleteAssetEvent";
+        return "DeleteProjectEvent";
       if (evt is AssociateProjectCustomer)
         return "AssociateProjectCustomerEvent";
       if (evt is DissociateProjectCustomer)
@@ -108,44 +108,7 @@ namespace VSS.VisionLink.Landfill.DataFeed
     
   }
 
-  #endregion
-
-  #region KafkaQueueCreateProjectEventPuller
-
-  public class KafkaQueueCreateProjectEventPuller : KafkaQueueProjectEventPuller
-  {
-    public KafkaQueueCreateProjectEventPuller(UnityContainer dependencyContainer, string kafkaTopicName)
-      : base(dependencyContainer, kafkaTopicName)
-    {
-    }
-  }
-
-  #endregion
-
-  #region KafkaQueueUpdateProjectEventPuller
-
-  public class KafkaQueueUpdateProjectEventPuller : KafkaQueueProjectEventPuller
-  {
-    public KafkaQueueUpdateProjectEventPuller(UnityContainer dependencyContainer, string kafkaTopicName)
-      : base(dependencyContainer, kafkaTopicName)
-    {
-    }
-  }
-
-  #endregion
-
-  #region KafkaQueueDeleteProjectEventPuller
-
-  public class KafkaQueueDeleteProjectEventPuller : KafkaQueueProjectEventPuller
-  {
-    public KafkaQueueDeleteProjectEventPuller(UnityContainer dependencyContainer, string kafkaTopicName)
-      : base(dependencyContainer, kafkaTopicName)
-    {
-    }
-  }
-
-  #endregion
-
+  
   #region KafkaQueueAssociateProjectCustomerEventPuller
 
   public class KafkaQueueAssociateProjectCustomerEventPuller : KafkaQueueProjectEventPuller

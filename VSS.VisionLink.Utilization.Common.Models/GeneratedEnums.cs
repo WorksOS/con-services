@@ -37,6 +37,7 @@ namespace VSS.VisionLink.Landfill.Common.Models
     DeleteProjectEvent = 13,
     CreateSubscriptionEv = 14,
     UpdateSubscriptionEv = 15,
-    Test = 255
+    Test = 255,
+    ProjectEventOffset = 16
   }
 }

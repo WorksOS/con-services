@@ -8,6 +8,7 @@ using Microsoft.Practices.Unity;
 using Topshelf;
 using Topshelf.Runtime;
 using VSS.Interfaces.Events.MasterData.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Landfill.Common.Interfaces;
 using VSS.VisionLink.Landfill.Common.Utilities;
@@ -78,12 +79,10 @@ namespace VSS.VisionLink.Landfill.MDMService
       //Register here all dependencies for furhter consumption
       container = new UnityContainer();
  
-      container.RegisterType<IKafkaQueue<CreateProjectEvent>, KafkaProjectEventQueue<CreateProjectEvent>>();
-      container.RegisterType<IKafkaQueue<UpdateProjectEvent>, KafkaProjectEventQueue<UpdateProjectEvent>>();
-      container.RegisterType<IKafkaQueue<DeleteProjectEvent>, KafkaProjectEventQueue<DeleteProjectEvent>>();
+      container.RegisterType<IKafkaQueue<IProjectEvent>, KafkaProjectEventQueue<IProjectEvent>>();
 
-      container.RegisterType<IKafkaQueue<CreateSubscriptionEvent>, KafkaSubscriptionEventQueue<CreateSubscriptionEvent>>();
-      container.RegisterType<IKafkaQueue<UpdateSubscriptionEvent>, KafkaSubscriptionEventQueue<UpdateSubscriptionEvent>>();
+/*      container.RegisterType<IKafkaQueue<CreateSubscriptionEvent>, KafkaSubscriptionEventQueue<CreateSubscriptionEvent>>();
+      container.RegisterType<IKafkaQueue<UpdateSubscriptionEvent>, KafkaSubscriptionEventQueue<UpdateSubscriptionEvent>>();*/
 
       var connectionString = ConfigSettings.GetConnectionString("VSPDB");
       container.RegisterType<IBookmarkRepository, BookmarkRepository>(new InjectionConstructor(connectionString));

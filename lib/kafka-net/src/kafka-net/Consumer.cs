@@ -154,21 +154,24 @@ namespace KafkaNet
                             {
                                 var response = responses.FirstOrDefault(); //we only asked for one response
 
-                                if (response != null && response.Messages.Count > 0)
+                                if (response != null )
                                 {
-                                    HandleResponseErrors(fetch, response);
+                                  HandleResponseErrors(fetch, response);
 
+                                  if (response.Messages.Count > 0)
+                                  {
                                     foreach (var message in response.Messages)
                                     {
-                                        _fetchResponseQueue.Add(message, _disposeToken.Token);
+                                      _fetchResponseQueue.Add(message, _disposeToken.Token);
 
-                                        if (_disposeToken.IsCancellationRequested) return;
+                                      if (_disposeToken.IsCancellationRequested) return;
                                     }
 
                                     var nextOffset = response.Messages.Max(x => x.Meta.Offset) + 1;
                                     _partitionOffsetIndex.AddOrUpdate(partitionId, i => nextOffset, (i, l) => nextOffset);
+                                  }
 
-                                    // sleep is not needed if responses were received
+                                  // sleep is not needed if responses were received
                                     continue;
                                 }
                             }
@@ -183,9 +186,11 @@ namespace KafkaNet
                         }
                         catch (OffsetOutOfRangeException ex)
                         {
-                            //TODO this turned out really ugly.  Need to fix this section.
-                            _options.Log.ErrorFormat(ex.Message);
-                            FixOffsetOutOfRangeExceptionAsync(ex.FetchRequest);
+                          //TODO this turned out really ugly.  Need to fix this section.
+                          _options.Log.ErrorFormat(ex.Message);
+                          var nextOffset = ex.FetchRequest.Offset + 1;
+                          _partitionOffsetIndex.AddOrUpdate(partitionId, i => nextOffset, (i, l) => nextOffset);
+                        // FixOffsetOutOfRangeExceptionAsync(ex.FetchRequest);
                         }
                         catch (InvalidMetadataException ex)
                         {

@@ -10,7 +10,10 @@ using KafkaNet.Model;
 using KafkaNet.Protocol;
 using log4net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using VSS.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Landfill.Common.Interfaces;
 
 namespace VSS.VisionLink.Landfill.Common.Utilities
@@ -84,9 +87,18 @@ namespace VSS.VisionLink.Landfill.Common.Utilities
     {
       try
       {
-        using (var stream = new MemoryStream(data))
-        using (var reader = new StreamReader(stream))
-          return JsonSerializer.Create().Deserialize(reader, type);
+        if (type.IsInterface)
+        {
+          var bytesAsString = data.ToUtf8String();
+          if (type.Name.Contains("IProjectEvent"))
+            return JsonConvert.DeserializeObject<IProjectEvent>(bytesAsString, new ProjectEventConverter());
+        }
+        else
+        {
+          using (var stream = new MemoryStream(data))
+          using (var reader = new StreamReader(stream))
+            return JsonSerializer.Create().Deserialize(reader, type);
+        }
       }
       catch
       {
@@ -117,5 +129,72 @@ namespace VSS.VisionLink.Landfill.Common.Utilities
         return default(T);
       }
     }
+  }
+
+  public class ProjectEventConverter : JsonCreationConverter<IProjectEvent>
+  {
+    protected override IProjectEvent Create(Type objectType, JObject jObject)
+    {
+      if (jObject["CreateProjectEvent"] != null)
+      {
+        return jObject["CreateProjectEvent"].ToObject<CreateProjectEvent>();
+      }
+      if (jObject["DeleteProjectEvent"] != null)
+      {
+        return jObject["DeleteProjectEvent"].ToObject<DeleteProjectEvent>();
+      }
+      if (jObject["UpdateProjectEvent"] != null)
+      {
+        return jObject["UpdateProjectEvent"].ToObject<UpdateProjectEvent>();
+      }
+      if (jObject["RestoreProjectEvent"] != null)
+      {
+        return jObject["RestoreProjectEvent"].ToObject<RestoreProjectEvent>();
+      }
+      return null;
+    }
+  }
+
+  public abstract class JsonCreationConverter<T> : JsonConverter
+  {
+    /// <summary>
+    /// Create an instance of objectType, based properties in the JSON object
+    /// </summary>
+    /// <param name="objectType">type of object expected</param>
+    /// <param name="jObject">
+    /// contents of JSON object that will be deserialized
+    /// </param>
+    /// <returns></returns>
+    protected abstract T Create(Type objectType, JObject jObject);
+
+    public override bool CanConvert(Type objectType)
+    {
+      return typeof(T).IsAssignableFrom(objectType);
+    }
+
+    public override object ReadJson(JsonReader reader,
+                                    Type objectType,
+                                     object existingValue,
+                                     JsonSerializer serializer)
+    {
+      if (reader.TokenType == JsonToken.Null)
+        return null;
+
+      // Load JObject from stream
+      JObject jObject = JObject.Load(reader);
+
+      // Create and populate target object based on JObject
+      T target = Create(objectType, jObject);
+
+      return target;
+    }
+
+    public override void WriteJson(JsonWriter writer,
+                                   object value,
+                                   JsonSerializer serializer)
+    {
+      throw new NotImplementedException();
+    }
+
   }
 }

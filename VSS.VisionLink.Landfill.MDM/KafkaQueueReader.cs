@@ -49,7 +49,7 @@ namespace VSS.VisionLink.Landfill.DataFeed
         }
         var bookmarkType = GetBookmarkType(kafkaTopic);
         var lastBookmark = dependencyContainer.Resolve<IBookmarkRepository>().GetBookmark(bookmarkType);
-        var offset = (int)(lastBookmark == null ? 0 : lastBookmark.Value);
+        var offset = (int)(lastBookmark == null ? -1 : lastBookmark.Value);
 
         try
         {
@@ -98,27 +98,11 @@ namespace VSS.VisionLink.Landfill.DataFeed
     {
       Log.DebugFormat("Resolving bookmark for IAssetEvent kafka topic {0}", kafkaTopic);
       var bookmarkType = BookmarkTypeEnum.None;
-      if (kafkaTopic.Contains("CreateProjectEvent"))
+      if (kafkaTopic.Contains("IProjectEvent"))
       {
-        bookmarkType = BookmarkTypeEnum.CreateProjectEvent;
+        bookmarkType = BookmarkTypeEnum.ProjectEventOffset;
       }
-      else if (kafkaTopic.Contains("UpdateProjectEvent"))
-      {
-        bookmarkType = BookmarkTypeEnum.UpdateProjectEvent;
-      }
-      else if (kafkaTopic.Contains("DeleteProjectEvent"))
-      {
-        bookmarkType = BookmarkTypeEnum.DeleteProjectEvent;
-      }
-      else if (kafkaTopic.Contains("CreateSubscriptionEvent"))
-      {
-        bookmarkType = BookmarkTypeEnum.CreateSubscriptionEv;
-      }
-      else if (kafkaTopic.Contains("UpdateSubscriptionEvent"))
-      {
-        bookmarkType = BookmarkTypeEnum.UpdateSubscriptionEv;
-      }
-      Log.DebugFormat("Bookmark type {0}", bookmarkType);
+    Log.DebugFormat("Bookmark type {0}", bookmarkType);
       return bookmarkType;
     }
 
