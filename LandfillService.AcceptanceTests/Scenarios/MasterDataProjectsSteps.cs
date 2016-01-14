@@ -1,5 +1,4 @@
-﻿using System;
-using LandfillService.AcceptanceTests.Helpers;
+﻿using LandfillService.AcceptanceTests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TechTalk.SpecFlow;
 
@@ -10,14 +9,15 @@ namespace LandfillService.AcceptanceTests.Scenarios
     {
         private readonly StepSupport stepSupport = new StepSupport();
 
-        [Given(@"I inject the following CreateProject master data events")]
-        public void GivenIInjectTheFollowingProjectsMasterDataEvents(Table table)
+        [Given(@"I inject the following master data events")]
+        public void GivenIInjectTheFollowingMasterDataEvents(Table table)
         {
+            var randomNumber = stepSupport.GetRandomNumber();
             foreach (TableRow row in table.Rows)
             {
-                IMessage message = MessageFactory.Instance.CreateMessage(row, stepSupport.GetRandomNumber(),MessageType.CreateProjectEvent);
+                var message = MessageFactory.Instance.CreateMessage(row, randomNumber, MessageType.CreateProjectEvent);
                 message.Send();
-                Assert.IsTrue(LandFillMySqlDb.WaitForProjectToBeCreated(row["ProjectName"] + stepSupport.GetRandomNumber()), "Failed to created a project in landfill mySql db");
+                Assert.IsTrue(LandFillMySqlDb.WaitForProjectToBeCreated(row["ProjectName"] + randomNumber), "Failed to created a project in landfill mySql db");
             }
 
         }
@@ -25,7 +25,14 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [When(@"I request the project details from landfill web api")]
         public void WhenIRequestTheProjectDetailsFromLandfillWebApi()
         {
-            ScenarioContext.Current.Pending();
+        //            [Given(@"Get a list of all projects")]
+        //public void GivenGetAListOfAllProjects()
+        //{
+        //    var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
+        //    request.Headers.Add("SessionID", sessionId);
+        //    response = httpClient.SendAsync(request).Result;
+        //   // var projects = await response.Content.ReadAsAsync<Project[]>();
+        //}
         }
 
         [Then(@"I the project details result from the Web Api should be")]

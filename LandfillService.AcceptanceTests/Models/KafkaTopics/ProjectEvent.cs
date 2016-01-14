@@ -3,7 +3,7 @@ using LandfillService.AcceptanceTests.Interfaces;
 
 namespace LandfillService.AcceptanceTests.Models.KafkaTopics
 {
-    public class CreateProjectEvent : IProjectEvent
+    public class ProjectEvent : IProjectEvent
     {
         public DateTime ProjectEndDate { get; set; }
         public DateTime ProjectStartDate { get; set; }

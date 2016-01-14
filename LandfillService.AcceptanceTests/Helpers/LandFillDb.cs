@@ -137,7 +137,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         {
             int timeElapsed = 0;
             const int timeout = 10000;
-            string queryStr = string.Format("SELECT COUNT(*) FROM landfill.projects WHERE name = '{0}'",  projectName);
+            var queryStr = string.Format("SELECT COUNT(*) FROM landfill.projects WHERE name = '{0}'",  projectName);
             while (Convert.ToInt32(ExecuteMySqlQueryResult(connString, queryStr)) < 1)
             {
                 Console.WriteLine("Wait for mySQL landfill projects to show - " + DateTime.Now + " project name: " + projectName);

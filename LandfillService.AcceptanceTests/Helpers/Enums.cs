@@ -13,6 +13,8 @@
         CreateAssetEvent,
         UpdateAssetEvent,
         DeleteAssetEvent,
-        CreateProjectEvent
+        CreateProjectEvent,
+        UpdateProjectEvent,
+        DeleteProjectEvent
     }
 }

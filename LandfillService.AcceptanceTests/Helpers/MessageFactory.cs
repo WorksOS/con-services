@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.Globalization;
 using KafkaNet.Protocol;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
@@ -20,14 +19,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         private MessageFactory() { }
         public static MessageFactory Instance
         {
-            get 
-            {
-                if (instance == null)
-                {
-                    instance = new MessageFactory();
-                }
-                return instance;
-            }
+            get { return instance ?? (instance = new MessageFactory()); }
         }
 
         /// <summary>
@@ -45,25 +37,72 @@ namespace LandfillService.AcceptanceTests.Helpers
 
             switch (eventType)
             {
-                #region CreateAssetEvent
+                #region CreateProjectEvent
                 case MessageType.CreateProjectEvent:
-                    var createProjectEvent = new CreateProjectEvent
+                    var createProjectEvent = new ProjectEvent
                     {
                         ActionUTC = DateTime.UtcNow,
-                        ProjectBoundaries = eventRow["Boundaries"],
+                        ProjectBoundaries = eventRow.Keys.Contains("Boundaries") ? eventRow["Boundaries"] : " ",
                         ProjectEndDate = DateTime.Today.AddDays(Convert.ToInt32(eventRow["DaysToExpire"])),
                         ProjectStartDate = DateTime.Today.AddMonths(-3),
                         ProjectName = eventRow["ProjectName"] + uniqueNumber,
-                        ProjectTimezone = eventRow["TimeZone"],
+                        ProjectTimezone = eventRow.Keys.Contains("TimeZone") ? eventRow["TimeZone"] : " ",
                         ProjectType = eventRow["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D,
                         ProjectID = LandFillMySqlDb.GetTheHighestProjectId() + 1,
                         ProjectUID = guid,
-                        ReceivedUTC = DateTime.UtcNow                        
+                        ReceivedUTC = DateTime.UtcNow
                     };
-                    
-                    messageStr = JsonConvert.SerializeObject(createProjectEvent,new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+
+                    messageStr = JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent }, 
+                                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });                   
                     topic = ConfigurationManager.AppSettings["CreateProjectTopic"];
                     break; 
+                #endregion
+
+                #region UpdateProjectEvent
+                case MessageType.UpdateProjectEvent:
+                    var updateProjectEvent = new ProjectEvent
+                    {
+                        ActionUTC = DateTime.UtcNow,
+                        ProjectBoundaries = eventRow.Keys.Contains("Boundaries") ? eventRow["Boundaries"] : " ",
+                        ProjectEndDate = DateTime.Today.AddDays(Convert.ToInt32(eventRow["DaysToExpire"])),
+                        ProjectStartDate = DateTime.Today.AddMonths(-3),
+                        ProjectName = eventRow["ProjectName"] + uniqueNumber,
+                        ProjectTimezone = eventRow.Keys.Contains("TimeZone") ? eventRow["TimeZone"] : " ",
+                        ProjectType = eventRow["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D,
+                        ProjectID = LandFillMySqlDb.GetTheHighestProjectId() + 1,
+                        ProjectUID = guid,
+                        ReceivedUTC = DateTime.UtcNow
+                    };
+
+                    messageStr = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent },
+                                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+
+                    topic = ConfigurationManager.AppSettings["UpdateProjectTopic"];
+                    break;
+                #endregion
+
+                #region DeleteProjectEvent
+                case MessageType.DeleteProjectEvent:
+                    var deleteProjectEvent = new ProjectEvent
+                    {
+                        ActionUTC = DateTime.UtcNow,
+                        ProjectBoundaries = eventRow.Keys.Contains("Boundaries") ? eventRow["Boundaries"] : " ",
+                        ProjectEndDate = DateTime.Today.AddDays(Convert.ToInt32(eventRow["DaysToExpire"])),
+                        ProjectStartDate = DateTime.Today.AddMonths(-3),
+                        ProjectName = eventRow["ProjectName"] + uniqueNumber,
+                        ProjectTimezone = eventRow.Keys.Contains("TimeZone") ? eventRow["TimeZone"] : " ",
+                        ProjectType = eventRow["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D,
+                        ProjectID = LandFillMySqlDb.GetTheHighestProjectId() + 1,
+                        ProjectUID = guid,
+                        ReceivedUTC = DateTime.UtcNow
+                    };
+
+                    messageStr = JsonConvert.SerializeObject(new { DeleteProjectEvent = deleteProjectEvent },
+                                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+
+                    topic = ConfigurationManager.AppSettings["DeleteProjectTopic"];
+                    break;
                 #endregion
             }
             return new KafkaMessage(Kafka.Instance.GetProducer(), topic, new Message(messageStr));

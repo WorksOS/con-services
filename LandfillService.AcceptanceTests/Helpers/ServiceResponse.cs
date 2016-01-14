@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Utilization.AcceptanceTests.Utils.Common
+namespace LandfillService.AcceptanceTests.Helpers
 {
     /// <summary>
     /// Represent an HTTP request response
