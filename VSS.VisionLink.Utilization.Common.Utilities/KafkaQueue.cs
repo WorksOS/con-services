@@ -151,6 +151,15 @@ namespace VSS.VisionLink.Landfill.Common.Utilities
       {
         return jObject["RestoreProjectEvent"].ToObject<RestoreProjectEvent>();
       }
+      if (jObject["AssociateProjectCustomerEvent"] != null)
+      {
+        return jObject["AssociateProjectCustomerEvent"].ToObject<AssociateProjectCustomer>();
+      }
+      if (jObject["DissociateProjectCustomerEvent"] != null)
+      {
+        return jObject["DissociateProjectCustomerEvent"].ToObject<DissociateProjectCustomer>();
+      }
+
       return null;
     }
   }

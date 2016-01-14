@@ -109,27 +109,4 @@ namespace VSS.VisionLink.Landfill.DataFeed
   }
 
   
-  #region KafkaQueueAssociateProjectCustomerEventPuller
-
-  public class KafkaQueueAssociateProjectCustomerEventPuller : KafkaQueueProjectEventPuller
-  {
-    public KafkaQueueAssociateProjectCustomerEventPuller(UnityContainer dependencyContainer, string kafkaTopicName)
-      : base(dependencyContainer, kafkaTopicName)
-    {
-    }
-  }
-
-  #endregion
-
-  #region KafkaQueueDissociateProjectCustomerEventPuller
-
-  public class KafkaQueueDissociateProjectCustomerEventPuller : KafkaQueueProjectEventPuller
-  {
-    public KafkaQueueDissociateProjectCustomerEventPuller(UnityContainer dependencyContainer, string kafkaTopicName)
-      : base(dependencyContainer, kafkaTopicName)
-    {
-    }
-  }
-
-  #endregion
 }
