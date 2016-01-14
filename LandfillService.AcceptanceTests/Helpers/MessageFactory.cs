@@ -54,8 +54,8 @@ namespace LandfillService.AcceptanceTests.Helpers
                     };
 
                     messageStr = JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent }, 
-                                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });                   
-                    topic = ConfigurationManager.AppSettings["CreateProjectTopic"];
+                                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+                    topic = ConfigurationManager.AppSettings["AssetMasterDataTopic"];
                     break; 
                 #endregion
 
@@ -78,7 +78,7 @@ namespace LandfillService.AcceptanceTests.Helpers
                     messageStr = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent },
                                 new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
-                    topic = ConfigurationManager.AppSettings["UpdateProjectTopic"];
+                    topic = ConfigurationManager.AppSettings["AssetMasterDataTopic"];
                     break;
                 #endregion
 
@@ -101,7 +101,7 @@ namespace LandfillService.AcceptanceTests.Helpers
                     messageStr = JsonConvert.SerializeObject(new { DeleteProjectEvent = deleteProjectEvent },
                                 new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
 
-                    topic = ConfigurationManager.AppSettings["DeleteProjectTopic"];
+                    topic = ConfigurationManager.AppSettings["AssetMasterDataTopic"];
                     break;
                 #endregion
             }
