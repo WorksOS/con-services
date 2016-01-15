@@ -24,24 +24,6 @@ CREATE TABLE `BookmarkTypeEnum` (
   UNIQUE KEY `UIX_BookmarkEnum_ID` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Table structure for table `entries`
---
-
-DROP TABLE IF EXISTS `entries`;
-CREATE TABLE `entries` (
-  `projectId` int(10) unsigned NOT NULL,
-  `date` date NOT NULL,
-  `weight` double NOT NULL,
-  `volume` double DEFAULT NULL,
-  `volumeNotRetrieved` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `volumeNotAvailable` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `volumesUpdatedTimestamp` datetime DEFAULT NULL,
-  UNIQUE KEY `projectId_date_unique` (`projectId`,`date`),
-  KEY `entriesProjectId` (`projectId`),
-  CONSTRAINT `projectId` FOREIGN KEY (`projectId`) REFERENCES `projects` (`projectId`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 --
 -- Table structure for table `projects`
@@ -67,19 +49,23 @@ CREATE TABLE `projects` (
 
 
 --
--- Table structure for table `sessions`
+-- Table structure for table `entries`
 --
 
-DROP TABLE IF EXISTS `sessions`;
-CREATE TABLE `sessions` (
-  `sessionId` varchar(32) NOT NULL,
-  `userId` int(10) unsigned NOT NULL,
-  `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`sessionId`),
-  UNIQUE KEY `sessionId_UNIQUE` (`sessionId`),
-  KEY `fkUserId_idx` (`userId`),
-  CONSTRAINT `fkUserId` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
+DROP TABLE IF EXISTS `entries`;
+CREATE TABLE `entries` (
+  `projectId` int(10) unsigned NOT NULL,
+  `date` date NOT NULL,
+  `weight` double NOT NULL,
+  `volume` double DEFAULT NULL,
+  `volumeNotRetrieved` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `volumeNotAvailable` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `volumesUpdatedTimestamp` datetime DEFAULT NULL,
+  UNIQUE KEY `projectId_date_unique` (`projectId`,`date`),
+  KEY `entriesProjectId` (`projectId`),
+  CONSTRAINT `projectId` FOREIGN KEY (`projectId`) REFERENCES `projects` (`projectId`) ON DELETE NO ACTION ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 --
 -- Table structure for table `subscriptions`
@@ -110,6 +96,21 @@ CREATE TABLE `users` (
   PRIMARY KEY (`userId`),
   UNIQUE KEY `name_UNIQUE` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3448 DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `sessions`
+--
+
+DROP TABLE IF EXISTS `sessions`;
+CREATE TABLE `sessions` (
+  `sessionId` varchar(32) NOT NULL,
+  `userId` int(10) unsigned NOT NULL,
+  `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`sessionId`),
+  UNIQUE KEY `sessionId_UNIQUE` (`sessionId`),
+  KEY `fkUserId_idx` (`userId`),
+  CONSTRAINT `fkUserId` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `usersprojects`
