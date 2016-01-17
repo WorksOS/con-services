@@ -43,13 +43,13 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Deploy_Production\LandFillDataSync\</OutputPath>
+    <OutputPath>..\..\Deploy_Production\LandFillDataSync\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForDev|AnyCPU'">
-    <OutputPath>..\Deploy_Production\LandFillDataSync\</OutputPath>
+    <OutputPath>..\..\Deploy_Production\LandFillDataSync\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -59,7 +59,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForT01|AnyCPU'">
-    <OutputPath>..\Deploy_Production\LandFillDataSync\</OutputPath>
+    <OutputPath>..\..\Deploy_Production\LandFillDataSync\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -69,7 +69,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForBeta|AnyCPU'">
-    <OutputPath>..\Deploy_Production\LandFillDataSync\</OutputPath>
+    <OutputPath>..\..\Deploy_Production\LandFillDataSync\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -79,7 +79,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForT02|AnyCPU'">
-    <OutputPath>..\Deploy_Production\LandFillDataSync\</OutputPath>
+    <OutputPath>..\..\Deploy_Production\LandFillDataSync\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -89,7 +89,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForRelease|AnyCPU'">
-    <OutputPath>bin\DeployToFolderForRelease\</OutputPath>
+    <OutputPath>..\..\Deploy_Production\LandFillDataSync\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -99,7 +99,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForProd|AnyCPU'">
-    <OutputPath>bin\DeployToFolderForProd\</OutputPath>
+    <OutputPath>..\..\Deploy_Production\LandFillDataSync\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>

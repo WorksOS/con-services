@@ -44,14 +44,14 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Deploy_Production\LandFillMDM\</OutputPath>
+    <OutputPath>..\..\Deploy_Production\LandFillMDM\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DeployToFolderForDev|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\Deploy_Production\LandFillMDM\</OutputPath>
+    <OutputPath>..\..\Deploy_Production\LandFillMDM\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
