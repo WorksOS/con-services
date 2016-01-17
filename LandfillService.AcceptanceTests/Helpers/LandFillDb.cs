@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Threading;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
@@ -15,9 +16,9 @@ namespace LandfillService.AcceptanceTests.Helpers
         public double Volume { get; set; }
     }
 
-    public class LandFillMySqlDb
+    public static class LandFillMySqlDb
     {
-        private readonly string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
+        private static readonly string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
         private const double POUNDS_PER_TON = 2000.0;
         private const double M3_PER_YD3 = 0.7645555;
         private const double EPSILON = 0.001;
@@ -26,7 +27,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// </summary>
         /// <param name="body">Code to execute</param>
         /// <returns>The result of executing body()</returns>
-        private T WithConnection<T>(Func<MySqlConnection, T> body)
+        private static T WithConnection<T>(Func<MySqlConnection, T> body)
         {
             using (var conn = new MySqlConnection(connString))
             {
@@ -36,13 +37,48 @@ namespace LandfillService.AcceptanceTests.Helpers
                 return res;
             }
         }
+
+
+        public static string ExecuteMySqlQueryResult(string connectionString, string queryString)
+        {
+
+            string queryResult = null;
+            using (MySqlConnection mySqlConnection = new MySqlConnection(connectionString))
+            {
+                mySqlConnection.Open();
+                MySqlCommand mySqlCommand = new MySqlCommand(queryString, mySqlConnection);
+                MySqlDataReader mySqlDataReader = mySqlCommand.ExecuteReader();
+
+                while (mySqlDataReader.Read())
+                {
+                    queryResult = mySqlDataReader[0].ToString();
+                }
+            }
+            return queryResult;
+        }
+
+        public static void ExecuteMySqlCommand(string connectionString, string commandString)
+        {
+            using (MySqlConnection mySqlConnection = new MySqlConnection(connectionString))
+            {
+                //Open connection 
+                mySqlConnection.Open();
+
+                MySqlCommand mySqlCommand = new MySqlCommand(commandString, mySqlConnection);
+                mySqlCommand.ExecuteNonQuery();
+            }
+
+        }
+
+
+
         /// <summary>
         /// Get all the volume entries from the mySQL database for the pass year
         /// </summary>
         /// <param name="project"></param>
         /// <param name="units"></param>
         /// <returns></returns>
-        public List<DayEntryAll> GetEntries(Project project, UnitsTypeEnum units)
+        public static List<DayEntryAll> GetEntries(Project project, UnitsTypeEnum units)
         {
             return WithConnection(conn =>
             {
@@ -70,7 +106,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// </summary>
         /// <param name="projectId"></param>
         /// <returns>Project</returns>
-        public Project GetProject(uint projectId)
+        public static Project GetProject(int projectId)
         {
             return WithConnection(conn =>
             {
@@ -83,7 +119,38 @@ namespace LandfillService.AcceptanceTests.Helpers
             });
         }
 
-        private Project GetProjectDetailsFromMySql(MySqlDataReader reader)
+        /// <summary>
+        /// Get the highest project Id in the mySql table
+        /// </summary>
+        /// <returns>projcet ID</returns>
+        public static int GetTheHighestProjectId()
+        {
+            return Convert.ToInt32(ExecuteMySqlQueryResult(connString,"SELECT max(projectId) FROM landfill.projects"));
+        }
+
+
+        /// <summary>
+        /// Check my SQL database to see if if the landfill project is there. 
+        /// </summary>
+        /// <param name="projectName">project name</param>
+        public static bool WaitForProjectToBeCreated(string projectName)
+        {
+            int timeElapsed = 0;
+            const int timeout = 10000;
+            var queryStr = string.Format("SELECT COUNT(*) FROM landfill.projects WHERE name = '{0}'",  projectName);
+            while (Convert.ToInt32(ExecuteMySqlQueryResult(connString, queryStr)) < 1)
+            {
+                Console.WriteLine("Wait for mySQL landfill projects to show - " + DateTime.Now + " project name: " + projectName);
+                Thread.Sleep(200);
+                timeElapsed += 200;
+                if (timeElapsed > timeout)
+                    { return false; }
+            }
+            return true;
+        }
+
+
+        private static Project GetProjectDetailsFromMySql(MySqlDataReader reader)
         {
             Project projectDetails = new Project();
             while (reader.Read())
@@ -103,7 +170,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="units"></param>
         /// <param name="reader"></param>
         /// <returns></returns>
-        private List<DayEntryAll> AddEntriesFromMySqlDatabase(UnitsTypeEnum units, MySqlDataReader reader)
+        private static List<DayEntryAll> AddEntriesFromMySqlDatabase(UnitsTypeEnum units, MySqlDataReader reader)
         {            
             var entries = new List<DayEntryAll>();
             try
@@ -124,7 +191,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="units">Type of units</param>
         /// <param name="reader">mysql data reader</param>
         /// <param name="entries">All entries</param>
-        private void IterateThroughMySqlDataReader(UnitsTypeEnum units, MySqlDataReader reader, List<DayEntryAll> entries)
+        private static void IterateThroughMySqlDataReader(UnitsTypeEnum units, MySqlDataReader reader, List<DayEntryAll> entries)
         {
             while (reader.Read())
             {
@@ -152,7 +219,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="entryDate">EntryDate</param>
         /// <param name="entryWeight">Daily weight</param>
         /// <param name="entryVolume">Daily volume</param>
-        private void AddANewDayEntryToCollection(UnitsTypeEnum units, List<DayEntryAll> entries, DateTime entryDate, double entryWeight, double entryVolume)
+        private static void AddANewDayEntryToCollection(UnitsTypeEnum units, List<DayEntryAll> entries, DateTime entryDate, double entryWeight, double entryVolume)
         {
             double density = CalculateTheDensity(units, entryWeight, entryVolume);
             entries.Add(new DayEntryAll
@@ -172,7 +239,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="entryWeight">Weight from mySql</param>
         /// <param name="entryVolume">Volume from mySql</param>
         /// <returns>density</returns>
-        private double CalculateTheDensity(UnitsTypeEnum units, double entryWeight, double entryVolume)
+        private static double CalculateTheDensity(UnitsTypeEnum units, double entryWeight, double entryVolume)
         {
             double density;
             if (units == UnitsTypeEnum.Metric)
