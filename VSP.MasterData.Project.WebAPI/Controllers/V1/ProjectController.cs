@@ -5,7 +5,7 @@ using log4net;
 using VSP.MasterData.Common.KafkaWrapper.Interfaces;
 using VSP.MasterData.Project.WebAPI.Helpers;
 using VSP.MasterData.Common.Logging;
-using VSS.Interfaces.Events.MasterData.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V1
