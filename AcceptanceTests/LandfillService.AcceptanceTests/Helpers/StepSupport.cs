@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using LandfillService.WebApi.Models;
+using LandfillService.AcceptanceTests.Models;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
