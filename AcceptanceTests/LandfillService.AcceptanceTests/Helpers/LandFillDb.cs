@@ -135,15 +135,15 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <param name="projectName">project name</param>
         public static bool WaitForProjectToBeCreated(string projectName)
         {
-            int timeElapsed = 0;
-            const int timeout = 10000;
+            var retries = 0;
+            const int maxRetries = 20;
             var queryStr = string.Format("SELECT COUNT(*) FROM landfill.projects WHERE name = '{0}'",  projectName);
             while (Convert.ToInt32(ExecuteMySqlQueryResult(connString, queryStr)) < 1)
             {
                 Console.WriteLine("Wait for mySQL landfill projects to show - " + DateTime.Now + " project name: " + projectName);
-                Thread.Sleep(200);
-                timeElapsed += 200;
-                if (timeElapsed > timeout)
+                Thread.Sleep(500);
+                retries++;
+                if (retries > maxRetries)
                     { return false; }
             }
             return true;
