@@ -136,15 +136,36 @@ namespace LandfillService.AcceptanceTests.Helpers
         public static bool WaitForProjectToBeCreated(string projectName)
         {
             var retries = 0;
-            const int maxRetries = 20;
+            const int maxRetries = 30;
             var queryStr = string.Format("SELECT COUNT(*) FROM landfill.projects WHERE name = '{0}'",  projectName);
             while (Convert.ToInt32(ExecuteMySqlQueryResult(connString, queryStr)) < 1)
             {
                 Console.WriteLine("Wait for mySQL landfill projects to show - " + DateTime.Now + " project name: " + projectName);
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
                 retries++;
                 if (retries > maxRetries)
                     { return false; }
+            }
+            return true;
+        }
+
+
+        /// <summary>
+        /// Check my SQL database to see if if the landfill project is there. 
+        /// </summary>
+        /// <param name="projectName">project name</param>
+        public static bool WaitForProjectToBeDeleted(string projectName)
+        {
+            var retries = 0;
+            const int maxRetries = 30;
+            var queryStr = string.Format("SELECT IsDeleted FROM landfill.projects WHERE name = '{0}'", projectName);
+            while (Convert.ToInt32(ExecuteMySqlQueryResult(connString, queryStr)) != 1)
+            {
+                Console.WriteLine("Wait for deleted mySQL landfill project - " + DateTime.Now + " project name: " + projectName);
+                Thread.Sleep(1000);
+                retries++;
+                if (retries > maxRetries)
+                { return false; }
             }
             return true;
         }

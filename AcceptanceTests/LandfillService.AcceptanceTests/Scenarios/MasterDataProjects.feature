@@ -8,9 +8,32 @@ Background:
 @MasterDataProjects
 Scenario: Create a new landfill project 
 Given I inject the following master data events
-| DaysToExpire | Boundaries | ProjectName    | Type     | TimeZone        |
-| 10           | boundary   | AcceptanceTest | LandFill | America/Chicago |
-When I request the project details from landfill web api 
-Then I the project details result from the Web Api should be 
-| DaysToExpire | Boundaries | ProjectName    | Type     | TimeZone        |
-| 10           | boundary   | AcceptanceTest | LandFill | America/Chicago |
+| Event              | DaysToExpire | Boundaries | ProjectName    | Type     | TimeZone        |
+| CreateProjectEvent | 10           | boundary   | AcceptanceTest | LandFill | America/Chicago |
+When I request a list of projects from landfill web api 
+Then I find the project I created in the list  
+
+
+@Sanity @Positive
+@MasterDataProjects
+Scenario: Update a new landfill project 
+Given I inject the following master data events
+| Event              | DaysToExpire | Boundaries | ProjectName      | Type     | TimeZone        |
+| CreateProjectEvent | 10           | boundary   | AcceptanceUpdate | LandFill | America/Chicago |
+And I inject the following master data events
+| Event              | DaysToExpire | ProjectName      | 
+| UpdateProjectEvent | 50           | AcceptanceUpdate | 
+When I request a list of projects from landfill web api 
+Then I find update project details in the project list  
+
+@Sanity @Positive
+@MasterDataProjects
+Scenario: Delete a new landfill project 
+Given I inject the following master data events
+| Event              | DaysToExpire | Boundaries | ProjectName      | Type     | TimeZone        |
+| CreateProjectEvent | 10           | boundary   | AcceptanceDelete | LandFill | America/Chicago |
+And I inject the following master data events
+| Event              | 
+| DeleteProjectEvent |
+When I request a list of projects from landfill web api 
+Then I dont find the project I created in the list  

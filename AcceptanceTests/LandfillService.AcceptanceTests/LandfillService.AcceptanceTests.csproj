@@ -128,7 +128,8 @@
     <Compile Include="Helpers\ServicesClientUtil.cs" />
     <Compile Include="Interfaces\IProjectEvent.cs" />
     <Compile Include="Models\KafkaTopics\ProjectEvent.cs" />
-    <Compile Include="Models\Models.cs" />
+    <Compile Include="Models\AllModels.cs" />
+    <Compile Include="Models\NGProject.cs" />
     <Compile Include="Models\ProjectType.cs" />
     <Compile Include="Scenarios\Data.feature.cs">
       <AutoGen>True</AutoGen>
@@ -152,6 +153,7 @@
       <DependentUpon>MasterDataProjects.feature</DependentUpon>
     </Compile>
     <Compile Include="Scenarios\MasterDataProjectsSteps.cs" />
+    <Compile Include="Scenarios\SpecFlowHooks.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
