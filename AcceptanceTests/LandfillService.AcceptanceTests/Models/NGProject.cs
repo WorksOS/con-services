@@ -17,5 +17,8 @@ namespace LandfillService.AcceptanceTests.Models
         public string projectUid { get; set; }
         public string customerUid { get; set; }
         public string subscriptionUid { get; set; }
+        public DateTime projectEndDate { get; set; }
+        public DateTime projectStartDate { get; set; }
+        public ProjectType projectType { get; set; }
     }
 }

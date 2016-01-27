@@ -22,6 +22,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         private const double POUNDS_PER_TON = 2000.0;
         private const double M3_PER_YD3 = 0.7645555;
         private const double EPSILON = 0.001;
+        private static readonly string mySqlDbName = ConfigurationManager.AppSettings["MySqlDBName"];
         /// <summary>
         /// Wrapper for generating a MySQL connection
         /// </summary>
@@ -110,7 +111,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         {
             return WithConnection(conn =>
             {
-                var command = @"SELECT * FROM landfill.projects where projectId=" + projectId;
+                var command = @"SELECT * FROM " + mySqlDbName + ".projects where projectId=" + projectId;
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command))
                 {
@@ -125,7 +126,16 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <returns>projcet ID</returns>
         public static int GetTheHighestProjectId()
         {
-            return Convert.ToInt32(ExecuteMySqlQueryResult(connString,"SELECT max(projectId) FROM landfill.projects"));
+            try
+            {
+                return Convert.ToInt32(ExecuteMySqlQueryResult(connString, "SELECT max(projectId) FROM " + mySqlDbName + ".projects"));
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+            
+
         }
 
 
@@ -137,7 +147,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         {
             var retries = 0;
             const int maxRetries = 30;
-            var queryStr = string.Format("SELECT COUNT(*) FROM landfill.projects WHERE name = '{0}'",  projectName);
+            var queryStr = string.Format("SELECT COUNT(*) FROM " + mySqlDbName + ".projects WHERE name = '{0}'", projectName);
             while (Convert.ToInt32(ExecuteMySqlQueryResult(connString, queryStr)) < 1)
             {
                 Console.WriteLine("Wait for mySQL landfill projects to show - " + DateTime.Now + " project name: " + projectName);
@@ -158,7 +168,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         {
             var retries = 0;
             const int maxRetries = 30;
-            var queryStr = string.Format("SELECT IsDeleted FROM landfill.projects WHERE name = '{0}'", projectName);
+            var queryStr = string.Format("SELECT IsDeleted FROM " + mySqlDbName + ".projects WHERE name = '{0}'", projectName);
             while (Convert.ToInt32(ExecuteMySqlQueryResult(connString, queryStr)) != 1)
             {
                 Console.WriteLine("Wait for deleted mySQL landfill project - " + DateTime.Now + " project name: " + projectName);

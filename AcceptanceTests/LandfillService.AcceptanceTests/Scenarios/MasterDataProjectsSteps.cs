@@ -61,8 +61,9 @@ namespace LandfillService.AcceptanceTests.Scenarios
                         break;
                     case "UpdateProjectEvent":
                         messageType = MessageType.UpdateProjectEvent;
-                        //projEvent.ProjectEndDate = DateTime.Today.AddDays(Convert.ToInt32(row["DaysToExpire"]));
+                        projEvent.ProjectEndDate = DateTime.Today.AddDays(Convert.ToInt32(row["DaysToExpire"]));
                         projEvent.ProjectName = row["ProjectName"] + stepSupport.GetRandomNumber();
+                        projEvent.ProjectType = row["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D;
                         messageStr = JsonConvert.SerializeObject(new {UpdateProjectEvent = projEvent},
                             new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
                         break;
