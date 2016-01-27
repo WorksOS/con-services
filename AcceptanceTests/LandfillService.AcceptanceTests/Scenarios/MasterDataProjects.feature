@@ -21,8 +21,8 @@ Given I inject the following master data events
 | Event              | DaysToExpire | Boundaries | ProjectName      | Type     | TimeZone        |
 | CreateProjectEvent | 10           | boundary   | AcceptanceUpdate | LandFill | America/Chicago |
 And I inject the following master data events
-| Event              | DaysToExpire | ProjectName      | 
-| UpdateProjectEvent | 50           | AcceptanceUpdate | 
+| Event              | DaysToExpire | ProjectName      |  Type     |
+| UpdateProjectEvent | 50           | AcceptanceUpdate |  Full3D   |
 When I request a list of projects from landfill web api 
 Then I find update project details in the project list  
 

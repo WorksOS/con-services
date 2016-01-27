@@ -152,11 +152,13 @@ testRunner.Given("I inject the following master data events", ((string)(null)), 
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                         "Event",
                         "DaysToExpire",
-                        "ProjectName"});
+                        "ProjectName",
+                        "Type"});
             table3.AddRow(new string[] {
                         "UpdateProjectEvent",
                         "50",
-                        "AcceptanceUpdate"});
+                        "AcceptanceUpdate",
+                        "Full3D"});
 #line 23
 testRunner.And("I inject the following master data events", ((string)(null)), table3, "And ");
 #line 26
