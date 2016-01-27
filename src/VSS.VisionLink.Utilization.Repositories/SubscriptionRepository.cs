@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using VSS.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Landfill.Common.Interfaces;

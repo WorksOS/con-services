@@ -1,6 +1,6 @@
 using System;
-using VSS.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Landfill.MDM.Interfaces;
 
 namespace VSS.VisionLink.Landfill.MDM

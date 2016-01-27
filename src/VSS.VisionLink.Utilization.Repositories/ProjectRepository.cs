@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using KafkaNet.Common;
-using VSS.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Landfill.Common.Interfaces;
 using VSS.VisionLink.Landfill.Common.Models;
 
@@ -33,7 +33,10 @@ namespace VSS.VisionLink.Landfill.Repositories
         project.name = projectEvent.ProjectName;
         project.timeZone = projectEvent.ProjectTimezone;
         project.projectUid = projectEvent.ProjectUID.ToString();
+        project.projectEndDate = projectEvent.ProjectEndDate;
         project.lastActionedUtc = projectEvent.ActionUTC;
+        project.projectStartDate = projectEvent.ProjectStartDate;
+        project.projectType = projectEvent.ProjectType;
         eventType = "CreateProjectEvent";
       }
       else if (evt is UpdateProjectEvent)
@@ -41,8 +44,9 @@ namespace VSS.VisionLink.Landfill.Repositories
         var projectEvent = (UpdateProjectEvent)evt;
         project.projectUid = projectEvent.ProjectUID.ToString();
         project.name = projectEvent.ProjectName;
-        project.timeZone = projectEvent.ProjectTimezone;
+        project.projectEndDate = projectEvent.ProjectEndDate;
         project.lastActionedUtc = projectEvent.ActionUTC;
+        project.projectType = projectEvent.ProjectType;
         eventType = "UpdateProjectEvent";
       }
       else if (evt is DeleteProjectEvent)
@@ -155,9 +159,9 @@ namespace VSS.VisionLink.Landfill.Repositories
     {
       const string insert =
         @"INSERT projects
-                (projectId, name, timeZone, projectUid, lastActionedUtc)
+                (projectId, name, timeZone, projectUid, lastActionedUtc, projectStartDate, projectEndDate, projectType)
                 VALUES
-                (@projectId, @name, @timeZone, @projectUid, @lastActionedUtc)";
+                (@projectId, @name, @timeZone, @projectUid, @lastActionedUtc, @projectStartDate, @projectEndDate, @projectType)";
       return await Connection.ExecuteAsync(insert, project);
     }
 
@@ -197,8 +201,9 @@ namespace VSS.VisionLink.Landfill.Repositories
           const string update =
             @"UPDATE projects                
                 SET name = @name,
-                  timeZone = @timeZone,
-                  lastActionedUTC = @lastActionedUtc
+                  lastActionedUTC = @lastActionedUtc,
+                  projectEndDate=@projectEndDate, 
+                  projectType=@projectType
               WHERE projectUid = @projectUid";
           return await Connection.ExecuteAsync(update, project);
         }

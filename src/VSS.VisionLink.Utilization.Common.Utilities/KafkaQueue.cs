@@ -11,7 +11,6 @@ using KafkaNet.Protocol;
 using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VSS.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Landfill.Common.Interfaces;

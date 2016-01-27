@@ -74,8 +74,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.10.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.20.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

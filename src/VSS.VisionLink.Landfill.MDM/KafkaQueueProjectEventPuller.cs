@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 using KafkaNet.Common;
 using log4net;
 using Microsoft.Practices.Unity;
-using Newtonsoft.Json.Linq;
-using VSS.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Landfill.Common.Interfaces;
 using VSS.VisionLink.Landfill.Common.Models;
-using VSS.VisionLink.Landfill.Common.Utilities;
 using VSS.VisionLink.Landfill.MDM;
 using VSS.VisionLink.Landfill.MDM.Interfaces;
 
