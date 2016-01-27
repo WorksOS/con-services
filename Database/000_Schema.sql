@@ -3,9 +3,7 @@
 -- Table structure for table `Bookmark`
 --
 
-DROP TABLE IF EXISTS `Bookmark`;
-
-CREATE TABLE `Bookmark` (
+CREATE TABLE IF NOT EXISTS `Bookmark` (
   `fk_BookmarkTypeID` int(11) NOT NULL,
   `Value` bigint(20) NOT NULL,
   `UpdateUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
@@ -16,8 +14,7 @@ CREATE TABLE `Bookmark` (
 -- Table structure for table `BookmarkTypeEnum`
 --
 
-DROP TABLE IF EXISTS `BookmarkTypeEnum`;
-CREATE TABLE `BookmarkTypeEnum` (
+CREATE TABLE IF NOT EXISTS `BookmarkTypeEnum` (
   `ID` int(11) NOT NULL,
   `Description` varchar(20) NOT NULL,
   PRIMARY KEY (`ID`),
@@ -26,34 +23,10 @@ CREATE TABLE `BookmarkTypeEnum` (
 
 
 --
--- Table structure for table `projects`
---
-
-DROP TABLE IF EXISTS `projects`;
-CREATE TABLE `projects` (
-  `projectId` int(10) unsigned NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `timeZone` varchar(255) NOT NULL,
-  `retrievalStartedAt` datetime NOT NULL,
-  `daysToSubscriptionExpiry` int(11) DEFAULT NULL,
-  `projectUid` varchar(36) DEFAULT NULL,
-  `customerUid` varchar(36) DEFAULT NULL,
-  `subscriptionUid` varchar(36) DEFAULT NULL,
-  `lastActionedUTC` datetime DEFAULT NULL,
-  `InsertUTC` datetime DEFAULT NULL,
-  `UpdateUTC` datetime DEFAULT NULL,
-  `IsDeleted` tinyint(4) DEFAULT '0',
-  PRIMARY KEY (`projectId`),
-  UNIQUE KEY `projectId_UNIQUE` (`projectId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
---
 -- Table structure for table `entries`
 --
 
-DROP TABLE IF EXISTS `entries`;
-CREATE TABLE `entries` (
+CREATE TABLE IF NOT EXISTS `entries` (
   `projectId` int(10) unsigned NOT NULL,
   `date` date NOT NULL,
   `weight` double NOT NULL,
@@ -71,8 +44,7 @@ CREATE TABLE `entries` (
 -- Table structure for table `subscriptions`
 --
 
-DROP TABLE IF EXISTS `subscriptions`;
-CREATE TABLE `subscriptions` (
+CREATE TABLE IF NOT EXISTS `subscriptions` (
   `subscriptionUid` varchar(36) NOT NULL,
   `customerUid` varchar(36) NOT NULL,
   `startDate` datetime(6) DEFAULT NULL,
@@ -87,8 +59,7 @@ CREATE TABLE `subscriptions` (
 -- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `userId` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `projectsRetrievedAt` datetime NOT NULL,
@@ -101,8 +72,7 @@ CREATE TABLE `users` (
 -- Table structure for table `sessions`
 --
 
-DROP TABLE IF EXISTS `sessions`;
-CREATE TABLE `sessions` (
+CREATE TABLE IF NOT EXISTS `sessions` (
   `sessionId` varchar(32) NOT NULL,
   `userId` int(10) unsigned NOT NULL,
   `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -116,8 +86,7 @@ CREATE TABLE `sessions` (
 -- Table structure for table `usersprojects`
 --
 
-DROP TABLE IF EXISTS `usersprojects`;
-CREATE TABLE `usersprojects` (
+CREATE TABLE IF NOT EXISTS `usersprojects` (
   `userId` int(10) unsigned NOT NULL,
   `projectId` int(10) unsigned NOT NULL,
   PRIMARY KEY (`userId`,`projectId`),
@@ -130,5 +99,5 @@ CREATE TABLE `usersprojects` (
 
 
 LOCK TABLES `BookmarkTypeEnum` WRITE;
-INSERT INTO `BookmarkTypeEnum` VALUES (0,'None'),(16,'ProjectEventOffset');
+INSERT IGNORE INTO `BookmarkTypeEnum` VALUES (0,'None'),(16,'ProjectEventOffset');
 UNLOCK TABLES;
