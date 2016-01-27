@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
-using LandfillService.WebApi.Models;
+using LandfillService.AcceptanceTests.Models;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {

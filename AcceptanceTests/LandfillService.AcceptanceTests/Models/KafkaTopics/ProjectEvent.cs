@@ -11,7 +11,6 @@ namespace LandfillService.AcceptanceTests.Models.KafkaTopics
         public string ProjectName { get; set; }
         public ProjectType ProjectType { get; set; }
         public string ProjectBoundaries { get; set; }
-
         public Guid ProjectUID { get; set; }
         public int ProjectID { get; set; }
         public DateTime ActionUTC { get; set; }
@@ -19,3 +18,5 @@ namespace LandfillService.AcceptanceTests.Models.KafkaTopics
 
     }
 }
+
+
