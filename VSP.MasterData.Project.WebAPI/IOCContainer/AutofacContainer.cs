@@ -19,18 +19,20 @@ namespace VSP.MasterData.Project.WebAPI
       var builder = new ContainerBuilder();
       HttpConfiguration configuration = GlobalConfiguration.Configuration;
 
-        var disvoveryServiceURI = new Uri(ConfigurationManager.AppSettings["DiscoveryURI"]);
+    //    var disvoveryServiceURI = new Uri(ConfigurationManager.AppSettings["DiscoveryURI"]);
 
       string kafkaUri = null;
-      string environment = ConfigurationManager.AppSettings["Environment"];
+      //string environment = ConfigurationManager.AppSettings["Environment"];
+      //string topicName = ConfigurationManager.AppSettings["TopicName"];
+      //string kafkaTopicName = string.Concat(environment, "-", topicName);//Environment specific topic name
+      //kafkaUri = GetKafkaEndPointURL(disvoveryServiceURI, kafkaTopicName);
+      kafkaUri = ConfigurationManager.AppSettings["KafkaEndpointURI"];
       string topicName = ConfigurationManager.AppSettings["TopicName"];
-      string kafkaTopicName = string.Concat(environment, "-", topicName);//Environment specific topic name
-      kafkaUri = GetKafkaEndPointURL(disvoveryServiceURI, kafkaTopicName);
 
       var uriList = new List<string>();
       if (kafkaUri != null) uriList.Add(kafkaUri);
 
-      builder.Register(c => new ProducerWrapper(kafkaTopicName, uriList)).As<IProducerWrapper>().SingleInstance();
+      builder.Register(c => new ProducerWrapper(topicName, uriList)).As<IProducerWrapper>().SingleInstance();
       builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
       IContainer container = builder.Build();
