@@ -40,7 +40,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         var jsonHelper = new JsonHelper();
         var message = jsonHelper.SerializeObjectToJson(new { CreateProjectEvent = project });
         _producer.Publish(message, project.ProjectUID.ToString());
-
+        Log.Debug(String.Format("Create Project Event: {0}",message));
         return Ok();
       }
       catch (Exception ex)
@@ -68,6 +68,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         project.ReceivedUTC = DateTime.UtcNow;
         var message = jsonHelper.SerializeObjectToJson(new { UpdateProjectEvent = project });
         _producer.Publish(message, project.ProjectUID.ToString());
+        Log.Debug(String.Format("Update Project Event: {0}", message));
 
         return Ok();
       }
@@ -104,6 +105,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
 
         var message = jsonHelper.SerializeObjectToJson(new { DeleteProjectEvent = project });
         _producer.Publish(message, project.ProjectUID.ToString());
+        Log.Debug(String.Format("Delete Project Event: {0}", message));
 
         return Ok();
       }
@@ -133,6 +135,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         var jsonHelper = new JsonHelper();
         var message = jsonHelper.SerializeObjectToJson(new { RestoreProjectEvent = project });
         _producer.Publish(message, project.ProjectUID.ToString());
+        Log.Debug(String.Format("Restore Project Event: {0}", message));
 
         return Ok();
       }
@@ -160,10 +163,13 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         customerProject.ReceivedUTC = DateTime.UtcNow;
         var message = new JsonHelper().SerializeObjectToJson(new { AssociateCustomerAssetEvent = customerProject });
         _producer.Publish(message, customerProject.CustomerUID.ToString());
+        Log.Debug(String.Format("AssociateProjectCustomer Project Event: {0}", message));
+
         return Ok();
       }
       catch (Exception ex)
       {
+        Log.IfError(ex.Message + ex.StackTrace);
         return InternalServerError(ex);
       }
     }
@@ -185,10 +191,12 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         customerProject.ReceivedUTC = DateTime.UtcNow;
         var message = new JsonHelper().SerializeObjectToJson(new { DissociateCustomerAssetEvent = customerProject });
         _producer.Publish(message, customerProject.CustomerUID.ToString());
+        Log.Debug(String.Format("DissociateProjectCustomer Project Event: {0}", message));
         return Ok();
       }
       catch (Exception ex)
       {
+        Log.IfError(ex.Message + ex.StackTrace);
         return InternalServerError(ex);
       }
     }
