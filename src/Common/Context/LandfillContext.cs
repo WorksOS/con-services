@@ -242,7 +242,7 @@ namespace LandfillService.WebApi.Models
 
       public static void AddDaysToSubscriptionExpiryToProjects()
       {
-          WithConnection<object>((conn) =>
+         /* WithConnection<object>((conn) =>
           {
             var command = @"select count(*) from information_schema.columns
                           where table_schema = 'landfill' and table_name = 'projects' and column_name = 'daysToSubscriptionExpiry'";
@@ -254,7 +254,7 @@ namespace LandfillService.WebApi.Models
               result = MySqlHelper.ExecuteNonQuery(conn, command);
             }
             return null;
-          });
+          });*/
       }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace LandfillService.WebApi
     {
         protected override bool IsAuthorized(HttpActionContext context)
         {
-            if (!context.Request.Headers.Contains("SessionID"))
+          /*  if (!context.Request.Headers.Contains("SessionID"))
             {
                 System.Diagnostics.Debug.WriteLine("Unauthorised: missing SessionID header");
                 return false;
@@ -44,7 +44,7 @@ namespace LandfillService.WebApi
                 LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, context.Request.RequestUri.ToString(), e.Message);
                 return false;
             }
-           
+           */
             return true;
         }
     }

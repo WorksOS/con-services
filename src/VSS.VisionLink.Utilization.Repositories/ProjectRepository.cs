@@ -242,7 +242,7 @@ namespace VSS.VisionLink.Landfill.Repositories
       var project = Connection.Query<Project>
         (@"SELECT 
                  projectUid, name, projectId, timeZone, customerUid, subscriptionUid, 
-                  daysToSubscriptionExpiry, lastActionedUtc, IsDeleted
+                  daysToSubscriptionExpiry, lastActionedUtc, IsDeleted, projectStartDate, projectEndDate, projectType
               FROM projects
               WHERE  IsDeleted=0");
       PerhapsCloseConnection();
