@@ -284,6 +284,10 @@
       <Project>{ebca4af6-ceac-45a1-8014-5e40a24cbc67}</Project>
       <Name>VSS.VisionLink.Landfill.Common.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VSS.VisionLink.Utilization.Common.Utilities\VSS.VisionLink.Landfill.Common.Utilities.csproj">
+      <Project>{486582b2-bf40-457e-943b-2350880854bc}</Project>
+      <Name>VSS.VisionLink.Landfill.Common.Utilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VSS.VisionLink.Utilization.Repositories\VSS.VisionLink.Landfill.Repositories.csproj">
       <Project>{80b92674-9bb2-4131-8053-701757f9eb03}</Project>
       <Name>VSS.VisionLink.Landfill.Repositories</Name>
