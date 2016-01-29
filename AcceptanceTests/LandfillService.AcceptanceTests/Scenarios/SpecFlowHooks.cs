@@ -19,14 +19,16 @@ namespace LandfillService.AcceptanceTests.Scenarios
 
         private static void Login(Credentials credentials)
         {
-
             httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
-            response = httpClient.PostAsJsonAsync(Config.serviceUrl + "users/login", credentials).Result;
+            string uri; // = "https://dev-mobile.vss-eng.com/foreman/Secure/ForemanSvc.svc/Login";
+            uri = Config.serviceUrl + "users/login";
+            response = httpClient.PostAsJsonAsync(uri, credentials).Result;  
             responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
-            Assert.IsFalse(responseParse.Contains("<html>"), "Failed to login - Is Foreman unavailable?");
+            Assert.IsFalse(responseParse.Contains("<html>"), "Failed to login - Is Foreman unavailable? - Response:" + responseParse);
+            Assert.IsFalse(responseParse.Contains("{"),  "Failed to login - Is Foreman unavailable? - Response:" + responseParse);        
             sessionId = GetSessionIdFromResponse(responseParse);
         }
 
@@ -41,7 +43,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [BeforeTestRun]
         public static void Before()
         {
-            Login(Config.credentials["goodCredentials"]);
+            //Login(Config.credentials["goodCredentials"]);
         }
 
         [AfterTestRun]

@@ -111,6 +111,18 @@ namespace LandfillService.AcceptanceTests.Models
     }
 
     /// <summary>
+    /// User credentials submitted for login
+    /// </summary>
+    public class ForemanCredentials
+    {
+        public string UserName { get; set; }
+
+
+        public string Password { get; set; }
+    }
+
+
+    /// <summary>
     /// User credentials submitted for login via VisionLink link
     /// </summary>
     public class VlCredentials
