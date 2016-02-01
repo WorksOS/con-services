@@ -159,7 +159,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [StepDefinition("login (.+)")]
         public void WhenLogin(string credKey)
         {
-            Login(Config.credentials[credKey]);
+            //Login(Config.credentials[credKey]);
         }
 
         [Given(@"Get Project data for '(.*)'")]
