@@ -175,6 +175,14 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Auth\AddChallengeOnUnauthorizedResult.cs" />
+    <Compile Include="Auth\AssociatedCustomer.cs" />
+    <Compile Include="Auth\AuthenticationFailureResult.cs" />
+    <Compile Include="Auth\AuthUtils.cs" />
+    <Compile Include="Auth\CustomerType.cs" />
+    <Compile Include="Auth\JWTHelper.cs" />
+    <Compile Include="Auth\ProjectDescriptor.cs" />
+    <Compile Include="Auth\TIDAuthFilter.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
@@ -275,6 +283,14 @@
     <ProjectReference Include="..\Common\LandfillService.Common.csproj">
       <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
       <Name>LandfillService.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSP.MasterData.Customer.Data\VSP.MasterData.Customer.Data.csproj">
+      <Project>{70CA8791-9379-4236-8849-D29CBEB2E251}</Project>
+      <Name>VSP.MasterData.Customer.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Subscription.Data\VSS.Subscription.Data.csproj">
+      <Project>{C455920E-769A-42CE-95A5-FC7CC5CBC3A6}</Project>
+      <Name>VSS.Subscription.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\VSS.VisionLink.Utilization.Common.Interfaces\VSS.VisionLink.Landfill.Common.Interfaces.csproj">
       <Project>{44CD2027-F652-4EDE-BFED-2C9555D56440}</Project>

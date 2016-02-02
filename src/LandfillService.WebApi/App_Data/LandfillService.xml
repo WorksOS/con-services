@@ -541,6 +541,216 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
+        <member name="T:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.AddChallengeOnUnauthorizedResult">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.AddChallengeOnUnauthorizedResult.#ctor(System.Net.Http.Headers.AuthenticationHeaderValue,System.Web.Http.IHttpActionResult)">
+            <summary>
+            
+            </summary>
+            <param name="challenge"></param>
+            <param name="innerResult"></param>
+        </member>
+        <member name="M:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.AddChallengeOnUnauthorizedResult.ExecuteAsync(System.Threading.CancellationToken)">
+            <summary>
+            Creates an <see cref="T:System.Net.Http.HttpResponseMessage"/> asynchronously.
+            </summary>
+            <returns>
+            A task that, when completed, contains the <see cref="T:System.Net.Http.HttpResponseMessage"/>.
+            </returns>
+            <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.AddChallengeOnUnauthorizedResult.Challenge">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.AddChallengeOnUnauthorizedResult.InnerResult">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult">
+            <summary>
+              The result of authentication
+            </summary>
+        </member>
+        <member name="M:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.#ctor(System.String,System.Net.Http.HttpRequestMessage)">
+            <summary>
+            
+            </summary>
+            <param name="reasonPhrase"></param>
+            <param name="request"></param>
+        </member>
+        <member name="M:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.ExecuteAsync(System.Threading.CancellationToken)">
+            <summary>
+            Creates an <see cref="T:System.Net.Http.HttpResponseMessage"/> asynchronously.
+            </summary>
+            <returns>
+            A task that, when completed, contains the <see cref="T:System.Net.Http.HttpResponseMessage"/>.
+            </returns>
+            <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.ReasonPhrase">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.AuthenticationFailureResult.Request">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt">
+            <summary>
+              Model class for Jwt
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Iss">
+            <summary>
+              Iss
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Exp">
+            <summary>
+              Exp
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Subscriber">
+            <summary>
+              Subscriber
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.ApplicationId">
+            <summary>
+              ApplicationId
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.ApplicationName">
+            <summary>
+              Application Name
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.ApplicationTier">
+            <summary>
+              Application Tier
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.ApiContext">
+            <summary>
+              Api Context
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Version">
+            <summary>
+              Version
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Tier">
+            <summary>
+              Tier
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.KeyType">
+            <summary>
+              Key Type
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.UserType">
+            <summary>
+              User Type
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.EndUser">
+            <summary>
+              EndUser
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.EndUserTenantId">
+            <summary>
+              Tenant Id of the End User
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Email">
+            <summary>
+              Email
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.GivenName">
+            <summary>
+              FirstName
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.LastName">
+            <summary>
+              Last Name
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Otp">
+            <summary>
+              OneTimePassword
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Role">
+            <summary>
+              Roles of the User
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Helpers.Jwt.Uuid">
+            <summary>
+              Unique Id of the User
+            </summary>
+        </member>
+        <member name="T:VSS.VisionLink.Utilization.WebApi.Helpers.JwtHelper">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:VSS.VisionLink.Utilization.WebApi.Helpers.JwtHelper.TryGetJwtToken(System.Net.Http.Headers.HttpRequestHeaders,System.String@)">
+            <summary>
+              This method is used to get the Jwt Assertion Token string from the HTTP Request Header
+            </summary>
+            <param name="httpRequestHeaders">Incoming Request Headers</param>
+            <param name="jwtToken">Output parameter - Jwt Assetion Token string</param>
+            <returns>true, if Http Headers contain Jwt; false, otherwise</returns>
+        </member>
+        <member name="M:VSS.VisionLink.Utilization.WebApi.Helpers.JwtHelper.IsValidJwtToken(System.String)">
+            <summary>
+              This method is used to check if the Jwt Token is valid or not
+            </summary>
+            <param name="jwtToken"></param>
+            <returns>true, if the Jwt Token is valid; false, otherwise</returns>
+        </member>
+        <member name="M:VSS.VisionLink.Utilization.WebApi.Helpers.JwtHelper.DecodeJwtToken(System.String)">
+            <summary>
+              This method is used to decode the validated jwtToken and return the Jwt object
+            </summary>
+            <param name="jwtToken"></param>
+            <returns>returns null if jwtToken is null/invalid else, returns the Jwt object</returns>
+        </member>
+        <member name="T:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models.ProjectDescriptor">
+            <summary>
+              Describes VL project
+            </summary>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models.ProjectDescriptor.isArchived">
+            <summary>
+              Gets or sets a value indicating whether this instance is archived.
+            </summary>
+            <value>
+              <c>true</c> if this instance is archived; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models.ProjectDescriptor.isLandFill">
+            <summary>
+              Gets or sets a value indicating whether this instance is landfill.
+            </summary>
+            <value>
+              <c>true</c> if this instance is landfill; otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="T:LandfillService.WebApi.Controllers.HomeController">
             <summary>
             Service documentation controller

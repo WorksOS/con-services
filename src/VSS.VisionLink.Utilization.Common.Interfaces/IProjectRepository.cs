@@ -11,5 +11,6 @@ namespace VSS.VisionLink.Landfill.Common.Interfaces
     Project GetProject(string projectUid);
     Task<int> StoreProject(IProjectEvent evt);
     IEnumerable<Project> GetProjects();
+    IEnumerable<Project> GetProjectsBySubcription(string subscriptionUid);
   }
 }

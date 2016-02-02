@@ -236,6 +236,20 @@ namespace VSS.VisionLink.Landfill.Repositories
       return project;
     }
 
+    public IEnumerable<Project> GetProjectsBySubcription(string subscriptionUid)
+    {
+      PerhapsOpenConnection();
+      var project = Connection.Query<Project>
+        (@"SELECT 
+                 projectUid, name, projectId, timeZone, customerUid, subscriptionUid, 
+                  daysToSubscriptionExpiry, lastActionedUtc, IsDeleted
+              FROM projects
+              WHERE subscriptionUid = @subscriptionUid AND IsDeleted=0"
+        );
+      PerhapsCloseConnection();
+      return project;
+    }
+
     public IEnumerable<Project> GetProjects()
     {
       PerhapsOpenConnection();

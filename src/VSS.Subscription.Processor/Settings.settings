@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="VSS.Subscription.Processor" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ConsumerGroupName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">MasterDataSubscriptionConsumer</Value>
+    </Setting>
+    <Setting Name="DicoveryServiceUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://54.201.153.176/DiscoveryService/kafkatopic/v1</Value>
+    </Setting>
+    <Setting Name="TopicName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Dev</Value>
+    </Setting>
+    <Setting Name="KafkaServerUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">KafkaServerUri" value="tcp://10.210.246.165:9092</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
