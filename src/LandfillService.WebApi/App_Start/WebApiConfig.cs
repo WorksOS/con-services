@@ -15,40 +15,11 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Cors;
 using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Filters;
+using VSS.VisionLink.Utilization.WebApi.Configuration;
 
 namespace LandfillService.WebApi
 {
-    /// <summary>
-    /// Verifies the session ID
-    /// </summary>
-    public class AuthNAuthZ : AuthorizeAttribute
-    {
-        protected override bool IsAuthorized(HttpActionContext context)
-        {
-          /*  if (!context.Request.Headers.Contains("SessionID"))
-            {
-                System.Diagnostics.Debug.WriteLine("Unauthorised: missing SessionID header");
-                return false;
-            }
-
-            System.Diagnostics.Debug.WriteLine("Authorising user: " + context.Request.Headers.GetValues("SessionID").First());
-
-            string sessionId = context.Request.Headers.GetValues("SessionID").First();
-            
-            try
-            {
-                LandfillDb.GetSession(sessionId);
-            }
-            catch (ApplicationException e)
-            {
-                LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, context.Request.RequestUri.ToString(), e.Message);
-                return false;
-            }
-           */
-            return true;
-        }
-    }
-
+ 
     /// <summary>
     /// Defines logging methods executed on request and after request is executed
     /// </summary>
@@ -103,7 +74,7 @@ namespace LandfillService.WebApi
         {
             config.EnableCors(new EnableCorsAttribute("*", "*", "GET, POST, OPTIONS"));
 
-            config.Filters.Add(new AuthNAuthZ());
+            config.Filters.Add(new TIDAuthFilter());
             config.Filters.Add(new LogActionFilterAttribute());
             config.Filters.Add(new HandleSerializationErrorAttribute());
 

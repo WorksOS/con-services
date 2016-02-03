@@ -33,6 +33,7 @@ namespace LandfillService.WebApi.Models
             }
         }
 
+
         /// <summary>
         /// Wrapper for executing MySQL queries/statements in a DB transaction; rolls back the transaction in case of errors
         /// </summary>
@@ -59,153 +60,8 @@ namespace LandfillService.WebApi.Models
             });
         }
 
-        #region(UsersAndSessions)
-
-        /// <summary>
-        /// Retrieves the user object for a given name (and creates a DB record if needed)
-        /// </summary>
-        /// <param name="userName">User name</param>
-        /// <returns>User object</returns>
-        public static User CreateOrGetUser(string userName, int units)
-        {
-            return WithConnection((conn) =>
-            {
-                // supply a dummy value for projectsRetrievedAt such that it indicates that projects have to be retrieved
-                var command = "insert ignore into users (name, projectsRetrievedAt, unitsId) values (@name, date_sub(UTC_TIMESTAMP(), interval 10 year), @units)";
-                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@name", userName), new MySqlParameter("@units", units));
-
-                command = "update users set unitsId = @units where name = @name";
-                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@name", userName), new MySqlParameter("@units", units));
-
-
-                command = "select * from users where name = @name";
-                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@name", userName)))
-                {
-                    reader.Read();
-                    var user = new User
-                               {
-                                   id = reader.GetUInt32(reader.GetOrdinal("userId")), name = reader.GetString(reader.GetOrdinal("name")),
-                                   unitsId = reader.GetUInt32(reader.GetOrdinal("unitsId"))
-                               };
-                    return user;
-                }
-            });
-        }
-
-        /// <summary>
-        /// Saves the session ID for a given user
-        /// </summary>
-        /// <param name="user">User object</param>
-        /// <param name="sessionId">Session ID</param>
-        /// <returns></returns>
-        public static void SaveSession(User user, string sessionId)
-        {
-            WithConnection<object>((conn) =>
-            {
-                var command = "insert ignore into sessions (userId, sessionId) values (@userId, @sessionId)";
-                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@userId", user.id), new MySqlParameter("@sessionId", sessionId));
-                return null;
-            });
-        }
-
-        /// <summary>
-        /// Deletes the given session ID from the DB
-        /// </summary>
-        /// <param name="sessionId">Session ID</param>
-        /// <returns></returns>
-        public static void DeleteSession(string sessionId)
-        {
-            WithConnection<object>((conn) =>
-            {
-                var command = "delete from sessions where sessionId = @sessionId";
-                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@sessionId", sessionId));
-                return null;
-            });
-        }
-
-        /// <summary>
-        /// Deletes sessions older than 30 days from the DB
-        /// </summary>
-        /// <returns></returns>
-        public static void DeleteStaleSessions()
-        {
-            WithConnection<object>((conn) =>
-            {
-              var command = "delete from sessions where createdAt < date_sub(UTC_TIMESTAMP(), interval 30 day)";
-                MySqlHelper.ExecuteNonQuery(conn, command);
-                return null;
-            });
-        }
-
-        /// <summary>
-        /// Retrieves the session with a given ID
-        /// </summary>
-        /// <param name="sessionId">Session ID</param>
-        /// <returns>Session object</returns>
-        public static Session GetSession(string sessionId)
-        {
-            return WithConnection((conn) =>
-            {
-                var command = "select * from sessions where sessionId = @sessionId";
-                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@sessionId", sessionId)))
-                {
-                    if (!reader.Read() || !reader.HasRows)
-                    {
-                        reader.Close();
-                        throw new ApplicationException("Invalid session " + sessionId);
-                    }
-                    var session = new Session { id = reader.GetString(reader.GetOrdinal("sessionId")), userId = reader.GetUInt32(reader.GetOrdinal("userId")) };
-                    return session;
-                }
-            });
-        }
-
-        #endregion
 
         #region(Projects)
-
-        /// <summary>
-        /// Saves a list of projects to the DB
-        /// </summary>
-        /// <param name="sessionId">Session ID used to associate projects with a user</param>
-        /// <param name="projects">List of projects</param>
-        /// <returns></returns>
-        public static void SaveProjects(string sessionId, IEnumerable<Project> projects)
-        {
-            InTransaction<object>((conn) =>
-            {
-                // delete any existing projects associated with the user
-                var command = "delete from usersprojects where userId = (select userId from sessions where sessionId = @sessionId)";
-                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@sessionId", sessionId));
-
-                foreach (var project in projects)
-                {
-                  command = @"insert into projects (projectId, name, timeZone, retrievalStartedAt, daysToSubscriptionExpiry) 
-                                values (@projectId, @name, @timeZone, date_sub(UTC_TIMESTAMP(), interval 10 year), @daysToSubscriptionExpiry)
-                                    on duplicate key update name = @name, timeZone = @timeZone, daysToSubscriptionExpiry = @daysToSubscriptionExpiry";
- 
-                  MySqlHelper.ExecuteNonQuery(conn, command,
-                      new MySqlParameter("@projectId", project.id),
-                      new MySqlParameter("@name", project.name),
-                      new MySqlParameter("@timeZone", project.timeZoneName),
-                      new MySqlParameter("@daysToSubscriptionExpiry", project.daysToSubscriptionExpiry));
-
-                    command = @"insert into usersprojects (userId, projectId) 
-                                values ((select userId from sessions where sessionId = @sessionId), @projectId)";
-
-                    MySqlHelper.ExecuteNonQuery(conn, command,
-                        new MySqlParameter("@sessionId", sessionId),
-                        new MySqlParameter("@projectId", project.id));
-
-                }
-
-                command = @"update users set projectsRetrievedAt = UTC_TIMESTAMP()
-                            where userId = (select userId from sessions where sessionId = @sessionId)";
-                MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@sessionId", sessionId));
-
-                return null;
-            });
-        }
 
         /// <summary>
         /// Retrieves a list of projects for a given user (via session ID)
@@ -216,9 +72,9 @@ namespace LandfillService.WebApi.Models
         {
             return InTransaction((conn) =>
             {
-                var command = @"select * from projects where projectId in 
-                                (select projectId from usersprojects where userId = (select userId from sessions where sessionId = @sessionId)) 
-                                order by name";
+
+              var command = @"select * from projects prj join UserCustomer uc ON prj.customerUid=uc.fk_CustomerUID
+                              where fk_UserUID = @sessionId;";
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@sessionId", sessionId)))
                 {
                     var projects = new List<Project>();
@@ -239,39 +95,6 @@ namespace LandfillService.WebApi.Models
         }
 
    
-
-      public static void AddDaysToSubscriptionExpiryToProjects()
-      {
-         /* WithConnection<object>((conn) =>
-          {
-            var command = @"select count(*) from information_schema.columns
-                          where table_schema = 'landfill' and table_name = 'projects' and column_name = 'daysToSubscriptionExpiry'";
-            var result = MySqlHelper.ExecuteScalar(conn, command);
-            bool exists = Convert.ToUInt32(result) > 0;
-            if (!exists)
-            {
-              command = @"alter table projects add daysToSubscriptionExpiry int";//nullable
-              result = MySqlHelper.ExecuteNonQuery(conn, command);
-            }
-            return null;
-          });*/
-      }
-
-        /// <summary>
-        /// Retrieves the age of the project list for a given user (found via session ID)
-        /// </summary>
-        /// <param name="sessionId">Session ID used to associate projects with a user</param>
-        /// <returns>Age of project list in hours</returns>
-        public static ulong GetProjectListAgeInHours(string sessionId)
-        {
-            return WithConnection((conn) =>
-            {
-                var command = @"select timestampdiff(hour, projectsRetrievedAt, UTC_TIMESTAMP()) as hours 
-                                from users where userId = (select userId from sessions where sessionId = @sessionId)";
-                var result = MySqlHelper.ExecuteScalar(conn, command, new MySqlParameter("@sessionId", sessionId)); 
-                return Convert.ToUInt32(result);
-            });
-        }
 
         /// <summary>
         /// Returns the status of volume retrieval for a project

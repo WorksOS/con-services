@@ -34,54 +34,11 @@ namespace LandfillService.WebApi.Controllers
         public ProjectsController()
         {
             LandfillDb.UnlockAllProjects();  // if the service terminates, some projects can be left locked for volume retrieval; unlock them
-            LandfillDb.AddDaysToSubscriptionExpiryToProjects();
         }
-
+  
+      
         /// <summary>
-        /// Wraps a request to the Foreman API & deletes the session if invalid
-        /// </summary>
-        /// <param name="sessionId">Session ID provided by the Foreman API</param>
-        /// <param name="body">Code to execute</param>
-        /// <returns>The result of executing body() or error details</returns>
-        private IHttpActionResult ForemanRequest(string sessionId, Func<IHttpActionResult> body)
-        {
-            try
-            {
-                return body();
-            }
-            catch (ForemanApiException e)
-            {
-                if (e.code == HttpStatusCode.Unauthorized)
-                    LandfillDb.DeleteSession(sessionId);
-                return Content(e.code, e.Message);
-            }
-        }
-
-
-        /// <summary>
-        /// Attempts to retrieve a list of projects from the Foreman API and save it in the landfill DB; deletes the session if invalid
-        /// </summary>
-        /// <param name="sessionId">Session ID provided by the Foreman API</param>
-        /// <returns>A list of projects or error details</returns>
-        private IEither<IHttpActionResult, IEnumerable<Project>> GetProjects(string sessionId)
-        {
-            try
-            {
-                var projects = foremanApiClient.GetProjects(sessionId);
-                System.Diagnostics.Debug.WriteLine(projects);
-                LandfillDb.SaveProjects(sessionId, projects);
-                return Either.Right<IHttpActionResult, IEnumerable<Project>>(projects);
-            }
-            catch (ForemanApiException e)
-            {
-                if (e.code == HttpStatusCode.Unauthorized)
-                    LandfillDb.DeleteSession(sessionId);
-                return Either.Left<IHttpActionResult, IEnumerable<Project>>(Content(e.code, e.Message));
-            }
-        }
-
-        /// <summary>
-        /// Attempts to retrieve a list of projects from the Foreman API and save it in the landfill DB; deletes the session if invalid
+        /// Retrieves all available rpojects from the DB
         /// </summary>
         /// <param name="sessionId">Session ID provided by the Foreman API</param>
         /// <returns>A list of projects or error details</returns>
@@ -101,16 +58,13 @@ namespace LandfillService.WebApi.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of projects either from the landfill DB (if less than one hour old) or from the Foreman API
+        /// Retrieves a list of projects from the db
         /// </summary>
         /// <param name="sessionId">Session ID provided by the Foreman API</param>
         /// <returns>A list of projects or error details</returns>
         private IEither<IHttpActionResult, IEnumerable<Project>> PerhapsUpdateProjectList(string sessionId)
         {
-            if (LandfillDb.GetProjectListAgeInHours(sessionId) < 1)
                 return Either.Right<IHttpActionResult, IEnumerable<Project>>(LandfillDb.GetProjects(sessionId));
-
-            return GetProjects(sessionId);
         }
 
         /// <summary>
