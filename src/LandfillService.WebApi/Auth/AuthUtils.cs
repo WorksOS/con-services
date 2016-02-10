@@ -19,8 +19,9 @@ public class AuthUtilities
     _dataService = dataService;
   }
 
-  public List<AssociatedCustomer> GetContext(HttpRequestHeaders headers, out string errorMessage)
+  public List<AssociatedCustomer> GetContext(HttpRequestHeaders headers, out string errorMessage, out string userId)
   {
+    userId = String.Empty;
     try
     {
       string token = String.Empty;
@@ -30,6 +31,7 @@ public class AuthUtilities
         if (JwtHelper.IsValidJwtToken(token))
         {
           var custList = _dataService.GetAssociatedCustomerbyUserUid(Guid.Parse(JwtHelper.DecodeJwtToken(token).Uuid));
+          userId = JwtHelper.DecodeJwtToken(token).Uuid;
           List<AssociatedCustomer> associatedCustomers =
             custList.Select(
               x =>

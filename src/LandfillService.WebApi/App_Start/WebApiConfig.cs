@@ -74,7 +74,7 @@ namespace LandfillService.WebApi
         {
             config.EnableCors(new EnableCorsAttribute("*", "*", "GET, POST, OPTIONS"));
 
-            config.Filters.Add(new TIDAuthFilter());
+           // config.Filters.Add(new TIDAuthFilter());
             config.Filters.Add(new LogActionFilterAttribute());
             config.Filters.Add(new HandleSerializationErrorAttribute());
 
