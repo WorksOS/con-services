@@ -1,10 +1,5 @@
-﻿using System;
-using System.Configuration;
+﻿using System.Configuration;
 using KafkaNet.Protocol;
-using Newtonsoft.Json;
-using TechTalk.SpecFlow;
-using LandfillService.AcceptanceTests.Models;
-using LandfillService.AcceptanceTests.Models.KafkaTopics;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
@@ -29,7 +24,25 @@ namespace LandfillService.AcceptanceTests.Helpers
         public IMessage CreateMessage(string messageStr, MessageType eventType)
         {
             string topic = "";
-            topic = ConfigurationManager.AppSettings["AssetMasterDataTopic"];
+            switch (eventType)
+            {
+                case MessageType.CreateProjectEvent:
+                case MessageType.DeleteProjectEvent:
+                case MessageType.UpdateProjectEvent:
+                    topic = ConfigurationManager.AppSettings["AssetMasterDataTopic"];
+                    break;
+                case MessageType.CreateAssetSubscriptionEvent:
+                case MessageType.CreateCustomerSubscriptionEvent:
+                case MessageType.CreateProjectSubscriptionEvent:
+                case MessageType.UpdateAssetSubscriptionEvent:
+                case MessageType.UpdateCustomerSubscriptionEvent:
+                case MessageType.UpdateProjectSubscriptionEvent:
+                case MessageType.DissociateProjectSubscriptionEvent:
+                case MessageType.AssociateProjectSubscriptionEvent:
+                    topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
+                    break;
+            }
+            
             return new KafkaMessage(Kafka.Instance.GetProducer(), topic, new Message(messageStr));
         }
     }
