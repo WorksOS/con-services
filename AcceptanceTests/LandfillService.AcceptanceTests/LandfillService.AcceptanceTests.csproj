@@ -127,8 +127,17 @@
     <Compile Include="Helpers\Kafka.cs" />
     <Compile Include="Helpers\ServicesClientUtil.cs" />
     <Compile Include="Interfaces\IProjectEvent.cs" />
+    <Compile Include="Interfaces\ISubscriptionEvent.cs" />
+    <Compile Include="Models\KafkaTopics\AssociateProjectSubscriptionEvent.cs" />
+    <Compile Include="Models\KafkaTopics\CreateAssetSubscriptionEvent.cs" />
+    <Compile Include="Models\KafkaTopics\CreateCustomerSubscriptionEvent.cs" />
+    <Compile Include="Models\KafkaTopics\CreateProjectSubscriptionEvent.cs" />
+    <Compile Include="Models\KafkaTopics\DissociateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\KafkaTopics\ProjectEvent.cs" />
     <Compile Include="Models\AllModels.cs" />
+    <Compile Include="Models\KafkaTopics\UpdateAssetSubscriptionEvent.cs" />
+    <Compile Include="Models\KafkaTopics\UpdateCustomerSubscriptionEvent.cs" />
+    <Compile Include="Models\KafkaTopics\UpdateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\NGProject.cs" />
     <Compile Include="Models\ProjectType.cs" />
     <Compile Include="Scenarios\Data.feature.cs">
@@ -153,6 +162,12 @@
       <DependentUpon>MasterDataProjects.feature</DependentUpon>
     </Compile>
     <Compile Include="Scenarios\MasterDataProjectsSteps.cs" />
+    <Compile Include="Scenarios\MasterDataSubscriptions.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MasterDataSubscriptions.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\MasterDataSubscriptionsSteps.cs" />
     <Compile Include="Scenarios\SpecFlowHooks.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +207,10 @@
     <None Include="Scenarios\MasterDataProjects.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>MasterDataProjects.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Scenarios\MasterDataSubscriptions.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>MasterDataSubscriptions.feature.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup />
