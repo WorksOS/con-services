@@ -19,6 +19,7 @@ using LandfillService.Common;
 using NodaTime;
 using System.Reflection;
 using VSS.VisionLink.Landfill.Repositories;
+using VSS.VisionLink.Utilization.WebApi.Configuration;
 
 namespace LandfillService.WebApi.Controllers
 {
@@ -28,7 +29,6 @@ namespace LandfillService.WebApi.Controllers
     [System.Web.Http.RoutePrefix("api/v1/projects")]
     public class ProjectsController : ApiController
     {
-        private ForemanApiClient foremanApiClient = new ForemanApiClient();
         private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
         public ProjectsController()
@@ -64,7 +64,7 @@ namespace LandfillService.WebApi.Controllers
         /// <returns>A list of projects or error details</returns>
         private IEither<IHttpActionResult, IEnumerable<Project>> PerhapsUpdateProjectList(string sessionId)
         {
-                return Either.Right<IHttpActionResult, IEnumerable<Project>>(LandfillDb.GetProjects(sessionId));
+           return Either.Right<IHttpActionResult, IEnumerable<Project>>(LandfillDb.GetProjects(sessionId));
         }
 
         /// <summary>
@@ -74,9 +74,7 @@ namespace LandfillService.WebApi.Controllers
         [System.Web.Http.Route("")]
         public IHttpActionResult Get()
         {
-            var sessionId = Request.Headers.GetValues("SessionId").First();
-
-            return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects => Ok(projects));
+          return PerhapsUpdateProjectList((RequestContext.Principal as LandfillPrincipal).UserUid).Case(errorResponse => errorResponse, projects => Ok(projects));
         }
 
         /// <summary>
@@ -133,7 +131,7 @@ namespace LandfillService.WebApi.Controllers
             // Kick off missing volumes retrieval IF not already running
             // Check if there are missing volumes and indicate to the client
 
-            var sessionId = Request.Headers.GetValues("SessionId").First();
+          var sessionId = (RequestContext.Principal as LandfillPrincipal).UserUid;
           UnitsTypeEnum units = LandfillDb.GetUnits(sessionId);
           LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(),
     "Retrieving density" + " units settings is: "+units.ToString());
@@ -277,7 +275,7 @@ namespace LandfillService.WebApi.Controllers
         [System.Web.Http.Route("{id}/weights")]
         public IHttpActionResult PostWeights(uint id, [FromBody] WeightEntry[] entries)
         {
-            var sessionId = Request.Headers.GetValues("SessionId").First();
+          var sessionId = (RequestContext.Principal as LandfillPrincipal).UserUid;
 
             return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects =>
             {

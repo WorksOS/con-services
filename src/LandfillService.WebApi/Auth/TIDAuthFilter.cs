@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Cache;
 using System.Net.Http.Headers;
@@ -8,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Filters;
 using LandfillService.Common;
+using LandfillService.WebApi.Models;
 using Newtonsoft.Json;
 using VSP.MasterData.Customer.Data;
 using VSS.Subscription.Data.Models;
@@ -32,7 +34,8 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
         //Passing the WebAPI Request headers to JWTHelper function to obtain the JWT Token
         var utils = new AuthUtilities(new CustomerDataService(), new MySqlSubscriptionService());
         string message = string.Empty;
-        var customerlist = utils.GetContext(context.Request.Headers, out message);
+        string userUid = string.Empty;
+        var customerlist = utils.GetContext(context.Request.Headers, out message, out userUid);
         List<CustomerSubscriptionModel> projectSubscriptions= new List<CustomerSubscriptionModel>();
         if (customerlist != null)
         {
@@ -45,7 +48,7 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
             }
           }
           //Build principal here
-          context.Principal = new LandfillPrincipal(projectList, projectSubscriptions);
+          context.Principal = new LandfillPrincipal(projectList, projectSubscriptions, userUid);
           LoggerSvc.LogMessage("Principal","BuildPrincipal","Claims",JsonConvert.SerializeObject(projectList));
         }
         else
@@ -76,13 +79,16 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
       this.Identity = new GenericIdentity("LandfillUser");
     }
 
-    public LandfillPrincipal( Dictionary<long, ProjectDescriptor> projects, List<CustomerSubscriptionModel> subscribtions)
+    public LandfillPrincipal(Dictionary<long, ProjectDescriptor> projects, List<CustomerSubscriptionModel> subscribtions, string userUid)
     {
       this.Identity = new GenericIdentity("LandfillUser");
 
       Projects = projects;
       Subscribtions = subscribtions;
+      UserUid = userUid;
     }
+
+    public string UserUid { get; private set; }
 
     public IIdentity Identity { get; private set; }
 
@@ -96,6 +102,7 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
 
     Dictionary<long, ProjectDescriptor> Projects { get; }
     List<CustomerSubscriptionModel> Subscribtions { get; }
+    String UserUid { get; }
 
   }
 
