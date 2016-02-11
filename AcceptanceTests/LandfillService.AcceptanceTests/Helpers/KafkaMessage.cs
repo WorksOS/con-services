@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using KafkaNet;
 using KafkaNet.Protocol;
-using Newtonsoft.Json;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
@@ -10,41 +9,15 @@ namespace LandfillService.AcceptanceTests.Helpers
     /// </summary>
     public class KafkaMessage : IMessage 
     {
-       // private static readonly ILog log = LogManager.GetLogger(typeof(KafkaMessage));
-
-        private Producer _producer;
-        private string _topic;
-        private Message _message;
+        private readonly Producer producer;
+        private readonly string topic;
+        private readonly Message message;
 
         public KafkaMessage(Producer producer, string topic, Message message)
         {
-            _producer = producer;
-            _topic = topic;
-            _message = message;
-        }
-
-        /// <summary>
-        /// GetMessageType()
-        /// </summary>
-        /// <returns></returns>
-        public MessageType GetMessageType()
-        {
-            //if (_topic == UtilizationServicesConfig.InternalQueueTopic)
-            //    return MessageType.InternalQueue;
-            //if (_topic == UtilizationServicesConfig.HoursTopic)
-            //    return MessageType.HoursEvent;
-            //if (_topic == UtilizationServicesConfig.EngineOperatingStatusTopic)
-            //    return MessageType.EngineOperatingStatusEvent;
-            //if (_topic == UtilizationServicesConfig.MovingTopic)
-            //    return MessageType.MovingEvent;
-            //if (_topic == UtilizationServicesConfig.SwitchTopic)
-            //    return MessageType.SwitchStateEvent;
-            //if (_topic == UtilizationServicesConfig.WorkDefinitionTopic)
-            //    return MessageType.WorkDefinition;
-            //if (_topic == UtilizationServicesConfig.OdometerTopic)
-            //    return MessageType.OdometerEvent;
-
-            return MessageType.Invalid;
+            this.producer = producer;
+            this.topic = topic;
+            this.message = message;
         }
 
         /// <summary>
@@ -54,13 +27,16 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// <returns></returns>
         public object Send()
         {
-            var result = _producer.SendMessageAsync(_topic, new[] { _message }).Result;
-
-            // Logging
-            //log.Info(LogFormatter.Format(JsonConvert.SerializeObject(result as List<ProduceResponse>, Formatting.None),
-            //    LogFormatter.ContentType.KafkaProduceResponse));
-
-            return result;
+            try
+            {
+                var result = producer.SendMessageAsync(topic, new[] { message }).Result;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return ex;
+            }
         }
     }
 }

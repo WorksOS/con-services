@@ -69,215 +69,31 @@ namespace LandfillService.AcceptanceTests.Scenarios
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Create Asset Subscription")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Create Customer, subscription and project and link them togeather")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterDataSubscriptions")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Sanity")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Positive")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Automated")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("MasterDataSubscriptions")]
-        public virtual void CreateAssetSubscription()
+        public virtual void CreateCustomerSubscriptionAndProjectAndLinkThemTogeather()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create Asset Subscription", new string[] {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create Customer, subscription and project and link them togeather", new string[] {
                         "Sanity",
                         "Positive",
                         "Automated",
                         "MasterDataSubscriptions"});
-#line 8
-this.ScenarioSetup(scenarioInfo);
 #line 9
-testRunner.Given("I inject the following master data subscription event \"CreateAssetSubscriptionEve" +
-                    "nt\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 10
-testRunner.Then("I verify the correct subscription event in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Update Asset Subscription Event")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterDataSubscriptions")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Sanity")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Positive")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Automated")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("MasterDataSubscriptions")]
-        public virtual void UpdateAssetSubscriptionEvent()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update Asset Subscription Event", new string[] {
-                        "Sanity",
-                        "Positive",
-                        "Automated",
-                        "MasterDataSubscriptions"});
-#line 15
-this.ScenarioSetup(scenarioInfo);
-#line 16
-testRunner.Given("I inject the following master data subscription event \"CreateAssetSubscriptionEve" +
-                    "nt\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 17
-testRunner.And("I inject the following master data subscription event \"UpdateAssetSubscriptionEve" +
-                    "nt\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 18
-testRunner.Then("I verify the correct subscription event in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Create Project Subscription Event")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterDataSubscriptions")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Sanity")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Positive")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Automated")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("MasterDataSubscriptions")]
-        public virtual void CreateProjectSubscriptionEvent()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create Project Subscription Event", new string[] {
-                        "Sanity",
-                        "Positive",
-                        "Automated",
-                        "MasterDataSubscriptions"});
-#line 22
-this.ScenarioSetup(scenarioInfo);
-#line 23
-testRunner.Given("I inject the following master data subscription event \"CreateProjectSubscriptionE" +
-                    "vent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 24
-testRunner.Then("I verify the correct subscription event in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Update Project Subscription Event")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterDataSubscriptions")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Sanity")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Positive")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Automated")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("MasterDataSubscriptions")]
-        public virtual void UpdateProjectSubscriptionEvent()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update Project Subscription Event", new string[] {
-                        "Sanity",
-                        "Positive",
-                        "Automated",
-                        "MasterDataSubscriptions"});
-#line 29
-this.ScenarioSetup(scenarioInfo);
-#line 30
-testRunner.Given("I inject the following master data subscription event \"CreateProjectSubscriptionE" +
-                    "vent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 31
-testRunner.And("I inject the following master data subscription event \"UpdateProjectSubscriptionE" +
-                    "vent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 32
-testRunner.Then("I verify the correct subscription event in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Create Customer Subscription Event")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterDataSubscriptions")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Sanity")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Positive")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Automated")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("MasterDataSubscriptions")]
-        public virtual void CreateCustomerSubscriptionEvent()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create Customer Subscription Event", new string[] {
-                        "Sanity",
-                        "Positive",
-                        "Automated",
-                        "MasterDataSubscriptions"});
-#line 37
-this.ScenarioSetup(scenarioInfo);
-#line 38
-testRunner.Given("I inject the following master data subscription event \"CreateCustomerSubscription" +
-                    "Event\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 39
-testRunner.Then("I verify the correct subscription event in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Update Customer Subscription Event")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterDataSubscriptions")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Sanity")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Positive")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Automated")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("MasterDataSubscriptions")]
-        public virtual void UpdateCustomerSubscriptionEvent()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Update Customer Subscription Event", new string[] {
-                        "Sanity",
-                        "Positive",
-                        "Automated",
-                        "MasterDataSubscriptions"});
-#line 44
-this.ScenarioSetup(scenarioInfo);
-#line 45
-testRunner.Given("I inject the following master data subscription event \"CreateCustomerSubscription" +
-                    "Event\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 46
-testRunner.And("I inject the following master data subscription event \"UpdateCustomerSubscription" +
-                    "Event\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 47
-testRunner.Then("I verify the correct subscription event in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Associate Project Subscription Event")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterDataSubscriptions")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Sanity")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Positive")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Automated")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("MasterDataSubscriptions")]
-        public virtual void AssociateProjectSubscriptionEvent()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Associate Project Subscription Event", new string[] {
-                        "Sanity",
-                        "Positive",
-                        "Automated",
-                        "MasterDataSubscriptions"});
-#line 52
-this.ScenarioSetup(scenarioInfo);
-#line 53
-testRunner.Given("I inject the following master data subscription event \"CreateProjectSubscriptionE" +
-                    "vent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 54
-testRunner.And("I inject the following master data subscription event \"AssociateProjectSubscripti" +
-                    "onEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 55
-testRunner.Then("I verify the correct subscription event in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Dissociate Project Subscription Event")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterDataSubscriptions")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Sanity")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Positive")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Automated")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("MasterDataSubscriptions")]
-        public virtual void DissociateProjectSubscriptionEvent()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dissociate Project Subscription Event", new string[] {
-                        "Sanity",
-                        "Positive",
-                        "Automated",
-                        "MasterDataSubscriptions"});
-#line 60
-this.ScenarioSetup(scenarioInfo);
-#line 61
-testRunner.Given("I inject the following master data subscription event \"CreateProjectSubscriptionE" +
-                    "vent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 62
-testRunner.And("I inject the following master data subscription event \"DissociateProjectSubscript" +
-                    "ionEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 63
+testRunner.Given("I inject the following master data event \"CreateCustomerEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 11
+testRunner.And("I inject the following master data event \"AssociateCustomerUserEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 12
+testRunner.And("I inject the following master data event \"CreateProjectEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 13
+testRunner.And("I inject the following master data event \"AssociateProjectSubscriptionEvent\" into" +
+                    " kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 14
 testRunner.Then("I verify the correct subscription event in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

@@ -16,13 +16,13 @@
         CreateProjectEvent,
         UpdateProjectEvent,
         DeleteProjectEvent,
+        CreateCustomerEvent,
         CreateProjectSubscriptionEvent,
         CreateCustomerSubscriptionEvent,
-        CreateAssetSubscriptionEvent,
-        UpdateAssetSubscriptionEvent,
         UpdateProjectSubscriptionEvent,
         UpdateCustomerSubscriptionEvent,
         AssociateProjectSubscriptionEvent,
+        AssociateProjectCustomerEvent,
         DissociateProjectSubscriptionEvent
     }
 }

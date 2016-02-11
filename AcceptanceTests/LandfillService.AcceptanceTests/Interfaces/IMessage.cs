@@ -2,7 +2,6 @@
 {
     public interface IMessage
     {
-        MessageType GetMessageType();
         object Send();
     }
 }

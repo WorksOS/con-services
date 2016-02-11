@@ -11,9 +11,8 @@ namespace LandfillService.AcceptanceTests.Helpers
         public string KafkaEndpoint;
         public ProduceResponse KafkaResponse;
         private KafkaOptions kafkaOptions;
-        private Producer kafkaProducer;
+        private readonly Producer kafkaProducer;
 
-        // Kafka is Singleton
         private static Kafka instance;
         private Kafka() 
         {
@@ -25,16 +24,10 @@ namespace LandfillService.AcceptanceTests.Helpers
                 BatchDelayTime = TimeSpan.FromMilliseconds(10)
             };
         }
+
         public static Kafka Instance
         {
-            get 
-            {
-                if (instance == null)
-                {
-                    instance = new Kafka();
-                }
-                return instance;
-            }
+            get { return instance ?? (instance = new Kafka()); }
         }
 
         /// <summary>

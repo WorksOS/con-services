@@ -31,10 +31,12 @@ namespace LandfillService.AcceptanceTests.Helpers
                 case MessageType.UpdateProjectEvent:
                     topic = ConfigurationManager.AppSettings["AssetMasterDataTopic"];
                     break;
-                case MessageType.CreateAssetSubscriptionEvent:
+                case MessageType.CreateCustomerEvent:
+                case MessageType.AssociateProjectCustomerEvent:
+                    topic = ConfigurationManager.AppSettings["CustomerMasterDataTopic"];
+                    break;
                 case MessageType.CreateCustomerSubscriptionEvent:
                 case MessageType.CreateProjectSubscriptionEvent:
-                case MessageType.UpdateAssetSubscriptionEvent:
                 case MessageType.UpdateCustomerSubscriptionEvent:
                 case MessageType.UpdateProjectSubscriptionEvent:
                 case MessageType.DissociateProjectSubscriptionEvent:

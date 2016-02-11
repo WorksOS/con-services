@@ -119,27 +119,32 @@
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\Getter.cs" />
     <Compile Include="Helpers\KafkaMessage.cs" />
+    <Compile Include="Helpers\MasterDataSupport.cs" />
     <Compile Include="Helpers\MessageFactory.cs" />
     <Compile Include="Helpers\Poster.cs" />
     <Compile Include="Helpers\ServiceResponse.cs" />
     <Compile Include="Helpers\StepSupport.cs" />
+    <Compile Include="Interfaces\ICustomerEvent.cs" />
+    <Compile Include="Interfaces\ICustomerUserEvent.cs" />
     <Compile Include="Interfaces\IMessage.cs" />
     <Compile Include="Helpers\Kafka.cs" />
     <Compile Include="Helpers\ServicesClientUtil.cs" />
     <Compile Include="Interfaces\IProjectEvent.cs" />
     <Compile Include="Interfaces\ISubscriptionEvent.cs" />
+    <Compile Include="Models\KafkaTopics\AssociateCustomerUserEvent.cs" />
+    <Compile Include="Models\KafkaTopics\AssociateProjectCustomer.cs" />
     <Compile Include="Models\KafkaTopics\AssociateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\KafkaTopics\CreateAssetSubscriptionEvent.cs" />
+    <Compile Include="Models\KafkaTopics\CreateCustomerEvent.cs" />
     <Compile Include="Models\KafkaTopics\CreateCustomerSubscriptionEvent.cs" />
     <Compile Include="Models\KafkaTopics\CreateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\KafkaTopics\DissociateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\KafkaTopics\ProjectEvent.cs" />
     <Compile Include="Models\AllModels.cs" />
-    <Compile Include="Models\KafkaTopics\UpdateAssetSubscriptionEvent.cs" />
     <Compile Include="Models\KafkaTopics\UpdateCustomerSubscriptionEvent.cs" />
     <Compile Include="Models\KafkaTopics\UpdateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\NGProject.cs" />
     <Compile Include="Models\ProjectType.cs" />
+    <Compile Include="Models\RelationType.cs" />
     <Compile Include="Scenarios\Data.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
