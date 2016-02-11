@@ -23,6 +23,7 @@
         UpdateCustomerSubscriptionEvent,
         AssociateProjectSubscriptionEvent,
         AssociateProjectCustomerEvent,
+        AssociateCustomerUserEvent,
         DissociateProjectSubscriptionEvent
     }
 }

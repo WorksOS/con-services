@@ -47,6 +47,10 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     messageType = MessageType.AssociateProjectSubscriptionEvent;
                     messageStr = masterDataSupport.AssociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
                     break;
+                case "AssociateCustomerUserEvent":
+                    messageType = MessageType.AssociateCustomerUserEvent;
+                    messageStr = masterDataSupport.AssociateCustomerUser(masterDataSupport.masterCustomerUid, Guid.NewGuid());
+                    break;
                 case "DissociateProjectSubscriptionEvent":
                     messageType = MessageType.DissociateProjectSubscriptionEvent;
                     messageStr = masterDataSupport.DissociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);

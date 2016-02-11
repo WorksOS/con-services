@@ -43,6 +43,9 @@ namespace LandfillService.AcceptanceTests.Helpers
                 case MessageType.AssociateProjectSubscriptionEvent:
                     topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
                     break;
+                case MessageType.AssociateCustomerUserEvent:
+                    topic = ConfigurationManager.AppSettings["CustomerUserMasterDataTopic"];
+                    break;
             }
             
             return new KafkaMessage(Kafka.Instance.GetProducer(), topic, new Message(messageStr));
