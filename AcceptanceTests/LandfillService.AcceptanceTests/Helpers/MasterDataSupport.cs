@@ -74,7 +74,7 @@ namespace LandfillService.AcceptanceTests.Helpers
             {
                 ActionUTC = DateTime.UtcNow,
                 CustomerUID = Guid.NewGuid(),
-                SubscriptionType = "project",
+                SubscriptionType = "LandFill",
                 SubscriptionUID = Guid.NewGuid(),
                 StartDate = DateTime.Now.AddMonths(-1),
                 EndDate = DateTime.Now.AddMonths(11),
@@ -96,7 +96,7 @@ namespace LandfillService.AcceptanceTests.Helpers
             {
                 ActionUTC = DateTime.UtcNow,
                 CustomerUID = customerUid,
-                SubscriptionType = "project",
+                SubscriptionType = "LandFill",
                 SubscriptionUID = subscriptionUid,
                 StartDate = DateTime.Now.AddMonths(-5),
                 EndDate = DateTime.Now.AddMonths(7),
@@ -110,41 +110,41 @@ namespace LandfillService.AcceptanceTests.Helpers
         /// Create a customer subscription
         /// </summary>
         /// <returns></returns>
-        public string CreateCustomerSubscription()
-        {
-            expectedCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent
-            {
-                ActionUTC = DateTime.UtcNow,
-                CustomerUID = Guid.NewGuid(),
-                SubscriptionType = "customer",
-                SubscriptionUID = Guid.NewGuid(),
-                StartDate = DateTime.Now.AddMonths(-1),
-                EndDate = DateTime.Now.AddMonths(11),
-                ReceivedUTC = DateTime.UtcNow
-            };
-            masterSubscriptionUid = expectedCustomerSubscriptionEvent.SubscriptionUID;
-            masterCustomerUid = expectedCustomerSubscriptionEvent.CustomerUID;
-            return JsonConvert.SerializeObject(new { CreateCustomerSubscriptionEvent = expectedCustomerSubscriptionEvent },
-                            new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        }
+        //public string CreateCustomerSubscription()
+        //{
+        //    expectedCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent
+        //    {
+        //        ActionUTC = DateTime.UtcNow,
+        //        CustomerUID = Guid.NewGuid(),
+        //        SubscriptionType = "customer",
+        //        SubscriptionUID = Guid.NewGuid(),
+        //        StartDate = DateTime.Now.AddMonths(-1),
+        //        EndDate = DateTime.Now.AddMonths(11),
+        //        ReceivedUTC = DateTime.UtcNow
+        //    };
+        //    masterSubscriptionUid = expectedCustomerSubscriptionEvent.SubscriptionUID;
+        //    masterCustomerUid = expectedCustomerSubscriptionEvent.CustomerUID;
+        //    return JsonConvert.SerializeObject(new { CreateCustomerSubscriptionEvent = expectedCustomerSubscriptionEvent },
+        //                    new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        //}
 
         /// <summary>
         /// Update a customer subscription
         /// </summary>
         /// <returns></returns>
-        public string UpdateCustomerSubscription(Guid subscriptionUid)
-        {
-            expectedUpdateCustomerSubscriptionEvent = new UpdateCustomerSubscriptionEvent
-            {
-                ActionUTC = DateTime.UtcNow,
-                SubscriptionUID = subscriptionUid,
-                StartDate = DateTime.Now.AddMonths(-1),
-                EndDate = DateTime.Now.AddMonths(11),
-                ReceivedUTC = DateTime.UtcNow
-            };
-            return JsonConvert.SerializeObject(new { UpdateCustomerSubscriptionEvent = expectedUpdateCustomerSubscriptionEvent },
-                            new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        }
+        //public string UpdateCustomerSubscription(Guid subscriptionUid)
+        //{
+        //    expectedUpdateCustomerSubscriptionEvent = new UpdateCustomerSubscriptionEvent
+        //    {
+        //        ActionUTC = DateTime.UtcNow,
+        //        SubscriptionUID = subscriptionUid,
+        //        StartDate = DateTime.Now.AddMonths(-1),
+        //        EndDate = DateTime.Now.AddMonths(11),
+        //        ReceivedUTC = DateTime.UtcNow
+        //    };
+        //    return JsonConvert.SerializeObject(new { UpdateCustomerSubscriptionEvent = expectedUpdateCustomerSubscriptionEvent },
+        //                    new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        //}
 
         /// <summary>
         /// Dissociate a project subscription

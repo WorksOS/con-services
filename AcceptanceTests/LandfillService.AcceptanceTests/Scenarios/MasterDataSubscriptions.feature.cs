@@ -89,11 +89,14 @@ testRunner.Given("I inject the following master data event \"CreateCustomerEvent
 #line 11
 testRunner.And("I inject the following master data event \"AssociateCustomerUserEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 12
-testRunner.And("I inject the following master data event \"CreateProjectEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("I inject the following master data event \"CreateProjectSubscriptionEvent\" into ka" +
+                    "fka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 13
+testRunner.And("I inject the following master data event \"CreateProjectEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 14
 testRunner.And("I inject the following master data event \"AssociateProjectSubscriptionEvent\" into" +
                     " kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 14
+#line 15
 testRunner.Then("I verify the correct subscription event in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

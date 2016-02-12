@@ -77,8 +77,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>External References\AutomationCore.API.Framework.dll</HintPath>
     </Reference>
+    <Reference Include="HashLib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HashLib.2.0.1\lib\net40\HashLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="kafka-net, Version=0.9.0.65, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kafka-net.0.9.0.65\lib\net45\kafka-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.4\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MySql.Data">
@@ -98,8 +106,24 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="TechTalk.SpecFlow">
       <HintPath>..\packages\SpecFlow.2.0.0-preview20151221-10\lib\net45\TechTalk.SpecFlow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VSS.Kafka.DotNetClient, Version=1.0.18.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.DotNetClient.1.0.18.0\lib\net451\VSS.Kafka.DotNetClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VSS.Kafka.DotNetClient.Helper, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.DotNetClient.Helper.1.0.9.0\lib\net451\VSS.Kafka.DotNetClient.Helper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VSS.Messaging.Kafka.Interfaces, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.DotNetClient.Helper.1.0.9.0\lib\net451\VSS.Messaging.Kafka.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -119,6 +143,7 @@
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\Getter.cs" />
     <Compile Include="Helpers\KafkaMessage.cs" />
+    <Compile Include="Helpers\KafkaRpl.cs" />
     <Compile Include="Helpers\MasterDataSupport.cs" />
     <Compile Include="Helpers\MessageFactory.cs" />
     <Compile Include="Helpers\Poster.cs" />

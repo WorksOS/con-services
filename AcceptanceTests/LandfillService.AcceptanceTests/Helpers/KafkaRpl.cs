@@ -1,30 +1,27 @@
-﻿using System.Configuration;
-using KafkaNet.Protocol;
-using LandfillService.AcceptanceTests.Interfaces;
+﻿using System;
+using System.Configuration;
+using VSS.Kafka.DotNetClient.Helper;
+using VSS.Messaging.Kafka.Interfaces;
+
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
-    /// <summary>
-    /// MessageFactory is Singleton (just in case it needs be derived)
-    /// </summary>
-    public class MessageFactory
+    public static class KafkaRpl
     {
-        private static MessageFactory instance;
-        private MessageFactory() { }
-        public static MessageFactory Instance
+
+        private static IProducerShareableConfigurator pconfigurator; 
+        private static IProducerShareable producer;
+
+        public static void InitialiseKafkaRpl()
         {
-            get { return instance ?? (instance = new MessageFactory()); }
+            pconfigurator = new ProducerShareableConfigurator();
+            producer = new ProducerShareable(pconfigurator);
+            producer.GetConfigurator(context => { context.BaseUrl = ConfigurationManager.AppSettings["RestProxyBaseUrl"]; });
         }
 
-        /// <summary>
-        /// Generates IMessage that can be Send() to a Kafka queue. Data source comes from SpecFlow feature file Table.
-        /// </summary>
-        /// <param name="messageStr"></param>
-        /// <param name="eventType"></param>
-        /// <returns></returns>
-        public IMessage CreateMessage(string messageStr, MessageType eventType)
+        public static string GetMyTopic(MessageType eventType)
         {
-            string topic = "";
+            var topic = string.Empty;
             switch (eventType)
             {
                 case MessageType.CreateProjectEvent:
@@ -43,13 +40,20 @@ namespace LandfillService.AcceptanceTests.Helpers
                 case MessageType.DissociateProjectSubscriptionEvent:
                 case MessageType.AssociateProjectSubscriptionEvent:
                     topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
-                    break;                                
+                    break;
                 case MessageType.AssociateCustomerUserEvent:
                     topic = ConfigurationManager.AppSettings["CustomerUserMasterDataTopic"];
                     break;
             }
-            
-            return new KafkaMessage(Kafka.Instance.GetProducer(), topic, new Message(messageStr));
+            return topic;
+        }            
+
+        public static void SendToKafka(string topicName, string message)
+        {
+            object[] kafkaData = {message};
+            var result = producer.PublishSync(topicName, new KafkaBinaryConsumerMessagePartition { Key = "somekey", Partition = 0 }, kafkaData);
+            Console.WriteLine(((KafkaPublishResponse)result).Status);
         }
+
     }
 }

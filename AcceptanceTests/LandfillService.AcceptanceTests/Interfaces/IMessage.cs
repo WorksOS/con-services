@@ -1,4 +1,4 @@
-﻿namespace LandfillService.AcceptanceTests.Helpers
+﻿namespace LandfillService.AcceptanceTests.Interfaces
 {
     public interface IMessage
     {

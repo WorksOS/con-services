@@ -9,13 +9,19 @@ namespace LandfillService.AcceptanceTests.Scenarios
     [TestClass]
     public class MasterDataSubscriptionsSteps
     {
-
         private readonly MasterDataSupport masterDataSupport = new MasterDataSupport();
+
+        public MasterDataSubscriptionsSteps()
+        {
+
+            KafkaRpl.InitialiseKafkaRpl();
+        }
 
         [Given(@"I inject the following master data event ""(.*)"" into kafka")]
         public void GivenIInjectTheFollowingMasterDataEventIntoKafka(string eventType)
         {
             var messageStr = string.Empty;
+            var topic = string.Empty;
             var messageType = new MessageType();
             switch (eventType)
             {
@@ -31,18 +37,18 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     messageType = MessageType.CreateProjectSubscriptionEvent;
                     messageStr = masterDataSupport.CreateProjectSubscription();
                     break;
-                case "CreateCustomerSubscriptionEvent":
-                    messageType = MessageType.CreateCustomerSubscriptionEvent;
-                    messageStr = masterDataSupport.CreateCustomerSubscription();
-                    break;
+                //case "CreateCustomerSubscriptionEvent":
+                //    messageType = MessageType.CreateCustomerSubscriptionEvent;
+                //    messageStr = masterDataSupport.CreateCustomerSubscription();
+                //    break;
                 case "UpdateProjectSubscriptionEvent":
                     messageType = MessageType.UpdateProjectSubscriptionEvent;
                     messageStr = masterDataSupport.UpdateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterCustomerUid);
                     break;
-                case "UpdateCustomerSubscriptionEvent":
-                    messageType = MessageType.UpdateCustomerSubscriptionEvent;
-                    messageStr = masterDataSupport.UpdateCustomerSubscription(masterDataSupport.masterSubscriptionUid);
-                    break;
+                //case "UpdateCustomerSubscriptionEvent":
+                //    messageType = MessageType.UpdateCustomerSubscriptionEvent;
+                //    messageStr = masterDataSupport.UpdateCustomerSubscription(masterDataSupport.masterSubscriptionUid);
+                //    break;
                 case "AssociateProjectSubscriptionEvent":
                     messageType = MessageType.AssociateProjectSubscriptionEvent;
                     messageStr = masterDataSupport.AssociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
@@ -56,8 +62,10 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     messageStr = masterDataSupport.DissociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
                     break;                   
             }
-            var message = MessageFactory.Instance.CreateMessage(messageStr, messageType);
-            message.Send();
+            //var message = MessageFactory.Instance.CreateMessage(messageStr, messageType);
+            //message.Send();
+            topic = KafkaRpl.GetMyTopic(messageType);
+            KafkaRpl.SendToKafka(topic, messageStr);
             Console.WriteLine();
         }
 
