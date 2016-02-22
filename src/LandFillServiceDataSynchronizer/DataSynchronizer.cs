@@ -59,17 +59,17 @@ namespace LandFillServiceDataSynchronizer
     /// <summary>
     /// Retrieves volume summary from Raptor and saves it to the landfill DB
     /// </summary>
-    /// <param name="sessionId">Session ID provided by the Foreman API</param>
+    /// <param name="userUid">User ID</param>
     /// <param name="project">Project</param>
     /// <param name="entry">Weight entry from the client</param>
     /// <returns></returns>
-    private async Task GetVolumeInBackground(string sessionId, Project project, WeightEntry entry)
+    private async Task GetVolumeInBackground(string userUid, Project project, WeightEntry entry)
     {
       try
       {
         Log.DebugFormat("Get volume for project {0} date {1}", project.id,entry.date);
 
-        var res = await raptorApiClient.GetVolumesAsync(sessionId,project, entry.date);
+        var res = await raptorApiClient.GetVolumesAsync(userUid,project, entry.date);
 
         Log.Debug("Volume res:" + res);
 

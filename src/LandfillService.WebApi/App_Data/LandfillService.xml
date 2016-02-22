@@ -4,31 +4,6 @@
         <name>LandfillService.WebApi</name>
     </assembly>
     <members>
-        <member name="T:LandfillService.WebApi.ApiClients.ForemanApiException">
-            <summary>
-            This exception can be thrown when the Foreman API returns an unsuccessful response (which needs to be propagated to the client)
-            </summary>
-        </member>
-        <member name="T:LandfillService.WebApi.ApiClients.ForemanApiClient">
-            <summary>
-            A wrapper around HttpClient to handle requests to the Foreman API
-            </summary>
-        </member>
-        <member name="M:LandfillService.WebApi.ApiClients.ForemanApiClient.Request``1(System.String,``0)">
-            <summary>
-            Makes a JSON POST request to the Foreman API
-            </summary>
-            <param name="endpoint">URL path fragment for the request</param>
-            <param name="parameters">JSON parameters</param>
-            <returns>Response as a string; throws an exception if request is not successful</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.ApiClients.ForemanApiClient.ParseResponse``1(System.String)">
-            <summary>
-            Parses a JSON response from the Foreman API
-            </summary>
-            <param name="response">response string</param>
-            <returns>Response string converted to the given type</returns>
-        </member>
         <member name="T:LandfillService.WebApi.LogActionFilterAttribute">
             <summary>
             Defines logging methods executed on request and after request is executed
@@ -760,14 +735,13 @@
             <summary>
             Retrieves all available rpojects from the DB
             </summary>
-            <param name="sessionId">Session ID provided by the Foreman API</param>
             <returns>A list of projects or error details</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PerhapsUpdateProjectList(System.String)">
             <summary>
             Retrieves a list of projects from the db
             </summary>
-            <param name="sessionId">Session ID provided by the Foreman API</param>
+            <param name="userUid">User ID</param>
             <returns>A list of projects or error details</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get">
@@ -799,7 +773,7 @@
             <summary>
             Retrieves volume summary from Raptor and saves it to the landfill DB
             </summary>
-            <param name="sessionId">Session ID provided by the Foreman API</param>
+            <param name="userUid">User ID</param>
             <param name="project">Project</param>
             <param name="entry">Weight entry from the client</param>
             <returns></returns>
@@ -808,7 +782,7 @@
             <summary>
             Retries volume summary retrieval from Raptor for volumes marked not retrieved
             </summary>
-            <param name="sessionId">Session ID provided by the Foreman API</param>
+            <param name="userUid">User ID</param>
             <param name="project">Project</param>
             <returns></returns>
         </member>
@@ -816,7 +790,7 @@
             <summary>
             Retrieves volumes via a background task in batches of 10 parallel requests
             </summary>
-            <param name="sessionId">Session ID provided by the Foreman API</param>
+            <param name="userUid">User ID</param>
             <param name="project">Project</param>
             <param name="entries">Weight entries (providing dates to request)</param>
             <param name="onComplete">Code to execute on completion</param>
