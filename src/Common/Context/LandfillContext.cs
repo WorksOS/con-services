@@ -318,7 +318,7 @@ namespace LandfillService.WebApi.Models
                                               date = dr.Date,
                                               entryPresent = false,
                                               weight = 0.0,
-                                              density = 0.0
+                                              volume = 0.0
                                           }).ToDictionary(k => k.date, v => v);
                 //Now get the actual data and merge
                 var command = @"select entries.date, entries.weight, entries.volume
@@ -342,9 +342,14 @@ namespace LandfillService.WebApi.Models
                           DayEntry entry = entriesLookup[date];
                           entry.entryPresent = true;
                           entry.weight = reader.GetDouble(reader.GetOrdinal("weight"));
-                          entry.density = 0.0;
-                          if (!reader.IsDBNull(reader.GetOrdinal("volume")) && reader.GetDouble(reader.GetOrdinal("volume")) > EPSILON)
-                            entry.density = reader.GetDouble(reader.GetOrdinal("weight")) * 1000 / reader.GetDouble(reader.GetOrdinal("volume"));
+                          double volume = 0.0;
+                          if (!reader.IsDBNull(reader.GetOrdinal("volume")))
+                          {
+                            volume = reader.GetDouble(reader.GetOrdinal("volume"));
+                            if (volume <= EPSILON)
+                              volume = 0.0;
+                          }
+                          entry.volume = volume;
                     }
 
                   return entriesLookup.Select(v => v.Value).ToList();

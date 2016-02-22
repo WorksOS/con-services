@@ -107,12 +107,14 @@ namespace LandfillService.WebApi.Controllers
             {
                 bool skip = (i < 728 && rnd.Next(5) % 6 == 0);
 
+                double density = skip ? 0 : rnd.Next(1200 / densityExtra, 1600 / densityExtra);
+                double weight = skip ? 0 : rnd.Next(500, 800 + weightExtra);
                 entries.Add(new DayEntry
                 {
                     date = DateTime.Today.AddDays(-totalDays + i),
-                    entryPresent = !skip,
-                    density = skip ? 0 : rnd.Next(1200 / densityExtra, 1600 / densityExtra),
-                    weight = skip ? 0 : rnd.Next(500, 800 + weightExtra)
+                    entryPresent = !skip,                    
+                    weight = weight,
+                    volume = skip ? 0 : weight * 1000 / density
                 });
             }
             return entries.ToArray(); 
@@ -145,14 +147,6 @@ namespace LandfillService.WebApi.Controllers
                                     entries = LandfillDb.GetEntries(project),
                                     retrievingVolumes = LandfillDb.RetrievalInProgress(project)
                                 };
-
-               /*   for (int i = 1; i < entries.entries.Count(); i++)
-                  {
-                    if (entries.entries.ElementAt(i).density == 0)
-                    {
-                      entries.entries.ElementAt(i).density = entries.entries.ElementAt(i-1).density;
-                    }
-                  }*/
 
                   return Ok(entries);
                     // TEST CODE: use this to test chart updates on the client
