@@ -6,37 +6,53 @@ using System.Reflection;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
+using log4net;
 using Newtonsoft.Json.Linq;
 using VSP.MasterData.Common.KafkaWrapper;
 using VSP.MasterData.Common.KafkaWrapper.Interfaces;
+using VSP.MasterData.Common.Logging;
+using VSP.MasterData.Common.RPLKafkaWrapper;
+using VSP.MasterData.Common.RPLKafkaWrapper.Interfaces;
 
 namespace VSP.MasterData.Project.WebAPI
 {
   public class AutofacContainer
   {
+    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
     public void ApplyDependencyInjection()
     {
-      var builder = new ContainerBuilder();
-      HttpConfiguration configuration = GlobalConfiguration.Configuration;
+      try
+      {
+        var builder = new ContainerBuilder();
+        HttpConfiguration configuration = GlobalConfiguration.Configuration;
 
-    //    var disvoveryServiceURI = new Uri(ConfigurationManager.AppSettings["DiscoveryURI"]);
+        string confluentBaseUrl = null;
+        string kafkaTopicName = ConfigurationManager.AppSettings["KafkaTopicName"];
 
-      string kafkaUri = null;
-      //string environment = ConfigurationManager.AppSettings["Environment"];
-      //string topicName = ConfigurationManager.AppSettings["TopicName"];
-      //string kafkaTopicName = string.Concat(environment, "-", topicName);//Environment specific topic name
-      //kafkaUri = GetKafkaEndPointURL(disvoveryServiceURI, kafkaTopicName);
-      kafkaUri = ConfigurationManager.AppSettings["KafkaEndpointURI"];
-      string topicName = ConfigurationManager.AppSettings["TopicName"];
+        if (string.IsNullOrWhiteSpace(kafkaTopicName))
+          throw new ArgumentNullException("Kafka Topic name is empty");
 
-      var uriList = new List<string>();
-      if (kafkaUri != null) uriList.Add(kafkaUri);
+        confluentBaseUrl = ConfigurationManager.AppSettings["RestProxyBaseUrl"];
 
-      builder.Register(c => new ProducerWrapper(topicName, uriList)).As<IProducerWrapper>().SingleInstance();
-      builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+        if (string.IsNullOrWhiteSpace(confluentBaseUrl))
+          throw new ArgumentNullException("RestProxy Base url is empty");
 
-      IContainer container = builder.Build();
-      configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+        confluentBaseUrl = ConfigurationManager.AppSettings["RestProxyBaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(confluentBaseUrl))
+          throw new ArgumentNullException("RestProxy Base Url is empty");
+
+        builder.Register(c => new RplProducerWrapper(confluentBaseUrl, kafkaTopicName)).As<IRplProducerWrapper>().SingleInstance();
+        builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+
+        IContainer container = builder.Build();
+        configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
+      }
+      catch (ArgumentNullException ex)
+      {
+        Log.IfError(string.Format("Message {0} \n StackTrace {1}", ex.Message, ex.StackTrace));
+      }
     }
 
    private static string GetKafkaEndPointURL(Uri _url, string kafkatopicName)
