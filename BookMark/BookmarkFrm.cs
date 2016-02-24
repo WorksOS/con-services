@@ -201,6 +201,27 @@ namespace BookMark
             btnUpdate.Show();
             grpSave.Show();
         }
-        #endregion 
+ 
+        private void dgvBookmarks_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == ' ')
+            {
+                foreach (DataGridViewRow row in dgvBookmarks.SelectedRows)
+                {
+                    try
+                    {
+                        if (!Convert.ToBoolean(row.Cells[0].Value))
+                        {
+                            row.Cells[0].Value = true;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
+                }
+            }
+        }
+        #endregion
     }
 }

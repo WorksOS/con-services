@@ -86,6 +86,11 @@ namespace TagFileHarvester
 
     private static void MergeAndProcessOrgs(List<Organization> orgs)
     {
+      string result="";
+      foreach (var organization in orgs)
+      {
+        result += organization.orgDisplayName + "," + organization.shortName + "," + organization.filespaceId + "," + organization.orgId + "\n";
+      }
       //Filter out all stopped\completed tasks
       lock (OrgListLocker)
       {

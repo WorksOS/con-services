@@ -125,7 +125,7 @@ namespace TagFileHarvester.Implementation
                 orgs =
                     synchOrgFilespaces.Select(
                         filespace =>
-                            new Organization {filespaceId = filespace.filespaceId, shortName = filespace.orgShortname, orgId = filespace.orgId})
+                            new Organization {filespaceId = filespace.filespaceId, shortName = filespace.orgShortname, orgId = filespace.orgId, orgDisplayName = filespace.orgDisplayName, orgTitle = filespace.shortname})
                         .ToList();
                 }
               }              
@@ -272,11 +272,6 @@ namespace TagFileHarvester.Implementation
         cache[GetCacheKey(org, path)].AddRange(files);
       }
 
-      if (OrgsHandler.FilenameDumpEnabled)
-      {
-        Log.DebugFormat("Dumping filenames for org {0} created after UTC {1} for folder {2}",org.shortName,createdAfterUTC,path );
-        files.ForEach(f=>Log.DebugFormat("{0} : {1}",f.fullName, f.createdUTC));
-      }
 
       return files;
     }
@@ -410,6 +405,12 @@ namespace TagFileHarvester.Implementation
                   lPath = string.Format("{0}/{1}", path, folderEntry.entryName);
 
                 DateTime lastChanged = GetLastChangedTime(org.filespaceId, lPath);
+
+                if (OrgsHandler.FilenameDumpEnabled)
+                {
+                  Log.DebugFormat("Dumping Dir {0} : {1} : {3}", org.filespaceId, lPath, lastChanged);
+                }
+
                 if (lastModifiedUTC == DateTime.MinValue)
                 {
                   folders.Add(string.Format("/{0}", folderEntry.entryName));
@@ -555,26 +556,34 @@ namespace TagFileHarvester.Implementation
           }
         }
       }
-      else if (OrgsHandler.UseModifyTimeInsteadOfCreateTime)
-      {
-        if (entry.leaf && entry.modifyTime > createdAfterUTC)
-        {
-          files.Add(new TagFile
-          {
-            fullName = string.Format("{0}/{1}", path, entry.entryName),
-            createdUTC = entry.createTime
-          });
-        }
-      }
       else
       {
-        if (entry.leaf && entry.createTime > createdAfterUTC)
+        if (OrgsHandler.FilenameDumpEnabled)
         {
-          files.Add(new TagFile
+          Log.DebugFormat("Dumping {0} : {1} : {3}", entry.entryName, entry.createTime, entry.modifyTime);
+        }
+
+        if (OrgsHandler.UseModifyTimeInsteadOfCreateTime)
+        {
+          if (entry.leaf && entry.modifyTime > createdAfterUTC)
           {
-            fullName = string.Format("{0}/{1}", path, entry.entryName),
-            createdUTC = entry.createTime
-          });
+            files.Add(new TagFile
+            {
+              fullName = string.Format("{0}/{1}", path, entry.entryName),
+              createdUTC = entry.createTime
+            });
+          }
+        }
+        else
+        {
+          if (entry.leaf && entry.createTime > createdAfterUTC)
+          {
+            files.Add(new TagFile
+            {
+              fullName = string.Format("{0}/{1}", path, entry.entryName),
+              createdUTC = entry.createTime
+            });
+          }
         }
       }
     }
