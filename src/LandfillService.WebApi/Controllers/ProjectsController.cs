@@ -132,7 +132,7 @@ namespace LandfillService.WebApi.Controllers
             // Check if there are missing volumes and indicate to the client
 
           var sessionId = (RequestContext.Principal as LandfillPrincipal).UserUid;
-          UnitsTypeEnum units = LandfillDb.GetUnits(sessionId);
+          UnitsTypeEnum units = UnitsTypeEnum.Metric;//LandfillDb.GetUnits(sessionId);
           LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(),
     "Retrieving density" + " units settings is: "+units.ToString());
 

@@ -78,6 +78,7 @@ namespace LandfillService.WebApi
             config.Filters.Add(new LogActionFilterAttribute());
             config.Filters.Add(new HandleSerializationErrorAttribute());
 
+            config.Filters.Add(new TIDAuthFilter());
 
             // Web API configuration and services: allow JSON only
             config.Formatters.Clear();
