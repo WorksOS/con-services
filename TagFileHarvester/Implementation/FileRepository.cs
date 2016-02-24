@@ -125,7 +125,7 @@ namespace TagFileHarvester.Implementation
                 orgs =
                     synchOrgFilespaces.Select(
                         filespace =>
-                            new Organization {filespaceId = filespace.filespaceId, shortName = filespace.orgShortname, orgId = filespace.orgId})
+                            new Organization {filespaceId = filespace.filespaceId, shortName = filespace.orgShortname, orgId = filespace.orgId, orgDisplayName = filespace.orgDisplayName, orgTitle = filespace.shortname})
                         .ToList();
                 }
               }              
