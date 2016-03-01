@@ -32,27 +32,42 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
       {
         Dictionary<long, ProjectDescriptor> projectList = new Dictionary<long, ProjectDescriptor>();
         //Passing the WebAPI Request headers to JWTHelper function to obtain the JWT Token
-        var utils = new AuthUtilities(new CustomerDataService(), new MySqlSubscriptionService());
+       // var utils = new AuthUtilities(new CustomerDataService(), new MySqlSubscriptionService());
         string message = string.Empty;
         string userUid = string.Empty;
-        var customerlist = utils.GetContext(context.Request.Headers, out message, out userUid);
+        //var customerlist = utils.GetContext(context.Request.Headers, out message, out userUid);
         List<CustomerSubscriptionModel> projectSubscriptions= new List<CustomerSubscriptionModel>();
-        if (customerlist != null)
+       // if (customerlist != null)
         {
-          foreach (var associatedCustomer in customerlist)
+         // foreach (var associatedCustomer in customerlist)
           {
-            projectSubscriptions = utils.GetActiveProjectSubscriptionByCustomerId(associatedCustomer.CustomerUID);
-            foreach (var projectSubscription in projectSubscriptions)
+           // projectSubscriptions = utils.GetActiveProjectSubscriptionByCustomerId(associatedCustomer.CustomerUID);
+           // foreach (var projectSubscription in projectSubscriptions)
             {
-              projectList.Add(utils.GetProjectBySubscripion(projectSubscription.ProjectSubscriptionUID), new ProjectDescriptor(){});
+             // projectList.Add(utils.GetProjectBySubscripion(projectSubscription.ProjectSubscriptionUID), new ProjectDescriptor(){});
             }
           }
           //Build principal here
+          string token = String.Empty;
+          var jwt = JwtHelper.TryGetJwtToken(context.Request.Headers, out token);
+          if (jwt)
+          {
+            if (JwtHelper.IsValidJwtToken(token))
+            {
+              userUid = JwtHelper.DecodeJwtToken(token).Uuid;
+            }
+            else
+            context.ErrorResult = new AuthenticationFailureResult(message, context.Request);
+          }
+          else
+            context.ErrorResult = new AuthenticationFailureResult(message, context.Request);
+
+
           context.Principal = new LandfillPrincipal(projectList, projectSubscriptions, userUid);
           LoggerSvc.LogMessage("Principal","BuildPrincipal","Claims",JsonConvert.SerializeObject(projectList));
         }
-        else
-          context.ErrorResult = new AuthenticationFailureResult(message, context.Request);
+/*        else
+          context.ErrorResult = new AuthenticationFailureResult(message, context.Request);*/
       }
     }
 
