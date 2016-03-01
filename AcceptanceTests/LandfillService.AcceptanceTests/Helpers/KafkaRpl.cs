@@ -8,7 +8,6 @@ namespace LandfillService.AcceptanceTests.Helpers
 {
     public static class KafkaRpl
     {
-
         private static IProducerShareableConfigurator pconfigurator; 
         private static IProducerShareable producer;
 
