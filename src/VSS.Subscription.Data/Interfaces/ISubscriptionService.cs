@@ -15,7 +15,7 @@ namespace VSS.Subscription.Model.Interfaces
         void CreateCustomerSubscription(CreateCustomerSubscriptionEvent createSubscription);
         void UpdateCustomerSubscription(UpdateCustomerSubscriptionEvent updateSubscription);
         List<CustomerSubscriptionModel> GetSubscriptionForCustomer(Guid customerGuid);
-        List<CustomerSubscriptionModel> GetActiveProjectSubscriptionForCustomer(Guid customerGuid);
-	      int GetProjectBySubscripion(string projectSubscriptionUid);
+        List<ActiveProjectCustomerSubscriptionModel> GetActiveProjectSubscriptionForCustomer(Guid customerGuid);
+	      int GetProjectBySubscription(string projectSubscriptionUid);
 	}
 }

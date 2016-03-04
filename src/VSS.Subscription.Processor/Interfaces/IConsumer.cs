@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace VSS.Subscription.Processor.Interfaces
 {
-    public interface IConsumer
-    {
-        void Process();
-    }
+	public interface IConsumer
+	{
+		void Consume();
+		void Dispose();
+	}
 }

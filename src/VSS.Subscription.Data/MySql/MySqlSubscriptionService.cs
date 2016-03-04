@@ -230,7 +230,7 @@ namespace VSS.Subscription.Data.MySql
                     connection.Close();
                 }
 
-                if (updateSubscription.CustomerUID.HasValue || !string.IsNullOrWhiteSpace(updateSubscription.SubscriptionType))
+                if ((updateSubscription.CustomerUID.HasValue && ids.customerUID != newCustomerUID) || (!string.IsNullOrWhiteSpace(updateSubscription.SubscriptionType) && ids.subscriptionID != newSubscriptionID))
                 {
                     var ReadOldCustomerAssetQuery = String.Format("{0} where customer.{1} = '{2}' and customer.{3} = {4}", ReadAllCustomerAssetSubscriptionQuery,
                     ColumnName.CustomerUID, ids.customerUID, ColumnName.fk_ServiceTypeID, ids.subscriptionID);
@@ -479,7 +479,7 @@ namespace VSS.Subscription.Data.MySql
                     connection.Close();
                 }
 
-                if (updateSubscription.CustomerUID.HasValue || !string.IsNullOrWhiteSpace(updateSubscription.SubscriptionType))
+                if ((updateSubscription.CustomerUID.HasValue && ids.customerUID != newCustomerUID) || (!string.IsNullOrWhiteSpace(updateSubscription.SubscriptionType) && ids.subscriptionID != newSubscriptionID))
                 {
                     var ReadOldCustomerProjectQuery = String.Format("{0} where customer.{1} = '{2}' and customer.{3} = {4}", ReadAllCustomerProjectSubscriptionQuery,
                     ColumnName.CustomerUID, ids.customerUID, ColumnName.fk_ServiceTypeID, ids.subscriptionID);
@@ -534,7 +534,7 @@ namespace VSS.Subscription.Data.MySql
                         DateTime projectEndDate = new DateTime();
                         if (!(updateSubscription.StartDate.HasValue && updateSubscription.EndDate.HasValue))
                         {
-                            var ReadStartEndDateProjectQuery = String.Format("select {0},{1} from ProjectSubscription where {2} = {3}",
+                            var ReadStartEndDateProjectQuery = String.Format("select {0},{1} from ProjectSubscription where {2} = '{3}'",
                                 ColumnName.StartDate, ColumnName.EndDate, ColumnName.ProjectSubscriptionUID, updateSubscription.SubscriptionUID);
                             var mySqlReadStartEndDateProjectCommand = new MySqlCommand(ReadStartEndDateProjectQuery, connection);
                             MySqlDataReader mySqlReadStartEndDateProjectDataReader;
@@ -722,7 +722,7 @@ namespace VSS.Subscription.Data.MySql
                 commaNeeded |= SqlBuilder.AppendValueParameter(DateTime.UtcNow, ColumnName.UpdateUTC, sb, commaNeeded);
 
                 var updateCustomerSubscriptionIDQuery = string.Format("Update CustomerSubscription set {0} where {1} = '{2}'",
-                     sb, ColumnName.CustomerSubscriptionID, subscription.SubscriptionUID);
+                     sb, ColumnName.CustomerUID, subscription.SubscriptionUID);
                 connection.Open();
                 connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
                 connection.Close();
@@ -786,36 +786,36 @@ namespace VSS.Subscription.Data.MySql
             }
         }
 
-        public List<CustomerSubscriptionModel> GetActiveProjectSubscriptionForCustomer(Guid customerGuid)
+        public List<ActiveProjectCustomerSubscriptionModel> GetActiveProjectSubscriptionForCustomer(Guid customerGuid)
         {
-          var readCustomerQuery = String.Format("select project.{0} as ProjectSubscriptionUID, st.{1} as SubscriptionType,customer.{2},customer.{3} from CustomerSubscription customer inner join ServiceType st on customer.fk_ServiceTypeID = st.ServiceTypeID inner join ProjectSubscription project on project.fk_CustomerSubscriptionID = customer.CustomerSubscriptionID", ColumnName.ProjectSubscriptionUID, ColumnName.Name, ColumnName.StartDate, ColumnName.EndDate);
+            var readCustomerQuery = String.Format("select project.{0} as SubscriptionGuid,st.{1} as SubscriptionType,customer.{2},customer.{3} from CustomerSubscription customer inner join ServiceType st on customer.fk_ServiceTypeID = st.ServiceTypeID inner join ProjectSubscription project on project.fk_CustomerSubscriptionID = customer.CustomerSubscriptionID", ColumnName.ProjectSubscriptionUID, ColumnName.Name, ColumnName.StartDate, ColumnName.EndDate);
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                var customerSubscriptionModelList = connection.Query<CustomerSubscriptionModel>(
-                        string.Format("{0} where customer.{1} = '{2}' and project.{3} is null and customer.startDate <= UTC_TIMESTAMP() and customer.enddate >= UTC_TIMESTAMP()", readCustomerQuery, ColumnName.CustomerUID, customerGuid,ColumnName.ProjectUID))
+                var activeProjectcustomerSubscriptionModelList = connection.Query<ActiveProjectCustomerSubscriptionModel>(
+                        string.Format("{0} where customer.{1} = '{2}' and project.{3} = '' and customer.startDate <= UTC_TIMESTAMP() and customer.enddate >= UTC_TIMESTAMP()", readCustomerQuery, ColumnName.CustomerUID, customerGuid,ColumnName.ProjectUID))
                             .ToList();
 
-                return customerSubscriptionModelList;
+                return activeProjectcustomerSubscriptionModelList;
             }
         }
 
-      public int GetProjectBySubscripion(string projectSubscriptionUid)
-      {
-        var readCustomerQuery =
-          String.Format("select projectId from projects where SubscriptionUid = '{0}'", projectSubscriptionUid);
-        using (var connection = new MySqlConnection(_connectionString))
+        public int GetProjectBySubscription(string projectSubscriptionUid)
         {
-          connection.Open();
-          var customerSubscriptionModelList = connection.Query<int>(readCustomerQuery);
-          if (customerSubscriptionModelList == null)
-          return -1;
+          var readCustomerQuery =
+            String.Format("select projectId from projects where SubscriptionUid = '{0}'", projectSubscriptionUid);
+          using (var connection = new MySqlConnection(_connectionString))
+          {
+            connection.Open();
+            var customerSubscriptionModelList = connection.Query<int>(readCustomerQuery);
+            if (customerSubscriptionModelList == null)
+              return -1;
 
-          return customerSubscriptionModelList.First();
+            return customerSubscriptionModelList.First();
+          }
         }
-      }
 
-      #endregion
+        #endregion
     }
 
 

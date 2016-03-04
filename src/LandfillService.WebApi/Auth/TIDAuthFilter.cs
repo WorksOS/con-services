@@ -26,48 +26,33 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
     public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
     {
       string jwtToken;
-      Jwt DecodedJwt = null;
+      // Jwt DecodedJwt = null;
 
       if (ConfigurationManager.AppSettings["JWT"] != "Disabled")
       {
         Dictionary<long, ProjectDescriptor> projectList = new Dictionary<long, ProjectDescriptor>();
         //Passing the WebAPI Request headers to JWTHelper function to obtain the JWT Token
-       // var utils = new AuthUtilities(new CustomerDataService(), new MySqlSubscriptionService());
+        var utils = new AuthUtilities(new CustomerDataService(), new MySqlSubscriptionService());
         string message = string.Empty;
         string userUid = string.Empty;
-        //var customerlist = utils.GetContext(context.Request.Headers, out message, out userUid);
-        List<CustomerSubscriptionModel> projectSubscriptions= new List<CustomerSubscriptionModel>();
-       // if (customerlist != null)
+        var customerlist = utils.GetContext(context.Request.Headers, out message, out userUid);
+        List<ActiveProjectCustomerSubscriptionModel> projectSubscriptions= new List<ActiveProjectCustomerSubscriptionModel>();
+        if (customerlist != null)
         {
-         // foreach (var associatedCustomer in customerlist)
+          foreach (var associatedCustomer in customerlist)
           {
-           // projectSubscriptions = utils.GetActiveProjectSubscriptionByCustomerId(associatedCustomer.CustomerUID);
-           // foreach (var projectSubscription in projectSubscriptions)
+            projectSubscriptions = utils.GetActiveProjectSubscriptionByCustomerId(associatedCustomer.CustomerUID);
+            foreach (var projectSubscription in projectSubscriptions)
             {
-             // projectList.Add(utils.GetProjectBySubscripion(projectSubscription.ProjectSubscriptionUID), new ProjectDescriptor(){});
+              projectList.Add(utils.GetProjectBySubscription(projectSubscription.SubscriptionGuid), new ProjectDescriptor(){});
             }
           }
-          //Build principal here
-          string token = String.Empty;
-          var jwt = JwtHelper.TryGetJwtToken(context.Request.Headers, out token);
-          if (jwt)
-          {
-            if (JwtHelper.IsValidJwtToken(token))
-            {
-              userUid = JwtHelper.DecodeJwtToken(token).Uuid;
-            }
-            else
-            context.ErrorResult = new AuthenticationFailureResult(message, context.Request);
-          }
-          else
-            context.ErrorResult = new AuthenticationFailureResult(message, context.Request);
-
-
+          
           context.Principal = new LandfillPrincipal(projectList, projectSubscriptions, userUid);
           LoggerSvc.LogMessage("Principal","BuildPrincipal","Claims",JsonConvert.SerializeObject(projectList));
         }
-/*        else
-          context.ErrorResult = new AuthenticationFailureResult(message, context.Request);*/
+        else
+          context.ErrorResult = new AuthenticationFailureResult(message, context.Request);
       }
     }
 
@@ -94,12 +79,12 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
       this.Identity = new GenericIdentity("LandfillUser");
     }
 
-    public LandfillPrincipal(Dictionary<long, ProjectDescriptor> projects, List<CustomerSubscriptionModel> subscribtions, string userUid)
+    public LandfillPrincipal(Dictionary<long, ProjectDescriptor> projects, List<ActiveProjectCustomerSubscriptionModel> subscriptions, string userUid)
     {
       this.Identity = new GenericIdentity("LandfillUser");
 
       Projects = projects;
-      Subscribtions = subscribtions;
+      Subscriptions = subscriptions;
       UserUid = userUid;
     }
 
@@ -108,7 +93,7 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
     public IIdentity Identity { get; private set; }
 
     public Dictionary<long, ProjectDescriptor> Projects { get; private set; }
-    public List<CustomerSubscriptionModel> Subscribtions { get; private set; }
+    public List<ActiveProjectCustomerSubscriptionModel> Subscriptions { get; private set; }
 
   }
 
@@ -116,7 +101,7 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
   {
 
     Dictionary<long, ProjectDescriptor> Projects { get; }
-    List<CustomerSubscriptionModel> Subscribtions { get; }
+    List<ActiveProjectCustomerSubscriptionModel> Subscriptions { get; }
     String UserUid { get; }
 
   }

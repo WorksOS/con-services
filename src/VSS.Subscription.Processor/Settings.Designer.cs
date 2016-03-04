@@ -34,28 +34,10 @@ namespace VSS.Subscription.Processor {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://54.201.153.176/DiscoveryService/kafkatopic/v1")]
-        public string DicoveryServiceUri {
-            get {
-                return ((string)(this["DicoveryServiceUri"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Dev")]
+        [global::System.Configuration.DefaultSettingValueAttribute("VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Develop")]
         public string TopicName {
             get {
                 return ((string)(this["TopicName"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("KafkaServerUri\" value=\"tcp://10.210.246.165:9092")]
-        public string KafkaServerUri {
-            get {
-                return ((string)(this["KafkaServerUri"]));
             }
         }
     }

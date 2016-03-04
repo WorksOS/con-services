@@ -1,24 +1,26 @@
 ﻿using Autofac;
-using Newtonsoft.Json.Linq;
+using log4net;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Configuration;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using Topshelf;
 using Topshelf.Runtime;
-using VSP.MasterData.Common.KafkaWrapper;
-using VSP.MasterData.Common.KafkaWrapper.Interfaces;
-using VSP.MasterData.Common.KafkaWrapper.Models;
+using VSS.Kafka.DotNetClient.Consumer;
+using VSS.Kafka.DotNetClient.Interfaces;
+using VSS.Kafka.DotNetClient.Model;
+using VSS.Messaging.Kafka.Interfaces;
 using VSS.Subscription.Data.MySql;
 using VSS.Subscription.Model.Interfaces;
+using VSS.Subscription.Processor.Consumer;
 using VSS.Subscription.Processor.Interfaces;
 
 namespace VSS.Subscription.Processor
 {
     class Program
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         protected static IContainer Container { get; set; }
         public static void Main(string[] args)
         {
@@ -41,7 +43,7 @@ namespace VSS.Subscription.Processor
                     s.WhenStarted(o => o.Start());
                     s.WhenStopped(o => o.Stop());
                 });
-                //c.UseLog4Net();
+                // c.UseLog4Net();
             });
         }
 
@@ -50,57 +52,31 @@ namespace VSS.Subscription.Processor
         {
             var builder = new ContainerBuilder();
             builder.RegisterType<ServiceController>()
-                .AsSelf()
-                .SingleInstance();
-            builder.RegisterType<SubscriptionEventHandler>().AsSelf().SingleInstance();
+              .AsSelf()
+              .SingleInstance();
 
-            string kafkaUri = GetKafkaEndPointUri(Settings.Default.TopicName);
 
-            builder.Register(
-                c => new KafkaConsumerParams(
-                    Settings.Default.ConsumerGroupName,
-                    kafkaUri,
-                    Settings.Default.TopicName)).As<KafkaConsumerParams>();
+            string confluentBaseUrl = ConfigurationManager.AppSettings["RestProxyBaseUrl"];
+            if (string.IsNullOrWhiteSpace(confluentBaseUrl))
+                throw new ArgumentNullException("RestProxy Base Url is empty");
 
-            builder.RegisterType<MySqlSubscriptionService>().As<ISubscriptionService>().SingleInstance();
+            string kafkaTopicName = Settings.Default.TopicName;
+            string consumerGroupName = Settings.Default.ConsumerGroupName;
 
             builder.Register(config =>
             {
-                var eAgg = new EventAggregator();
-                eAgg.Subscribe(config.Resolve<SubscriptionEventHandler>(
-                    new NamedParameter("subscriptionService", config.Resolve<ISubscriptionService>())));
-                return eAgg;
-            })
-            .As<IEventAggregator>().SingleInstance(); ;
+                var consumerConfigurator = new ConsumerConfigurator(confluentBaseUrl, kafkaTopicName, consumerGroupName, Dns.GetHostName(), 1024);
+                return consumerConfigurator;
+            }).As<IConsumerConfigurator>().SingleInstance();
 
-            builder.RegisterType<ConsumerWrapper>().As<IConsumerWrapper>().InstancePerLifetimeScope();
-            builder.RegisterType<SubscriptionEventConsumer>().As<IConsumer>().InstancePerLifetimeScope();
+            builder.RegisterType<SubscriptionProcessor>().As<ISubscriptionProcessor>().SingleInstance();
+
+            builder.RegisterType<SubscriptionEventObserver>().As<IObserver<ConsumerInstanceResponse>>().SingleInstance();
+         
+            builder.RegisterType<MySqlSubscriptionService>().As<ISubscriptionService>().SingleInstance();
 
             Container = builder.Build();
             return Container.Resolve<ServiceController>();
-
-        }
-
-
-        private static string GetKafkaEndPointUri(string kafkaTopicName)
-        {
-          return Settings.Default.KafkaServerUri;
-          /*try
-            {
-                string jsonStr;
-                using (var wc = new WebClient())
-                {
-                    jsonStr = wc.DownloadString(new Uri(Settings.Default.DicoveryServiceUri));
-                }
-                JObject jsonObj = JObject.Parse(jsonStr);
-                var token = jsonObj.SelectToken("$.Topics[?(@.Name == '" + kafkaTopicName + "')].URL");
-                return token.ToString();
-            }
-            catch (Exception)
-            {
-
-            }
-            return null;*/
         }
     }
 }

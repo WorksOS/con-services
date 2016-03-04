@@ -70,7 +70,8 @@ public class AuthUtilities
       return null;
     }
   }
-  public List<CustomerSubscriptionModel> GetActiveProjectSubscriptionByCustomerId(Guid customerGuid)
+
+  public List<ActiveProjectCustomerSubscriptionModel> GetActiveProjectSubscriptionByCustomerId(Guid customerGuid)
   {
     try
     {
@@ -81,15 +82,14 @@ public class AuthUtilities
     {
       return null;
     }
-
   }
 
-
-  public int GetProjectBySubscripion(string projectSubscriptionUid)
+  public int GetProjectBySubscription(string projectSubscriptionUid)
   {
     try
     {
-      var project = _subscriptionService.GetProjectBySubscripion(projectSubscriptionUid);
+      // When updating Subscription project, Merino needs to add GetProjectBySubscription() to MySqlSubscriptionService
+      var project = _subscriptionService.GetProjectBySubscription(projectSubscriptionUid);
       return project;
     }
     catch (Exception ex)
@@ -97,4 +97,5 @@ public class AuthUtilities
       return -1;
     }
   }
+
 }

@@ -42,12 +42,21 @@ namespace VSS.Subscription.Data.Models
         public DateTime EndDate { get; set; }
     }
 
+    public class ActiveProjectCustomerSubscriptionModel : CustomerSubscriptionModel
+    {
+        public string SubscriptionGuid { get; set; }
+    }
+
     public class CustomerSubscriptionModel
     {
-      public string ProjectSubscriptionUID { get; set; }
         public string SubscriptionType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+    }
+
+    public class ActiveProjectCustomerSubscriptionList
+    {
+        public List<ActiveProjectCustomerSubscriptionModel> Subscriptions { get; set; }
     }
 
     public class CustomerSubscriptionList
