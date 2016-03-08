@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSP.MasterData.Customer.Data.Interfaces
+namespace VSS.MasterData.Customer.Processor.Interfaces
 {
   public interface ICustomerEvent
   {

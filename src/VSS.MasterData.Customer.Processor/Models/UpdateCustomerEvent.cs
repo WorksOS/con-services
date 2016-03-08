@@ -1,25 +1,15 @@
 ﻿using Newtonsoft.Json;
 using System;
-using VSP.MasterData.Customer.Data.Interfaces;
+using VSS.MasterData.Customer.Processor.Interfaces;
 
-namespace VSP.MasterData.Customer.Data.Models
+namespace VSS.MasterData.Customer.Processor.Models
 {
-    public enum CustomerType
+    public class UpdateCustomerEvent : ICustomerEvent
     {
-        Customer = 0,
-        Dealer = 1,
-        Operations = 2,
-        Corporate = 3
-    }
-    public class CreateCustomerEvent : ICustomerEvent
-    {
-        //[Required]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string CustomerName { get; set; }
-        //[Required]
-        public CustomerType CustomerType { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string BSSID { get; set; }
-        //[Required]
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string DealerNetwork { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -28,7 +18,7 @@ namespace VSP.MasterData.Customer.Data.Models
         public string NetworkCustomerCode { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string DealerAccountCode { get; set; }
-        // [Required]
+        //[Required]
         public Guid CustomerUID { get; set; }
         //[Required]
         public DateTime ActionUTC { get; set; }

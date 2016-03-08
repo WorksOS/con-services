@@ -1,15 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System;
-using VSP.MasterData.Customer.Data.Interfaces;
+using VSS.MasterData.Customer.Processor.Interfaces;
 
-namespace VSP.MasterData.Customer.Data.Models
+namespace VSS.MasterData.Customer.Processor.Models
 {
-    public class AssociateCustomerUserEvent : ICustomerUserEvent
+    public class DeleteCustomerEvent : ICustomerEvent
     {
         //[Required]
         public Guid CustomerUID { get; set; }
-        //[Required]
-        public Guid UserUID { get; set; }
         //[Required]
         public DateTime ActionUTC { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
