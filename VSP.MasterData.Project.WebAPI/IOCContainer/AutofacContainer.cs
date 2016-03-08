@@ -8,11 +8,11 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using log4net;
 using Newtonsoft.Json.Linq;
-using VSP.MasterData.Common.KafkaWrapper;
-using VSP.MasterData.Common.KafkaWrapper.Interfaces;
 using VSP.MasterData.Common.Logging;
-using VSP.MasterData.Common.RPLKafkaWrapper;
-using VSP.MasterData.Common.RPLKafkaWrapper.Interfaces;
+using VSS.Kafka.DotNetClient;
+using VSS.Kafka.DotNetClient.Interfaces;
+using VSS.Kafka.DotNetClient.Model;
+using VSS.Kafka.DotNetClient.Producer;
 
 namespace VSP.MasterData.Project.WebAPI
 {
@@ -43,7 +43,8 @@ namespace VSP.MasterData.Project.WebAPI
         if (string.IsNullOrWhiteSpace(confluentBaseUrl))
           throw new ArgumentNullException("RestProxy Base Url is empty");
 
-        builder.Register(c => new RplProducerWrapper(confluentBaseUrl, kafkaTopicName)).As<IRplProducerWrapper>().SingleInstance();
+        var configSettings = new AppConfigSettings();
+        builder.Register(c => new BinaryProducer(kafkaTopicName, MessageFormat.Binary, configSettings)).As<IProducer>().SingleInstance();
         builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
         IContainer container = builder.Build();

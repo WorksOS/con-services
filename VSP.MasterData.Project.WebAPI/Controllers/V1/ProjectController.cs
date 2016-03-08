@@ -2,10 +2,10 @@
 using System.Reflection;
 using System.Web.Http;
 using log4net;
-using VSP.MasterData.Common.KafkaWrapper.Interfaces;
-using VSP.MasterData.Common.RPLKafkaWrapper.Interfaces;
 using VSP.MasterData.Project.WebAPI.Helpers;
 using VSP.MasterData.Common.Logging;
+using VSS.Kafka.DotNetClient.Interfaces;
+using VSS.Kafka.DotNetClient.Model;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 
@@ -16,9 +16,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    private readonly IRplProducerWrapper _producer;
+    private readonly IProducer _producer;
 
-    public ProjectV1Controller(IRplProducerWrapper producer)
+    public ProjectV1Controller(IProducer producer)
     {
       _producer = producer;
     }
@@ -39,10 +39,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       {
         project.ReceivedUTC = DateTime.UtcNow;
         var jsonHelper = new JsonHelper();
-        var message = jsonHelper.SerializeObjectToJson(new { CreateProjectEvent = project });
-        _producer.PublishMessageInSync(message, project.ProjectUID.ToString());
-        Log.Debug(String.Format("Create Project Event: {0}",message));
-        return Ok();
+        var messagePayload = jsonHelper.SerializeObjectToJson(new { CreateProjectEvent = project });
+        var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
+        if (_producer.PublishToBatch(new[] { message }))
+          return Ok();
+        throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
       {
@@ -67,11 +68,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       {
         var jsonHelper = new JsonHelper();
         project.ReceivedUTC = DateTime.UtcNow;
-        var message = jsonHelper.SerializeObjectToJson(new { UpdateProjectEvent = project });
-        _producer.PublishMessageInSync(message, project.ProjectUID.ToString());
-        Log.Debug(String.Format("Update Project Event: {0}", message));
-
-        return Ok();
+        var messagePayload = jsonHelper.SerializeObjectToJson(new { UpdateProjectEvent = project });
+        var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
+        if (_producer.PublishToBatch(new[] { message }))
+          return Ok();
+        throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
       {
@@ -104,11 +105,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         project.ReceivedUTC = DateTime.UtcNow;
         var jsonHelper = new JsonHelper();
 
-        var message = jsonHelper.SerializeObjectToJson(new { DeleteProjectEvent = project });
-        _producer.PublishMessageInSync(message, project.ProjectUID.ToString());
-        Log.Debug(String.Format("Delete Project Event: {0}", message));
-
-        return Ok();
+        var messagePayload = jsonHelper.SerializeObjectToJson(new { DeleteProjectEvent = project });
+        var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
+        if (_producer.PublishToBatch(new[] { message }))
+          return Ok();
+        throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
       {
@@ -134,11 +135,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       {
         project.ReceivedUTC = DateTime.UtcNow;
         var jsonHelper = new JsonHelper();
-        var message = jsonHelper.SerializeObjectToJson(new { RestoreProjectEvent = project });
-        _producer.PublishMessageInSync(message, project.ProjectUID.ToString());
-        Log.Debug(String.Format("Restore Project Event: {0}", message));
-
-        return Ok();
+        var messagePayload = jsonHelper.SerializeObjectToJson(new { RestoreProjectEvent = project });
+        var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
+        if (_producer.PublishToBatch(new[] { message }))
+          return Ok();
+        throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
       {
@@ -162,11 +163,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       try
       {
         customerProject.ReceivedUTC = DateTime.UtcNow;
-        var message = new JsonHelper().SerializeObjectToJson(new { AssociateCustomerAssetEvent = customerProject });
-        _producer.PublishMessageInSync(message, customerProject.CustomerUID.ToString());
-        Log.Debug(String.Format("AssociateProjectCustomer Project Event: {0}", message));
-
-        return Ok();
+        var messagePayload = new JsonHelper().SerializeObjectToJson(new { AssociateCustomerAssetEvent = customerProject });
+        var message = new Message { Key = customerProject.ProjectUID.ToString(), Value = messagePayload };
+        if (_producer.PublishToBatch(new[] { message }))
+          return Ok();
+        throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
       {
@@ -190,10 +191,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       try
       {
         customerProject.ReceivedUTC = DateTime.UtcNow;
-        var message = new JsonHelper().SerializeObjectToJson(new { DissociateCustomerAssetEvent = customerProject });
-        _producer.PublishMessageInSync(message, customerProject.CustomerUID.ToString());
-        Log.Debug(String.Format("DissociateProjectCustomer Project Event: {0}", message));
-        return Ok();
+        var messagePayload = new JsonHelper().SerializeObjectToJson(new { DissociateCustomerAssetEvent = customerProject });
+        var message = new Message { Key = customerProject.ProjectUID.ToString(), Value = messagePayload };
+        if (_producer.PublishToBatch(new[] { message }))
+          return Ok();
+        throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
       {
