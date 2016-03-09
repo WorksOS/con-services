@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
-using VSP.MasterData.Customer.Data;
 using VSP.MasterData.Customer.WebAPI.Models;
+using VSS.Customer.Data.Interfaces;
 using VSS.Subscription.Data.Models;
 using VSS.Subscription.Model.Interfaces;
 using VSS.VisionLink.Utilization.WebApi.Helpers;
 
 public class AuthUtilities
 {
-  private readonly ICustomerDataService _dataService;
+  private readonly ICustomerService _dataService;
   private readonly ISubscriptionService _subscriptionService;
 
-  public AuthUtilities(ICustomerDataService dataService, ISubscriptionService subscriptionService)
+  public AuthUtilities(ICustomerService dataService, ISubscriptionService subscriptionService)
   {
     _subscriptionService = subscriptionService;
     _dataService = dataService;

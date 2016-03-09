@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSP.MasterData.Customer.Data.Models
+namespace VSS.Customer.Data.Models
 {
   public class Customer
   {

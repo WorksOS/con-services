@@ -1,24 +1,25 @@
-﻿using Dapper;
-using MySql.Data.MySqlClient;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
-using VSP.MasterData.Customer.Data.Models;
-using System;
+using Dapper;
+using MySql.Data.MySqlClient;
+using VSS.Customer.Data.Interfaces;
+using VSS.Customer.Data.Models;
 
-namespace VSP.MasterData.Customer.Data
+namespace VSS.Customer.Data
 {
-  public class CustomerDataService : ICustomerDataService
+  public class CustomerService : ICustomerService
   {
     private readonly string _connectionString;
 
-    public CustomerDataService()
+    public CustomerService()
     {
       _connectionString = ConfigurationManager.ConnectionStrings["MySql.Customer"].ConnectionString;
     }
 
-    public void CreateCustomer(CreateCustomer createCustomerEvent)
+    public void CreateCustomer(CreateCustomerEvent createCustomerEvent)
     {
       using (var connection = new MySqlConnection(_connectionString))
       {
@@ -34,7 +35,7 @@ namespace VSP.MasterData.Customer.Data
       }
     }
 
-    public int UpdateCustomer(UpdateCustomer updateCustomerEvent)
+    public int UpdateCustomer(UpdateCustomerEvent updateCustomerEvent)
     {
       using (var connection = new MySqlConnection(_connectionString))
       {
@@ -49,7 +50,7 @@ namespace VSP.MasterData.Customer.Data
       }
     }
 
-    public void DeleteCustomer(DeleteCustomer deleteCustomerEvent)
+    public void DeleteCustomer(DeleteCustomerEvent deleteCustomerEvent)
     {
       using (var connection = new MySqlConnection(_connectionString))
       {
@@ -62,7 +63,7 @@ namespace VSP.MasterData.Customer.Data
       }
     }
 
-    public bool AssociateCustomerUser(AssociateCustomerUser associateCustomerUserEvent)
+    public bool AssociateCustomerUser(AssociateCustomerUserEvent associateCustomerUserEvent)
     {
       using (var connection = new MySqlConnection(_connectionString))
       {
@@ -83,7 +84,7 @@ namespace VSP.MasterData.Customer.Data
       }
     }
 
-    public void DissociateCustomerUser(DissociateCustomerUser dissociateCustomerUserEvent)
+    public void DissociateCustomerUser(DissociateCustomerUserEvent dissociateCustomerUserEvent)
     {
       using (var connection = new MySqlConnection(_connectionString))
       {

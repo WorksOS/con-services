@@ -1,5 +1,5 @@
 ﻿
-namespace VSS.MasterData.Customer.Processor.Interfaces
+namespace VSS.Customer.Processor.Interfaces
 {
   public interface ICustomerProcessor
   {

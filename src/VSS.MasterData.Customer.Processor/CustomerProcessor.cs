@@ -1,33 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using log4net;
+using System;
 using System.Reflection;
-using log4net;
-using VSS.Kafka.DotNetClient.Consumer;
-using VSS.Kafka.DotNetClient.Interfaces;
+using VSS.Customer.Data.Interfaces;
 using VSS.Kafka.DotNetClient.Model;
-//using VSP.MasterData.Common.KafkaWrapper;
-using VSS.MasterData.Customer.Processor.Interfaces;
+using VSS.Customer.Processor.Consumer;
+using VSS.Customer.Processor.Interfaces;
 
-
-namespace VSS.MasterData.Customer.Processor
+namespace VSS.Customer.Processor
 {
   public class CustomerProcessor : ICustomerProcessor
   {
-    private readonly IObserver<ConsumerInstanceResponse> _customerEventObserver;
-    readonly BinaryConsumer _customerEventConsumer;
-    IDisposable subscriber;
-    CreateConsumerRequest _consumerRequest;
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    private readonly IObserver<ConsumerInstanceResponse> _observer;
+    private readonly IDisposable _subscriber;
+    private readonly ConsumerWrapper _consumerWrapper;
 
-    public CustomerProcessor(IObserver<ConsumerInstanceResponse> customerEventObserver,
-      BinaryConsumer customerEventConsumer, CreateConsumerRequest consumerRequest)
+    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    public CustomerProcessor(ICustomerService service, IConsumerConfigurator configurator)
     {
       try
       {
-        _customerEventObserver = customerEventObserver;
-        _customerEventConsumer = customerEventConsumer;
-        _consumerRequest = consumerRequest;
-        subscriber = customerEventConsumer.Subscribe(customerEventObserver);
+        _consumerWrapper = new ConsumerWrapper(configurator);
+        _subscriber = _consumerWrapper.Subscribe(new CustomerEventObserver(service));
       }
       catch (Exception error)
       {
@@ -37,13 +30,14 @@ namespace VSS.MasterData.Customer.Processor
 
     public void Process()
     {
-      _customerEventConsumer.ConsumeMessages(_consumerRequest);
+      _consumerWrapper.StartConsume();
     }
 
     public void Stop()
     {
-      _customerEventConsumer.Dispose();
-      subscriber.Dispose();
+      if (_subscriber != null)
+        _subscriber.Dispose();
+      _consumerWrapper.Dispose();
     }
   }
 }

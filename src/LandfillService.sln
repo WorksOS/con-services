@@ -37,13 +37,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{950A1645-323
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kafka-net", "..\lib\kafka-net\src\kafka-net\kafka-net.csproj", "{1343EB68-55CB-4452-8386-24A9989DE1C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.MasterData.Customer.Processor", "VSS.MasterData.Customer.Processor\VSS.MasterData.Customer.Processor.csproj", "{DFA2EC39-693E-46FC-936A-25A6FC5A214B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Customer.Processor", "VSS.MasterData.Customer.Processor\VSS.Customer.Processor.csproj", "{DFA2EC39-693E-46FC-936A-25A6FC5A214B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Subscription.Processor", "VSS.Subscription.Processor\VSS.Subscription.Processor.csproj", "{98ADDF8C-D1D9-48F0-833D-B7A3B147A5DB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Subscription.Data", "VSS.Subscription.Data\VSS.Subscription.Data.csproj", "{C455920E-769A-42CE-95A5-FC7CC5CBC3A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSP.MasterData.Customer.Data", "VSP.MasterData.Customer.Data\VSP.MasterData.Customer.Data.csproj", "{70CA8791-9379-4236-8849-D29CBEB2E251}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Customer.Data", "VSP.MasterData.Customer.Data\VSS.Customer.Data.csproj", "{70CA8791-9379-4236-8849-D29CBEB2E251}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A37BDD9A-7FFD-49DA-8369-FD4CE6E1F8B0}"
 EndProject

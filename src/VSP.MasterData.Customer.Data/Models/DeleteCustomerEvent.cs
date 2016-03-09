@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
-using VSS.MasterData.Customer.Processor.Interfaces;
+﻿using System;
+using Newtonsoft.Json;
+using VSS.Customer.Data.Interfaces;
 
-namespace VSS.MasterData.Customer.Processor.Models
+namespace VSS.Customer.Data.Models
 {
     public class DeleteCustomerEvent : ICustomerEvent
     {

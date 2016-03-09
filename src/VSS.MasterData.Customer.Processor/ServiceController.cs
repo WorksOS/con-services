@@ -1,12 +1,10 @@
 ﻿using log4net;
 using System;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using VSP.MasterData.Common.Logging;
-using VSS.MasterData.Customer.Processor.Interfaces;
+using VSS.Customer.Processor.Interfaces;
 
-namespace VSS.MasterData.Customer.Processor
+namespace VSS.Customer.Processor
 {
   public class ServiceController
   {

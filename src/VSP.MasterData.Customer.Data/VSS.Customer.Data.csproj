@@ -7,8 +7,8 @@
     <ProjectGuid>{70CA8791-9379-4236-8849-D29CBEB2E251}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VSP.MasterData.Customer.Data</RootNamespace>
-    <AssemblyName>VSP.MasterData.Customer.Data</AssemblyName>
+    <RootNamespace>VSS.Customer.Data</RootNamespace>
+    <AssemblyName>VSS.Customer.Data</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -55,14 +55,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomerDataService.cs" />
-    <Compile Include="Interfaces\ICustomerDataService.cs" />
-    <Compile Include="Models\AssociateCustomerUser.cs" />
-    <Compile Include="Models\CreateCustomer.cs" />
+    <Compile Include="CustomerService.cs" />
+    <Compile Include="Helpers\DapperHelper.cs" />
+    <Compile Include="Helpers\GuidExtensions.cs" />
+    <Compile Include="Helpers\StringExtensions.cs" />
+    <Compile Include="Helpers\TypeHelper.cs" />
+    <Compile Include="Interfaces\ICustomerService.cs" />
+    <Compile Include="Interfaces\ICustomerEvent.cs" />
+    <Compile Include="Interfaces\ICustomerUserEvent.cs" />
+    <Compile Include="Models\AssociateCustomerUserEvent.cs" />
+    <Compile Include="Models\CreateCustomerEvent.cs" />
     <Compile Include="Models\Customer.cs" />
-    <Compile Include="Models\DeleteCustomer.cs" />
-    <Compile Include="Models\DissociateCustomerUser.cs" />
-    <Compile Include="Models\UpdateCustomer.cs" />
+    <Compile Include="Models\DeleteCustomerEvent.cs" />
+    <Compile Include="Models\DissociateCustomerUserEvent.cs" />
+    <Compile Include="Models\UpdateCustomerEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

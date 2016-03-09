@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace VSS.Customer.Data.Tests.Helpers
+namespace VSS.Customer.Data.Helpers
 {
   public static class GuidExtensions
   {
