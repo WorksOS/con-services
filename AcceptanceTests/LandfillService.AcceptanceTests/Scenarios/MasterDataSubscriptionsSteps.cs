@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using LandfillService.AcceptanceTests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TechTalk.SpecFlow;
@@ -11,62 +12,51 @@ namespace LandfillService.AcceptanceTests.Scenarios
     {
         private readonly MasterDataSupport masterDataSupport = new MasterDataSupport();
 
-        public MasterDataSubscriptionsSteps()
-        {
-
-            KafkaRpl.InitialiseKafkaRpl();
-        }
-
         [Given(@"I inject the following master data event ""(.*)"" into kafka")]
         public void GivenIInjectTheFollowingMasterDataEventIntoKafka(string eventType)
         {
             var messageStr = string.Empty;
             var topic = string.Empty;
-            var messageType = new MessageType();
+            var uniqueId = string.Empty;
             switch (eventType)
             {
                 case "CreateCustomerEvent":
-                    messageType = MessageType.CreateCustomerEvent;
+                    topic = ConfigurationManager.AppSettings["CustomerMasterDataTopic"];
                     messageStr = masterDataSupport.CreateCustomer();
                     break;
                 case "CreateProjectEvent":
-                    messageType = MessageType.CreateProjectEvent;
                     messageStr = masterDataSupport.CreateProjectEvent();
+                    topic = ConfigurationManager.AppSettings["AssetMasterDataTopic"];
+                    uniqueId = masterDataSupport.masterProjectUid.ToString();
                     break;
                 case "CreateProjectSubscriptionEvent":
-                    messageType = MessageType.CreateProjectSubscriptionEvent;
                     messageStr = masterDataSupport.CreateProjectSubscription();
+                    topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
+                    uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
                     break;
-                //case "CreateCustomerSubscriptionEvent":
-                //    messageType = MessageType.CreateCustomerSubscriptionEvent;
-                //    messageStr = masterDataSupport.CreateCustomerSubscription();
-                //    break;
                 case "UpdateProjectSubscriptionEvent":
-                    messageType = MessageType.UpdateProjectSubscriptionEvent;
                     messageStr = masterDataSupport.UpdateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterCustomerUid);
+                    topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
+                    uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
                     break;
-                //case "UpdateCustomerSubscriptionEvent":
-                //    messageType = MessageType.UpdateCustomerSubscriptionEvent;
-                //    messageStr = masterDataSupport.UpdateCustomerSubscription(masterDataSupport.masterSubscriptionUid);
-                //    break;
                 case "AssociateProjectSubscriptionEvent":
-                    messageType = MessageType.AssociateProjectSubscriptionEvent;
                     messageStr = masterDataSupport.AssociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
+                    topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
+                    uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
                     break;
                 case "AssociateCustomerUserEvent":
-                    messageType = MessageType.AssociateCustomerUserEvent;
                     messageStr = masterDataSupport.AssociateCustomerUser(masterDataSupport.masterCustomerUid, Guid.NewGuid());
+                    topic = ConfigurationManager.AppSettings["CustomerUserMasterDataTopic"];
+                    uniqueId = masterDataSupport.masterCustomerUid.ToString();
                     break;
                 case "DissociateProjectSubscriptionEvent":
-                    messageType = MessageType.DissociateProjectSubscriptionEvent;
                     messageStr = masterDataSupport.DissociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
+                    topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
+                    uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
                     break;                   
             }
-            //var message = MessageFactory.Instance.CreateMessage(messageStr, messageType);
-            //message.Send();
-            topic = KafkaRpl.GetMyTopic(messageType);
-            KafkaRpl.SendToKafka(topic, messageStr);
-            Console.WriteLine();
+
+            KafkaResolver.SendMessage(topic, KafkaResolver.ResolveTopic(topic), messageStr, uniqueId);
         }
 
         [Then(@"I verify the correct subscription event in the database")]

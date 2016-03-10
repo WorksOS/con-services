@@ -9,9 +9,9 @@ namespace LandfillService.AcceptanceTests.Helpers
     public class MasterDataSupport
     {
         private CreateProjectSubscriptionEvent expectedProjectSubscriptionEvent;
-        private CreateCustomerSubscriptionEvent expectedCustomerSubscriptionEvent;
+     //   private CreateCustomerSubscriptionEvent expectedCustomerSubscriptionEvent;
         private UpdateProjectSubscriptionEvent expectedUpdateProjectSubscriptionEvent;
-        private UpdateCustomerSubscriptionEvent expectedUpdateCustomerSubscriptionEvent;
+      //  private UpdateCustomerSubscriptionEvent expectedUpdateCustomerSubscriptionEvent;
         private AssociateProjectSubscriptionEvent expectedAssociatedProjectSubscriptionEvent;
         private AssociateCustomerUserEvent expectedAssociateCustomerUserEvent;
         private DissociateProjectSubscriptionEvent expectedDissociatedProjectSubscriptionEvent;

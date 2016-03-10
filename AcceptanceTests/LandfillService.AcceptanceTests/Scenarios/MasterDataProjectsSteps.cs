@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using LandfillService.AcceptanceTests.Helpers;
@@ -48,19 +49,18 @@ namespace LandfillService.AcceptanceTests.Scenarios
         public void GivenIInjectTheFollowingMasterDataEvents(Table table)
         {            
             var messageStr = string.Empty;
+            var topic = string.Empty;
+            var uniqueId = string.Empty;
             foreach (var row in table.Rows)
             {
-                var messageType = new MessageType();
                 switch (row["Event"])
                 {
                     case "CreateProjectEvent":
-                        messageType = MessageType.CreateProjectEvent;
                         projEvent = CreateAProjectEvent(row);
                         messageStr = JsonConvert.SerializeObject(new {CreateProjectEvent = projEvent},
                             new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
                         break;
                     case "UpdateProjectEvent":
-                        messageType = MessageType.UpdateProjectEvent;
                         projEvent.ProjectEndDate = DateTime.Today.AddDays(Convert.ToInt32(row["DaysToExpire"]));
                         projEvent.ProjectName = row["ProjectName"] + stepSupport.GetRandomNumber();
                         projEvent.ProjectType = row["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D;
@@ -68,14 +68,16 @@ namespace LandfillService.AcceptanceTests.Scenarios
                             new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
                         break;
                     case "DeleteProjectEvent":
-                        messageType = MessageType.DeleteProjectEvent;
                         messageStr = JsonConvert.SerializeObject(new {DeleteProjectEvent = projEvent},
                             new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
                         break;
                 }
+                topic = ConfigurationManager.AppSettings["AssetMasterDataTopic"];
+                uniqueId = projEvent.ProjectUID.ToString();
+                //var message = MessageFactory.Instance.CreateMessage(messageStr, messageType);
+                //message.Send();
+                KafkaResolver.SendMessage(topic, KafkaResolver.ResolveTopic(topic), messageStr, uniqueId);
 
-                var message = MessageFactory.Instance.CreateMessage(messageStr, messageType);
-                message.Send();
                 switch (row["Event"])
                 {
                     case "CreateProjectEvent":
