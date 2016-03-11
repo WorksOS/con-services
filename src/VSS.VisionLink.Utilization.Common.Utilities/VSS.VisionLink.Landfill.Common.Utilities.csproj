@@ -132,10 +132,8 @@
   <ItemGroup>
     <Compile Include="ConfigSettings.cs" />
     <Compile Include="ExceptionRenderer.cs" />
-    <Compile Include="KafkaQueue.cs" />
     <Compile Include="LogAppender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TopicResolver.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

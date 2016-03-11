@@ -16,10 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8F8054
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LandFillServiceDataSynchronizer", "LandFillServiceDataSynchronizer\LandFillServiceDataSynchronizer.csproj", "{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.VisionLink.Landfill.MDM", "VSS.VisionLink.Landfill.MDM\VSS.VisionLink.Landfill.MDM.csproj", "{DBFA74D3-68E2-49B1-9690-9B01A23A6082}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.VisionLink.Landfill.MDMService", "VSS.VisionLink.Landfill.MDMService\VSS.VisionLink.Landfill.MDMService.csproj", "{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.VisionLink.Landfill.Common.Interfaces", "VSS.VisionLink.Utilization.Common.Interfaces\VSS.VisionLink.Landfill.Common.Interfaces.csproj", "{44CD2027-F652-4EDE-BFED-2C9555D56440}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.VisionLink.Landfill.Common.Models", "VSS.VisionLink.Utilization.Common.Models\VSS.VisionLink.Landfill.Common.Models.csproj", "{EBCA4AF6-CEAC-45A1-8014-5E40A24CBC67}"
@@ -127,46 +123,6 @@ Global
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.QA|Any CPU.Build.0 = Release|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForBeta|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForBeta|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForDev|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForDev|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForProd|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForProd|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForRelease|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForRelease|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForT01|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForT01|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForT02|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.DeployToFolderForT02|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.Feature|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.Feature|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.QA|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.QA|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DBFA74D3-68E2-49B1-9690-9B01A23A6082}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForBeta|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForBeta|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForDev|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForDev|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForProd|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForProd|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForRelease|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForRelease|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForT01|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForT01|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForT02|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.DeployToFolderForT02|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.Feature|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.Feature|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.QA|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.QA|Any CPU.Build.0 = DeployToFolderForDev|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B9FE984D-4AD5-41D8-8B01-3EA2A9EA0199}.Release|Any CPU.Build.0 = Release|Any CPU
 		{44CD2027-F652-4EDE-BFED-2C9555D56440}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44CD2027-F652-4EDE-BFED-2C9555D56440}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44CD2027-F652-4EDE-BFED-2C9555D56440}.DeployToFolderForBeta|Any CPU.ActiveCfg = DeployToFolderForDev|Any CPU

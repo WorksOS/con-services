@@ -78,9 +78,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IProjectRepository.cs" />
-    <Compile Include="IBookmarkRepository.cs" />
-    <Compile Include="IKafkaQueue.cs" />
-    <Compile Include="ISubscriptionRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
