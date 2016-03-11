@@ -4,8 +4,8 @@ using System.Linq;
 using System.Net.Http.Headers;
 using VSP.MasterData.Customer.WebAPI.Models;
 using VSS.Customer.Data.Interfaces;
+using VSS.Subscription.Data.Interfaces;
 using VSS.Subscription.Data.Models;
-using VSS.Subscription.Model.Interfaces;
 using VSS.VisionLink.Utilization.WebApi.Helpers;
 
 public class AuthUtilities
@@ -76,7 +76,9 @@ public class AuthUtilities
     try
     {
       var subscriptions = _subscriptionService.GetActiveProjectSubscriptionForCustomer(customerGuid);
-      return subscriptions;
+      return (from t in subscriptions
+              where t.SubscriptionType == "Landfill"
+              select t).ToList();
     }
     catch (Exception ex)
     {

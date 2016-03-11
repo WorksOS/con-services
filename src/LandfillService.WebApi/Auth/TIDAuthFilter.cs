@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Filters;
+using log4net;
 using LandfillService.Common;
 using Newtonsoft.Json;
 using VSS.Customer.Data;
+using VSS.Subscription.Data;
 using VSS.Subscription.Data.Models;
-using VSS.Subscription.Data.MySql;
 using VSS.VisionLink.Utilization.WebApi.Configuration.Principal;
 using VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models;
 
@@ -19,6 +21,8 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
 {
   public class TIDAuthFilter : IAuthenticationFilter
   {
+    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
     public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
     {
       string jwtToken;
@@ -28,11 +32,13 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
       {
         Dictionary<long, ProjectDescriptor> projectList = new Dictionary<long, ProjectDescriptor>();
         //Passing the WebAPI Request headers to JWTHelper function to obtain the JWT Token
-        var utils = new AuthUtilities(new CustomerService(), new MySqlSubscriptionService());
+        var utils = new AuthUtilities(new MySqlCustomerRepository(), new MySqlSubscriptionRepository());
         string message = string.Empty;
         string userUid = string.Empty;
         var customerlist = utils.GetContext(context.Request.Headers, out message, out userUid);
         List<ActiveProjectCustomerSubscriptionModel> projectSubscriptions= new List<ActiveProjectCustomerSubscriptionModel>();
+        Log.DebugFormat("Authorization: For userID {0} customer List is {1}", userUid, customerlist.ToString());
+
         if (customerlist != null)
         {
           foreach (var associatedCustomer in customerlist)
@@ -42,6 +48,7 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
             {
               projectList.Add(utils.GetProjectBySubscription(projectSubscription.SubscriptionGuid), new ProjectDescriptor(){});
             }
+            Log.DebugFormat("Authorization: for Customer: {0} projectList is: {1}", associatedCustomer, projectSubscriptions.ToString());
           }
           
           context.Principal = new LandfillPrincipal(projectList, projectSubscriptions, userUid);

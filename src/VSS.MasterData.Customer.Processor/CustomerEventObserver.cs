@@ -34,18 +34,21 @@ namespace VSS.Customer.Processor
 
     public void OnNext(ConsumerInstanceResponse value)
     {
-        try
+      try
+      {
+        var payload = value.Messages.Payload;
+        foreach (var binaryMessage in payload)
         {
-            var payload = value.Messages.Payload;
-            foreach (var binaryMessage in payload)
-            {
-                string val = binaryMessage.Value;
-                bool success = false;
-                var json = JObject.Parse(val);
-                string tokenName;
+          string val = binaryMessage.Value;
+          bool success = false;
+          Log.DebugFormat("Recieved Customer Payload : {0} ", val);
+          var json = JObject.Parse(val);
+          Log.DebugFormat("Recieved Customer Payload json: {0}", JsonConvert.SerializeObject(json));
+          Log.DebugFormat("Recieved Customer Payload json2: {0}", json);
+          string tokenName;
 
-                JToken token;
-          if ((token = json.SelectToken(tokenName ="CreateCustomerEvent")) != null)
+          JToken token;
+          if ((token = json.SelectToken(tokenName = "CreateCustomerEvent")) != null)
           {
             var createCustomerEvent = JsonConvert.DeserializeObject<CreateCustomerEvent>(token.ToString());
             Log.InfoFormat("Received a CreateCustomerEvent for CustomerUid:{0}", createCustomerEvent.CustomerUID);
@@ -60,7 +63,7 @@ namespace VSS.Customer.Processor
                 ActionUTC = createCustomerEvent.ActionUTC,
                 BSSID = createCustomerEvent.BSSID,
                 CustomerName = createCustomerEvent.CustomerName,
-                CustomerType = 
+                CustomerType =
                   (CustomerType) Enum.Parse(typeof (CustomerType), createCustomerEvent.CustomerType.ToString(), true),
                 CustomerUID = createCustomerEvent.CustomerUID,
                 DealerAccountCode = createCustomerEvent.DealerAccountCode,
@@ -76,7 +79,7 @@ namespace VSS.Customer.Processor
             {
               //Customer Type cannot be changed, If duplicate message is received with different customer type need to skip it
               if (existingCustomer.fk_CustomerTypeID ==
-                (CustomerType) Enum.Parse(typeof (CustomerType), createCustomerEvent.CustomerType.ToString(), true))
+                  (CustomerType) Enum.Parse(typeof (CustomerType), createCustomerEvent.CustomerType.ToString(), true))
               {
                 Log.InfoFormat("Customer already exists with CustomerUid:{0}, starting to update existing customer",
                   createCustomerEvent.CustomerUID);
@@ -149,7 +152,8 @@ namespace VSS.Customer.Processor
           else if ((token = json.SelectToken(tokenName = "AssociateCustomerUserEvent")) != null)
           {
             var associateCustomerUserEvent = JsonConvert.DeserializeObject<AssociateCustomerUserEvent>(token.ToString());
-            Log.InfoFormat("Received a AssociateCustomerUserEvent for CustomerUid:{0} and UserUid:{1}", associateCustomerUserEvent.CustomerUID, associateCustomerUserEvent.UserUID);
+            Log.InfoFormat("Received a AssociateCustomerUserEvent for CustomerUid:{0} and UserUid:{1}",
+              associateCustomerUserEvent.CustomerUID, associateCustomerUserEvent.UserUID);
             Log.DebugFormat("Payload :{0}", token.ToString());
             if (_customerService.AssociateCustomerUser(new AssociateCustomerUserEvent()
             {
@@ -170,8 +174,10 @@ namespace VSS.Customer.Processor
           }
           else if ((token = json.SelectToken(tokenName = "DissociateCustomerUserEvent")) != null)
           {
-            var dissociateCustomerUserEvent = JsonConvert.DeserializeObject<DissociateCustomerUserEvent>(token.ToString());
-            Log.InfoFormat("Received a DissociateCustomerUserEvent for CustomerUid:{0} and UserUid:{1}", dissociateCustomerUserEvent.CustomerUID, dissociateCustomerUserEvent.UserUID);
+            var dissociateCustomerUserEvent =
+              JsonConvert.DeserializeObject<DissociateCustomerUserEvent>(token.ToString());
+            Log.InfoFormat("Received a DissociateCustomerUserEvent for CustomerUid:{0} and UserUid:{1}",
+              dissociateCustomerUserEvent.CustomerUID, dissociateCustomerUserEvent.UserUID);
             Log.DebugFormat("Payload :{0}", token.ToString());
             _customerService.DissociateCustomerUser(new DissociateCustomerUserEvent()
             {
@@ -192,29 +198,30 @@ namespace VSS.Customer.Processor
           else
           {
             if (Log.IsWarnEnabled)
-              Log.WarnFormat("Consumed a message and was unable to find a proper token. Message Sample: {0}... ", val.Truncate(15));
-          }
-            }
-        }
-        catch (MySqlException ex)
-        {
-          Log.Error("MySql Error  occured while Processing the Subscription Payload", ex);
-          switch (ex.Number)
-          {
-            case 0: //Cannot connect to server
-            case 1045:	//Invalid user name and/or password
-              throw;
-            default:
-              //todo: log exception and payload here
-              break;
+              Log.WarnFormat("Consumed a message and was unable to find a proper token. Message Sample: {0}... ",
+                val.Truncate(15));
           }
         }
-        catch (Exception ex)
+      }
+      catch (MySqlException ex)
+      {
+        Log.Error("MySql Error  occured while Processing the Subscription Payload", ex);
+        switch (ex.Number)
         {
-          //deliberately supppress
-          Log.Error("Error  occured while Processing the Subscription Payload", ex);
+          case 0: //Cannot connect to server
+          case 1045: //Invalid user name and/or password
+            throw;
+          default:
+            //todo: log exception and payload here
+            break;
         }
-        value.Commit();
+      }
+      catch (Exception ex)
+      {
+        //deliberately supppress
+        Log.Error("Error  occured while Processing the Subscription Payload", ex);
+      }
+      value.Commit();
     }
   }
 }

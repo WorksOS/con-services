@@ -37,8 +37,8 @@ namespace VSS.Subscription.Processor.Consumer
 		}
 		private void Configure()
 		{
-			_settings = new AppConfigSettings();
-
+			_settings = new DefaultRestProxySettings(); // Merino
+      
 			_cInstance = new ConsumerInstance {InstanceId = InstanceId};
 
 			_cRequest = new CreateConsumerRequest

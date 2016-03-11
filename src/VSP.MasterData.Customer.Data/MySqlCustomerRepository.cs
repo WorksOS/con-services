@@ -10,13 +10,13 @@ using VSS.Customer.Data.Models;
 
 namespace VSS.Customer.Data
 {
-  public class CustomerService : ICustomerService
+  public class MySqlCustomerRepository : ICustomerService
   {
     private readonly string _connectionString;
 
-    public CustomerService()
+    public MySqlCustomerRepository()
     {
-      _connectionString = ConfigurationManager.ConnectionStrings["MySql.Customer"].ConnectionString;
+      _connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
     }
 
     public void CreateCustomer(CreateCustomerEvent createCustomerEvent)

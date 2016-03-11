@@ -49,6 +49,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A37BDD9A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Subscription.Data.Tests", "..\tests\VSS.Subscription.Data.Tests\VSS.Subscription.Data.Tests.csproj", "{47A8D364-AC21-4641-AD66-2998BA255DB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Project.Data", "VSS.Project.Data\VSS.Project.Data.csproj", "{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Project.Processor", "VSS.Project.Processor\VSS.Project.Processor.csproj", "{F174163B-35DD-4D9A-857E-270E48BE466F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -363,6 +367,46 @@ Global
 		{47A8D364-AC21-4641-AD66-2998BA255DB8}.QA|Any CPU.Build.0 = Release|Any CPU
 		{47A8D364-AC21-4641-AD66-2998BA255DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47A8D364-AC21-4641-AD66-2998BA255DB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForBeta|Any CPU.ActiveCfg = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForBeta|Any CPU.Build.0 = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForDev|Any CPU.ActiveCfg = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForDev|Any CPU.Build.0 = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForProd|Any CPU.ActiveCfg = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForProd|Any CPU.Build.0 = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForRelease|Any CPU.Build.0 = Release|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForT01|Any CPU.ActiveCfg = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForT01|Any CPU.Build.0 = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForT02|Any CPU.ActiveCfg = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.DeployToFolderForT02|Any CPU.Build.0 = Debug|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.Feature|Any CPU.ActiveCfg = Release|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.Feature|Any CPU.Build.0 = Release|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.QA|Any CPU.ActiveCfg = Release|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.QA|Any CPU.Build.0 = Release|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{225FBDEA-C77F-4208-8942-1CA40ECEEF2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForBeta|Any CPU.ActiveCfg = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForBeta|Any CPU.Build.0 = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForDev|Any CPU.ActiveCfg = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForDev|Any CPU.Build.0 = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForProd|Any CPU.ActiveCfg = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForProd|Any CPU.Build.0 = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForRelease|Any CPU.Build.0 = Release|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForT01|Any CPU.ActiveCfg = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForT01|Any CPU.Build.0 = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForT02|Any CPU.ActiveCfg = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.DeployToFolderForT02|Any CPU.Build.0 = Debug|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.Feature|Any CPU.ActiveCfg = Release|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.Feature|Any CPU.Build.0 = Release|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.QA|Any CPU.ActiveCfg = Release|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.QA|Any CPU.Build.0 = Release|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F174163B-35DD-4D9A-857E-270E48BE466F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

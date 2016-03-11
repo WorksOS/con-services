@@ -1,12 +1,8 @@
 ﻿using log4net;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using VSS.Kafka.DotNetClient.Consumer;
-using VSS.Kafka.DotNetClient.Interfaces;
 using VSS.Kafka.DotNetClient.Model;
-using VSS.Messaging.Kafka.Interfaces;
-using VSS.Subscription.Model.Interfaces;
+using VSS.Subscription.Data.Interfaces;
 using VSS.Subscription.Processor.Consumer;
 using VSS.Subscription.Processor.Interfaces;
 

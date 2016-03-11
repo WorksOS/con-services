@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using log4net;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using VSP.MasterData.Common.Logging;
-using VSS.Messaging.Kafka.Interfaces;
 using VSS.Subscription.Data.Models;
-using VSS.Subscription.Model.Interfaces;
 using VSS.Subscription.Processor.Helpers;
-using VSS.Kafka.DotNetClient.Interfaces;
 using VSS.Kafka.DotNetClient.Model;
-using System.Threading.Tasks;
-using VSS.Kafka.DotNetClient.Common;
+using VSS.Subscription.Data.Interfaces;
 
 namespace VSS.Subscription.Processor
 {
@@ -34,11 +29,12 @@ namespace VSS.Subscription.Processor
 
         public void OnError(Exception error)
         {
-            Log.IfError("Failed consuming subcscription event messages");
+            Log.DebugFormat("Failed consuming subcscription event messages: {0} ", error.ToString());
         }
 
         public void OnNext(ConsumerInstanceResponse value)
         {
+          Log.Debug("SubscriptionEventObserver.OnNext()");
             try
             {
                 var payload = value.Messages.Payload;
@@ -46,7 +42,9 @@ namespace VSS.Subscription.Processor
                 {
                     string val = binaryMessage.Value;
                     bool success = false;
+                    Log.DebugFormat("Recieved Subscription Payload : {0} ", val);
                     var json = JObject.Parse(val);
+                    Log.DebugFormat("Recieved Subscription Payload2: {0}", json);             
                     string tokenName;
 
                     JToken token;
@@ -64,40 +62,50 @@ namespace VSS.Subscription.Processor
                         Log.Debug(String.Format("Recieved Update Asset Subscription Payload : {0} ", token.ToString()));
                         var updateAssetSubscriptionEvent =
                           JsonConvert.DeserializeObject<UpdateAssetSubscriptionEvent>(token.ToString());
+                        // todo what todo if the original didn't exist
+                        Log.Debug(String.Format("Recieved Update Asset Subscription Payload deserialized : {0} ", updateAssetSubscriptionEvent));
                         _subscriptionService.UpdateAssetSubscription(updateAssetSubscriptionEvent);
                         success = true;
                     }
                     else if ((token = json.SelectToken(tokenName = "CreateProjectSubscriptionEvent")) != null)
                     {
-                        Log.Debug(String.Format("Recieved Create Project Subscription Payload : {0} ", token.ToString()));
-                        var createProjectSubscriptionEvent =
-                          JsonConvert.DeserializeObject<CreateProjectSubscriptionEvent>(token.ToString());
-                        _subscriptionService.CreateProjectSubscription(createProjectSubscriptionEvent);
-                        success = true;
+                      Log.Debug(String.Format("Recieved Create Project Subscription Payload : {0} ", token.ToString()));
+                      var createProjectSubscriptionEvent =
+                        JsonConvert.DeserializeObject<CreateProjectSubscriptionEvent>(token.ToString());
+                      Log.DebugFormat("Project subscription {0}", createProjectSubscriptionEvent );
+                      // todo make sure a duplicate isn't created
+                      _subscriptionService.CreateProjectSubscription(createProjectSubscriptionEvent);
+                      success = true;
                     }
                     else if ((token = json.SelectToken(tokenName = "UpdateProjectSubscriptionEvent")) != null)
                     {
-                        Log.Debug(String.Format("Recieved Update Project Subscription Payload : {0} ", token.ToString()));
-                        var updateProjectSubscriptionEvent =
-                          JsonConvert.DeserializeObject<UpdateProjectSubscriptionEvent>(token.ToString());
-                        _subscriptionService.UpdateProjectSubscription(updateProjectSubscriptionEvent);
-                        success = true;
+                      Log.Debug(String.Format("Recieved Update Project Subscription Payload : {0} ", token.ToString()));
+                      var updateProjectSubscriptionEvent =
+                        JsonConvert.DeserializeObject<UpdateProjectSubscriptionEvent>(token.ToString());
+                      // todo make sure this doesn't cause issues if sub is not present. 
+                      // Could fail because the sub hasn't been created
+                      _subscriptionService.UpdateProjectSubscription(updateProjectSubscriptionEvent);
+                      success = true;
                     }
                     else if ((token = json.SelectToken(tokenName = "AssociateProjectSubscriptionEvent")) != null)
                     {
-                        Log.Debug(String.Format("Recieved Associate Project Subscription Payload : {0} ", token.ToString()));
-                        var associateProjectSubscriptionEvent =
-                          JsonConvert.DeserializeObject<AssociateProjectSubscriptionEvent>(token.ToString());
-                        _subscriptionService.AssociateProjectSubscription(associateProjectSubscriptionEvent);
-                        success = true;
+                      Log.Debug(String.Format("Recieved Associate Project Subscription Payload : {0} ", token.ToString()));
+                      var associateProjectSubscriptionEvent =
+                        JsonConvert.DeserializeObject<AssociateProjectSubscriptionEvent>(token.ToString());
+                      // todo make sure this doesn't cause issues if sub is not present. 
+                      // Could fail because the sub hasn't been created
+                      _subscriptionService.AssociateProjectSubscription(associateProjectSubscriptionEvent);
+                      success = true;
                     }
                     else if ((token = json.SelectToken(tokenName = "DissociateProjectSubscriptionEvent")) != null)
                     {
-                        Log.Debug(String.Format("Recieved Dissociate Project Subscription Payload : {0} ", token.ToString()));
-                        var dissociateProjectSubscriptionEvent =
-                          JsonConvert.DeserializeObject<DissociateProjectSubscriptionEvent>(token.ToString());
-                        _subscriptionService.DissociateProjectSubscription(dissociateProjectSubscriptionEvent);
-                        success = true;
+                      Log.Debug(String.Format("Recieved Dissociate Project Subscription Payload : {0} ", token.ToString()));
+                      var dissociateProjectSubscriptionEvent =
+                        JsonConvert.DeserializeObject<DissociateProjectSubscriptionEvent>(token.ToString());
+                      // todo make sure this doesn't cause issues if sub is not present. 
+                      // Could fail because the sub hasn't been created
+                      _subscriptionService.DissociateProjectSubscription(dissociateProjectSubscriptionEvent);
+                      success = true;
                     }
                     else if ((token = json.SelectToken(tokenName = "CreateCustomerSubscriptionEvent")) != null)
                     {
@@ -112,20 +120,23 @@ namespace VSS.Subscription.Processor
                         Log.Debug(String.Format("Recieved Update Customer Subscription Payload : {0} ", token.ToString()));
                         var updateCustomerSubscriptionEvent =
                           JsonConvert.DeserializeObject<UpdateCustomerSubscriptionEvent>(token.ToString());
+                        // todo make sure this doesn't cause issues if sub is not present. 
+                        // Could fail because the sub hasn't been created
                         _subscriptionService.UpdateCustomerSubscription(updateCustomerSubscriptionEvent);
                         success = true;
                     }
 
-                    if (success)
-                    {
-                        if (Log.IsDebugEnabled)
-                            Log.Debug("Consumed " + tokenName);
-                    }
-                    else
-                    {
-                        if (Log.IsWarnEnabled)
-                            Log.WarnFormat("Consumed a message and was unable to find a proper token. Message Sample: {0}... ", val.Truncate(15));
-                    }
+                  if (success)
+                  {
+                      if (Log.IsDebugEnabled)
+                          Log.Debug("Consumed " + tokenName);
+                  }
+                  else
+                  {
+                      if (Log.IsWarnEnabled)
+                          Log.WarnFormat("Consumed a message but discarded as not relavant {0}... ", val.Truncate(30));
+                  }
+
                 }
             }
             catch (MySqlException ex)

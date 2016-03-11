@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using VSS.Subscription.Model.Interfaces;
+using VSS.Subscription.Data.Interfaces;
 
 namespace VSS.Subscription.Data.Models
 {

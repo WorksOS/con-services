@@ -37,6 +37,10 @@
       <HintPath>..\packages\Dapper.1.42\lib\net45\Dapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.6.9.8\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
@@ -60,18 +64,18 @@
     <Compile Include="Helpers\GuidExtensions.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="Helpers\TypeHelper.cs" />
+    <Compile Include="Interfaces\ISubscriptionEvent.cs" />
     <Compile Include="Interfaces\ISubscriptionService.cs" />
     <Compile Include="Models\AssociateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\CreateCustomerSubscriptionEvent.cs" />
     <Compile Include="Models\CreateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\DissociateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\ISubscriptionEvent.cs" />
     <Compile Include="Models\CreateAssetSubscriptionEvent.cs" />
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="Models\UpdateAssetSubscriptionEvent.cs" />
     <Compile Include="Models\UpdateCustomerSubscriptionEvent.cs" />
     <Compile Include="Models\UpdateProjectSubscriptionEvent.cs" />
-    <Compile Include="MySql\MySqlSubscriptionService.cs" />
+    <Compile Include="MySqlSubscriptionRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

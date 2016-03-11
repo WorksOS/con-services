@@ -37,7 +37,7 @@ namespace VSS.Customer.Processor.Consumer
 		}
 		private void Configure()
 		{
-			_settings = new AppConfigSettings();
+      _settings = new DefaultRestProxySettings();
 
 			_cInstance = new ConsumerInstance {InstanceId = InstanceId};
 

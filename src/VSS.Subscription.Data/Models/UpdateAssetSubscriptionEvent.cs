@@ -1,11 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VSS.Subscription.Model.Interfaces;
+using VSS.Subscription.Data.Interfaces;
 
 namespace VSS.Subscription.Data.Models
 {

@@ -14,10 +14,11 @@ using VSS.Customer.Processor.Interfaces;
 
 namespace VSS.Customer.Processor
 {
-  class Program
+  internal class Program
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     protected static IContainer Container { get; set; }
+
     public static void Main(string[] args)
     {
       TopshelfExitCode exitCode = HostFactory.Run(c =>
@@ -45,32 +46,35 @@ namespace VSS.Customer.Processor
 
     private static ServiceController ServiceFactory(HostSettings settings)
     {
+      Log.Debug("CustomerProcessor: starting ServiceFactory");
+
       var builder = new ContainerBuilder();
       builder.RegisterType<ServiceController>()
-          .AsSelf()
-          .SingleInstance();
+        .AsSelf()
+        .SingleInstance();
 
-                string confluentBaseUrl = ConfigurationManager.AppSettings["RestProxyBaseUrl"];
-            if (string.IsNullOrWhiteSpace(confluentBaseUrl))
-                throw new ArgumentNullException("RestProxy Base Url is empty");
+      string confluentBaseUrl = ConfigurationManager.AppSettings["KafkaServerUri"];
+      if (string.IsNullOrWhiteSpace(confluentBaseUrl))
+        throw new ArgumentNullException("RestProxy Base Url is empty");
 
-            string kafkaTopicName = Settings.Default.TopicName;
-            string consumerGroupName = Settings.Default.ConsumerGroupName;
+      string kafkaTopicName = Settings.Default.TopicName;
+      string consumerGroupName = Settings.Default.ConsumerGroupName;
 
-            builder.Register(config =>
-            {
-                var consumerConfigurator = new ConsumerConfigurator(confluentBaseUrl, kafkaTopicName, consumerGroupName, Dns.GetHostName(), 1024);
-                return consumerConfigurator;
-            }).As<IConsumerConfigurator>().SingleInstance();
+      builder.Register(config =>
+      {
+        var consumerConfigurator = new ConsumerConfigurator(confluentBaseUrl, kafkaTopicName, consumerGroupName,
+          Dns.GetHostName(), 1024);
+        return consumerConfigurator;
+      }).As<IConsumerConfigurator>().SingleInstance();
 
-            builder.RegisterType<CustomerProcessor>().As<ICustomerProcessor>().SingleInstance();
+      builder.RegisterType<CustomerProcessor>().As<ICustomerProcessor>().SingleInstance();
 
-            builder.RegisterType<CustomerEventObserver>().As<IObserver<ConsumerInstanceResponse>>().SingleInstance();
+      builder.RegisterType<CustomerEventObserver>().As<IObserver<ConsumerInstanceResponse>>().SingleInstance();
 
-            builder.RegisterType<CustomerService>().As<ICustomerService>().SingleInstance();
+      builder.RegisterType<MySqlCustomerRepository>().As<ICustomerService>().SingleInstance();
 
-            Container = builder.Build();
-            return Container.Resolve<ServiceController>();
-        }
+      Container = builder.Build();
+      return Container.Resolve<ServiceController>();
     }
+  }
 }

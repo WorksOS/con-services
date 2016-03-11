@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Dapper;
-using MDM.Data.Helpers;
 using MySql.Data.MySqlClient;
 using VSS.Subscription.Data.Models;
 using VSS.Subscription.Data.Helpers;
-using VSS.Subscription.Model.Interfaces;
+using log4net;
+using Newtonsoft.Json;
+using VSS.Subscription.Data.Interfaces;
 
-namespace VSS.Subscription.Data.MySql
+namespace VSS.Subscription.Data
 {
-    public class MySqlSubscriptionService : ISubscriptionService
+    public class MySqlSubscriptionRepository : ISubscriptionService
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         static class ColumnName
         {
             public const string AssetSubscriptionID = "AssetSubscriptionID";
@@ -46,10 +49,10 @@ namespace VSS.Subscription.Data.MySql
         private Dictionary<string, Int64> _projectSubscriptionTypeCache = new Dictionary<string, Int64>();
         private Dictionary<string, Int64> _customerSubscriptionTypeCache = new Dictionary<string, Int64>();
 
-        public MySqlSubscriptionService()
+        public MySqlSubscriptionRepository()
         {
-            _connectionString = ConfigurationManager.ConnectionStrings["MySql.Subscription"].ConnectionString;
-            GetServicePlan();
+          _connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
+          GetServicePlan();
         }
 
         private static readonly string ReadAllServiceViewQuery = string.Format("select st.{0},st.{1},stf.{4} from ServiceType st inner join ServiceTypeFamily stf on st.{2} = stf.{3}", ColumnName.Name, ColumnName.ServiceTypeID, ColumnName.fk_ServiceTypeFamilyID, ColumnName.ServiceTypeFamilyID, ColumnName.FamilyName);
@@ -198,11 +201,20 @@ namespace VSS.Subscription.Data.MySql
                 connection.Open();
                 AssetSubscriptionIdentifiers ids = connection.Query<AssetSubscriptionIdentifiers>(readCustomerAssetQuery).FirstOrDefault();
                 connection.Close();
+
+                if (ids == null) // todo Merino-fix
+                {
+                  Log.Error("UpdateAssetSubscription: Subscription doesn't exist.");
+                  return;
+                }
+
                 newCustomerUID = updateSubscription.CustomerUID.HasValue ? updateSubscription.CustomerUID.Value.ToString() : ids.customerUID;
                 newSubscriptionID = string.IsNullOrWhiteSpace(updateSubscription.SubscriptionType) ? ids.subscriptionID : _assetSubscriptionTypeCache[updateSubscription.SubscriptionType.ToLowerInvariant()];
-
+                Log.DebugFormat("UpdateAssetSubscription {0}", JsonConvert.SerializeObject(updateSubscription));
+              
                 //Update Asset Subscription with Rest Of fields
-                if (updateSubscription.AssetUID.HasValue || updateSubscription.DeviceUID.HasValue || updateSubscription.StartDate.HasValue || updateSubscription.EndDate.HasValue)
+                if (updateSubscription.AssetUID.HasValue || updateSubscription.DeviceUID.HasValue
+                  ||updateSubscription.StartDate.HasValue || updateSubscription.EndDate.HasValue)
                 {
                     var sbAsset = new StringBuilder();
                     bool assetCommaNeeded = false;
@@ -215,8 +227,6 @@ namespace VSS.Subscription.Data.MySql
                     {
                         assetCommaNeeded |= SqlBuilder.AppendValueParameter(updateSubscription.DeviceUID.Value, ColumnName.DeviceUID, sbAsset, assetCommaNeeded);
                     }
-
-
                     if (updateSubscription.StartDate.HasValue)
                         assetCommaNeeded |= SqlBuilder.AppendValueParameter(updateSubscription.StartDate.Value, ColumnName.StartDate, sbAsset, assetCommaNeeded);
                     if (updateSubscription.EndDate.HasValue)
@@ -374,8 +384,8 @@ namespace VSS.Subscription.Data.MySql
 
         public void CreateProjectSubscription(CreateProjectSubscriptionEvent subscription)
         {
-            if (subscription.SubscriptionType != null && !_projectSubscriptionTypeCache.ContainsKey(subscription.SubscriptionType.ToLowerInvariant()))
-                throw new Exception("Invalid Project Subscription Type");
+          if (subscription.SubscriptionType != null && !_projectSubscriptionTypeCache.ContainsKey(subscription.SubscriptionType.ToLowerInvariant()))
+            throw new Exception("Invalid Project Subscription Type");
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -439,12 +449,13 @@ namespace VSS.Subscription.Data.MySql
                         });
                 connection.Close();
             }
+          return;
         }
 
         public void UpdateProjectSubscription(UpdateProjectSubscriptionEvent updateSubscription)
         {
-            if (updateSubscription.SubscriptionType != null && !_projectSubscriptionTypeCache.ContainsKey(updateSubscription.SubscriptionType.ToLowerInvariant()))
-                throw new Exception("Invalid Project Subscription Type");
+          if (updateSubscription.SubscriptionType != null && !_projectSubscriptionTypeCache.ContainsKey(updateSubscription.SubscriptionType.ToLowerInvariant()))
+            throw new Exception("Invalid Project Subscription Type");
 
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -457,6 +468,13 @@ namespace VSS.Subscription.Data.MySql
                 connection.Open();
                 ProjectSubscriptionIdentifiers ids = connection.Query<ProjectSubscriptionIdentifiers>(readCustomerProjectQuery).FirstOrDefault();
                 connection.Close();
+
+                if (ids == null) // todo Merino-fix
+                {
+                  Log.Error("UpdateProjectSubscriptionEvent: Subscription doesn't exist.");
+                  return;
+                }
+
                 newCustomerUID = updateSubscription.CustomerUID.HasValue ? updateSubscription.CustomerUID.Value.ToString() : ids.customerUID;
                 newSubscriptionID = string.IsNullOrWhiteSpace(updateSubscription.SubscriptionType) ? ids.subscriptionID : _projectSubscriptionTypeCache[updateSubscription.SubscriptionType.ToLowerInvariant()];
 
@@ -609,6 +627,7 @@ namespace VSS.Subscription.Data.MySql
 
         public void AssociateProjectSubscription(AssociateProjectSubscriptionEvent associateProjectSubscription)
         {
+
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var sb = new StringBuilder();

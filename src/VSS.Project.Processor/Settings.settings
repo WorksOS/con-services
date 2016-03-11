@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="VSS.Project.Processor" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ConsumerGroupName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">MasterDataProjectConsumer</Value>
+    </Setting>
+    <Setting Name="TopicName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">VSS.Interfaces.Events.MasterData.IProjectEvent-Alpha</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

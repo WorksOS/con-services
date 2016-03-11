@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using VSS.Subscription.Data.Models;
 
-namespace VSS.Subscription.Model.Interfaces
+namespace VSS.Subscription.Data.Interfaces
 {
 	public interface ISubscriptionService
 	{

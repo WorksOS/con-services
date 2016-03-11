@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.Subscription.Data.MySql;
 using VSS.Subscription.Data.Models;
 using System.Linq;
 using Xunit;
@@ -15,11 +14,11 @@ namespace VSS.Subscription.Data.Tests
 {
   public class MySqlSubscriptionServiceTest
   {
-    readonly MySqlSubscriptionService _subscriptionService;
+    readonly MySqlSubscriptionRepository _subscriptionService;
 
     public MySqlSubscriptionServiceTest()
     {
-      _subscriptionService = new MySqlSubscriptionService();
+      _subscriptionService = new MySqlSubscriptionRepository();
     }
 
     private CreateAssetSubscriptionEvent GetMeACreateAssetSubscriptionEvent(string subscriptionType)
@@ -363,7 +362,7 @@ namespace VSS.Subscription.Data.Tests
 
     private static AssetSubscriptionData getAssetSubscription(Guid subscriptionUID)
     {
-      var connectionString = ConfigurationManager.ConnectionStrings["MySql.Subscription"].ConnectionString;
+      var connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
       var ReadAssetQuery = String.Format("select AssetSubscriptionUID as SubscriptionUIDString , fk_AssetUID as AssetUIDString, fk_CustomerSubscriptionID as CustomerSubscriptionID , StartDate , EndDate from AssetSubscription where AssetSubscriptionUID = '{0}'", subscriptionUID.ToString());
       AssetSubscriptionData assetSubscriptionData;
       using (var connection = new MySqlConnection(connectionString))
@@ -376,7 +375,7 @@ namespace VSS.Subscription.Data.Tests
 
     private static CustomerSubscriptionData getCustomerSubscription(long customerSubscritionId)
     {
-      var connectionString = ConfigurationManager.ConnectionStrings["MySql.Subscription"].ConnectionString; ;
+      var connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString; ;
       var ReadAssetQuery = String.Format("select customer.CustomerSubscriptionID, customer.fk_CustomerUID as CustomerUIDString , serviceType.Name as ServiceType , customer.StartDate , customer.EndDate from CustomerSubscription customer inner join ServiceType serviceType on customer.fk_ServiceTypeID = serviceType.ServiceTypeID where customer.CustomerSubscriptionID = '{0}'", customerSubscritionId);
       CustomerSubscriptionData customerSubscriptionData;
       using (var connection = new MySqlConnection(connectionString))
