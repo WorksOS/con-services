@@ -266,24 +266,35 @@ namespace LandfillService.WebApi.Controllers
         [System.Web.Http.Route("{id}/weights")]
         public IHttpActionResult PostWeights(uint id, [FromBody] WeightEntry[] entries)
         {
+          LoggerSvc.LogMessage(null, null, null,"PostWeights: RequestContext.Principal is LandfillPrincipal = " +
+              (RequestContext.Principal is LandfillPrincipal).ToString());
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
 
             return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects =>
             {
                 var project = projects.Where(p => p.id == id).First();
+                LoggerSvc.LogMessage(null, null, null, "PostWeights: project not null = " +
+                  (project != null).ToString());
 
                 var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
+                LoggerSvc.LogMessage(null, null, null, "PostWeights: projTimeZone not null = " +
+                  (projTimeZone != null).ToString());
+
                 DateTime utcNow = DateTime.UtcNow;
                 Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
                 DateTime yesterdayInProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).AddDays(-1);
   
                 System.Diagnostics.Debug.WriteLine("yesterdayInProjTimeZone=" + yesterdayInProjTimeZone.ToString());
+                LoggerSvc.LogMessage(null, null, null, "PostWeights: yesterdayInProjTimeZone = " +
+                  yesterdayInProjTimeZone.ToString());
 
                 var validEntries = new List<WeightEntry>();
                 foreach (var entry in entries)
                 {
                   bool valid = entry.weight >= 0 && entry.date.Date <= yesterdayInProjTimeZone.Date;
                     System.Diagnostics.Debug.WriteLine(entry.ToString() + "--->" + valid);
+                    LoggerSvc.LogMessage(null, null, null, "PostWeights: entry = " +
+                      entry.ToString() + "--->" + valid);
 
                     if (valid)
                     { 
@@ -300,6 +311,7 @@ namespace LandfillService.WebApi.Controllers
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
 
 
+                LoggerSvc.LogMessage(null, null, null, "PostWeights: about to return Ok");
 
                 return Ok(new ProjectData
                           {
