@@ -288,6 +288,9 @@ namespace LandfillService.WebApi.Controllers
                 LoggerSvc.LogMessage(null, null, null, "PostWeights: yesterdayInProjTimeZone = " +
                   yesterdayInProjTimeZone.ToString());
 
+                LoggerSvc.LogMessage(null, null, null, "PostWeights: entries are null = " +
+                  (entries == null).ToString());
+
                 var validEntries = new List<WeightEntry>();
                 foreach (var entry in entries)
                 {
