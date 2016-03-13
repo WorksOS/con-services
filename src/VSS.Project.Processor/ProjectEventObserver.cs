@@ -43,7 +43,6 @@ namespace VSS.Project.Processor
           bool success = false;
           Log.DebugFormat("Recieved Project Payload : {0} ", val);
           var json = JObject.Parse(val);
-          Log.DebugFormat("Recieved Project Payload2: {0}", json);
           string tokenName;
 
           JToken token;

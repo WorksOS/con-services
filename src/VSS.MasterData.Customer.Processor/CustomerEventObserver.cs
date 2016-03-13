@@ -43,8 +43,6 @@ namespace VSS.Customer.Processor
           bool success = false;
           Log.DebugFormat("Recieved Customer Payload : {0} ", val);
           var json = JObject.Parse(val);
-          Log.DebugFormat("Recieved Customer Payload json: {0}", JsonConvert.SerializeObject(json));
-          Log.DebugFormat("Recieved Customer Payload json2: {0}", json);
           string tokenName;
 
           JToken token;

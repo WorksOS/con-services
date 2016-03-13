@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Dapper;
-using KafkaNet.Common;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Landfill.Common.Interfaces;
 using VSS.VisionLink.Landfill.Common.Models;
 
@@ -13,8 +9,6 @@ namespace VSS.VisionLink.Landfill.Repositories
 
   public class ProjectRepository : RepositoryBase, IProjectRepository
   {
-    private static readonly AsyncLock Locker = new AsyncLock();
-
     public ProjectRepository(string connectionString)
       : base(connectionString)
     {

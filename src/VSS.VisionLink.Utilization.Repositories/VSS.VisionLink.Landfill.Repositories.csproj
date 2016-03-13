@@ -72,20 +72,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration">
-      <HintPath>..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.configuration.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.20.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.20.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProjectRepository.cs" />
@@ -97,10 +85,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\lib\kafka-net\src\kafka-net\kafka-net.csproj">
-      <Project>{1343eb68-55cb-4452-8386-24a9989de1c0}</Project>
-      <Name>kafka-net</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VSS.VisionLink.Utilization.Common.Interfaces\VSS.VisionLink.Landfill.Common.Interfaces.csproj">
       <Project>{44cd2027-f652-4ede-bfed-2c9555d56440}</Project>
       <Name>VSS.VisionLink.Landfill.Common.Interfaces</Name>
@@ -108,10 +92,6 @@
     <ProjectReference Include="..\VSS.VisionLink.Utilization.Common.Models\VSS.VisionLink.Landfill.Common.Models.csproj">
       <Project>{ebca4af6-ceac-45a1-8014-5e40a24cbc67}</Project>
       <Name>VSS.VisionLink.Landfill.Common.Models</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VSS.VisionLink.Utilization.Common.Utilities\VSS.VisionLink.Landfill.Common.Utilities.csproj">
-      <Project>{486582b2-bf40-457e-943b-2350880854bc}</Project>
-      <Name>VSS.VisionLink.Landfill.Common.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -44,7 +44,6 @@ namespace VSS.Subscription.Processor
                     bool success = false;
                     Log.DebugFormat("Recieved Subscription Payload : {0} ", val);
                     var json = JObject.Parse(val);
-                    Log.DebugFormat("Recieved Subscription Payload2: {0}", json);             
                     string tokenName;
 
                     JToken token;
