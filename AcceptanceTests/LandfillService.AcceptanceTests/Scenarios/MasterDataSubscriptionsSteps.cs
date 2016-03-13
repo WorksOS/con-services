@@ -10,7 +10,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
     [TestClass]
     public class MasterDataSubscriptionsSteps
     {
-        private readonly MasterDataSupport masterDataSupport = new MasterDataSupport();
+        private readonly MasterDataSupport masterDataSupport = new MasterDataSupport();      
 
         [Given(@"I inject the following master data event ""(.*)"" into kafka")]
         public void GivenIInjectTheFollowingMasterDataEventIntoKafka(string eventType)
@@ -23,6 +23,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
                 case "CreateCustomerEvent":
                     topic = ConfigurationManager.AppSettings["CustomerMasterDataTopic"];
                     messageStr = masterDataSupport.CreateCustomer();
+                    uniqueId = masterDataSupport.masterCustomerUid.ToString();
                     break;
                 case "CreateProjectEvent":
                     messageStr = masterDataSupport.CreateProjectEvent();
