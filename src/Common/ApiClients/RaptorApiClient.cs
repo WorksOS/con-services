@@ -55,20 +55,20 @@ namespace LandfillService.WebApi.ApiClients
         }
 
         /// <summary>
-        /// Makes a JSON POST request to the Foreman API
+        /// Makes a JSON POST request to the Raptor API
         /// </summary>
         /// <param name="endpoint">URL path fragment for the request</param>
-        /// <param name="sessionId">session ID provided by the Foreman API</param>
+        /// <param name="userUid">User ID</param>
         /// <param name="parameters">JSON parameters</param>
         /// <returns>Response as a string; throws an exception if the request is not successful</returns>
-        private async Task<string> Request<TParams>(string endpoint, string sessionId, TParams parameters)  
+        private async Task<string> Request<TParams>(string endpoint, string userUid, TParams parameters)  
         {
             System.Diagnostics.Debug.WriteLine("In RaptorApiClient::Request to " + endpoint + " with " + parameters);
 
             LoggerSvc.LogRequest(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, parameters);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint);
-            request.Headers.Add("Authorization", "VL " + sessionId);
+            request.Headers.Add("Authorization", "VL " + userUid);
             request.Content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
 
             
@@ -116,11 +116,11 @@ namespace LandfillService.WebApi.ApiClients
         /// <summary>
         /// Retrieves volume summary information for a given project and date
         /// </summary>
-        /// <param name="sessionId">session ID provided by the Foreman API</param>
+        /// <param name="userUid">User ID</param>
         /// <param name="project">VisionLink project to retrieve volumes for</param>
         /// <param name="date">Date to retrieve volumes for (in project time zone)</param>
         /// <returns>Response as a string; throws an exception if the request is not successful</returns>
-        public async Task<SummaryVolumesResult> GetVolumesAsync(string sessionId, Project project, DateTime date)
+        public async Task<SummaryVolumesResult> GetVolumesAsync(string userUid, Project project, DateTime date)
         {
           TimeZoneInfo hwZone = GetTimeZoneInfoForTzdbId(project.timeZoneName);
 
@@ -139,7 +139,7 @@ namespace LandfillService.WebApi.ApiClients
                 baseFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1).AddMinutes(-1), returnEarliest = true },
                 topFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1).AddMinutes(-1), returnEarliest = false }
             };
-            return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", sessionId, volumeParams));
+            return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", userUid, volumeParams));
         }
 
 

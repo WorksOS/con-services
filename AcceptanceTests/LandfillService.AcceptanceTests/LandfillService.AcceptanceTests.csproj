@@ -114,13 +114,9 @@
       <HintPath>..\packages\SpecFlow.2.0.0-preview20151221-10\lib\net45\TechTalk.SpecFlow.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="VSS.Kafka.DotNetClient, Version=1.0.18.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VSS.Kafka.DotNetClient.1.0.18.0\lib\net451\VSS.Kafka.DotNetClient.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="VSS.Kafka.DotNetClient.Helper, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VSS.Kafka.DotNetClient.Helper.1.0.9.0\lib\net451\VSS.Kafka.DotNetClient.Helper.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="VSS.Kafka.DotNetClient, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>External References\VSS.Kafka.DotNetClient.dll</HintPath>
     </Reference>
     <Reference Include="VSS.Messaging.Kafka.Interfaces, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VSS.Kafka.DotNetClient.Helper.1.0.9.0\lib\net451\VSS.Messaging.Kafka.Interfaces.dll</HintPath>
@@ -143,7 +139,7 @@
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\Getter.cs" />
     <Compile Include="Helpers\KafkaMessage.cs" />
-    <Compile Include="Helpers\KafkaRpl.cs" />
+    <Compile Include="Helpers\KafkaResolver.cs" />
     <Compile Include="Helpers\MasterDataSupport.cs" />
     <Compile Include="Helpers\MessageFactory.cs" />
     <Compile Include="Helpers\Poster.cs" />
@@ -226,6 +222,7 @@
       <DependentUpon>App.config</DependentUpon>
     </None>
     <None Include="packages.config" />
+    <None Include="restclientapp.config" />
     <None Include="Scenarios\Data.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Data.feature.cs</LastGenOutput>
@@ -251,6 +248,7 @@
     <Content Include="External References\AutomationCore.Shared.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="External References\VSS.Kafka.DotNetClient.dll" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

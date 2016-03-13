@@ -10,19 +10,14 @@ Certain assumptions have been made for the purposes of application design:
 - Raptor data cannot be retrieved within a reasonable request response cycle
 - Raptor API can be down intermittently
 - Retrieval of a batch of volumes will always take less than an hour
-- The Foreman API is assumed to be available - the landfill service cannot
-  function without it
 - A 400 Bad Request response from Raptor is only received when data isn't 
   available for the particular request being made.
 
 
 == Overview
 
-The service interacts with two APIs: Foreman API and Raptor API. It also 
+The service interacts with the Raptor API. It also 
 stores data in a MySQL database. 
-
-The Foreman API is used for authentication, authorisation and retrieving 
-a list of available projects. 
 
 The Raptor API is used to retrieve daily volume summary information which
 is used to calculate density values. 
@@ -33,27 +28,21 @@ low-volume nature of the landfill application permitted it.
 
 == Authentication & authorisation
 
-The service acts as a proxy between the client and the Foreman API with 
+The service acts as a proxy between the client and TPaaS with 
 regard to authentication and authorisation. 
 
-Credentials from the client are passed to the Foreman API which returns 
-a session ID. The session ID is stored in the DB because it's used to 
+The user UID is stored in the DB because it's used to 
 (a) verify that the user is allowed access to the data in the DB and 
 (b) authenticate requests to the Raptor API.
-
-There are two login methods supported by the service: 
-- user name and password (entered by the user)
-- one-time key passed when opening the client via a link in VisionLink.
 
 Authentication errors returned by the APIs are propagated to the client,
 thus the validity of the sessions is enforced by the APIs rather than by
 the service.
 
-The list of projects retrieved from the Foreman API is used to display 
+Projects are stored in the database as the master data comes in.
+The list of projects retrieved from the database is used to display 
 the list of available projects to users, and also used to verify that 
 users only deal with projects they have permissions for. 
-
-The list of projects is stored in the database, and refreshed periodically.
 
 Stale sessions (defined as older than 30 days) are deleted from time to 
 time by kicking off a background task (with a 5% chance) from the login 
@@ -108,11 +97,11 @@ The server and the database time are expected to be set to UTC.
 
 Dates sent by the client are assumed to be in the project time zone.
 
-There is a discrepancy with time zones: the Foreman API returns project 
+There is a discrepancy with time zones: the project Master data returns project 
 time zones using Windows nomenclature, while MySQL uses IANA nomenclature.
 
 The landfill service resolves this by converting project time zones 
-received from the Foreman API to IANA format, and only dealing with IANA
+received from the project master data to IANA format, and only dealing with IANA
 time zones in the rest of the system. 
 
 NodaTime library is used to deal with time zone manipulation. 

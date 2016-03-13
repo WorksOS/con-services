@@ -66,16 +66,16 @@ namespace LandfillService.WebApi.Models
         /// <summary>
         /// Retrieves a list of projects for a given user (via session ID)
         /// </summary>
-        /// <param name="sessionId">Session ID used to associate projects with a user</param>
+        /// <param name="userUid">User ID used to associate projects with a user</param>
         /// <returns>A list of projects</returns>
-        public static IEnumerable<Project> GetProjects(string sessionId)
+        public static IEnumerable<Project> GetProjects(string userUid)
         {
             return InTransaction((conn) =>
             {
 
               var command = @"select * from projects prj join UserCustomer uc ON prj.customerUid=uc.fk_CustomerUID
-                              where fk_UserUID = @sessionId;";
-                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@sessionId", sessionId)))
+                              where fk_UserUID = @userUid;";
+              using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
                 {
                     var projects = new List<Project>();
                     while (reader.Read())
@@ -298,7 +298,7 @@ namespace LandfillService.WebApi.Models
         /// </summary>
         /// <param name="project">Project</param>
         /// <returns>A list of data entries</returns>
-        public static IEnumerable<DayEntry> GetEntries(Project project, UnitsTypeEnum units)
+        public static IEnumerable<DayEntry> GetEntries(Project project)
         {
             return WithConnection((conn) =>
             {
@@ -318,7 +318,7 @@ namespace LandfillService.WebApi.Models
                                               date = dr.Date,
                                               entryPresent = false,
                                               weight = 0.0,
-                                              density = 0.0
+                                              volume = 0.0
                                           }).ToDictionary(k => k.date, v => v);
                 //Now get the actual data and merge
                 var command = @"select entries.date, entries.weight, entries.volume
@@ -342,13 +342,14 @@ namespace LandfillService.WebApi.Models
                           DayEntry entry = entriesLookup[date];
                           entry.entryPresent = true;
                           entry.weight = reader.GetDouble(reader.GetOrdinal("weight"));
-                          double density = 0.0;
-                          if (!reader.IsDBNull(reader.GetOrdinal("volume")) && reader.GetDouble(reader.GetOrdinal("volume")) > EPSILON)
-                              if (units == UnitsTypeEnum.Metric)
-                                density = reader.GetDouble(reader.GetOrdinal("weight")) * 1000 / reader.GetDouble(reader.GetOrdinal("volume"));
-                              else
-                                density = reader.GetDouble(reader.GetOrdinal("weight")) * M3_PER_YD3 * POUNDS_PER_TON / reader.GetDouble(reader.GetOrdinal("volume"));
-                          entry.density = density;                        
+                          double volume = 0.0;
+                          if (!reader.IsDBNull(reader.GetOrdinal("volume")))
+                          {
+                            volume = reader.GetDouble(reader.GetOrdinal("volume"));
+                            if (volume <= EPSILON)
+                              volume = 0.0;
+                          }
+                          entry.volume = volume;
                     }
 
                   return entriesLookup.Select(v => v.Value).ToList();
@@ -370,20 +371,6 @@ namespace LandfillService.WebApi.Models
 
         #endregion
 
-      public static UnitsTypeEnum GetUnits(string sessionId)
-      {
-        return (UnitsTypeEnum) WithConnection((conn) =>
-                                              {
-
-                                                var command = "select unitsId from users left join landfill.sessions on users.userId = sessions.userId where sessions.sessionId = @sessionId";
-
-                                                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@sessionId", sessionId)))
-                                                {
-                                                  reader.Read();
-                                                  return reader.GetUInt16(0);
-                                                }
-                                              });
-      }
     }
 
 }

@@ -40,7 +40,6 @@ namespace LandfillService.WebApi.Controllers
         /// <summary>
         /// Retrieves all available rpojects from the DB
         /// </summary>
-        /// <param name="sessionId">Session ID provided by the Foreman API</param>
         /// <returns>A list of projects or error details</returns>
         private IEither<IHttpActionResult, IEnumerable<VSS.VisionLink.Landfill.Common.Models.Project>> GetAllProjects()
         {
@@ -51,20 +50,20 @@ namespace LandfillService.WebApi.Controllers
             System.Diagnostics.Debug.WriteLine(projects);
             return Either.Right<IHttpActionResult, IEnumerable<VSS.VisionLink.Landfill.Common.Models.Project>>(projects);
           }
-          catch (ForemanApiException e)
+          catch (Exception e)
           {
-            return Either.Left<IHttpActionResult, IEnumerable<VSS.VisionLink.Landfill.Common.Models.Project>>(Content(e.code, e.Message));
+            return Either.Left<IHttpActionResult, IEnumerable<VSS.VisionLink.Landfill.Common.Models.Project>>(Content(HttpStatusCode.InternalServerError, e.Message));
           }
         }
 
         /// <summary>
         /// Retrieves a list of projects from the db
         /// </summary>
-        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <param name="userUid">User ID</param>
         /// <returns>A list of projects or error details</returns>
-        private IEither<IHttpActionResult, IEnumerable<Project>> PerhapsUpdateProjectList(string sessionId)
+        private IEither<IHttpActionResult, IEnumerable<Project>> PerhapsUpdateProjectList(string userUid)
         {
-           return Either.Right<IHttpActionResult, IEnumerable<Project>>(LandfillDb.GetProjects(sessionId));
+           return Either.Right<IHttpActionResult, IEnumerable<Project>>(LandfillDb.GetProjects(userUid));
         }
 
         /// <summary>
@@ -108,12 +107,14 @@ namespace LandfillService.WebApi.Controllers
             {
                 bool skip = (i < 728 && rnd.Next(5) % 6 == 0);
 
+                double density = skip ? 0 : rnd.Next(1200 / densityExtra, 1600 / densityExtra);
+                double weight = skip ? 0 : rnd.Next(500, 800 + weightExtra);
                 entries.Add(new DayEntry
                 {
                     date = DateTime.Today.AddDays(-totalDays + i),
-                    entryPresent = !skip,
-                    density = skip ? 0 : rnd.Next(1200 / densityExtra, 1600 / densityExtra),
-                    weight = skip ? 0 : rnd.Next(500, 800 + weightExtra)
+                    entryPresent = !skip,                    
+                    weight = weight,
+                    volume = skip ? 0 : weight * 1000 / density
                 });
             }
             return entries.ToArray(); 
@@ -131,31 +132,21 @@ namespace LandfillService.WebApi.Controllers
             // Kick off missing volumes retrieval IF not already running
             // Check if there are missing volumes and indicate to the client
 
-          var sessionId = (RequestContext.Principal as LandfillPrincipal).UserUid;
-          UnitsTypeEnum units = UnitsTypeEnum.Metric;//LandfillDb.GetUnits(sessionId);
-          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(),
-    "Retrieving density" + " units settings is: "+units.ToString());
+          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(),"Retrieving density");
 
-            return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects => 
+            return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects => 
             {
                 try
                 {
                     var project = projects.Where(p => p.id == id).First();
-                  //  GetMissingVolumesInBackground(sessionId, project);  // retry volume requests which weren't successful before
+                    //  GetMissingVolumesInBackground(userUid, project);  // retry volume requests which weren't successful before
                   var entries = new ProjectData
                                 {
                                     project = project,
-                                    entries = LandfillDb.GetEntries(project, units),
+                                    entries = LandfillDb.GetEntries(project),
                                     retrievingVolumes = LandfillDb.RetrievalInProgress(project)
                                 };
-
-               /*   for (int i = 1; i < entries.entries.Count(); i++)
-                  {
-                    if (entries.entries.ElementAt(i).density == 0)
-                    {
-                      entries.entries.ElementAt(i).density = entries.entries.ElementAt(i-1).density;
-                    }
-                  }*/
 
                   return Ok(entries);
                     // TEST CODE: use this to test chart updates on the client
@@ -173,15 +164,15 @@ namespace LandfillService.WebApi.Controllers
         /// <summary>
         /// Retrieves volume summary from Raptor and saves it to the landfill DB
         /// </summary>
-        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <param name="userUid">User ID</param>
         /// <param name="project">Project</param>
         /// <param name="entry">Weight entry from the client</param>
         /// <returns></returns>
-        private async Task GetVolumeInBackground(string sessionId, Project project, WeightEntry entry)
+        private async Task GetVolumeInBackground(string userUid, Project project, WeightEntry entry)
         {
             try
             {
-                var res = await raptorApiClient.GetVolumesAsync(sessionId, project, entry.date);
+                var res = await raptorApiClient.GetVolumesAsync(userUid, project, entry.date);
 
                 System.Diagnostics.Debug.WriteLine("Volume res:" + res);
                 System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill ));
@@ -216,10 +207,10 @@ namespace LandfillService.WebApi.Controllers
         /// <summary>
         /// Retries volume summary retrieval from Raptor for volumes marked not retrieved
         /// </summary>
-        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <param name="userUid">User ID</param>
         /// <param name="project">Project</param>
         /// <returns></returns>
-        private void GetMissingVolumesInBackground(string sessionId, Project project)
+        private void GetMissingVolumesInBackground(string userUid, Project project)
         {
             // get a "lock" on the project so that only a single background task at a time is retrieving 
             // missing volumes 
@@ -230,7 +221,7 @@ namespace LandfillService.WebApi.Controllers
                 var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project.id);
                 System.Diagnostics.Debug.Write("Dates without volumes: {0}", dates.ToString());
                 var entries = dates.Select(date => new WeightEntry { date = date, weight = 0 }); // generate fake WeightEntry objects from dates
-                GetVolumesInBackground(sessionId, project, entries, () =>
+                GetVolumesInBackground(userUid, project, entries, () =>
                 {
                     var retrievalWasInProgress = LandfillDb.LockForRetrieval(project, false);  // "unlock" the project
                     if (!retrievalWasInProgress)
@@ -245,12 +236,12 @@ namespace LandfillService.WebApi.Controllers
         /// <summary>
         /// Retrieves volumes via a background task in batches of 10 parallel requests
         /// </summary>
-        /// <param name="sessionId">Session ID provided by the Foreman API</param>
+        /// <param name="userUid">User ID</param>
         /// <param name="project">Project</param>
         /// <param name="entries">Weight entries (providing dates to request)</param>
         /// <param name="onComplete">Code to execute on completion</param>
         /// <returns></returns>
-        private void GetVolumesInBackground(string sessionId, Project project, IEnumerable<WeightEntry> entries, Action onComplete)
+        private void GetVolumesInBackground(string userUid, Project project, IEnumerable<WeightEntry> entries, Action onComplete)
         {
             HostingEnvironment.QueueBackgroundWorkItem(async (CancellationToken cancel) =>
             {
@@ -258,7 +249,7 @@ namespace LandfillService.WebApi.Controllers
 
                 for (var offset = 0; offset <= entries.Count() / parallelRequestCount; offset++)
                 {
-                    var tasks = entries.Skip(offset * parallelRequestCount).Take(parallelRequestCount).Select(entry => GetVolumeInBackground(sessionId, project, entry));
+                    var tasks = entries.Skip(offset * parallelRequestCount).Take(parallelRequestCount).Select(entry => GetVolumeInBackground(userUid, project, entry));
                     await Task.WhenAll(tasks);
                 }
 
@@ -275,24 +266,38 @@ namespace LandfillService.WebApi.Controllers
         [System.Web.Http.Route("{id}/weights")]
         public IHttpActionResult PostWeights(uint id, [FromBody] WeightEntry[] entries)
         {
-          var sessionId = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          LoggerSvc.LogMessage(null, null, null,"PostWeights: RequestContext.Principal is LandfillPrincipal = " +
+              (RequestContext.Principal is LandfillPrincipal).ToString());
+          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
 
-            return PerhapsUpdateProjectList(sessionId).Case(errorResponse => errorResponse, projects =>
+            return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects =>
             {
                 var project = projects.Where(p => p.id == id).First();
+                LoggerSvc.LogMessage(null, null, null, "PostWeights: project not null = " +
+                  (project != null).ToString());
 
                 var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
+                LoggerSvc.LogMessage(null, null, null, "PostWeights: projTimeZone not null = " +
+                  (projTimeZone != null).ToString());
+
                 DateTime utcNow = DateTime.UtcNow;
                 Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
                 DateTime yesterdayInProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).AddDays(-1);
   
                 System.Diagnostics.Debug.WriteLine("yesterdayInProjTimeZone=" + yesterdayInProjTimeZone.ToString());
+                LoggerSvc.LogMessage(null, null, null, "PostWeights: yesterdayInProjTimeZone = " +
+                  yesterdayInProjTimeZone.ToString());
+
+                LoggerSvc.LogMessage(null, null, null, "PostWeights: entries are null = " +
+                  (entries == null).ToString());
 
                 var validEntries = new List<WeightEntry>();
                 foreach (var entry in entries)
                 {
                   bool valid = entry.weight >= 0 && entry.date.Date <= yesterdayInProjTimeZone.Date;
                     System.Diagnostics.Debug.WriteLine(entry.ToString() + "--->" + valid);
+                    LoggerSvc.LogMessage(null, null, null, "PostWeights: entry = " +
+                      entry.ToString() + "--->" + valid);
 
                     if (valid)
                     { 
@@ -301,19 +306,20 @@ namespace LandfillService.WebApi.Controllers
                     }
                 };
 
-                GetVolumesInBackground(sessionId, project, validEntries, () =>
+                GetVolumesInBackground(userUid, project, validEntries, () =>
                 {
-                   // GetMissingVolumesInBackground(sessionId, project);
+                   // GetMissingVolumesInBackground(userUid, project);
                 });
 
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
 
 
+                LoggerSvc.LogMessage(null, null, null, "PostWeights: about to return Ok");
 
                 return Ok(new ProjectData
                           {
                               project = project,
-                              entries = LandfillDb.GetEntries(project, LandfillDb.GetUnits(sessionId)), 
+                              entries = LandfillDb.GetEntries(project), 
                               retrievingVolumes = true
                           });
 
