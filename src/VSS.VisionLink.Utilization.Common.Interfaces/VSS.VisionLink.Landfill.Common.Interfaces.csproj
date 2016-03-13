@@ -62,6 +62,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.37.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.37.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IProjectRepository.cs" />
