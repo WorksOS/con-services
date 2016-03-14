@@ -395,6 +395,7 @@ namespace VSS.Subscription.Data
                 connection.Open();
 
                 var customerSubscriptionDataList = connection.Query<CustomerProjectSubscriptionData>(readQuery).ToList();
+                Log.DebugFormat("CreateProjectSubscription(): readQuery {0} customerSubscriptionDataList {1}", readQuery, customerSubscriptionDataList);
                 connection.Close();
 
 
@@ -416,6 +417,10 @@ namespace VSS.Subscription.Data
                         UpdateUTC = DateTime.UtcNow
                     });
                     connection.Close();
+                    Log.DebugFormat("CreateProjectSubscription(): cust-sub count 0 @fk_CustomerUID: {0} @fk_ServiceTypeID: {1} @StartDate: {2}, @EndDate {3}",
+                                    subscription.CustomerUID, _projectSubscriptionTypeCache[subscription.SubscriptionType.ToLowerInvariant()],
+                                    subscription.StartDate, subscription.EndDate);
+
                 }
                 else
                 {
@@ -428,10 +433,19 @@ namespace VSS.Subscription.Data
                     customerSubscriptionDataList.Add(incomingSubscriptionData);
 
                     UpdateSubscriptionDatesForCustomer(connection, subscription.CustomerUID.ToString(), _projectSubscriptionTypeCache[subscription.SubscriptionType.ToLowerInvariant()], customerSubscriptionDataList);
+                    
+                    Log.DebugFormat("CreateProjectSubscription(): cust-sub count >0 @fk_CustomerUID: {0} @fk_ServiceTypeID: {1} @StartDate: {2}, @EndDate {3}",
+                      subscription.CustomerUID, _projectSubscriptionTypeCache[subscription.SubscriptionType.ToLowerInvariant()],
+                      subscription.StartDate, subscription.EndDate);
+
                 }
 
                 //Getting Customer SubscriptionId
                 long customerSubscriptionId = GetCustomerSubscriptionID(connection, subscription.CustomerUID.ToString(), _projectSubscriptionTypeCache[subscription.SubscriptionType.ToLowerInvariant()]);
+
+                Log.DebugFormat("CreateProjectSubscription(): cust-sub count >0 @fk_CustomerUID: {0} @fk_ServiceTypeID: {1} @StartDate: {2}, @EndDate {3}",
+                        subscription.CustomerUID, _projectSubscriptionTypeCache[subscription.SubscriptionType.ToLowerInvariant()],
+                        subscription.StartDate, subscription.EndDate);
 
                 //Insert Project Subscription
                 connection.Open();

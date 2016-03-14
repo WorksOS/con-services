@@ -49,8 +49,7 @@ namespace VSS.Customer.Processor
           if ((token = json.SelectToken(tokenName = "CreateCustomerEvent")) != null)
           {
             var createCustomerEvent = JsonConvert.DeserializeObject<CreateCustomerEvent>(token.ToString());
-            Log.InfoFormat("Received a CreateCustomerEvent for CustomerUid:{0}", createCustomerEvent.CustomerUID);
-            Log.DebugFormat("Payload :{0}", token.ToString());
+            Log.InfoFormat("Received a CreateCustomerEvent for CustomerUid:{0} payload: {1}", createCustomerEvent.CustomerUID, token.ToString());
             var existingCustomer = _customerService.GetCustomer(createCustomerEvent.CustomerUID);
             if (existingCustomer == null) //To check whether received event is duplicate
             {

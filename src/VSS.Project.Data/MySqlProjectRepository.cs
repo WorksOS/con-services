@@ -102,9 +102,9 @@ namespace VSS.Project.Data
                 FROM projects
                 WHERE projectUid = @projectUid", new {project.projectUid}).FirstOrDefault();
 
-        if (existing == null && eventType == "CreateProjectEvent")
+        if (eventType == "CreateProjectEvent")
         {
-          upsertedCount = CreateProject(connection, project);
+          upsertedCount = CreateProject(connection, project, existing);
         }
 
         if (eventType == "UpdateProjectEvent")
@@ -155,14 +155,22 @@ namespace VSS.Project.Data
       return 0;
     }
 
-    private int CreateProject(MySqlConnection connection, Models.Project project)
+    private int CreateProject(MySqlConnection connection, Models.Project project, Models.Project existing)
     {
-      const string insert =
-        @"INSERT projects
+      if (existing == null)
+      {
+        const string insert =
+          @"INSERT projects
                 (projectId, name, timeZone, projectUid, lastActionedUtc, projectStartDate, projectEndDate, projectType)
                 VALUES
                 (@projectId, @name, @timeZone, @projectUid, @lastActionedUtc, @projectStartDate, @projectEndDate, @projectType)";
-      return connection.Execute(insert, project);
+        return connection.Execute(insert, project);
+      }
+      else
+      {
+        Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC {0}", project.lastActionedUtc);
+      }
+      return 0;
     }
 
     private int DeleteProject(MySqlConnection connection, Models.Project project, Models.Project existing)
