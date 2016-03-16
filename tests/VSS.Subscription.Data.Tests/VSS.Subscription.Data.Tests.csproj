@@ -76,9 +76,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProjectSubs.cs" />
     <Compile Include="Attributes\RollbackAtribute.cs" />
     <Compile Include="Helpers\GuidExtensions.cs" />
-    <Compile Include="MySqlSubscriptionServiceTest.cs" />
+    <Compile Include="AssetSubs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

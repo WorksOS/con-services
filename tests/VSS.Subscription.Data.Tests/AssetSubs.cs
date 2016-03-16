@@ -8,15 +8,19 @@ using System.Collections.Generic;
 using KellermanSoftware.CompareNetObjects;
 using MySql.Data.MySqlClient;
 using System.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Assert = Xunit.Assert;
+
 //using VSS.Geofence.Data.Tests.Helpers;
 
 namespace VSS.Subscription.Data.Tests
 {
-  public class MySqlSubscriptionServiceTest
+  [TestClass]
+  public class AssetSubs
   {
     readonly MySqlSubscriptionRepository _subscriptionService;
 
-    public MySqlSubscriptionServiceTest()
+    public AssetSubs()
     {
       _subscriptionService = new MySqlSubscriptionRepository();
     }
@@ -56,8 +60,7 @@ namespace VSS.Subscription.Data.Tests
       return assetSubscription;
     }
 
-    [Fact]
-    [Trait("Category", "Database")] //needed for xunit test runner to exclude in MSBuild
+    [TestMethod]
     [Rollback]
     public void AddAssetSubscription_ValidNewCustomerNewAssetSubscription_SucceedsInInsert()
     {
@@ -65,12 +68,14 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.CreateAssetSubscription(assetSubscription);
       var assetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
       Assert.NotNull(assetFetched);
+
       assetFetched.AssetUID = new Guid(assetFetched.AssetUIDString);
       assetFetched.SubscriptionUID = new Guid(assetFetched.SubscriptionUIDString);
       var assetConfig = new ComparisonConfig { IgnoreObjectTypes = true, MaxMillisecondsDateDifference = 500, MaxDifferences = 0, MembersToIgnore = new List<string>() { "ActionUTC", "ReceivedUTC", "SubscriptionType", "CustomerUID", "CustomerSubscriptionId", "AssetUIDString" } };
       var assetCompareLogic = new CompareLogic(assetConfig);
       ComparisonResult assetResult = assetCompareLogic.Compare(assetSubscription, assetFetched);
       Assert.True(assetResult.Differences.Count == 0);
+
       var customerFetched = getCustomerSubscription(assetFetched.CustomerSubscriptionID);
       Assert.NotNull(customerFetched);
       customerFetched.CustomerUID = new Guid(customerFetched.CustomerUIDString);
@@ -80,8 +85,7 @@ namespace VSS.Subscription.Data.Tests
       Assert.True(assetResult.Differences.Count == 0);
     }
 
-    [Fact]
-    [Trait("Category", "Database")] //needed for xunit test runner to exclude in MSBuild
+    [TestMethod]
     [Rollback]
     public void AddAssetSubscription_ValidExistingCustomerNewAssetSubscriptionWithDateBoundary_SucceedsInInsert()
     {
@@ -118,8 +122,7 @@ namespace VSS.Subscription.Data.Tests
       Assert.True(assetResult.Differences.Count == 0);
     }
 
-    [Fact]
-    [Trait("Category", "Database")] //needed for xunit test runner to exclude in MSBuild
+    [TestMethod]
     [Rollback]
     public void AddAssetSubscription_ExistingCustomerNewAssetSubscriptionWithSmallerDateBoundary_SucceedsInInsert()
     {
@@ -152,8 +155,7 @@ namespace VSS.Subscription.Data.Tests
       Assert.True(assetResult.Differences.Count == 0);
     }
 
-    [Fact]
-    [Trait("Category", "Database")] //needed for xunit test runner to exclude in MSBuild
+    [TestMethod]
     [Rollback]
     public void AddAssetSubscription_ExistingCustomerNewAssetSubscriptionWithBiggerDateBoundary_SucceedsInInsert()
     {
@@ -183,8 +185,7 @@ namespace VSS.Subscription.Data.Tests
       Assert.True(assetResult.Differences.Count == 0);
     }
 
-    [Fact]
-    [Trait("Category", "Database")] //needed for xunit test runner to exclude in MSBuild
+    [TestMethod]
     [Rollback]
     public void UpdateAssetSubscription_WithChangedDates_SucceedsInUpdate()
     {
@@ -217,8 +218,7 @@ namespace VSS.Subscription.Data.Tests
       Assert.True(assetResult.Differences.Count == 0);
     }
 
-    [Fact]
-    [Trait("Category", "Database")] //needed for xunit test runner to exclude in MSBuild
+    [TestMethod]
     [Rollback]
     public void UpdateAssetSubscription_WithChangedDatesAndAsset_SucceedsInUpdate()
     {
@@ -252,8 +252,7 @@ namespace VSS.Subscription.Data.Tests
       Assert.True(assetResult.Differences.Count == 0);
     }
 
-    [Fact]
-    [Trait("Category", "Database")] //needed for xunit test runner to exclude in MSBuild
+    [TestMethod]
     [Rollback]
     public void UpdateAssetSubscription_WithChangedDates_Asset_Customer_SucceedsInUpdate()
     {
@@ -291,8 +290,7 @@ namespace VSS.Subscription.Data.Tests
       Assert.Null(OldCustomerFetched);
     }
 
-    [Fact]
-    [Trait("Category", "Database")] //needed for xunit test runner to exclude in MSBuild
+    [TestMethod]
     [Rollback]
     public void UpdateAssetSubscription_WithChangedDates_MultipleAsset_Customer_SucceedsInUpdate()
     {
@@ -337,8 +335,7 @@ namespace VSS.Subscription.Data.Tests
       Assert.True(assetResult.Differences.Count == 0);
     }
 
-    [Fact]
-    [Trait("Category", "Database")] //needed for xunit test runner to exclude in MSBuild
+    [TestMethod]
     [Rollback]
     public void GetCustomerSubscription_WithChangedDates_MultipleAsset_Customer_SucceedsInRead()
     {
