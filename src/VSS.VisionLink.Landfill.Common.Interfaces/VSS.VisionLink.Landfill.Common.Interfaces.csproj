@@ -72,7 +72,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VSS.VisionLink.Utilization.Common.Models\VSS.VisionLink.Landfill.Common.Models.csproj">
+    <ProjectReference Include="..\VSS.VisionLink.Landfill.Common.Models\VSS.VisionLink.Landfill.Common.Models.csproj">
       <Project>{EBCA4AF6-CEAC-45A1-8014-5E40A24CBC67}</Project>
       <Name>VSS.VisionLink.Landfill.Common.Models</Name>
     </ProjectReference>

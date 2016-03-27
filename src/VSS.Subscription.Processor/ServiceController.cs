@@ -1,7 +1,6 @@
 ﻿using log4net;
 using System;
 using System.Reflection;
-using VSP.MasterData.Common.Logging;
 using VSS.Subscription.Processor.Interfaces;
 
 namespace VSS.Subscription.Processor
@@ -24,10 +23,10 @@ namespace VSS.Subscription.Processor
       }
       catch (Exception ex)
       {
-        Log.IfInfo(string.Format("Failed to start Subscription Processor.. \n {0} \n {1}", ex.Message, ex.StackTrace));
+        Log.Info(string.Format("Failed to start Subscription Processor.. \n {0} \n {1}", ex.Message, ex.StackTrace));
         return false;
       }
-      Log.IfInfo("Subscription Processor has been Started");
+      Log.Info("Subscription Processor has been Started");
       return true;
     }
 

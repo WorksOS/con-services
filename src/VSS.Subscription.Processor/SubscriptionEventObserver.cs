@@ -4,7 +4,6 @@ using log4net;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VSP.MasterData.Common.Logging;
 using VSS.Subscription.Data.Models;
 using VSS.Subscription.Processor.Helpers;
 using VSS.Kafka.DotNetClient.Model;
@@ -24,7 +23,7 @@ namespace VSS.Subscription.Processor
 
         public void OnCompleted()
         {
-            Log.IfInfo("Completed consuming subcscription event messages");
+            Log.Info("Completed consuming subcscription event messages");
         }
 
         public void OnError(Exception error)
