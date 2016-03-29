@@ -2,7 +2,7 @@
 
 namespace VSS.Customer.Data.Interfaces
 {
-  public interface ICustomerUserEvent
+  public interface IUserCustomerEvent
   {
     Guid CustomerUID { get; set; }
     Guid UserUID { get; set; }

@@ -100,7 +100,7 @@ namespace VSS.Project.Data
                   projectUid, name, projectId, timeZone, customerUid, subscriptionUid, 
                   daysToSubscriptionExpiry, lastActionedUtc
                 FROM projects
-                WHERE projectUid = @projectUid", new {project.projectUid}).FirstOrDefault();
+                WHERE projectUid = @projectUid", new { project.projectUid }).FirstOrDefault();
 
         if (eventType == "CreateProjectEvent")
         {

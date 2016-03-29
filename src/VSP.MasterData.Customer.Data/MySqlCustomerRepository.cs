@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using Dapper;
+using log4net;
 using MySql.Data.MySqlClient;
 using VSS.Customer.Data.Interfaces;
 using VSS.Customer.Data.Models;
@@ -12,6 +13,7 @@ namespace VSS.Customer.Data
 {
   public class MySqlCustomerRepository : ICustomerService
   {
+    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     private readonly string _connectionString;
 
     public MySqlCustomerRepository()
@@ -19,96 +21,172 @@ namespace VSS.Customer.Data
       _connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
     }
 
-    public void CreateCustomer(CreateCustomerEvent createCustomerEvent)
+    public int StoreCustomer(ICustomerEvent evt)
     {
-      using (var connection = new MySqlConnection(_connectionString))
+      var upsertedCount = 0;
+      var customer = new Models.Customer();
+      string eventType = "Unknown";
+
+      if (evt is CreateCustomerEvent)
       {
-        connection.Open();
-        connection.Execute("Insert into Customer(CustomerUID,CustomerName,fk_CustomerTypeID,LastCustomerUTC) values(@CustomerUid,@Name,@fk_CustTypeId,@lastCustomerUTC);", new
-        {
-          CustomerUid = createCustomerEvent.CustomerUID,
-          Name = createCustomerEvent.CustomerName,
-          fk_CustTypeId = createCustomerEvent.CustomerType,//TODO: Convert to enum from string
-          lastCustomerUTC = DateTime.UtcNow
-        },
-                    commandType: CommandType.Text);
+        var customerEvent = (CreateCustomerEvent)evt;
+        customer.CustomerName = customerEvent.CustomerName;
+        customer.CustomerUID = customerEvent.CustomerUID.ToString();
+        customer.fk_CustomerTypeID = customerEvent.CustomerType;
+        customer.LastCustomerUTC = customerEvent.ActionUTC;        
+
+        eventType = "CreateCustomerEvent";
       }
+      else if (evt is UpdateCustomerEvent)
+      {
+        var customerEvent = (UpdateCustomerEvent)evt;
+        customer.CustomerName = customerEvent.CustomerName;
+        customer.CustomerUID = customerEvent.CustomerUID.ToString();
+        customer.LastCustomerUTC = customerEvent.ActionUTC;
+        
+        eventType = "UpdateCustomerEvent";
+      }
+      else if (evt is DeleteCustomerEvent)
+      {
+        var customerEvent = (DeleteCustomerEvent)evt;
+        customer.CustomerUID = customerEvent.CustomerUID.ToString();
+        customer.LastCustomerUTC = customerEvent.ActionUTC;
+
+        eventType = "DeleteCustomerEvent";
+      }
+
+      upsertedCount = UpsertCustomerDetail(customer, eventType);
+      
+      return upsertedCount;
     }
 
-    public int UpdateCustomer(UpdateCustomerEvent updateCustomerEvent)
+    /// <summary>
+    /// All Customer detail-related columns can be inserted, 
+    /// but only certain columns can be updated.
+    /// On the deletion, a corresponded entry will be deleted.
+    /// </summary>
+    /// <param name="customer"></param>
+    /// <param name="eventType"></param>
+    /// <returns></returns>
+    private int UpsertCustomerDetail(Models.Customer customer, string eventType)
     {
+      int upsertedCount = 0;
       using (var connection = new MySqlConnection(_connectionString))
       {
-        connection.Open();
-        return connection.Execute("Update Customer set CustomerName =@Name , LastCustomerUTC = @lastCustomerUTC where CustomerUID=@CustomerUid;", new
-        {
-          Name = updateCustomerEvent.CustomerName,
-          lastCustomerUTC = DateTime.UtcNow,
-          CustomerUid = updateCustomerEvent.CustomerUID
-        },
-                    commandType: CommandType.Text);
-      }
-    }
+        Log.DebugFormat("CustomerRepository: Upserting eventType{0} customerUid={1}", eventType, customer.CustomerUID);
 
-    public void DeleteCustomer(DeleteCustomerEvent deleteCustomerEvent)
-    {
-      using (var connection = new MySqlConnection(_connectionString))
-      {
         connection.Open();
-        connection.Execute("delete from Customer where CustomerUID = @CustomerUid;", new
-        {
-          CustomerUid = deleteCustomerEvent.CustomerUID
-        },
-                    commandType: CommandType.Text);
-      }
-    }
+        var existing = connection.Query<Models.Customer>
+          (@"SELECT 
+                  CustomerUID, CustomerName, fk_CustomerTypeID, LastCustomerUTC
+                FROM Customer
+                WHERE CustomerUID = @customerUID", new { customerUID = customer.CustomerUID }).FirstOrDefault();
 
-    public bool AssociateCustomerUser(AssociateCustomerUserEvent associateCustomerUserEvent)
-    {
-      using (var connection = new MySqlConnection(_connectionString))
-      {
-        connection.Open();
-        var customer = connection.Query<Models.Customer>("select * from Customer where CustomerUID = @customerUid", new { customerUid = associateCustomerUserEvent.CustomerUID }, commandType: CommandType.Text).FirstOrDefault();
-        if (customer != null && customer.CustomerID > 0)
+        if (eventType == "CreateCustomerEvent")
         {
-          return connection.Execute("Insert into UserCustomer(fk_CustomerUID,fk_UserUID,fk_CustomerID,LastUserUTC) values(@CustomerUid,@UserUid,@fk_customerID,@lastUserUTC);", new
-          {
-            CustomerUid = associateCustomerUserEvent.CustomerUID,
-            UserUid = associateCustomerUserEvent.UserUID,
-            fk_customerID = customer.CustomerID,
-            lastUserUTC = DateTime.UtcNow
-          },
-                      commandType: CommandType.Text) == 1;
+          upsertedCount = CreateCustomer(connection, customer, existing);
         }
-        return false;
-      }
-    }
 
-    public void DissociateCustomerUser(DissociateCustomerUserEvent dissociateCustomerUserEvent)
-    {
-      using (var connection = new MySqlConnection(_connectionString))
-      {
-        connection.Open();
-        connection.Execute("delete from UserCustomer where fk_CustomerUID=@CustomerUid and fk_UserUID = @UserUid;", new
+        if (eventType == "UpdateCustomerEvent")
         {
-          CustomerUid = dissociateCustomerUserEvent.CustomerUID,
-          UserUid = dissociateCustomerUserEvent.UserUID,
-        },
-                   commandType: CommandType.Text);
+          upsertedCount = UpdateCustomer(connection, customer, existing);
+        }
+
+        if (eventType == "DeleteCustomerEvent")
+        {
+          upsertedCount = DeleteCustomer(connection, customer, existing);
+        }
+
+        Log.DebugFormat("CustomerRepository: upserted {0} rows", upsertedCount);
+        connection.Close();
       }
+      return upsertedCount;
     }
 
+    public int CreateCustomer(MySqlConnection connection, Models.Customer customer, Models.Customer existing)
+    {
+      if (existing == null)
+      {
+        const string insert =
+          @"INSERT Customer
+              (CustomerUID, CustomerName, fk_CustomerTypeID, LastCustomerUTC)
+              VALUES
+              (@CustomerUID, @CustomerName, @fk_CustomerTypeID, @LastCustomerUTC)";
+
+        return connection.Execute(insert, customer);
+      }
+      
+      Log.DebugFormat("CustomerRepository: can't create as already exists newActionedUTC {0}", customer.LastCustomerUTC);
+
+      return 0;
+    }
+
+    public int UpdateCustomer(MySqlConnection connection, Models.Customer customer, Models.Customer existing)
+    {
+      if (existing != null)
+      {
+        if (customer.LastCustomerUTC >= existing.LastCustomerUTC)
+        {
+          const string update =
+            @"UPDATE Customer                
+                SET CustomerName = @CustomerName,
+                  LastCustomerUTC = @LastCustomerUTC
+                WHERE CustomerUID = @CustomerUID";
+          return connection.Execute(update, customer);
+        }
+        
+        Log.DebugFormat("CustomerRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
+          existing.LastCustomerUTC, customer.LastCustomerUTC);
+      }
+      else
+      {
+        Log.DebugFormat("CustomerRepository: can't update as none existing newActionedUTC {0}",
+          customer.LastCustomerUTC);
+      }
+      return 0;
+    }
+
+    public int DeleteCustomer(MySqlConnection connection, Models.Customer customer, Models.Customer existing)
+    {
+      if (existing != null)
+      {
+        if (customer.LastCustomerUTC >= existing.LastCustomerUTC)
+        {
+          const string delete =
+            @"DELETE 
+              FROM Customer                
+              WHERE CustomerUID = @CustomerUID";
+          return connection.Execute(delete, customer);
+        }
+        
+        Log.DebugFormat("CustomerRepository: old delete event ignored currentActionedUTC{0} newActionedUTC{1}",
+          existing.LastCustomerUTC, customer.LastCustomerUTC);
+      }
+      else
+      {
+        Log.DebugFormat("CustomerRepository: can't delete as none existing newActionedUTC {0}",
+          customer.LastCustomerUTC);
+      }
+      return 0;
+    }
 
     public List<Models.Customer> GetAssociatedCustomerbyUserUid(System.Guid UserUID)
     {
-      List<Models.Customer> customerList = new List<Models.Customer>();
+      //List<Models.Customer> customerList = new List<Models.Customer>();
+
       using (var connection = new MySqlConnection(_connectionString))
       {
         connection.Open();
-        customerList = connection.Query<Models.Customer>("select c.* from Customer c join UserCustomer uc on uc.fk_CustomerUID = c.CustomerUID where uc.fk_UserUID = @userUid",
-            new { userUid = UserUID }, commandType: CommandType.Text).AsList();
+
+        var customerList = connection.Query<Models.Customer>
+          (@"SELECT c.* 
+              FROM Customer c JOIN UserCustomer uc ON uc.fk_CustomerUID = c.CustomerUID 
+              WHERE uc.fk_UserUID = @userUid", new { userUid = UserUID }).AsList();
+
+        connection.Close();
+
+        return customerList;
       }
-      return customerList;
     }
 
     public Models.Customer GetCustomer(System.Guid CustomerUID)
@@ -116,9 +194,34 @@ namespace VSS.Customer.Data
       using (var connection = new MySqlConnection(_connectionString))
       {
         connection.Open();
-        return connection.Query<Models.Customer>("select * from Customer where CustomerUID = @customerUid", new { customerUid = CustomerUID }, commandType: CommandType.Text).FirstOrDefault();
+
+        var customer = connection.Query<Models.Customer>
+            (@"SELECT * 
+                FROM Customer 
+                WHERE CustomerUID = @customerUid", new { customerUid = CustomerUID }).FirstOrDefault();
+
+        connection.Close();
+
+        return customer;
       }
     }
-  }
 
+    public IEnumerable<Models.Customer> GetCustomers()
+    {
+      IEnumerable<Models.Customer> customers;
+      using (var connection = new MySqlConnection(_connectionString))
+      {
+        connection.Open();
+
+        customers = connection.Query<Models.Customer>
+          (@"SELECT 
+                   CustomerID, CustomerName, fk_CustomerTypeID, CustomerUID, LastCustomerUTC
+                FROM Customer");
+
+        connection.Close();
+      }
+      return customers;
+    }
+
+  }
 }

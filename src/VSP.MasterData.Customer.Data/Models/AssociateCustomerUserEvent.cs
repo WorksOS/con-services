@@ -4,7 +4,7 @@ using VSS.Customer.Data.Interfaces;
 
 namespace VSS.Customer.Data.Models
 {
-    public class AssociateCustomerUserEvent : ICustomerUserEvent
+    public class AssociateCustomerUserEvent : IUserCustomerEvent
     {
         //[Required]
         public Guid CustomerUID { get; set; }

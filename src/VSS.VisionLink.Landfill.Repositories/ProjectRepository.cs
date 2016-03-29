@@ -17,7 +17,7 @@ namespace VSS.VisionLink.Landfill.Repositories
     public IEnumerable<Project> GetProjectsBySubcription(string subscriptionUid)
     {
       PerhapsOpenConnection();
-      var project = Connection.Query<Project>
+      var projects = Connection.Query<Project>
         (@"SELECT 
                  projectUid, name, projectId, timeZone, customerUid, subscriptionUid, 
                   daysToSubscriptionExpiry, lastActionedUtc, IsDeleted
@@ -25,7 +25,7 @@ namespace VSS.VisionLink.Landfill.Repositories
               WHERE subscriptionUid = @subscriptionUid AND IsDeleted=0"
         );
       PerhapsCloseConnection();
-      return project;
+      return projects;
     }
 
     public IEnumerable<Project> GetProjects()
