@@ -4,6 +4,7 @@ using log4net;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using org.apache.kafka.clients.consumer;
 using VSS.Kafka.DotNetClient.Model;
 using VSS.Project.Data.Interfaces;
 using VSS.Project.Data.Models;
@@ -26,20 +27,24 @@ namespace VSS.Project.Processor
       Log.Info("Completed consuming subcscription event messages");
     }
 
+    public void OnNext(ConsumerInstanceResponse value)
+    {
+      throw new NotImplementedException();
+    }
+
     public void OnError(Exception error)
     {
       Log.DebugFormat("Failed consuming subcscription event messages: {0} ", error.ToString());
     }
 
-    public void OnNext(ConsumerInstanceResponse value)
+    public void OnNext(ConsumerRecord value)
     {
       Log.Debug("ProjectEventObserver.OnNext()");
       try
       {
-        var payload = value.Messages.Payload;
-        foreach (var binaryMessage in payload)
-        {
-          string val = binaryMessage.Value;
+
+          string val = (string)value.value();
+
           bool success = false;
           Log.DebugFormat("Recieved Project Payload : {0} ", val);
           var json = JObject.Parse(val);
@@ -98,7 +103,6 @@ namespace VSS.Project.Processor
               Log.WarnFormat("Consumed a message but discarded as not relavant {0}... ", val.Truncate(30));
           }
 
-        }
       }
       catch (MySqlException ex)
       {
@@ -118,7 +122,6 @@ namespace VSS.Project.Processor
         //deliberately supppress
         Log.Error("Error  occured while Processing the Project Payload", ex);
       }
-      value.Commit();
     }
   }
 }
