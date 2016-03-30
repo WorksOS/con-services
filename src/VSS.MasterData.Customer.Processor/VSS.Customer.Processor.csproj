@@ -195,6 +195,7 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="UserCustomerEventObserver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

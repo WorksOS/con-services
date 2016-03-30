@@ -58,13 +58,13 @@ namespace VSS.Project.Processor
 
     private void JavaConsumerWorker()
     {
-      var buffer = new List<ConsumerRecord>();
+      var buffer = new List<ConsumerInstanceResponse>();
       const int minBatchSize = 1;
 
       while (true)
       {
         var records = javaConsumer.poll(100);
-        buffer.AddRange(records.Cast<ConsumerRecord>());
+        buffer.AddRange(records.Cast<ConsumerInstanceResponse>());
 
         if (buffer.Count < minBatchSize) continue;
 
