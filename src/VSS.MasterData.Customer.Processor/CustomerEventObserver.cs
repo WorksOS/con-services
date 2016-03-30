@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Reflection;
 using MySql.Data.MySqlClient;
+using org.apache.kafka.clients.consumer;
 using VSP.MasterData.Common.Logging;
 using VSS.Customer.Data.Interfaces;
 using VSS.Customer.Data.Models;
@@ -27,19 +28,21 @@ namespace VSS.Customer.Processor
       Log.IfInfo("Completed consuming customer event messages");
     }
 
+    public void OnNext(ConsumerInstanceResponse value)
+    {
+      throw new NotImplementedException();
+    }
+
     public void OnError(Exception error)
     {
       Log.IfError("Failed consuming customer event messages");
     }
 
-    public void OnNext(ConsumerInstanceResponse value)
+    public void OnNext(ConsumerRecord value)
     {
       try
       {
-        var payload = value.Messages.Payload;
-        foreach (var binaryMessage in payload)
-        {
-          string val = binaryMessage.Value;
+        string val = (string)value.value();
           bool success = false;
           Log.DebugFormat("Recieved Customer Payload : {0} ", val);
           var json = JObject.Parse(val);
@@ -198,7 +201,6 @@ namespace VSS.Customer.Processor
               Log.WarnFormat("Consumed a message and was unable to find a proper token. Message Sample: {0}... ",
                 val.Truncate(15));
           }
-        }
       }
       catch (MySqlException ex)
       {
