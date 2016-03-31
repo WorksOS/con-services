@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Configuration;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
+using org.apache.kafka.clients.producer;
 using VSP.MasterData.Project.WebAPI.Helpers;
 using VSP.MasterData.Common.Logging;
 using VSS.Kafka.DotNetClient.Interfaces;
@@ -41,8 +43,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         var jsonHelper = new JsonHelper();
         var messagePayload = jsonHelper.SerializeObjectToJson(new { CreateProjectEvent = project });
         var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
-        if (_producer.PublishToBatch(new[] { message }))
-          return Ok();
+
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+        _producer.send(producerRecord).get();
+
+        return Ok();
         throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
@@ -70,7 +75,10 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         project.ReceivedUTC = DateTime.UtcNow;
         var messagePayload = jsonHelper.SerializeObjectToJson(new { UpdateProjectEvent = project });
         var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
-        if (_producer.PublishToBatch(new[] { message }))
+
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+        _producer.send(producerRecord).get();
+
           return Ok();
         throw new Exception("Failed to publish message to Kafka");
       }
@@ -107,8 +115,10 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
 
         var messagePayload = jsonHelper.SerializeObjectToJson(new { DeleteProjectEvent = project });
         var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
-        if (_producer.PublishToBatch(new[] { message }))
-          return Ok();
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+        _producer.send(producerRecord).get();
+
+        return Ok();
         throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
@@ -137,8 +147,10 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         var jsonHelper = new JsonHelper();
         var messagePayload = jsonHelper.SerializeObjectToJson(new { RestoreProjectEvent = project });
         var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
-        if (_producer.PublishToBatch(new[] { message }))
-          return Ok();
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+        _producer.send(producerRecord).get();
+
+        return Ok();
         throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
@@ -165,8 +177,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         customerProject.ReceivedUTC = DateTime.UtcNow;
         var messagePayload = new JsonHelper().SerializeObjectToJson(new { AssociateCustomerAssetEvent = customerProject });
         var message = new Message { Key = customerProject.ProjectUID.ToString(), Value = messagePayload };
-        if (_producer.PublishToBatch(new[] { message }))
-          return Ok();
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+        _producer.send(producerRecord).get();
+        return Ok();
         throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
@@ -193,8 +206,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         customerProject.ReceivedUTC = DateTime.UtcNow;
         var messagePayload = new JsonHelper().SerializeObjectToJson(new { DissociateCustomerAssetEvent = customerProject });
         var message = new Message { Key = customerProject.ProjectUID.ToString(), Value = messagePayload };
-        if (_producer.PublishToBatch(new[] { message }))
-          return Ok();
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+        _producer.send(producerRecord).get();
+        return Ok();
         throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)

@@ -4,7 +4,8 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion></ProductVersion>
+    <ProductVersion>
+    </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2DB9DD17-6A0B-41C3-88B3-0D97EDCC4DEC}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -78,12 +79,76 @@
       <HintPath>..\packages\Autofac.WebApi2.3.4.0\lib\net45\Autofac.Integration.WebApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Log4Net1213, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Log4Net1213.3.3.1\lib\net40\Common.Logging.Log4Net1213.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="HashLib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\HashLib.2.0.1\lib\net40\HashLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="IKVM.OpenJDK.Beans, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Beans.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Core, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Jdbc, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Jdbc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Management, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Management.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Security, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Text, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Text.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Util, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.OpenJDK.Util.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.Runtime, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\IKVM.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="javax.jms-api-2.0.1, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\javax.jms-api-2.0.1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kafka-clients-0.9.0.1-cp1, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\kafka-clients-0.9.0.1-cp1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4j-1.2.17, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\log4j-1.2.17.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="lz4-1.2.0, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\lz4-1.2.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mail-1.4.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\mail-1.4.7.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -92,6 +157,14 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="slf4j-api, Version=1.7.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\slf4j-api.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="slf4j-NetCommonLogging, Version=1.7.5.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\slf4j-NetCommonLogging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Swashbuckle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
@@ -156,6 +229,10 @@
       <HintPath>..\packages\VSS.Kafka.DotNetClient.1.1.69.0\lib\net451\VSS.Kafka.DotNetClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="VSS.Kafka.Ikvm.Client, Version=1.0.61.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\VSS.Kafka.Ikvm.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
       <HintPath>..\libraries\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
     </Reference>
@@ -209,7 +286,8 @@
           <IISUrl>http://localhost:55178/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl></CustomServerUrl>
+          <CustomServerUrl>
+          </CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
