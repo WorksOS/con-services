@@ -243,8 +243,8 @@
       <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
       <Name>LandfillService.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSP.MasterData.Customer.Data\VSS.Customer.Data.csproj">
-      <Project>{70CA8791-9379-4236-8849-D29CBEB2E251}</Project>
+    <ProjectReference Include="..\VSS.Customer.Data\VSS.Customer.Data.csproj">
+      <Project>{70ca8791-9379-4236-8849-d29cbeb2e251}</Project>
       <Name>VSS.Customer.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\VSS.Subscription.Data\VSS.Subscription.Data.csproj">
