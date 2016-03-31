@@ -71,16 +71,17 @@ namespace LandfillService.WebApi.Models
         {
             return InTransaction((conn) =>
             {
-
               var command = @"select * from projects prj join UserCustomer uc ON prj.customerUid=uc.fk_CustomerUID
                               where fk_UserUID = @userUid;";
+              var projects = new List<Project>();
+
               using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
                 {
-                    var projects = new List<Project>();
                     while (reader.Read())
                     {
                       int indxExpiry = reader.GetOrdinal("daysToSubscriptionExpiry");
                       bool hasExpiry = !reader.IsDBNull(indxExpiry);
+
 
                         projects.Add(new Project { id = reader.GetUInt32(reader.GetOrdinal("projectId")), 
                                                    name = reader.GetString(reader.GetOrdinal("name")),
@@ -88,8 +89,36 @@ namespace LandfillService.WebApi.Models
                                                    daysToSubscriptionExpiry = hasExpiry ? reader.GetInt32(indxExpiry) : (int?)null
                         });
                     }
-                    return projects;
                 }
+
+              // Get the subscription expiry dates...
+              command = @"SELECT prj.projectId, MAX(ps.EndDate) AS LatestDate 
+                          FROM projects prj 
+                          JOIN ProjectSubscription ps ON prj.projectUid = ps.fk_ProjectUID
+                          WHERE prj.IsDeleted = 0 
+                          GROUP BY prj.projectId;";
+
+              IDictionary<UInt32, DateTime> expiryDates = new Dictionary<UInt32, DateTime>();
+
+              using (var reader = MySqlHelper.ExecuteReader(conn, command))
+              {
+                while (reader.Read())
+                {
+                  var key = reader.GetUInt32(reader.GetOrdinal("projectId"));
+                  var value = reader.GetDateTime(reader.GetOrdinal("LatestDate"));
+
+                  expiryDates[key] = value;
+                }
+              }
+
+              DateTime utcNow = DateTime.UtcNow;
+              foreach (var p in projects)
+              {
+                if (expiryDates.ContainsKey(p.id))
+                  p.daysToSubscriptionExpiry = (int)Math.Round((expiryDates[p.id] - utcNow).TotalDays);
+              }
+
+              return projects;
             });
         }
 

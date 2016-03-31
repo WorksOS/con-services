@@ -98,7 +98,7 @@ namespace VSS.Customer.Processor
               
               success = (updatedCount == 1);
                
-              Log.InfoFormat(success ? String.Format("Customer updated successfully {0} records updated", updatedCount) : "Failed to update customer");
+              Log.InfoFormat(success ? String.Format("Customer updated successfully: {0} record(s) updated", updatedCount) : "Failed to update customer");
             }
             else
             {

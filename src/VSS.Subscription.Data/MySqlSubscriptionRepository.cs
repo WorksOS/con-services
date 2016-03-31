@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Dapper;
+using Microsoft.SqlServer.Server;
 using MySql.Data.MySqlClient;
 using VSS.Subscription.Data.Models;
 using VSS.Subscription.Data.Helpers;
@@ -82,6 +83,47 @@ namespace VSS.Subscription.Data
                     "insert into CustomerSubscription ({0}, {1}, {2}, {3}, {4}, {5}) ",
                     ColumnName.CustomerUID, ColumnName.fk_ServiceTypeID, ColumnName.StartDate, ColumnName.EndDate, ColumnName.InsertUTC, ColumnName.UpdateUTC);
 
+        public int StoreSubscription(ISubscriptionEvent evt)
+        {
+          var upsertedCount = 0;
+          string eventType = "Unknown";
+
+          if (evt is CreateAssetSubscriptionEvent)
+          {
+            upsertedCount = CreateAssetSubscription((CreateAssetSubscriptionEvent)evt);
+          }
+          else if (evt is UpdateAssetSubscriptionEvent)
+          {
+            upsertedCount = UpdateAssetSubscription((UpdateAssetSubscriptionEvent)evt);
+          }
+          else if (evt is CreateProjectSubscriptionEvent)
+          {
+            upsertedCount = CreateProjectSubscription((CreateProjectSubscriptionEvent)evt);
+          }
+          else if (evt is UpdateProjectSubscriptionEvent)
+          {
+            upsertedCount = UpdateProjectSubscription((UpdateProjectSubscriptionEvent)evt);
+          }
+          else if (evt is AssociateProjectSubscriptionEvent)
+          {
+            upsertedCount = AssociateProjectSubscription((AssociateProjectSubscriptionEvent)evt);
+          }
+          else if (evt is DissociateProjectSubscriptionEvent)
+          {
+            upsertedCount = DissociateProjectSubscription((DissociateProjectSubscriptionEvent)evt);
+          }
+          else if (evt is CreateCustomerSubscriptionEvent)
+          {
+            upsertedCount = CreateCustomerSubscription((CreateCustomerSubscriptionEvent)evt);
+          }
+          else if (evt is UpdateCustomerSubscriptionEvent)
+          {
+            upsertedCount = UpdateCustomerSubscription((UpdateCustomerSubscriptionEvent)evt);
+          }
+
+          return upsertedCount;
+        }
+
         private void GetServicePlan()
         {
             using (var connection = new MySqlConnection(_connectionString))
@@ -114,8 +156,10 @@ namespace VSS.Subscription.Data
             public long subscriptionID { get; set; }
         }
 
-        public void CreateAssetSubscription(CreateAssetSubscriptionEvent subscription)
+        public int CreateAssetSubscription(CreateAssetSubscriptionEvent subscription)
         {
+            int upsertedCount = 0;
+
             if (subscription.SubscriptionType != null && !_assetSubscriptionTypeCache.ContainsKey(subscription.SubscriptionType.ToLowerInvariant()))
                 throw new Exception("Invalid Asset Subscription Type");
 
@@ -134,8 +178,8 @@ namespace VSS.Subscription.Data
                 {
                     //Insert Customer Subscription
                     connection.Open();
-                    connection.Execute(
-                    string.Format(InsertCustomerSubscriptionQuery +
+                    upsertedCount = connection.Execute(
+                        string.Format(InsertCustomerSubscriptionQuery +
                             "values (@fk_CustomerUID, @fk_ServiceTypeID, @StartDate, @EndDate, @InsertUTC, @UpdateUTC);"
                     ),
                     new
@@ -159,7 +203,19 @@ namespace VSS.Subscription.Data
                     incomingSubscriptionData.EndDate = subscription.EndDate;
                     customerSubscriptionDataList.Add(incomingSubscriptionData);
 
-                    UpdateSubscriptionDatesForCustomer(connection, subscription.CustomerUID.ToString(), _assetSubscriptionTypeCache[subscription.SubscriptionType.ToLowerInvariant()], customerSubscriptionDataList);
+                    upsertedCount = UpdateSubscriptionDatesForCustomer(connection, subscription.CustomerUID.ToString(), _assetSubscriptionTypeCache[subscription.SubscriptionType.ToLowerInvariant()], customerSubscriptionDataList);
+
+                    if (upsertedCount == 0)
+                    {
+                      Log.Error(String.Format("CreateAssetSubscription: Failed to update Customer Subscription with UID {0} for existing customer with UID {1}.", subscription.SubscriptionUID, subscription.CustomerUID));
+                      return upsertedCount;
+                    }
+                }
+
+                if (upsertedCount == 0)
+                {
+                  Log.Error(String.Format("CreateAssetSubscription: Failed to create Asset Subscription for customer with UID {0}", subscription.CustomerUID));
+                  return upsertedCount;
                 }
 
                 //Getting Customer SubscriptionId
@@ -167,7 +223,7 @@ namespace VSS.Subscription.Data
 
                 //Insert Asset Subscription
                 connection.Open();
-                connection.Execute(
+                upsertedCount = connection.Execute(
                         string.Format(InsertAssetSubscriptionQuery +
                                     "values (@AssetSubscriptionUID,@fk_AssetUID, @fk_DeviceUID, @fk_CustomerSubscriptionID, @StartDate, @EndDate, @InsertUTC, @UpdateUTC);"),
                         new
@@ -183,10 +239,14 @@ namespace VSS.Subscription.Data
                         });
                 connection.Close();
             }
+
+          return upsertedCount;
         }
 
-        public void UpdateAssetSubscription(UpdateAssetSubscriptionEvent updateSubscription)
+        public int UpdateAssetSubscription(UpdateAssetSubscriptionEvent updateSubscription)
         {
+            int upsertedCount = 0;
+
             if (updateSubscription.SubscriptionType != null && !_assetSubscriptionTypeCache.ContainsKey(updateSubscription.SubscriptionType.ToLowerInvariant()))
                 throw new Exception("Invalid Asset Subscription Type");
 
@@ -204,8 +264,8 @@ namespace VSS.Subscription.Data
 
                 if (ids == null) // todo Merino-fix
                 {
-                  Log.Error("UpdateAssetSubscription: Subscription doesn't exist.");
-                  return;
+                  Log.Error(String.Format("UpdateAssetSubscription: Subscription with UID {0} doesn't exist.", updateSubscription.SubscriptionUID));
+                  return upsertedCount;
                 }
 
                 newCustomerUID = updateSubscription.CustomerUID.HasValue ? updateSubscription.CustomerUID.Value.ToString() : ids.customerUID;
@@ -236,8 +296,15 @@ namespace VSS.Subscription.Data
                     var updateAssetSubscriptionQuery = string.Format("Update AssetSubscription set {0} where {1} = '{2}'",
                          sbAsset, ColumnName.AssetSubscriptionUID, updateSubscription.SubscriptionUID);
                     connection.Open();
-                    var rowsAffected = connection.Execute(updateAssetSubscriptionQuery, null, commandType: CommandType.Text);
+                    upsertedCount = connection.Execute(updateAssetSubscriptionQuery, null, commandType: CommandType.Text);
                     connection.Close();
+
+                    if (upsertedCount == 0)
+                    {
+                      Log.Error(String.Format("UpdateAssetSubscription: Failed to update Asset Subscription with UID {0}.", updateSubscription.SubscriptionUID));
+                      return upsertedCount;
+                    }
+                   
                 }
 
                 if ((updateSubscription.CustomerUID.HasValue && ids.customerUID != newCustomerUID) || (!string.IsNullOrWhiteSpace(updateSubscription.SubscriptionType) && ids.subscriptionID != newSubscriptionID))
@@ -258,7 +325,13 @@ namespace VSS.Subscription.Data
                     if (customerSubscriptionDataList.Count > 0)
                     {
                         //Update Old Customer Subscription
-                        UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+                        upsertedCount = UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+
+                      if (upsertedCount == 0)
+                      {
+                        Log.Error(String.Format("UpdateAssetSubscription: Failed to update Customer Subscription with UID {0} for existing customer with UID {1}.", ids.subscriptionID, ids.customerUID));
+                        return upsertedCount;
+                      }
                     }
 
                     //Updating New Customer Asset Relation 
@@ -273,10 +346,16 @@ namespace VSS.Subscription.Data
                         var updateCustomerSubscriptionIDQuery = string.Format("Update AssetSubscription set {0} where {1} = '{2}'",
                              sb, ColumnName.AssetSubscriptionUID, updateSubscription.SubscriptionUID);
                         connection.Open();
-                        connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
+                        upsertedCount = connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
                         connection.Close();
 
-                        /// Updating CustomerData for new Customer
+                        if (upsertedCount == 0)
+                        {
+                          Log.Error(String.Format("UpdateAssetSubscription: Failed to update Asset Subscription with UID {0} for new customer with UID {1}.", newSubscriptionID, newCustomerUID));
+                          return upsertedCount;
+                        }
+
+                        // Updating CustomerData for new Customer
                         var ReadNewCustomerAssetQuery = String.Format("{0} where customer.{1} = '{2}' and customer.{3} = {4}", ReadAllCustomerAssetSubscriptionQuery,
                         ColumnName.CustomerUID, newCustomerUID, ColumnName.fk_ServiceTypeID, newSubscriptionID);
                         connection.Open();
@@ -287,8 +366,13 @@ namespace VSS.Subscription.Data
                         connection.Close();
 
                         //Update Customer Subscription
-                        UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, newCustomerSubscriptionDataList);
+                        upsertedCount = UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, newCustomerSubscriptionDataList);
 
+                        if (upsertedCount == 0)
+                        {
+                          Log.Error(String.Format("UpdateAssetSubscription: Failed to update Customer Subscription with UID {0} for existing customer with UID {1}.", ids.subscriptionID, ids.customerUID));
+                          return upsertedCount;
+                        }
                     }
                     else
                     {
@@ -316,7 +400,7 @@ namespace VSS.Subscription.Data
 
                         // Insert Customer 
                         connection.Open();
-                        connection.Execute(string.Format(InsertCustomerSubscriptionQuery +
+                        upsertedCount = connection.Execute(string.Format(InsertCustomerSubscriptionQuery +
                             "values (@CustomerUID, @fk_ServiceTypeID, @StartDate, @EndDate, @InsertUTC, @UpdateUTC);"
                             ),
                             new
@@ -330,6 +414,12 @@ namespace VSS.Subscription.Data
                             });
                         connection.Close();
 
+                        if (upsertedCount == 0)
+                        {
+                          Log.Error(String.Format("UpdateAssetSubscription: Failed to insert Customer Subscription with UID {0} for new customer with UID {1}.", newSubscriptionID, newCustomerUID));
+                          return upsertedCount;
+                        }
+
                         customerSubscriptionId = GetCustomerSubscriptionID(connection, newCustomerUID, newSubscriptionID);
 
                         var sb = new StringBuilder();
@@ -340,8 +430,14 @@ namespace VSS.Subscription.Data
                         var updateCustomerSubscriptionIDQuery = string.Format("Update AssetSubscription set {0} where {1} = '{2}'",
                              sb, ColumnName.AssetSubscriptionUID, updateSubscription.SubscriptionUID);
                         connection.Open();
-                        connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
+                        upsertedCount = connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
                         connection.Close();
+
+                        if (upsertedCount == 0)
+                        {
+                          Log.Error(String.Format("UpdateAssetSubscription: Failed to update Asset Subscription with UID {0} for new customer with UID {1}.", updateSubscription.SubscriptionUID, newCustomerUID));
+                          return upsertedCount;
+                        }
                     }
 
                     if (customerSubscriptionDataList.Count == 0)
@@ -349,14 +445,19 @@ namespace VSS.Subscription.Data
                         //Delete Old Customer
                         string query = string.Format("Delete from CustomerSubscription where {0} = '{1}' and {2} = {3}", ColumnName.CustomerUID, ids.customerUID, ColumnName.fk_ServiceTypeID, ids.subscriptionID);
                         connection.Open();
-                        connection.Execute(query, commandType: CommandType.Text);
+                        upsertedCount = connection.Execute(query, commandType: CommandType.Text);
                         connection.Close();
 
+                        if (upsertedCount == 0)
+                        {
+                          Log.Error(String.Format("UpdateAssetSubscription: Failed to delete Customer Subscription with UID {0} for new customer with UID {1}.", ids.subscriptionID, ids.customerUID));
+                          return upsertedCount;
+                        }
                     }
                 }
                 else
                 {
-                    /// Updating CustomerData for Customer
+                    // Updating CustomerData for Customer
                     var ReadExistingCustomerAssetQuery = String.Format("{0} where customer.{1} = '{2}' and customer.{3} = {4}", ReadAllCustomerAssetSubscriptionQuery,
                     ColumnName.CustomerUID, newCustomerUID, ColumnName.fk_ServiceTypeID, newSubscriptionID);
                     connection.Open();
@@ -366,9 +467,17 @@ namespace VSS.Subscription.Data
                     connection.Close();
 
                     //Update Customer Subscription
-                    UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+                    upsertedCount = UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+
+                    if (upsertedCount == 0)
+                    {
+                      Log.Error(String.Format("UpdateAssetSubscription: Failed to update Customer Subscription with UID {0} for existing customer with UID {1}.", ids.subscriptionID, ids.customerUID));
+                      return upsertedCount;
+                    }
                 }
             }
+
+          return upsertedCount;
         }
 
         # endregion
@@ -382,8 +491,10 @@ namespace VSS.Subscription.Data
             public long subscriptionID { get; set; }
         }
 
-        public void CreateProjectSubscription(CreateProjectSubscriptionEvent subscription)
+        public int CreateProjectSubscription(CreateProjectSubscriptionEvent subscription)
         {
+          int upsertedCount = 0;
+
           if (subscription.SubscriptionType != null && !_projectSubscriptionTypeCache.ContainsKey(subscription.SubscriptionType.ToLowerInvariant()))
             throw new Exception("Invalid Project Subscription Type");
 
@@ -403,7 +514,7 @@ namespace VSS.Subscription.Data
                 {
                     //Insert Customer Subscription
                     connection.Open();
-                    connection.Execute(
+                    upsertedCount = connection.Execute(
                     string.Format(InsertCustomerSubscriptionQuery +
                             "values (@fk_CustomerUID, @fk_ServiceTypeID, @StartDate, @EndDate, @InsertUTC, @UpdateUTC);"
                     ),
@@ -432,12 +543,23 @@ namespace VSS.Subscription.Data
                     incomingSubscriptionData.EndDate = subscription.EndDate;
                     customerSubscriptionDataList.Add(incomingSubscriptionData);
 
-                    UpdateSubscriptionDatesForCustomer(connection, subscription.CustomerUID.ToString(), _projectSubscriptionTypeCache[subscription.SubscriptionType.ToLowerInvariant()], customerSubscriptionDataList);
+                    upsertedCount = UpdateSubscriptionDatesForCustomer(connection, subscription.CustomerUID.ToString(), _projectSubscriptionTypeCache[subscription.SubscriptionType.ToLowerInvariant()], customerSubscriptionDataList);
                     
                     Log.DebugFormat("CreateProjectSubscription(): cust-sub count >0 @fk_CustomerUID: {0} @fk_ServiceTypeID: {1} @StartDate: {2}, @EndDate {3}",
                       subscription.CustomerUID, _projectSubscriptionTypeCache[subscription.SubscriptionType.ToLowerInvariant()],
                       subscription.StartDate, subscription.EndDate);
 
+                    if (upsertedCount == 0)
+                    {
+                      Log.Error(String.Format("CreateProjectSubscription: Failed to update Customer Subscription with UID {0} for existing customer with UID {1}.", subscription.SubscriptionUID, subscription.CustomerUID));
+                      return upsertedCount;
+                    }
+                }
+
+                if (upsertedCount == 0)
+                {
+                  Log.Error(String.Format("CreateProjectSubscription: Failed to create Project Subscription for customer with UID {0}", subscription.CustomerUID));
+                  return upsertedCount;
                 }
 
                 //Getting Customer SubscriptionId
@@ -449,7 +571,7 @@ namespace VSS.Subscription.Data
 
                 //Insert Project Subscription
                 connection.Open();
-                connection.Execute(
+                upsertedCount = connection.Execute(
                         string.Format(InsertProjectSubscriptionQuery +
                                     "values (@ProjectSubscriptionUID, @fk_CustomerSubscriptionID, @StartDate, @EndDate, @InsertUTC, @UpdateUTC);"),
                         new
@@ -463,11 +585,14 @@ namespace VSS.Subscription.Data
                         });
                 connection.Close();
             }
-          return;
+
+          return upsertedCount;
         }
 
-        public void UpdateProjectSubscription(UpdateProjectSubscriptionEvent updateSubscription)
+        public int UpdateProjectSubscription(UpdateProjectSubscriptionEvent updateSubscription)
         {
+          int upsertedCount = 0;
+
           if (updateSubscription.SubscriptionType != null && !_projectSubscriptionTypeCache.ContainsKey(updateSubscription.SubscriptionType.ToLowerInvariant()))
             throw new Exception("Invalid Project Subscription Type");
 
@@ -485,8 +610,8 @@ namespace VSS.Subscription.Data
 
                 if (ids == null) // todo Merino-fix
                 {
-                  Log.Error("UpdateProjectSubscriptionEvent: Subscription doesn't exist.");
-                  return;
+                  Log.Error(String.Format("UpdateProjectSubscription: Subscription with UID {0} doesn't exist.", updateSubscription.SubscriptionUID));
+                  return upsertedCount;
                 }
 
                 newCustomerUID = updateSubscription.CustomerUID.HasValue ? updateSubscription.CustomerUID.Value.ToString() : ids.customerUID;
@@ -507,8 +632,14 @@ namespace VSS.Subscription.Data
                     var updateProjectSubscriptionQuery = string.Format("Update ProjectSubscription set {0} where {1} = '{2}'",
                          sbProject, ColumnName.ProjectSubscriptionUID, updateSubscription.SubscriptionUID);
                     connection.Open();
-                    var rowsAffected = connection.Execute(updateProjectSubscriptionQuery, null, commandType: CommandType.Text);
+                    upsertedCount = connection.Execute(updateProjectSubscriptionQuery, null, commandType: CommandType.Text);
                     connection.Close();
+
+                    if (upsertedCount == 0)
+                    {
+                      Log.Error(String.Format("UpdateProjectSubscription: Failed to update Project Subscription with UID {0}.", updateSubscription.SubscriptionUID));
+                      return upsertedCount;
+                    }
                 }
 
                 if ((updateSubscription.CustomerUID.HasValue && ids.customerUID != newCustomerUID) || (!string.IsNullOrWhiteSpace(updateSubscription.SubscriptionType) && ids.subscriptionID != newSubscriptionID))
@@ -527,7 +658,13 @@ namespace VSS.Subscription.Data
                     if (customerSubscriptionDataList.Count > 0)
                     {
                         //Update Old Customer Subscription
-                        UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+                        upsertedCount = UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+
+                      if (upsertedCount == 0)
+                      {
+                        Log.Error(String.Format("UpdateProjectSubscription: Failed to update Customer Subscription with UID {0} for existing customer with UID {1}.", ids.subscriptionID, ids.customerUID));
+                        return upsertedCount;
+                      }
                     }
 
                     //Updating New Customer Project Relation 
@@ -542,10 +679,16 @@ namespace VSS.Subscription.Data
                         var updateCustomerSubscriptionIDQuery = string.Format("Update ProjectSubscription set {0} where {1} = '{2}'",
                              sb, ColumnName.ProjectSubscriptionUID, updateSubscription.SubscriptionUID);
                         connection.Open();
-                        connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
+                        upsertedCount = connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
                         connection.Close();
 
-                        /// Updating CustomerData for new Customer
+                        if (upsertedCount == 0)
+                        {
+                          Log.Error(String.Format("UpdateProjectSubscription: Failed to update Project Subscription with UID {0} for new customer with UID {1}.", newSubscriptionID, newCustomerUID));
+                          return upsertedCount;
+                        }
+
+                        // Updating CustomerData for new Customer
                         var ReadNewCustomerProjectQuery = String.Format("{0} where customer.{1} = '{2}' and customer.{3} = {4}", ReadAllCustomerProjectSubscriptionQuery,
                         ColumnName.CustomerUID, newCustomerUID, ColumnName.fk_ServiceTypeID, newSubscriptionID);
                         connection.Open();
@@ -556,8 +699,13 @@ namespace VSS.Subscription.Data
                         connection.Close();
 
                         //Update Customer Subscription
-                        UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, newCustomerSubscriptionDataList);
+                        upsertedCount = UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, newCustomerSubscriptionDataList);
 
+                        if (upsertedCount == 0)
+                        {
+                          Log.Error(String.Format("UpdateProjectSubscription: Failed to update Customer Subscription with UID {0} for existing customer with UID {1}.", ids.subscriptionID, ids.customerUID));
+                          return upsertedCount;
+                        }
                     }
                     else
                     {
@@ -585,7 +733,7 @@ namespace VSS.Subscription.Data
 
                         // Insert Customer 
                         connection.Open();
-                        connection.Execute(string.Format(InsertCustomerSubscriptionQuery +
+                        upsertedCount = connection.Execute(string.Format(InsertCustomerSubscriptionQuery +
                             "values (@CustomerUID, @fk_ServiceTypeID, @StartDate, @EndDate, @InsertUTC, @UpdateUTC);"
                             ),
                             new
@@ -599,6 +747,12 @@ namespace VSS.Subscription.Data
                             });
                         connection.Close();
 
+                        if (upsertedCount == 0)
+                        {
+                          Log.Error(String.Format("UpdateProjectSubscription: Failed to insert Customer Subscription with UID {0} for new customer with UID {1}.", newSubscriptionID, newCustomerUID));
+                          return upsertedCount;
+                        }
+
                         customerSubscriptionId = GetCustomerSubscriptionID(connection, newCustomerUID, newSubscriptionID);
 
                         var sb = new StringBuilder();
@@ -609,8 +763,14 @@ namespace VSS.Subscription.Data
                         var updateCustomerSubscriptionIDQuery = string.Format("Update ProjectSubscription set {0} where {1} = '{2}'",
                              sb, ColumnName.ProjectSubscriptionUID, updateSubscription.SubscriptionUID);
                         connection.Open();
-                        connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
+                        upsertedCount = connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
                         connection.Close();
+
+                        if (upsertedCount == 0)
+                        {
+                          Log.Error(String.Format("UpdateProjectSubscription: Failed to update Project Subscription with UID {0} for new customer with UID {1}.", updateSubscription.SubscriptionUID, newCustomerUID));
+                          return upsertedCount;
+                        }
                     }
 
                     if (customerSubscriptionDataList.Count == 0)
@@ -618,14 +778,19 @@ namespace VSS.Subscription.Data
                         //Delete Old Customer
                         string query = string.Format("Delete from CustomerSubscription where {0} = '{1}' and {2} = {3}", ColumnName.CustomerUID, ids.customerUID, ColumnName.fk_ServiceTypeID, ids.subscriptionID);
                         connection.Open();
-                        connection.Execute(query, commandType: CommandType.Text);
+                        upsertedCount = connection.Execute(query, commandType: CommandType.Text);
                         connection.Close();
 
+                        if (upsertedCount == 0)
+                        {
+                          Log.Error(String.Format("UpdateProjectSubscription: Failed to delete Customer Subscription with UID {0} for new customer with UID {1}.", ids.subscriptionID, ids.customerUID));
+                          return upsertedCount;
+                        }
                     }
                 }
                 else
                 {
-                    /// Updating CustomerData for Customer
+                    // Updating CustomerData for Customer
                     var ReadExistingCustomerProjectQuery = String.Format("{0} where customer.{1} = '{2}' and customer.{3} = {4}", ReadAllCustomerProjectSubscriptionQuery,
                     ColumnName.CustomerUID, newCustomerUID, ColumnName.fk_ServiceTypeID, newSubscriptionID);
                     connection.Open();
@@ -634,14 +799,21 @@ namespace VSS.Subscription.Data
                     connection.Close();
 
                     //Update Customer Subscription
-                    UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+                    upsertedCount = UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+
+                    if (upsertedCount == 0)
+                    {
+                      Log.Error(String.Format("UpdateProjectSubscription: Failed to update Customer Subscription with UID {0} for existing customer with UID {1}.", ids.subscriptionID, ids.customerUID));
+                      return upsertedCount;
+                    }
                 }
             }
+
+          return upsertedCount;
         }
 
-        public void AssociateProjectSubscription(AssociateProjectSubscriptionEvent associateProjectSubscription)
+        public int AssociateProjectSubscription(AssociateProjectSubscriptionEvent associateProjectSubscription)
         {
-
             using (var connection = new MySqlConnection(_connectionString))
             {
                 var sb = new StringBuilder();
@@ -653,8 +825,14 @@ namespace VSS.Subscription.Data
                 var updateCustomerSubscriptionIDQuery = string.Format("Update ProjectSubscription set {0} where {1} = '{2}'",
                      sb, ColumnName.ProjectSubscriptionUID, associateProjectSubscription.SubscriptionUID);
                 connection.Open();
-                connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
+                int upsertedCount = connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
                 connection.Close();
+
+                if (upsertedCount == 0)
+                {
+                  Log.Error(String.Format("AssociateProjectSubscription: Failed to update Project Subscription with UID {0} for project with UID {1}.", associateProjectSubscription.SubscriptionUID, associateProjectSubscription.ProjectUID));
+                  return upsertedCount;
+                }
 
                 var readCustomerProjectQuery = String.Format("select customer.{0} as customerUID,customer.{1} as subscriptionID,project.{2} as projectUID from ProjectSubscription project inner join CustomerSubscription customer on project.{3} = customer.{4} where project.{5} = '{6}'",
                         ColumnName.CustomerUID, ColumnName.fk_ServiceTypeID, ColumnName.ProjectUID, ColumnName.fk_CustomerSubscriptionID, ColumnName.CustomerSubscriptionID, ColumnName.ProjectSubscriptionUID, associateProjectSubscription.SubscriptionUID);
@@ -662,7 +840,7 @@ namespace VSS.Subscription.Data
                 ProjectSubscriptionIdentifiers ids = connection.Query<ProjectSubscriptionIdentifiers>(readCustomerProjectQuery).FirstOrDefault();
                 connection.Close();
 
-                /// Updating CustomerData for Customer
+                // Updating CustomerData for Customer
                 var ReadExistingCustomerProjectQuery = String.Format("{0} where customer.{1} = '{2}' and customer.{3} = {4}", ReadAllCustomerProjectSubscriptionQuery,
                 ColumnName.CustomerUID, ids.customerUID, ColumnName.fk_ServiceTypeID, ids.subscriptionID);
                 connection.Open();
@@ -671,11 +849,19 @@ namespace VSS.Subscription.Data
                 connection.Close();
 
                 //Update Customer Subscription
-                UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+                upsertedCount = UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+
+                if (upsertedCount == 0)
+                {
+                  Log.Error(String.Format("AssociateProjectSubscription: Failed to update Customer Subscription with UID {0} for existing customer with UID {1}.", ids.subscriptionID, ids.customerUID));
+                  return upsertedCount;
+                }
+
+                return upsertedCount;
             }
         }
 
-        public void DissociateProjectSubscription(DissociateProjectSubscriptionEvent dissociateProjectSubscription)
+        public int DissociateProjectSubscription(DissociateProjectSubscriptionEvent dissociateProjectSubscription)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -688,8 +874,14 @@ namespace VSS.Subscription.Data
                 var updateCustomerSubscriptionIDQuery = string.Format("Update ProjectSubscription set {0} where {1} = '{2}'",
                      sb, ColumnName.ProjectSubscriptionUID, dissociateProjectSubscription.SubscriptionUID);
                 connection.Open();
-                connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
+                int upsertedCount = connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
                 connection.Close();
+
+                if (upsertedCount == 0)
+                {
+                  Log.Error(String.Format("DissociateProjectSubscription: Failed to update Project Subscription with UID {0} for project with UID {1}.", dissociateProjectSubscription.SubscriptionUID, dissociateProjectSubscription.ProjectUID));
+                  return upsertedCount;
+                }
 
                 var readCustomerProjectQuery = String.Format("select customer.{0} as customerUID,customer.{1} as subscriptionID,project.{2} as projectUID from ProjectSubscription project inner join CustomerSubscription customer on project.{3} = customer.{4} where project.{5} = '{6}'",
                         ColumnName.CustomerUID, ColumnName.fk_ServiceTypeID, ColumnName.ProjectUID, ColumnName.fk_CustomerSubscriptionID, ColumnName.CustomerSubscriptionID, ColumnName.ProjectSubscriptionUID, dissociateProjectSubscription.SubscriptionUID);
@@ -697,7 +889,7 @@ namespace VSS.Subscription.Data
                 ProjectSubscriptionIdentifiers ids = connection.Query<ProjectSubscriptionIdentifiers>(readCustomerProjectQuery).FirstOrDefault();
                 connection.Close();
 
-                /// Updating CustomerData for Customer
+                // Updating CustomerData for Customer
                 var ReadExistingCustomerProjectQuery = String.Format("{0} where customer.{1} = '{2}' and customer.{3} = {4}", ReadAllCustomerProjectSubscriptionQuery,
                 ColumnName.CustomerUID, ids.customerUID, ColumnName.fk_ServiceTypeID, ids.subscriptionID);
                 connection.Open();
@@ -706,7 +898,15 @@ namespace VSS.Subscription.Data
                 connection.Close();
 
                 //Update Customer Subscription
-                UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+                upsertedCount = UpdateSubscriptionDatesForCustomer(connection, ids.customerUID, ids.subscriptionID, customerSubscriptionDataList);
+
+                if (upsertedCount == 0)
+                {
+                  Log.Error(String.Format("DissociateProjectSubscription: Failed to update Customer Subscription with UID {0} for existing customer with UID {1}.", ids.subscriptionID, ids.customerUID));
+                  return upsertedCount;
+                }
+                
+                return upsertedCount;
             }
         }
 
@@ -714,7 +914,7 @@ namespace VSS.Subscription.Data
 
         # region Customer Subscription
 
-        public void CreateCustomerSubscription(CreateCustomerSubscriptionEvent subscription)
+        public int CreateCustomerSubscription(CreateCustomerSubscriptionEvent subscription)
         {
             if (subscription.SubscriptionType != null && !_customerSubscriptionTypeCache.ContainsKey(subscription.SubscriptionType.ToLowerInvariant()))
                 throw new Exception("Invalid Project Subscription Type");
@@ -723,7 +923,7 @@ namespace VSS.Subscription.Data
             {
                 //Insert Customer Subscription
                 connection.Open();
-                connection.Execute(
+                int upsertedCount = connection.Execute(
                 string.Format(InsertCustomerSubscriptionQuery +
                         "values (@fk_CustomerUID, @fk_ServiceTypeID, @StartDate, @EndDate, @InsertUTC, @UpdateUTC);"
                 ),
@@ -737,10 +937,12 @@ namespace VSS.Subscription.Data
                     UpdateUTC = DateTime.UtcNow
                 });
                 connection.Close();
+
+                return upsertedCount;
             }
         }
 
-        public void UpdateCustomerSubscription(UpdateCustomerSubscriptionEvent subscription)
+        public int UpdateCustomerSubscription(UpdateCustomerSubscriptionEvent subscription)
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
@@ -757,14 +959,16 @@ namespace VSS.Subscription.Data
                 var updateCustomerSubscriptionIDQuery = string.Format("Update CustomerSubscription set {0} where {1} = '{2}'",
                      sb, ColumnName.CustomerUID, subscription.SubscriptionUID);
                 connection.Open();
-                connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
+                int upsertedCount = connection.Execute(updateCustomerSubscriptionIDQuery, null, commandType: CommandType.Text);
                 connection.Close();
+
+                return upsertedCount;
             }
         }
 
         # endregion
 
-        private static void UpdateSubscriptionDatesForCustomer(MySqlConnection connection, string customerUID, long subscriptionID, IEnumerable<ICustomerSubscriptionData> customerSubscriptionDataList)
+        public static int UpdateSubscriptionDatesForCustomer(MySqlConnection connection, string customerUID, long subscriptionID, IEnumerable<ICustomerSubscriptionData> customerSubscriptionDataList)
         {
             var minCustomerSubscriptionStartDate = DateTime.MaxValue;
             var maxCustomerSubscriptionEndDate = DateTime.MinValue;
@@ -786,9 +990,14 @@ namespace VSS.Subscription.Data
 
             var updateCustomerSubscriptionQuery = string.Format("Update CustomerSubscription set {0} where {1} = '{2}' and {3} = {4}",
                  sbCustomer, ColumnName.CustomerUID, customerUID, ColumnName.fk_ServiceTypeID, subscriptionID);
+
             connection.Open();
-            connection.Execute(updateCustomerSubscriptionQuery, null, commandType: CommandType.Text);
+
+            int upsertedCount = connection.Execute(updateCustomerSubscriptionQuery, null, commandType: CommandType.Text);
+
             connection.Close();
+
+            return upsertedCount;
         }
 
         private static long GetCustomerSubscriptionID(MySqlConnection connection, string customerUID, long subscriptionID)
@@ -805,7 +1014,7 @@ namespace VSS.Subscription.Data
 
         #region Read Operations
 
-        public List<CustomerSubscriptionModel> GetSubscriptionForCustomer(Guid customerGuid)
+      public List<CustomerSubscriptionModel> GetSubscriptionForCustomer(Guid customerGuid)
         {
             var readCustomerQuery = String.Format("select st.{0} as SubscriptionType,customer.{1},customer.{2} from CustomerSubscription customer inner join ServiceType st on customer.fk_ServiceTypeID = st.ServiceTypeID", ColumnName.Name, ColumnName.StartDate, ColumnName.EndDate);
             using (var connection = new MySqlConnection(_connectionString))

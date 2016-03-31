@@ -49,79 +49,92 @@ namespace VSS.Subscription.Processor
                     if ((token = json.SelectToken(tokenName = "CreateAssetSubscriptionEvent")) != null)
                     {
                         Log.Debug(String.Format("Recieved Create Asset Subscription Payload : {0} ", token.ToString()));
-                        var createAssetSubscriptionEvent =
-                          JsonConvert.DeserializeObject<CreateAssetSubscriptionEvent>(token.ToString());
-                        _subscriptionService.CreateAssetSubscription(createAssetSubscriptionEvent);
-                        success = true;
-                        //todo: figure out what to do with success - should i throw an exception on failure? or just log?
+                        
+                        var createAssetSubscriptionEvent = JsonConvert.DeserializeObject<CreateAssetSubscriptionEvent>(token.ToString());
+
+                        success = _subscriptionService.StoreSubscription(createAssetSubscriptionEvent) == 1;
+
+                        Log.Info(success ? "Asset Subscription created successfully" : "Failed to create Asset Subscription");
                     }
                     else if ((token = json.SelectToken(tokenName = "UpdateAssetSubscriptionEvent")) != null)
                     {
                         Log.Debug(String.Format("Recieved Update Asset Subscription Payload : {0} ", token.ToString()));
-                        var updateAssetSubscriptionEvent =
-                          JsonConvert.DeserializeObject<UpdateAssetSubscriptionEvent>(token.ToString());
-                        // todo what todo if the original didn't exist
-                        Log.Debug(String.Format("Recieved Update Asset Subscription Payload deserialized : {0} ", updateAssetSubscriptionEvent));
-                        _subscriptionService.UpdateAssetSubscription(updateAssetSubscriptionEvent);
-                        success = true;
+
+                        var updateAssetSubscriptionEvent =  JsonConvert.DeserializeObject<UpdateAssetSubscriptionEvent>(token.ToString());
+                        
+                        Log.Debug(String.Format("Recieved Update Asset Subscription Payload deserialized : {0} ", updateAssetSubscriptionEvent));                        
+                        
+                        int updatedCount = _subscriptionService.StoreSubscription(updateAssetSubscriptionEvent);
+
+                        success = (updatedCount == 1);
+
+                        Log.InfoFormat(success ? String.Format("Asset Subscription updated successfully: {0} record(s) updated", updatedCount) : "Failed to update Asset Subscription");
                     }
                     else if ((token = json.SelectToken(tokenName = "CreateProjectSubscriptionEvent")) != null)
                     {
                       Log.Debug(String.Format("Recieved Create Project Subscription Payload : {0} ", token.ToString()));
-                      var createProjectSubscriptionEvent =
-                        JsonConvert.DeserializeObject<CreateProjectSubscriptionEvent>(token.ToString());
+                      
+                      var createProjectSubscriptionEvent = JsonConvert.DeserializeObject<CreateProjectSubscriptionEvent>(token.ToString());
+                      
                       Log.DebugFormat("Project subscription {0}", createProjectSubscriptionEvent );
-                      // todo make sure a duplicate isn't created
-                      _subscriptionService.CreateProjectSubscription(createProjectSubscriptionEvent);
-                      success = true;
+                      
+                      success = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent) == 1;
+
+                      Log.Info(success ? "Project Subscription created successfully" : "Failed to create Project Subscription");
                     }
                     else if ((token = json.SelectToken(tokenName = "UpdateProjectSubscriptionEvent")) != null)
                     {
                       Log.Debug(String.Format("Recieved Update Project Subscription Payload : {0} ", token.ToString()));
-                      var updateProjectSubscriptionEvent =
-                        JsonConvert.DeserializeObject<UpdateProjectSubscriptionEvent>(token.ToString());
-                      // todo make sure this doesn't cause issues if sub is not present. 
-                      // Could fail because the sub hasn't been created
-                      _subscriptionService.UpdateProjectSubscription(updateProjectSubscriptionEvent);
-                      success = true;
+
+                      var updateProjectSubscriptionEvent = JsonConvert.DeserializeObject<UpdateProjectSubscriptionEvent>(token.ToString());
+
+                      int updatedCount = _subscriptionService.StoreSubscription(updateProjectSubscriptionEvent);
+
+                      success = (updatedCount == 1);
+
+                      Log.InfoFormat(success ? String.Format("Project Subscription updated successfully: {0} record(s) updated", updatedCount) : "Failed to update Project Subscription");
                     }
                     else if ((token = json.SelectToken(tokenName = "AssociateProjectSubscriptionEvent")) != null)
                     {
                       Log.Debug(String.Format("Recieved Associate Project Subscription Payload : {0} ", token.ToString()));
-                      var associateProjectSubscriptionEvent =
-                        JsonConvert.DeserializeObject<AssociateProjectSubscriptionEvent>(token.ToString());
-                      // todo make sure this doesn't cause issues if sub is not present. 
-                      // Could fail because the sub hasn't been created
-                      _subscriptionService.AssociateProjectSubscription(associateProjectSubscriptionEvent);
-                      success = true;
+
+                      var associateProjectSubscriptionEvent = JsonConvert.DeserializeObject<AssociateProjectSubscriptionEvent>(token.ToString());
+
+                      success = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent) == 1;
+
+                      Log.Info(success ? "Project Subscription was associated successfully" : "Failed to associate Project Subscription");
                     }
                     else if ((token = json.SelectToken(tokenName = "DissociateProjectSubscriptionEvent")) != null)
                     {
                       Log.Debug(String.Format("Recieved Dissociate Project Subscription Payload : {0} ", token.ToString()));
-                      var dissociateProjectSubscriptionEvent =
-                        JsonConvert.DeserializeObject<DissociateProjectSubscriptionEvent>(token.ToString());
-                      // todo make sure this doesn't cause issues if sub is not present. 
-                      // Could fail because the sub hasn't been created
-                      _subscriptionService.DissociateProjectSubscription(dissociateProjectSubscriptionEvent);
-                      success = true;
+
+                      var dissociateProjectSubscriptionEvent = JsonConvert.DeserializeObject<DissociateProjectSubscriptionEvent>(token.ToString());
+
+                      success = _subscriptionService.StoreSubscription(dissociateProjectSubscriptionEvent) == 1;
+
+                      Log.Info(success ? "Project Subscription was dissociated successfully" : "Failed to dissociate Project Subscription");
                     }
                     else if ((token = json.SelectToken(tokenName = "CreateCustomerSubscriptionEvent")) != null)
                     {
                         Log.Debug(String.Format("Recieved Create Customer Subscription Payload : {0} ", token.ToString()));
-                        var createCustomerSubscriptionEvent =
-                          JsonConvert.DeserializeObject<CreateCustomerSubscriptionEvent>(token.ToString());
-                        _subscriptionService.CreateCustomerSubscription(createCustomerSubscriptionEvent);
-                        success = true;
+
+                        var createCustomerSubscriptionEvent = JsonConvert.DeserializeObject<CreateCustomerSubscriptionEvent>(token.ToString());
+
+                        success = _subscriptionService.StoreSubscription(createCustomerSubscriptionEvent) == 1;
+
+                        Log.Info(success ? "Customer Subscription created successfully" : "Failed to create Customer Subscription");
                     }
                     else if ((token = json.SelectToken(tokenName = "UpdateCustomerSubscriptionEvent")) != null)
                     {
                         Log.Debug(String.Format("Recieved Update Customer Subscription Payload : {0} ", token.ToString()));
-                        var updateCustomerSubscriptionEvent =
-                          JsonConvert.DeserializeObject<UpdateCustomerSubscriptionEvent>(token.ToString());
-                        // todo make sure this doesn't cause issues if sub is not present. 
-                        // Could fail because the sub hasn't been created
-                        _subscriptionService.UpdateCustomerSubscription(updateCustomerSubscriptionEvent);
-                        success = true;
+
+                        var updateCustomerSubscriptionEvent = JsonConvert.DeserializeObject<UpdateCustomerSubscriptionEvent>(token.ToString());
+
+                        int updatedCount = _subscriptionService.StoreSubscription(updateCustomerSubscriptionEvent);
+
+                        success = (updatedCount == 1);
+
+                        Log.InfoFormat(success ? String.Format("Customer Subscription updated successfully: {0} record(s) updated", updatedCount) : "Failed to update Customer Subscription");
                     }
 
                   if (success)

@@ -65,7 +65,8 @@ namespace VSS.Subscription.Data.Tests
     public void AddAssetSubscription_ValidNewCustomerNewAssetSubscription_SucceedsInInsert()
     {
       var assetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      var upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
       var assetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
       Assert.NotNull(assetFetched);
 
@@ -82,7 +83,7 @@ namespace VSS.Subscription.Data.Tests
       var customerConfig = new ComparisonConfig { IgnoreObjectTypes = true, MaxMillisecondsDateDifference = 500, MaxDifferences = 0, MembersToIgnore = new List<string>() { "ActionUTC", "ReceivedUTC", "AssetUID", "SubscriptionUID" } };
       var customerCompareLogic = new CompareLogic(customerConfig);
       ComparisonResult customerResult = customerCompareLogic.Compare(assetSubscription, customerFetched);
-      Assert.True(assetResult.Differences.Count == 0);
+      Assert.True(customerResult.Differences.Count == 0);
     }
 
     [TestMethod]
@@ -93,15 +94,16 @@ namespace VSS.Subscription.Data.Tests
       var assetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
       assetSubscription.StartDate = DateTime.Now.AddDays(-2).Date;
       assetSubscription.EndDate = DateTime.Now.Date;
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
-
+      var upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
       //Create a New Asset with same Customer
       assetSubscription.SubscriptionUID = Guid.NewGuid();
       assetSubscription.AssetUID = Guid.NewGuid();
       assetSubscription.StartDate = DateTime.Now.Date;
       assetSubscription.EndDate = DateTime.Now.AddDays(2).Date;
 
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
       var assetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
       assetFetched.AssetUID = new Guid(assetFetched.AssetUIDString);
       assetFetched.SubscriptionUID = new Guid(assetFetched.SubscriptionUIDString);
@@ -119,7 +121,7 @@ namespace VSS.Subscription.Data.Tests
       assetSubscription.StartDate = DateTime.Now.AddDays(-2).Date;
       assetSubscription.EndDate = DateTime.Now.AddDays(2).Date;
       ComparisonResult customerResult = customerCompareLogic.Compare(assetSubscription, customerFetched);
-      Assert.True(assetResult.Differences.Count == 0);
+      Assert.True(customerResult.Differences.Count == 0);
     }
 
     [TestMethod]
@@ -128,14 +130,16 @@ namespace VSS.Subscription.Data.Tests
     {
       //Create a New Customer and Asset
       var assetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      var upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
 
       //Create a New Asset with same Customer
       assetSubscription.AssetUID = Guid.NewGuid();
       assetSubscription.StartDate = DateTime.Now.Date;
       assetSubscription.EndDate = DateTime.Now.Date;
 
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
       var assetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
       assetFetched.AssetUID = new Guid(assetFetched.AssetUIDString);
       assetFetched.SubscriptionUID = new Guid(assetFetched.SubscriptionUIDString);
@@ -152,7 +156,7 @@ namespace VSS.Subscription.Data.Tests
       assetSubscription.StartDate = DateTime.Now.AddDays(-1).Date;
       assetSubscription.EndDate = DateTime.Now.AddDays(1).Date;
       ComparisonResult customerResult = customerCompareLogic.Compare(assetSubscription, customerFetched);
-      Assert.True(assetResult.Differences.Count == 0);
+      Assert.True(customerResult.Differences.Count == 0);
     }
 
     [TestMethod]
@@ -161,14 +165,16 @@ namespace VSS.Subscription.Data.Tests
     {
       //Create a New Customer and Asset
       var assetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      var upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
 
       //Create a New Asset with same Customer
       assetSubscription.AssetUID = Guid.NewGuid();
       assetSubscription.StartDate = DateTime.Now.AddDays(-1).Date;
       assetSubscription.EndDate = DateTime.Now.AddDays(1).Date;
 
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
       var assetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
       assetFetched.AssetUID = new Guid(assetFetched.AssetUIDString);
       assetFetched.SubscriptionUID = new Guid(assetFetched.SubscriptionUIDString);
@@ -182,7 +188,7 @@ namespace VSS.Subscription.Data.Tests
       var customerConfig = new ComparisonConfig { IgnoreObjectTypes = true, MaxMillisecondsDateDifference = 500, MaxDifferences = 0, MembersToIgnore = new List<string>() { "ActionUTC", "ReceivedUTC", "AssetUID", "SubscriptionUID" } };
       var customerCompareLogic = new CompareLogic(customerConfig);
       ComparisonResult customerResult = customerCompareLogic.Compare(assetSubscription, customerFetched);
-      Assert.True(assetResult.Differences.Count == 0);
+      Assert.True(customerResult.Differences.Count == 0);
     }
 
     [TestMethod]
@@ -191,12 +197,14 @@ namespace VSS.Subscription.Data.Tests
     {
       //Create a New Customer and Asset
       var assetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      var upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
 
       //Create a Same Asset with same Customer
       var updateAssetSubscription = GetMeAnUpdateAssetSubscriptionEvent(assetSubscription.SubscriptionUID,
           startDate: DateTime.UtcNow.AddDays(-2).Date, endDate: DateTime.UtcNow.AddDays(2).Date);
-      _subscriptionService.UpdateAssetSubscription(updateAssetSubscription);
+      upsertedCount = _subscriptionService.UpdateAssetSubscription(updateAssetSubscription);
+      Assert.True(upsertedCount > 0);
       var assetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
       Assert.NotNull(assetFetched);
       assetFetched.AssetUID = new Guid(assetFetched.AssetUIDString);
@@ -215,7 +223,7 @@ namespace VSS.Subscription.Data.Tests
       var customerConfig = new ComparisonConfig { IgnoreObjectTypes = true, MaxMillisecondsDateDifference = 500, MaxDifferences = 0, MembersToIgnore = new List<string>() { "ActionUTC", "ReceivedUTC", "AssetUID", "SubscriptionUID" } };
       var customerCompareLogic = new CompareLogic(customerConfig);
       ComparisonResult customerResult = customerCompareLogic.Compare(assetSubscription, customerFetched);
-      Assert.True(assetResult.Differences.Count == 0);
+      Assert.True(customerResult.Differences.Count == 0);
     }
 
     [TestMethod]
@@ -224,12 +232,14 @@ namespace VSS.Subscription.Data.Tests
     {
       //Create a New Customer and Asset
       var assetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      var upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
 
       //Create a Same Asset with same Customer
       var updateAssetSubscription = GetMeAnUpdateAssetSubscriptionEvent(assetSubscription.SubscriptionUID, AssetGuid: Guid.NewGuid(),
           startDate: DateTime.UtcNow.AddDays(-2).Date, endDate: DateTime.UtcNow.AddDays(2).Date);
-      _subscriptionService.UpdateAssetSubscription(updateAssetSubscription);
+      upsertedCount = _subscriptionService.UpdateAssetSubscription(updateAssetSubscription);
+      Assert.True(upsertedCount > 0);
       var assetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
       Assert.NotNull(assetFetched);
       assetFetched.AssetUID = new Guid(assetFetched.AssetUIDString);
@@ -249,7 +259,7 @@ namespace VSS.Subscription.Data.Tests
       var customerConfig = new ComparisonConfig { IgnoreObjectTypes = true, MaxMillisecondsDateDifference = 500, MaxDifferences = 0, MembersToIgnore = new List<string>() { "ActionUTC", "ReceivedUTC", "AssetUID", "SubscriptionUID" } };
       var customerCompareLogic = new CompareLogic(customerConfig);
       ComparisonResult customerResult = customerCompareLogic.Compare(assetSubscription, customerFetched);
-      Assert.True(assetResult.Differences.Count == 0);
+      Assert.True(customerResult.Differences.Count == 0);
     }
 
     [TestMethod]
@@ -258,13 +268,15 @@ namespace VSS.Subscription.Data.Tests
     {
       //Create a New Customer and Asset
       var assetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      var upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
       var oldAssetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
 
       //Create a New Asset with New Customer
       var updateAssetSubscription = GetMeAnUpdateAssetSubscriptionEvent(assetSubscription.SubscriptionUID, AssetGuid: Guid.NewGuid(), customerGuid: Guid.NewGuid(),
           startDate: DateTime.UtcNow.AddDays(-2).Date, endDate: DateTime.UtcNow.AddDays(2).Date);
-      _subscriptionService.UpdateAssetSubscription(updateAssetSubscription);
+      upsertedCount = _subscriptionService.UpdateAssetSubscription(updateAssetSubscription);
+      Assert.True(upsertedCount > 0);
       var assetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
       Assert.NotNull(assetFetched);
       assetFetched.AssetUID = new Guid(assetFetched.AssetUIDString);
@@ -285,7 +297,7 @@ namespace VSS.Subscription.Data.Tests
       var customerCompareLogic = new CompareLogic(customerConfig);
       assetSubscription.CustomerUID = updateAssetSubscription.CustomerUID.Value;
       ComparisonResult customerResult = customerCompareLogic.Compare(assetSubscription, customerFetched);
-      Assert.True(assetResult.Differences.Count == 0);
+      Assert.True(customerResult.Differences.Count == 0);
       var OldCustomerFetched = getCustomerSubscription(oldAssetFetched.CustomerSubscriptionID);
       Assert.Null(OldCustomerFetched);
     }
@@ -298,18 +310,21 @@ namespace VSS.Subscription.Data.Tests
       var firstAssetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
       firstAssetSubscription.StartDate = DateTime.UtcNow.AddDays(-3).Date;
       firstAssetSubscription.EndDate = DateTime.UtcNow.AddDays(3).Date;
-      _subscriptionService.CreateAssetSubscription(firstAssetSubscription);
+      var upsertedCount = _subscriptionService.CreateAssetSubscription(firstAssetSubscription);
+      Assert.True(upsertedCount > 0);
 
       //Create a New Customer and Asset
       var assetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
       assetSubscription.CustomerUID = firstAssetSubscription.CustomerUID;
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
       var oldAssetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
 
       //Create a New Asset with New Customer
       var updateAssetSubscription = GetMeAnUpdateAssetSubscriptionEvent(assetSubscription.SubscriptionUID, AssetGuid: Guid.NewGuid(), customerGuid: new Guid("71d38732-8440-4c0e-a425-c42eef460e91"),
           startDate: DateTime.UtcNow.AddDays(-2).Date, endDate: DateTime.UtcNow.AddDays(2).Date);
-      _subscriptionService.UpdateAssetSubscription(updateAssetSubscription);
+      upsertedCount = _subscriptionService.UpdateAssetSubscription(updateAssetSubscription);
+      Assert.True(upsertedCount > 0);
       var assetFetched = getAssetSubscription(assetSubscription.SubscriptionUID);
       Assert.NotNull(assetFetched);
       assetFetched.AssetUID = new Guid(assetFetched.AssetUIDString);
@@ -332,7 +347,7 @@ namespace VSS.Subscription.Data.Tests
       assetSubscription.StartDate = firstAssetSubscription.StartDate;
       assetSubscription.EndDate = firstAssetSubscription.EndDate;
       ComparisonResult customerResult = customerCompareLogic.Compare(assetSubscription, customerFetched);
-      Assert.True(assetResult.Differences.Count == 0);
+      Assert.True(customerResult.Differences.Count == 0);
     }
 
     [TestMethod]
@@ -343,12 +358,14 @@ namespace VSS.Subscription.Data.Tests
       var firstAssetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
       firstAssetSubscription.StartDate = DateTime.UtcNow.AddDays(-3).Date;
       firstAssetSubscription.EndDate = DateTime.UtcNow.AddDays(3).Date;
-      _subscriptionService.CreateAssetSubscription(firstAssetSubscription);
+      var upsertedCount = _subscriptionService.CreateAssetSubscription(firstAssetSubscription);
+      Assert.True(upsertedCount > 0);
 
       //Create a New Customer and Asset
       var assetSubscription = GetMeACreateAssetSubscriptionEvent("Essentials");
       assetSubscription.CustomerUID = firstAssetSubscription.CustomerUID;
-      _subscriptionService.CreateAssetSubscription(assetSubscription);
+      upsertedCount = _subscriptionService.CreateAssetSubscription(assetSubscription);
+      Assert.True(upsertedCount > 0);
 
       var customerSubscriptionModelList = _subscriptionService.GetSubscriptionForCustomer(firstAssetSubscription.CustomerUID);
       var customerConfig = new ComparisonConfig { IgnoreObjectTypes = true, MaxMillisecondsDateDifference = 500, MaxDifferences = 0, MembersToIgnore = new List<string>() { "ActionUTC", "ReceivedUTC", "AssetUID", "DeviceUID", "SubscriptionUID", "CustomerUID" } };
