@@ -1,20 +1,21 @@
-CREATE TABLE IF NOT EXISTS projects (
-  projectId INT(10) UNSIGNED NOT NULL COMMENT '',
-  name VARCHAR(255) NOT NULL COMMENT '',
-  timeZone VARCHAR(255) NOT NULL COMMENT '',
-  retrievalStartedAt DATETIME NOT NULL COMMENT '',
-  daysToSubscriptionExpiry int(11) DEFAULT NULL,
-  projectUid varchar(36) DEFAULT NULL,
-  customerUid varchar(36) DEFAULT NULL,
-  subscriptionUid varchar(36) DEFAULT NULL,
-  lastActionedUTC datetime DEFAULT NULL,
-  projectStartDate datetime DEFAULT NULL,
-  projectEndDate datetime DEFAULT NULL,
-  projectType INT(10) UNSIGNED DEFAULT NULL COMMENT '',
-  InsertUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  UpdateUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  PRIMARY KEY (projectId)  COMMENT '',
-  UNIQUE INDEX projectId_UNIQUE (projectId ASC)  COMMENT '')
+CREATE TABLE IF NOT EXISTS `Project` (
+  `ID` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `ProjectID` INT(10) UNSIGNED NOT NULL COMMENT '',
+  `Name` VARCHAR(255) NOT NULL COMMENT '',
+  `TimeZone` VARCHAR(255) NOT NULL COMMENT '',
+  `RetrievalStartedAt` DATETIME NOT NULL COMMENT '',
+  `ProjectUID` varchar(36) DEFAULT NULL,
+  `CustomerUID` varchar(36) DEFAULT NULL,
+  `SubscriptionUID` varchar(36) DEFAULT NULL,
+  `IsDeleted` tinyint(4) DEFAULT 0,
+  `LastActionedUTC` datetime(6) DEFAULT NULL,
+  `StartDate` datetime DEFAULT NULL,
+  `EndDate` datetime DEFAULT NULL,
+  `fk_ProjectTypeID` INT(10) UNSIGNED DEFAULT NULL COMMENT '',
+  `InsertUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  `UpdateUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (`ID`)  COMMENT '',
+  UNIQUE INDEX `UIX_Project_ProjectID` (`ProjectID` ASC)  COMMENT '')
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
