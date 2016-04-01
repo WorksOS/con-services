@@ -7,7 +7,6 @@ using Common.Logging;
 using java.util;
 using org.apache.kafka.clients.consumer;
 using VSS.UserCustomer.Data.Interfaces;
-using VSS.UserCustomer.Processor.Consumer;
 using VSS.UserCustomer.Processor.Interfaces;
 using VSS.Kafka.DotNetClient.Model;
 using Random = System.Random;
@@ -16,9 +15,7 @@ namespace VSS.UserCustomer.Processor
 {
   public class UserCustomerProcessor : IUserCustomerProcessor
   {
-    private readonly IObserver<ConsumerInstanceResponse> _observer;
     private readonly UserCustomerEventObserver _subscriber;
-    private readonly ConsumerWrapper _consumerWrapper;
     private readonly KafkaConsumer javaConsumer;
 
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -59,13 +56,13 @@ namespace VSS.UserCustomer.Processor
 
     private void JavaConsumerWorker()
     {
-      var buffer = new List<ConsumerInstanceResponse>();
+      var buffer = new List<ConsumerRecord>();
       const int minBatchSize = 1;
 
       while (true)
       {
         var records = javaConsumer.poll(100);
-        buffer.AddRange(records.Cast<ConsumerInstanceResponse>());
+        buffer.AddRange(records.Cast<ConsumerRecord>());
 
         if (buffer.Count < minBatchSize) continue;
 

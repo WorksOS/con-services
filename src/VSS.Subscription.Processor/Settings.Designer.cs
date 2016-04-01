@@ -25,7 +25,7 @@ namespace VSS.Subscription.Processor {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("MasterDataSubscriptionConsumer")]
+        [global::System.Configuration.DefaultSettingValueAttribute("MasterDataSubscriptionConsumerJeannie1b")]
         public string ConsumerGroupName {
             get {
                 return ((string)(this["ConsumerGroupName"]));
@@ -34,10 +34,19 @@ namespace VSS.Subscription.Processor {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Alpha")]
+        [global::System.Configuration.DefaultSettingValueAttribute("VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Merino")]
         public string TopicName {
             get {
                 return ((string)(this["TopicName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10.210.246.165:9092")]
+        public string KafkaUri {
+            get {
+                return ((string)(this["KafkaUri"]));
             }
         }
     }

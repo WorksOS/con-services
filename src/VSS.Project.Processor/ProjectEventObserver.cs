@@ -4,14 +4,14 @@ using log4net;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using VSS.Kafka.DotNetClient.Model;
+using org.apache.kafka.clients.consumer;
 using VSS.Project.Data.Interfaces;
 using VSS.Project.Data.Models;
 using VSS.Project.Processor.Helpers;
 
 namespace VSS.Project.Processor
 {
-  public class ProjectEventObserver : IObserver<ConsumerInstanceResponse>
+  public class ProjectEventObserver : IObserver<ConsumerRecord>
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     private IProjectService _ProjectService;
@@ -31,12 +31,11 @@ namespace VSS.Project.Processor
       Log.DebugFormat("Failed consuming subcscription event messages: {0} ", error.ToString());
     }
 
-    public void OnNext(ConsumerInstanceResponse value)
+    public void OnNext(ConsumerRecord value)
     {
       Log.Debug("ProjectEventObserver.OnNext()");
       try
       {
-
           string val = value.ToString();
 
           bool success = false;

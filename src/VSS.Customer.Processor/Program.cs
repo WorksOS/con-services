@@ -9,7 +9,6 @@ using Topshelf.Runtime;
 using VSS.Customer.Data;
 using VSS.Customer.Data.Interfaces;
 using VSS.Kafka.DotNetClient.Model;
-using VSS.Customer.Processor.Consumer;
 using VSS.Customer.Processor.Interfaces;
 
 namespace VSS.Customer.Processor
@@ -57,21 +56,12 @@ namespace VSS.Customer.Processor
       if (string.IsNullOrWhiteSpace(confluentBaseUrl))
         throw new ArgumentNullException("RestProxy Base Url is empty");
 
-      string kafkaTopicName = Settings.Default.TopicName;
-      string consumerGroupName = Settings.Default.ConsumerGroupName;
-
-      builder.Register(config =>
-      {
-        var consumerConfigurator = new ConsumerConfigurator(confluentBaseUrl, kafkaTopicName, consumerGroupName,
-          Dns.GetHostName(), 1024);
-        return consumerConfigurator;
-      }).As<IConsumerConfigurator>().SingleInstance();
-
       builder.RegisterType<CustomerProcessor>().As<ICustomerProcessor>().SingleInstance();
       builder.RegisterType<CustomerEventObserver>().As<IObserver<ConsumerInstanceResponse>>().SingleInstance();
       builder.RegisterType<MySqlCustomerRepository>().As<ICustomerService>().SingleInstance();
 
       Container = builder.Build();
+
       return Container.Resolve<ServiceController>();
     }
   }

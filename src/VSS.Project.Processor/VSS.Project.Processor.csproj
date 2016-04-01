@@ -150,8 +150,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Consumer\ConsumerConfigurator.cs" />
-    <Compile Include="Consumer\ConsumerWrapper.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="Interfaces\IConsumer.cs" />
     <Compile Include="Interfaces\IConsumerConfigurator.cs" />

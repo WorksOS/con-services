@@ -6,9 +6,7 @@ using log4net;
 using System;
 using System.Reflection;
 using org.apache.kafka.clients.consumer;
-using VSS.Kafka.DotNetClient.Model;
 using VSS.Project.Data.Interfaces;
-using VSS.Project.Processor.Consumer;
 using VSS.Project.Processor.Interfaces;
 using Random = System.Random;
 
@@ -16,13 +14,11 @@ namespace VSS.Project.Processor
 {
   public class ProjectProcessor : IProjectProcessor
   {
-    private readonly IObserver<ConsumerInstanceResponse> _observer;
     private readonly ProjectEventObserver _subscriber;
-    private readonly ConsumerWrapper _consumerWrapper;
     private readonly KafkaConsumer javaConsumer;
 
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    public ProjectProcessor(IProjectService service, IConsumerConfigurator configurator)
+    public ProjectProcessor(IProjectService service)
     {
         try
         {
@@ -58,13 +54,13 @@ namespace VSS.Project.Processor
 
     private void JavaConsumerWorker()
     {
-      var buffer = new List<ConsumerInstanceResponse>();
+      var buffer = new List<ConsumerRecord>();
       const int minBatchSize = 1;
 
       while (true)
       {
         var records = javaConsumer.poll(100);
-        buffer.AddRange(records.Cast<ConsumerInstanceResponse>());
+        buffer.AddRange(records.Cast<ConsumerRecord>());
 
         if (buffer.Count < minBatchSize) continue;
 

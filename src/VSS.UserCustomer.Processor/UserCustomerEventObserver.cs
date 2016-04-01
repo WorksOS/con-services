@@ -4,6 +4,7 @@ using log4net;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using org.apache.kafka.clients.consumer;
 using VSP.MasterData.Common.Logging;
 using VSS.UserCustomer.Data.Interfaces;
 using VSS.UserCustomer.Data.Models;
@@ -12,7 +13,7 @@ using VSS.Kafka.DotNetClient.Model;
 
 namespace VSS.UserCustomer.Processor
 {
-  public class UserCustomerEventObserver : IObserver<ConsumerInstanceResponse>
+  public class UserCustomerEventObserver : IObserver<ConsumerRecord>
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     private IUserCustomerService _userCustomerService;
@@ -32,7 +33,7 @@ namespace VSS.UserCustomer.Processor
       Log.IfError("Failed consuming customer event messages");
     }
 
-    public void OnNext(ConsumerInstanceResponse value)
+    public void OnNext(ConsumerRecord value)
     {
       try
       {
@@ -98,7 +99,6 @@ namespace VSS.UserCustomer.Processor
         //deliberately supppress
         Log.Error("Error  occured while Processing the Subscription Payload", ex);
       }
-      value.Commit();
     }
   }
 }
