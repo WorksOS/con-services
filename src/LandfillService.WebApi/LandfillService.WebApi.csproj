@@ -255,14 +255,6 @@
       <Project>{C455920E-769A-42CE-95A5-FC7CC5CBC3A6}</Project>
       <Name>VSS.Subscription.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.VisionLink.Landfill.Common.Interfaces\VSS.VisionLink.Landfill.Common.Interfaces.csproj">
-      <Project>{44cd2027-f652-4ede-bfed-2c9555d56440}</Project>
-      <Name>VSS.VisionLink.Landfill.Common.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VSS.VisionLink.Landfill.Common.Models\VSS.VisionLink.Landfill.Common.Models.csproj">
-      <Project>{ebca4af6-ceac-45a1-8014-5e40a24cbc67}</Project>
-      <Name>VSS.VisionLink.Landfill.Common.Models</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VSS.VisionLink.Landfill.Repositories\VSS.VisionLink.Landfill.Repositories.csproj">
       <Project>{80b92674-9bb2-4131-8053-701757f9eb03}</Project>
       <Name>VSS.VisionLink.Landfill.Repositories</Name>
