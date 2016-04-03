@@ -97,10 +97,10 @@ namespace VSS.Project.Data
         connection.Open();
         var existing = connection.Query<Models.Project>
           (@"SELECT 
-                  projectUid, name, projectId, timeZone, customerUid, subscriptionUid, 
-                  daysToSubscriptionExpiry, lastActionedUtc
-                FROM projects
-                WHERE projectUid = @projectUid", new { project.projectUid }).FirstOrDefault();
+                  ProjectUID, Name, ProjectID, TimeZone, CustomerUID, SubscriptionUID, 
+                  LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID AS ProjectType, IsDeleted
+                FROM Project
+                WHERE ProjectUID = @projectUid", new { project.projectUid }).FirstOrDefault();
 
         if (eventType == "CreateProjectEvent")
         {
@@ -135,10 +135,10 @@ namespace VSS.Project.Data
         if (project.lastActionedUtc >= existing.lastActionedUtc)
         {
           const string update =
-            @"UPDATE projects                
-                SET customerUid = @customerUid,
-                  lastActionedUTC = @lastActionedUtc
-              WHERE projectUid = @projectUid";
+            @"UPDATE Project                
+                SET customerUID = @customerUid,
+                  LastActionedUTC = @lastActionedUtc
+              WHERE ProjectUID = @projectUid";
           return connection.Execute(update, project);
         }
         else
@@ -160,8 +160,8 @@ namespace VSS.Project.Data
       if (existing == null)
       {
         const string insert =
-          @"INSERT projects
-                (projectId, name, timeZone, projectUid, lastActionedUtc, projectStartDate, projectEndDate, projectType)
+          @"INSERT Project
+                (ProjectID, Name, TimeZone, ProjectUID, LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID)
                 VALUES
                 (@projectId, @name, @timeZone, @projectUid, @lastActionedUtc, @projectStartDate, @projectEndDate, @projectType)";
         return connection.Execute(insert, project);
@@ -180,21 +180,21 @@ namespace VSS.Project.Data
         if (project.lastActionedUtc >= existing.lastActionedUtc)
         {
           const string update =
-            @"UPDATE projects                
+            @"UPDATE Project                
                 SET IsDeleted = 1,
-                  lastActionedUtc = @lastActionedUtc
-              WHERE projectUid = @projectUid";
+                  LastActionedUTC = @lastActionedUtc
+              WHERE ProjectUID = @projectUid";
           return connection.Execute(update, project);
         }
         else
         {
-          Log.DebugFormat("ProjectRepository: old delete event ignored currentActionedUTC{0} newActionedUTC{1}",
+          Log.DebugFormat("ProjectRepository: old delete event ignored currentActionedUTC={0} newActionedUTC={1}",
             existing.lastActionedUtc, project.lastActionedUtc);
         }
       }
       else
       {
-        Log.DebugFormat("ProjectRepository: can't delete as none existing newActionedUTC {0}",
+        Log.DebugFormat("ProjectRepository: can't delete as none existing newActionedUTC={0}",
           project.lastActionedUtc);
       }
       return 0;
@@ -207,23 +207,23 @@ namespace VSS.Project.Data
         if (project.lastActionedUtc >= existing.lastActionedUtc)
         {
           const string update =
-            @"UPDATE projects                
-                SET name = @name,
-                  lastActionedUTC = @lastActionedUtc,
-                  projectEndDate=@projectEndDate, 
-                  projectType=@projectType
-              WHERE projectUid = @projectUid";
+            @"UPDATE Project                
+                SET Name = @name,
+                  LastActionedUTC = @lastActionedUtc,
+                  EndDate = @projectEndDate, 
+                  fk_ProjectTypeID = @projectType
+              WHERE ProjectUID = @projectUid";
           return connection.Execute(update, project);
         }
         else
         {
-          Log.DebugFormat("ProjectRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
+          Log.DebugFormat("ProjectRepository: old update event ignored currentActionedUTC={0} newActionedUTC={1}",
             existing.lastActionedUtc, project.lastActionedUtc);
         }
       }
       else
       {
-        Log.DebugFormat("ProjectRepository: can't update as none existing newActionedUTC {0}",
+        Log.DebugFormat("ProjectRepository: can't update as none existing newActionedUTC={0}",
           project.lastActionedUtc);
       }
       return 0;
@@ -237,10 +237,10 @@ namespace VSS.Project.Data
         connection.Open();
         project = connection.Query<Models.Project>
           (@"SELECT 
-                   projectUid, name, projectId, timeZone, customerUid, subscriptionUid, 
-                    daysToSubscriptionExpiry, lastActionedUtc, IsDeleted
-                FROM projects
-                WHERE projectUid = @projectUid AND IsDeleted=0"
+                   ProjectUID, Name, ProjectID, TimeZone, CustomerUID, SubscriptionUID, 
+                    LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
+                FROM Project
+                WHERE ProjectUID = @projectUid AND IsDeleted = 0"
             , new {projectUid}
           ).FirstOrDefault();
         connection.Close();
@@ -256,10 +256,10 @@ namespace VSS.Project.Data
         connection.Open();
         projects = connection.Query<Models.Project>
           (@"SELECT 
-                   projectUid, name, projectId, timeZone, customerUid, subscriptionUid, 
-                    daysToSubscriptionExpiry, lastActionedUtc, IsDeleted
-                FROM projects
-                WHERE subscriptionUid = @subscriptionUid AND IsDeleted=0"
+                   ProjectUID, Name, ProjectID, TimeZone, CustomerUID, SubscriptionUID, 
+                    LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
+                FROM Project
+                WHERE SubscriptionUID = @subscriptionUid AND IsDeleted = 0"
           );
         connection.Close();
       }
@@ -273,11 +273,12 @@ namespace VSS.Project.Data
       {
         connection.Open();
         projects = connection.Query<Models.Project>
-          (@"SELECT 
-                   projectUid, name, projectId, timeZone, customerUid, subscriptionUid, 
-                    daysToSubscriptionExpiry, lastActionedUtc, IsDeleted, projectStartDate, projectEndDate, projectType
-                FROM projects
-                WHERE  IsDeleted=0");
+         (@"SELECT 
+                   ProjectUID, Name, ProjectID, TimeZone, CustomerUID, SubscriptionUID, 
+                    LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
+                FROM Project
+                WHERE IsDeleted = 0"
+         );
         connection.Close();
       }
       return projects;

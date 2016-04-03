@@ -112,7 +112,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Project.cs" />
     <Compile Include="Bookmark.cs" />
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="GeneratedEnums.cs">
