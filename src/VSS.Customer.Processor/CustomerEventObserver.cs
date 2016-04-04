@@ -59,7 +59,7 @@ namespace VSS.Customer.Processor
             else
             {
               //Customer Type cannot be changed, If duplicate message is received with different customer type need to skip it
-              if (existingCustomer.fk_CustomerTypeID ==
+              if (existingCustomer.CustomerType ==
                   (CustomerType) Enum.Parse(typeof (CustomerType), createCustomerEvent.CustomerType.ToString(), true))
               {
                 Log.InfoFormat("Customer already exists with CustomerUid:{0}, starting to update existing customer", createCustomerEvent.CustomerUID);

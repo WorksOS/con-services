@@ -37,9 +37,9 @@ public class AuthUtilities
               x =>
                 new AssociatedCustomer()
                 {
-                  CustomerUID = Guid.Parse(x.CustomerUID),
+                  CustomerUID = Guid.Parse(x.CustomerUid),
                   CustomerName = x.CustomerName,
-                  CustomerType = (CustomerType) x.fk_CustomerTypeID
+                  CustomerType = (VSP.MasterData.Customer.WebAPI.Models.CustomerType)(int)x.CustomerType
                 }).ToList();
           errorMessage = "";
           return associatedCustomers;

@@ -4,10 +4,10 @@ namespace VSS.Customer.Data.Models
 {
   public class Customer
   {
-    public Int32 CustomerID { get; set; }
+    public Int32 CustomerId { get; set; }
     public string CustomerName { get; set; }
-    public CustomerType fk_CustomerTypeID { get; set; }
-    public string CustomerUID { get; set; }
-    public DateTime LastActionedUTC { get; set; }
+    public CustomerType CustomerType { get; set; }
+    public string CustomerUid { get; set; }
+    public DateTime LastActionedUtc { get; set; }
   }
 }
