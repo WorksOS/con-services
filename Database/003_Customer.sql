@@ -1,6 +1,4 @@
 
-
-
 CREATE TABLE IF NOT EXISTS `Customer` (
   `ID` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `CustomerUID` varchar(64) NOT NULL,

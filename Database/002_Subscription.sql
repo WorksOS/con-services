@@ -5,11 +5,11 @@ CREATE TABLE IF NOT EXISTS `Subscription` (
   `SubscriptionUID` varchar(36) NOT NULL,
   `CustomerUID` varchar(36) NOT NULL,
   `StartDate` datetime(6) DEFAULT NULL,
+  `EndDate` datetime DEFAULT NULL,
   `EffectiveUTC` datetime(6) DEFAULT NULL,
   `LastActionedUTC` datetime(6) DEFAULT NULL,
   `InsertUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  `UpdateUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  `EndDate` datetime DEFAULT NULL,
+  `UpdateUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),  
   UNIQUE KEY `UIX_Subscription_SubscriptionUID` (`SubscriptionUID`),
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
