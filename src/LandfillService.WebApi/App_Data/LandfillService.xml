@@ -792,10 +792,5 @@
             <param name="entries">array of weight entries</param>
             <returns>Project data and status of volume retrieval</returns>
         </member>
-        <member name="T:LandfillService.WebApi.TimeZone">
-            <summary>
-            Encapsulates time zone conversion functions
-            </summary>
-        </member>
     </members>
 </doc>

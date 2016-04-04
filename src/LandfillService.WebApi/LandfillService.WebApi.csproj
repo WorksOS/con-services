@@ -105,6 +105,7 @@
   <ItemGroup>
     <Folder Include="ApiClients\" />
     <Folder Include="App_Data\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -152,7 +153,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\TimeZone.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -254,10 +254,6 @@
     <ProjectReference Include="..\VSS.Subscription.Data\VSS.Subscription.Data.csproj">
       <Project>{C455920E-769A-42CE-95A5-FC7CC5CBC3A6}</Project>
       <Name>VSS.Subscription.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VSS.VisionLink.Landfill.Repositories\VSS.VisionLink.Landfill.Repositories.csproj">
-      <Project>{80b92674-9bb2-4131-8053-701757f9eb03}</Project>
-      <Name>VSS.VisionLink.Landfill.Repositories</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

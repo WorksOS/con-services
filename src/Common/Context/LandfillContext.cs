@@ -71,7 +71,7 @@ namespace LandfillService.WebApi.Models
         {
             return InTransaction((conn) =>
             {
-              var command = @"SELECT prj.ProjectID, prj.Name, prj.TimeZone, 
+              var command = @"SELECT prj.ProjectID, prj.Name, prj.LandfillTimeZone as TimeZone, 
                                      sub.StartDate AS SubStartDate, sub.EndDate AS SubEndDate 
                               FROM Project prj  
                               JOIN CustomerUser cu ON prj.CustomerUID = cu.fk_CustomerUID
@@ -191,16 +191,14 @@ namespace LandfillService.WebApi.Models
         {
             WithConnection<object>((conn) =>
             {
-                var command = @"INSERT INTO Entries (ProjectID, Date, Weight, InsertUTC, UpdateUTC) 
-                                VALUES (@projectId, @date, @weight, @insertUtc, @updateUtc) 
+                var command = @"INSERT INTO Entries (ProjectID, Date, Weight) 
+                                VALUES (@projectId, @date, @weight) 
                                 ON DUPLICATE KEY UPDATE Weight = @weight";
 
-                MySqlHelper.ExecuteNonQuery(conn, command,
-                    new MySqlParameter("@projectId", projectId),
-                    new MySqlParameter("@date", entry.date),
-                    new MySqlParameter("@weight", entry.weight),
-                    new MySqlParameter("@insertUtc", DateTime.UtcNow),
-                    new MySqlParameter("@updateUtc", DateTime.UtcNow));
+              MySqlHelper.ExecuteNonQuery(conn, command,
+                  new MySqlParameter("@projectId", projectId),
+                  new MySqlParameter("@date", entry.date),
+                  new MySqlParameter("@weight", entry.weight));
 
                 return null;
             });
@@ -259,7 +257,7 @@ namespace LandfillService.WebApi.Models
       {
         return InTransaction((conn) =>
         {
-          var command = @"SELECT DISTINCT prj.ProjectID, prj.TimeZone 
+          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone
                           FROM Project prj 
                           LEFT JOIN Entries etr ON prj.ProjectID = etr.ProjectID 
                           WHERE Weight IS NOT NULL;";

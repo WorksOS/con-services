@@ -11,13 +11,10 @@ using System.Web;
 using System.Web.Mvc;
 using LandfillService.WebApi.Models;
 using LandfillService.WebApi.ApiClients;
-using System.Collections;
 using System.Web.Hosting;
-using LandfillService.Common.Contracts;
 using LandfillService.Common;
 using NodaTime;
 using System.Reflection;
-using VSS.VisionLink.Landfill.Repositories;
 using VSS.VisionLink.Utilization.WebApi.Configuration;
 
 namespace LandfillService.WebApi.Controllers

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
@@ -32,7 +33,8 @@ namespace VSS.Project.Data
         var projectEvent = (CreateProjectEvent)evt;
         project.projectId = projectEvent.ProjectID;
         project.name = projectEvent.ProjectName;
-        project.timeZone = projectEvent.ProjectTimezone;
+        project.projectTimeZone = projectEvent.ProjectTimezone;
+        project.landfillTimeZone = TimeZone.WindowsToIana(projectEvent.ProjectTimezone);
         project.projectUid = projectEvent.ProjectUID.ToString();
         project.projectEndDate = projectEvent.ProjectEndDate;
         project.lastActionedUtc = projectEvent.ActionUTC;
@@ -97,7 +99,7 @@ namespace VSS.Project.Data
         connection.Open();
         var existing = connection.Query<Models.Project>
           (@"SELECT 
-                  ProjectUID, Name, ProjectID, TimeZone, CustomerUID, SubscriptionUID, 
+                  ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
                   LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID AS ProjectType, IsDeleted
                 FROM Project
                 WHERE ProjectUID = @projectUid", new { project.projectUid }).FirstOrDefault();
@@ -161,9 +163,9 @@ namespace VSS.Project.Data
       {
         const string insert =
           @"INSERT Project
-                (ProjectID, Name, TimeZone, ProjectUID, LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID)
-                VALUES
-                (@projectId, @name, @timeZone, @projectUid, @lastActionedUtc, @projectStartDate, @projectEndDate, @projectType)";
+                (ProjectID, Name, ProjectTimeZone, LandfillTimeZone, ProjectUID, LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID)
+            VALUES
+                (@projectId, @name, @projectTimeZone, @landfillTimeZone, @projectUid, @lastActionedUtc, @projectStartDate, @projectEndDate, @projectType)";
         return connection.Execute(insert, project);
       }
       else
@@ -237,7 +239,7 @@ namespace VSS.Project.Data
         connection.Open();
         project = connection.Query<Models.Project>
           (@"SELECT 
-                   ProjectUID, Name, ProjectID, TimeZone, CustomerUID, SubscriptionUID, 
+                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
                     LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
                 FROM Project
                 WHERE ProjectUID = @projectUid AND IsDeleted = 0"
@@ -256,7 +258,7 @@ namespace VSS.Project.Data
         connection.Open();
         projects = connection.Query<Models.Project>
           (@"SELECT 
-                   ProjectUID, Name, ProjectID, TimeZone, CustomerUID, SubscriptionUID, 
+                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
                     LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
                 FROM Project
                 WHERE SubscriptionUID = @subscriptionUid AND IsDeleted = 0"
@@ -274,7 +276,7 @@ namespace VSS.Project.Data
         connection.Open();
         projects = connection.Query<Models.Project>
          (@"SELECT 
-                   ProjectUID, Name, ProjectID, TimeZone, CustomerUID, SubscriptionUID, 
+                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
                     LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
                 FROM Project
                 WHERE IsDeleted = 0"
