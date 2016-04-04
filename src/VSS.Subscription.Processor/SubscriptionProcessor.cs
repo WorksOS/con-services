@@ -6,6 +6,7 @@ using System;
 using System.Reflection;
 using java.util;
 using org.apache.kafka.clients.consumer;
+using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data.Interfaces;
 using VSS.Subscription.Processor.Interfaces;
 using Random = System.Random;
@@ -18,7 +19,7 @@ namespace VSS.Subscription.Processor
     private readonly KafkaConsumer javaConsumer;
 
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    public SubscriptionProcessor(ISubscriptionService service, IConsumerConfigurator configurator)
+    public SubscriptionProcessor(ISubscriptionService service, IProjectService projectService)
     {
       try
       {
@@ -37,7 +38,7 @@ namespace VSS.Subscription.Processor
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         javaConsumer = new KafkaConsumer(props);
 
-        _subscriber = new SubscriptionEventObserver(service);
+        _subscriber = new SubscriptionEventObserver(service, projectService);
       }
       catch (Exception error)
       {

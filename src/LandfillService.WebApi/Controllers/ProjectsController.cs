@@ -11,13 +11,10 @@ using System.Web;
 using System.Web.Mvc;
 using LandfillService.WebApi.Models;
 using LandfillService.WebApi.ApiClients;
-using System.Collections;
 using System.Web.Hosting;
-using LandfillService.Common.Contracts;
 using LandfillService.Common;
 using NodaTime;
 using System.Reflection;
-using VSS.VisionLink.Landfill.Repositories;
 using VSS.VisionLink.Utilization.WebApi.Configuration;
 
 namespace LandfillService.WebApi.Controllers
@@ -33,26 +30,6 @@ namespace LandfillService.WebApi.Controllers
         public ProjectsController()
         {
             LandfillDb.UnlockAllProjects();  // if the service terminates, some projects can be left locked for volume retrieval; unlock them
-        }
-  
-      
-        /// <summary>
-        /// Retrieves all available rpojects from the DB
-        /// </summary>
-        /// <returns>A list of projects or error details</returns>
-        private IEither<IHttpActionResult, IEnumerable<VSS.VisionLink.Landfill.Common.Models.Project>> GetAllProjects()
-        {
-          try
-          {
-            var repo = new ProjectRepository(ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString);
-            var projects = repo.GetProjects();
-            System.Diagnostics.Debug.WriteLine(projects);
-            return Either.Right<IHttpActionResult, IEnumerable<VSS.VisionLink.Landfill.Common.Models.Project>>(projects);
-          }
-          catch (Exception e)
-          {
-            return Either.Left<IHttpActionResult, IEnumerable<VSS.VisionLink.Landfill.Common.Models.Project>>(Content(HttpStatusCode.InternalServerError, e.Message));
-          }
         }
 
         /// <summary>
@@ -73,16 +50,6 @@ namespace LandfillService.WebApi.Controllers
         public IHttpActionResult Get()
         {
           return PerhapsUpdateProjectList((RequestContext.Principal as LandfillPrincipal).UserUid).Case(errorResponse => errorResponse, projects => Ok(projects));
-        }
-
-        /// <summary>
-        /// Returns the list of projects available to the user
-        /// </summary>
-        /// <returns>List of available projects</returns>
-        [System.Web.Http.Route("NG")]
-        public IHttpActionResult GetNG()
-        {
-          return GetAllProjects().Case(errorResponse => errorResponse, Ok);
         }
 
         /// <summary>

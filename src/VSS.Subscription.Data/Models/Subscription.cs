@@ -6,6 +6,16 @@ using System.Threading.Tasks;
 
 namespace VSS.Subscription.Data.Models
 {
+  public class Subscription
+  {
+    public string SubscriptionUID { get; set; }
+    public string CustomerUID { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public DateTime EffectiveUTC { get; set; }
+    public DateTime LastActionedUTC { get; set; }
+  }
+
     public class CustomerAssetSubscriptionData : ICustomerAssetSubscriptionData
     {
         public string fk_AssetUID { get; set; }

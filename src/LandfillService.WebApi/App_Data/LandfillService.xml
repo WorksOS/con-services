@@ -731,12 +731,6 @@
             Handles project related requests
             </summary>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetAllProjects">
-            <summary>
-            Retrieves all available rpojects from the DB
-            </summary>
-            <returns>A list of projects or error details</returns>
-        </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PerhapsUpdateProjectList(System.String)">
             <summary>
             Retrieves a list of projects from the db
@@ -745,12 +739,6 @@
             <returns>A list of projects or error details</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get">
-            <summary>
-            Returns the list of projects available to the user
-            </summary>
-            <returns>List of available projects</returns>
-        </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetNG">
             <summary>
             Returns the list of projects available to the user
             </summary>
@@ -803,11 +791,6 @@
             <param name="id">Project ID</param>
             <param name="entries">array of weight entries</param>
             <returns>Project data and status of volume retrieval</returns>
-        </member>
-        <member name="T:LandfillService.WebApi.TimeZone">
-            <summary>
-            Encapsulates time zone conversion functions
-            </summary>
         </member>
     </members>
 </doc>

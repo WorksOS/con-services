@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace LandfillService.WebApi
+namespace VSS.Project.Data
 {
     /// <summary>
     /// Encapsulates time zone conversion functions

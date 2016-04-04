@@ -71,52 +71,44 @@ namespace LandfillService.WebApi.Models
         {
             return InTransaction((conn) =>
             {
-              var command = @"select * from projects prj join UserCustomer uc ON prj.customerUid=uc.fk_CustomerUID
-                              where fk_UserUID = @userUid;";
+              var command = @"SELECT prj.ProjectID, prj.Name, prj.LandfillTimeZone as TimeZone, 
+                                     sub.StartDate AS SubStartDate, sub.EndDate AS SubEndDate 
+                              FROM Project prj  
+                              JOIN CustomerUser cu ON prj.CustomerUID = cu.fk_CustomerUID
+                              JOIN Subscription sub ON prj.SubscriptionUID = sub.SubscriptionUID
+                              WHERE cu.fk_UserUID = @userUid;";
               var projects = new List<Project>();
 
               using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
                 {
                     while (reader.Read())
                     {
-                      int indxExpiry = reader.GetOrdinal("daysToSubscriptionExpiry");
-                      bool hasExpiry = !reader.IsDBNull(indxExpiry);
+                      var subStartDate = reader.GetDateTime(reader.GetOrdinal("SubStartDate"));
+                      var subEndDate = reader.GetDateTime(reader.GetOrdinal("SubEndDate"));
+                      var utcNowDate = DateTime.UtcNow.Date;
+                      var daysToSubExpiry = -1;
+                      if (subEndDate > utcNowDate)
+                      {
+                        bool subIsLeapDay = subStartDate.Month == 2 && subStartDate.Day == 29;
+                        bool nowIsLeapYear = DateTime.IsLeapYear(utcNowDate.Year);
+                        int day = nowIsLeapYear || !subIsLeapDay ? subStartDate.Day : 28;
+                        var anniversaryDate = new DateTime(utcNowDate.Year, subStartDate.Month, day);
+                        if (anniversaryDate < utcNowDate)
+                          anniversaryDate = anniversaryDate.AddYears(1);
+                        daysToSubExpiry = (anniversaryDate - utcNowDate).Days;
+                      }
+                      else if (subEndDate == utcNowDate)
+                      {
+                        daysToSubExpiry = 0;
+                      }                       
 
-
-                        projects.Add(new Project { id = reader.GetUInt32(reader.GetOrdinal("projectId")), 
-                                                   name = reader.GetString(reader.GetOrdinal("name")),
-                                                   timeZoneName = reader.GetString(reader.GetOrdinal("timeZone")),
-                                                   daysToSubscriptionExpiry = hasExpiry ? reader.GetInt32(indxExpiry) : (int?)null
+                        projects.Add(new Project { id = reader.GetUInt32(reader.GetOrdinal("ProjectID")), 
+                                                   name = reader.GetString(reader.GetOrdinal("Name")),
+                                                   timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone")),
+                                                   daysToSubscriptionExpiry = daysToSubExpiry
                         });
                     }
                 }
-
-              // Get the subscription expiry dates...
-              command = @"SELECT prj.projectId, MAX(ps.EndDate) AS LatestDate 
-                          FROM projects prj 
-                          JOIN ProjectSubscription ps ON prj.projectUid = ps.fk_ProjectUID
-                          WHERE prj.IsDeleted = 0 
-                          GROUP BY prj.projectId;";
-
-              IDictionary<UInt32, DateTime> expiryDates = new Dictionary<UInt32, DateTime>();
-
-              using (var reader = MySqlHelper.ExecuteReader(conn, command))
-              {
-                while (reader.Read())
-                {
-                  var key = reader.GetUInt32(reader.GetOrdinal("projectId"));
-                  var value = reader.GetDateTime(reader.GetOrdinal("LatestDate"));
-
-                  expiryDates[key] = value;
-                }
-              }
-
-              DateTime utcNow = DateTime.UtcNow;
-              foreach (var p in projects)
-              {
-                if (expiryDates.ContainsKey(p.id))
-                  p.daysToSubscriptionExpiry = (int)Math.Round((expiryDates[p.id] - utcNow).TotalDays);
-              }
 
               return projects;
             });
@@ -133,9 +125,13 @@ namespace LandfillService.WebApi.Models
         {
             return WithConnection((conn) =>
             {
-                var command = @"select count(*) from projects 
-                                where projectId = @projectId and (retrievalStartedAt >= date_sub(UTC_TIMESTAMP(), interval " + lockTimeout.ToString() + " hour) or " +
-                                "(select count(*) from entries where projectId = @projectId and volume is null and volumeNotAvailable = 0) > 0)";
+                var command = @"SELECT COUNT(*) FROM Project 
+                                WHERE ProjectID = @projectId AND 
+                                (RetrievalStartedAt >= DATE_SUB(UTC_TIMESTAMP(), INTERVAL " + 
+                                lockTimeout.ToString() + " HOUR) OR " +
+                                @"(SELECT COUNT(*) FROM Entries 
+                                   WHERE ProjectID = @projectId AND
+                                   Volume IS NULL AND VolumeNotAvailable = 0) > 0)";
 
                 var count = MySqlHelper.ExecuteScalar(conn, command, new MySqlParameter("@projectId", project.id));
                 return Convert.ToUInt32(count) > 0;
@@ -151,13 +147,15 @@ namespace LandfillService.WebApi.Models
         public static bool LockForRetrieval(Project project, bool shouldLock = true)
         {
             return WithConnection((conn) =>
-            {
+            {          
                 var command = shouldLock ? 
-                    @"update projects set retrievalStartedAt = UTC_TIMESTAMP()
-                      where projectId = @projectId and retrievalStartedAt < date_sub(UTC_TIMESTAMP(), interval " + lockTimeout.ToString() + " hour)"
+                    @"UPDATE Project SET RetrievalStartedAt = UTC_TIMESTAMP()
+                      WHERE ProjectID = @projectId AND 
+                      RetrievalStartedAt < DATE_SUB(UTC_TIMESTAMP(), INTERVAL " + lockTimeout.ToString() + " HOUR)"
                     :
-                    @"update projects set retrievalStartedAt = date_sub(UTC_TIMESTAMP(), interval 10 year)
-                      where projectId = @projectId and retrievalStartedAt >= date_sub(UTC_TIMESTAMP(), interval " + lockTimeout.ToString() + " hour)";
+                    @"UPDATE Project SET RetrievalStartedAt = DATE_SUB(UTC_TIMESTAMP(), INTERVAL 10 YEAR)
+                      WHERE ProjectID = @projectId AND 
+                      RetrievalStartedAt >= DATE_SUB(UTC_TIMESTAMP(), INTERVAL " + lockTimeout.ToString() + " HOUR)";
 
                 var rowsAffected = MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@projectId", project.id));
                 return rowsAffected > 0;
@@ -172,7 +170,7 @@ namespace LandfillService.WebApi.Models
         {
             WithConnection<object>((conn) =>
             {
-                var command = @"update projects set retrievalStartedAt = date_sub(UTC_TIMESTAMP(), interval 10 year)";
+                var command = @"UPDATE Project SET RetrievalStartedAt = DATE_SUB(UTC_TIMESTAMP(), INTERVAL 10 YEAR)";
                 MySqlHelper.ExecuteNonQuery(conn, command);
                 return null;
             });
@@ -193,13 +191,14 @@ namespace LandfillService.WebApi.Models
         {
             WithConnection<object>((conn) =>
             {
-                var command = @"insert into entries (projectId, date, weight) values (@projectId, @date, @weight) 
-                                on duplicate key update weight = @weight";
+                var command = @"INSERT INTO Entries (ProjectID, Date, Weight) 
+                                VALUES (@projectId, @date, @weight) 
+                                ON DUPLICATE KEY UPDATE Weight = @weight";
 
-                MySqlHelper.ExecuteNonQuery(conn, command,
-                    new MySqlParameter("@projectId", projectId),
-                    new MySqlParameter("@date", entry.date),
-                    new MySqlParameter("@weight", entry.weight));
+              MySqlHelper.ExecuteNonQuery(conn, command,
+                  new MySqlParameter("@projectId", projectId),
+                  new MySqlParameter("@date", entry.date),
+                  new MySqlParameter("@weight", entry.weight));
 
                 return null;
             });
@@ -219,8 +218,10 @@ namespace LandfillService.WebApi.Models
             {
                 // replace negative volumes with 0; they are possible (e.g. due to extra compaction 
                 // without new material coming in) but don't make sense in the context of the application
-              var command = @"update entries set volume = greatest(@volume, 0.0), volumeNotRetrieved = 0, volumeNotAvailable = 0, volumesUpdatedTimestamp = UTC_TIMESTAMP()
-                                where projectId = @projectId and date = @date";
+              var command = @"UPDATE Entries 
+                              SET Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, 
+                                  VolumeNotAvailable = 0, VolumesUpdatedTimestamp = UTC_TIMESTAMP()
+                              WHERE ProjectID = @projectId AND Date = @date";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
                     new MySqlParameter("@volume", volume),
@@ -241,7 +242,7 @@ namespace LandfillService.WebApi.Models
         {
             WithConnection<object>((conn) =>
             {
-                var command = "update entries set volumeNotRetrieved = 1 where projectId = @projectId and date = @date";
+                var command = "UPDATE Entries SET VolumeNotRetrieved = 1 WHERE ProjectID = @projectId AND Date = @date";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
                     new MySqlParameter("@projectId", projectId),
@@ -256,7 +257,10 @@ namespace LandfillService.WebApi.Models
       {
         return InTransaction((conn) =>
         {
-          var command = @"SELECT distinct prj.projectId, prj.timeZone FROM landfill.projects as prj left join landfill.entries as etr on prj.projectId = etr.projectId where weight is not null;";
+          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone
+                          FROM Project prj 
+                          LEFT JOIN Entries etr ON prj.ProjectID = etr.ProjectID 
+                          WHERE Weight IS NOT NULL;";
           using (var reader = MySqlHelper.ExecuteReader(conn, command))
           {
             var projects = new List<Project>();
@@ -264,8 +268,8 @@ namespace LandfillService.WebApi.Models
             {
               projects.Add(new Project
               {
-                id = reader.GetUInt32(reader.GetOrdinal("projectId")),
-                timeZoneName = reader.GetString(reader.GetOrdinal("timeZone"))
+                id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
+                timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone"))
               });
             }
             return projects;
@@ -283,8 +287,9 @@ namespace LandfillService.WebApi.Models
         {
             WithConnection<object>((conn) =>
             {
-              var command = @"update entries set volumeNotAvailable = 1, volumeNotRetrieved = 0, volumesUpdatedTimestamp = UTC_TIMESTAMP()
-                                where projectId = @projectId and date = @date";
+              var command = @"UPDATE Entries 
+                              SET VolumeNotAvailable = 1, VolumeNotRetrieved = 0, VolumesUpdatedTimestamp = UTC_TIMESTAMP()
+                              WHERE ProjectID = @projectId AND Date = @date";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
                     new MySqlParameter("@projectId", projectId),
@@ -307,7 +312,12 @@ namespace LandfillService.WebApi.Models
                 // note that this can cause overlap with newly added dates which are currently waiting to be handled by 
                 // a volume retrieval task; this is acceptable because the probability of such overlap is expected to be low
                 // BUT it allows the service to tolerate background tasks dying
-              var command = "select date from entries where projectId = @projectId and (volumeNotRetrieved = 1 or (volume is null and volumeNotAvailable = 0) or (volumesUpdatedTimestamp is null) or ( (volumesUpdatedTimestamp < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) and (volumesUpdatedTimestamp > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
+              var command = @"SELECT Date FROM Entries
+                            WHERE ProjectID = @projectId AND 
+                            (VolumeNotRetrieved = 1 OR (Volume IS NULL AND VolumeNotAvailable = 0) OR 
+                            (VolumesUpdatedTimestamp IS NULL) OR 
+                            ( (VolumesUpdatedTimestamp < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) AND 
+                              (VolumesUpdatedTimestamp > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", projectId)))
                 {
@@ -349,31 +359,28 @@ namespace LandfillService.WebApi.Models
                                               volume = 0.0
                                           }).ToDictionary(k => k.date, v => v);
                 //Now get the actual data and merge
-                var command = @"select entries.date, entries.weight, entries.volume
-                    from entries 
-                    where entries.date >= cast(@startDate as date) and entries.date <= cast(@endDate as date)
-                          and entries.projectId = @projectId
-                    order by date";
+                var command = @"SELECT Date, Weight, Volume FROM Entries 
+                                WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
+                                AND ProjectID = @projectId
+                                ORDER BY Date";
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command,
                   new MySqlParameter("@projectId", project.id), 
                   new MySqlParameter("@startDate", twoYearsAgo), 
                   new MySqlParameter("@endDate", yesterday)))
                 {
-                    const double POUNDS_PER_TON = 2000.0;
-                    const double M3_PER_YD3 = 0.7645555;
                     const double EPSILON = 0.001;
 
                     while (reader.Read())
                     {
-                          DateTime date = reader.GetDateTime(reader.GetOrdinal("date"));
+                          DateTime date = reader.GetDateTime(reader.GetOrdinal("Date"));
                           DayEntry entry = entriesLookup[date];
                           entry.entryPresent = true;
-                          entry.weight = reader.GetDouble(reader.GetOrdinal("weight"));
+                          entry.weight = reader.GetDouble(reader.GetOrdinal("Weight"));
                           double volume = 0.0;
-                          if (!reader.IsDBNull(reader.GetOrdinal("volume")))
+                          if (!reader.IsDBNull(reader.GetOrdinal("Volume")))
                           {
-                            volume = reader.GetDouble(reader.GetOrdinal("volume"));
+                            volume = reader.GetDouble(reader.GetOrdinal("Volume"));
                             if (volume <= EPSILON)
                               volume = 0.0;
                           }
