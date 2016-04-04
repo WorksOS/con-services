@@ -7,6 +7,7 @@ using System.Reflection;
 using Topshelf;
 using Topshelf.Runtime;
 using VSS.Kafka.DotNetClient.Model;
+using VSS.Project.Processor.Interfaces;
 using VSS.Subscription.Data;
 using VSS.Subscription.Data.Interfaces;
 using VSS.Subscription.Processor.Consumer;
@@ -61,18 +62,11 @@ namespace VSS.Subscription.Processor
       string kafkaTopicName = Settings.Default.TopicName;
       string consumerGroupName = Settings.Default.ConsumerGroupName;
 
-      builder.Register(config =>
-      {
-        var consumerConfigurator = new ConsumerConfigurator(confluentBaseUrl, kafkaTopicName, consumerGroupName,
-          Dns.GetHostName(), 1024);
-        return consumerConfigurator;
-      }).As<IConsumerConfigurator>().SingleInstance();
-
       builder.RegisterType<SubscriptionProcessor>().As<ISubscriptionProcessor>().SingleInstance();
-
       builder.RegisterType<SubscriptionEventObserver>().As<IObserver<ConsumerInstanceResponse>>().SingleInstance();
-
       builder.RegisterType<MySqlSubscriptionRepository>().As<ISubscriptionService>().SingleInstance();
+      
+      builder.RegisterType<MySqlSubscriptionRepository>().As<IProjectProcessor>().SingleInstance();
 
       Container = builder.Build();
       return Container.Resolve<ServiceController>();
