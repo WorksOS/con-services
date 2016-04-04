@@ -285,5 +285,28 @@ namespace VSS.Project.Data
       }
       return projects;
     }
+
+    public IEnumerable<Models.Project> GetProjectsForUser(string userUid)
+    {
+      IEnumerable<Models.Project> projects;
+      using (var connection = new MySqlConnection(_connectionString))
+      {
+        connection.Open();
+        projects = connection.Query<Models.Project>
+         (@"SELECT 
+                   p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, p.CustomerUID, p.SubscriptionUID, 
+                   p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
+                   p.fk_ProjectTypeID as ProjectType, s.EndDate AS SubEndDate
+                FROM Project p
+                JOIN Subscription s on p.SubscriptionUID = s.SubscriptionUID
+                JOIN CustomerUser cu on p.CustomerUID = cu.fk_CustomerUID
+                WHERE cu.fk_userUID = @userUid", 
+         new { userUid }
+         );
+        connection.Close();
+      }
+      return projects;
+    }
+
   }
 }

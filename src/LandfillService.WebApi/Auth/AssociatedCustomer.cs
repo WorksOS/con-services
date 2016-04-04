@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using VSS.Customer.Data.Models;
 
 namespace VSP.MasterData.Customer.WebAPI.Models
 {

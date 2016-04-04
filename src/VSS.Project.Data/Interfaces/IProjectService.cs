@@ -6,6 +6,7 @@ namespace VSS.Project.Data.Interfaces
 	{
     Models.Project GetProject(string projectUid);
     int StoreProject(IProjectEvent evt);
+	  IEnumerable<Models.Project> GetProjectsForUser(string userUid);
     IEnumerable<Models.Project> GetProjects();
     IEnumerable<Models.Project> GetProjectsBySubcription(string subscriptionUid);
 	}

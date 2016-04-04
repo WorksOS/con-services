@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS `Subscription` (
   `ID` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `SubscriptionUID` varchar(36) NOT NULL,
   `CustomerUID` varchar(36) NOT NULL,
+  `fk_ServiceTypeID` INT(11)  NOT NULL,
   `StartDate` datetime(6) DEFAULT NULL,
   `EndDate` datetime DEFAULT NULL,
   `EffectiveUTC` datetime(6) DEFAULT NULL,

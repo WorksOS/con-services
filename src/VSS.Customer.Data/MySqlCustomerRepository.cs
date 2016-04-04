@@ -170,20 +170,20 @@ namespace VSS.Customer.Data
       return 0;
     }
 
-    public List<Models.Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
+    public Models.Customer GetAssociatedCustomerbyUserUid(System.Guid userUid)
     {
       using (var connection = new MySqlConnection(_connectionString))
       {
         connection.Open();
 
-        var customerList = connection.Query<Models.Customer>
-          (@"SELECT c.* 
+        var customer = connection.Query<Models.Customer>
+            (@"SELECT c.* 
               FROM Customer c JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
-              WHERE cu.fk_UserUID = @userUid", new { userUid = userUid.ToString() }).AsList();
+              WHERE cu.fk_UserUID = @userUid", new {userUid = userUid.ToString()}).FirstOrDefault();
 
         connection.Close();
 
-        return customerList;
+        return customer;
       }
     }
 

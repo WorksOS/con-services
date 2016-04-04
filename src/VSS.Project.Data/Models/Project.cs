@@ -1,7 +1,6 @@
 ﻿using System;
 
 namespace VSS.Project.Data.Models
-
 {
   public class Project
   {
@@ -17,6 +16,10 @@ namespace VSS.Project.Data.Models
     public DateTime projectEndDate { get; set; }
     public DateTime projectStartDate { get; set; }
     public ProjectType projectType { get; set; }
+    //These 2 properties used for authentication stuff
+    public bool isDeleted { get; set; }
+    public DateTime subEndDate { get; set; } 
+
   
     public override bool Equals(object obj)
     {
