@@ -16,10 +16,12 @@ namespace VSS.Subscription.Processor
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private ISubscriptionService _subscriptionService;
+        private Project.Data.Interfaces.IProjectService _projectService;
 
-        public SubscriptionEventObserver(ISubscriptionService subscriptionService)
+        public SubscriptionEventObserver(ISubscriptionService subscriptionService, Project.Data.Interfaces.IProjectService projectService)
         {
             _subscriptionService = subscriptionService;
+            _projectService = projectService;
         }
 
         public void OnCompleted()
@@ -50,7 +52,7 @@ namespace VSS.Subscription.Processor
                         
                       var createAssetSubscriptionEvent = JsonConvert.DeserializeObject<CreateAssetSubscriptionEvent>(token.ToString());
 
-                      success = _subscriptionService.StoreSubscription(createAssetSubscriptionEvent) == 1;
+                      success = _subscriptionService.StoreSubscription(createAssetSubscriptionEvent, _projectService) == 1;
 
                       Log.Info(success ? "Asset Subscription created successfully" : "Failed to create Asset Subscription");
                   }
@@ -60,9 +62,9 @@ namespace VSS.Subscription.Processor
 
                       var updateAssetSubscriptionEvent =  JsonConvert.DeserializeObject<UpdateAssetSubscriptionEvent>(token.ToString());
                         
-                      Log.Debug(String.Format("Recieved Update Asset Subscription Payload deserialized : {0} ", updateAssetSubscriptionEvent));                        
-                        
-                      int updatedCount = _subscriptionService.StoreSubscription(updateAssetSubscriptionEvent);
+                      Log.Debug(String.Format("Recieved Update Asset Subscription Payload deserialized : {0} ", updateAssetSubscriptionEvent));
+
+                      int updatedCount = _subscriptionService.StoreSubscription(updateAssetSubscriptionEvent, _projectService);
 
                       success = (updatedCount == 1);
 
@@ -75,8 +77,8 @@ namespace VSS.Subscription.Processor
                     var createProjectSubscriptionEvent = JsonConvert.DeserializeObject<CreateProjectSubscriptionEvent>(token.ToString());
                       
                     Log.DebugFormat("Project subscription {0}", createProjectSubscriptionEvent );
-                      
-                    success = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent) == 1;
+
+                    success = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService) == 1;
 
                     Log.Info(success ? "Project Subscription created successfully" : "Failed to create Project Subscription");
                   }
@@ -86,7 +88,7 @@ namespace VSS.Subscription.Processor
 
                     var updateProjectSubscriptionEvent = JsonConvert.DeserializeObject<UpdateProjectSubscriptionEvent>(token.ToString());
 
-                    int updatedCount = _subscriptionService.StoreSubscription(updateProjectSubscriptionEvent);
+                    int updatedCount = _subscriptionService.StoreSubscription(updateProjectSubscriptionEvent, _projectService);
 
                     success = (updatedCount == 1);
 
@@ -98,7 +100,7 @@ namespace VSS.Subscription.Processor
 
                     var associateProjectSubscriptionEvent = JsonConvert.DeserializeObject<AssociateProjectSubscriptionEvent>(token.ToString());
 
-                    success = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent) == 1;
+                    success = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService) == 1;
 
                     Log.Info(success ? "Project Subscription was associated successfully" : "Failed to associate Project Subscription");
                   }
@@ -108,7 +110,7 @@ namespace VSS.Subscription.Processor
 
                     var dissociateProjectSubscriptionEvent = JsonConvert.DeserializeObject<DissociateProjectSubscriptionEvent>(token.ToString());
 
-                    success = _subscriptionService.StoreSubscription(dissociateProjectSubscriptionEvent) == 1;
+                    success = _subscriptionService.StoreSubscription(dissociateProjectSubscriptionEvent, _projectService) == 1;
 
                     Log.Info(success ? "Project Subscription was dissociated successfully" : "Failed to dissociate Project Subscription");
                   }
@@ -118,7 +120,7 @@ namespace VSS.Subscription.Processor
 
                       var createCustomerSubscriptionEvent = JsonConvert.DeserializeObject<CreateCustomerSubscriptionEvent>(token.ToString());
 
-                      success = _subscriptionService.StoreSubscription(createCustomerSubscriptionEvent) == 1;
+                      success = _subscriptionService.StoreSubscription(createCustomerSubscriptionEvent, _projectService) == 1;
 
                       Log.Info(success ? "Customer Subscription created successfully" : "Failed to create Customer Subscription");
                   }
@@ -128,7 +130,7 @@ namespace VSS.Subscription.Processor
 
                       var updateCustomerSubscriptionEvent = JsonConvert.DeserializeObject<UpdateCustomerSubscriptionEvent>(token.ToString());
 
-                      int updatedCount = _subscriptionService.StoreSubscription(updateCustomerSubscriptionEvent);
+                      int updatedCount = _subscriptionService.StoreSubscription(updateCustomerSubscriptionEvent, _projectService);
 
                       success = (updatedCount == 1);
 
