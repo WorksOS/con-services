@@ -8,6 +8,6 @@ namespace VSS.Customer.Data.Models
     public string CustomerName { get; set; }
     public CustomerType fk_CustomerTypeID { get; set; }
     public string CustomerUID { get; set; }
-    public DateTime LastCustomerUTC { get; set; }
+    public DateTime LastActionedUTC { get; set; }
   }
 }

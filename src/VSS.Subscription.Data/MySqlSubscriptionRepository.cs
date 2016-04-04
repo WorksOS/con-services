@@ -310,7 +310,11 @@ namespace VSS.Subscription.Data
           return 0;
       }
 
-        private void GetServicePlan()
+
+
+
+
+      private void GetServicePlan()
         {
             using (var connection = new MySqlConnection(_connectionString))
             {
