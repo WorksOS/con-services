@@ -1,72 +1,56 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
-using VSS.Kafka.DotNetClient;
-using VSS.Kafka.DotNetClient.Interfaces;
-using VSS.Kafka.DotNetClient.Model;
-using VSS.Kafka.DotNetClient.Producer;
+using VSS.Kafka.Ikvm.Client;
+using java.util;
+using org.apache.kafka.clients.producer;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {
     public static class KafkaResolver
     {
-        public static BinaryProducer Producer { get; set; }
-        public static string KafkaTopic { get; set; }
-        private static readonly Dictionary<string, BinaryProducer> kafkaTopics;
-        private static readonly IRestProxySettings settings;
-
+        public static KafkaProducer javaProducer;
         static KafkaResolver()
         {
-            kafkaTopics = new Dictionary<string, BinaryProducer>();
-            if (settings == null)
-                { settings = new DefaultRestProxySettings();}
-        }
+            IkvmKafkaInitializer.Initialize();
+            log4net.Config.XmlConfigurator.Configure();
+            var props = new Properties();
+            props.put("bootstrap.servers", Config.KafkaEndpoint);
+            props.put("acks", "all");
+            props.put("retries", "0");
+            props.put("batch.size", "16384");
+            props.put("linger.ms", "1");
+            props.put("buffer.memory", "33554432");
+            props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+            props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-
-        /// <summary>
-        /// Try and resolved the kafka topic. If it can't be found the add it to the dictionary 
-        /// </summary>
-        /// <param name="topicName"></param>
-        /// <returns></returns>
-        public static BinaryProducer ResolveTopic(string topicName)
-        {
-            try
-            {
-                BinaryProducer producer;
-                if (kafkaTopics.TryGetValue(topicName, out producer))
-                {
-                    return producer;
-                }
-                //Log.Write(" Create new topic producer " + topicName);
-                producer = new BinaryProducer(topicName, MessageFormat.Binary, settings);
-                kafkaTopics.Add(topicName, producer);
-                return producer;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(@"Error : " + ex.Message);
-            }
-            return null;
+            javaProducer = new KafkaProducer(props);
         }
 
         /// <summary>
         /// Send the message to Kafka
-        /// </summary>
-        /// <param name="topic"></param>
-        /// <param name="kafkaInstance"></param>
-        /// <param name="inMessage"></param>
-        /// <param name="assetId"></param>
-        /// <returns></returns>
-        public static BinaryProducer SendMessage(string topic, BinaryProducer kafkaInstance, string inMessage, string assetId)
+        /// </summary>        
+        public static void SendMessage(string topic, string inMessage)
         {
-
             Thread.Sleep(50);
-          //  Log.Write("Send message: " + inMessage);
-            kafkaInstance.PublishToBatch(new VSS.Kafka.DotNetClient.Model.Message[]{new VSS.Kafka.DotNetClient.Model.Message() {
-                Key = assetId,
-                Value = inMessage
-                 } });            
-            return kafkaInstance;
+            var producerRecord = new ProducerRecord(topic, inMessage);
+            javaProducer.send(producerRecord, new MainCallback()).get();
+        }
+
+        public class MainCallback : Callback
+        {
+            public void onCompletion(RecordMetadata metadata, java.lang.Exception e)
+            {
+                if (e != null)
+                    e.printStackTrace();
+
+                Console.WriteLine("The offset of the record we just sent is: {0}", metadata.offset());
+            }
+        }
+
+        public static void CloseProducer()
+        {
+            javaProducer.flush();
+            javaProducer.close();
         }
     }
 }
