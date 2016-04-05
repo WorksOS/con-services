@@ -17,7 +17,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         {
             var messageStr = string.Empty;
             var topic = string.Empty;
-           // var uniqueId = string.Empty;
+            var uniqueId = string.Empty;
             switch (eventType)
             {
                 case "CreateCustomerEvent":

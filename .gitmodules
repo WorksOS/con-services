@@ -1,0 +1,3 @@
+[submodule "TestAutomation"]
+	path = TestAutomation
+	url = https://visionlink.visualstudio.com/DefaultCollection/VSS/_git/TestAutomation
