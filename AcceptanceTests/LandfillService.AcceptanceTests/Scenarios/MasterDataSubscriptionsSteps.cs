@@ -17,7 +17,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         {
             var messageStr = string.Empty;
             var topic = string.Empty;
-            var uniqueId = string.Empty;
+           // var uniqueId = string.Empty;
             switch (eventType)
             {
                 case "CreateCustomerEvent":
@@ -27,36 +27,36 @@ namespace LandfillService.AcceptanceTests.Scenarios
                 case "CreateProjectEvent":
                     messageStr = masterDataSupport.CreateProjectEvent();
                     topic = ConfigurationManager.AppSettings["AssetMasterDataTopic"];
-                    uniqueId = masterDataSupport.masterProjectUid.ToString();
+                    //uniqueId = masterDataSupport.masterProjectUid.ToString();
                     break;
                 case "CreateProjectSubscriptionEvent":
                     messageStr = masterDataSupport.CreateProjectSubscription();
                     topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
-                    uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
+                    //uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
                     break;
                 case "UpdateProjectSubscriptionEvent":
                     messageStr = masterDataSupport.UpdateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterCustomerUid);
                     topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
-                    uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
+                   // uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
                     break;
                 case "AssociateProjectSubscriptionEvent":
                     messageStr = masterDataSupport.AssociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
                     topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
-                    uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
+                   // uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
                     break;
                 case "AssociateCustomerUserEvent":
                     messageStr = masterDataSupport.AssociateCustomerUser(masterDataSupport.masterCustomerUid, Guid.NewGuid());
                     topic = ConfigurationManager.AppSettings["CustomerUserMasterDataTopic"];
-                    uniqueId = masterDataSupport.masterCustomerUid.ToString();
+                   // uniqueId = masterDataSupport.masterCustomerUid.ToString();
                     break;
                 case "DissociateProjectSubscriptionEvent":
                     messageStr = masterDataSupport.DissociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
                     topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
-                    uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
+                  //  uniqueId = masterDataSupport.masterSubscriptionUid.ToString();
                     break;                   
             }
 
-            KafkaResolver.SendMessage(topic, KafkaResolver.ResolveTopic(topic), messageStr, uniqueId);
+            KafkaResolver.SendMessage(topic, messageStr);
         }
 
         [Then(@"I verify the correct subscription event in the database")]

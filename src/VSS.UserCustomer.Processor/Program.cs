@@ -4,6 +4,7 @@ using System;
 using System.Configuration;
 using System.Net;
 using System.Reflection;
+using org.apache.kafka.clients.consumer;
 using Topshelf;
 using Topshelf.Runtime;
 using VSS.UserCustomer.Data;
@@ -52,12 +53,12 @@ namespace VSS.UserCustomer.Processor
         .AsSelf()
         .SingleInstance();
 
-      string confluentBaseUrl = ConfigurationManager.AppSettings["KafkaServerUri"];
+      string confluentBaseUrl = Settings.Default.KafkaUri;
       if (string.IsNullOrWhiteSpace(confluentBaseUrl))
         throw new ArgumentNullException("RestProxy Base Url is empty");
 
       builder.RegisterType<UserCustomerProcessor>().As<IUserCustomerProcessor>().SingleInstance();
-      builder.RegisterType<UserCustomerEventObserver>().As<IObserver<ConsumerInstanceResponse>>().SingleInstance();
+      builder.RegisterType<UserCustomerEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlUserCustomerRepository>().As<IUserCustomerService>().SingleInstance();
 
       Container = builder.Build();

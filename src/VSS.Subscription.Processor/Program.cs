@@ -4,9 +4,12 @@ using System;
 using System.Configuration;
 using System.Net;
 using System.Reflection;
+using org.apache.kafka.clients.consumer;
 using Topshelf;
 using Topshelf.Runtime;
 using VSS.Kafka.DotNetClient.Model;
+using VSS.Project.Data;
+using VSS.Project.Data.Interfaces;
 using VSS.Project.Processor.Interfaces;
 using VSS.Subscription.Data;
 using VSS.Subscription.Data.Interfaces;
@@ -54,8 +57,8 @@ namespace VSS.Subscription.Processor
       builder.RegisterType<ServiceController>()
         .AsSelf()
         .SingleInstance();
-      
-      string confluentBaseUrl = ConfigurationManager.AppSettings["KafkaServerUri"]; //["RestProxyBaseUrl"];
+
+      string confluentBaseUrl = Settings.Default.KafkaUri; //["RestProxyBaseUrl"];
       if (string.IsNullOrWhiteSpace(confluentBaseUrl))
         throw new ArgumentNullException("RestProxy Base Url is empty");
 
@@ -63,10 +66,10 @@ namespace VSS.Subscription.Processor
       string consumerGroupName = Settings.Default.ConsumerGroupName;
 
       builder.RegisterType<SubscriptionProcessor>().As<ISubscriptionProcessor>().SingleInstance();
-      builder.RegisterType<SubscriptionEventObserver>().As<IObserver<ConsumerInstanceResponse>>().SingleInstance();
+      builder.RegisterType<SubscriptionEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlSubscriptionRepository>().As<ISubscriptionService>().SingleInstance();
-      
-      builder.RegisterType<MySqlSubscriptionRepository>().As<IProjectProcessor>().SingleInstance();
+
+      builder.RegisterType<MySqlProjectRepository>().As<IProjectService>().SingleInstance();
 
       Container = builder.Build();
       return Container.Resolve<ServiceController>();
