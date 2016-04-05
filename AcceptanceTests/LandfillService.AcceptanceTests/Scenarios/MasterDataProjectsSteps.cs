@@ -72,11 +72,11 @@ namespace LandfillService.AcceptanceTests.Scenarios
                             new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
                         break;
                 }
-                topic = ConfigurationManager.AppSettings["AssetMasterDataTopic"];
+                topic = ConfigurationManager.AppSettings["ProjectMasterDataTopic"];
                 uniqueId = projEvent.ProjectUID.ToString();
                 //var message = MessageFactory.Instance.CreateMessage(messageStr, messageType);
                 //message.Send();
-                KafkaResolver.SendMessage(topic, KafkaResolver.ResolveTopic(topic), messageStr, uniqueId);
+                KafkaResolver.SendMessage(topic, messageStr);
 
                 switch (row["Event"])
                 {
