@@ -9,10 +9,13 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web;
 using System.Web.Mvc;
+using LandfillService.Common.Contracts;
 using LandfillService.WebApi.Models;
 using LandfillService.WebApi.ApiClients;
 using System.Web.Hosting;
 using LandfillService.Common;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NodaTime;
 using System.Reflection;
 using VSS.VisionLink.Utilization.WebApi.Configuration;
@@ -39,7 +42,9 @@ namespace LandfillService.WebApi.Controllers
         /// <returns>A list of projects or error details</returns>
         private IEither<IHttpActionResult, IEnumerable<Project>> PerhapsUpdateProjectList(string userUid)
         {
-           return Either.Right<IHttpActionResult, IEnumerable<Project>>(LandfillDb.GetProjects(userUid));
+           IEnumerable<Project> projects = LandfillDb.GetProjects(userUid);
+           //LoggerSvc.LogMessage(null, null, null, "PerhapsUpdateProjectList: projects count=" + projects.Count());
+           return Either.Right<IHttpActionResult, IEnumerable<Project>>(projects);
         }
 
         /// <summary>
@@ -229,42 +234,48 @@ namespace LandfillService.WebApi.Controllers
         /// <param name="id">Project ID</param>
         /// <param name="entries">array of weight entries</param>
         /// <returns>Project data and status of volume retrieval</returns>
+        [System.Web.Http.HttpPost]
         [System.Web.Http.Route("{id}/weights")]
-        public IHttpActionResult PostWeights(uint id, [FromBody] WeightEntry[] entries)
+        public IHttpActionResult PostWeights(uint id/*, [FromBody] WeightEntry[] entries*/)
         {
-          LoggerSvc.LogMessage(null, null, null,"PostWeights: RequestContext.Principal is LandfillPrincipal = " +
-              (RequestContext.Principal is LandfillPrincipal).ToString());
+          //When the request goes through TPaaS the headers get changed to Transfer-Encoding: chunked and the Content-Length is 0.
+          //For some reason the Web API framework can't handle this and doesn't deserialize the 'entries'.
+          //So we do it manually here. Note this problem only occurs when URI and body contain parameters.
+          //See http://w3foverflow.com/question/asp-net-web-api-the-framework-is-not-converting-json-to-object-when-using-chunked-transfer-encoding/
+          //If you hit the Landfill service directly it all works.
+          string jsonContent = Request.Content.ReadAsStringAsync().Result; //this gets proper JSON
+          //LoggerSvc.LogMessage(null, null, null, "PostWeights: id=" + id + ", request content=" + jsonContent);          
+          var entries = JsonConvert.DeserializeObject<WeightEntry[]>(jsonContent);
+
+          if (entries == null)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+                new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+                    "Missing weight entries"));
+          }
+
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          //LoggerSvc.LogMessage(null, null, null, "PostWeights: userUid=" + userUid);          
+
 
             return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects =>
             {
                 var project = projects.Where(p => p.id == id).First();
-                LoggerSvc.LogMessage(null, null, null, "PostWeights: project not null = " +
-                  (project != null).ToString());
 
                 var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
-                LoggerSvc.LogMessage(null, null, null, "PostWeights: projTimeZone not null = " +
-                  (projTimeZone != null).ToString());
 
                 DateTime utcNow = DateTime.UtcNow;
                 Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
                 DateTime yesterdayInProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).AddDays(-1);
   
                 System.Diagnostics.Debug.WriteLine("yesterdayInProjTimeZone=" + yesterdayInProjTimeZone.ToString());
-                LoggerSvc.LogMessage(null, null, null, "PostWeights: yesterdayInProjTimeZone = " +
-                  yesterdayInProjTimeZone.ToString());
-
-                LoggerSvc.LogMessage(null, null, null, "PostWeights: entries are null = " +
-                  (entries == null).ToString());
 
                 var validEntries = new List<WeightEntry>();
                 foreach (var entry in entries)
                 {
                   bool valid = entry.weight >= 0 && entry.date.Date <= yesterdayInProjTimeZone.Date;
                     System.Diagnostics.Debug.WriteLine(entry.ToString() + "--->" + valid);
-                    LoggerSvc.LogMessage(null, null, null, "PostWeights: entry = " +
-                      entry.ToString() + "--->" + valid);
-
+    
                     if (valid)
                     { 
                         LandfillDb.SaveEntry(id, entry);
@@ -278,9 +289,6 @@ namespace LandfillService.WebApi.Controllers
                 });
 
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
-
-
-                LoggerSvc.LogMessage(null, null, null, "PostWeights: about to return Ok");
 
                 return Ok(new ProjectData
                           {

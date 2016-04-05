@@ -298,7 +298,9 @@
       <DependentUpon>App.config</DependentUpon>
     </None>
     <None Include="packages.config" />
-    <None Include="restclientapp.config" />
+    <None Include="restclientapp.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Scenarios\Data.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Data.feature.cs</LastGenOutput>
@@ -324,7 +326,6 @@
     <Content Include="External References\AutomationCore.Shared.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="External References\VSS.Kafka.DotNetClient.dll" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

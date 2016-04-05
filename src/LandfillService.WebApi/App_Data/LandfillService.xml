@@ -784,7 +784,7 @@
             <param name="onComplete">Code to execute on completion</param>
             <returns></returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32,LandfillService.WebApi.Models.WeightEntry[])">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32)">
             <summary>
             Saves weights submitted in the request.
             </summary>
