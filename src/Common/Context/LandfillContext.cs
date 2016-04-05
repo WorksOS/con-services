@@ -220,7 +220,7 @@ namespace LandfillService.WebApi.Models
                 // without new material coming in) but don't make sense in the context of the application
               var command = @"UPDATE Entries 
                               SET Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, 
-                                  VolumeNotAvailable = 0, VolumesUpdatedTimestamp = UTC_TIMESTAMP()
+                                  VolumeNotAvailable = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP()
                               WHERE ProjectID = @projectId AND Date = @date";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
@@ -288,7 +288,7 @@ namespace LandfillService.WebApi.Models
             WithConnection<object>((conn) =>
             {
               var command = @"UPDATE Entries 
-                              SET VolumeNotAvailable = 1, VolumeNotRetrieved = 0, VolumesUpdatedTimestamp = UTC_TIMESTAMP()
+                              SET VolumeNotAvailable = 1, VolumeNotRetrieved = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP()
                               WHERE ProjectID = @projectId AND Date = @date";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
@@ -315,9 +315,9 @@ namespace LandfillService.WebApi.Models
               var command = @"SELECT Date FROM Entries
                             WHERE ProjectID = @projectId AND 
                             (VolumeNotRetrieved = 1 OR (Volume IS NULL AND VolumeNotAvailable = 0) OR 
-                            (VolumesUpdatedTimestamp IS NULL) OR 
-                            ( (VolumesUpdatedTimestamp < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) AND 
-                              (VolumesUpdatedTimestamp > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
+                            (VolumesUpdatedTimestampUTC IS NULL) OR 
+                            ( (VolumesUpdatedTimestampUTC < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) AND 
+                              (VolumesUpdatedTimestampUTC > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", projectId)))
                 {
