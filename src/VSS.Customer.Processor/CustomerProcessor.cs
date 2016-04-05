@@ -20,7 +20,7 @@ namespace VSS.Customer.Processor
 
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    public CustomerProcessor(ICustomerService service, IConsumerConfigurator configurator)
+    public CustomerProcessor(ICustomerService service)
     {
       try
       {
