@@ -111,7 +111,7 @@ namespace VSS.Customer.Data
           @"INSERT Customer
               (CustomerUID, CustomerName, fk_CustomerTypeID, LastActionedUTC)
               VALUES
-              (@CustomerUID, @CustomerName, @CustomerType, @LastActionedUTC)";
+              (@CustomerUid, @CustomerName, @CustomerType, @LastActionedUtc)";
 
         return connection.Execute(insert, customer);
       }
