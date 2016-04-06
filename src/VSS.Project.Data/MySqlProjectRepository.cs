@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using Dapper;
@@ -8,20 +9,25 @@ using MySql.Data.MySqlClient;
 using log4net;
 using VSS.Project.Data.Interfaces;
 using VSS.Project.Data.Models;
+using LandfillService.Common.Repositories;
 
 namespace VSS.Project.Data
 {
 
-  public class MySqlProjectRepository : IProjectService
+  public class MySqlProjectRepository : RepositoryBase, IProjectService
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    private readonly string _connectionString;
+    //private readonly string _connectionString;
 
-    public MySqlProjectRepository()
+    //public MySqlProjectRepository()
+    //{
+    //  connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
+    //}
+
+    public void SetConnection(MySqlConnection connection)
     {
-      _connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
+      Connection = connection;
     }
-
 
     public int StoreProject(IProjectEvent evt)
     {
@@ -92,45 +98,46 @@ namespace VSS.Project.Data
     private int UpsertProjectDetail(Models.Project project, string eventType)
     {
       int upsertedCount = 0;
-      using (var connection = new MySqlConnection(_connectionString))
+      
+      PerhapsOpenConnection();
+      
+      Log.DebugFormat("ProjectRepository: Upserting eventType{0} projectUid={1}", eventType, project.projectUid);
+
+      var existing = Connection.Query<Models.Project>
+        (@"SELECT 
+                ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
+                LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID AS ProjectType, IsDeleted
+              FROM Project
+              WHERE ProjectUID = @projectUid", new { project.projectUid }).FirstOrDefault();
+
+      if (eventType == "CreateProjectEvent")
       {
-        Log.DebugFormat("ProjectRepository: Upserting eventType{0} projectUid={1}", eventType, project.projectUid);
-
-        connection.Open();
-        var existing = connection.Query<Models.Project>
-          (@"SELECT 
-                  ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
-                  LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID AS ProjectType, IsDeleted
-                FROM Project
-                WHERE ProjectUID = @projectUid", new { project.projectUid }).FirstOrDefault();
-
-        if (eventType == "CreateProjectEvent")
-        {
-          upsertedCount = CreateProject(connection, project, existing);
-        }
-
-        if (eventType == "UpdateProjectEvent")
-        {
-          upsertedCount = UpdateProject(connection, project, existing);
-        }
-
-        if (eventType == "DeleteProjectEvent")
-        {
-          upsertedCount = DeleteProject(connection, project, existing);
-        }
-
-        if (eventType == "AssociateProjectCustomerEvent")
-        {
-          upsertedCount = AssociateProject(connection, project, existing);
-        }
-
-        Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
-        connection.Close();
+        upsertedCount = CreateProject(project, existing);
       }
+
+      if (eventType == "UpdateProjectEvent")
+      {
+        upsertedCount = UpdateProject(project, existing);
+      }
+
+      if (eventType == "DeleteProjectEvent")
+      {
+        upsertedCount = DeleteProject(project, existing);
+      }
+
+      if (eventType == "AssociateProjectCustomerEvent")
+      {
+        upsertedCount = AssociateProject(project, existing);
+      }
+
+      Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
+      
+      PerhapsCloseConnection();
+
       return upsertedCount;
     }
 
-    private int AssociateProject(MySqlConnection connection, Models.Project project, Models.Project existing)
+    private int AssociateProject(Models.Project project, Models.Project existing)
     {
       if (existing != null)
       {
@@ -141,7 +148,7 @@ namespace VSS.Project.Data
                 SET customerUID = @customerUid,
                   LastActionedUTC = @lastActionedUtc
               WHERE ProjectUID = @projectUid";
-          return connection.Execute(update, project);
+          return Connection.Execute(update, project);
         }
         else
         {
@@ -157,7 +164,7 @@ namespace VSS.Project.Data
       return 0;
     }
 
-    private int CreateProject(MySqlConnection connection, Models.Project project, Models.Project existing)
+    private int CreateProject(Models.Project project, Models.Project existing)
     {
       if (existing == null)
       {
@@ -166,7 +173,7 @@ namespace VSS.Project.Data
                 (ProjectID, Name, ProjectTimeZone, LandfillTimeZone, ProjectUID, LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID)
             VALUES
                 (@projectId, @name, @projectTimeZone, @landfillTimeZone, @projectUid, @lastActionedUtc, @projectStartDate, @projectEndDate, @projectType)";
-        return connection.Execute(insert, project);
+        return Connection.Execute(insert, project);
       }
       else
       {
@@ -175,7 +182,7 @@ namespace VSS.Project.Data
       return 0;
     }
 
-    private int DeleteProject(MySqlConnection connection, Models.Project project, Models.Project existing)
+    private int DeleteProject(Models.Project project, Models.Project existing)
     {
       if (existing != null)
       {
@@ -186,7 +193,7 @@ namespace VSS.Project.Data
                 SET IsDeleted = 1,
                   LastActionedUTC = @lastActionedUtc
               WHERE ProjectUID = @projectUid";
-          return connection.Execute(update, project);
+          return Connection.Execute(update, project);
         }
         else
         {
@@ -202,7 +209,7 @@ namespace VSS.Project.Data
       return 0;
     }
 
-    private int UpdateProject(MySqlConnection connection, Models.Project project, Models.Project existing)
+    private int UpdateProject(Models.Project project, Models.Project existing)
     {
       if (existing != null)
       {
@@ -215,7 +222,7 @@ namespace VSS.Project.Data
                   EndDate = @projectEndDate, 
                   fk_ProjectTypeID = @projectType
               WHERE ProjectUID = @projectUid";
-          return connection.Execute(update, project);
+          return Connection.Execute(update, project);
         }
         else
         {
@@ -233,66 +240,61 @@ namespace VSS.Project.Data
 
     public Models.Project GetProject(string projectUid)
     {
-      Models.Project project;
-      using (var connection = new MySqlConnection(_connectionString))
-      {
-        connection.Open();
-        project = connection.Query<Models.Project>
-          (@"SELECT 
-                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
-                    LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
-                FROM Project
-                WHERE ProjectUID = @projectUid AND IsDeleted = 0"
-            , new {projectUid}
-          ).FirstOrDefault();
-        connection.Close();
-      }
+      PerhapsOpenConnection();
+
+      var project = Connection.Query<Models.Project>
+        (@"SELECT 
+                  ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
+                  LastActionedUTC, IsDeleted, StartDate AS projectStartDate, EndDate AS projectEndDate, fk_ProjectTypeID as ProjectType
+              FROM Project
+              WHERE ProjectUID = @projectUid AND IsDeleted = 0"
+          , new {projectUid}
+        ).FirstOrDefault();
+
+      PerhapsCloseConnection();
+
       return project;
     }
 
     public IEnumerable<Models.Project> GetProjectsBySubcription(string subscriptionUid)
     {
-      IEnumerable<Models.Project> projects;
-      using (var connection = new MySqlConnection(_connectionString))
-      {
-        connection.Open();
-        projects = connection.Query<Models.Project>
+      PerhapsOpenConnection();
+
+      var projects = Connection.Query<Models.Project>
           (@"SELECT 
                    ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
                     LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
                 FROM Project
                 WHERE SubscriptionUID = @subscriptionUid AND IsDeleted = 0"
           );
-        connection.Close();
-      }
+
+      PerhapsCloseConnection();
+
       return projects;
     }
 
     public IEnumerable<Models.Project> GetProjects()
     {
-      IEnumerable<Models.Project> projects;
-      using (var connection = new MySqlConnection(_connectionString))
-      {
-        connection.Open();
-        projects = connection.Query<Models.Project>
+      PerhapsOpenConnection();
+
+      var projects = Connection.Query<Models.Project>
          (@"SELECT 
                    ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
-                    LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
+                   LastActionedUTC, IsDeleted, StartDate AS projectStartDate, EndDate AS projectEndDate, fk_ProjectTypeID as ProjectType
                 FROM Project
                 WHERE IsDeleted = 0"
          );
-        connection.Close();
-      }
+
+      PerhapsCloseConnection();
+
       return projects;
     }
 
     public IEnumerable<Models.Project> GetProjectsForUser(string userUid)
     {
-      IEnumerable<Models.Project> projects;
-      using (var connection = new MySqlConnection(_connectionString))
-      {
-        connection.Open();
-        projects = connection.Query<Models.Project>
+      PerhapsOpenConnection();
+
+      var projects = Connection.Query<Models.Project>
          (@"SELECT 
                    p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, p.CustomerUID, p.SubscriptionUID, 
                    p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
@@ -303,8 +305,9 @@ namespace VSS.Project.Data
                 WHERE cu.fk_userUID = @userUid", 
          new { userUid }
          );
-        connection.Close();
-      }
+
+      PerhapsCloseConnection();
+
       return projects;
     }
 
