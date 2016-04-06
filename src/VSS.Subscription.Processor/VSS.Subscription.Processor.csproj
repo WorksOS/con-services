@@ -198,13 +198,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\LandfillService.Common.csproj">
+      <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
+      <Name>LandfillService.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VSS.Project.Data\VSS.Project.Data.csproj">
       <Project>{225fbdea-c77f-4208-8942-1ca40eceef2d}</Project>
       <Name>VSS.Project.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VSS.Project.Processor\VSS.Project.Processor.csproj">
-      <Project>{f174163b-35dd-4d9a-857e-270e48be466f}</Project>
-      <Name>VSS.Project.Processor</Name>
     </ProjectReference>
     <ProjectReference Include="..\VSS.Subscription.Data\VSS.Subscription.Data.csproj">
       <Project>{c455920e-769a-42ce-95a5-fc7cc5cbc3a6}</Project>

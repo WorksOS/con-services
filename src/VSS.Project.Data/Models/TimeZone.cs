@@ -32,13 +32,16 @@ namespace VSS.Project.Data
         // If the primary zone is a link, it then resolves it to the canonical ID.
         public static string WindowsToIana(string windowsZoneId)
         {
-            if (windowsZoneId.Equals("UTC", StringComparison.OrdinalIgnoreCase))
-                return "Etc/UTC";
+          if (String.IsNullOrEmpty(windowsZoneId))
+            return String.Empty;
+          
+          if (windowsZoneId.Equals("UTC", StringComparison.OrdinalIgnoreCase))
+              return "Etc/UTC";
 
-            var tzdbSource = NodaTime.TimeZones.TzdbDateTimeZoneSource.Default;
-            var tzi = TimeZoneInfo.FindSystemTimeZoneById(windowsZoneId);
-            var tzid = tzdbSource.MapTimeZoneId(tzi);
-            return tzdbSource.CanonicalIdMap[tzid];
+          var tzdbSource = NodaTime.TimeZones.TzdbDateTimeZoneSource.Default;
+          var tzi = TimeZoneInfo.FindSystemTimeZoneById(windowsZoneId);
+          var tzid = tzdbSource.MapTimeZoneId(tzi);
+          return tzdbSource.CanonicalIdMap[tzid];
         }
 
     }
