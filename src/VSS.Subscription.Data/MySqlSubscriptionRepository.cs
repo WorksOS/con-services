@@ -145,7 +145,7 @@ namespace VSS.Subscription.Data
 
           var existing = Connection.Query<Models.Subscription>
             (@"SELECT 
-                SubscriptionUID, CustomerUID, EffectiveUTC, LastActionedUTC, StartDate, EndDate, fk_ServiceTypeID
+                SubscriptionUID, CustomerUID, EffectiveUTC, LastActionedUTC, StartDate, EndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUID", new { subscriptionUID = subscription.SubscriptionUID }).FirstOrDefault();
 
@@ -235,9 +235,9 @@ namespace VSS.Subscription.Data
               const string update =
                 @"UPDATE Subscription                
                   SET SubscriptionUID = @SubscriptionUID,
-                      EffectiveDate = @EffectiveUTC,
+                      EffectiveUTC = @EffectiveUTC,
                       LastActionedUTC = @LastActionedUTC
-                WHERE SubscriptionUID = @SubscriptionUID";
+                  WHERE SubscriptionUID = @SubscriptionUID";
               return Connection.Execute(update, subscription);
             }
               Log.DebugFormat("SubscriptionRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",

@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using VSS.Project.Data;
+using VSS.Project.Data.Models;
 using VSS.Subscription.Data.Models;
 
 namespace VSS.Subscription.Data.Tests
@@ -57,6 +58,22 @@ namespace VSS.Subscription.Data.Tests
         EffectiveDate = effectiveDate,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = receivedUTC
+      };
+    }
+
+    private CreateProjectEvent GetNewCreateProjectEvent()
+    {
+      return new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 123,
+        ProjectName = "Test Project",
+        ProjectTimezone = "New Zealand Standard Time",
+        ProjectType = ProjectType.LandFill,
+        ProjectStartDate = DateTime.UtcNow.AddDays(-1).Date,
+        ProjectEndDate = DateTime.UtcNow.AddDays(1).Date,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow.AddMilliseconds(1000)
       };
     }
 
@@ -165,7 +182,7 @@ namespace VSS.Subscription.Data.Tests
     }
 
     [TestMethod]
-    public void AssociateProjectSubscriptionNoProjectAndSubscription_Succeeds()
+    public void AssociateProjectSubscription_NoProjectAndSubscription_Succeeds()
     {
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
@@ -180,12 +197,80 @@ namespace VSS.Subscription.Data.Tests
         Assert.IsTrue(upsertCount == 1, "Failed to associate a subscription with a Landfill project!");
 
         var subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
-        Assert.IsNotNull(subscription, "Failed to get the subscription associated with a project!");
+        Assert.IsNotNull(subscription, "Failed to get the subscription associated with a Landfill project!");
 
         var project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the project associated with the subscription!");
 
         Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the Subscription's one!");
+
+        return null;
+      });
+    }
+
+    [TestMethod]
+    public void AssociateProjectSubscription_NoProject_Succeeds()
+    {
+      _subscriptionService.InRollbackTransaction<object>(o =>
+      {
+        _projectService.SetConnection((MySqlConnection)o);
+
+        var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
+        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project subscription that is to be associated with a project!");
+
+        var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription that is to be associated with a project!");
+
+        var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(createProjectSubscriptionEvent.SubscriptionUID,
+                                                                                        Guid.NewGuid(),
+                                                                                        DateTime.UtcNow,
+                                                                                        DateTime.UtcNow.AddMilliseconds(100));
+
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate the existing subscription with a Landfill project!");
+
+        subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription associated with a Landfill project!");
+
+        var project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the project associated with the existing subscription!");
+
+        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+
+        return null;
+      });
+    }
+
+    [TestMethod]
+    public void AssociateProjectSubscription_NoSubscription_Succeeds()
+    {
+      _subscriptionService.InRollbackTransaction<object>(o =>
+      {
+        _projectService.SetConnection((MySqlConnection)o);
+
+        var createProjectEvent = GetNewCreateProjectEvent();
+        var upsertCount = _projectService.StoreProject(createProjectEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a project that is to be associated with a subscription!");
+
+        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the created project that is to be associated with a subscription!");
+
+        var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(Guid.NewGuid(),
+                                                                                        Guid.NewGuid(),
+                                                                                        DateTime.UtcNow,
+                                                                                        DateTime.UtcNow.AddMilliseconds(100));
+
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with the existing Landfill project!");
+
+        var subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription associated with the existing Landfill project!");
+
+        project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
+
+        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
 
         return null;
       });
