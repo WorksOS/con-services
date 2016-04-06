@@ -3,13 +3,13 @@
   <Profiles />
   <Settings>
     <Setting Name="ConsumerGroupName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">MasterDataCustomerConsumerJeannie1d</Value>
+      <Value Profile="(Default)">Landfill-Customer-Alpha</Value>
     </Setting>
     <Setting Name="TopicName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">VSS.Interfaces.Events.MasterData.ICustomerEvent-Merino1</Value>
+      <Value Profile="(Default)">VSS.Interfaces.Events.MasterData.ICustomerEvent-Alpha</Value>
     </Setting>
     <Setting Name="KafkaUri" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">10.210.246.165:9092</Value>
+      <Value Profile="(Default)">10.97.97.96:9092,10.97.99.157:9092,10.97.97.6:9092</Value>
     </Setting>
   </Settings>
 </SettingsFile>

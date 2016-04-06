@@ -36,7 +36,7 @@ namespace VSS.Customer.Processor
     {
       try
       {
-          string val = value.ToString();
+          string val = (string)value.value();
           bool success = false;
           Log.DebugFormat("Recieved Customer Payload : {0} ", val);
           var json = JObject.Parse(val);
@@ -131,7 +131,7 @@ namespace VSS.Customer.Processor
       }
       catch (MySqlException ex)
       {
-        Log.Error("MySql Error  occured while Processing the Subscription Payload", ex);
+        Log.Error("MySql Error  occured while Processing the Customer Payload", ex);
         switch (ex.Number)
         {
           case 0: //Cannot connect to server
@@ -145,7 +145,7 @@ namespace VSS.Customer.Processor
       catch (Exception ex)
       {
         //deliberately supppress
-        Log.Error("Error  occured while Processing the Subscription Payload", ex);
+        Log.Error("Error  occured while Processing the Customer Payload", ex);
       }
     }
   }

@@ -37,6 +37,12 @@ namespace VSS.UserCustomer.Processor
         props.put("session.timeout.ms", "30000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("auto.offset.reset", "earliest");
+        props.put("fetch.min.bytes", "10000");
+        props.put("receive.buffer.bytes", "21440");
+        props.put("max.partition.fetch.bytes", "57152");
+        props.put("heartbeat.interval.ms", "1000");
+
         javaConsumer = new KafkaConsumer(props);
 
         _subscriber = new UserCustomerEventObserver(service);

@@ -25,7 +25,7 @@ namespace VSS.Customer.Processor {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("MasterDataCustomerConsumerJeannie1d")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Landfill-Customer-Alpha")]
         public string ConsumerGroupName {
             get {
                 return ((string)(this["ConsumerGroupName"]));
@@ -34,7 +34,7 @@ namespace VSS.Customer.Processor {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("VSS.Interfaces.Events.MasterData.ICustomerEvent-Merino1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("VSS.Interfaces.Events.MasterData.ICustomerEvent-Alpha")]
         public string TopicName {
             get {
                 return ((string)(this["TopicName"]));
@@ -43,7 +43,7 @@ namespace VSS.Customer.Processor {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10.210.246.165:9092")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10.97.97.96:9092,10.97.99.157:9092,10.97.97.6:9092")]
         public string KafkaUri {
             get {
                 return ((string)(this["KafkaUri"]));
