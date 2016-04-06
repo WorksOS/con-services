@@ -36,7 +36,7 @@ namespace VSS.Project.Processor
       Log.Debug("ProjectEventObserver.OnNext()");
       try
       {
-          string val = value.ToString();
+        string val = (string)value.value();
 
           bool success = false;
           Log.DebugFormat("Recieved Project Payload : {0} ", val);
