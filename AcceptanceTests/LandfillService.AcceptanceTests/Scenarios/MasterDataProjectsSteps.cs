@@ -97,7 +97,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         public void WhenIRequestAListOfProjectsFromLandfillWebApi()
         {
             var httpClient = new HttpClient();
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects/NG"), Method = HttpMethod.Get };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.LandfillBaseUri + "projects/NG"), Method = HttpMethod.Get };
             request.Headers.Add("SessionID", SpecFlowHooks.sessionId);
             response = httpClient.SendAsync(request).Result;
         }

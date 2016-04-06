@@ -46,7 +46,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);       
-            response = httpClient.PostAsJsonAsync(Config.serviceUrl + "users/login", credentials).Result;
+            response = httpClient.PostAsJsonAsync(Config.LandfillBaseUri + "users/login", credentials).Result;
             responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
             Assert.IsFalse(responseParse.Contains("<html>"),"Failed to login - Is Foreman unavailable?");
             sessionId = stepSupport.GetSessionIdFromResponse(responseParse);
@@ -71,7 +71,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         /// <param name="dateOfWeight">A date between today and two years ago</param>
         private void AddAWeightToAProjectForADay(int idFromProject, DateTime dateOfWeight)
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects/" + idFromProject + "/weights"), Method = HttpMethod.Post };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.LandfillBaseUri + "projects/" + idFromProject + "/weights"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
             Assert.IsFalse(sessionId.Contains("Code"), "Unable to establish a session. Check MySQL database connection");
             WeightEntry[] weightEntry = stepSupport.SetUpOneWeightForOneDay(dateOfWeight);
@@ -105,7 +105,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         /// </summary>
         private void GetProjectData()
         {
-            var requestdata = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects/" + projectId), Method = HttpMethod.Get };
+            var requestdata = new HttpRequestMessage() { RequestUri = new Uri(Config.LandfillBaseUri + "projects/" + projectId), Method = HttpMethod.Get };
             requestdata.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(requestdata).Result;
         }
@@ -165,7 +165,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [Given(@"Get Project data for '(.*)'")]
         public void GivenGetProjectDataFor(string projectName)
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.LandfillBaseUri + "projects"), Method = HttpMethod.Get };
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
             // Try and get the projects. Should cause exception
@@ -183,7 +183,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [Given(@"Get a list of all projects")]
         public void GivenGetAListOfAllProjects()
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.LandfillBaseUri + "projects"), Method = HttpMethod.Get };
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
            // var projects = await response.Content.ReadAsAsync<Project[]>();
@@ -243,7 +243,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [When(@"adding five random weights for ten days ago")]
         public void WhenAddingFiveRandomWeightsForTenDaysAgo()
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.LandfillBaseUri + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
             if (sessionId.Contains("Code"))
             {
@@ -301,7 +301,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [When(@"updating a weight \((.*)\) tonnes for date \((.*)\)")]
         public void WhenUpdatingAWeightTonnesForDate(double weight, DateTime dateWeightUpdate)
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.LandfillBaseUri + "projects/" + projectId + "/weights"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
             if (sessionId.Contains("Code"))
             {

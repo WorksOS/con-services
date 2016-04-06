@@ -7,12 +7,23 @@ namespace LandfillService.AcceptanceTests.Helpers
 {
     public class Config
     {
-        //public static string ServiceUrl = "http://localhost:59674/api/v1/";
-        public static string serviceUrl = ConfigurationManager.AppSettings["LandFillServiceApiUrl"];
-        public static string pmServiceUrl = ConfigurationManager.AppSettings["ProjectMonitoringApiUrl"];
-        public static string KafkaDriver { get { return ConfigurationManager.AppSettings["KafkaDriver"]; } }
-        public static string KafkaEndpoint { get { return ConfigurationManager.AppSettings["KafkaEndpoint"]; } }
-        public static string TpaasBearerToken { get { return TokenService.GetAccessToken(); ; } }
+        public static string LandfillBaseUri = ConfigurationManager.AppSettings["LandFillWebApiBaseUrl"];
+        public static string PMBaseUri = ConfigurationManager.AppSettings["ProjectMonitoringWebApiBaseUrl"];
+
+        public static string KafkaDriver 
+        { 
+            get 
+            { 
+                return ConfigurationManager.AppSettings["KafkaDriver"]; 
+            } 
+        }
+        public static string KafkaEndpoint 
+        { 
+            get 
+            { 
+                return ConfigurationManager.AppSettings["KafkaEndpoint"]; 
+            } 
+        }
 
         public static Dictionary<string, Credentials> credentials = new Dictionary<string, Credentials>()
         {

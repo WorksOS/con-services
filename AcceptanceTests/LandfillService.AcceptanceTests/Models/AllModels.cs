@@ -190,6 +190,7 @@ namespace LandfillService.AcceptanceTests.Models
         public bool entryPresent { get; set; }    // true if the entry has at least the weight value
         public double density { get; set; }       // weight / volume
         public double weight { get; set; }
+        public double volume { get; set; }
     }
 
 

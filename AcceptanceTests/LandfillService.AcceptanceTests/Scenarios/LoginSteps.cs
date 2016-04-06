@@ -40,7 +40,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
-                response = httpClient.PostAsJsonAsync(Config.serviceUrl + "users/login", credentials).Result;
+                response = httpClient.PostAsJsonAsync(Config.LandfillBaseUri + "users/login", credentials).Result;
                 responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
                 if (responseParse.Length > 32)
                 {
@@ -92,7 +92,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [When(@"get list of projects")]
         public void WhenGetListOfProjects()
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.LandfillBaseUri + "projects"), Method = HttpMethod.Get };
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
             List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response.Content.ReadAsStringAsync().Result);
@@ -102,7 +102,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [When(@"try get list of projects")]
         public void WhenTryGetListOfProjects()
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "projects"), Method = HttpMethod.Get };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.LandfillBaseUri + "projects"), Method = HttpMethod.Get };
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
             if (!response.IsSuccessStatusCode) 
@@ -115,7 +115,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [When("logout")]
         public void WhenLogout()
         {
-            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.serviceUrl + "users/logout"), Method = HttpMethod.Post };
+            var request = new HttpRequestMessage() { RequestUri = new Uri(Config.LandfillBaseUri + "users/logout"), Method = HttpMethod.Post };
             request.Headers.Add("SessionID", sessionId);
             response = httpClient.SendAsync(request).Result;
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -153,7 +153,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
-            response = httpClient.PostAsJsonAsync(Config.serviceUrl + "users/login/vl", vlcredentials).Result;
+            response = httpClient.PostAsJsonAsync(Config.LandfillBaseUri + "users/login/vl", vlcredentials).Result;
             responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
             if (responseParse.Length > 32)
             {

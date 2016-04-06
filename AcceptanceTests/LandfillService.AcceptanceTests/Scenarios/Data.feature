@@ -5,11 +5,11 @@ Background:
 	Given login goodCredentials
 	And Get Project data for 'Casella-Stanley Landfill'
 
-#look at the project data
-Scenario: Get a list of projects
-	Given Get a list of all projects
-	Then match response (Ok 200)
-	And check the project 'Casella-Stanley Landfill' is in the list
+##look at the project data
+#Scenario: Get a list of projects
+#	Given Get a list of all projects
+#	Then match response (Ok 200)
+#	And check the project 'Casella-Stanley Landfill' is in the list
 
 Scenario: Get project data
 	Given Get Project data for 'Casella-Stanley Landfill'

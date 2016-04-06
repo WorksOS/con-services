@@ -42,7 +42,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         private string CallProjectMonitoringAndGetTheAccessToken()
         {
             string tokenkey = "grant_type=password&username=" + ConfigurationManager.AppSettings["UserName"] + "&password=" + ConfigurationManager.AppSettings["Password"];
-            var client = new RestClient(Config.pmServiceUrl + "/token");
+            var client = new RestClient(Config.PMBaseUri + "/token");
             var request = new RestRequest(Method.POST);
             request.AddParameter("text/json", tokenkey, ParameterType.RequestBody);
             IRestResponse restResponse = client.Execute(request);
@@ -55,7 +55,7 @@ namespace LandfillService.AcceptanceTests.Helpers
 
         public string SessionLogonWithToken(string accesstoken)
         {
-            var client = new RestClient(Config.pmServiceUrl + "/api/v1/session");
+            var client = new RestClient(Config.PMBaseUri + "/api/v1/session");
             var request = new RestRequest(Method.GET);
             request.AddHeader("authorization", "Bearer " + accesstoken);
             IRestResponse restResponse = client.Execute(request);

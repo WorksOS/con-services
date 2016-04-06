@@ -208,6 +208,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Auth\TPaaS.cs" />
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\Getter.cs" />
     <Compile Include="Helpers\KafkaMessage.cs" />
@@ -238,6 +239,7 @@
     <Compile Include="Models\NGProject.cs" />
     <Compile Include="Models\ProjectType.cs" />
     <Compile Include="Models\RelationType.cs" />
+    <Compile Include="Scenarios\AuthenticationSteps.cs" />
     <Compile Include="Scenarios\Data.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -266,7 +268,19 @@
       <DependentUpon>MasterDataSubscriptions.feature</DependentUpon>
     </Compile>
     <Compile Include="Scenarios\MasterDataSubscriptionsSteps.cs" />
+    <Compile Include="Scenarios\Projects.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Projects.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\ProjectsSteps.cs" />
     <Compile Include="Scenarios\SpecFlowHooks.cs" />
+    <Compile Include="Scenarios\Weights.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Weights.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\WeightsSteps.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -313,6 +327,14 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>MasterDataSubscriptions.feature.cs</LastGenOutput>
     </None>
+    <None Include="Scenarios\Projects.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Projects.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Scenarios\Weights.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Weights.feature.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\TestAutomation\AutomationCore\AutomationCore.API.Framework\AutomationCore.API.Framework.csproj">
@@ -320,6 +342,7 @@
       <Name>AutomationCore.API.Framework</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
