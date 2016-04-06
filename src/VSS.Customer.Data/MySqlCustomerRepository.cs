@@ -6,6 +6,7 @@ using System.Reflection;
 using Dapper;
 using log4net;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using VSS.Customer.Data.Interfaces;
 using VSS.Customer.Data.Models;
 
@@ -73,12 +74,12 @@ namespace VSS.Customer.Data
       int upsertedCount = 0;
       using (var connection = new MySqlConnection(_connectionString))
       {
-        Log.DebugFormat("CustomerRepository: Upserting eventType{0} customerUid={1}", eventType, customer.CustomerUid);
+        Log.DebugFormat("CustomerRepository: Upserting eventType={0} customerUid={1} connectionstring={2}", eventType, customer.CustomerUid, _connectionString);
 
         connection.Open();
         var existing = connection.Query<Models.Customer>
           (@"SELECT 
-                  CustomerUID, CustomerName, fk_CustomerTypeID AS CustomerType, LastActionedUTC
+                  CustomerUID AS CustomerUid, CustomerName, fk_CustomerTypeID AS CustomerType, LastActionedUTC AS LastActionedUtc
                 FROM Customer
                 WHERE CustomerUID = @CustomerUid", new { customer.CustomerUid }).FirstOrDefault();
 
@@ -107,6 +108,8 @@ namespace VSS.Customer.Data
     {
       if (existing == null)
       {
+        Log.DebugFormat("CustomerRepository: going to create customer={0}", JsonConvert.SerializeObject(customer));
+
         const string insert =
           @"INSERT Customer
               (CustomerUID, CustomerName, fk_CustomerTypeID, LastActionedUTC)
@@ -213,8 +216,8 @@ namespace VSS.Customer.Data
 
         customers = connection.Query<Models.Customer>
           (@"SELECT 
-                   CustomerUID, CustomerName, fk_CustomerTypeID AS CustomerType, LastActionedUTC
-                FROM Customer");
+                CustomerUID AS CustomerUid, CustomerName, fk_CustomerTypeID AS CustomerType, LastActionedUTC AS LastActionedUtc
+              FROM Customer");
 
         connection.Close();
       }
