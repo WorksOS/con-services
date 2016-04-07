@@ -1,5 +1,6 @@
 ﻿using LandfillService.Common;
 using LandfillService.WebApi.Models;
+using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NodaTime;
@@ -40,6 +41,8 @@ namespace LandfillService.WebApi.ApiClients
     {
         private HttpClient client;
 
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public RaptorApiClient()
         {
             client = new HttpClient();
@@ -63,7 +66,7 @@ namespace LandfillService.WebApi.ApiClients
         /// <returns>Response as a string; throws an exception if the request is not successful</returns>
         private async Task<string> Request<TParams>(string endpoint, string userUid, TParams parameters)  
         {
-            System.Diagnostics.Debug.WriteLine("In RaptorApiClient::Request to " + endpoint + " with " + parameters);
+            Log.DebugFormat("In RaptorApiClient::Request to " + endpoint + " with " + parameters);
 
             LoggerSvc.LogRequest(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, parameters);
 
@@ -78,10 +81,11 @@ namespace LandfillService.WebApi.ApiClients
             if (!response.IsSuccessStatusCode)
             {
                 LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
+                Log.WarnFormat("Bad response from Raptor {0}", response);
                 throw new RaptorApiException(response.StatusCode, response.ReasonPhrase);
             }
 
-            System.Diagnostics.Debug.WriteLine("POST request succeeded");
+            Log.DebugFormat("POST request succeeded");
             LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
 
             var responseContent = response.Content;
@@ -97,7 +101,7 @@ namespace LandfillService.WebApi.ApiClients
         /// <returns>Response string converted to the given type</returns>
         private T ParseResponse<T>(string response)
         {
-            System.Diagnostics.Debug.WriteLine("In RaptorApiClient::ParseResponse");
+          Log.DebugFormat("In RaptorApiClient::ParseResponse");
 
             var resObj = JsonConvert.DeserializeObject<T>(response,
                  new JsonSerializerSettings
@@ -130,7 +134,7 @@ namespace LandfillService.WebApi.ApiClients
       
           //use only utc dates and times in the service contracts. Ignore time for now.
           var utcDateTime = date.Date.Add(-hwZone.BaseUtcOffset);
-           System.Diagnostics.Debug.WriteLine("UTC time range in volume request: {0} - {1}", utcDateTime.ToString(), utcDateTime.AddDays(1).ToString());
+          Log.DebugFormat("UTC time range in volume request: {0} - {1}", utcDateTime.ToString(), utcDateTime.AddDays(1).ToString());
 
             var volumeParams = new VolumeParams()
             {

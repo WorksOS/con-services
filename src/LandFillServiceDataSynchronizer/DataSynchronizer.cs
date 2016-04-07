@@ -92,7 +92,10 @@ namespace LandFillServiceDataSynchronizer
           //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478);
         }
         else
+        {
+          Log.Error("RaptorApiException while retrieving volumes: " + e.Message);
           LandfillDb.MarkVolumeNotRetrieved(project.id, entry.date);
+        }
       }
       catch (Exception e)
       {

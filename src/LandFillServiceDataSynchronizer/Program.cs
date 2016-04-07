@@ -154,7 +154,7 @@ namespace LandFillServiceDataSynchronizer
       Log.Debug("Starting service...");
       //here we need to sync filespaces and tasks
       SyncTimer = new System.Threading.Timer(dataSync.RunUpdateDataFromRaptor);
-      SyncTimer.Change(TimeSpan.FromSeconds(5), TimeSpan.FromDays(1));
+      SyncTimer.Change(TimeSpan.FromSeconds(5), TimeSpan.FromHours(2));
     }
 
     public void Stop()
