@@ -8,6 +8,7 @@ using AutomationCore.API.Framework.Library;
 using LandfillService.AcceptanceTests.Helpers;
 using LandfillService.AcceptanceTests.Auth;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using LandfillService.AcceptanceTests.Utils;
 
 namespace LandfillService.AcceptanceTests.Scenarios
 {
@@ -32,17 +33,11 @@ namespace LandfillService.AcceptanceTests.Scenarios
         }
 
         [When(@"I try to get data for project '(.*)'")]
-        public void WhenITryToGetDataForProject(string project)
+        public void WhenITryToGetDataForProject(string projName)
         {
-            string response = RestClientUtil.DoHttpRequest(Config.LandfillBaseUri, "GET", TPaaS.BearerToken,
-                RestClientConfig.JsonMediaType, null, System.Net.HttpStatusCode.OK, "Bearer", null);
-            List<Project> allProjects = JsonConvert.DeserializeObject<List<Project>>(response);
-            Project proj = allProjects.FirstOrDefault(p => p.name == project);
+            Project project = ProjectsUtils.GetProjectDetails(projName);
 
-            Assert.IsNotNull(proj, "Project not found.");
-
-            uint pId = proj.id;
-            response = RestClientUtil.DoHttpRequest(Config.LandfillBaseUri + pId, "GET", TPaaS.BearerToken,
+            string response = RestClientUtil.DoHttpRequest(string.Format("{0}/{1}", Config.LandfillBaseUri, project.id), "GET", TPaaS.BearerToken,
                 RestClientConfig.JsonMediaType, null, System.Net.HttpStatusCode.OK, "Bearer", null);
             data = JsonConvert.DeserializeObject<ProjectData>(response);
         }

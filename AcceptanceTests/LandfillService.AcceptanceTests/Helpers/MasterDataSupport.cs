@@ -3,6 +3,7 @@ using LandfillService.AcceptanceTests.Models;
 using LandfillService.AcceptanceTests.Models.KafkaTopics;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
+using LandfillService.AcceptanceTests.LandFillKafka;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {

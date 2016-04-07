@@ -4,7 +4,7 @@ using KafkaNet;
 using KafkaNet.Model;
 using KafkaNet.Protocol;
 
-namespace LandfillService.AcceptanceTests.Helpers
+namespace LandfillService.AcceptanceTests.LandFillKafka
 {
     public class Kafka
     {

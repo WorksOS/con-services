@@ -10,4 +10,3 @@ Scenario: Project list
 Scenario: Project data
 	When I try to get data for project 'Casella-Stanley Landfill'
 	Then the response contains data for the past two years
-

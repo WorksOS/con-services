@@ -211,8 +211,8 @@
     <Compile Include="Auth\TPaaS.cs" />
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\Getter.cs" />
-    <Compile Include="Helpers\KafkaMessage.cs" />
-    <Compile Include="Helpers\KafkaResolver.cs" />
+    <Compile Include="LandFillKafka\KafkaMessage.cs" />
+    <Compile Include="LandFillKafka\KafkaResolver.cs" />
     <Compile Include="Helpers\MasterDataSupport.cs" />
     <Compile Include="Helpers\MessageFactory.cs" />
     <Compile Include="Helpers\Poster.cs" />
@@ -221,7 +221,7 @@
     <Compile Include="Interfaces\ICustomerEvent.cs" />
     <Compile Include="Interfaces\ICustomerUserEvent.cs" />
     <Compile Include="Interfaces\IMessage.cs" />
-    <Compile Include="Helpers\Kafka.cs" />
+    <Compile Include="LandFillKafka\Kafka.cs" />
     <Compile Include="Helpers\ServicesClientUtil.cs" />
     <Compile Include="Interfaces\IProjectEvent.cs" />
     <Compile Include="Interfaces\ISubscriptionEvent.cs" />
@@ -281,6 +281,9 @@
       <DependentUpon>Weights.feature</DependentUpon>
     </Compile>
     <Compile Include="Scenarios\WeightsSteps.cs" />
+    <Compile Include="Utils\LandfillCommonUtils.cs" />
+    <Compile Include="Utils\ProjectsUtils.cs" />
+    <Compile Include="Utils\WeightsUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

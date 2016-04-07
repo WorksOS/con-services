@@ -3,6 +3,7 @@ using System.Configuration;
 using LandfillService.AcceptanceTests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TechTalk.SpecFlow;
+using LandfillService.AcceptanceTests.LandFillKafka;
 
 namespace LandfillService.AcceptanceTests.Scenarios
 {

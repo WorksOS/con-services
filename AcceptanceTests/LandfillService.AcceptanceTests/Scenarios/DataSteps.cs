@@ -272,31 +272,31 @@ namespace LandfillService.AcceptanceTests.Scenarios
         }
 
 
-        [Then(@"check the calculated density is correct for the date \((.*)\)")]
-        public void ThenCheckTheCalculatedDensityIsCorrectForTheDate(DateTime dateOfDensityCheck)
-        {
-            var dayOfDensityCheck = GetEntriesFromMySqlDb(dateOfDensityCheck);
-            if (dayOfDensityCheck == null)
-            {
-                Assert.Fail("Cannot find any entry in the MySQL database for that day");
-            }
+        //[Then(@"check the calculated density is correct for the date \((.*)\)")]
+        //public void ThenCheckTheCalculatedDensityIsCorrectForTheDate(DateTime dateOfDensityCheck)
+        //{
+        //    var dayOfDensityCheck = GetEntriesFromMySqlDb(dateOfDensityCheck);
+        //    if (dayOfDensityCheck == null)
+        //    {
+        //        Assert.Fail("Cannot find any entry in the MySQL database for that day");
+        //    }
 
-            double calculatedDensity;
-            if (unitsEnum == UnitsTypeEnum.Metric)
-                { calculatedDensity = dayOfDensityCheck.Weight * 1000 / dayOfDensityCheck.Volume; }
-            else
-                { calculatedDensity = dayOfDensityCheck.Weight * M3_PER_YD3 * POUNDS_PER_TON / dayOfDensityCheck.Volume; }
+        //    double calculatedDensity;
+        //    if (unitsEnum == UnitsTypeEnum.Metric)
+        //        { calculatedDensity = dayOfDensityCheck.Weight * 1000 / dayOfDensityCheck.Volume; }
+        //    else
+        //        { calculatedDensity = dayOfDensityCheck.Weight * M3_PER_YD3 * POUNDS_PER_TON / dayOfDensityCheck.Volume; }
 
-            var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
-            var dayEntry = from day in projectData.entries
-                           where day.date.ToShortDateString() == dateOfDensityCheck.ToShortDateString()
-                           select day.density;
+        //    var projectData = JsonConvert.DeserializeObject<ProjectData>(response.Content.ReadAsStringAsync().Result);
+        //    var dayEntry = from day in projectData.entries
+        //                   where day.date.ToShortDateString() == dateOfDensityCheck.ToShortDateString()
+        //                   select day.density;
 
-            var dayentries = dayEntry as double[] ?? dayEntry.ToArray();
-            Assert.AreEqual(Math.Round(dayentries.First(), 4), Math.Round(calculatedDensity, 4), "density retrieve from response:" + Math.Round(dayentries.First(), 4) + " does not equal calculated expected:" + Math.Round(calculatedDensity, 4) + " The volume is: "
-                            + dayOfDensityCheck.Volume + " and weight is:" + dayOfDensityCheck.Weight);
+        //    var dayentries = dayEntry as double[] ?? dayEntry.ToArray();
+        //    Assert.AreEqual(Math.Round(dayentries.First(), 4), Math.Round(calculatedDensity, 4), "density retrieve from response:" + Math.Round(dayentries.First(), 4) + " does not equal calculated expected:" + Math.Round(calculatedDensity, 4) + " The volume is: "
+        //                    + dayOfDensityCheck.Volume + " and weight is:" + dayOfDensityCheck.Weight);
 
-        }
+        //}
 
         [When(@"updating a weight \((.*)\) tonnes for date \((.*)\)")]
         public void WhenUpdatingAWeightTonnesForDate(double weight, DateTime dateWeightUpdate)

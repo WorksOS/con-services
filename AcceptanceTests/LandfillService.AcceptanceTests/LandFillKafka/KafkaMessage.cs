@@ -3,7 +3,7 @@ using KafkaNet;
 using KafkaNet.Protocol;
 using LandfillService.AcceptanceTests.Interfaces;
 
-namespace LandfillService.AcceptanceTests.Helpers
+namespace LandfillService.AcceptanceTests.LandFillKafka
 {
     /// <summary>
     /// KafkaMessage that can be Send()

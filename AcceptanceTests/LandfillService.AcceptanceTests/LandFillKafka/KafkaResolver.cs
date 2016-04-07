@@ -3,8 +3,9 @@ using System.Threading;
 using VSS.Kafka.Ikvm.Client;
 using java.util;
 using org.apache.kafka.clients.producer;
+using LandfillService.AcceptanceTests.Helpers;
 
-namespace LandfillService.AcceptanceTests.Helpers
+namespace LandfillService.AcceptanceTests.LandFillKafka
 {
     public static class KafkaResolver
     {

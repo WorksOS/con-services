@@ -9,6 +9,7 @@ using LandfillService.AcceptanceTests.Models.KafkaTopics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
+using LandfillService.AcceptanceTests.LandFillKafka;
 
 namespace LandfillService.AcceptanceTests.Scenarios
 {
