@@ -73,10 +73,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutomationCore.API.Framework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>External References\AutomationCore.API.Framework.dll</HintPath>
-    </Reference>
     <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
@@ -212,10 +208,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Auth\TPaaS.cs" />
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\Getter.cs" />
-    <Compile Include="Helpers\KafkaMessage.cs" />
-    <Compile Include="Helpers\KafkaResolver.cs" />
+    <Compile Include="LandFillKafka\KafkaMessage.cs" />
+    <Compile Include="LandFillKafka\KafkaResolver.cs" />
     <Compile Include="Helpers\MasterDataSupport.cs" />
     <Compile Include="Helpers\MessageFactory.cs" />
     <Compile Include="Helpers\Poster.cs" />
@@ -224,7 +221,7 @@
     <Compile Include="Interfaces\ICustomerEvent.cs" />
     <Compile Include="Interfaces\ICustomerUserEvent.cs" />
     <Compile Include="Interfaces\IMessage.cs" />
-    <Compile Include="Helpers\Kafka.cs" />
+    <Compile Include="LandFillKafka\Kafka.cs" />
     <Compile Include="Helpers\ServicesClientUtil.cs" />
     <Compile Include="Interfaces\IProjectEvent.cs" />
     <Compile Include="Interfaces\ISubscriptionEvent.cs" />
@@ -242,21 +239,10 @@
     <Compile Include="Models\NGProject.cs" />
     <Compile Include="Models\ProjectType.cs" />
     <Compile Include="Models\RelationType.cs" />
-    <Compile Include="Scenarios\Data.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Data.feature</DependentUpon>
-    </Compile>
+    <Compile Include="Scenarios\AuthenticationSteps.cs" />
     <Compile Include="Helpers\LandFillDb.cs" />
     <Compile Include="Helpers\LogonKey.cs" />
-    <Compile Include="Scenarios\Login.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Login.feature</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\Config.cs" />
-    <Compile Include="Scenarios\DataSteps.cs" />
-    <Compile Include="Scenarios\LoginSteps.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenarios\MasterDataProjects.feature.cs">
       <AutoGen>True</AutoGen>
@@ -270,7 +256,22 @@
       <DependentUpon>MasterDataSubscriptions.feature</DependentUpon>
     </Compile>
     <Compile Include="Scenarios\MasterDataSubscriptionsSteps.cs" />
+    <Compile Include="Scenarios\Projects.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Projects.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\ProjectsSteps.cs" />
     <Compile Include="Scenarios\SpecFlowHooks.cs" />
+    <Compile Include="Scenarios\Weights.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Weights.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\WeightsSteps.cs" />
+    <Compile Include="Utils\LandfillCommonUtils.cs" />
+    <Compile Include="Utils\ProjectsUtils.cs" />
+    <Compile Include="Utils\WeightsUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -301,14 +302,6 @@
     <None Include="restclientapp.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Scenarios\Data.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Data.feature.cs</LastGenOutput>
-    </None>
-    <None Include="Scenarios\Login.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Login.feature.cs</LastGenOutput>
-    </None>
     <None Include="Scenarios\MasterDataProjects.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>MasterDataProjects.feature.cs</LastGenOutput>
@@ -317,16 +310,22 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>MasterDataSubscriptions.feature.cs</LastGenOutput>
     </None>
+    <None Include="Scenarios\Projects.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Projects.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Scenarios\Weights.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Weights.feature.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\TestAutomation\AutomationCore\AutomationCore.API.Framework\AutomationCore.API.Framework.csproj">
+      <Project>{af26f239-e452-41a1-b66c-d683eada57b2}</Project>
+      <Name>AutomationCore.API.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Content Include="External References\AutomationCore.API.Framework.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="External References\AutomationCore.Shared.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -10,7 +10,6 @@ using Topshelf.Runtime;
 using VSS.Kafka.DotNetClient.Model;
 using VSS.Project.Data;
 using VSS.Project.Data.Interfaces;
-using VSS.Project.Processor.Interfaces;
 using VSS.Subscription.Data;
 using VSS.Subscription.Data.Interfaces;
 using VSS.Subscription.Processor.Consumer;

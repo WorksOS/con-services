@@ -1,6 +1,7 @@
 ﻿using System.Configuration;
 using KafkaNet.Protocol;
 using LandfillService.AcceptanceTests.Interfaces;
+using LandfillService.AcceptanceTests.LandFillKafka;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {

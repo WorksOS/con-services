@@ -37,7 +37,7 @@ namespace VSS.UserCustomer.Processor
     {
       try
       {
-        string val = value.ToString();
+        string val = (string)value.value();
         bool success = false;
         Log.DebugFormat("Recieved Customer Payload : {0} ", val);
         var json = JObject.Parse(val);

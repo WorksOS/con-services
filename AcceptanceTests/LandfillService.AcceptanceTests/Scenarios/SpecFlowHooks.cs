@@ -24,7 +24,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.Add("SessionID", sessionId);
             string uri; // = "https://dev-mobile.vss-eng.com/foreman/Secure/ForemanSvc.svc/Login";
-            uri = Config.serviceUrl + "users/login";
+            uri = Config.LandfillBaseUri + "users/login";
             response = httpClient.PostAsJsonAsync(uri, credentials).Result;  
             responseParse = response.Content.ReadAsStringAsync().Result.Replace("\"", "");
             Assert.IsFalse(responseParse.Contains("<html>"), "Failed to login - Is Foreman unavailable? - Response:" + responseParse);

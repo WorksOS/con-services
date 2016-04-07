@@ -10,19 +10,20 @@ using VSS.Project.Data.Models;
 using VSS.Subscription.Data.Models;
 using log4net;
 using VSS.Subscription.Data.Interfaces;
+using LandfillService.Common.Repositories;
 
 namespace VSS.Subscription.Data
 {
-    public class MySqlSubscriptionRepository : ISubscriptionService
+  public class MySqlSubscriptionRepository : RepositoryBase, ISubscriptionService
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly string _connectionString;
-        private Dictionary<string, Models.ServiceType> _serviceTypes = null;
+        //private readonly string _connectionString;
+        public Dictionary<string, Models.ServiceType> _serviceTypes = null;
 
         public MySqlSubscriptionRepository()
         {
-          _connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
+          //_connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
 
           _serviceTypes = GetServiceTypes().ToDictionary(k => k.Name, v => v);
         }
@@ -81,6 +82,7 @@ namespace VSS.Subscription.Data
             var subscriptionEvent = (AssociateProjectSubscriptionEvent)evt;
 
             subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+            subscription.CustomerUID = String.Empty;            
             subscription.EffectiveUTC = subscriptionEvent.EffectiveDate;
             subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
 
@@ -90,30 +92,35 @@ namespace VSS.Subscription.Data
 
             if (upsertedCount > 0)
             {
-              var connection = new MySqlConnection(_connectionString);
+              PerhapsOpenConnection();
 
-              connection.Open();
-
-              var project = connection.Query<Project.Data.Models.Project>
+              var project = Connection.Query<Project.Data.Models.Project>
                 (@"SELECT ProjectUID, LastActionedUTC
                   FROM Project
                   WHERE ProjectUID = @ProjectUid", new { subscriptionEvent.ProjectUID }).FirstOrDefault();
-              connection.Close();
+
+              PerhapsCloseConnection();
               
               if (project == null)
                 {
-                  upsertedCount = projectService.StoreProject(new CreateProjectEvent(){ ProjectUID = subscriptionEvent.ProjectUID, ActionUTC = subscriptionEvent.ActionUTC });
+                  upsertedCount = projectService.StoreProject(new CreateProjectEvent(){ ProjectUID = subscriptionEvent.ProjectUID, 
+                                                                                        ProjectName = String.Empty,
+                                                                                        ProjectTimezone = String.Empty, 
+                                                                                        ActionUTC = subscriptionEvent.ActionUTC });
                 }
 
               if (upsertedCount > 0)
               {
+                PerhapsOpenConnection();
+
                 const string update =
                   @"UPDATE Project                
-                    SET SubscriptionUID = @SubscriptionUID,
-                    LastActionedUTC = @minActionDate,
-                    WHERE ProjectUID = @ProjectUID";
+                    SET SubscriptionUID = @subscriptionUID, LastActionedUTC = @minActionDate
+                    WHERE ProjectUID = @projectUID";
 
-                upsertedCount = connection.Execute(update, new { subscriptionEvent.ProjectUID, subscriptionEvent.SubscriptionUID, minActionDate = DateTime.MinValue });
+                upsertedCount = Connection.Execute(update, new { projectUID = subscriptionEvent.ProjectUID, subscriptionUID = subscriptionEvent.SubscriptionUID, minActionDate = DateTime.MinValue });
+
+                PerhapsCloseConnection();
               }
             }
           }
@@ -131,39 +138,40 @@ namespace VSS.Subscription.Data
         private int UpsertSubscriptionDetail(Models.Subscription subscription, string eventType)
         {
           int upsertedCount = 0;
-          using (var connection = new MySqlConnection(_connectionString))
+
+          PerhapsOpenConnection();
+
+          Log.DebugFormat("SubscriptionRepository: Upserting eventType{0} SubscriptionUID={1}", eventType, subscription.SubscriptionUID);
+
+          var existing = Connection.Query<Models.Subscription>
+            (@"SELECT 
+                SubscriptionUID, CustomerUID, EffectiveUTC, LastActionedUTC, StartDate, EndDate, fk_ServiceTypeID AS ServiceTypeID
+              FROM Subscription
+              WHERE SubscriptionUID = @subscriptionUID", new { subscriptionUID = subscription.SubscriptionUID }).FirstOrDefault();
+
+          if (eventType == "CreateProjectSubscriptionEvent")
           {
-            Log.DebugFormat("SubscriptionRepository: Upserting eventType{0} SubscriptionUID={1}", eventType, subscription.SubscriptionUID);
-
-            connection.Open();
-            var existing = connection.Query<Models.Subscription>
-              (@"SELECT 
-                  SubscriptionUID, CustomerUID, EffectiveUTC, LastActionedUTC, StartDate, EndDate, fk_ServiceTypeID
-                FROM Subscription
-                WHERE SubscriptionUID = @subscriptionUID", new { subscriptionUID = subscription.SubscriptionUID }).FirstOrDefault();
-
-            if (eventType == "CreateProjectSubscriptionEvent")
-            {
-              upsertedCount = CreateProjectSubscriptionEx(connection, subscription, existing);
-            }
-
-            if (eventType == "UpdateProjectSubscriptionEvent")
-            {
-              upsertedCount = UpdateProjectSubscriptionEx(connection, subscription, existing);
-            }
-
-            if (eventType == "AssociateProjectSubscriptionEvent")
-            {
-              upsertedCount = AssociateProjectSubscriptionEx(connection, subscription, existing);
-            }
-
-            Log.DebugFormat("SubscriptionRepository: upserted {0} rows", upsertedCount);
-            connection.Close();
+            upsertedCount = CreateProjectSubscriptionEx(subscription, existing);
           }
+
+          if (eventType == "UpdateProjectSubscriptionEvent")
+          {
+            upsertedCount = UpdateProjectSubscriptionEx(subscription, existing);
+          }
+
+          if (eventType == "AssociateProjectSubscriptionEvent")
+          {
+            upsertedCount = AssociateProjectSubscriptionEx(subscription, existing);
+          }
+
+          Log.DebugFormat("SubscriptionRepository: upserted {0} rows", upsertedCount);
+
+          PerhapsCloseConnection();
+
           return upsertedCount;
         }
 
-        private int CreateProjectSubscriptionEx(MySqlConnection connection, Models.Subscription subscription, Models.Subscription existing)
+        private int CreateProjectSubscriptionEx(Models.Subscription subscription, Models.Subscription existing)
         {
           if (existing == null)
           {
@@ -173,15 +181,15 @@ namespace VSS.Subscription.Data
                 VALUES
                 (@SubscriptionUID, @CustomerUID, @StartDate, @EffectiveUTC, @LastActionedUTC, @EndDate, @ServiceTypeID)";
 
-            return connection.Execute(insert, subscription);
+            return Connection.Execute(insert, subscription);
           }
 
           Log.DebugFormat("SubscriptionRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", subscription.LastActionedUTC);
 
-          return UpdateProjectSubscriptionEx(connection, subscription, existing);
+          return UpdateProjectSubscriptionEx(subscription, existing);
         }
 
-        private int UpdateProjectSubscriptionEx(MySqlConnection connection, Models.Subscription subscription, Models.Subscription existing)
+        private int UpdateProjectSubscriptionEx(Models.Subscription subscription, Models.Subscription existing)
         {
           if (existing != null)
           {
@@ -204,7 +212,7 @@ namespace VSS.Subscription.Data
                     fk_ServiceTypeId=@ServiceTypeID,
                     LastActionedUTC=@LastActionedUTC
               WHERE SubscriptionUID = @SubscriptionUID";
-              return connection.Execute(update, subscription);
+              return Connection.Execute(update, subscription);
             }
 
             Log.DebugFormat("SubscriptionRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
@@ -218,7 +226,7 @@ namespace VSS.Subscription.Data
           return 0;
         }
 
-        private int AssociateProjectSubscriptionEx(MySqlConnection connection, Models.Subscription subscription, Models.Subscription existing)
+        private int AssociateProjectSubscriptionEx(Models.Subscription subscription, Models.Subscription existing)
         {
           if (existing != null)
           {
@@ -227,10 +235,10 @@ namespace VSS.Subscription.Data
               const string update =
                 @"UPDATE Subscription                
                   SET SubscriptionUID = @SubscriptionUID,
-                      EffectiveDate = @EffectiveUTC,
+                      EffectiveUTC = @EffectiveUTC,
                       LastActionedUTC = @LastActionedUTC
-                WHERE SubscriptionUID = @SubscriptionUID";
-              return connection.Execute(update, subscription);
+                  WHERE SubscriptionUID = @SubscriptionUID";
+              return Connection.Execute(update, subscription);
             }
               Log.DebugFormat("SubscriptionRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
                 existing.LastActionedUTC, subscription.LastActionedUTC);
@@ -239,7 +247,7 @@ namespace VSS.Subscription.Data
           {
             Log.DebugFormat("SubscriptionRepository: can't update as none existing newActionedUTC {0}. So, a new entry should be created.", subscription.LastActionedUTC);
 
-            return CreateProjectSubscriptionEx(connection, subscription, null);
+            return CreateProjectSubscriptionEx(subscription, null);
           }
 
           return 0;
@@ -247,22 +255,52 @@ namespace VSS.Subscription.Data
 
       private IEnumerable<Models.ServiceType> GetServiceTypes()
       {
-        IEnumerable<Models.ServiceType> serviceTypes;
-        using (var connection = new MySqlConnection(_connectionString))
-        {
-          Log.Debug("SubscriptionRepository: Getting service types");
+        PerhapsOpenConnection();
+        
+        Log.Debug("SubscriptionRepository: Getting service types");
 
-          connection.Open();
-          serviceTypes = connection.Query<Models.ServiceType>
-              (@"SELECT 
-                  s.ID, s.Description AS Name, sf.ID AS ServiceTypeFamilyID, sf.Description AS ServiceTypeFamilyName
-                FROM ServiceTypeEnum s JOIN ServiceTypeFamilyEnum sf on s.fk_ServiceTypeFamilyID = sf.ID"
-              );
-          connection.Close();
-        }
+        var serviceTypes = Connection.Query<ServiceType>
+            (@"SELECT 
+                s.ID, s.Description AS Name, sf.ID AS ServiceTypeFamilyID, sf.Description AS ServiceTypeFamilyName
+              FROM ServiceTypeEnum s JOIN ServiceTypeFamilyEnum sf on s.fk_ServiceTypeFamilyID = sf.ID"
+            );
+
+        PerhapsCloseConnection();
+
         return serviceTypes;
       }
+
+      public Models.Subscription GetSubscription(string subscriptionUid)
+      {
+        PerhapsOpenConnection();
+
+        var subscription = Connection.Query<Models.Subscription>
+          (@"SELECT 
+                  SubscriptionUID, CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, EffectiveUTC, LastActionedUTC
+              FROM Subscription
+              WHERE SubscriptionUID = @subscriptionUid"
+            , new { subscriptionUid }
+          ).FirstOrDefault();
+
+        PerhapsCloseConnection();
+
+        return subscription;
+      }
+
+      public IEnumerable<Models.Subscription> GetSubscriptions()
+      {
+        PerhapsOpenConnection();
+
+        var subscriptions = Connection.Query<Models.Subscription>
+          (@"SELECT 
+                  SubscriptionUID, CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, EffectiveUTC, LastActionedUTC
+              FROM Subscription"
+           );
+
+        PerhapsCloseConnection();
+
+        return subscriptions;
+      }
+
     }
-
-
 }
