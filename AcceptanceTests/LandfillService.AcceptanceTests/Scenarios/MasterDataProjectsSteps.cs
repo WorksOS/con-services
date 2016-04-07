@@ -27,7 +27,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         private ProjectEvent CreateAProjectEvent(TableRow eventRow)
         {
             var projectName = eventRow["ProjectName"] + stepSupport.GetRandomNumber();
-            var projectId = LandFillMySqlDb.GetTheHighestProjectId() + 1;
+            var projectId = 1000; //LandFillMySqlDb.GetTheHighestProjectId() + 1;
             var createProjectEvent = new ProjectEvent
             {
                 ActionUTC = DateTime.UtcNow,
