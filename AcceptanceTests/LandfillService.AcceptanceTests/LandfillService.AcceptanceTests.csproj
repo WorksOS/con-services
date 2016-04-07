@@ -240,21 +240,9 @@
     <Compile Include="Models\ProjectType.cs" />
     <Compile Include="Models\RelationType.cs" />
     <Compile Include="Scenarios\AuthenticationSteps.cs" />
-    <Compile Include="Scenarios\Data.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Data.feature</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\LandFillDb.cs" />
     <Compile Include="Helpers\LogonKey.cs" />
-    <Compile Include="Scenarios\Login.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Login.feature</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\Config.cs" />
-    <Compile Include="Scenarios\DataSteps.cs" />
-    <Compile Include="Scenarios\LoginSteps.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenarios\MasterDataProjects.feature.cs">
       <AutoGen>True</AutoGen>
@@ -313,14 +301,6 @@
     <None Include="packages.config" />
     <None Include="restclientapp.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Scenarios\Data.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Data.feature.cs</LastGenOutput>
-    </None>
-    <None Include="Scenarios\Login.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Login.feature.cs</LastGenOutput>
     </None>
     <None Include="Scenarios\MasterDataProjects.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
