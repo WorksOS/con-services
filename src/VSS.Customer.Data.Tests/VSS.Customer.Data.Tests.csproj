@@ -53,6 +53,19 @@
     <Compile Include="Customers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\LandfillService.Common.csproj">
+      <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
+      <Name>LandfillService.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Customer.Data\VSS.Customer.Data.csproj">
+      <Project>{70ca8791-9379-4236-8849-d29cbeb2e251}</Project>
+      <Name>VSS.Customer.Data</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
