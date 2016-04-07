@@ -180,7 +180,11 @@ namespace VSS.Subscription.Data.Tests
         return null;
       });
     }
-
+    
+    /// <summary>
+    /// AssociateProjectSubscription event arrives first and as there is neither CreateProjectSubscription event
+    /// nor CreateProject event coming from the Kafka queue dummy Project and Subscription entries are created.
+    /// </summary>
     [TestMethod]
     public void AssociateProjectSubscription_NoProjectAndSubscription_Succeeds()
     {
@@ -208,6 +212,11 @@ namespace VSS.Subscription.Data.Tests
       });
     }
 
+    /// <summary>
+    /// CreateProjectSubscription event arrives first, the AssociateProjectSubscription event is coming after
+    /// and as there is no CreateProject event coming from the Kafka queue a dummy Project 
+    /// entry is created.
+    /// </summary>
     [TestMethod]
     public void AssociateProjectSubscription_NoProject_Succeeds()
     {
@@ -242,6 +251,11 @@ namespace VSS.Subscription.Data.Tests
       });
     }
 
+    /// <summary>
+    /// CreateProject event arrives first, the AssociateProjectSubscription event is coming after
+    /// and as there is no CreateProjectSubscription event coming from the Kafka queue a dummy Subscription 
+    /// entry is created.
+    /// </summary>
     [TestMethod]
     public void AssociateProjectSubscription_NoSubscription_Succeeds()
     {
@@ -251,10 +265,10 @@ namespace VSS.Subscription.Data.Tests
 
         var createProjectEvent = GetNewCreateProjectEvent();
         var upsertCount = _projectService.StoreProject(createProjectEvent);
-        Assert.IsTrue(upsertCount == 1, "Failed to create a project that is to be associated with a subscription!");
+        Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
-        Assert.IsNotNull(project, "Failed to get the created project that is to be associated with a subscription!");
+        Assert.IsNotNull(project, "Failed to get the created Landfill project that is to be associated with a subscription!");
 
         var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(Guid.NewGuid(),
                                                                                         Guid.NewGuid(),
@@ -276,5 +290,326 @@ namespace VSS.Subscription.Data.Tests
       });
     }
 
+    /// <summary>
+    /// The events are consumed from the Kafka queue in the following order:
+    /// 1. CreateProject
+    /// 2. CreateProjectSubscription
+    /// 3. AssociateProjectSubscription
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectSubscription_Project_Subscription_Associate_Succeeds()
+    {
+      _subscriptionService.InRollbackTransaction<object>(o =>
+      {
+        _projectService.SetConnection((MySqlConnection)o);
+        
+        // CreateProject event...
+        var createProjectEvent = GetNewCreateProjectEvent();
+        var upsertCount = _projectService.StoreProject(createProjectEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
+
+        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the created Landfill project that is to be associated with a subscription!");
+
+        // CreateProjectSubscription event...
+        var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
+        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with a project!");
+
+        var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the project subscription that is to be associated with a project!");
+
+        // AssociateProjectSubscription event...
+        var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(createProjectSubscriptionEvent.SubscriptionUID,
+                                                                                        createProjectEvent.ProjectUID,
+                                                                                        DateTime.UtcNow,
+                                                                                        DateTime.UtcNow.AddMilliseconds(100));
+
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with the existing Landfill project!");
+
+        subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription associated with the existing Landfill project!");
+
+        project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
+
+        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+
+        return null;
+      });
+    }
+
+    /// <summary>
+    /// The events are consumed from the Kafka queue in the following order:
+    /// 1. CreateProjectSubscription
+    /// 2. CreateProject
+    /// 3. AssociateProjectSubscription
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectSubscription_Subscription_Project_Associate_Succeeds()
+    {
+      _subscriptionService.InRollbackTransaction<object>(o =>
+      {
+        _projectService.SetConnection((MySqlConnection)o);
+
+        // CreateProjectSubscription event...
+        var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
+        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with a project!");
+
+        var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the project subscription that is to be associated with a project!");
+
+        // CreateProject event...
+        var createProjectEvent = GetNewCreateProjectEvent();
+        upsertCount = _projectService.StoreProject(createProjectEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
+
+        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the created Landfill project that is to be associated with a subscription!");
+
+        // AssociateProjectSubscription event...
+        var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(createProjectSubscriptionEvent.SubscriptionUID,
+                                                                                        createProjectEvent.ProjectUID,
+                                                                                        DateTime.UtcNow,
+                                                                                        DateTime.UtcNow.AddMilliseconds(100));
+
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with the existing Landfill project!");
+
+        subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription associated with the existing Landfill project!");
+
+        project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
+
+        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+
+        return null;
+      });
+    }
+
+    /// <summary>
+    /// The events are consumed from the Kafka queue in the following order:
+    /// 1. AssociateProjectSubscription
+    /// 2. CreateProject
+    /// 3. CreateProjectSubscription
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectSubscription_Associate_Project_Subscription_Succeeds()
+    {
+      _subscriptionService.InRollbackTransaction<object>(o =>
+      {
+        _projectService.SetConnection((MySqlConnection)o);
+
+        // AssociateProjectSubscription event...
+        var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(Guid.NewGuid(),
+                                                                                        Guid.NewGuid(),
+                                                                                        DateTime.UtcNow,
+                                                                                        DateTime.UtcNow.AddMilliseconds(100));
+
+        var upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with a Landfill project!");
+
+        var subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription to be associated with a Landfill project!");
+
+        // CreateProject event...
+        var createProjectEvent = GetNewCreateProjectEvent();
+        createProjectEvent.ProjectUID = associateProjectSubscriptionEvent.ProjectUID;
+        upsertCount = _projectService.StoreProject(createProjectEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
+
+        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the created Landfill project that is to be associated with a subscription!");
+
+        // CreateProjectSubscription event...
+        var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
+        createProjectSubscriptionEvent.SubscriptionUID = associateProjectSubscriptionEvent.SubscriptionUID;
+        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with the existing Landfill project!");
+
+        subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the project subscription that is to be associated with the existing Landfill project!");
+
+
+        subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription associated with the existing Landfill project!");
+
+        project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
+
+        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+
+        return null;
+      });
+    }
+
+    /// <summary>
+    /// The events are consumed from the Kafka queue in the following order:
+    /// 1. AssociateProjectSubscription
+    /// 2. CreateProjectSubscription
+    /// 3. CreateProject
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectSubscription_Associate_Subscription_Project_Succeeds()
+    {
+      _subscriptionService.InRollbackTransaction<object>(o =>
+      {
+        _projectService.SetConnection((MySqlConnection)o);
+
+        // AssociateProjectSubscription event...
+        var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(Guid.NewGuid(),
+                                                                                        Guid.NewGuid(),
+                                                                                        DateTime.UtcNow,
+                                                                                        DateTime.UtcNow.AddMilliseconds(100));
+
+        var upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with a Landfill project!");
+
+        var subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription to be associated with a Landfill project!");
+
+        // CreateProjectSubscription event...
+        var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
+        createProjectSubscriptionEvent.SubscriptionUID = associateProjectSubscriptionEvent.SubscriptionUID;
+        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with the existing Landfill project!");
+
+        subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the project subscription that is to be associated with the existing Landfill project!");
+
+        // CreateProject event...
+        var createProjectEvent = GetNewCreateProjectEvent();
+        createProjectEvent.ProjectUID = associateProjectSubscriptionEvent.ProjectUID;
+        upsertCount = _projectService.StoreProject(createProjectEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
+
+        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the created Landfill project that is to be associated with a subscription!");
+
+
+        subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription associated with the existing Landfill project!");
+
+        project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
+
+        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+
+        return null;
+      });
+    }
+
+    /// <summary>
+    /// The events are consumed from the Kafka queue in the following order:
+    /// 1. CreateProject
+    /// 2. AssociateProjectSubscription
+    /// 3. CreateProjectSubscription
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectSubscription_Project_Associate_Subscription_Succeeds()
+    {
+      _subscriptionService.InRollbackTransaction<object>(o =>
+      {
+        _projectService.SetConnection((MySqlConnection)o);
+
+        // CreateProject event...
+        var createProjectEvent = GetNewCreateProjectEvent();
+        var upsertCount = _projectService.StoreProject(createProjectEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
+
+        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the created Landfill project that is to be associated with a subscription!");
+
+        // AssociateProjectSubscription event...
+        var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(Guid.NewGuid(),
+                                                                                        createProjectEvent.ProjectUID,
+                                                                                        DateTime.UtcNow,
+                                                                                        DateTime.UtcNow.AddMilliseconds(100));
+
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with a Landfill project!");
+
+        var subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription to be associated with a Landfill project!");
+
+        // CreateProjectSubscription event...
+        var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
+        createProjectSubscriptionEvent.SubscriptionUID = associateProjectSubscriptionEvent.SubscriptionUID;
+        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with the existing Landfill project!");
+
+        subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the project subscription that is to be associated with the existing Landfill project!");
+
+
+        subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription associated with the existing Landfill project!");
+
+        project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
+
+        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+
+        return null;
+      });
+    }
+
+    /// <summary>
+    /// The events are consumed from the Kafka queue in the following order:
+    /// 1. CreateProjectSubscription
+    /// 2. AssociateProjectSubscription
+    /// 3. CreateProject
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectSubscription_Subscription_Associate_Project_Succeeds()
+    {
+      _subscriptionService.InRollbackTransaction<object>(o =>
+      {
+        _projectService.SetConnection((MySqlConnection)o);
+
+        // CreateProjectSubscription event...
+        var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
+        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with the existing Landfill project!");
+
+        var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the project subscription that is to be associated with the existing Landfill project!");
+
+        // AssociateProjectSubscription event...
+        var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(createProjectSubscriptionEvent.SubscriptionUID,
+                                                                                        Guid.NewGuid(),
+                                                                                        DateTime.UtcNow,
+                                                                                        DateTime.UtcNow.AddMilliseconds(100));
+
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with a Landfill project!");
+
+        subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription to be associated with a Landfill project!");
+
+        // CreateProject event...
+        var createProjectEvent = GetNewCreateProjectEvent();
+        createProjectEvent.ProjectUID = associateProjectSubscriptionEvent.ProjectUID;
+        upsertCount = _projectService.StoreProject(createProjectEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
+
+        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the created Landfill project that is to be associated with a subscription!");
+
+
+        subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
+        Assert.IsNotNull(subscription, "Failed to get the subscription associated with the existing Landfill project!");
+
+        project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
+        Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
+
+        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+
+        return null;
+      });
+    }
   }
 }

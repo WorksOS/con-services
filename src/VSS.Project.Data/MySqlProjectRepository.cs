@@ -175,11 +175,10 @@ namespace VSS.Project.Data
                 (@projectId, @name, @projectTimeZone, @landfillTimeZone, @projectUid, @lastActionedUtc, @projectStartDate, @projectEndDate, @projectType)";
         return Connection.Execute(insert, project);
       }
-      else
-      {
-        Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC {0}", project.lastActionedUtc);
-      }
-      return 0;
+
+      Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", project.lastActionedUtc);
+
+      return UpdateProject(project, existing);
     }
 
     private int DeleteProject(Models.Project project, Models.Project existing)
