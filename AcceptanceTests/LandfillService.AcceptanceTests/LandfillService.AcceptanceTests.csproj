@@ -209,19 +209,16 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Auth\TPaaS.cs" />
-    <Compile Include="Helpers\Enums.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Helpers\Getter.cs" />
-    <Compile Include="LandFillKafka\KafkaMessage.cs" />
-    <Compile Include="LandFillKafka\KafkaResolver.cs" />
+    <Compile Include="Kafka\KafkaResolver.cs" />
     <Compile Include="Helpers\MasterDataSupport.cs" />
-    <Compile Include="Helpers\MessageFactory.cs" />
     <Compile Include="Helpers\Poster.cs" />
     <Compile Include="Helpers\ServiceResponse.cs" />
     <Compile Include="Helpers\StepSupport.cs" />
     <Compile Include="Interfaces\ICustomerEvent.cs" />
     <Compile Include="Interfaces\ICustomerUserEvent.cs" />
-    <Compile Include="Interfaces\IMessage.cs" />
-    <Compile Include="LandFillKafka\Kafka.cs" />
+    <Compile Include="Kafka\KafkaDotNet.cs" />
     <Compile Include="Helpers\ServicesClientUtil.cs" />
     <Compile Include="Interfaces\IProjectEvent.cs" />
     <Compile Include="Interfaces\ISubscriptionEvent.cs" />
@@ -232,17 +229,15 @@
     <Compile Include="Models\KafkaTopics\CreateCustomerSubscriptionEvent.cs" />
     <Compile Include="Models\KafkaTopics\CreateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\KafkaTopics\DissociateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\KafkaTopics\ProjectEvent.cs" />
+    <Compile Include="Models\KafkaTopics\CreateProjectEvent.cs" />
     <Compile Include="Models\AllModels.cs" />
     <Compile Include="Models\KafkaTopics\UpdateCustomerSubscriptionEvent.cs" />
     <Compile Include="Models\KafkaTopics\UpdateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\NGProject.cs" />
-    <Compile Include="Models\ProjectType.cs" />
-    <Compile Include="Models\RelationType.cs" />
     <Compile Include="Scenarios\AuthenticationSteps.cs" />
     <Compile Include="Helpers\LandFillDb.cs" />
     <Compile Include="Helpers\LogonKey.cs" />
-    <Compile Include="Helpers\Config.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenarios\MasterDataProjects.feature.cs">
       <AutoGen>True</AutoGen>

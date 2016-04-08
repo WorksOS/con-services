@@ -18,21 +18,21 @@ namespace LandfillService.AcceptanceTests.Scenarios
     {
         private readonly StepSupport stepSupport = new StepSupport();
         private HttpResponseMessage response;
-        private ProjectEvent projEvent = new ProjectEvent();
+        private CreateProjectEvent projEvent = new CreateProjectEvent();
 
         /// <summary>
         /// Create the kafka message. This creates a Project Event and is available to be used by other messages.
         /// </summary>
         /// <param name="eventRow"></param>
         /// <returns>A ProjectEvent object</returns>
-        private ProjectEvent CreateAProjectEvent(TableRow eventRow)
+        private CreateProjectEvent CreateAProjectEvent(TableRow eventRow)
         {
             var projectName = eventRow["ProjectName"] + stepSupport.GetRandomNumber();
             var projectId = 1000; //LandFillMySqlDb.GetTheHighestProjectId() + 1;
-            var createProjectEvent = new ProjectEvent
+            var createProjectEvent = new CreateProjectEvent
             {
                 ActionUTC = DateTime.UtcNow,
-                ProjectBoundaries = eventRow.Keys.Contains("Boundaries") ? eventRow["Boundaries"] : " ",
+                ProjectBoundary = eventRow.Keys.Contains("Boundaries") ? eventRow["Boundaries"] : " ",
                 ProjectEndDate = DateTime.Today.AddDays(Convert.ToInt32(eventRow["DaysToExpire"])),
                 ProjectStartDate = DateTime.Today.AddMonths(-3),
                 ProjectName = projectName,

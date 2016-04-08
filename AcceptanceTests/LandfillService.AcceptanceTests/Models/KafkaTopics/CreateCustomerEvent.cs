@@ -6,7 +6,7 @@ namespace LandfillService.AcceptanceTests.Models.KafkaTopics
     public class CreateCustomerEvent : ICustomerEvent
     {
         public string CustomerName { get; set; }
-        public string CustomerType { get; set; }
+        public CustomerType CustomerType { get; set; }
         public string BSSID { get; set; }
         public string DealerNetwork { get; set; }
         public string NetworkDealerCode { get; set; }

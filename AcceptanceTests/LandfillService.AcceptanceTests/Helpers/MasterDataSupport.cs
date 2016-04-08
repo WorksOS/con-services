@@ -17,7 +17,7 @@ namespace LandfillService.AcceptanceTests.Helpers
         private AssociateCustomerUserEvent expectedAssociateCustomerUserEvent;
         private DissociateProjectSubscriptionEvent expectedDissociatedProjectSubscriptionEvent;
         private CreateCustomerEvent expectedCreateCustomerEvent;
-        private ProjectEvent expectedCreateProjectEvent;
+        private CreateProjectEvent expectedCreateProjectEvent;
 
         public Guid masterSubscriptionUid;
         public Guid masterProjectUid;
@@ -28,10 +28,10 @@ namespace LandfillService.AcceptanceTests.Helpers
         {
             var projectName = "AT-Test" + DateTime.Now;
             var projectId = LandFillMySqlDb.GetTheHighestProjectId() + 1;
-            expectedCreateProjectEvent = new ProjectEvent
+            expectedCreateProjectEvent = new CreateProjectEvent
             {
                 ActionUTC = DateTime.UtcNow,
-                ProjectBoundaries = " ",
+                ProjectBoundary = " ",
                 ProjectEndDate = DateTime.Today.AddMonths(10),
                 ProjectStartDate = DateTime.Today.AddMonths(-3),
                 ProjectName = projectName,
@@ -56,7 +56,7 @@ namespace LandfillService.AcceptanceTests.Helpers
             {
                 CustomerUID = Guid.NewGuid(),
                 CustomerName = "AT-" + DateTime.Now,
-                CustomerType = "Test",
+                CustomerType = CustomerType.Corporate,
                 ActionUTC = DateTime.UtcNow,
                 ReceivedUTC = DateTime.UtcNow,
             };

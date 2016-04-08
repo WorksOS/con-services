@@ -12,29 +12,6 @@ namespace LandfillService.AcceptanceTests.Helpers
         private static readonly object syncLock = new object();
 
         /// <summary>
-        /// Get the unit type from response from forman. 
-        /// </summary>
-        /// <param name="inResponse"></param>
-        public UnitsTypeEnum GetWeightUnitsFromResponse(string inResponse)
-        {
-            if (inResponse.Length < 32)
-               { return UnitsTypeEnum.Metric; }
-
-            var unitsSetting = inResponse.Substring(33).TrimEnd();
-            switch (unitsSetting)
-            {
-                case "Imperial":
-                    return UnitsTypeEnum.Imperial;
-                case "Metric":
-                    return UnitsTypeEnum.Metric;
-                case "US":
-                    return UnitsTypeEnum.US;
-                default:
-                    return UnitsTypeEnum.Metric;
-            }
-        }
-
-        /// <summary>
         /// Get the session ID from response from forman. 
         /// </summary>
         /// <param name="inResponse"></param>

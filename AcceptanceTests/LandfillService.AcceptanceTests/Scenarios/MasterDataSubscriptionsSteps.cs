@@ -14,43 +14,52 @@ namespace LandfillService.AcceptanceTests.Scenarios
         private readonly MasterDataSupport masterDataSupport = new MasterDataSupport();      
 
         [Given(@"I inject the following master data event ""(.*)"" into kafka")]
-        public void GivenIInjectTheFollowingMasterDataEventIntoKafka(string eventType)
+        public void GivenIInjectTheFollowingMasterDataEventIntoKafka(string eventTypeStr)
         {
-            var messageStr = string.Empty;
-            var topic = string.Empty;
+            string messageStr = string.Empty;
+            string topic = string.Empty;
+            EventType eventType = (EventType)Enum.Parse(typeof(EventType), eventTypeStr);
+
             switch (eventType)
             {
-                case "CreateCustomerEvent":
-                    topic = ConfigurationManager.AppSettings["CustomerMasterDataTopic"];
-                    messageStr = masterDataSupport.CreateCustomer();                    
+                case EventType.CreateCustomerEvent:
+                    messageStr = masterDataSupport.CreateCustomer(); 
+                    topic = Config.CustomerMasterDataTopic;
                     break;
-                case "CreateProjectEvent":
+                case EventType.CreateProjectEvent:
                     messageStr = masterDataSupport.CreateProjectEvent();
-                    topic = ConfigurationManager.AppSettings["ProjectMasterDataTopic"];
+                    topic = Config.ProjectMasterDataTopic;
                     break;
-                case "CreateProjectSubscriptionEvent":
+                case EventType.CreateProjectSubscriptionEvent:
                     messageStr = masterDataSupport.CreateProjectSubscription();
-                    topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
+                    topic = Config.SubscriptionTopic;
                     break;
-                case "UpdateProjectSubscriptionEvent":
+                case EventType.UpdateProjectSubscriptionEvent:
                     messageStr = masterDataSupport.UpdateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterCustomerUid);
-                    topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
+                    topic = Config.SubscriptionTopic;
                     break;
-                case "AssociateProjectSubscriptionEvent":
+                case EventType.AssociateProjectSubscriptionEvent:
                     messageStr = masterDataSupport.AssociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
-                    topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
+                    topic = Config.SubscriptionTopic;
                     break;
-                case "AssociateCustomerUserEvent":
+                case EventType.AssociateCustomerUserEvent:
                     messageStr = masterDataSupport.AssociateCustomerUser(masterDataSupport.masterCustomerUid, Guid.NewGuid());
-                    topic = ConfigurationManager.AppSettings["CustomerUserMasterDataTopic"];
+                    topic = Config.CustomerUserMasterDataTopic;
                     break;
-                case "DissociateProjectSubscriptionEvent":
+                case EventType.DissociateProjectSubscriptionEvent:
                     messageStr = masterDataSupport.DissociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
-                    topic = ConfigurationManager.AppSettings["SubscriptionTopic"];
+                    topic = Config.SubscriptionTopic;
                     break;                   
             }
 
-            KafkaResolver.SendMessage(topic, messageStr);
+            if (Config.KafkaDriver == "JAVA")
+            {
+                KafkaResolver.SendMessage(topic, messageStr);
+            }
+            if (Config.KafkaDriver == ".NET")
+            {
+                KafkaDotNet.SendMessage(topic, messageStr);
+            }
         }
 
         [Then(@"I verify the correct subscription event in the database")]
