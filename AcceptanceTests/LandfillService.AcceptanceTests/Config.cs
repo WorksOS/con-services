@@ -7,6 +7,9 @@ namespace LandfillService.AcceptanceTests
 {
     public class Config
     {
+        public static string MySqlConnString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
+        public static string MySqlDbName = ConfigurationManager.AppSettings["MySqlDBName"];
+
         public static string LandfillBaseUri = ConfigurationManager.AppSettings["LandFillWebApiBaseUrl"];
         public static string PMBaseUri = ConfigurationManager.AppSettings["ProjectMonitoringWebApiBaseUrl"];
 

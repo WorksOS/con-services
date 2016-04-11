@@ -5,7 +5,6 @@ using TechTalk.SpecFlow;
 using Newtonsoft.Json;
 using LandfillService.AcceptanceTests.Models.Landfill;
 using AutomationCore.API.Framework.Library;
-using LandfillService.AcceptanceTests.Helpers;
 using LandfillService.AcceptanceTests.Auth;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using LandfillService.AcceptanceTests.Utils;

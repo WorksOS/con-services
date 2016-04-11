@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using LandfillService.AcceptanceTests.Models.Landfill;
 
-namespace LandfillService.AcceptanceTests.Helpers
+namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
 {
     public class StepSupport
     {

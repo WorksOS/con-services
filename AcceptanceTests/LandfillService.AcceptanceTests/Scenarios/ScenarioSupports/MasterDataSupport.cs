@@ -4,8 +4,9 @@ using LandfillService.AcceptanceTests.Models.KafkaTopics;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using LandfillService.AcceptanceTests.LandFillKafka;
+using LandfillService.AcceptanceTests.Utils;
 
-namespace LandfillService.AcceptanceTests.Helpers
+namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
 {
     public class MasterDataSupport
     {

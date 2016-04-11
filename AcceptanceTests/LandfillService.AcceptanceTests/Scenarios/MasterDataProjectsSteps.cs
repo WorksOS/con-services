@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
-using LandfillService.AcceptanceTests.Helpers;
 using LandfillService.AcceptanceTests.Models;
 using LandfillService.AcceptanceTests.Models.KafkaTopics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using LandfillService.AcceptanceTests.LandFillKafka;
+using LandfillService.AcceptanceTests.Utils;
+using LandfillService.AcceptanceTests.Scenarios.ScenarioSupports;
 
 namespace LandfillService.AcceptanceTests.Scenarios
 {
@@ -28,7 +29,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         private CreateProjectEvent CreateAProjectEvent(TableRow eventRow)
         {
             var projectName = eventRow["ProjectName"] + stepSupport.GetRandomNumber();
-            var projectId = 1000; //LandFillMySqlDb.GetTheHighestProjectId() + 1;
+            var projectId = LandFillMySqlDb.GetTheHighestProjectId() + 1;
             var createProjectEvent = new CreateProjectEvent
             {
                 ActionUTC = DateTime.UtcNow,
@@ -75,9 +76,14 @@ namespace LandfillService.AcceptanceTests.Scenarios
                 }
                 topic = ConfigurationManager.AppSettings["ProjectMasterDataTopic"];
                 uniqueId = projEvent.ProjectUID.ToString();
-                //var message = MessageFactory.Instance.CreateMessage(messageStr, messageType);
-                //message.Send();
-                KafkaResolver.SendMessage(topic, messageStr);
+                if (Config.KafkaDriver == "JAVA")
+                {
+                    KafkaResolver.SendMessage(topic, messageStr);
+                }
+                if (Config.KafkaDriver == ".NET")
+                {
+                    KafkaDotNet.SendMessage(topic, messageStr);
+                }
 
                 switch (row["Event"])
                 {

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using LandfillService.AcceptanceTests.Models.Landfill;
 using AutomationCore.API.Framework.Library;
-using LandfillService.AcceptanceTests.Helpers;
 using Newtonsoft.Json;
 using LandfillService.AcceptanceTests.Auth;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Configuration;
-using LandfillService.AcceptanceTests.Helpers;
+using LandfillService.AcceptanceTests.Scenarios.ScenarioSupports;
 using LandfillService.AcceptanceTests.LandFillKafka;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TechTalk.SpecFlow;
