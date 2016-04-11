@@ -30,8 +30,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         public static void FeatureSetup(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext)
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner(null, 0);
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "MasterDataProjects", "\tDependencies:\tInternal  - AutomationCoreAPI\r\n\t\t\t\t\tExternal  - Kafka queue, Landf" +
-                    "ill WebApi, mySql database, project monitoring and Foreman Web Api\'s", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "MasterDataProjects", null, ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -68,28 +67,14 @@ namespace LandfillService.AcceptanceTests.Scenarios
             testRunner.CollectScenarioErrors();
         }
         
-        public virtual void FeatureBackground()
-        {
-#line 5
-#line hidden
-        }
-        
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Create a new landfill project")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterDataProjects")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Sanity")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Positive")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("MasterDataProjects")]
         public virtual void CreateANewLandfillProject()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create a new landfill project", new string[] {
-                        "Sanity",
-                        "Positive",
-                        "MasterDataProjects"});
-#line 9
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create a new landfill project", ((string[])(null)));
+#line 3
 this.ScenarioSetup(scenarioInfo);
-#line 5
-this.FeatureBackground();
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                         "Event",
@@ -105,11 +90,11 @@ this.FeatureBackground();
                         "AcceptanceTest",
                         "LandFill",
                         "America/Chicago"});
-#line 10
+#line 4
 testRunner.Given("I inject the following master data events", ((string)(null)), table1, "Given ");
-#line 13
+#line 7
 testRunner.When("I request a list of projects from landfill web api", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 14
+#line 8
 testRunner.Then("I find the project I created in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -127,10 +112,8 @@ testRunner.Then("I find the project I created in the list", ((string)(null)), ((
                         "Sanity",
                         "Positive",
                         "MasterDataProjects"});
-#line 19
+#line 13
 this.ScenarioSetup(scenarioInfo);
-#line 5
-this.FeatureBackground();
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
                         "Event",
@@ -146,7 +129,7 @@ this.FeatureBackground();
                         "AcceptanceUpdate",
                         "LandFill",
                         "America/Chicago"});
-#line 20
+#line 14
 testRunner.Given("I inject the following master data events", ((string)(null)), table2, "Given ");
 #line hidden
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
@@ -159,11 +142,11 @@ testRunner.Given("I inject the following master data events", ((string)(null)), 
                         "50",
                         "AcceptanceUpdate",
                         "Full3D"});
-#line 23
+#line 17
 testRunner.And("I inject the following master data events", ((string)(null)), table3, "And ");
-#line 26
+#line 20
 testRunner.When("I request a list of projects from landfill web api", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 27
+#line 21
 testRunner.Then("I find update project details in the project list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -181,10 +164,8 @@ testRunner.Then("I find update project details in the project list", ((string)(n
                         "Sanity",
                         "Positive",
                         "MasterDataProjects"});
-#line 31
+#line 25
 this.ScenarioSetup(scenarioInfo);
-#line 5
-this.FeatureBackground();
 #line hidden
             TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                         "Event",
@@ -200,18 +181,18 @@ this.FeatureBackground();
                         "AcceptanceDelete",
                         "LandFill",
                         "America/Chicago"});
-#line 32
+#line 26
 testRunner.Given("I inject the following master data events", ((string)(null)), table4, "Given ");
 #line hidden
             TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
                         "Event"});
             table5.AddRow(new string[] {
                         "DeleteProjectEvent"});
-#line 35
+#line 29
 testRunner.And("I inject the following master data events", ((string)(null)), table5, "And ");
-#line 38
+#line 32
 testRunner.When("I request a list of projects from landfill web api", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 39
+#line 33
 testRunner.Then("I dont find the project I created in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

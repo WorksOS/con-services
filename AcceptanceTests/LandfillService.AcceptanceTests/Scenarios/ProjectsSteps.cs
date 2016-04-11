@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using TechTalk.SpecFlow;
 using Newtonsoft.Json;
-using LandfillService.AcceptanceTests.Models;
+using LandfillService.AcceptanceTests.Models.Landfill;
 using AutomationCore.API.Framework.Library;
 using LandfillService.AcceptanceTests.Helpers;
 using LandfillService.AcceptanceTests.Auth;

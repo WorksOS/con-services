@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading;
-using LandfillService.AcceptanceTests.Models;
+using LandfillService.AcceptanceTests.Models.Landfill;
 
 namespace LandfillService.AcceptanceTests.Helpers
 {

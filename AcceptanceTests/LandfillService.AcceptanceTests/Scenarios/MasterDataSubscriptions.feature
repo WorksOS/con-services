@@ -1,11 +1,5 @@
 ﻿Feature: MasterDataSubscriptions
 
-	Dependencies:	Internal  - AutomationCoreAPI
-					External  - Kafka queue, mySql database
-
-
-@Sanity @Positive @Automated
-@MasterDataSubscriptions
 Scenario: Create Customer, subscription and project and link them togeather
 Given I inject the following master data event "CreateCustomerEvent" into kafka
 And I inject the following master data event "AssociateCustomerUserEvent" into kafka

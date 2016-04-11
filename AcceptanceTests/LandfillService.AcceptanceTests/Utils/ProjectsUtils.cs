@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LandfillService.AcceptanceTests.Models;
+using LandfillService.AcceptanceTests.Models.Landfill;
 using AutomationCore.API.Framework.Library;
 using LandfillService.AcceptanceTests.Helpers;
 using Newtonsoft.Json;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LandfillService.AcceptanceTests.Interfaces
+namespace LandfillService.AcceptanceTests.Models.MasterData.Interfaces
 {
     public interface IProjectEvent
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Interfaces.Events.MasterData.Interfaces
+namespace LandfillService.AcceptanceTests.Models.MasterData.Interfaces
 {
     public interface ISubscriptionEvent
     {

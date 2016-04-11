@@ -1,11 +1,5 @@
 ﻿Feature: MasterDataProjects
 
-	Dependencies:	Internal  - AutomationCoreAPI
-					External  - Kafka queue, Landfill WebApi, mySql database, project monitoring and Foreman Web Api's
-Background: 
-
-@Sanity @Positive
-@MasterDataProjects
 Scenario: Create a new landfill project 
 Given I inject the following master data events
 | Event              | DaysToExpire | Boundaries | ProjectName    | Type     | TimeZone        |

@@ -1,5 +1,5 @@
 ﻿using System;
-using LandfillService.AcceptanceTests.Interfaces;
+using LandfillService.AcceptanceTests.Models.MasterData.Interfaces;
 
 namespace LandfillService.AcceptanceTests.Models.KafkaTopics
 {

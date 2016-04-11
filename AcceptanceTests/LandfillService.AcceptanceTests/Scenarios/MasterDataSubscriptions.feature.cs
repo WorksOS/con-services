@@ -30,8 +30,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         public static void FeatureSetup(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext)
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner(null, 0);
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "MasterDataSubscriptions", "\tDependencies:\tInternal  - AutomationCoreAPI\r\n\t\t\t\t\tExternal  - Kafka queue, mySql" +
-                    " database", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "MasterDataSubscriptions", null, ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -71,32 +70,24 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Create Customer, subscription and project and link them togeather")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterDataSubscriptions")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Sanity")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Positive")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("Automated")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("MasterDataSubscriptions")]
         public virtual void CreateCustomerSubscriptionAndProjectAndLinkThemTogeather()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create Customer, subscription and project and link them togeather", new string[] {
-                        "Sanity",
-                        "Positive",
-                        "Automated",
-                        "MasterDataSubscriptions"});
-#line 9
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create Customer, subscription and project and link them togeather", ((string[])(null)));
+#line 3
 this.ScenarioSetup(scenarioInfo);
-#line 10
+#line 4
 testRunner.Given("I inject the following master data event \"CreateCustomerEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 11
+#line 5
 testRunner.And("I inject the following master data event \"AssociateCustomerUserEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 12
+#line 6
 testRunner.And("I inject the following master data event \"CreateProjectSubscriptionEvent\" into ka" +
                     "fka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 13
+#line 7
 testRunner.And("I inject the following master data event \"CreateProjectEvent\" into kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 14
+#line 8
 testRunner.And("I inject the following master data event \"AssociateProjectSubscriptionEvent\" into" +
                     " kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 15
+#line 9
 testRunner.Then("I verify the correct subscription event in the database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

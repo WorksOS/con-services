@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using LandfillService.AcceptanceTests.Models.MasterData.Interfaces;
 
 namespace LandfillService.AcceptanceTests.Models.KafkaTopics
 {
