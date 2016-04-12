@@ -212,7 +212,6 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Kafka\KafkaResolver.cs" />
     <Compile Include="Scenarios\ScenarioSupports\MasterDataSupport.cs" />
-    <Compile Include="Scenarios\ScenarioSupports\StepSupport.cs" />
     <Compile Include="Models\Landfill\Project.cs" />
     <Compile Include="Models\Landfill\WeightEntry.cs" />
     <Compile Include="Models\Landfill\DayEntry.cs" />

@@ -10,197 +10,124 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
 {
     public class MasterDataSupport
     {
-        private CreateProjectSubscriptionEvent expectedProjectSubscriptionEvent;
-     //   private CreateCustomerSubscriptionEvent expectedCustomerSubscriptionEvent;
-        private UpdateProjectSubscriptionEvent expectedUpdateProjectSubscriptionEvent;
-      //  private UpdateCustomerSubscriptionEvent expectedUpdateCustomerSubscriptionEvent;
-        private AssociateProjectSubscriptionEvent expectedAssociatedProjectSubscriptionEvent;
-        private AssociateCustomerUserEvent expectedAssociateCustomerUserEvent;
-        private DissociateProjectSubscriptionEvent expectedDissociatedProjectSubscriptionEvent;
-        private CreateCustomerEvent expectedCreateCustomerEvent;
-        private CreateProjectEvent expectedCreateProjectEvent;
+        private CreateProjectSubscriptionEvent createProjectSubscriptionEvent;
+        private UpdateProjectSubscriptionEvent updateProjectSubscriptionEvent;
+        private AssociateProjectSubscriptionEvent associateProjectSubscriptionEvent;
+        private AssociateCustomerUserEvent associateCustomerUserEvent;
+        private DissociateProjectSubscriptionEvent dissociateProjectSubscriptionEvent;
+        private CreateCustomerEvent createCustomerEvent;
+        private CreateProjectEvent createProjectEvent;
 
-        public Guid masterSubscriptionUid;
-        public Guid masterProjectUid;
-        public Guid masterCustomerUid;
-
+        public Guid MasterSubscriptionGuid;
+        public Guid MasterProjectGuid;
+        public Guid MasterCustomerGuid;
 
         public string CreateProjectEvent()
         {
-            var projectName = "AT-Test" + DateTime.Now;
+            var projectName = "AT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss");
             var projectId = LandFillMySqlDb.GetTheHighestProjectId() + 1;
-            expectedCreateProjectEvent = new CreateProjectEvent
+            createProjectEvent = new CreateProjectEvent
             {
                 ActionUTC = DateTime.UtcNow,
                 ProjectBoundary = " ",
                 ProjectEndDate = DateTime.Today.AddMonths(10),
                 ProjectStartDate = DateTime.Today.AddMonths(-3),
                 ProjectName = projectName,
-                ProjectTimezone = "America/Chicago",
-                ProjectType = ProjectType.LandFill, // : ProjectType.Full3D,
+                ProjectTimezone = "New Zealand Standard Time",
+                ProjectType = ProjectType.LandFill,
                 ProjectID = projectId,
                 ProjectUID = Guid.NewGuid(),                
                 ReceivedUTC = DateTime.UtcNow
             };
-            masterProjectUid = expectedCreateProjectEvent.ProjectUID;
-            return JsonConvert.SerializeObject(new { CreateProjectEvent = expectedCreateProjectEvent },
+            MasterProjectGuid = createProjectEvent.ProjectUID;
+            return JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent },
                 new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
         }
-
-        /// <summary>
-        /// Create a new customer
-        /// </summary>
-        /// <returns></returns>
         public string CreateCustomer()
         {
-           expectedCreateCustomerEvent = new CreateCustomerEvent
-            {
+           createCustomerEvent = new CreateCustomerEvent
+           {
                 CustomerUID = Guid.NewGuid(),
-                CustomerName = "AT-" + DateTime.Now,
+                CustomerName = "AT_CUS-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
                 CustomerType = CustomerType.Corporate,
                 ActionUTC = DateTime.UtcNow,
-                ReceivedUTC = DateTime.UtcNow,
-            };
-           masterCustomerUid = expectedCreateCustomerEvent.CustomerUID;
-           return JsonConvert.SerializeObject(new { CreateCustomerEvent = expectedCreateCustomerEvent },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+                ReceivedUTC = DateTime.UtcNow
+           };
+           MasterCustomerGuid = createCustomerEvent.CustomerUID;
+           return JsonConvert.SerializeObject(new { CreateCustomerEvent = createCustomerEvent },
+               new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
         }
-
-        /// <summary>
-        /// Set up the Create project subscription
-        /// </summary>
-        /// <returns></returns>
         public string CreateProjectSubscription()
         {
-            expectedProjectSubscriptionEvent = new CreateProjectSubscriptionEvent
+            createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent
             {
                 ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow,
                 CustomerUID = Guid.NewGuid(),
                 SubscriptionType = "LandFill",
                 SubscriptionUID = Guid.NewGuid(),
                 StartDate = DateTime.Now.AddMonths(-1),
-                EndDate = DateTime.Now.AddMonths(11),
-                ReceivedUTC = DateTime.UtcNow
+                EndDate = DateTime.Now.AddMonths(11)
             };
-            masterSubscriptionUid = expectedProjectSubscriptionEvent.SubscriptionUID;
-            masterCustomerUid = expectedProjectSubscriptionEvent.CustomerUID;
+            MasterSubscriptionGuid = createProjectSubscriptionEvent.SubscriptionUID;
+            MasterCustomerGuid = createProjectSubscriptionEvent.CustomerUID;
 
-            return JsonConvert.SerializeObject(new { CreateProjectSubscriptionEvent = expectedProjectSubscriptionEvent },
-                            new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        }
-        /// <summary>
-        /// Update project subscription 
-        /// </summary>
-        /// <returns></returns>
-        public string UpdateProjectSubscription(Guid subscriptionUid, Guid customerUid)
-        {
-            expectedUpdateProjectSubscriptionEvent = new UpdateProjectSubscriptionEvent
-            {
-                ActionUTC = DateTime.UtcNow,
-                CustomerUID = customerUid,
-                SubscriptionType = "LandFill",
-                SubscriptionUID = subscriptionUid,
-                StartDate = DateTime.Now.AddMonths(-5),
-                EndDate = DateTime.Now.AddMonths(7),
-                ReceivedUTC = DateTime.UtcNow
-            };
-            return JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = expectedUpdateProjectSubscriptionEvent },
-                            new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        }
-
-        /// <summary>
-        /// Create a customer subscription
-        /// </summary>
-        /// <returns></returns>
-        //public string CreateCustomerSubscription()
-        //{
-        //    expectedCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent
-        //    {
-        //        ActionUTC = DateTime.UtcNow,
-        //        CustomerUID = Guid.NewGuid(),
-        //        SubscriptionType = "customer",
-        //        SubscriptionUID = Guid.NewGuid(),
-        //        StartDate = DateTime.Now.AddMonths(-1),
-        //        EndDate = DateTime.Now.AddMonths(11),
-        //        ReceivedUTC = DateTime.UtcNow
-        //    };
-        //    masterSubscriptionUid = expectedCustomerSubscriptionEvent.SubscriptionUID;
-        //    masterCustomerUid = expectedCustomerSubscriptionEvent.CustomerUID;
-        //    return JsonConvert.SerializeObject(new { CreateCustomerSubscriptionEvent = expectedCustomerSubscriptionEvent },
-        //                    new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        //}
-
-        /// <summary>
-        /// Update a customer subscription
-        /// </summary>
-        /// <returns></returns>
-        //public string UpdateCustomerSubscription(Guid subscriptionUid)
-        //{
-        //    expectedUpdateCustomerSubscriptionEvent = new UpdateCustomerSubscriptionEvent
-        //    {
-        //        ActionUTC = DateTime.UtcNow,
-        //        SubscriptionUID = subscriptionUid,
-        //        StartDate = DateTime.Now.AddMonths(-1),
-        //        EndDate = DateTime.Now.AddMonths(11),
-        //        ReceivedUTC = DateTime.UtcNow
-        //    };
-        //    return JsonConvert.SerializeObject(new { UpdateCustomerSubscriptionEvent = expectedUpdateCustomerSubscriptionEvent },
-        //                    new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        //}
-
-        /// <summary>
-        /// Dissociate a project subscription
-        /// </summary>
-        /// <returns></returns>
-        public string DissociateProjectSubscription(Guid subscriptionUid, Guid projectUid)
-        {
-            expectedDissociatedProjectSubscriptionEvent = new DissociateProjectSubscriptionEvent
-            {
-                ActionUTC = DateTime.UtcNow,
-                SubscriptionUID = subscriptionUid,
-                EffectiveDate = DateTime.Now.AddMonths(-1),
-                ProjectUID = projectUid,
-                ReceivedUTC = DateTime.UtcNow
-            };
-            return JsonConvert.SerializeObject(new { DissociateProjectSubscriptionEvent = expectedDissociatedProjectSubscriptionEvent },
+            return JsonConvert.SerializeObject(new { CreateProjectSubscriptionEvent = createProjectSubscriptionEvent },
                 new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
         }
-
-        /// <summary>
-        /// Associate a project subscription
-        /// </summary>
-        /// <returns></returns>
-        public string AssociateProjectSubscription(Guid subscriptionUid, Guid projectUid)
+        public string UpdateProjectSubscription(Guid subscriptionGuid, Guid customerGuid)
         {
-            expectedAssociatedProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent
+            updateProjectSubscriptionEvent = new UpdateProjectSubscriptionEvent
             {
                 ActionUTC = DateTime.UtcNow,
-                SubscriptionUID = subscriptionUid,
-                EffectiveDate = DateTime.Now.AddMonths(-1),
-                ProjectUID = projectUid,
-                ReceivedUTC = DateTime.UtcNow
-            };
-            return JsonConvert.SerializeObject(new { AssociateProjectSubscriptionEvent = expectedAssociatedProjectSubscriptionEvent },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        }
-
-        /// <summary>
-        /// Associate a project subscription
-        /// </summary>
-        /// <returns></returns>
-        public string AssociateCustomerUser(Guid customerUid, Guid userUid)
-        {
-            expectedAssociateCustomerUserEvent = new AssociateCustomerUserEvent
-            {
-                ActionUTC= DateTime.UtcNow,
-                CustomerUID = customerUid,
                 ReceivedUTC = DateTime.UtcNow,
-                UserUID = userUid
+                CustomerUID = customerGuid,
+                SubscriptionType = "LandFill",
+                SubscriptionUID = subscriptionGuid,
+                StartDate = DateTime.Now.AddMonths(-5),
+                EndDate = DateTime.Now.AddMonths(7)
             };
-
-            return JsonConvert.SerializeObject(new { AssociateCustomerUserEvent = expectedAssociateCustomerUserEvent },
+            return JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = updateProjectSubscriptionEvent },
                 new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
         }
+        public string DissociateProjectSubscription(Guid subscriptionGuid, Guid projectGuid)
+        {
+            dissociateProjectSubscriptionEvent = new DissociateProjectSubscriptionEvent
+            {
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow,
+                SubscriptionUID = subscriptionGuid,
+                EffectiveDate = DateTime.Now.AddMonths(-1),
+                ProjectUID = projectGuid,
+            };
+            return JsonConvert.SerializeObject(new { DissociateProjectSubscriptionEvent = dissociateProjectSubscriptionEvent },
+                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        }
+        public string AssociateProjectSubscription(Guid subscriptionGuid, Guid projectGuid)
+        {
+            associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent
+            {
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow,
+                SubscriptionUID = subscriptionGuid,
+                EffectiveDate = DateTime.Now.AddMonths(-1),
+                ProjectUID = projectGuid
+            };
+            return JsonConvert.SerializeObject(new { AssociateProjectSubscriptionEvent = associateProjectSubscriptionEvent },
+                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        }
+        public string AssociateCustomerUser(Guid customerGuid, Guid userGuid)
+        {
+            associateCustomerUserEvent = new AssociateCustomerUserEvent
+            {
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow,
+                CustomerUID = customerGuid,
+                UserUID = userGuid
+            };
 
+            return JsonConvert.SerializeObject(new { AssociateCustomerUserEvent = associateCustomerUserEvent },
+                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        }
     }
 }

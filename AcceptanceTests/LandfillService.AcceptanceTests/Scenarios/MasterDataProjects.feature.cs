@@ -87,9 +87,9 @@ this.ScenarioSetup(scenarioInfo);
                         "CreateProjectEvent",
                         "10",
                         "boundary",
-                        "AcceptanceTest",
+                        "AcceptTest",
                         "LandFill",
-                        "America/Chicago"});
+                        "New Zealand Standard Time"});
 #line 4
 testRunner.Given("I inject the following master data events", ((string)(null)), table1, "Given ");
 #line 7
@@ -126,7 +126,7 @@ this.ScenarioSetup(scenarioInfo);
                         "CreateProjectEvent",
                         "10",
                         "boundary",
-                        "AcceptanceUpdate",
+                        "AcceptUpdate",
                         "LandFill",
                         "America/Chicago"});
 #line 14
@@ -178,7 +178,7 @@ this.ScenarioSetup(scenarioInfo);
                         "CreateProjectEvent",
                         "10",
                         "boundary",
-                        "AcceptanceDelete",
+                        "AcceptDelete",
                         "LandFill",
                         "America/Chicago"});
 #line 26

@@ -35,19 +35,19 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     topic = Config.SubscriptionTopic;
                     break;
                 case EventType.UpdateProjectSubscriptionEvent:
-                    messageStr = masterDataSupport.UpdateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterCustomerUid);
+                    messageStr = masterDataSupport.UpdateProjectSubscription(masterDataSupport.MasterSubscriptionGuid, masterDataSupport.MasterCustomerGuid);
                     topic = Config.SubscriptionTopic;
                     break;
                 case EventType.AssociateProjectSubscriptionEvent:
-                    messageStr = masterDataSupport.AssociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
+                    messageStr = masterDataSupport.AssociateProjectSubscription(masterDataSupport.MasterSubscriptionGuid, masterDataSupport.MasterProjectGuid);
                     topic = Config.SubscriptionTopic;
                     break;
                 case EventType.AssociateCustomerUserEvent:
-                    messageStr = masterDataSupport.AssociateCustomerUser(masterDataSupport.masterCustomerUid, Guid.NewGuid());
+                    messageStr = masterDataSupport.AssociateCustomerUser(masterDataSupport.MasterCustomerGuid, new Guid());
                     topic = Config.CustomerUserMasterDataTopic;
                     break;
                 case EventType.DissociateProjectSubscriptionEvent:
-                    messageStr = masterDataSupport.DissociateProjectSubscription(masterDataSupport.masterSubscriptionUid, masterDataSupport.masterProjectUid);
+                    messageStr = masterDataSupport.DissociateProjectSubscription(masterDataSupport.MasterSubscriptionGuid, masterDataSupport.MasterProjectGuid);
                     topic = Config.SubscriptionTopic;
                     break;                   
             }

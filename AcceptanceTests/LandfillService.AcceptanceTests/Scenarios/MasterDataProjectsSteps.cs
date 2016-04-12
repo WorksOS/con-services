@@ -11,41 +11,36 @@ using TechTalk.SpecFlow;
 using LandfillService.AcceptanceTests.LandFillKafka;
 using LandfillService.AcceptanceTests.Utils;
 using LandfillService.AcceptanceTests.Scenarios.ScenarioSupports;
+using LandfillService.AcceptanceTests.Utils;
 
 namespace LandfillService.AcceptanceTests.Scenarios
 {
     [Binding]
     public class MasterDataProjectsSteps
     {
-        private readonly StepSupport stepSupport = new StepSupport();
         private HttpResponseMessage response;
         private CreateProjectEvent projEvent = new CreateProjectEvent();
 
-        /// <summary>
-        /// Create the kafka message. This creates a Project Event and is available to be used by other messages.
-        /// </summary>
-        /// <param name="eventRow"></param>
-        /// <returns>A ProjectEvent object</returns>
         private CreateProjectEvent CreateAProjectEvent(TableRow eventRow)
         {
-            var projectName = eventRow["ProjectName"] + stepSupport.GetRandomNumber();
-            var projectId = LandFillMySqlDb.GetTheHighestProjectId() + 1;
+            var projectName = eventRow["ProjectName"] + LandfillCommonUtils.Random.Next(1, 100000).ToString("D6");
+            //var projectId = LandFillMySqlDb.GetTheHighestProjectId() + 1;
+            var projectId = 1600;
             var createProjectEvent = new CreateProjectEvent
             {
+                ProjectUID = Guid.NewGuid(),
+                ProjectID = projectId,
                 ActionUTC = DateTime.UtcNow,
-                ProjectBoundary = eventRow.Keys.Contains("Boundaries") ? eventRow["Boundaries"] : " ",
-                ProjectEndDate = DateTime.Today.AddDays(Convert.ToInt32(eventRow["DaysToExpire"])),
-                ProjectStartDate = DateTime.Today.AddMonths(-3),
+                ReceivedUTC = DateTime.UtcNow,
                 ProjectName = projectName,
                 ProjectTimezone = eventRow.Keys.Contains("TimeZone") ? eventRow["TimeZone"] : " ",
-                ProjectType = eventRow["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D,
-                ProjectID = projectId,
-                ProjectUID = Guid.NewGuid(),
-                ReceivedUTC = DateTime.UtcNow
+                ProjectBoundary = eventRow.Keys.Contains("Boundaries") ? eventRow["Boundaries"] : " ",
+                ProjectStartDate = DateTime.Today.AddMonths(-3),
+                ProjectEndDate = DateTime.Today.AddDays(Convert.ToInt32(eventRow["DaysToExpire"])),
+                ProjectType = eventRow["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D
             };
             return createProjectEvent;
         }
-
 
         [Given(@"I inject the following master data events")]
         public void GivenIInjectTheFollowingMasterDataEvents(Table table)
@@ -59,12 +54,12 @@ namespace LandfillService.AcceptanceTests.Scenarios
                 {
                     case "CreateProjectEvent":
                         projEvent = CreateAProjectEvent(row);
-                        messageStr = JsonConvert.SerializeObject(new {CreateProjectEvent = projEvent},
-                            new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
+                        messageStr = JsonConvert.SerializeObject(new { CreateProjectEvent = projEvent },
+                            new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
                         break;
                     case "UpdateProjectEvent":
                         projEvent.ProjectEndDate = DateTime.Today.AddDays(Convert.ToInt32(row["DaysToExpire"]));
-                        projEvent.ProjectName = row["ProjectName"] + stepSupport.GetRandomNumber();
+                        projEvent.ProjectName = row["ProjectName"] + LandfillCommonUtils.Random.Next(1, 1000000).ToString("D7");
                         projEvent.ProjectType = row["Type"] == "LandFill" ? ProjectType.LandFill : ProjectType.Full3D;
                         messageStr = JsonConvert.SerializeObject(new {UpdateProjectEvent = projEvent},
                             new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified});
