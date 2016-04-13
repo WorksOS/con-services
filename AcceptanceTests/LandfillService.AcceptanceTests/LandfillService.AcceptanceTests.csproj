@@ -211,6 +211,12 @@
     <Compile Include="Auth\TPaaS.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Kafka\KafkaResolver.cs" />
+    <Compile Include="Scenarios\MasterData.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MasterData.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\MasterDataSteps.cs" />
     <Compile Include="Scenarios\ScenarioSupports\MasterDataSupport.cs" />
     <Compile Include="Models\Landfill\Project.cs" />
     <Compile Include="Models\Landfill\WeightEntry.cs" />
@@ -293,6 +299,10 @@
     <None Include="packages.config" />
     <None Include="restclientapp.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Scenarios\MasterData.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>MasterData.feature.cs</LastGenOutput>
     </None>
     <None Include="Scenarios\MasterDataProjects.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
