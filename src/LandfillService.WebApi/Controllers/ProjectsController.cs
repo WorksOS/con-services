@@ -30,10 +30,10 @@ namespace LandfillService.WebApi.Controllers
     {
         private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
-        public ProjectsController()
-        {
-            LandfillDb.UnlockAllProjects();  // if the service terminates, some projects can be left locked for volume retrieval; unlock them
-        }
+        //public ProjectsController()
+        //{
+        //    LandfillDb.UnlockAllProjects();  // if the service terminates, some projects can be left locked for volume retrieval; unlock them
+        //}
 
         /// <summary>
         /// Retrieves a list of projects from the db

@@ -31,13 +31,13 @@ namespace VSS.Subscription.Processor
         props.put("bootstrap.servers", Settings.Default.KafkaUri);
         props.put("client.id", "11111");
         props.put("group.id", Settings.Default.ConsumerGroupName);
-        props.put("enable.auto.commit", "true");
+        props.put("enable.auto.commit", "false");
         props.put("auto.commit.interval.ms", "1000");
         props.put("session.timeout.ms", "30000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("auto.offset.reset", "earliest");
-        props.put("fetch.min.bytes", "1");
+        props.put("fetch.min.bytes", "10000");
         props.put("receive.buffer.bytes", "214400");
         props.put("max.partition.fetch.bytes", "571520");
         props.put("heartbeat.interval.ms", "1000");
@@ -66,7 +66,7 @@ namespace VSS.Subscription.Processor
 
       while (true)
       {
-        var records = javaConsumer.poll(3000);
+        var records = javaConsumer.poll(200);
         buffer.AddRange(records.Cast<ConsumerRecord>());
         Log.DebugFormat("Receieved {0} messages", buffer.Count);
         if (buffer.Count < 1) continue;
