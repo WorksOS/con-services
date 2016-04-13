@@ -97,7 +97,7 @@ namespace VSS.Subscription.Data
               var project = connection.Query<Project.Data.Models.Project>
                 (@"SELECT ProjectUID, LastActionedUTC
                   FROM Project
-                  WHERE ProjectUID = @ProjectUid", new { subscriptionEvent.ProjectUID }).FirstOrDefault();
+                  WHERE ProjectUID = @ProjectUID", new { subscriptionEvent.ProjectUID }).FirstOrDefault();
               connection.Close();
               
               if (project == null)
@@ -110,7 +110,7 @@ namespace VSS.Subscription.Data
                 const string update =
                   @"UPDATE Project                
                     SET SubscriptionUID = @SubscriptionUID,
-                    LastActionedUTC = @minActionDate,
+                    LastActionedUTC = @minActionDate
                     WHERE ProjectUID = @ProjectUID";
 
                 upsertedCount = connection.Execute(update, new { subscriptionEvent.ProjectUID, subscriptionEvent.SubscriptionUID, minActionDate = DateTime.MinValue });
