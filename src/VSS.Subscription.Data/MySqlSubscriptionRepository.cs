@@ -227,7 +227,7 @@ namespace VSS.Subscription.Data
               const string update =
                 @"UPDATE Subscription                
                   SET SubscriptionUID = @SubscriptionUID,
-                      EffectiveDate = @EffectiveUTC,
+                      EffectiveUTC = @EffectiveUTC,
                       LastActionedUTC = @LastActionedUTC
                 WHERE SubscriptionUID = @SubscriptionUID";
               return connection.Execute(update, subscription);
