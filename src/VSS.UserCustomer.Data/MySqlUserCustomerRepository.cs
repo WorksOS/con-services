@@ -103,7 +103,7 @@ namespace VSS.UserCustomer.Data
               FROM Customer
               WHERE CustomerUID = @customerUID", new { customerUID = userCustomer.fk_CustomerUID }).FirstOrDefault();
 
-        if (customer == null || customer.CustomerId <= 0) return 0;
+        if (customer == null) return 0;
 
 
         const string insert =
