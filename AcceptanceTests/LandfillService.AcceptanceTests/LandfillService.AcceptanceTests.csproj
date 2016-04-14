@@ -211,6 +211,7 @@
     <Compile Include="Auth\TPaaS.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Kafka\KafkaResolver.cs" />
+    <Compile Include="Models\MasterData\Project\UpdateProjectEvent.cs" />
     <Compile Include="Scenarios\MasterData.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -237,23 +238,10 @@
     <Compile Include="Models\Landfill\ProjectData.cs" />
     <Compile Include="Models\MasterData\Subscription\UpdateCustomerSubscriptionEvent.cs" />
     <Compile Include="Models\MasterData\Subscription\UpdateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\MasterData\Project\ProjectNg.cs" />
     <Compile Include="Scenarios\AuthenticationSteps.cs" />
     <Compile Include="Utils\LandFillDb.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scenarios\MasterDataProjects.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MasterDataProjects.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Scenarios\MasterDataProjectsSteps.cs" />
-    <Compile Include="Scenarios\MasterDataSubscriptions.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MasterDataSubscriptions.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Scenarios\MasterDataSubscriptionsSteps.cs" />
     <Compile Include="Scenarios\Projects.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -303,14 +291,6 @@
     <None Include="Scenarios\MasterData.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>MasterData.feature.cs</LastGenOutput>
-    </None>
-    <None Include="Scenarios\MasterDataProjects.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>MasterDataProjects.feature.cs</LastGenOutput>
-    </None>
-    <None Include="Scenarios\MasterDataSubscriptions.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>MasterDataSubscriptions.feature.cs</LastGenOutput>
     </None>
     <None Include="Scenarios\Projects.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

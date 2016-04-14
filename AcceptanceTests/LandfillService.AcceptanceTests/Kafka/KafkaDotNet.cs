@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Configuration;
 using KafkaNet;
@@ -28,6 +29,7 @@ namespace LandfillService.AcceptanceTests.LandFillKafka
         public static string SendMessage(string topic, string message)
         {
             var result = producer.SendMessageAsync(topic, new[] { new Message(message) }).Result;
+            Thread.Sleep(20000);
             return JsonConvert.SerializeObject(result);
         }
     }
