@@ -1,9 +1,8 @@
 ﻿using System;
-using LandfillService.AcceptanceTests.Models.MasterData.Interfaces;
 
-namespace LandfillService.AcceptanceTests.Models.KafkaTopics
+namespace LandfillService.AcceptanceTests.Models
 {
-    public class UpdateProjectSubscriptionEvent : ISubscriptionEvent
+    public class UpdateProjectSubscriptionEvent
     {
         public Guid SubscriptionUID { get; set; }
 

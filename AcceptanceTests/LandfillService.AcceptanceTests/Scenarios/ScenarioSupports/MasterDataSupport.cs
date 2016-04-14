@@ -1,12 +1,9 @@
 ﻿using System;
 using LandfillService.AcceptanceTests.Models;
-using LandfillService.AcceptanceTests.Models.KafkaTopics;
 using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using LandfillService.AcceptanceTests.LandFillKafka;
 using LandfillService.AcceptanceTests.Utils;
-using LandfillService.AcceptanceTests.Models.MasterData.Project;
-using LandfillService.AcceptanceTests.Models.MasterData.Customer;
 
 namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
 {
@@ -25,7 +22,6 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
         public AssociateProjectSubscriptionEvent AssociateProjectSubscriptionEvt;
         public AssociateProjectCustomer AssociateProjectCustomerEvt;
         public UpdateProjectSubscriptionEvent UpdateProjectSubscriptionEvt;
-        public DissociateProjectSubscriptionEvent DissociateProjectSubscriptionEvt;
 
         public string CreateProject(Guid projectUid)
         {
@@ -181,18 +177,5 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
             return JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = UpdateProjectSubscriptionEvt },
                 new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
         }
-        public string DissociateProjectSubscription(Guid projectUid, Guid subscriptionUid)
-        {
-            DissociateProjectSubscriptionEvt = new DissociateProjectSubscriptionEvent
-            {
-                ActionUTC = DateTime.UtcNow,
-                ReceivedUTC = DateTime.UtcNow,
-                SubscriptionUID = subscriptionUid,
-                EffectiveDate = DateTime.Now.AddMonths(-1),
-                ProjectUID = projectUid,
-            };
-            return JsonConvert.SerializeObject(new { DissociateProjectSubscriptionEvent = DissociateProjectSubscriptionEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        }       
     }
 }

@@ -225,21 +225,14 @@
     <Compile Include="Models\Landfill\Project.cs" />
     <Compile Include="Models\Landfill\WeightEntry.cs" />
     <Compile Include="Models\Landfill\DayEntry.cs" />
-    <Compile Include="Models\MasterData\Interfaces\ICustomerEvent.cs" />
-    <Compile Include="Models\MasterData\Interfaces\IUserCustomerEvent.cs" />
     <Compile Include="Kafka\KafkaDotNet.cs" />
-    <Compile Include="Models\MasterData\Interfaces\IProjectEvent.cs" />
-    <Compile Include="Models\MasterData\Interfaces\ISubscriptionEvent.cs" />
     <Compile Include="Models\MasterData\UserCustomer\AssociateCustomerUserEvent.cs" />
     <Compile Include="Models\MasterData\Project\AssociateProjectCustomer.cs" />
     <Compile Include="Models\MasterData\Subscription\AssociateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\MasterData\Customer\CreateCustomerEvent.cs" />
-    <Compile Include="Models\MasterData\Subscription\CreateCustomerSubscriptionEvent.cs" />
     <Compile Include="Models\MasterData\Subscription\CreateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\MasterData\Subscription\DissociateProjectSubscriptionEvent.cs" />
     <Compile Include="Models\MasterData\Project\CreateProjectEvent.cs" />
     <Compile Include="Models\Landfill\ProjectData.cs" />
-    <Compile Include="Models\MasterData\Subscription\UpdateCustomerSubscriptionEvent.cs" />
     <Compile Include="Models\MasterData\Subscription\UpdateProjectSubscriptionEvent.cs" />
     <Compile Include="Scenarios\AuthenticationSteps.cs" />
     <Compile Include="Utils\LandFillDb.cs" />
@@ -251,7 +244,7 @@
       <DependentUpon>Projects.feature</DependentUpon>
     </Compile>
     <Compile Include="Scenarios\ProjectsSteps.cs" />
-    <Compile Include="Scenarios\SpecFlowHooks.cs" />
+    <Compile Include="Scenarios\ScenarioSupports\BeforeAndAfter.cs" />
     <Compile Include="Scenarios\Weights.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

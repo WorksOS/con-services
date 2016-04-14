@@ -59,7 +59,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     topic = Config.ProjectMasterDataTopic;
                     break;
                 case "CreateProjectSubscriptionEvent":
-                    messageStr = mdSupport.CreateProjectSubscription(projSubscripUID, Config.GoldenCustomerUID);
+                    messageStr = mdSupport.CreateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUID);
                     topic = Config.SubscriptionTopic;
                     break;
                 case "AssociateCustomerUserEvent":
@@ -67,9 +67,9 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     topic = Config.CustomerUserMasterDataTopic;
                     break;
                 case "AssociateProjectCustomer":
-                    string query = string.Format("DELETE FROM {0}.Project WHERE CustomerUID = '{1}'", Config.MySqlDbName, Config.GoldenCustomerUID);
+                    string query = string.Format("DELETE FROM {0}.Project WHERE CustomerUID = '{1}'", Config.MySqlDbName, Config.MasterDataCustomerUID);
                     LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query);
-                    messageStr = mdSupport.AssociateProjectCustomer(projectUID, Config.GoldenCustomerUID);
+                    messageStr = mdSupport.AssociateProjectCustomer(projectUID, Config.MasterDataCustomerUID);
                     topic = Config.ProjectMasterDataTopic;
                     break;
                 case "AssociateProjectSubscriptionEvent":
@@ -77,11 +77,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     topic = Config.SubscriptionTopic;
                     break;
                 case "UpdateProjectSubscriptionEvent":
-                    messageStr = mdSupport.UpdateProjectSubscription(projSubscripUID, Config.GoldenCustomerUID);
-                    topic = Config.SubscriptionTopic;
-                    break;
-                case "DissociateProjectSubscriptionEvent":
-                    messageStr = mdSupport.DissociateProjectSubscription(projSubscripUID, projSubscripUID);
+                    messageStr = mdSupport.UpdateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUID);
                     topic = Config.SubscriptionTopic;
                     break;
             }
@@ -100,8 +96,6 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [When(@"I make a Web API request for a list of projects")]
         public void WhenIMakeAWebAPIRequestForAListOfProjects()
         {
-            LandfillCommonUtils.UpdateAppSetting("StagingTPaaSTokenUsername", Config.GoldenUserName);
-
             string response = RestClientUtil.DoHttpRequest(Config.LandfillBaseUri, "GET", TPaaS.BearerToken,
                 RestClientConfig.JsonMediaType, null, System.Net.HttpStatusCode.OK, "Bearer", null);
             projects = JsonConvert.DeserializeObject<List<Project>>(response);
@@ -123,19 +117,21 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [Then(@"the number of days to subscription expiry is correct")]
         public void ThenTheNumberOfDaysToSubscriptionExpiryIsCorrect()
         {
-            int expectedDaysToExpiry = (mdSupport.CreateProjectSubscriptionEvt.EndDate - DateTime.Today).Days;
-            int actualDaysToExpiry = (int)projects.FirstOrDefault(p => p.name == mdSupport.CreateProjectEvt.ProjectName).daysToSubscriptionExpiry;
-
-            Assert.AreEqual(expectedDaysToExpiry, actualDaysToExpiry, "daysToSubscriptionExpiry incorrect.");
+            int expected = (mdSupport.CreateProjectSubscriptionEvt.EndDate - DateTime.Today).Days;
+            int actual = (int)projects.FirstOrDefault(p => p.name == mdSupport.CreateProjectEvt.ProjectName).daysToSubscriptionExpiry;
+            
+            int diff = expected - actual;
+            Assert.IsFalse(diff < -1 || diff > 1, "daysToSubscriptionExpiry incorrect.");
         }
 
         [Then(@"the updated number of days to subscription expiry is correct")]
         public void ThenTheUpdatedNumberOfDaysToSubscriptionExpiryIsCorrect()
         {
-            int expectedDaysToExpiry = ((DateTime)mdSupport.UpdateProjectSubscriptionEvt.EndDate - DateTime.Today).Days;
-            int actualDaysToExpiry = (int)projects.FirstOrDefault(p => p.name == mdSupport.CreateProjectEvt.ProjectName).daysToSubscriptionExpiry;
+            int expected = ((DateTime)mdSupport.UpdateProjectSubscriptionEvt.EndDate - DateTime.Today).Days;
+            int actual = (int)projects.FirstOrDefault(p => p.name == mdSupport.CreateProjectEvt.ProjectName).daysToSubscriptionExpiry;
 
-            Assert.AreEqual(expectedDaysToExpiry, actualDaysToExpiry, "daysToSubscriptionExpiry incorrect.");
+            int diff = expected - actual;
+            Assert.IsFalse(diff < -1 || diff > 1, "Updated daysToSubscriptionExpiry incorrect.");
         }
 
         [Then(@"the project details are updated")]

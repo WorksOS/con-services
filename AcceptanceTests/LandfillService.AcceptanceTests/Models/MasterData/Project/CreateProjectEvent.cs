@@ -1,9 +1,8 @@
 ﻿using System;
-using LandfillService.AcceptanceTests.Models.MasterData.Interfaces;
 
-namespace LandfillService.AcceptanceTests.Models.KafkaTopics
+namespace LandfillService.AcceptanceTests.Models
 {
-    public class CreateProjectEvent : IProjectEvent
+    public class CreateProjectEvent
     {
         public DateTime ProjectEndDate { get; set; }
         public DateTime ProjectStartDate { get; set; }

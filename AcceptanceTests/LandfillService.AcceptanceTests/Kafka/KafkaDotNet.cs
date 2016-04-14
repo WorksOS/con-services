@@ -29,7 +29,7 @@ namespace LandfillService.AcceptanceTests.LandFillKafka
         public static string SendMessage(string topic, string message)
         {
             var result = producer.SendMessageAsync(topic, new[] { new Message(message) }).Result;
-            Thread.Sleep(20000);
+            Thread.Sleep(30000);
             return JsonConvert.SerializeObject(result);
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LandfillService.AcceptanceTests.Models.KafkaTopics
+namespace LandfillService.AcceptanceTests.Models
 {
     public class AssociateProjectSubscriptionEvent
     {

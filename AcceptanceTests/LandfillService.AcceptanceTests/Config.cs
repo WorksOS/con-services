@@ -22,9 +22,12 @@ namespace LandfillService.AcceptanceTests
         public static string SubscriptionTopic = ConfigurationManager.AppSettings["SubscriptionTopic"];
         public static string CustomerUserMasterDataTopic = ConfigurationManager.AppSettings["CustomerUserMasterDataTopic"];
 
-        public static string GoldenUserName = "acceptance_test@vss.com";
-        public static string GoldenUserPassword = "Password@123";
-        public static Guid GoldenUserUID = Guid.Parse("2fa7e8f2-670e-4fa3-964b-7549c9cb196d");
-        public static Guid GoldenCustomerUID = Guid.Parse("465a6189-9be3-48fc-a30b-1a525bd376b1");
+        public static string LandfillUserName = "clay_anderson@trimble.com";
+        public static string LandfillUserPassword = "Password@123";
+
+        public static string MasterDataUserName = "acceptance_test@vss.com";
+        public static string MasterDataUserPassword = "Password@123";
+        public static Guid MasterDataUserUID = Guid.Parse("2fa7e8f2-670e-4fa3-964b-7549c9cb196d");
+        public static Guid MasterDataCustomerUID = Guid.Parse("465a6189-9be3-48fc-a30b-1a525bd376b1");
     }
 }

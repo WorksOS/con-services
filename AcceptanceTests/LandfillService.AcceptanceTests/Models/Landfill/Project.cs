@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 namespace LandfillService.AcceptanceTests.Models.Landfill
 {
-    /// <summary>
-    /// Project representation
-    /// </summary>
     public class Project
     {
         public uint id { get; set; }

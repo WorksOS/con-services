@@ -1,9 +1,8 @@
 ﻿using System;
-using LandfillService.AcceptanceTests.Models.MasterData.Interfaces;
 
-namespace LandfillService.AcceptanceTests.Models.KafkaTopics
+namespace LandfillService.AcceptanceTests.Models
 {
-    public class CreateCustomerEvent : ICustomerEvent
+    public class CreateCustomerEvent
     {
         public string CustomerName { get; set; }
         public CustomerType CustomerType { get; set; }

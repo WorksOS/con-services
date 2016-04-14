@@ -9,12 +9,6 @@ namespace LandfillService.AcceptanceTests.Utils
 {
     public static class LandFillMySqlDb
     {
-        /// <summary>
-        /// Execute a MySQL query
-        /// </summary>
-        /// <param name="connectionString"></param>
-        /// <param name="queryString"></param>
-        /// <returns></returns>
         public static string ExecuteMySqlQueryResult(string connectionString, string queryString)
         {
 
@@ -32,11 +26,6 @@ namespace LandfillService.AcceptanceTests.Utils
             }
             return queryResult;
         }
-
-        /// <summary>
-        /// Get the highest project Id in the mySql table
-        /// </summary>
-        /// <returns>projcet ID</returns>
         public static int GetTheHighestProjectId()
         {
             try
@@ -48,10 +37,7 @@ namespace LandfillService.AcceptanceTests.Utils
                 return 0;
             }
         }
-        /// <summary>
-        /// Check my SQL database to see if if the landfill project is there. 
-        /// </summary>
-        /// <param name="projectName">project name</param>
+
         public static bool WaitForProjectToBeCreated(string projectName)
         {
             var retries = 0;
@@ -69,10 +55,6 @@ namespace LandfillService.AcceptanceTests.Utils
             }
             return true;
         }
-        /// <summary>
-        /// Check my SQL database to see if if the landfill project is there. 
-        /// </summary>
-        /// <param name="projectName">project name</param>
         public static bool WaitForProjectToBeDeleted(string projectName)
         {
             var retries = 0;
@@ -90,52 +72,5 @@ namespace LandfillService.AcceptanceTests.Utils
             }
             return true;
         }
-
-
-        ///// <summary>
-        ///// Wrapper for generating a MySQL connection
-        ///// </summary>
-        ///// <param name="body">Code to execute</param>
-        ///// <returns>The result of executing body()</returns>
-        //private static T WithConnection<T>(Func<MySqlConnection, T> body)
-        //{
-        //    using (var conn = new MySqlConnection(Config.MySqlConnString))
-        //    {
-        //        conn.Open();
-        //        var res = body(conn);
-        //        conn.Close();
-        //        return res;
-        //    }
-        //}
-        ///// <summary>
-        ///// Using the project ID retrieve all the details for the project for the mySql database
-        ///// </summary>
-        ///// <param name="projectId"></param>
-        ///// <returns>Project</returns>
-        //public static Project GetProject(int projectId)
-        //{
-        //    return WithConnection(conn =>
-        //    {
-        //        var command = @"SELECT * FROM " + Config.MySqlDbName + ".Project where ProjectID=" + projectId;
-
-        //        using (var reader = MySqlHelper.ExecuteReader(conn, command))
-        //        {
-        //            return GetProjectDetailsFromMySql(reader);
-        //        }
-        //    });
-        //}
-        //private static Project GetProjectDetailsFromMySql(MySqlDataReader reader)
-        //{
-        //    Project projectDetails = new Project();
-        //    while (reader.Read())
-        //    {
-        //        projectDetails.id = reader.GetUInt32("projectId");
-        //        projectDetails.name = reader.GetString("name");
-        //        projectDetails.timeZoneName = reader.GetString("timeZone");
-        //        projectDetails.daysToSubscriptionExpiry = reader.GetInt32("daysToSubscriptionExpiry");
-        //        break;
-        //    }
-        //    return projectDetails;
-        //}
     }
 }

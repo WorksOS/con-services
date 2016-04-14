@@ -61,15 +61,3 @@ Scenario: Integration delete project
 		And I inject 'DeleteProjectEvent' into Kafka
 	When I make a Web API request for a list of projects
 	Then the created project is not in the list
-
-@ignore @notImplemented
-Scenario: Integration disassociate project subscription
-	Given I inject 'CreateProjectEvent' into Kafka
-		And I inject 'CreateProjectSubscriptionEvent' into Kafka
-		And I inject 'AssociateProjectCustomer' into Kafka
-		And I inject 'AssociateProjectSubscriptionEvent' into Kafka
-		And I make a Web API request for a list of projects
-		And the created project is in the list
-		And I inject 'DissociateProjectSubscriptionEvent' into Kafka
-	When I make a Web API request for a list of projects
-	Then the created project is not in the list

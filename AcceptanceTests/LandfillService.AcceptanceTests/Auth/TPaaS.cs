@@ -9,17 +9,11 @@ namespace LandfillService.AcceptanceTests.Auth
 {
     public static class TPaaS
     {
-        private static string bearerToken;
-
         public static string BearerToken
         {
             get
             {
-                if (string.IsNullOrEmpty(bearerToken))
-                {
-                    bearerToken = TokenService.GetAccessToken();
-                }
-                return bearerToken;
+                return TokenService.GetAccessToken();
             }
         }
     }

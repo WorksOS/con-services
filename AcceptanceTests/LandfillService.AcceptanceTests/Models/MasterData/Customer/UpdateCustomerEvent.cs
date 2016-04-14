@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LandfillService.AcceptanceTests.Models.MasterData.Interfaces;
 
-namespace LandfillService.AcceptanceTests.Models.MasterData.Customer
+namespace LandfillService.AcceptanceTests.Models
 {
-    public class UpdateCustomerEvent : ICustomerEvent
+    public class UpdateCustomerEvent
     {
         public string CustomerName { get; set; }
         public string BSSID { get; set; }
