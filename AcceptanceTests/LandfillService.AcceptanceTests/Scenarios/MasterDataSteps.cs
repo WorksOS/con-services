@@ -21,10 +21,12 @@ namespace LandfillService.AcceptanceTests.Scenarios
         Guid projSubscripUID = Guid.NewGuid();
         Guid projectUID = Guid.NewGuid();
         Guid customerUID = Guid.NewGuid();
+        Guid userUID = Guid.NewGuid();
         MasterDataSupport mdSupport = new MasterDataSupport();
         List<Project> projects;
         
         [Given(@"I inject '(.*)' into Kafka")]
+        [When(@"I inject '(.*)' into Kafka")]
         public void GivenIInjectIntoKafka(string eventType)
         {
             string messageStr = "";
@@ -36,6 +38,14 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     messageStr = mdSupport.CreateCustomer(customerUID);
                     topic = Config.CustomerMasterDataTopic;
                     break;
+                case "UpdateCustomerEvent":
+                    messageStr = mdSupport.UpdateCustomer(customerUID);
+                    topic = Config.CustomerMasterDataTopic;
+                    break;
+                case "DeleteCustomerEvent":
+                    messageStr = mdSupport.DeleteCustomer(customerUID);
+                    topic = Config.CustomerMasterDataTopic;
+                    break;
                 case "CreateProjectEvent":
                     messageStr = mdSupport.CreateProject(projectUID);
                     topic = Config.ProjectMasterDataTopic;
@@ -44,9 +54,17 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     messageStr = mdSupport.UpdateProject(projectUID);
                     topic = Config.ProjectMasterDataTopic;
                     break;
+                case "DeleteProjectEvent":
+                    messageStr = mdSupport.DeleteProject(projectUID);
+                    topic = Config.ProjectMasterDataTopic;
+                    break;
                 case "CreateProjectSubscriptionEvent":
                     messageStr = mdSupport.CreateProjectSubscription(projSubscripUID, Config.GoldenCustomerUID);
                     topic = Config.SubscriptionTopic;
+                    break;
+                case "AssociateCustomerUserEvent":
+                    messageStr = mdSupport.AssociateCustomerUser(customerUID, userUID);
+                    topic = Config.CustomerUserMasterDataTopic;
                     break;
                 case "AssociateProjectCustomer":
                     string query = string.Format("DELETE FROM {0}.Project WHERE CustomerUID = '{1}'", Config.MySqlDbName, Config.GoldenCustomerUID);
@@ -127,11 +145,69 @@ namespace LandfillService.AcceptanceTests.Scenarios
                 "Project details not updated.");
         }
 
-        [Then(@"a new customer is created")]
-        public void ThenANewCustomerIsCreated()
+        [Then(@"a new '(.*)' is created")]
+        [Given(@"a new '(.*)' is created")]
+        public void ThenANewIsCreated(string thing)
         {
-            string query = string.Format("SELECT COUNT(ID) FROM {0}.Customer WHERE CustomerUID = '{1}'", Config.MySqlDbName, customerUID);
-            Assert.IsTrue(Convert.ToInt32(LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query)) == 1, "Customer not created.");
+            string query = "";
+
+            switch (thing)
+            {
+                case "Customer":
+                    query = string.Format("SELECT COUNT(ID) FROM {0}.Customer WHERE CustomerUID = '{1}'", Config.MySqlDbName, customerUID);
+                    break;
+                case "Project":
+                    query = string.Format("SELECT COUNT(ID) FROM {0}.Project WHERE ProjectUID = '{1}'", Config.MySqlDbName, projectUID);
+                    break;
+            }
+            Assert.IsTrue(Convert.ToInt32(LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query)) == 1,
+                thing + " not created.");
+        }
+
+        [Then(@"the new '(.*)' is updated")]
+        public void ThenTheNewIsUpdated(string thing)
+        {
+            string query = "";
+
+            switch (thing)
+            {
+                case "Customer":
+                    query = string.Format("SELECT CustomerName FROM {0}.Customer WHERE CustomerUID = '{1}'", Config.MySqlDbName, customerUID);
+                    Assert.AreEqual(mdSupport.UpdateCustomerEvt.CustomerName, LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query),
+                        "Customer not updated.");
+                    break;
+                case "Project":
+                    query = string.Format("SELECT Name FROM {0}.Project WHERE ProjectUID = '{1}'", Config.MySqlDbName, projectUID);
+                    Assert.AreEqual(mdSupport.UpdateProjectEvt.ProjectName, LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query),
+                        "Project not updated.");
+                    break;
+            }  
+        }
+
+        [Then(@"the new '(.*)' is deleted")]
+        public void ThenTheNewIsDeleted(string thing)
+        {
+            string query = "";
+
+            switch (thing)
+            {
+                case "Customer":
+                    query = string.Format("SELECT COUNT(ID) FROM {0}.Customer WHERE CustomerUID = '{1}'", Config.MySqlDbName, customerUID);
+                    break;
+                case "Project":
+                    query = string.Format("SELECT COUNT(ID) FROM {0}.Project WHERE ProjectUID = '{1}'", Config.MySqlDbName, projectUID);
+                    break;
+            }
+            Assert.IsTrue(Convert.ToInt32(LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query)) == 0,
+                thing + " not deleted.");
+        }
+
+        [Then(@"user and customer are associated")]
+        public void ThenUserAndCustomerAreAssociated()
+        {
+            string query = string.Format("SELECT fk_UserUID FROM {0}.CustomerUser WHERE fk_CustomerUID = '{1}'", Config.MySqlDbName, customerUID);
+            Guid associatedUserUid = Guid.Parse(LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query));
+            Assert.AreEqual(userUID, associatedUserUid, "User and customer not associated.");
         }
 
     }

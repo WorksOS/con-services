@@ -6,6 +6,7 @@ using TechTalk.SpecFlow;
 using LandfillService.AcceptanceTests.LandFillKafka;
 using LandfillService.AcceptanceTests.Utils;
 using LandfillService.AcceptanceTests.Models.MasterData.Project;
+using LandfillService.AcceptanceTests.Models.MasterData.Customer;
 
 namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
 {
@@ -13,14 +14,18 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
     {
         public CreateProjectEvent CreateProjectEvt;
         public UpdateProjectEvent UpdateProjectEvt;
+        public DeleteProjectEvent DeleteProjectEvt;
+
         public CreateCustomerEvent CreateCustomerEvt;
+        public UpdateCustomerEvent UpdateCustomerEvt;
+        public DeleteCustomerEvent DeleteCustomerEvt;
+
+        public AssociateCustomerUserEvent AssociateCustomerUserEvt;
         public CreateProjectSubscriptionEvent CreateProjectSubscriptionEvt;
         public AssociateProjectSubscriptionEvent AssociateProjectSubscriptionEvt;
         public AssociateProjectCustomer AssociateProjectCustomerEvt;
         public UpdateProjectSubscriptionEvent UpdateProjectSubscriptionEvt;
         public DissociateProjectSubscriptionEvent DissociateProjectSubscriptionEvt;
-
-        public AssociateCustomerUserEvent AssociateCustomerUserEvt;
 
         public string CreateProject(Guid projectUid)
         {
@@ -57,6 +62,18 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
             return JsonConvert.SerializeObject(new { UpdateProjectEvent = UpdateProjectEvt },
                 new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
         }
+        public string DeleteProject(Guid projectUid)
+        {
+            DeleteProjectEvt = new DeleteProjectEvent
+            {
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow,
+                ProjectUID = projectUid
+            };
+            return JsonConvert.SerializeObject(new { DeleteProjectEvent = DeleteProjectEvt },
+                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        }
+
         public string CreateCustomer(Guid customerUid)
         {
             CreateCustomerEvt = new CreateCustomerEvent
@@ -70,6 +87,43 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
             return JsonConvert.SerializeObject(new { CreateCustomerEvent = CreateCustomerEvt },
                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
         }
+        public string UpdateCustomer(Guid customerUid)
+        {
+            UpdateCustomerEvt = new UpdateCustomerEvent
+            {
+                CustomerUID = customerUid,
+                CustomerName = "AT_CUS-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow
+            };
+            return JsonConvert.SerializeObject(new { UpdateCustomerEvent = UpdateCustomerEvt },
+               new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        }
+        public string DeleteCustomer(Guid customerUid)
+        {
+            DeleteCustomerEvt = new DeleteCustomerEvent
+            {
+                CustomerUID = customerUid,
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow
+            };
+            return JsonConvert.SerializeObject(new { DeleteCustomerEvent = DeleteCustomerEvt },
+               new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        }
+        public string AssociateCustomerUser(Guid customerUid, Guid userUid)
+        {
+            AssociateCustomerUserEvt = new AssociateCustomerUserEvent
+            {
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow,
+                CustomerUID = customerUid,
+                UserUID = userUid
+            };
+
+            return JsonConvert.SerializeObject(new { AssociateCustomerUserEvent = AssociateCustomerUserEvt },
+                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        }
+
         public string CreateProjectSubscription(Guid subscriptionUid, Guid customerUid)
         {
             CreateProjectSubscriptionEvt = new CreateProjectSubscriptionEvent
@@ -127,7 +181,6 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
             return JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = UpdateProjectSubscriptionEvt },
                 new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
         }
-
         public string DissociateProjectSubscription(Guid projectUid, Guid subscriptionUid)
         {
             DissociateProjectSubscriptionEvt = new DissociateProjectSubscriptionEvent
@@ -141,18 +194,5 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
             return JsonConvert.SerializeObject(new { DissociateProjectSubscriptionEvent = DissociateProjectSubscriptionEvt },
                 new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
         }       
-        public string AssociateCustomerUser(Guid customerUid, Guid userUid)
-        {
-            AssociateCustomerUserEvt = new AssociateCustomerUserEvent
-            {
-                ActionUTC = DateTime.UtcNow,
-                ReceivedUTC = DateTime.UtcNow,
-                CustomerUID = customerUid,
-                UserUID = userUid
-            };
-
-            return JsonConvert.SerializeObject(new { AssociateCustomerUserEvent = AssociateCustomerUserEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        }
     }
 }

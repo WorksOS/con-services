@@ -211,6 +211,9 @@
     <Compile Include="Auth\TPaaS.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Kafka\KafkaResolver.cs" />
+    <Compile Include="Models\MasterData\Customer\DeleteCustomerEvent.cs" />
+    <Compile Include="Models\MasterData\Customer\UpdateCustomerEvent.cs" />
+    <Compile Include="Models\MasterData\Project\DeleteProjectEvent.cs" />
     <Compile Include="Models\MasterData\Project\UpdateProjectEvent.cs" />
     <Compile Include="Scenarios\MasterData.feature.cs">
       <AutoGen>True</AutoGen>
