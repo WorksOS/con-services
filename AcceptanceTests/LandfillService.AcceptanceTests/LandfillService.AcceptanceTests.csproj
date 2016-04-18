@@ -280,6 +280,7 @@
     <None Include="App.Release.config">
       <DependentUpon>App.config</DependentUpon>
     </None>
+    <None Include="HtmlReportGenerator\specflow.exe.config" />
     <None Include="packages.config" />
     <None Include="restclientapp.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -304,6 +305,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Content Include="HtmlReportGenerator\LandfillService.AcceptanceTests.csproj" />
+    <Content Include="HtmlReportGenerator\specflow.exe" />
+    <Content Include="HtmlReportGenerator\TechTalk.SpecFlow.dll" />
+    <Content Include="HtmlReportGenerator\TechTalk.SpecFlow.Generator.dll" />
+    <Content Include="HtmlReportGenerator\TechTalk.SpecFlow.Reporting.dll" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
