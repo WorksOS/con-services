@@ -41,14 +41,21 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
         var customer = utils.GetContext(context.Request.Headers, out message, out userUid);
         Log.DebugFormat("Authorization: For userID {0} customer is {1}", userUid, customer);
 
+        Dictionary<long, ProjectDescriptor> projectList = new Dictionary<long, ProjectDescriptor>();
+        IEnumerable<VSS.Project.Data.Models.Project> userProjects;
+
         if (customer != null)
         {
-          IEnumerable<VSS.Project.Data.Models.Project> userProjects = utils.GetProjectsForUser(userUid);
-          Dictionary<long, ProjectDescriptor> projectList = new Dictionary<long, ProjectDescriptor>();
+          userProjects = utils.GetProjectsForUser(userUid);
+          projectList = new Dictionary<long, ProjectDescriptor>();
           foreach (var userProject in userProjects)
           {
             projectList.Add(userProject.projectId,
-                new ProjectDescriptor {isLandFill = true, isArchived = userProject.isDeleted || userProject.subEndDate < DateTime.UtcNow});
+              new ProjectDescriptor
+              {
+                isLandFill = true,
+                isArchived = userProject.isDeleted || userProject.subEndDate < DateTime.UtcNow
+              });
           }
           Log.DebugFormat("Authorization: for Customer: {0} projectList is: {1}", customer, projectList.ToString());
 
@@ -56,7 +63,11 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
           LoggerSvc.LogMessage("Principal", "BuildPrincipal", "Claims", JsonConvert.SerializeObject(projectList));
         }
         else
-          context.ErrorResult = new AuthenticationFailureResult(message, context.Request);
+        {
+          projectList = new Dictionary<long, ProjectDescriptor>();
+          context.Principal = new LandfillPrincipal(projectList, userUid, Guid.Empty.ToString());
+          //context.ErrorResult = new AuthenticationFailureResult(message, context.Request);
+        }
       }
     }
 
