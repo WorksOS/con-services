@@ -163,6 +163,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\LandfillService.Common.csproj">
+      <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
+      <Name>LandfillService.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VSS.UserCustomer.Data\VSS.UserCustomer.Data.csproj">
       <Project>{b73ecf50-46d9-40cd-94af-19462dfa9905}</Project>
       <Name>VSS.UserCustomer.Data</Name>

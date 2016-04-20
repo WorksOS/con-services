@@ -8,18 +8,19 @@ using log4net;
 using MySql.Data.MySqlClient;
 using VSS.UserCustomer.Data.Interfaces;
 using VSS.UserCustomer.Data.Models;
+using LandfillService.Common.Repositories;
 
 namespace VSS.UserCustomer.Data
 {
-  public class MySqlUserCustomerRepository : IUserCustomerService
+  public class MySqlUserCustomerRepository : RepositoryBase, IUserCustomerService
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    private readonly string _connectionString;
+    //private readonly string _connectionString;
 
-    public MySqlUserCustomerRepository()
-    {
-      _connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
-    }
+    //public MySqlUserCustomerRepository()
+    //{
+    //  _connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
+    //}
 
     public int StoreUserCustomer(IUserCustomerEvent evt)
     {
@@ -62,46 +63,47 @@ namespace VSS.UserCustomer.Data
     private int UpsertUserCustomerDetail(Models.UserCustomer userCustomer, string eventType)
     {
       int upsertedCount = 0;
-      using (var connection = new MySqlConnection(_connectionString))
+
+      PerhapsOpenConnection();
+
+      Log.DebugFormat("UserCustomerRepository: Upserting eventType{0} CustomerUid={1}, UserUID={2}", 
+        eventType, userCustomer.fk_CustomerUID, userCustomer.fk_UserUID);
+
+      var existing = Connection.Query<Models.UserCustomer>
+        (@"SELECT 
+            fk_UserUID, fk_CustomerUID, LastActionedUTC
+              FROM CustomerUser
+              WHERE fk_CustomerUID = @customerUID AND fk_UserUID = @userUID", new { customerUID = userCustomer.fk_CustomerUID, userUID = userCustomer.fk_UserUID }).FirstOrDefault();
+
+      if (eventType == "AssociateCustomerUserEvent")
       {
-        Log.DebugFormat("UserCustomerRepository: Upserting eventType{0} CustomerUid={1}, UserUID={2}", 
-          eventType, userCustomer.fk_CustomerUID, userCustomer.fk_UserUID);
-
-        connection.Open();
-        var existing = connection.Query<Models.UserCustomer>
-          (@"SELECT 
-              fk_UserUID, fk_CustomerUID, LastActionedUTC
-                FROM CustomerUser
-                WHERE fk_CustomerUID = @customerUID AND fk_UserUID = @userUID", new { customerUID = userCustomer.fk_CustomerUID, userUID = userCustomer.fk_UserUID }).FirstOrDefault();
-
-        if (eventType == "AssociateCustomerUserEvent")
-        {
-          upsertedCount = AssociateCustomerUser(connection, userCustomer, existing);
-        }
-
-        if (eventType == "DissociateCustomerUserEvent")
-        {
-          upsertedCount = DissociateCustomerUser(connection, userCustomer, existing);
-        }
-
-        Log.DebugFormat("UserCustomerRepository: upserted {0} rows", upsertedCount);
-        connection.Close();
+        upsertedCount = AssociateCustomerUser(userCustomer, existing);
       }
+
+      if (eventType == "DissociateCustomerUserEvent")
+      {
+        upsertedCount = DissociateCustomerUser(userCustomer, existing);
+      }
+
+      Log.DebugFormat("UserCustomerRepository: upserted {0} rows", upsertedCount);
+
+      PerhapsCloseConnection();
+
       return upsertedCount;
     }
 
-    private int AssociateCustomerUser(MySqlConnection connection, Models.UserCustomer userCustomer, Models.UserCustomer existing)
+    private int AssociateCustomerUser(Models.UserCustomer userCustomer, Models.UserCustomer existing)
     {
       if (existing == null)
       {
         //TODO: May need to dummy this like projects and customers due to out of order events
 
-        var customer = connection.Query<VSS.Customer.Data.Models.Customer>
+        var customer = Connection.Query<VSS.Customer.Data.Models.Customer>
           (@"SELECT *
               FROM Customer
               WHERE CustomerUID = @customerUID", new { customerUID = userCustomer.fk_CustomerUID }).FirstOrDefault();
 
-        if (customer == null || customer.CustomerId <= 0) return 0;
+        if (customer == null) return 0;
 
 
         const string insert =
@@ -110,14 +112,14 @@ namespace VSS.UserCustomer.Data
             VALUES
             (@fk_UserUid, @fk_CustomerUID, @LastActionedUTC)";
 
-        return connection.Execute(insert, userCustomer);
+        return Connection.Execute(insert, userCustomer);
       }
 
       Log.DebugFormat("UserCustomerRepository: can't create as already exists newActionedUTC={0}", userCustomer.LastActionedUTC);
       return 0;
     }
 
-    private int DissociateCustomerUser(MySqlConnection connection, Models.UserCustomer userCustomer, Models.UserCustomer existing)
+    private int DissociateCustomerUser(Models.UserCustomer userCustomer, Models.UserCustomer existing)
     {
       if (existing != null)
       {
@@ -127,7 +129,7 @@ namespace VSS.UserCustomer.Data
             @"DELETE 
               FROM CustomerUser               
               WHERE fk_CustomerUID = @fk_CustomerUID AND fk_UserUID = @fk_UserUID";
-          return connection.Execute(delete, userCustomer);
+          return Connection.Execute(delete, userCustomer);
         }
         
         Log.DebugFormat("UserCustomerRepository: old delete event ignored currentActionedUTC{0} newActionedUTC{1}",

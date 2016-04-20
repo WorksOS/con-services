@@ -24,7 +24,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Deploy_Production\LandFillServiceAcceptanceTests\</OutputPath>
+    <OutputPath>..\deploy\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -208,65 +208,52 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Helpers\Enums.cs" />
-    <Compile Include="Helpers\Getter.cs" />
-    <Compile Include="Helpers\KafkaMessage.cs" />
-    <Compile Include="Helpers\KafkaResolver.cs" />
-    <Compile Include="Helpers\MasterDataSupport.cs" />
-    <Compile Include="Helpers\MessageFactory.cs" />
-    <Compile Include="Helpers\Poster.cs" />
-    <Compile Include="Helpers\ServiceResponse.cs" />
-    <Compile Include="Helpers\StepSupport.cs" />
-    <Compile Include="Interfaces\ICustomerEvent.cs" />
-    <Compile Include="Interfaces\ICustomerUserEvent.cs" />
-    <Compile Include="Interfaces\IMessage.cs" />
-    <Compile Include="Helpers\Kafka.cs" />
-    <Compile Include="Helpers\ServicesClientUtil.cs" />
-    <Compile Include="Interfaces\IProjectEvent.cs" />
-    <Compile Include="Interfaces\ISubscriptionEvent.cs" />
-    <Compile Include="Models\KafkaTopics\AssociateCustomerUserEvent.cs" />
-    <Compile Include="Models\KafkaTopics\AssociateProjectCustomer.cs" />
-    <Compile Include="Models\KafkaTopics\AssociateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\KafkaTopics\CreateCustomerEvent.cs" />
-    <Compile Include="Models\KafkaTopics\CreateCustomerSubscriptionEvent.cs" />
-    <Compile Include="Models\KafkaTopics\CreateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\KafkaTopics\DissociateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\KafkaTopics\ProjectEvent.cs" />
-    <Compile Include="Models\AllModels.cs" />
-    <Compile Include="Models\KafkaTopics\UpdateCustomerSubscriptionEvent.cs" />
-    <Compile Include="Models\KafkaTopics\UpdateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\NGProject.cs" />
-    <Compile Include="Models\ProjectType.cs" />
-    <Compile Include="Models\RelationType.cs" />
-    <Compile Include="Scenarios\Data.feature.cs">
+    <Compile Include="Auth\TPaaS.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="Kafka\KafkaResolver.cs" />
+    <Compile Include="Models\MasterData\Customer\DeleteCustomerEvent.cs" />
+    <Compile Include="Models\MasterData\Customer\UpdateCustomerEvent.cs" />
+    <Compile Include="Models\MasterData\Project\DeleteProjectEvent.cs" />
+    <Compile Include="Models\MasterData\Project\UpdateProjectEvent.cs" />
+    <Compile Include="Scenarios\MasterData.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Data.feature</DependentUpon>
+      <DependentUpon>MasterData.feature</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\LandFillDb.cs" />
-    <Compile Include="Helpers\LogonKey.cs" />
-    <Compile Include="Scenarios\Login.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Login.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Helpers\Config.cs" />
-    <Compile Include="Scenarios\DataSteps.cs" />
-    <Compile Include="Scenarios\LoginSteps.cs" />
+    <Compile Include="Scenarios\MasterDataSteps.cs" />
+    <Compile Include="Scenarios\ScenarioSupports\MasterDataSupport.cs" />
+    <Compile Include="Models\Landfill\Project.cs" />
+    <Compile Include="Models\Landfill\WeightEntry.cs" />
+    <Compile Include="Models\Landfill\DayEntry.cs" />
+    <Compile Include="Kafka\KafkaDotNet.cs" />
+    <Compile Include="Models\MasterData\UserCustomer\AssociateCustomerUserEvent.cs" />
+    <Compile Include="Models\MasterData\Project\AssociateProjectCustomer.cs" />
+    <Compile Include="Models\MasterData\Subscription\AssociateProjectSubscriptionEvent.cs" />
+    <Compile Include="Models\MasterData\Customer\CreateCustomerEvent.cs" />
+    <Compile Include="Models\MasterData\Subscription\CreateProjectSubscriptionEvent.cs" />
+    <Compile Include="Models\MasterData\Project\CreateProjectEvent.cs" />
+    <Compile Include="Models\Landfill\ProjectData.cs" />
+    <Compile Include="Models\MasterData\Subscription\UpdateProjectSubscriptionEvent.cs" />
+    <Compile Include="Scenarios\AuthenticationSteps.cs" />
+    <Compile Include="Utils\LandFillDb.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scenarios\MasterDataProjects.feature.cs">
+    <Compile Include="Scenarios\Projects.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>MasterDataProjects.feature</DependentUpon>
+      <DependentUpon>Projects.feature</DependentUpon>
     </Compile>
-    <Compile Include="Scenarios\MasterDataProjectsSteps.cs" />
-    <Compile Include="Scenarios\MasterDataSubscriptions.feature.cs">
+    <Compile Include="Scenarios\ProjectsSteps.cs" />
+    <Compile Include="Scenarios\ScenarioSupports\BeforeAndAfter.cs" />
+    <Compile Include="Scenarios\Weights.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>MasterDataSubscriptions.feature</DependentUpon>
+      <DependentUpon>Weights.feature</DependentUpon>
     </Compile>
-    <Compile Include="Scenarios\MasterDataSubscriptionsSteps.cs" />
-    <Compile Include="Scenarios\SpecFlowHooks.cs" />
+    <Compile Include="Scenarios\WeightsSteps.cs" />
+    <Compile Include="Utils\LandfillCommonUtils.cs" />
+    <Compile Include="Utils\ProjectsUtils.cs" />
+    <Compile Include="Utils\WeightsUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -293,25 +280,22 @@
     <None Include="App.Release.config">
       <DependentUpon>App.config</DependentUpon>
     </None>
+    <None Include="HtmlReportGenerator\specflow.exe.config" />
     <None Include="packages.config" />
     <None Include="restclientapp.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Scenarios\Data.feature">
+    <None Include="Scenarios\MasterData.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Data.feature.cs</LastGenOutput>
+      <LastGenOutput>MasterData.feature.cs</LastGenOutput>
     </None>
-    <None Include="Scenarios\Login.feature">
+    <None Include="Scenarios\Projects.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>Login.feature.cs</LastGenOutput>
+      <LastGenOutput>Projects.feature.cs</LastGenOutput>
     </None>
-    <None Include="Scenarios\MasterDataProjects.feature">
+    <None Include="Scenarios\Weights.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>MasterDataProjects.feature.cs</LastGenOutput>
-    </None>
-    <None Include="Scenarios\MasterDataSubscriptions.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>MasterDataSubscriptions.feature.cs</LastGenOutput>
+      <LastGenOutput>Weights.feature.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -319,6 +303,14 @@
       <Project>{af26f239-e452-41a1-b66c-d683eada57b2}</Project>
       <Name>AutomationCore.API.Framework</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="HtmlReportGenerator\LandfillService.AcceptanceTests.csproj" />
+    <Content Include="HtmlReportGenerator\specflow.exe" />
+    <Content Include="HtmlReportGenerator\TechTalk.SpecFlow.dll" />
+    <Content Include="HtmlReportGenerator\TechTalk.SpecFlow.Generator.dll" />
+    <Content Include="HtmlReportGenerator\TechTalk.SpecFlow.Reporting.dll" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
