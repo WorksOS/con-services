@@ -301,7 +301,7 @@ namespace VSS.Project.Data
                 FROM Project p
                 JOIN Subscription s on p.SubscriptionUID = s.SubscriptionUID
                 JOIN CustomerUser cu on p.CustomerUID = cu.fk_CustomerUID
-                WHERE cu.fk_userUID = @userUid", 
+                WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0" , 
          new { userUid }
          );
 
