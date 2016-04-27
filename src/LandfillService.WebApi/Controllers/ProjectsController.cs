@@ -104,6 +104,11 @@ namespace LandfillService.WebApi.Controllers
             // Check if there are missing volumes and indicate to the client
 
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          //Secure with project list
+          if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+          {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+          }
           LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(),"Retrieving density");
 
             return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects => 
@@ -246,6 +251,13 @@ namespace LandfillService.WebApi.Controllers
           string jsonContent = Request.Content.ReadAsStringAsync().Result; //this gets proper JSON
           //LoggerSvc.LogMessage(null, null, null, "PostWeights: id=" + id + ", request content=" + jsonContent);          
           var entries = JsonConvert.DeserializeObject<WeightEntry[]>(jsonContent);
+
+          //Secure with project list
+          if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+          {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+          }
+
 
           if (entries == null)
           {
