@@ -11,8 +11,10 @@ namespace LandfillService.WebApi.Models
     {
         public uint id { get; set; }
         public string name { get; set; }
-        public string timeZoneName { get; set; }      // project time zone name
+        public string timeZoneName { get; set; }      // project time zone name (NodaTime)
         public int? daysToSubscriptionExpiry { get; set; }
+        public string projectUid { get; set; }
+        public string currentGenTimeZoneName { get; set; }
     }
 
     /// <summary>

@@ -71,7 +71,8 @@ namespace LandfillService.WebApi.Models
         {
             return InTransaction((conn) =>
             {
-              var command = @"SELECT prj.ProjectID, prj.Name, prj.LandfillTimeZone as TimeZone, 
+              var command = @"SELECT prj.ProjectID, prj.Name, prj.LandfillTimeZone,
+                                     prj.ProjectUID, prj.ProjectTimeZone,
                                      sub.StartDate AS SubStartDate, sub.EndDate AS SubEndDate 
                               FROM Project prj  
                               JOIN CustomerUser cu ON prj.CustomerUID = cu.fk_CustomerUID
@@ -102,9 +103,11 @@ namespace LandfillService.WebApi.Models
                         daysToSubExpiry = 0;
                       }                       
 
-                        projects.Add(new Project { id = reader.GetUInt32(reader.GetOrdinal("ProjectID")), 
+                        projects.Add(new Project { id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
+                                                   projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
                                                    name = reader.GetString(reader.GetOrdinal("Name")),
-                                                   timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone")),
+                                                   timeZoneName = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
+                                                   currentGenTimeZoneName = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
                                                    daysToSubscriptionExpiry = daysToSubExpiry
                         });
                     }
