@@ -77,7 +77,7 @@ namespace LandfillService.WebApi.Models
                               FROM Project prj  
                               JOIN CustomerUser cu ON prj.CustomerUID = cu.fk_CustomerUID
                               JOIN Subscription sub ON prj.SubscriptionUID = sub.SubscriptionUID
-                              WHERE cu.fk_UserUID = @userUid;";
+                              WHERE cu.fk_UserUID = @userUid and prj.IsDeleted = 0;";
               var projects = new List<Project>();
 
               using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
