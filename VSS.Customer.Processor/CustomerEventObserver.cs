@@ -8,6 +8,8 @@ using org.apache.kafka.clients.consumer;
 using VSS.Customer.Data.Interfaces;
 using VSS.Customer.Data.Models;
 using VSS.Customer.Processor.Helpers;
+using VSS.UserCustomer.Data.Interfaces;
+using VSS.UserCustomer.Data.Models;
 
 namespace VSS.Customer.Processor
 {
@@ -15,10 +17,12 @@ namespace VSS.Customer.Processor
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     private ICustomerService _customerService;
+    private IUserCustomerService _userCustomerService;
 
-    public CustomerEventObserver(ICustomerService customerService)
+    public CustomerEventObserver(ICustomerService customerService, IUserCustomerService userCustomerService)
     {
       _customerService = customerService;
+      _userCustomerService = userCustomerService;
     }
 
     public void OnCompleted()
@@ -42,6 +46,31 @@ namespace VSS.Customer.Processor
           string tokenName;
 
           JToken token;
+
+          if ((token = json.SelectToken(tokenName = "AssociateCustomerUserEvent")) != null)
+          {
+            var associateCustomerUserEvent = JsonConvert.DeserializeObject<AssociateCustomerUserEvent>(token.ToString());
+            Log.InfoFormat("Received a AssociateCustomerUserEvent for CustomerUid:{0} and UserUid:{1}",
+              associateCustomerUserEvent.CustomerUID, associateCustomerUserEvent.UserUID);
+            Log.DebugFormat("Payload :{0}", token.ToString());
+
+            success = (_userCustomerService.StoreUserCustomer(associateCustomerUserEvent) == 1);
+
+            Log.Info(success ? "Customer user association created successfully" : "Customer user association could not be created ");
+          }
+          else if ((token = json.SelectToken(tokenName = "DissociateCustomerUserEvent")) != null)
+          {
+            var dissociateCustomerUserEvent =
+              JsonConvert.DeserializeObject<DissociateCustomerUserEvent>(token.ToString());
+            Log.InfoFormat("Received a DissociateCustomerUserEvent for CustomerUid:{0} and UserUid:{1}",
+              dissociateCustomerUserEvent.CustomerUID, dissociateCustomerUserEvent.UserUID);
+            Log.DebugFormat("Payload :{0}", token.ToString());
+
+            success = _userCustomerService.StoreUserCustomer(dissociateCustomerUserEvent) == 1;
+
+            Log.Info(success ? "Customer user association removed successfully" : "Customer user association could not be removed");
+          }
+          else
           if ((token = json.SelectToken(tokenName = "CreateCustomerEvent")) != null)
           {
             var createCustomerEvent = JsonConvert.DeserializeObject<CreateCustomerEvent>(token.ToString());
@@ -125,7 +154,7 @@ namespace VSS.Customer.Processor
           {
             if (Log.IsWarnEnabled)
               Log.WarnFormat("Consumed a message and was unable to find a proper token. Message Sample: {0}... ",
-                val.Truncate(15));
+                val.Truncate(100));
           }
       }
       catch (MySqlException ex)

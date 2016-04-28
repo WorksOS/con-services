@@ -20,8 +20,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Project.Data", "VSS.Pro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.UserCustomer.Data", "VSS.UserCustomer.Data\VSS.UserCustomer.Data.csproj", "{B73ECF50-46D9-40CD-94AF-19462DFA9905}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.UserCustomer.Processor", "VSS.UserCustomer.Processor\VSS.UserCustomer.Processor.csproj", "{EA41CDD7-8175-4C7B-8F52-3A0740241616}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Customer.Data", "VSS.Customer.Data\VSS.Customer.Data.csproj", "{70CA8791-9379-4236-8849-D29CBEB2E251}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Customer.Processor", "VSS.Customer.Processor\VSS.Customer.Processor.csproj", "{DFA2EC39-693E-46FC-936A-25A6FC5A214B}"
@@ -120,22 +118,6 @@ Global
 		{B73ECF50-46D9-40CD-94AF-19462DFA9905}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B73ECF50-46D9-40CD-94AF-19462DFA9905}.Staging|Any CPU.ActiveCfg = Release|Any CPU
 		{B73ECF50-46D9-40CD-94AF-19462DFA9905}.Staging|Any CPU.Build.0 = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Alpha|Any CPU.ActiveCfg = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Alpha|Any CPU.Build.0 = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Dev|Any CPU.Build.0 = Debug|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Integrated|Any CPU.ActiveCfg = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Integrated|Any CPU.Build.0 = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Performance|Any CPU.ActiveCfg = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Performance|Any CPU.Build.0 = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Production|Any CPU.ActiveCfg = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Production|Any CPU.Build.0 = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Staging|Any CPU.ActiveCfg = Release|Any CPU
-		{EA41CDD7-8175-4C7B-8F52-3A0740241616}.Staging|Any CPU.Build.0 = Release|Any CPU
 		{70CA8791-9379-4236-8849-D29CBEB2E251}.Alpha|Any CPU.ActiveCfg = Release|Any CPU
 		{70CA8791-9379-4236-8849-D29CBEB2E251}.Alpha|Any CPU.Build.0 = Release|Any CPU
 		{70CA8791-9379-4236-8849-D29CBEB2E251}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

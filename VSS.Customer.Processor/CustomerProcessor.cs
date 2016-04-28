@@ -9,6 +9,7 @@ using org.apache.kafka.clients.consumer;
 using VSS.Customer.Data.Interfaces;
 using VSS.Kafka.DotNetClient.Model;
 using VSS.Customer.Processor.Interfaces;
+using VSS.UserCustomer.Data.Interfaces;
 using Random = System.Random;
 
 namespace VSS.Customer.Processor
@@ -20,7 +21,7 @@ namespace VSS.Customer.Processor
 
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    public CustomerProcessor(ICustomerService service)
+    public CustomerProcessor(ICustomerService service, IUserCustomerService userCustomerService)
     {
       try
       {
@@ -32,7 +33,7 @@ namespace VSS.Customer.Processor
         props.put("bootstrap.servers", Settings.Default.KafkaUri);
         props.put("client.id", "11111");
         props.put("group.id", Settings.Default.ConsumerGroupName);
-        props.put("enable.auto.commit", "true");
+        props.put("enable.auto.commit", "false");
         props.put("auto.commit.interval.ms", "1000");
         props.put("session.timeout.ms", "30000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -45,7 +46,7 @@ namespace VSS.Customer.Processor
         
         javaConsumer = new KafkaConsumer(props);
 
-        _subscriber = new CustomerEventObserver(service);
+        _subscriber = new CustomerEventObserver(service, userCustomerService);
       }
       catch (Exception error)
       {

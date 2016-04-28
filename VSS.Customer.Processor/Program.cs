@@ -11,6 +11,8 @@ using VSS.Customer.Data;
 using VSS.Customer.Data.Interfaces;
 using VSS.Kafka.DotNetClient.Model;
 using VSS.Customer.Processor.Interfaces;
+using VSS.UserCustomer.Data;
+using VSS.UserCustomer.Data.Interfaces;
 
 namespace VSS.Customer.Processor
 {
@@ -60,6 +62,7 @@ namespace VSS.Customer.Processor
       builder.RegisterType<CustomerProcessor>().As<ICustomerProcessor>().SingleInstance();
       builder.RegisterType<CustomerEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlCustomerRepository>().As<ICustomerService>().SingleInstance();
+      builder.RegisterType<MySqlUserCustomerRepository>().As<IUserCustomerService>().SingleInstance();
 
       Container = builder.Build();
 
