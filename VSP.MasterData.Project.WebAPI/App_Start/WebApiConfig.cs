@@ -1,5 +1,6 @@
 ﻿using System.Web.Http;
 using VSP.MasterData.Project.WebAPI.Filters;
+using VSS.VisionLink.Utilization.WebApi.Configuration;
 
 namespace VSP.MasterData.Project.WebAPI
 {
@@ -7,8 +8,7 @@ namespace VSP.MasterData.Project.WebAPI
   {
     public static void Register(HttpConfiguration config)
     {
-      // Web API configuration and services
-
+      config.Filters.Add(new TIDAuthFilter());
       // Web API routes
       config.MapHttpAttributeRoutes();
 

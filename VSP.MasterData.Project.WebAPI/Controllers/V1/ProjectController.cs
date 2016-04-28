@@ -1,14 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Web.Http;
+using java.util;
 using log4net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.producer;
 using VSP.MasterData.Project.WebAPI.Helpers;
 using VSP.MasterData.Common.Logging;
 using VSS.Kafka.DotNetClient.Interfaces;
 using VSS.Kafka.DotNetClient.Model;
+using VSS.Project.Data.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.VisionLink.Utilization.WebApi.Configuration;
+using VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models;
 
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V1
@@ -19,10 +28,25 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
     private readonly IProducer _producer;
+    private readonly IProjectService _projectService;
 
-    public ProjectV1Controller(IProducer producer)
+    public ProjectV1Controller(IProducer producer, IProjectService projectRepo)
     {
       _producer = producer;
+      _projectService = projectRepo;
+    }
+
+    [Route("")]
+    [HttpGet]
+    public Dictionary<long, ProjectDescriptor> CreateProject()
+    {
+      //Secure with project list
+      if (!(RequestContext.Principal as LandfillPrincipal).Projects.Any())
+      {
+        throw new HttpResponseException(HttpStatusCode.Forbidden);
+      }
+
+      return (RequestContext.Principal as LandfillPrincipal).Projects;
     }
 
     // POST: api/project
@@ -47,6 +71,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
         _producer.send(producerRecord).get();
 
+        var json = JObject.Parse(messagePayload);
+        _projectService.StoreProject(JsonConvert.DeserializeObject<VSS.Project.Data.Models.CreateProjectEvent>(json.SelectToken("CreateProjectEvent").ToString()));
+        
         return Ok();
         throw new Exception("Failed to publish message to Kafka");
       }
@@ -79,7 +106,10 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
         _producer.send(producerRecord).get();
 
-          return Ok();
+        var json = JObject.Parse(messagePayload);
+        _projectService.StoreProject(JsonConvert.DeserializeObject<VSS.Project.Data.Models.UpdateProjectEvent>(json.SelectToken("UpdateProjectEvent").ToString()));
+
+         return Ok();
         throw new Exception("Failed to publish message to Kafka");
       }
       catch (Exception ex)
@@ -118,6 +148,10 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
         _producer.send(producerRecord).get();
 
+        var json = JObject.Parse(messagePayload);
+        _projectService.StoreProject(JsonConvert.DeserializeObject<VSS.Project.Data.Models.DeleteProjectEvent>(json.SelectToken("DeleteProjectEvent").ToString()));
+
+
         return Ok();
         throw new Exception("Failed to publish message to Kafka");
       }
@@ -141,6 +175,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     [HttpPost]
     public IHttpActionResult RestoreProject([FromBody] RestoreProjectEvent project)
     {
+      /*This is only for debugging no actual project can be restored*/
       try
       {
         project.ReceivedUTC = DateTime.UtcNow;
@@ -179,6 +214,10 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         var message = new Message { Key = customerProject.ProjectUID.ToString(), Value = messagePayload };
         var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
         _producer.send(producerRecord).get();
+
+        var json = JObject.Parse(messagePayload);
+        _projectService.StoreProject(JsonConvert.DeserializeObject<VSS.Project.Data.Models.AssociateProjectCustomer>(json.SelectToken("AssociateProjectCustomer").ToString()));
+
         return Ok();
         throw new Exception("Failed to publish message to Kafka");
       }
@@ -201,6 +240,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     [Route("DissociateCustomer")]
     public IHttpActionResult DissociateCustomerProject([FromBody] DissociateProjectCustomer customerProject)
     {
+      /*This is only for debugging no actual project can be diassociated*/
       try
       {
         customerProject.ReceivedUTC = DateTime.UtcNow;

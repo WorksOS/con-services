@@ -16,6 +16,8 @@ using VSS.Kafka.DotNetClient;
 using VSS.Kafka.DotNetClient.Interfaces;
 using VSS.Kafka.DotNetClient.Model;
 using VSS.Kafka.DotNetClient.Producer;
+using VSS.Project.Data;
+using VSS.Project.Data.Interfaces;
 
 namespace VSP.MasterData.Project.WebAPI
 {
@@ -71,8 +73,11 @@ namespace VSP.MasterData.Project.WebAPI
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
         var javaProducer = new JavaProducer(props);
+        var repository = new MySqlProjectRepository();
 
         builder.Register(c => javaProducer).As<IProducer>().SingleInstance();
+        builder.Register(c => repository).As<IProjectService>().SingleInstance();
+
         builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
         IContainer container = builder.Build();
