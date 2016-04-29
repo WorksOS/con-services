@@ -88,8 +88,17 @@ this.ScenarioSetup(scenarioInfo);
 this.FeatureBackground();
 #line 7
  testRunner.When("I try to get a list of all projects", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+            TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                        "UID",
+                        "TimezoneName",
+                        "CurrentGenTimezoneName"});
+            table1.AddRow(new string[] {
+                        "06A92E4F-FAA2-E511-80E5-0050568821E6",
+                        "America/Chicago",
+                        "Central Standard Time"});
 #line 8
- testRunner.Then("the project \'Casella-Stanley Landfill\' is in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the project \'Casella-Stanley Landfill\' is in the list with details", ((string)(null)), table1, "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -100,13 +109,13 @@ this.FeatureBackground();
         public virtual void ProjectData()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project data", ((string[])(null)));
-#line 10
+#line 12
 this.ScenarioSetup(scenarioInfo);
 #line 3
 this.FeatureBackground();
-#line 11
+#line 13
  testRunner.When("I try to get data for project \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 12
+#line 14
  testRunner.Then("the response contains data for the past two years", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

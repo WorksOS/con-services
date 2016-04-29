@@ -25,10 +25,15 @@ namespace LandfillService.AcceptanceTests.Scenarios
             projects = JsonConvert.DeserializeObject<List<Project>>(response);
         }
         
-        [Then(@"the project '(.*)' is in the list")]
-        public void ThenTheProjectIsInTheList(string project)
+        [Then(@"the project '(.*)' is in the list with details")]
+        public void ThenTheProjectIsInTheListWithDetails(string projName, Table projDetails)
         {
-            Assert.IsTrue(projects.Exists(p => p.name == project), "Project not found.");
+            Assert.IsTrue(projects.Exists(p => p.name == projName), "Project not found.");
+
+            Project project = projects.First(p => p.name == projName);
+            Assert.AreEqual(projDetails.Rows[0]["UID"], project.projectUid, "Incorrect projectUid.");
+            Assert.AreEqual(projDetails.Rows[0]["TimezoneName"], project.timeZoneName, "Incorrect project timeZoneName.");
+            Assert.AreEqual(projDetails.Rows[0]["CurrentGenTimezoneName"], project.currentGenTimeZoneName, "Incorrect project currentGenTimeZoneName.");
         }
 
         [When(@"I try to get data for project '(.*)'")]
