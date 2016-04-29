@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LandfillService.WebApi.Models
+namespace LandfillService.Common.Models
 {
     /// <summary>
     /// Project representation
@@ -18,6 +18,23 @@ namespace LandfillService.WebApi.Models
     }
 
     /// <summary>
+    /// Date and geofence for entries with no volume
+    /// </summary>
+    public class DateEntry
+    {
+      public DateTime date { get; set; }          // date of the entry; always in the project time zone
+      public string geofenceUid { get; set; }
+
+      /// <summary>
+      /// ToString override
+      /// </summary>
+      /// <returns>A string representation of date entry</returns>
+      public override string ToString()
+      {
+        return String.Format("date:{0}, geofence UID:{1}", date, geofenceUid);
+      }
+    }
+    /// <summary>
     /// Weight entry submitted by the user
     /// </summary>
     public class WeightEntry
@@ -28,7 +45,7 @@ namespace LandfillService.WebApi.Models
         /// <summary>
         /// ToString override
         /// </summary>
-        /// <returns>A string representation of volume filter params</returns>
+        /// <returns>A string representation of weight entry</returns>
         public override string ToString()
         {
             return String.Format("date:{0}, weight:{1}", date, weight);
@@ -58,13 +75,32 @@ namespace LandfillService.WebApi.Models
     }
 
     /// <summary>
+    /// WGS point for volume summary requests sent to the Raptor API; see Raptor API documentation for details
+    /// </summary>
+    public class WGSPoint
+    {
+      public double Lat;
+      public double Lon;
+
+      /// <summary>
+      /// ToString override
+      /// </summary>
+      /// <returns>A string representation of polygon filter params</returns>
+      public override string ToString()
+      {
+        return String.Format("(Lat:{0}, Lon:{1})", Lat, Lon);
+      }
+    }
+
+    /// <summary>
     /// Filter for volume summary requests sent to the Raptor API; see Raptor API documentation for details
     /// </summary>
     public class VolumeFilter
     {
         public DateTime startUTC;
         public DateTime endUTC;
-        public bool returnEarliest;     
+        public bool returnEarliest;
+        public List<WGSPoint> polygonLL;
 
         /// <summary>
         /// ToString override
@@ -72,9 +108,13 @@ namespace LandfillService.WebApi.Models
         /// <returns>A string representation of volume filter params</returns>
         public override string ToString()
         {
-            return String.Format("startUTC:{0}, endUTC:{1}, returnEarliest:{2}", startUTC, endUTC, returnEarliest);
+          var poly = string.Empty;
+          foreach (WGSPoint pt in polygonLL)
+          {
+            poly = string.Format("{0}{1}", poly, pt);
+          }
+          return string.Format("startUTC:{0}, endUTC:{1}, returnEarliest:{2}, polygonLL:{3}", startUTC, endUTC, returnEarliest, poly);
         }
-
     }
 
     /// <summary>

@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
+using LandfillService.Common.ApiClients;
+using LandfillService.Common.Context;
+using LandfillService.Common.Models;
 using log4net;
-using LandfillService.Common;
-using LandfillService.WebApi.ApiClients;
-using LandfillService.WebApi.Models;
 
 namespace LandFillServiceDataSynchronizer
 {
@@ -28,15 +27,24 @@ namespace LandFillServiceDataSynchronizer
       return LandfillDb.GetListOfAvailableProjects();
     }
 
-    private Dictionary<Project, List<DateTime>> GetListOfEntriesToUpdate()
+    private Dictionary<Project, List<DateEntry>> GetListOfEntriesToUpdate()
     {
       var projects = GetListOfProjectsToRetrieve();
       Log.DebugFormat("Got {0} projects to process",projects.Count);
-      Dictionary<Project, List<DateTime>> entries = projects.ToDictionary(project => project,
+      Dictionary<Project, List<DateEntry>> entries = projects.ToDictionary(project => project,
           project => LandfillDb.GetDatesWithVolumesNotRetrieved(project.id).ToList());
       Log.DebugFormat("Got {0} entries to process", entries.Count);
 
       return entries;
+    }
+
+    private Dictionary<string, List<WGSPoint>> GetGeofences(uint id, List<string> geofenceUids)
+    {
+      Dictionary<string, List<WGSPoint>> geofences = geofenceUids.ToDictionary(g => g,
+          g => LandfillDb.GetGeofencePoints(g).ToList());
+      Log.DebugFormat("Got {0} geofences to process for project {1}", geofenceUids.Count, id);
+
+      return geofences;
     }
 
     public void RunUpdateDataFromRaptor(object state)
@@ -45,11 +53,15 @@ namespace LandFillServiceDataSynchronizer
 
       foreach (var project in datesToUpdate)
       {
-        var entries = project.Value.Select(date => new WeightEntry { date = date, weight = 0 }); // generate fake WeightEntry objects from dates
-        Log.DebugFormat("Processing project {0} with {1} entries", project.Key.id, entries.Count());        
-        foreach (var weightEntry in entries)
+        var geofenceUids = project.Value.Where(d => !string.IsNullOrEmpty(d.geofenceUid)).Select(d => d.geofenceUid).Distinct().ToList();
+        var geofences = GetGeofences(project.Key.id, geofenceUids);
+
+        Log.DebugFormat("Processing project {0} with {1} entries", project.Key.id, project.Value.Count());        
+        foreach (var dateEntry in project.Value)
         {
-          GetVolumeInBackground("sUpErSeCretIdTuSsupport348215890UnknownRa754291", project.Key, weightEntry).Wait();
+          var weightEntry = new WeightEntry { date = dateEntry.date, weight = 0 };// generate fake WeightEntry objects from dates
+          var geofence = geofences.ContainsKey(dateEntry.geofenceUid) ? geofences[dateEntry.geofenceUid] : null;
+          GetVolumeInBackground("sUpErSeCretIdTuSsupport348215890UnknownRa754291", project.Key, geofence, weightEntry).Wait();
         }
       }
 
@@ -60,15 +72,16 @@ namespace LandFillServiceDataSynchronizer
     /// </summary>
     /// <param name="userUid">User ID</param>
     /// <param name="project">Project</param>
+    /// <param name="geofence">Geofence</param>
     /// <param name="entry">Weight entry from the client</param>
     /// <returns></returns>
-    private async Task GetVolumeInBackground(string userUid, Project project, WeightEntry entry)
+    private async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, WeightEntry entry)
     {
       try
       {
         Log.DebugFormat("Get volume for project {0} date {1}", project.id,entry.date);
 
-        var res = await raptorApiClient.GetVolumesAsync(userUid,project, entry.date);
+        var res = await raptorApiClient.GetVolumesAsync(userUid,project, entry.date, geofence);
 
         Log.Debug("Volume res:" + res);
 

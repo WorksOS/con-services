@@ -763,16 +763,17 @@
             <param name="endDate">End date in project time zone for which to return data</param>
             <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeInBackground(System.String,LandfillService.WebApi.Models.Project,LandfillService.WebApi.Models.WeightEntry)">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeInBackground(System.String,LandfillService.Common.Models.Project,System.Collections.Generic.List{LandfillService.Common.Models.WGSPoint},LandfillService.Common.Models.WeightEntry)">
             <summary>
             Retrieves volume summary from Raptor and saves it to the landfill DB
             </summary>
             <param name="userUid">User ID</param>
             <param name="project">Project</param>
+            <param name="geofence">Geofence</param>
             <param name="entry">Weight entry from the client</param>
             <returns></returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetMissingVolumesInBackground(System.String,LandfillService.WebApi.Models.Project)">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetMissingVolumesInBackground(System.String,LandfillService.Common.Models.Project)">
             <summary>
             Retries volume summary retrieval from Raptor for volumes marked not retrieved
             </summary>
@@ -780,13 +781,13 @@
             <param name="project">Project</param>
             <returns></returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumesInBackground(System.String,LandfillService.WebApi.Models.Project,System.Collections.Generic.IEnumerable{LandfillService.WebApi.Models.WeightEntry},System.Action)">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumesInBackground(System.String,LandfillService.Common.Models.Project,System.Collections.Generic.IEnumerable{LandfillService.Common.Models.DateEntry},System.Action)">
             <summary>
             Retrieves volumes via a background task in batches of 10 parallel requests
             </summary>
             <param name="userUid">User ID</param>
             <param name="project">Project</param>
-            <param name="entries">Weight entries (providing dates to request)</param>
+            <param name="entries">Date entries (providing dates to request)</param>
             <param name="onComplete">Code to execute on completion</param>
             <returns></returns>
         </member>

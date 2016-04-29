@@ -1,9 +1,7 @@
-﻿using LandfillService.Common;
-using LandfillService.WebApi.Models;
+﻿using LandfillService.Common.Models;
 using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,13 +11,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http;
 using NodaTime.TimeZones;
 
-namespace LandfillService.WebApi.ApiClients
+namespace LandfillService.Common.ApiClients
 {
     /// <summary>
     /// This exception can be thrown when the Raptor API returns an unsuccessful response (which needs to be propagated to the client)
@@ -118,13 +113,14 @@ namespace LandfillService.WebApi.ApiClients
 
 
         /// <summary>
-        /// Retrieves volume summary information for a given project and date
+        /// Retrieves volume summary information for a given project, date and geofence
         /// </summary>
         /// <param name="userUid">User ID</param>
         /// <param name="project">VisionLink project to retrieve volumes for</param>
         /// <param name="date">Date to retrieve volumes for (in project time zone)</param>
+        /// <param name="geofence">Geofence to retrieve volumes for. If not specified then volume retrieved for entire project area</param>
         /// <returns>Response as a string; throws an exception if the request is not successful</returns>
-        public async Task<SummaryVolumesResult> GetVolumesAsync(string userUid, Project project, DateTime date)
+        public async Task<SummaryVolumesResult> GetVolumesAsync(string userUid, Project project, DateTime date, List<WGSPoint> geofence)
         {
           TimeZoneInfo hwZone = GetTimeZoneInfoForTzdbId(project.timeZoneName);
 
@@ -136,12 +132,24 @@ namespace LandfillService.WebApi.ApiClients
           var utcDateTime = date.Date.Add(-hwZone.BaseUtcOffset);
           Log.DebugFormat("UTC time range in volume request: {0} - {1}", utcDateTime.ToString(), utcDateTime.AddDays(1).ToString());
 
-            var volumeParams = new VolumeParams()
+            var volumeParams = new VolumeParams
             {
                 projectId = project.id,
                 volumeCalcType = 4,
-                baseFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1).AddMinutes(-1), returnEarliest = true },
-                topFilter = new VolumeFilter() { startUTC = utcDateTime, endUTC = utcDateTime.AddDays(1).AddMinutes(-1), returnEarliest = false }
+                baseFilter = new VolumeFilter
+                             {
+                                 startUTC = utcDateTime, 
+                                 endUTC = utcDateTime.AddDays(1).AddMinutes(-1), 
+                                 returnEarliest = true,
+                                 polygonLL = geofence
+                             },
+                topFilter = new VolumeFilter
+                            {
+                                startUTC = utcDateTime, 
+                                endUTC = utcDateTime.AddDays(1).AddMinutes(-1), 
+                                returnEarliest = false,
+                                polygonLL = geofence
+                            }
             };
             return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", userUid, volumeParams));
         }

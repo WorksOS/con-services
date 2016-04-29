@@ -1,11 +1,7 @@
 ﻿using LandfillService.Common;
 using LandfillService.Common.Contracts;
-using LandfillService.WebApi.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;

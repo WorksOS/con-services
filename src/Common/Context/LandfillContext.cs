@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using LandfillService.Common.Models;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Web;
 using NodaTime;
 
-namespace LandfillService.WebApi.Models
+namespace LandfillService.Common.Context
 {
     /// <summary>
     /// Encapsulates DB queries
@@ -303,11 +304,43 @@ namespace LandfillService.WebApi.Models
         }
 
         /// <summary>
+        /// Retrieves a geofence boundary
+        /// </summary>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <returns>A list of WGS84 points</returns>
+        public static IEnumerable<WGSPoint> GetGeofencePoints(string geofenceUid)
+        {
+          return WithConnection((conn) =>
+          {
+            var command = @"SELECT GeometryWKT FROM Geofence
+                            WHERE GeofenceUID = @geofenceUid";
+
+            using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@geofenceUid", geofenceUid)))
+            {
+              List<WGSPoint> latlngs = new List<WGSPoint>();
+              while (reader.Read())
+              {
+                var wkt = reader.GetString(0);
+                //Trim off the "POLYGON((" and "))"
+                wkt = wkt.Substring(9, wkt.Length - 11);
+                var points = wkt.Split(',');
+                foreach (var point in points)
+                {
+                  var parts = point.Split(' ');
+                  latlngs.Add(new WGSPoint {Lat = double.Parse(parts[0]), Lon = double.Parse(parts[1])});
+                }
+              }
+              return latlngs;
+            }
+          });        
+        }
+
+        /// <summary>
         /// Retrieves a list of dates for which volumes couldn't be retrieved previously (used to retry retrieval)
         /// </summary>
         /// <param name="projectId">Project ID</param>
         /// <returns>A list of dates</returns>
-        public static IEnumerable<DateTime> GetDatesWithVolumesNotRetrieved(uint projectId)
+        public static IEnumerable<DateEntry> GetDatesWithVolumesNotRetrieved(uint projectId)
         {
             return WithConnection((conn) =>
             {
@@ -315,19 +348,20 @@ namespace LandfillService.WebApi.Models
                 // note that this can cause overlap with newly added dates which are currently waiting to be handled by 
                 // a volume retrieval task; this is acceptable because the probability of such overlap is expected to be low
                 // BUT it allows the service to tolerate background tasks dying
-              var command = @"SELECT Date FROM Entries
-                            WHERE ProjectID = @projectId AND 
-                            (VolumeNotRetrieved = 1 OR (Volume IS NULL AND VolumeNotAvailable = 0) OR 
-                            (VolumesUpdatedTimestampUTC IS NULL) OR 
-                            ( (VolumesUpdatedTimestampUTC < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) AND 
-                              (VolumesUpdatedTimestampUTC > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
+              var command = @"SELECT etr.Date, etr.GeofenceUID FROM Entries etr
+                              LEFT JOIN Geofence geo ON etr.GeofenceUID = geo.GeofenceUID
+                            WHERE etr.ProjectID = @projectId AND geo.IsDeleted = 0 AND
+                            (etr.VolumeNotRetrieved = 1 OR (etr.Volume IS NULL AND etr.VolumeNotAvailable = 0) OR 
+                            (etr.VolumesUpdatedTimestampUTC IS NULL) OR 
+                            ( (etr.VolumesUpdatedTimestampUTC < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) AND 
+                              (etr.VolumesUpdatedTimestampUTC > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", projectId)))
                 {
-                    var dates = new List<DateTime>();
+                    var dates = new List<DateEntry>();
                     while (reader.Read())
                     {
-                        dates.Add(reader.GetDateTime(0));
+                      dates.Add(new DateEntry {date = reader.GetDateTime(0), geofenceUid = reader.GetString(1)});
                     }
                     return dates;
                 }
