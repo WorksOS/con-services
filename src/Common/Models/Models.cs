@@ -14,7 +14,7 @@ namespace LandfillService.WebApi.Models
         public string timeZoneName { get; set; }      // project time zone name (NodaTime)
         public int? daysToSubscriptionExpiry { get; set; }
         public string projectUid { get; set; }
-        public string currentGenTimeZoneName { get; set; }
+        public string legacyTimeZoneName { get; set; }
     }
 
     /// <summary>

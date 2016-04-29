@@ -33,7 +33,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             Project project = projects.First(p => p.name == projName);
             Assert.AreEqual(projDetails.Rows[0]["UID"], project.projectUid, "Incorrect projectUid.");
             Assert.AreEqual(projDetails.Rows[0]["TimezoneName"], project.timeZoneName, "Incorrect project timeZoneName.");
-            Assert.AreEqual(projDetails.Rows[0]["CurrentGenTimezoneName"], project.currentGenTimeZoneName, "Incorrect project currentGenTimeZoneName.");
+            Assert.AreEqual(projDetails.Rows[0]["LegacyTimezoneName"], project.legacyTimeZoneName, "Incorrect project legacyTimezoneName.");
         }
 
         [When(@"I try to get data for project '(.*)'")]
