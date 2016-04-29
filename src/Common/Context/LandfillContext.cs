@@ -335,23 +335,35 @@ namespace LandfillService.WebApi.Models
         }
 
         /// <summary>
-        /// Retrieves data entries for a given project
+        /// Retrieves data entries for a given project. If date range is not specified, returns data 
+        /// for 2 years ago to today in poject time zone. If geofence is not specified returns data for 
+        /// entire project area otherwise for geofenced area.
         /// </summary>
         /// <param name="project">Project</param>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <param name="startDate">Start date in project time zone</param>
+        /// <param name="endDate">End date in project time zone</param>
         /// <returns>A list of data entries</returns>
-        public static IEnumerable<DayEntry> GetEntries(Project project)
+        public static IEnumerable<DayEntry> GetEntries(Project project, string geofenceUid, DateTime? startDate, DateTime? endDate)
         {
             return WithConnection((conn) =>
             {
-                //Create last 2 years of dates in project time zone
+                //Check date range within 2 years ago to today in project time zone
                 var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
                 DateTime utcNow = DateTime.UtcNow;
                 Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
                 DateTime todayinProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;
-                //Date range is 2 years ago to yesterday
                 DateTime twoYearsAgo = todayinProjTimeZone.AddYears(-2);
-                DateTime yesterday = todayinProjTimeZone.AddDays(-1);
-                var dateRange = GetDateRange(twoYearsAgo, yesterday);
+                //DateTime yesterday = todayinProjTimeZone.AddDays(-1);
+                if (!startDate.HasValue)
+                  startDate = twoYearsAgo;
+                if (!endDate.HasValue)
+                  endDate = todayinProjTimeZone;
+                if (startDate < twoYearsAgo || endDate > todayinProjTimeZone)
+                {
+                  throw new ArgumentException("Invalid date range. Valid range is 2 years ago to today.");
+                }
+                var dateRange = GetDateRange(startDate.Value, endDate.Value);
 
                 var entriesLookup = (from dr in dateRange
                                      select new DayEntry
@@ -362,15 +374,24 @@ namespace LandfillService.WebApi.Models
                                               volume = 0.0
                                           }).ToDictionary(k => k.date, v => v);
                 //Now get the actual data and merge
+                var command2 = string.IsNullOrEmpty(geofenceUid) ? string.Empty : " AND GeofenceUID = @geofenceUid ";     
                 var command = @"SELECT Date, Weight, Volume FROM Entries 
                                 WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
-                                AND ProjectID = @projectId
-                                ORDER BY Date";
+                                AND ProjectID = @projectId "
+                                + command2 + " ORDER BY Date";
 
-                using (var reader = MySqlHelper.ExecuteReader(conn, command,
-                  new MySqlParameter("@projectId", project.id), 
-                  new MySqlParameter("@startDate", twoYearsAgo), 
-                  new MySqlParameter("@endDate", yesterday)))
+                List<MySqlParameter> parameters = new List<MySqlParameter>
+                {
+                  new MySqlParameter("@projectId", project.id),
+                  new MySqlParameter("@startDate", startDate.Value), //twoYearsAgo
+                  new MySqlParameter("@endDate", endDate.Value)//yesterday
+                };
+                if (!string.IsNullOrEmpty(geofenceUid))
+                {
+                  parameters.Add(new MySqlParameter("@geofenceUid", geofenceUid));
+                }
+
+                using (var reader = MySqlHelper.ExecuteReader(conn, command, parameters.ToArray()))
                 {
                     const double EPSILON = 0.001;
 
@@ -395,7 +416,7 @@ namespace LandfillService.WebApi.Models
             });
         }
 
-        public static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
+        private static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
         {
           if (endDate < startDate)
             throw new ArgumentException("endDate must be greater than or equal to startDate");

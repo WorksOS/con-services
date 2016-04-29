@@ -92,12 +92,18 @@ namespace LandfillService.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns the last two years worth of project data for a given project.
+        /// Returns the project data for the given project. If geofenceUid is not specified, 
+        /// data for the entire project area is returned otherwise data for the geofenced area is returned.
+        /// If no date range specified, returns data for the last 2 years to today in the project time zone
+        /// otherwise returns data for the specified date range.
         /// </summary>
         /// <param name="id">Project ID</param>
-        /// <returns>List of data entries for each day in the last two years and the status of volume retrieval for the project</returns>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <param name="startDate">Start date in project time zone for which to return data</param>
+        /// <param name="endDate">End date in project time zone for which to return data</param>
+        /// <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
         [System.Web.Http.Route("{id}")]
-        public IHttpActionResult Get(uint id)
+        public IHttpActionResult Get(uint id, string geofenceUid, DateTime? startDate, DateTime? endDate)
         {
             // Get the available data
             // Kick off missing volumes retrieval IF not already running
@@ -120,7 +126,7 @@ namespace LandfillService.WebApi.Controllers
                   var entries = new ProjectData
                                 {
                                     project = project,
-                                    entries = LandfillDb.GetEntries(project),
+                                    entries = LandfillDb.GetEntries(project, geofenceUid, startDate, endDate),
                                     retrievingVolumes = LandfillDb.RetrievalInProgress(project)
                                 };
 
@@ -305,7 +311,7 @@ namespace LandfillService.WebApi.Controllers
                 return Ok(new ProjectData
                           {
                               project = project,
-                              entries = LandfillDb.GetEntries(project), 
+                              entries = LandfillDb.GetEntries(project, null, null, null), //TODO: This will change when CCA changes implemented
                               retrievingVolumes = true
                           });
 

@@ -750,12 +750,18 @@
             </summary>
             <returns>Random project data entries</returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get(System.UInt32)">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get(System.UInt32,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
-            Returns the last two years worth of project data for a given project.
+            Returns the project data for the given project. If geofenceUid is not specified, 
+            data for the entire project area is returned otherwise data for the geofenced area is returned.
+            If no date range specified, returns data for the last 2 years to today in the project time zone
+            otherwise returns data for the specified date range.
             </summary>
             <param name="id">Project ID</param>
-            <returns>List of data entries for each day in the last two years and the status of volume retrieval for the project</returns>
+            <param name="geofenceUid">Geofence UID</param>
+            <param name="startDate">Start date in project time zone for which to return data</param>
+            <param name="endDate">End date in project time zone for which to return data</param>
+            <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeInBackground(System.String,LandfillService.WebApi.Models.Project,LandfillService.WebApi.Models.WeightEntry)">
             <summary>
