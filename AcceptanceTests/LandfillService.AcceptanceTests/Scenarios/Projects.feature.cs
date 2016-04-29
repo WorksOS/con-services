@@ -92,7 +92,7 @@ this.FeatureBackground();
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                         "UID",
                         "TimezoneName",
-                        "CurrentGenTimezoneName"});
+                        "LegacyTimezoneName"});
             table1.AddRow(new string[] {
                         "06A92E4F-FAA2-E511-80E5-0050568821E6",
                         "America/Chicago",
