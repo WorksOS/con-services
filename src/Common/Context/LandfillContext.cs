@@ -107,7 +107,7 @@ namespace LandfillService.WebApi.Models
                                                    projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
                                                    name = reader.GetString(reader.GetOrdinal("Name")),
                                                    timeZoneName = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
-                                                   currentGenTimeZoneName = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
+                                                   legacyTimeZoneName = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
                                                    daysToSubscriptionExpiry = daysToSubExpiry
                         });
                     }
