@@ -29,7 +29,7 @@ namespace VSP.MasterData.Project.AcceptanceTests.Kafka
         public static string SendMessage(string topic, string message)
         {
             var result = producer.SendMessageAsync(topic, new[] { new Message(message) }).Result;
-            Thread.Sleep(30000);
+            //Thread.Sleep(30000);
             return JsonConvert.SerializeObject(result);
         }
     }

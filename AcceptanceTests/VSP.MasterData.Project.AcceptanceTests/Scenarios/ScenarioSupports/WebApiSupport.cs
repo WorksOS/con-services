@@ -10,7 +10,7 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios.ScenarioSupports
 {
     public class WebApiSupport
     {
-        public CreateProjectEvent MakeCreateProjectRequest(Guid projectUid)
+        public CreateProjectEvent CreateProject(Guid projectUid)
         {
             return new CreateProjectEvent
             {
@@ -20,9 +20,21 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios.ScenarioSupports
                 ProjectStartDate = DateTime.Today.AddMonths(-3),
                 ProjectName = "AT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
                 ProjectTimezone = "New Zealand Standard Time",
-                ProjectType = ProjectType.LandFill,
+                ProjectType = ProjectType.ProjectMonitoring,
                 ProjectID = CommonUtils.Random.Next(3000, 4000),
                 ProjectUID = projectUid,
+                ReceivedUTC = DateTime.UtcNow
+            };
+        }
+
+        public AssociateProjectCustomer AssociateProjectCustomer(Guid projectUid, Guid customerUid)
+        {
+            return new AssociateProjectCustomer
+            {
+                ProjectUID = projectUid,
+                CustomerUID = customerUid,
+                RelationType = RelationType.Corporate,
+                ActionUTC = DateTime.UtcNow,
                 ReceivedUTC = DateTime.UtcNow
             };
         }

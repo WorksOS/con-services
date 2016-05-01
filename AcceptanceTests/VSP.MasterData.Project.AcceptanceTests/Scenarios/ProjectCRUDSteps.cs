@@ -10,7 +10,7 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
     {
         Guid customerUID = Guid.NewGuid();
         Guid userUID = Guid.NewGuid();
-        Guid projectUID = Guid.NewGuid(); 
+        Guid projectUID = Guid.NewGuid();
         MasterDataSupport mdSupport = new MasterDataSupport();
         WebApiSupport apiSupport = new WebApiSupport();
 
@@ -31,26 +31,35 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
                     topic = Config.CustomerUserMasterDataTopic;
                     break;
             }
-            KafkaDotNet.SendMessage(topic, messageStr);
+           KafkaDotNet.SendMessage(topic, messageStr);
         }
-        
-        [When(@"I try to '(.*)' a project via Web API as the user for the customer")]
-        public void WhenITryToAProjectViaWebAPIAsTheUserForTheCustomer(string action)
+
+        [When(@"I '(.*)' a project via Web API as the user for the customer")]
+        public void WhenIAProjectViaWebAPIAsTheUserForTheCustomer(string action)
         {
             switch (action)
             {
                 case "Create":
                     // TODO
                     break;
+                case "Update":
+                    // TODO
+                    break;
             }
         }
-        
+
+        [When(@"I associate the project with the customer via Web API")]
+        public void WhenIAssociateTheProjectWithTheCustomerViaWebAPI()
+        {
+            ScenarioContext.Current.Pending();
+        }
+
         [When(@"I try to get all projects for the customer via Web API")]
         public void WhenITryToGetAllProjectsForTheCustomerViaWebAPI()
         {
             ScenarioContext.Current.Pending();
         }
-        
+
         [Then(@"the created project is in the list returned by the Web API")]
         public void ThenTheCreatedProjectIsInTheListReturnedByTheWebAPI()
         {

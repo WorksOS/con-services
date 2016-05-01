@@ -78,6 +78,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Kafka\KafkaDotNet.cs" />
     <Compile Include="Models\Customer\CreateCustomerEvent.cs" />
+    <Compile Include="Models\Project\AssociateProjectCustomer.cs" />
     <Compile Include="Models\Project\CreateProjectEvent.cs" />
     <Compile Include="Models\UserCustomer\AssociateCustomerUserEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
