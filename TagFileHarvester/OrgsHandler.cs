@@ -30,6 +30,7 @@ namespace TagFileHarvester
     public static TimeSpan OrgProcessingDelay;
     public static TimeSpan FolderSearchTimeSpan;
     public static bool UseModifyTimeInsteadOfCreateTime;
+    public static string BookmarkPath;
 
 
 

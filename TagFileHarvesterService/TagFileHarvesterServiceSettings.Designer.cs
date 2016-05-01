@@ -211,5 +211,14 @@ namespace TagFileHarvester {
                 return ((bool)(this["UseModifyTimeInsteadOfCreateTime"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\Bookmarks")]
+        public string BookmarkPath {
+            get {
+                return ((string)(this["BookmarkPath"]));
+            }
+        }
     }
 }

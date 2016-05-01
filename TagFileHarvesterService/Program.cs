@@ -118,6 +118,7 @@ namespace TagFileHarvester
       OrgsHandler.FolderSearchTimeSpan = TagFileHarvesterServiceSettings.Default.FolderSearchTimeSpan;
       OrgsHandler.UseModifyTimeInsteadOfCreateTime =
         TagFileHarvesterServiceSettings.Default.UseModifyTimeInsteadOfCreateTime;
+      OrgsHandler.BookmarkPath = TagFileHarvesterServiceSettings.Default.BookmarkPath;
 
       Log.Debug("TagFileHarvester.Start: Entered Start()");
       //register dependencies here
