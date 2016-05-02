@@ -16,5 +16,6 @@ namespace VSP.MasterData.Project.AcceptanceTests
         public static string WebApiBaseUri = ConfigurationManager.AppSettings["WebApiBaseUri"];
         public static string ProjectCrudUri = WebApiBaseUri + "/Project/v1";
         public static string AssociateProjectCustomerUri = WebApiBaseUri + "/Project/v1/AssociateCustomer";
+        public static string DissociateProjectCustomerUri = WebApiBaseUri + "/Project/v1/DissociateCustomer";
     }
 }

@@ -47,28 +47,52 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
         [When(@"I '(.*)' a project via Web API as the user for the customer")]
         public void WhenIAProjectViaWebAPIAsTheUserForTheCustomer(string action)
         {
+            string request;
+            string response;
+            string jwtToken = Jwt.GetJwtToken(userUID);
+
             switch (action)
             {
                 case "Create":
-                    string request = JsonConvert.SerializeObject(apiSupport.CreateProject(projectUID));
-                    string jwtToken = Jwt.GetJwtToken(userUID);
-                    string response = RestClientUtil.DoHttpRequest(Config.ProjectCrudUri, "POST", RestClientConfig.JsonMediaType,
+                    request = JsonConvert.SerializeObject(apiSupport.CreateProject(projectUID));
+                    response = RestClientUtil.DoHttpRequest(Config.ProjectCrudUri, "POST", RestClientConfig.JsonMediaType,
                         request, jwtToken, HttpStatusCode.OK);                    
                     break;
                 case "Update":
-                    // TODO
+                    request = JsonConvert.SerializeObject(apiSupport.CreateProject(projectUID));
+                    response = RestClientUtil.DoHttpRequest(Config.ProjectCrudUri, "PUT", RestClientConfig.JsonMediaType,
+                        request, jwtToken, HttpStatusCode.OK);  
+                    break;
+                case "Delete":
+                    string deleteProjUri = string.Format("{0}?projectUID={1}&actionUTC={2}", Config.ProjectCrudUri, projectUID, DateTime.UtcNow);
+                    response = RestClientUtil.DoHttpRequest(deleteProjUri, "DELETE", RestClientConfig.JsonMediaType,
+                        null, jwtToken, HttpStatusCode.OK);
                     break;
             }
         }
 
-        [When(@"I associate the project with the customer via Web API")]
-        public void WhenIAssociateTheProjectWithTheCustomerViaWebAPI()
+        [When(@"I '(.*)' the project with the customer via Web API")]
+        public void WhenITheProjectWithTheCustomerViaWebAPI(string action)
         {
-            string request = JsonConvert.SerializeObject(apiSupport.AssociateProjectCustomer(projectUID, customerUID));
+            string request;
+            string response;
             string jwtToken = Jwt.GetJwtToken(userUID);
-            string response = RestClientUtil.DoHttpRequest(Config.AssociateProjectCustomerUri, "POST", RestClientConfig.JsonMediaType,
-                request, jwtToken, HttpStatusCode.OK);     
+
+            switch(action)
+            {
+                case "Associate":
+                    request = JsonConvert.SerializeObject(apiSupport.AssociateProjectCustomer(projectUID, customerUID));
+                    response = RestClientUtil.DoHttpRequest(Config.AssociateProjectCustomerUri, "POST", RestClientConfig.JsonMediaType,
+                        request, jwtToken, HttpStatusCode.OK);
+                    break;
+                case "Dissociate":
+                    request = JsonConvert.SerializeObject(apiSupport.DissociateProjectCustomer(projectUID, customerUID));
+                    response = RestClientUtil.DoHttpRequest(Config.DissociateProjectCustomerUri, "POST", RestClientConfig.JsonMediaType,
+                        request, jwtToken, HttpStatusCode.OK);
+                    break;
+            }
         }
+
 
         [When(@"I try to get all projects for the customer via Web API")]
         public void WhenITryToGetAllProjectsForTheCustomerViaWebAPI()
@@ -80,13 +104,33 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
             getAllProjectsResult = JsonConvert.DeserializeObject<Dictionary<long, ProjectDescriptor>>(response);
         }
 
-        [Then(@"the created project is in the list returned by the Web API")]
-        public void ThenTheCreatedProjectIsInTheListReturnedByTheWebAPI()
+        [When(@"the '(.*)' project is in the list returned by the Web API")]
+        [Then(@"the '(.*)' project is in the list returned by the Web API")]
+        public void ThenTheProjectIsInTheListReturnedByTheWebAPI(string action)
         {
             long projectId = Convert.ToInt64(DatabaseUtils.ExecuteMySqlQueryResult(Config.MySqlConnString,
                 string.Format("SELECT ProjectID FROM {0}.Project WHERE ProjectUID = {1}", Config.MySqlDbName, projectUID)));
 
-            Assert.IsTrue(getAllProjectsResult.ContainsKey(projectId), "Project not in the list.");
+            switch(action)
+            {
+                case "Created":
+                    Assert.IsTrue(getAllProjectsResult.ContainsKey(projectId), "Created project not in the list.");
+                    break;
+                case "Updated":
+                    ProjectDescriptor updatedProj = getAllProjectsResult[projectId];
+                    ScenarioContext.Current.Pending();
+                    // TODO: check updatedProj has updated project name
+                    break;
+            }
+        }
+
+        [Then(@"project is not in the list returned by the Web API")]
+        public void ThenProjectIsNotInTheListReturnedByTheWebAPI()
+        {
+            long projectId = Convert.ToInt64(DatabaseUtils.ExecuteMySqlQueryResult(Config.MySqlConnString,
+                string.Format("SELECT ProjectID FROM {0}.Project WHERE ProjectUID = {1}", Config.MySqlDbName, projectUID)));
+
+            Assert.IsFalse(getAllProjectsResult.ContainsKey(projectId), "Project still in the list.");
         }
     }
 }
