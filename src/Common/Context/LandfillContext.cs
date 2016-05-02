@@ -268,10 +268,10 @@ namespace LandfillService.Common.Context
       {
         return InTransaction((conn) =>
         {
-          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone
+          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name
                           FROM Project prj 
                           LEFT JOIN Entries etr ON prj.ProjectID = etr.ProjectID 
-                          WHERE Weight IS NOT NULL;";
+                          WHERE etr.Weight IS NOT NULL AND prj.IsDeleted = 0;";
           using (var reader = MySqlHelper.ExecuteReader(conn, command))
           {
             var projects = new List<Project>();
@@ -280,7 +280,9 @@ namespace LandfillService.Common.Context
               projects.Add(new Project
               {
                 id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
-                timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone"))
+                timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone")),
+                projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
+                name = reader.GetString(reader.GetOrdinal("Name"))
               });
             }
             return projects;
@@ -317,8 +319,10 @@ namespace LandfillService.Common.Context
         /// </summary>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <returns>A list of WGS84 points</returns>
-        public static IEnumerable<WGSPoint> GetGeofencePoints(string geofenceUid)
+        public static IEnumerable<WGSPoint> GetGeofencePoints(string geofenceUid, bool inRadians)
         {
+          const double DEGREES_TO_RADIANS = Math.PI / 180;
+
           return WithConnection((conn) =>
           {
             var command = @"SELECT GeometryWKT FROM Geofence
@@ -336,7 +340,9 @@ namespace LandfillService.Common.Context
                 foreach (var point in points)
                 {
                   var parts = point.Split(' ');
-                  latlngs.Add(new WGSPoint {Lat = double.Parse(parts[0]), Lon = double.Parse(parts[1])});
+                  var lat = double.Parse(parts[0]);
+                  var lng = double.Parse(parts[0]);
+                  latlngs.Add(new WGSPoint { Lat = inRadians ? lat * DEGREES_TO_RADIANS : lat, Lon = inRadians ? lng * DEGREES_TO_RADIANS : lng });
                 }
               }
               return latlngs;
