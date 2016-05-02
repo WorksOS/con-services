@@ -763,7 +763,7 @@
             <param name="endDate">End date in project time zone for which to return data</param>
             <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeInBackground(System.String,LandfillService.Common.Models.Project,System.Collections.Generic.List{LandfillService.Common.Models.WGSPoint},LandfillService.Common.Models.WeightEntry)">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeInBackground(System.String,LandfillService.Common.Models.Project,System.Collections.Generic.List{LandfillService.Common.Models.WGSPoint},LandfillService.Common.Models.DateEntry)">
             <summary>
             Retrieves volume summary from Raptor and saves it to the landfill DB
             </summary>
@@ -787,15 +787,16 @@
             </summary>
             <param name="userUid">User ID</param>
             <param name="project">Project</param>
-            <param name="entries">Date entries (providing dates to request)</param>
+            <param name="entries">Date entries (providing dates and geofence uids to request)</param>
             <param name="onComplete">Code to execute on completion</param>
             <returns></returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32)">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32,System.String)">
             <summary>
             Saves weights submitted in the request.
             </summary>
             <param name="id">Project ID</param>
+            <param name="geofenceUid">Geofence UID</param>
             <param name="entries">array of weight entries</param>
             <returns>Project data and status of volume retrieval</returns>
         </member>

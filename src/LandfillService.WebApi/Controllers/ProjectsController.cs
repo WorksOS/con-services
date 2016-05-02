@@ -148,7 +148,7 @@ namespace LandfillService.WebApi.Controllers
         /// <param name="geofence">Geofence</param>
         /// <param name="entry">Weight entry from the client</param>
         /// <returns></returns>
-        private async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, WeightEntry entry)
+        private async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, DateEntry entry)
         {
             try
             {
@@ -157,7 +157,7 @@ namespace LandfillService.WebApi.Controllers
                 System.Diagnostics.Debug.WriteLine("Volume res:" + res);
                 System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill ));
 
-                LandfillDb.SaveVolume(project.id, entry.date, res.Fill );
+                LandfillDb.SaveVolume(project.id, entry.geofenceUid, entry.date, res.Fill);
             }
             catch (RaptorApiException e)
             {
@@ -167,19 +167,19 @@ namespace LandfillService.WebApi.Controllers
                     // is outside project extents); the assumption is that's the only reason we will
                     // receive a 400 Bad Request 
                     System.Diagnostics.Debug.Write("RaptorApiException while retrieving volumes: " + e);
-                    LandfillDb.MarkVolumeNotAvailable(project.id, entry.date);
+                    LandfillDb.MarkVolumeNotAvailable(project.id, entry.geofenceUid, entry.date);
 
                     // TESTING CODE
                     // Volume range in m3 should be ~ [478, 1020]
-                    //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478);
+                    //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478, entry.geofenceUid);
                 }
                 else
-                    LandfillDb.MarkVolumeNotRetrieved(project.id, entry.date);
+                  LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.Write("Exception while retrieving volumes: " + e);
-                LandfillDb.MarkVolumeNotRetrieved(project.id, entry.date);
+                LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
                 throw;
             }
         }
@@ -198,7 +198,7 @@ namespace LandfillService.WebApi.Controllers
 
             if (noRetrievalInProgress)
             {
-                var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project.id);
+                var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project);
                 System.Diagnostics.Debug.Write("Dates without volumes: {0}", dates.ToString());
                 GetVolumesInBackground(userUid, project, dates, () =>
                 {
@@ -217,7 +217,7 @@ namespace LandfillService.WebApi.Controllers
         /// </summary>
         /// <param name="userUid">User ID</param>
         /// <param name="project">Project</param>
-        /// <param name="entries">Date entries (providing dates to request)</param>
+        /// <param name="entries">Date entries (providing dates and geofence uids to request)</param>
         /// <param name="onComplete">Code to execute on completion</param>
         /// <returns></returns>
         private void GetVolumesInBackground(string userUid, Project project, IEnumerable<DateEntry> entries, Action onComplete)
@@ -237,7 +237,7 @@ namespace LandfillService.WebApi.Controllers
                         userUid, 
                         project, 
                         geofences.ContainsKey(entry.geofenceUid) ? geofences[entry.geofenceUid] : null, 
-                        new WeightEntry { date = entry.date, weight = 0 }));// generate fake WeightEntry objects from dates
+                        entry));
                     await Task.WhenAll(tasks);
                 }
 
@@ -259,11 +259,12 @@ namespace LandfillService.WebApi.Controllers
         /// Saves weights submitted in the request.
         /// </summary>
         /// <param name="id">Project ID</param>
+        /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="entries">array of weight entries</param>
         /// <returns>Project data and status of volume retrieval</returns>
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("{id}/weights")]
-        public IHttpActionResult PostWeights(uint id/*, [FromBody] WeightEntry[] entries*/)
+        public IHttpActionResult PostWeights(uint id, string geofenceUid /*, [FromBody] WeightEntry[] entries*/)
         {
           //When the request goes through TPaaS the headers get changed to Transfer-Encoding: chunked and the Content-Length is 0.
           //For some reason the Web API framework can't handle this and doesn't deserialize the 'entries'.
@@ -312,8 +313,8 @@ namespace LandfillService.WebApi.Controllers
     
                     if (valid)
                     { 
-                        LandfillDb.SaveEntry(id, entry);
-                        validEntries.Add(new DateEntry{date = entry.date, geofenceUid = null});//TODO: will be fixed when CCA changes for saving weights done
+                        LandfillDb.SaveEntry(id, geofenceUid, entry);
+                        validEntries.Add(new DateEntry{date = entry.date, geofenceUid = geofenceUid});
                     }
                 };
 
@@ -327,7 +328,7 @@ namespace LandfillService.WebApi.Controllers
                 return Ok(new ProjectData
                           {
                               project = project,
-                              entries = LandfillDb.GetEntries(project, null, null, null), //TODO: This will change when CCA changes implemented
+                              entries = LandfillDb.GetEntries(project, geofenceUid, null, null), //TODO: This will change when CCA changes implemented
                               retrievingVolumes = true
                           });
 

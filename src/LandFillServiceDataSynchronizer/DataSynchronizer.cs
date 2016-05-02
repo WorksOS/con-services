@@ -32,7 +32,7 @@ namespace LandFillServiceDataSynchronizer
       var projects = GetListOfProjectsToRetrieve();
       Log.DebugFormat("Got {0} projects to process",projects.Count);
       Dictionary<Project, List<DateEntry>> entries = projects.ToDictionary(project => project,
-          project => LandfillDb.GetDatesWithVolumesNotRetrieved(project.id).ToList());
+          project => LandfillDb.GetDatesWithVolumesNotRetrieved(project).ToList());
       Log.DebugFormat("Got {0} entries to process", entries.Count);
 
       return entries;
@@ -53,15 +53,14 @@ namespace LandFillServiceDataSynchronizer
 
       foreach (var project in datesToUpdate)
       {
-        var geofenceUids = project.Value.Where(d => !string.IsNullOrEmpty(d.geofenceUid)).Select(d => d.geofenceUid).Distinct().ToList();
+        var geofenceUids = project.Value.Select(d => d.geofenceUid).Distinct().ToList();
         var geofences = GetGeofences(project.Key.id, geofenceUids);
 
         Log.DebugFormat("Processing project {0} with {1} entries", project.Key.id, project.Value.Count());        
         foreach (var dateEntry in project.Value)
         {
-          var weightEntry = new WeightEntry { date = dateEntry.date, weight = 0 };// generate fake WeightEntry objects from dates
           var geofence = geofences.ContainsKey(dateEntry.geofenceUid) ? geofences[dateEntry.geofenceUid] : null;
-          GetVolumeInBackground("sUpErSeCretIdTuSsupport348215890UnknownRa754291", project.Key, geofence, weightEntry).Wait();
+          GetVolumeInBackground("sUpErSeCretIdTuSsupport348215890UnknownRa754291", project.Key, geofence, dateEntry).Wait();
         }
       }
 
@@ -75,19 +74,19 @@ namespace LandFillServiceDataSynchronizer
     /// <param name="geofence">Geofence</param>
     /// <param name="entry">Weight entry from the client</param>
     /// <returns></returns>
-    private async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, WeightEntry entry)
+    private async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, DateEntry entry)
     {
       try
       {
         Log.DebugFormat("Get volume for project {0} date {1}", project.id,entry.date);
 
-        var res = await raptorApiClient.GetVolumesAsync(userUid,project, entry.date, geofence);
+        var res = await raptorApiClient.GetVolumesAsync(userUid, project, entry.date, geofence);
 
         Log.Debug("Volume res:" + res);
 
         Log.Debug("Volume: " + (res.Fill));
 
-        LandfillDb.SaveVolume(project.id, entry.date, res.Fill);
+        LandfillDb.SaveVolume(project.id, entry.geofenceUid, entry.date, res.Fill);
       }
       catch (RaptorApiException e)
       {
@@ -98,22 +97,22 @@ namespace LandFillServiceDataSynchronizer
           // receive a 400 Bad Request 
 
           Log.Warn("RaptorApiException while retrieving volumes: " + e.Message);
-          LandfillDb.MarkVolumeNotAvailable(project.id, entry.date);
+          LandfillDb.MarkVolumeNotAvailable(project.id, entry.geofenceUid, entry.date);
 
           // TESTING CODE
           // Volume range in m3 should be ~ [478, 1020]
-          //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478);
+          //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478, entry.geofenceUid);
         }
         else
         {
           Log.Error("RaptorApiException while retrieving volumes: " + e.Message);
-          LandfillDb.MarkVolumeNotRetrieved(project.id, entry.date);
+          LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
         }
       }
       catch (Exception e)
       {
         Log.Error("Exception while retrieving volumes: " + e.Message);
-        LandfillDb.MarkVolumeNotRetrieved(project.id, entry.date);
+        LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
       }
     }
 
