@@ -319,7 +319,7 @@ namespace LandfillService.Common.Context
         /// </summary>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <returns>A list of WGS84 points</returns>
-        public static IEnumerable<WGSPoint> GetGeofencePoints(string geofenceUid, bool inRadians)
+        public static IEnumerable<WGSPoint> GetGeofencePoints(string geofenceUid)
         {
           const double DEGREES_TO_RADIANS = Math.PI / 180;
 
@@ -342,7 +342,7 @@ namespace LandfillService.Common.Context
                   var parts = point.Split(' ');
                   var lat = double.Parse(parts[0]);
                   var lng = double.Parse(parts[0]);
-                  latlngs.Add(new WGSPoint { Lat = inRadians ? lat * DEGREES_TO_RADIANS : lat, Lon = inRadians ? lng * DEGREES_TO_RADIANS : lng });
+                  latlngs.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
                 }
               }
               return latlngs;

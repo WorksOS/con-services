@@ -41,7 +41,7 @@ namespace LandFillServiceDataSynchronizer
     private Dictionary<string, List<WGSPoint>> GetGeofences(uint id, List<string> geofenceUids)
     {
       Dictionary<string, List<WGSPoint>> geofences = geofenceUids.ToDictionary(g => g,
-          g => LandfillDb.GetGeofencePoints(g, true).ToList());
+          g => LandfillDb.GetGeofencePoints(g).ToList());
       Log.DebugFormat("Got {0} geofences to process for project {1}", geofenceUids.Count, id);
 
       return geofences;
