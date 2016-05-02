@@ -750,7 +750,7 @@
             </summary>
             <returns>Random project data entries</returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get(System.UInt32,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.Get(System.UInt32,System.Nullable{System.Guid},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
             Returns the project data for the given project. If geofenceUid is not specified, 
             data for the entire project area is returned otherwise data for the geofenced area is returned.
@@ -791,7 +791,7 @@
             <param name="onComplete">Code to execute on completion</param>
             <returns></returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32,System.String)">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32,System.Nullable{System.Guid})">
             <summary>
             Saves weights submitted in the request.
             </summary>

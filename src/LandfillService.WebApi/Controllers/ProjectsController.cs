@@ -100,7 +100,7 @@ namespace LandfillService.WebApi.Controllers
         /// <param name="endDate">End date in project time zone for which to return data</param>
         /// <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
         [System.Web.Http.Route("{id}")]
-        public IHttpActionResult Get(uint id, string geofenceUid, DateTime? startDate, DateTime? endDate)
+        public IHttpActionResult Get(uint id, Guid? geofenceUid, DateTime? startDate, DateTime? endDate)
         {
             // Get the available data
             // Kick off missing volumes retrieval IF not already running
@@ -123,7 +123,7 @@ namespace LandfillService.WebApi.Controllers
                   var entries = new ProjectData
                                 {
                                     project = project,
-                                    entries = LandfillDb.GetEntries(project, geofenceUid, startDate, endDate),
+                                    entries = LandfillDb.GetEntries(project, geofenceUid.HasValue ? geofenceUid.ToString() : null, startDate, endDate),
                                     retrievingVolumes = LandfillDb.RetrievalInProgress(project)
                                 };
 
@@ -264,7 +264,7 @@ namespace LandfillService.WebApi.Controllers
         /// <returns>Project data and status of volume retrieval</returns>
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("{id}/weights")]
-        public IHttpActionResult PostWeights(uint id, string geofenceUid /*, [FromBody] WeightEntry[] entries*/)
+        public IHttpActionResult PostWeights(uint id, Guid? geofenceUid /*, [FromBody] WeightEntry[] entries*/)
         {
           //When the request goes through TPaaS the headers get changed to Transfer-Encoding: chunked and the Content-Length is 0.
           //For some reason the Web API framework can't handle this and doesn't deserialize the 'entries'.
@@ -288,6 +288,14 @@ namespace LandfillService.WebApi.Controllers
                 new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
                     "Missing weight entries"));
           }
+
+          if (!geofenceUid.HasValue || geofenceUid == Guid.Empty)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+                       new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+                           "Missing geofence UID"));            
+          }
+          var geofenceUidStr = geofenceUid.Value.ToString();
 
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
           //LoggerSvc.LogMessage(null, null, null, "PostWeights: userUid=" + userUid);          
@@ -313,8 +321,8 @@ namespace LandfillService.WebApi.Controllers
     
                     if (valid)
                     { 
-                        LandfillDb.SaveEntry(id, geofenceUid, entry);
-                        validEntries.Add(new DateEntry{date = entry.date, geofenceUid = geofenceUid});
+                        LandfillDb.SaveEntry(id, geofenceUidStr, entry);
+                        validEntries.Add(new DateEntry{date = entry.date, geofenceUid = geofenceUidStr});
                     }
                 };
 
@@ -328,7 +336,7 @@ namespace LandfillService.WebApi.Controllers
                 return Ok(new ProjectData
                           {
                               project = project,
-                              entries = LandfillDb.GetEntries(project, geofenceUid, null, null), //TODO: This will change when CCA changes implemented
+                              entries = LandfillDb.GetEntries(project, geofenceUidStr, null, null), //TODO: This will change when CCA changes implemented
                               retrievingVolumes = true
                           });
 

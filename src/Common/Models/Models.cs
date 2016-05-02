@@ -109,9 +109,12 @@ namespace LandfillService.Common.Models
         public override string ToString()
         {
           var poly = string.Empty;
-          foreach (WGSPoint pt in polygonLL)
+          if (polygonLL != null)
           {
-            poly = string.Format("{0}{1}", poly, pt);
+            foreach (WGSPoint pt in polygonLL)
+            {
+              poly = string.Format("{0}{1}", poly, pt);
+            }
           }
           return string.Format("startUTC:{0}, endUTC:{1}, returnEarliest:{2}, polygonLL:{3}", startUTC, endUTC, returnEarliest, poly);
         }
