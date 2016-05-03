@@ -82,7 +82,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 6
  testRunner.When("I \'Create\' a project via Web API as the user for the customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 7
-  testRunner.And("I \'Associate\' the project with the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("I associate the project with the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
   testRunner.And("I try to get all projects for the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
@@ -106,7 +106,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 14
  testRunner.When("I \'Create\' a project via Web API as the user for the customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 15
-  testRunner.And("I \'Associate\' the project with the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("I associate the project with the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 16
   testRunner.And("I try to get all projects for the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 17
@@ -134,49 +134,21 @@ this.ScenarioSetup(scenarioInfo);
 #line 24
   testRunner.And("I inject \'AssociateCustomerUserEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 25
- testRunner.When("I \'Create\' a project via Web API as the user for the customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.And("I create and associate a dummy project via Web API as the user for the customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 26
-  testRunner.And("I \'Associate\' the project with the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 27
-  testRunner.And("I try to get all projects for the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 28
-  testRunner.And("the \'Created\' project is in the list returned by the Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 29
- testRunner.And("I \'Delete\' a project via Web API as the user for the customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 30
-  testRunner.And("I try to get all projects for the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 31
- testRunner.Then("project is not in the list returned by the Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Dissociate project")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ProjectCRUD")]
-        public virtual void DissociateProject()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dissociate project", ((string[])(null)));
-#line 33
-this.ScenarioSetup(scenarioInfo);
-#line 34
- testRunner.Given("I inject \'CreateCustomerEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 35
-  testRunner.And("I inject \'AssociateCustomerUserEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 36
  testRunner.When("I \'Create\' a project via Web API as the user for the customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 37
-  testRunner.And("I \'Associate\' the project with the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 38
+#line 27
+  testRunner.And("I associate the project with the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 28
   testRunner.And("I try to get all projects for the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 39
+#line 29
   testRunner.And("the \'Created\' project is in the list returned by the Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 40
- testRunner.And("I \'Dissociate\' the project with the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 41
+#line 30
+ testRunner.And("I \'Delete\' a project via Web API as the user for the customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 31
   testRunner.And("I try to get all projects for the customer via Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 42
- testRunner.Then("project is not in the list returned by the Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 32
+ testRunner.Then("deleted project is not in the list returned by the Web API", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

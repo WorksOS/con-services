@@ -44,6 +44,19 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
            KafkaDotNet.SendMessage(topic, messageStr);
         }
 
+        [Given(@"I create and associate a dummy project via Web API as the user for the customer")]
+        public void GivenICreateAndAssociateADummyProjectViaWebAPIAsTheUserForTheCustomer()
+        {
+            Guid dummyProjUid = Guid.NewGuid();
+            string jwtToken = Jwt.GetJwtToken(userUID);
+
+            RestClientUtil.DoHttpRequest(Config.ProjectCrudUri, "POST", RestClientConfig.JsonMediaType,
+                JsonConvert.SerializeObject(apiSupport.CreateProject(dummyProjUid)), jwtToken, HttpStatusCode.OK);
+
+            RestClientUtil.DoHttpRequest(Config.AssociateProjectCustomerUri, "POST", RestClientConfig.JsonMediaType,
+                JsonConvert.SerializeObject(apiSupport.AssociateProjectCustomer(dummyProjUid, customerUID)), jwtToken, HttpStatusCode.OK);
+        }
+
         [When(@"I '(.*)' a project via Web API as the user for the customer")]
         public void WhenIAProjectViaWebAPIAsTheUserForTheCustomer(string action)
         {
@@ -59,7 +72,7 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
                         request, jwtToken, HttpStatusCode.OK);                    
                     break;
                 case "Update":
-                    request = JsonConvert.SerializeObject(apiSupport.CreateProject(projectUID));
+                    request = JsonConvert.SerializeObject(apiSupport.UpdateProject(projectUID));
                     response = RestClientUtil.DoHttpRequest(Config.ProjectCrudUri, "PUT", RestClientConfig.JsonMediaType,
                         request, jwtToken, HttpStatusCode.OK);  
                     break;
@@ -71,28 +84,14 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
             }
         }
 
-        [When(@"I '(.*)' the project with the customer via Web API")]
-        public void WhenITheProjectWithTheCustomerViaWebAPI(string action)
+        [When(@"I associate the project with the customer via Web API")]
+        public void WhenIAssociateTheProjectWithTheCustomerViaWebAPI()
         {
-            string request;
-            string response;
             string jwtToken = Jwt.GetJwtToken(userUID);
-
-            switch(action)
-            {
-                case "Associate":
-                    request = JsonConvert.SerializeObject(apiSupport.AssociateProjectCustomer(projectUID, customerUID));
-                    response = RestClientUtil.DoHttpRequest(Config.AssociateProjectCustomerUri, "POST", RestClientConfig.JsonMediaType,
-                        request, jwtToken, HttpStatusCode.OK);
-                    break;
-                case "Dissociate":
-                    request = JsonConvert.SerializeObject(apiSupport.DissociateProjectCustomer(projectUID, customerUID));
-                    response = RestClientUtil.DoHttpRequest(Config.DissociateProjectCustomerUri, "POST", RestClientConfig.JsonMediaType,
-                        request, jwtToken, HttpStatusCode.OK);
-                    break;
-            }
+            string request = JsonConvert.SerializeObject(apiSupport.AssociateProjectCustomer(projectUID, customerUID));
+            string response = RestClientUtil.DoHttpRequest(Config.AssociateProjectCustomerUri, "POST", RestClientConfig.JsonMediaType,
+                request, jwtToken, HttpStatusCode.OK);
         }
-
 
         [When(@"I try to get all projects for the customer via Web API")]
         public void WhenITryToGetAllProjectsForTheCustomerViaWebAPI()
@@ -109,7 +108,7 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
         public void ThenTheProjectIsInTheListReturnedByTheWebAPI(string action)
         {
             long projectId = Convert.ToInt64(DatabaseUtils.ExecuteMySqlQueryResult(Config.MySqlConnString,
-                string.Format("SELECT ProjectID FROM {0}.Project WHERE ProjectUID = {1}", Config.MySqlDbName, projectUID)));
+                string.Format("SELECT ProjectID FROM {0}.Project WHERE ProjectUID = '{1}'", Config.MySqlDbName, projectUID)));
 
             switch(action)
             {
@@ -118,17 +117,17 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
                     break;
                 case "Updated":
                     ProjectDescriptor updatedProj = getAllProjectsResult[projectId];
-                    ScenarioContext.Current.Pending();
-                    // TODO: check updatedProj has updated project name
+                    Assert.AreEqual(apiSupport.UpdateProjectRequest.ProjectType == ProjectType.LandFill, updatedProj.isLandFill,
+                        "Project not updated.");
                     break;
             }
         }
 
-        [Then(@"project is not in the list returned by the Web API")]
-        public void ThenProjectIsNotInTheListReturnedByTheWebAPI()
+        [Then(@"deleted project is not in the list returned by the Web API")]
+        public void ThenDeletedProjectIsNotInTheListReturnedByTheWebAPI()
         {
             long projectId = Convert.ToInt64(DatabaseUtils.ExecuteMySqlQueryResult(Config.MySqlConnString,
-                string.Format("SELECT ProjectID FROM {0}.Project WHERE ProjectUID = {1}", Config.MySqlDbName, projectUID)));
+                string.Format("SELECT ProjectID FROM {0}.Project WHERE ProjectUID = '{1}'", Config.MySqlDbName, projectUID)));
 
             Assert.IsFalse(getAllProjectsResult.ContainsKey(projectId), "Project still in the list.");
         }

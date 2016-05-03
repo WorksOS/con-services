@@ -81,7 +81,6 @@
     <Compile Include="Models\Customer\CreateCustomerEvent.cs" />
     <Compile Include="Models\Project\AssociateProjectCustomer.cs" />
     <Compile Include="Models\Project\CreateProjectEvent.cs" />
-    <Compile Include="Models\Project\DissociateProjectCustomer.cs" />
     <Compile Include="Models\Project\ProjectDescriptor.cs" />
     <Compile Include="Models\Project\UpdateProjectEvent.cs" />
     <Compile Include="Models\UserCustomer\AssociateCustomerUserEvent.cs" />
