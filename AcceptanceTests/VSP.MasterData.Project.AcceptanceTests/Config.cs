@@ -12,5 +12,10 @@ namespace VSP.MasterData.Project.AcceptanceTests
         public static string KafkaEndpoint = ConfigurationManager.AppSettings["KafkaEndpoint"];
         public static string CustomerMasterDataTopic = ConfigurationManager.AppSettings["CustomerMasterDataTopic"];
         public static string CustomerUserMasterDataTopic = ConfigurationManager.AppSettings["CustomerUserMasterDataTopic"];
+
+        public static string WebApiBaseUri = ConfigurationManager.AppSettings["WebApiBaseUri"];
+        public static string ProjectCrudUri = WebApiBaseUri + "/Project/v1";
+        public static string AssociateProjectCustomerUri = WebApiBaseUri + "/Project/v1/AssociateCustomer";
+        public static string DissociateProjectCustomerUri = WebApiBaseUri + "/Project/v1/DissociateCustomer";
     }
 }
