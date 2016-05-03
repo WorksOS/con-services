@@ -18,6 +18,16 @@ namespace LandfillService.Common.Models
     }
 
     /// <summary>
+    /// Geofence representation
+    /// </summary>
+    public class Geofence
+    {
+      public Guid uid { get; set; }
+      public string name { get; set; }
+      public int type { get; set; }
+    }
+
+    /// <summary>
     /// Date and geofence for entries with no volume
     /// </summary>
     public class DateEntry

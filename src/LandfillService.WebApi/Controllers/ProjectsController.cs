@@ -342,5 +342,63 @@ namespace LandfillService.WebApi.Controllers
 
             });
         }
+
+
+        /// <summary>
+        /// Returns a list of geofences for the project. A geofence is associated with a project if its
+        /// boundary is inside or intersects that of the project and it is of type 'Landfill'. The project
+        /// geofence is also returned.
+        /// </summary>
+        /// <param name="id">Project ID</param>
+        /// <returns>List of geofences</returns>
+        [System.Web.Http.Route("{id}/geofences")]
+        public IHttpActionResult GetGeofences(uint id)
+        {
+          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          //Secure with project list
+          if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+          {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+          }
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving geofences");
+         
+          try
+          {
+            IEnumerable<Geofence> geofences = LandfillDb.GetGeofences(id);            
+            return Ok(geofences);
+          }
+          catch (InvalidOperationException)
+          {
+            return Ok();
+          }
+        }
+
+        /// <summary>
+        /// Returns a geofence boundary.
+        /// </summary>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <returns>List of WGS84 boundary points in radians</returns>
+        [System.Web.Http.Route("{id}/geofences/{geofenceUid}")]
+        public IHttpActionResult GetGeofenceBoundary(uint id, Guid geofenceUid)
+        {
+          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          //Secure with project list
+          if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+          {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+          }
+          string geofenceUidStr = geofenceUid.ToString();
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving geofence boundary for " + geofenceUidStr);
+
+          try
+          {
+            IEnumerable<WGSPoint> points = LandfillDb.GetGeofencePoints(geofenceUidStr);
+            return Ok(points);
+          }
+          catch (InvalidOperationException)
+          {
+            return Ok();
+          }
+        }
     }
 }

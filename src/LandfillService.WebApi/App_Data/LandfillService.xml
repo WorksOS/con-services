@@ -800,5 +800,21 @@
             <param name="entries">array of weight entries</param>
             <returns>Project data and status of volume retrieval</returns>
         </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofences(System.UInt32)">
+            <summary>
+            Returns a list of geofences for the project. A geofence is associated with a project if its
+            boundary is inside or intersects that of the project and it is of type 'Landfill'. The project
+            site is also returned.
+            </summary>
+            <param name="id">Project ID</param>
+            <returns>List of geofences</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofenceBoundary(System.UInt32,System.Guid)">
+            <summary>
+            Returns a geofence boundary.
+            </summary>
+            <param name="geofenceUid">Geofence UID</param>
+            <returns>List of WGS84 boundary points in radians</returns>
+        </member>
     </members>
 </doc>

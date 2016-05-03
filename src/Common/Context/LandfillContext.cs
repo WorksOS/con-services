@@ -312,43 +312,7 @@ namespace LandfillService.Common.Context
 
                 return null;
             });
-        }
-
-        /// <summary>
-        /// Retrieves a geofence boundary
-        /// </summary>
-        /// <param name="geofenceUid">Geofence UID</param>
-        /// <returns>A list of WGS84 points</returns>
-        public static IEnumerable<WGSPoint> GetGeofencePoints(string geofenceUid)
-        {
-          const double DEGREES_TO_RADIANS = Math.PI / 180;
-
-          return WithConnection((conn) =>
-          {
-            var command = @"SELECT GeometryWKT FROM Geofence
-                            WHERE GeofenceUID = @geofenceUid";
-
-            using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@geofenceUid", geofenceUid)))
-            {
-              List<WGSPoint> latlngs = new List<WGSPoint>();
-              while (reader.Read())
-              {
-                var wkt = reader.GetString(0);
-                //Trim off the "POLYGON((" and "))"
-                wkt = wkt.Substring(9, wkt.Length - 11);
-                var points = wkt.Split(',');
-                foreach (var point in points)
-                {
-                  var parts = point.Split(' ');
-                  var lat = double.Parse(parts[0]);
-                  var lng = double.Parse(parts[0]);
-                  latlngs.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
-                }
-              }
-              return latlngs;
-            }
-          });        
-        }
+        }      
 
         /// <summary>
         /// Retrieves a list of dates for which volumes couldn't be retrieved previously (used to retry retrieval)
@@ -527,6 +491,76 @@ namespace LandfillService.Common.Context
         }
 
         #endregion
+
+      #region Geofences
+        /// <summary>
+        /// Retrieves the geofences associated with the project.
+        /// </summary>
+        /// <param name="projectId">Project ID</param>
+        /// <returns>A list of geofences</returns>
+        public static IEnumerable<Geofence> GetGeofences(uint projectId)
+        {
+          return WithConnection((conn) =>
+          {
+            var command = @"SELECT geo.GeofenceUID, geo.Name, geo.fk_GeofenceTypeID FROM Geofence geo
+                            INNER JOIN Project prj ON geo.ProjectUID = prj.ProjectUID
+                            WHERE prj.ProjectID = @projectId AND geo.IsDeleted = 0 
+                                AND (geo.fk_GeofenceTypeID = 1 OR geo.fk_GeofenceTypeID = 10)";
+
+            using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", projectId)))
+            {
+              List<Geofence> geofences = new List<Geofence>();
+              while (reader.Read())
+              {
+                geofences.Add(new Geofence
+                              {
+                                uid = Guid.Parse(reader.GetString(reader.GetOrdinal("GeofenceUID"))),
+                                name = reader.GetString(reader.GetOrdinal("Name")),
+                                type = reader.GetInt32(reader.GetOrdinal("fk_GeofenceTypeID")),
+                              });
+
+              }
+              return geofences;
+            }
+          });        
+        }
+
+        /// <summary>
+        /// Retrieves a geofence boundary
+        /// </summary>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <returns>A list of WGS84 points</returns>
+        public static IEnumerable<WGSPoint> GetGeofencePoints(string geofenceUid)
+        {
+          const double DEGREES_TO_RADIANS = Math.PI / 180;
+
+          return WithConnection((conn) =>
+          {
+            var command = @"SELECT GeometryWKT FROM Geofence
+                            WHERE GeofenceUID = @geofenceUid";
+
+            using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@geofenceUid", geofenceUid)))
+            {
+              List<WGSPoint> latlngs = new List<WGSPoint>();
+              while (reader.Read())
+              {
+                var wkt = reader.GetString(0);
+                //Trim off the "POLYGON((" and "))"
+                wkt = wkt.Substring(9, wkt.Length - 11);
+                var points = wkt.Split(',');
+                foreach (var point in points)
+                {
+                  var parts = point.Split(' ');
+                  var lat = double.Parse(parts[0]);
+                  var lng = double.Parse(parts[0]);
+                  latlngs.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
+                }
+              }
+              return latlngs;
+            }
+          });
+        }
+      #endregion
 
     }
 

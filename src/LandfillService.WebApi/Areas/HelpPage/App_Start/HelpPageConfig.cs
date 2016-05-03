@@ -58,6 +58,9 @@ namespace LandfillService.WebApi.Areas.HelpPage
             config.SetActualResponseType(typeof(IEnumerable<Project>), "Projects", "Get");
             config.SetActualResponseType(typeof(ProjectData), "Projects", "Get", "id");
             config.SetActualResponseType(typeof(ProjectData), "Projects", "PostWeights");
+            config.SetActualResponseType(typeof(IEnumerable<Geofence>), "Projects", "GetGeofences", "id");
+            List<string> parms = new List<string>{"id", "geofenceUid"};
+            config.SetActualResponseType(typeof(IEnumerable<WGSPoint>), "Projects", "GetGeofenceBoundary", parms.ToArray());
 
             //// Uncomment the following to use "[0]=foo&[1]=bar" directly as the sample for all actions that support form URL encoded format
             //// and have IEnumerable<string> as the body parameter or return type.
