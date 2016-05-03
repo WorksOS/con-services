@@ -12,8 +12,6 @@ using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.producer;
 using VSP.MasterData.Project.WebAPI.Helpers;
 using VSP.MasterData.Common.Logging;
-using VSS.Kafka.DotNetClient.Interfaces;
-using VSS.Kafka.DotNetClient.Model;
 using VSS.Project.Data.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Utilization.WebApi.Configuration;
@@ -30,7 +28,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     private readonly IProducer _producer;
     private readonly IProjectService _projectService;
 
-    public ProjectV1Controller(IProducer producer, IProjectService projectRepo)
+
+    public ProjectV1Controller(IProducer producer, IProjectService projectRepo) : base()
     {
       _producer = producer;
       _projectService = projectRepo;
@@ -66,9 +65,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         project.ReceivedUTC = DateTime.UtcNow;
         var jsonHelper = new JsonHelper();
         var messagePayload = jsonHelper.SerializeObjectToJson(new { CreateProjectEvent = project });
-        var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
 
-        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], messagePayload);
         _producer.send(producerRecord).get();
 
         var json = JObject.Parse(messagePayload);
@@ -101,9 +99,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         var jsonHelper = new JsonHelper();
         project.ReceivedUTC = DateTime.UtcNow;
         var messagePayload = jsonHelper.SerializeObjectToJson(new { UpdateProjectEvent = project });
-        var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
 
-        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], messagePayload);
         _producer.send(producerRecord).get();
 
         var json = JObject.Parse(messagePayload);
@@ -144,8 +141,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         var jsonHelper = new JsonHelper();
 
         var messagePayload = jsonHelper.SerializeObjectToJson(new { DeleteProjectEvent = project });
-        var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
-        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], messagePayload);
         _producer.send(producerRecord).get();
 
         var json = JObject.Parse(messagePayload);
@@ -181,8 +178,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         project.ReceivedUTC = DateTime.UtcNow;
         var jsonHelper = new JsonHelper();
         var messagePayload = jsonHelper.SerializeObjectToJson(new { RestoreProjectEvent = project });
-        var message = new Message { Key = project.ProjectUID.ToString(), Value = messagePayload };
-        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], messagePayload);
         _producer.send(producerRecord).get();
 
         return Ok();
@@ -210,9 +207,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       try
       {
         customerProject.ReceivedUTC = DateTime.UtcNow;
-        var messagePayload = new JsonHelper().SerializeObjectToJson(new { AssociateCustomerAssetEvent = customerProject });
-        var message = new Message { Key = customerProject.ProjectUID.ToString(), Value = messagePayload };
-        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+        var messagePayload = new JsonHelper().SerializeObjectToJson(new { AssociateProjectCustomer = customerProject });
+
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], messagePayload);
         _producer.send(producerRecord).get();
 
         var json = JObject.Parse(messagePayload);
@@ -244,9 +241,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       try
       {
         customerProject.ReceivedUTC = DateTime.UtcNow;
-        var messagePayload = new JsonHelper().SerializeObjectToJson(new { DissociateCustomerAssetEvent = customerProject });
-        var message = new Message { Key = customerProject.ProjectUID.ToString(), Value = messagePayload };
-        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], message);
+        var messagePayload = new JsonHelper().SerializeObjectToJson(new { DissociateProjectCustomer = customerProject });
+
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], messagePayload);
         _producer.send(producerRecord).get();
         return Ok();
         throw new Exception("Failed to publish message to Kafka");

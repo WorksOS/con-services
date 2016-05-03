@@ -235,10 +235,6 @@
     <Reference Include="VSP.MasterData.Common.RPLKafkaWrapper">
       <HintPath>..\libraries\VSP.MasterData.Common.RPLKafkaWrapper.dll</HintPath>
     </Reference>
-    <Reference Include="VSS.Kafka.DotNetClient, Version=1.1.87.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VSS.Kafka.DotNetClient.1.1.87.0\lib\net451\VSS.Kafka.DotNetClient.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="VSS.Kafka.Ikvm.Client, Version=1.0.63.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.63\lib\net451\VSS.Kafka.Ikvm.Client.dll</HintPath>
       <Private>True</Private>
