@@ -207,7 +207,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       try
       {
         customerProject.ReceivedUTC = DateTime.UtcNow;
-        var messagePayload = new JsonHelper().SerializeObjectToJson(new { AssociateCustomerAssetEvent = customerProject });
+        var messagePayload = new JsonHelper().SerializeObjectToJson(new { AssociateProjectCustomer = customerProject });
 
         var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], messagePayload);
         _producer.send(producerRecord).get();
@@ -241,7 +241,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       try
       {
         customerProject.ReceivedUTC = DateTime.UtcNow;
-        var messagePayload = new JsonHelper().SerializeObjectToJson(new { DissociateCustomerAssetEvent = customerProject });
+        var messagePayload = new JsonHelper().SerializeObjectToJson(new { DissociateProjectCustomer = customerProject });
 
         var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], messagePayload);
         _producer.send(producerRecord).get();
