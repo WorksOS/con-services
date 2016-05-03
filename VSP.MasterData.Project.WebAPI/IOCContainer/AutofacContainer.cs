@@ -12,10 +12,6 @@ using log4net;
 using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.producer;
 using VSP.MasterData.Common.Logging;
-using VSS.Kafka.DotNetClient;
-using VSS.Kafka.DotNetClient.Interfaces;
-using VSS.Kafka.DotNetClient.Model;
-using VSS.Kafka.DotNetClient.Producer;
 using VSS.Project.Data;
 using VSS.Project.Data.Interfaces;
 
@@ -60,7 +56,6 @@ namespace VSP.MasterData.Project.WebAPI
         if (string.IsNullOrWhiteSpace(confluentBaseUrl))
           throw new ArgumentNullException("RestProxy Base Url is empty");
 
-        var configSettings = new AppConfigSettings();
 
         var props = new Properties();
         props.put("bootstrap.servers", confluentBaseUrl);
@@ -89,24 +84,5 @@ namespace VSP.MasterData.Project.WebAPI
       }
     }
 
-   private static string GetKafkaEndPointURL(Uri _url, string kafkatopicName)
-    {
-      try
-      {
-        string jsonStr;
-        using (var wc = new WebClient())
-        {
-          jsonStr = wc.DownloadString(_url);
-        }
-        JObject jsonObj = JObject.Parse(jsonStr);
-        var token = jsonObj.SelectToken("$.Topics[?(@.Name == '" + kafkatopicName + "')].URL");
-        return token.ToString();
-      }
-      catch (Exception)
-      {
-
-      }
-      return null;
-    }
   }
 }

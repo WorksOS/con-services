@@ -12,8 +12,6 @@ using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.producer;
 using VSP.MasterData.Project.WebAPI.Helpers;
 using VSP.MasterData.Common.Logging;
-using VSS.Kafka.DotNetClient.Interfaces;
-using VSS.Kafka.DotNetClient.Model;
 using VSS.Project.Data.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Utilization.WebApi.Configuration;
@@ -30,9 +28,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     private readonly IProducer _producer;
     private readonly IProjectService _projectService;
 
-    public ProjectV1Controller()
-    {
-    }
 
     public ProjectV1Controller(IProducer producer, IProjectService projectRepo) : base()
     {
