@@ -52,7 +52,9 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
             projectList.Add(userProject.projectId,
               new ProjectDescriptor
               {
-                isLandFill = true,
+                ProjectType = userProject.projectType,
+                Name = userProject.name,
+                ProjectTimeZone = userProject.projectTimeZone,
                 isArchived = userProject.isDeleted || userProject.subEndDate < DateTime.UtcNow
               });
           }
