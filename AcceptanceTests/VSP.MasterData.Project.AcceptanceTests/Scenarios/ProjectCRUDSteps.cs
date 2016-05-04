@@ -61,24 +61,23 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
         public void WhenIAProjectViaWebAPIAsTheUserForTheCustomer(string action)
         {
             string request;
-            string response;
             string jwtToken = Jwt.GetJwtToken(userUID);
 
             switch (action)
             {
                 case "Create":
                     request = JsonConvert.SerializeObject(apiSupport.CreateProject(projectUID));
-                    response = RestClientUtil.DoHttpRequest(Config.ProjectCrudUri, "POST", RestClientConfig.JsonMediaType,
+                    RestClientUtil.DoHttpRequest(Config.ProjectCrudUri, "POST", RestClientConfig.JsonMediaType,
                         request, jwtToken, HttpStatusCode.OK);                    
                     break;
                 case "Update":
                     request = JsonConvert.SerializeObject(apiSupport.UpdateProject(projectUID));
-                    response = RestClientUtil.DoHttpRequest(Config.ProjectCrudUri, "PUT", RestClientConfig.JsonMediaType,
+                    RestClientUtil.DoHttpRequest(Config.ProjectCrudUri, "PUT", RestClientConfig.JsonMediaType,
                         request, jwtToken, HttpStatusCode.OK);  
                     break;
                 case "Delete":
                     string deleteProjUri = string.Format("{0}?projectUID={1}&actionUTC={2}", Config.ProjectCrudUri, projectUID, DateTime.UtcNow);
-                    response = RestClientUtil.DoHttpRequest(deleteProjUri, "DELETE", RestClientConfig.JsonMediaType,
+                    RestClientUtil.DoHttpRequest(deleteProjUri, "DELETE", RestClientConfig.JsonMediaType,
                         null, jwtToken, HttpStatusCode.OK);
                     break;
             }
@@ -89,7 +88,7 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
         {
             string jwtToken = Jwt.GetJwtToken(userUID);
             string request = JsonConvert.SerializeObject(apiSupport.AssociateProjectCustomer(projectUID, customerUID));
-            string response = RestClientUtil.DoHttpRequest(Config.AssociateProjectCustomerUri, "POST", RestClientConfig.JsonMediaType,
+            RestClientUtil.DoHttpRequest(Config.AssociateProjectCustomerUri, "POST", RestClientConfig.JsonMediaType,
                 request, jwtToken, HttpStatusCode.OK);
         }
 
@@ -117,8 +116,8 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios
                     break;
                 case "Updated":
                     ProjectDescriptor updatedProj = getAllProjectsResult[projectId];
-                    Assert.AreEqual(apiSupport.UpdateProjectRequest.ProjectType == ProjectType.LandFill, updatedProj.isLandFill,
-                        "Project not updated.");
+                    Assert.AreEqual(apiSupport.UpdateProjectRequest.ProjectName, updatedProj.Name, "Project name not updated.");
+                    Assert.AreEqual(apiSupport.UpdateProjectRequest.ProjectType, updatedProj.ProjectType, "Project type not updated.");
                     break;
             }
         }

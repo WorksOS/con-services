@@ -40,7 +40,7 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios.ScenarioSupports
                 ProjectEndDate = DateTime.Today.AddMonths(12),
                 ProjectName = "up_AT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
                 ProjectTimezone = "New Zealand Standard Time",
-                ProjectType = ProjectType.Standard,
+                ProjectType = ProjectType.ProjectMonitoring,
                 ProjectUID = projectUid,
                 ReceivedUTC = DateTime.UtcNow
             };

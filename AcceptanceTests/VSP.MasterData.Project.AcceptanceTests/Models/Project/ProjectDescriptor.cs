@@ -20,11 +20,25 @@ namespace VSP.MasterData.Project.AcceptanceTests.Models.Project
         public bool isArchived { get; set; }
 
         /// <summary>
-        ///   Gets or sets a value indicating whether this instance is landfill.
+        /// Gets or sets the name of the project.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance is landfill; otherwise, <c>false</c>.
+        /// The name.
         /// </value>
-        public bool isLandFill { get; set; }
+        public string Name { get; set; }
+        /// <summary>
+        /// Gets or sets the project time zone.
+        /// </summary>
+        /// <value>
+        /// The project time zone.
+        /// </value>
+        public string ProjectTimeZone { get; set; }
+        /// <summary>
+        /// Gets or sets the type of the project.
+        /// </summary>
+        /// <value>
+        /// The type of the project.
+        /// </value>
+        public ProjectType ProjectType { get; set; }
     }
 }
