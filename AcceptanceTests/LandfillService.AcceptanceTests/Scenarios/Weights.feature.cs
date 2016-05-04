@@ -127,11 +127,11 @@ this.ScenarioSetup(scenarioInfo);
 #line 3
 this.FeatureBackground();
 #line 15
- testRunner.When("I add weight for \'2016-04-01\' to site \'1863fb2e-fd25-e311-9e53-0050568824d7\' of p" +
-                    "roject \'Pegasus\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I add weight for \'2016-04-01\' to site \'fb4f0e9d-12f4-11e5-b129-0050568838e5\' of p" +
+                    "roject \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 16
- testRunner.Then("the weight is added for \'2016-04-01\' to site \'1863fb2e-fd25-e311-9e53-0050568824d" +
-                    "7\' of project \'Pegasus\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the weight is added for \'2016-04-01\' to site \'fb4f0e9d-12f4-11e5-b129-0050568838e" +
+                    "5\' of project \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
