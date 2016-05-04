@@ -10,10 +10,9 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios.ScenarioSupports
 {
     public class WebApiSupport
     {
-        CreateProjectEvent CreateProjectRequest;
-        UpdateProjectEvent UpdateProjectRequest;
-        AssociateProjectCustomer AssociateProjectCustomerRequest;
-        DissociateProjectCustomer DissociateProjectCustomerRequest;
+        public CreateProjectEvent CreateProjectRequest;
+        public UpdateProjectEvent UpdateProjectRequest;
+        public AssociateProjectCustomer AssociateProjectCustomerRequest;
 
         public CreateProjectEvent CreateProject(Guid projectUid)
         {
@@ -25,7 +24,7 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios.ScenarioSupports
                 ProjectStartDate = DateTime.Today.AddMonths(-3),
                 ProjectName = "AT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
                 ProjectTimezone = "New Zealand Standard Time",
-                ProjectType = ProjectType.ProjectMonitoring,
+                ProjectType = ProjectType.LandFill,
                 ProjectID = CommonUtils.Random.Next(3000, 4000),
                 ProjectUID = projectUid,
                 ReceivedUTC = DateTime.UtcNow
@@ -41,7 +40,7 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios.ScenarioSupports
                 ProjectEndDate = DateTime.Today.AddMonths(12),
                 ProjectName = "up_AT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
                 ProjectTimezone = "New Zealand Standard Time",
-                ProjectType = ProjectType.ProjectMonitoring,
+                ProjectType = ProjectType.Standard,
                 ProjectUID = projectUid,
                 ReceivedUTC = DateTime.UtcNow
             };
@@ -60,18 +59,6 @@ namespace VSP.MasterData.Project.AcceptanceTests.Scenarios.ScenarioSupports
             };
 
             return AssociateProjectCustomerRequest;
-        }
-        public DissociateProjectCustomer DissociateProjectCustomer(Guid projectUid, Guid customerUid)
-        {
-            DissociateProjectCustomerRequest = new DissociateProjectCustomer
-            {
-                ProjectUID = projectUid,
-                CustomerUID = customerUid,
-                ActionUTC = DateTime.UtcNow,
-                ReceivedUTC = DateTime.UtcNow
-            };
-
-            return DissociateProjectCustomerRequest;
         }
     }
 }
