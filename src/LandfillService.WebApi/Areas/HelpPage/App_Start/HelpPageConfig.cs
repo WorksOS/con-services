@@ -2,19 +2,15 @@
 // package to your project.
 ////#define Handle_PageResultOfT
 
-using LandfillService.WebApi.Models;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 #if Handle_PageResultOfT
 using System.Web.Http.OData;
 #endif
+using LandfillService.Common.Models;
 
 namespace LandfillService.WebApi.Areas.HelpPage
 {
@@ -62,6 +58,9 @@ namespace LandfillService.WebApi.Areas.HelpPage
             config.SetActualResponseType(typeof(IEnumerable<Project>), "Projects", "Get");
             config.SetActualResponseType(typeof(ProjectData), "Projects", "Get", "id");
             config.SetActualResponseType(typeof(ProjectData), "Projects", "PostWeights");
+            config.SetActualResponseType(typeof(IEnumerable<Geofence>), "Projects", "GetGeofences", "id");
+            List<string> parms = new List<string>{"id", "geofenceUid"};
+            config.SetActualResponseType(typeof(IEnumerable<WGSPoint>), "Projects", "GetGeofenceBoundary", parms.ToArray());
 
             //// Uncomment the following to use "[0]=foo&[1]=bar" directly as the sample for all actions that support form URL encoded format
             //// and have IEnumerable<string> as the body parameter or return type.

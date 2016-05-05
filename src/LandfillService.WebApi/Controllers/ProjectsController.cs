@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web;
-using System.Web.Mvc;
+using LandfillService.Common.ApiClients;
+using LandfillService.Common.Context;
 using LandfillService.Common.Contracts;
-using LandfillService.WebApi.Models;
-using LandfillService.WebApi.ApiClients;
 using System.Web.Hosting;
 using LandfillService.Common;
+using LandfillService.Common.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NodaTime;
 using System.Reflection;
 using VSS.VisionLink.Utilization.WebApi.Configuration;
@@ -92,12 +89,18 @@ namespace LandfillService.WebApi.Controllers
         }
 
         /// <summary>
-        /// Returns the last two years worth of project data for a given project.
+        /// Returns the project data for the given project. If geofenceUid is not specified, 
+        /// data for the entire project area is returned otherwise data for the geofenced area is returned.
+        /// If no date range specified, returns data for the last 2 years to today in the project time zone
+        /// otherwise returns data for the specified date range.
         /// </summary>
         /// <param name="id">Project ID</param>
-        /// <returns>List of data entries for each day in the last two years and the status of volume retrieval for the project</returns>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <param name="startDate">Start date in project time zone for which to return data</param>
+        /// <param name="endDate">End date in project time zone for which to return data</param>
+        /// <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
         [System.Web.Http.Route("{id}")]
-        public IHttpActionResult Get(uint id)
+        public IHttpActionResult Get(uint id, Guid? geofenceUid, DateTime? startDate, DateTime? endDate)
         {
             // Get the available data
             // Kick off missing volumes retrieval IF not already running
@@ -120,7 +123,7 @@ namespace LandfillService.WebApi.Controllers
                   var entries = new ProjectData
                                 {
                                     project = project,
-                                    entries = LandfillDb.GetEntries(project),
+                                    entries = LandfillDb.GetEntries(project, geofenceUid.HasValue ? geofenceUid.ToString() : null, startDate, endDate),
                                     retrievingVolumes = LandfillDb.RetrievalInProgress(project)
                                 };
 
@@ -142,18 +145,19 @@ namespace LandfillService.WebApi.Controllers
         /// </summary>
         /// <param name="userUid">User ID</param>
         /// <param name="project">Project</param>
+        /// <param name="geofence">Geofence</param>
         /// <param name="entry">Weight entry from the client</param>
         /// <returns></returns>
-        private async Task GetVolumeInBackground(string userUid, Project project, WeightEntry entry)
+        private async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, DateEntry entry)
         {
             try
             {
-                var res = await raptorApiClient.GetVolumesAsync(userUid, project, entry.date);
+                var res = await raptorApiClient.GetVolumesAsync(userUid, project, entry.date, geofence);
 
                 System.Diagnostics.Debug.WriteLine("Volume res:" + res);
                 System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill ));
 
-                LandfillDb.SaveVolume(project.id, entry.date, res.Fill );
+                LandfillDb.SaveVolume(project.id, entry.geofenceUid, entry.date, res.Fill);
             }
             catch (RaptorApiException e)
             {
@@ -163,19 +167,19 @@ namespace LandfillService.WebApi.Controllers
                     // is outside project extents); the assumption is that's the only reason we will
                     // receive a 400 Bad Request 
                     System.Diagnostics.Debug.Write("RaptorApiException while retrieving volumes: " + e);
-                    LandfillDb.MarkVolumeNotAvailable(project.id, entry.date);
+                    LandfillDb.MarkVolumeNotAvailable(project.id, entry.geofenceUid, entry.date);
 
                     // TESTING CODE
                     // Volume range in m3 should be ~ [478, 1020]
-                    //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478);
+                    //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478, entry.geofenceUid);
                 }
                 else
-                    LandfillDb.MarkVolumeNotRetrieved(project.id, entry.date);
+                  LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.Write("Exception while retrieving volumes: " + e);
-                LandfillDb.MarkVolumeNotRetrieved(project.id, entry.date);
+                LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
                 throw;
             }
         }
@@ -194,10 +198,9 @@ namespace LandfillService.WebApi.Controllers
 
             if (noRetrievalInProgress)
             {
-                var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project.id);
+                var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project);
                 System.Diagnostics.Debug.Write("Dates without volumes: {0}", dates.ToString());
-                var entries = dates.Select(date => new WeightEntry { date = date, weight = 0 }); // generate fake WeightEntry objects from dates
-                GetVolumesInBackground(userUid, project, entries, () =>
+                GetVolumesInBackground(userUid, project, dates, () =>
                 {
                     var retrievalWasInProgress = LandfillDb.LockForRetrieval(project, false);  // "unlock" the project
                     if (!retrievalWasInProgress)
@@ -214,18 +217,27 @@ namespace LandfillService.WebApi.Controllers
         /// </summary>
         /// <param name="userUid">User ID</param>
         /// <param name="project">Project</param>
-        /// <param name="entries">Weight entries (providing dates to request)</param>
+        /// <param name="entries">Date entries (providing dates and geofence uids to request)</param>
         /// <param name="onComplete">Code to execute on completion</param>
         /// <returns></returns>
-        private void GetVolumesInBackground(string userUid, Project project, IEnumerable<WeightEntry> entries, Action onComplete)
+        private void GetVolumesInBackground(string userUid, Project project, IEnumerable<DateEntry> entries, Action onComplete)
         {
             HostingEnvironment.QueueBackgroundWorkItem(async (CancellationToken cancel) =>
             {
                 const int parallelRequestCount = 1;
 
+                var geofenceUids = entries.Where(d => !string.IsNullOrEmpty(d.geofenceUid)).Select(d => d.geofenceUid).Distinct().ToList();
+                var geofences = GetGeofences(project.id, geofenceUids);
+
                 for (var offset = 0; offset <= entries.Count() / parallelRequestCount; offset++)
                 {
-                    var tasks = entries.Skip(offset * parallelRequestCount).Take(parallelRequestCount).Select(entry => GetVolumeInBackground(userUid, project, entry));
+                    var tasks = entries.Skip(offset * parallelRequestCount)
+                      .Take(parallelRequestCount)
+                      .Select(entry => GetVolumeInBackground(
+                        userUid, 
+                        project, 
+                        geofences.ContainsKey(entry.geofenceUid) ? geofences[entry.geofenceUid] : null, 
+                        entry));
                     await Task.WhenAll(tasks);
                 }
 
@@ -233,15 +245,26 @@ namespace LandfillService.WebApi.Controllers
             });
         }
 
+        private Dictionary<string, List<WGSPoint>> GetGeofences(uint id, List<string> geofenceUids)
+        {
+          Dictionary<string, List<WGSPoint>> geofences = geofenceUids.ToDictionary(g => g,
+              g => LandfillDb.GetGeofencePoints(g).ToList());
+          LoggerSvc.LogMessage(null, null, null, string.Format("Got {0} geofences to process for project {1}", geofenceUids.Count, id));          
+
+          return geofences;
+        }
+
+
         /// <summary>
         /// Saves weights submitted in the request.
         /// </summary>
         /// <param name="id">Project ID</param>
+        /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="entries">array of weight entries</param>
         /// <returns>Project data and status of volume retrieval</returns>
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("{id}/weights")]
-        public IHttpActionResult PostWeights(uint id/*, [FromBody] WeightEntry[] entries*/)
+        public IHttpActionResult PostWeights(uint id, Guid? geofenceUid /*, [FromBody] WeightEntry[] entries*/)
         {
           //When the request goes through TPaaS the headers get changed to Transfer-Encoding: chunked and the Content-Length is 0.
           //For some reason the Web API framework can't handle this and doesn't deserialize the 'entries'.
@@ -266,6 +289,14 @@ namespace LandfillService.WebApi.Controllers
                     "Missing weight entries"));
           }
 
+          if (!geofenceUid.HasValue || geofenceUid == Guid.Empty)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+                       new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+                           "Missing geofence UID"));            
+          }
+          var geofenceUidStr = geofenceUid.Value.ToString();
+
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
           //LoggerSvc.LogMessage(null, null, null, "PostWeights: userUid=" + userUid);          
 
@@ -282,7 +313,7 @@ namespace LandfillService.WebApi.Controllers
   
                 System.Diagnostics.Debug.WriteLine("yesterdayInProjTimeZone=" + yesterdayInProjTimeZone.ToString());
 
-                var validEntries = new List<WeightEntry>();
+                var validEntries = new List<DateEntry>();
                 foreach (var entry in entries)
                 {
                   bool valid = entry.weight >= 0 && entry.date.Date <= yesterdayInProjTimeZone.Date;
@@ -290,8 +321,8 @@ namespace LandfillService.WebApi.Controllers
     
                     if (valid)
                     { 
-                        LandfillDb.SaveEntry(id, entry);
-                        validEntries.Add(entry);
+                        LandfillDb.SaveEntry(id, geofenceUidStr, entry);
+                        validEntries.Add(new DateEntry{date = entry.date, geofenceUid = geofenceUidStr});
                     }
                 };
 
@@ -305,11 +336,69 @@ namespace LandfillService.WebApi.Controllers
                 return Ok(new ProjectData
                           {
                               project = project,
-                              entries = LandfillDb.GetEntries(project), 
+                              entries = LandfillDb.GetEntries(project, geofenceUidStr, null, null), //TODO: This will change when CCA changes implemented
                               retrievingVolumes = true
                           });
 
             });
+        }
+
+
+        /// <summary>
+        /// Returns a list of geofences for the project. A geofence is associated with a project if its
+        /// boundary is inside or intersects that of the project and it is of type 'Landfill'. The project
+        /// geofence is also returned.
+        /// </summary>
+        /// <param name="id">Project ID</param>
+        /// <returns>List of geofences</returns>
+        [System.Web.Http.Route("{id}/geofences")]
+        public IHttpActionResult GetGeofences(uint id)
+        {
+          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          //Secure with project list
+          if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+          {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+          }
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving geofences");
+         
+          try
+          {
+            IEnumerable<Geofence> geofences = LandfillDb.GetGeofences(id);            
+            return Ok(geofences);
+          }
+          catch (InvalidOperationException)
+          {
+            return Ok();
+          }
+        }
+
+        /// <summary>
+        /// Returns a geofence boundary.
+        /// </summary>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <returns>List of WGS84 boundary points in radians</returns>
+        [System.Web.Http.Route("{id}/geofences/{geofenceUid}")]
+        public IHttpActionResult GetGeofenceBoundary(uint id, Guid geofenceUid)
+        {
+          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          //Secure with project list
+          if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+          {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+          }
+          string geofenceUidStr = geofenceUid.ToString();
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving geofence boundary for " + geofenceUidStr);
+
+          try
+          {
+            IEnumerable<WGSPoint> points = LandfillDb.GetGeofencePoints(geofenceUidStr);
+            return Ok(points);
+          }
+          catch (InvalidOperationException)
+          {
+            return Ok();
+          }
         }
     }
 }

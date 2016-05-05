@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using LandfillService.Common.Models;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Web;
 using NodaTime;
 
-namespace LandfillService.WebApi.Models
+namespace LandfillService.Common.Context
 {
     /// <summary>
     /// Encapsulates DB queries
@@ -187,19 +188,21 @@ namespace LandfillService.WebApi.Models
         /// <summary>
         /// Saves a weight entry for a given project
         /// </summary>
-        /// <param name="project">Project</param>
+        /// <param name="projectId">Project ID</param>
+        /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="entry">Weight entry from the client</param>
         /// <returns></returns>
-        public static void SaveEntry(uint projectId, WeightEntry entry)
+        public static void SaveEntry(uint projectId, string geofenceUid, WeightEntry entry)
         {
             WithConnection<object>((conn) =>
             {
-                var command = @"INSERT INTO Entries (ProjectID, Date, Weight) 
-                                VALUES (@projectId, @date, @weight) 
+                var command = @"INSERT INTO Entries (ProjectID, Date, Weight, GeofenceUID) 
+                                VALUES (@projectId, @date, @weight, @geofenceUid) 
                                 ON DUPLICATE KEY UPDATE Weight = @weight";
 
               MySqlHelper.ExecuteNonQuery(conn, command,
                   new MySqlParameter("@projectId", projectId),
+                  new MySqlParameter("@geofenceUid", geofenceUid),
                   new MySqlParameter("@date", entry.date),
                   new MySqlParameter("@weight", entry.weight));
 
@@ -209,13 +212,14 @@ namespace LandfillService.WebApi.Models
 
 
         /// <summary>
-        /// Saves a volume for a given project and date
+        /// Saves a volume for a given project, geofence and date
         /// </summary>
         /// <param name="projectId">Project ID</param>
+        /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="date">Date</param>
         /// <param name="volume">Volume</param>
         /// <returns></returns>
-        public static void SaveVolume(uint projectId, DateTime date, double volume)
+        public static void SaveVolume(uint projectId, string geofenceUid, DateTime date, double volume)
         {
             WithConnection<object>((conn) =>
             {
@@ -224,11 +228,12 @@ namespace LandfillService.WebApi.Models
               var command = @"UPDATE Entries 
                               SET Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, 
                                   VolumeNotAvailable = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP()
-                              WHERE ProjectID = @projectId AND Date = @date";
+                              WHERE ProjectID = @projectId AND Date = @date AND GeofenceUID = @geofenceUid";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
                     new MySqlParameter("@volume", volume),
                     new MySqlParameter("@projectId", projectId),
+                    new MySqlParameter("@geofenceUid", geofenceUid),
                     new MySqlParameter("@date", date));
 
                 return null;
@@ -239,16 +244,19 @@ namespace LandfillService.WebApi.Models
         /// Marks an entry with "volume not retrieved" so it can be retried later
         /// </summary>
         /// <param name="projectId">Project id</param>
+        /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="date">Date of the entry</param>
         /// <returns></returns>
-        public static void MarkVolumeNotRetrieved(uint projectId, DateTime date)
+        public static void MarkVolumeNotRetrieved(uint projectId, string geofenceUid, DateTime date)
         {
             WithConnection<object>((conn) =>
             {
-                var command = "UPDATE Entries SET VolumeNotRetrieved = 1 WHERE ProjectID = @projectId AND Date = @date";
+                var command = @"UPDATE Entries SET VolumeNotRetrieved = 1
+                                WHERE ProjectID = @projectId AND Date = @date AND GeofenceUID = @geofenceUid";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
                     new MySqlParameter("@projectId", projectId),
+                    new MySqlParameter("@geofenceUid", geofenceUid),
                     new MySqlParameter("@date", date));
 
                 return null;
@@ -260,10 +268,10 @@ namespace LandfillService.WebApi.Models
       {
         return InTransaction((conn) =>
         {
-          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone
+          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name
                           FROM Project prj 
                           LEFT JOIN Entries etr ON prj.ProjectID = etr.ProjectID 
-                          WHERE Weight IS NOT NULL;";
+                          WHERE etr.Weight IS NOT NULL AND prj.IsDeleted = 0;";
           using (var reader = MySqlHelper.ExecuteReader(conn, command))
           {
             var projects = new List<Project>();
@@ -272,7 +280,9 @@ namespace LandfillService.WebApi.Models
               projects.Add(new Project
               {
                 id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
-                timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone"))
+                timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone")),
+                projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
+                name = reader.GetString(reader.GetOrdinal("Name"))
               });
             }
             return projects;
@@ -284,50 +294,55 @@ namespace LandfillService.WebApi.Models
         /// Marks an entry with "volume not available" to indicate that there is no volume information in Raptor for that date
         /// </summary>
         /// <param name="projectId">Project ID</param>
+        /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="date">Date of the entry</param>
         /// <returns></returns>
-        public static void MarkVolumeNotAvailable(uint projectId, DateTime date)
+        public static void MarkVolumeNotAvailable(uint projectId, string geofenceUid, DateTime date)
         {
             WithConnection<object>((conn) =>
             {
               var command = @"UPDATE Entries 
                               SET VolumeNotAvailable = 1, VolumeNotRetrieved = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP()
-                              WHERE ProjectID = @projectId AND Date = @date";
+                              WHERE ProjectID = @projectId AND Date = @date AND GeofenceUID = @geofenceUid";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
                     new MySqlParameter("@projectId", projectId),
+                    new MySqlParameter("@geofenceUid", geofenceUid),
                     new MySqlParameter("@date", date));
 
                 return null;
             });
-        }
+        }      
 
         /// <summary>
         /// Retrieves a list of dates for which volumes couldn't be retrieved previously (used to retry retrieval)
         /// </summary>
-        /// <param name="projectId">Project ID</param>
-        /// <returns>A list of dates</returns>
-        public static IEnumerable<DateTime> GetDatesWithVolumesNotRetrieved(uint projectId)
+        /// <param name="project">Project for which to retrieve data</param>
+        /// <returns>A list of dates and geofence UIDs</returns>
+        public static IEnumerable<DateEntry> GetDatesWithVolumesNotRetrieved(Project project)
         {
+            string projectGeofenceUid = UpdateEntriesIfRequired(project, null);
+
             return WithConnection((conn) =>
             {
                 // selects dates where volume retrieval failed OR was never completed OR hasn't yet happened;
                 // note that this can cause overlap with newly added dates which are currently waiting to be handled by 
                 // a volume retrieval task; this is acceptable because the probability of such overlap is expected to be low
                 // BUT it allows the service to tolerate background tasks dying
-              var command = @"SELECT Date FROM Entries
-                            WHERE ProjectID = @projectId AND 
-                            (VolumeNotRetrieved = 1 OR (Volume IS NULL AND VolumeNotAvailable = 0) OR 
-                            (VolumesUpdatedTimestampUTC IS NULL) OR 
-                            ( (VolumesUpdatedTimestampUTC < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) AND 
-                              (VolumesUpdatedTimestampUTC > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
+              var command = @"SELECT etr.Date, etr.GeofenceUID FROM Entries etr
+                              JOIN Geofence geo ON etr.GeofenceUID = geo.GeofenceUID
+                            WHERE etr.ProjectID = @projectId AND geo.IsDeleted = 0 AND
+                            (etr.VolumeNotRetrieved = 1 OR (etr.Volume IS NULL AND etr.VolumeNotAvailable = 0) OR 
+                            (etr.VolumesUpdatedTimestampUTC IS NULL) OR 
+                            ( (etr.VolumesUpdatedTimestampUTC < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) AND 
+                              (etr.VolumesUpdatedTimestampUTC > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
 
-                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", projectId)))
+                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", project.id)))
                 {
-                    var dates = new List<DateTime>();
+                    var dates = new List<DateEntry>();
                     while (reader.Read())
                     {
-                        dates.Add(reader.GetDateTime(0));
+                      dates.Add(new DateEntry {date = reader.GetDateTime(0), geofenceUid = reader.GetString(1)});
                     }
                     return dates;
                 }
@@ -335,23 +350,39 @@ namespace LandfillService.WebApi.Models
         }
 
         /// <summary>
-        /// Retrieves data entries for a given project
+        /// Retrieves data entries for a given project. If date range is not specified, returns data 
+        /// for 2 years ago to today in poject time zone. If geofence is not specified returns data for 
+        /// entire project area otherwise for geofenced area.
         /// </summary>
         /// <param name="project">Project</param>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <param name="startDate">Start date in project time zone</param>
+        /// <param name="endDate">End date in project time zone</param>
         /// <returns>A list of data entries</returns>
-        public static IEnumerable<DayEntry> GetEntries(Project project)
+        public static IEnumerable<DayEntry> GetEntries(Project project, string geofenceUid, DateTime? startDate, DateTime? endDate)
         {
+            string projectGeofenceUid = UpdateEntriesIfRequired(project, geofenceUid);
+            if (string.IsNullOrEmpty(geofenceUid))
+              geofenceUid = projectGeofenceUid;
+
             return WithConnection((conn) =>
             {
-                //Create last 2 years of dates in project time zone
+                //Check date range within 2 years ago to today in project time zone
                 var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
                 DateTime utcNow = DateTime.UtcNow;
                 Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
                 DateTime todayinProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;
-                //Date range is 2 years ago to yesterday
                 DateTime twoYearsAgo = todayinProjTimeZone.AddYears(-2);
-                DateTime yesterday = todayinProjTimeZone.AddDays(-1);
-                var dateRange = GetDateRange(twoYearsAgo, yesterday);
+                //DateTime yesterday = todayinProjTimeZone.AddDays(-1);
+                if (!startDate.HasValue)
+                  startDate = twoYearsAgo;
+                if (!endDate.HasValue)
+                  endDate = todayinProjTimeZone;
+                if (startDate < twoYearsAgo || endDate > todayinProjTimeZone)
+                {
+                  throw new ArgumentException("Invalid date range. Valid range is 2 years ago to today.");
+                }
+                var dateRange = GetDateRange(startDate.Value, endDate.Value);
 
                 var entriesLookup = (from dr in dateRange
                                      select new DayEntry
@@ -361,16 +392,19 @@ namespace LandfillService.WebApi.Models
                                               weight = 0.0,
                                               volume = 0.0
                                           }).ToDictionary(k => k.date, v => v);
-                //Now get the actual data and merge
+                
+                //Now get the actual data and merge       
                 var command = @"SELECT Date, Weight, Volume FROM Entries 
                                 WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
-                                AND ProjectID = @projectId
+                                AND ProjectID = @projectId AND GeofenceUID = @geofenceUid
                                 ORDER BY Date";
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command,
-                  new MySqlParameter("@projectId", project.id), 
-                  new MySqlParameter("@startDate", twoYearsAgo), 
-                  new MySqlParameter("@endDate", yesterday)))
+                  new MySqlParameter("@projectId", project.id),
+                  new MySqlParameter("@geofenceUid", geofenceUid),
+                  new MySqlParameter("@startDate", startDate.Value), //twoYearsAgo
+                  new MySqlParameter("@endDate", endDate.Value)//yesterday
+                  ))
                 {
                     const double EPSILON = 0.001;
 
@@ -395,7 +429,56 @@ namespace LandfillService.WebApi.Models
             });
         }
 
-        public static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
+        /// <summary>
+        /// Updates entries for a project if required. Old landfill projects do not have the geofence UID set.
+        /// Checks if the specified geofence UID is the project one and updates corresponding entries.
+        /// If the geofence UID is not specified then it gets the project one from the Geofence table
+        /// and updates the corresponding entries.
+        /// </summary>
+        /// <param name="project">Project</param>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <returns>The geofence UID. If none was specified returns the project geofence UID</returns>
+        private static string UpdateEntriesIfRequired(Project project, string geofenceUid)
+        {
+          return WithConnection((conn) =>
+          {
+            //Get the project geofence uid
+            string projectGeofenceUid = null;
+            var command = @"SELECT GeofenceUID
+                              FROM Geofence 
+                              WHERE ProjectUID = @projectUid AND fk_GeofenceTypeID = 1;";//Project type
+            using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", project.projectUid)))
+            {
+              while (reader.Read())
+              {
+                projectGeofenceUid = reader.GetString(0);
+              }      
+            }
+
+            //See if handling entries for whole project
+            if (string.IsNullOrEmpty(geofenceUid) || projectGeofenceUid == geofenceUid)
+            {
+              if (!string.IsNullOrEmpty(projectGeofenceUid))
+              {
+                //Update project entries geofence UID
+                command =
+                    "UPDATE Entries SET GeofenceUID = @geofenceUid WHERE ProjectID = @projectId AND GeofenceUID IS NULL";
+
+                MySqlHelper.ExecuteNonQuery(conn, command,
+                    new MySqlParameter("@projectId", project.id),
+                    new MySqlParameter("@geofenceUid", projectGeofenceUid));
+
+
+                if (string.IsNullOrEmpty(geofenceUid))
+                  geofenceUid = projectGeofenceUid;
+              }
+            }
+
+            return geofenceUid;
+          });        
+        }
+
+        private static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
         {
           if (endDate < startDate)
             throw new ArgumentException("endDate must be greater than or equal to startDate");
@@ -408,6 +491,76 @@ namespace LandfillService.WebApi.Models
         }
 
         #endregion
+
+      #region Geofences
+        /// <summary>
+        /// Retrieves the geofences associated with the project.
+        /// </summary>
+        /// <param name="projectId">Project ID</param>
+        /// <returns>A list of geofences</returns>
+        public static IEnumerable<Geofence> GetGeofences(uint projectId)
+        {
+          return WithConnection((conn) =>
+          {
+            var command = @"SELECT geo.GeofenceUID, geo.Name, geo.fk_GeofenceTypeID FROM Geofence geo
+                            INNER JOIN Project prj ON geo.ProjectUID = prj.ProjectUID
+                            WHERE prj.ProjectID = @projectId AND geo.IsDeleted = 0 
+                                AND (geo.fk_GeofenceTypeID = 1 OR geo.fk_GeofenceTypeID = 10)";
+
+            using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", projectId)))
+            {
+              List<Geofence> geofences = new List<Geofence>();
+              while (reader.Read())
+              {
+                geofences.Add(new Geofence
+                              {
+                                uid = Guid.Parse(reader.GetString(reader.GetOrdinal("GeofenceUID"))),
+                                name = reader.GetString(reader.GetOrdinal("Name")),
+                                type = reader.GetInt32(reader.GetOrdinal("fk_GeofenceTypeID")),
+                              });
+
+              }
+              return geofences;
+            }
+          });        
+        }
+
+        /// <summary>
+        /// Retrieves a geofence boundary
+        /// </summary>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <returns>A list of WGS84 points</returns>
+        public static IEnumerable<WGSPoint> GetGeofencePoints(string geofenceUid)
+        {
+          const double DEGREES_TO_RADIANS = Math.PI / 180;
+
+          return WithConnection((conn) =>
+          {
+            var command = @"SELECT GeometryWKT FROM Geofence
+                            WHERE GeofenceUID = @geofenceUid";
+
+            using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@geofenceUid", geofenceUid)))
+            {
+              List<WGSPoint> latlngs = new List<WGSPoint>();
+              while (reader.Read())
+              {
+                var wkt = reader.GetString(0);
+                //Trim off the "POLYGON((" and "))"
+                wkt = wkt.Substring(9, wkt.Length - 11);
+                var points = wkt.Split(',');
+                foreach (var point in points)
+                {
+                  var parts = point.Split(' ');
+                  var lat = double.Parse(parts[0]);
+                  var lng = double.Parse(parts[0]);
+                  latlngs.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
+                }
+              }
+              return latlngs;
+            }
+          });
+        }
+      #endregion
 
     }
 

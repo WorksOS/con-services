@@ -104,19 +104,82 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project data")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project data - one day")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Projects")]
-        public virtual void ProjectData()
+        public virtual void ProjectData_OneDay()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project data", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project data - one day", ((string[])(null)));
 #line 12
 this.ScenarioSetup(scenarioInfo);
 #line 3
 this.FeatureBackground();
+#line hidden
+            TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                        "ProjectName",
+                        "GeofenceUID",
+                        "DateRange"});
+            table2.AddRow(new string[] {
+                        "Casella-Stanley Landfill",
+                        "fb4f0e9d-12f4-11e5-b129-0050568838e5",
+                        "OneDay"});
 #line 13
- testRunner.When("I try to get data for project \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 14
- testRunner.Then("the response contains data for the past two years", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I try to get data for", ((string)(null)), table2, "When ");
+#line 16
+ testRunner.Then("the response contains data for \'OneDay\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project data - three days")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Projects")]
+        public virtual void ProjectData_ThreeDays()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project data - three days", ((string[])(null)));
+#line 18
+this.ScenarioSetup(scenarioInfo);
+#line 3
+this.FeatureBackground();
+#line hidden
+            TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                        "ProjectName",
+                        "GeofenceUID",
+                        "DateRange"});
+            table3.AddRow(new string[] {
+                        "Casella-Stanley Landfill",
+                        "fb4f0e9d-12f4-11e5-b129-0050568838e5",
+                        "ThreeDays"});
+#line 19
+ testRunner.When("I try to get data for", ((string)(null)), table3, "When ");
+#line 22
+ testRunner.Then("the response contains data for \'ThreeDays\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project data - two years")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Projects")]
+        public virtual void ProjectData_TwoYears()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project data - two years", ((string[])(null)));
+#line 24
+this.ScenarioSetup(scenarioInfo);
+#line 3
+this.FeatureBackground();
+#line hidden
+            TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                        "ProjectName",
+                        "GeofenceUID",
+                        "DateRange"});
+            table4.AddRow(new string[] {
+                        "Casella-Stanley Landfill",
+                        "fb4f0e9d-12f4-11e5-b129-0050568838e5",
+                        "TwoYears"});
+#line 25
+ testRunner.When("I try to get data for", ((string)(null)), table4, "When ");
+#line 28
+ testRunner.Then("the response contains data for \'TwoYears\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
