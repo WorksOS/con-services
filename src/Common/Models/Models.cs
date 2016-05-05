@@ -73,6 +73,44 @@ namespace LandfillService.Common.Models
         public double volume { get; set; }    
     }
 
+    /// <summary>
+    /// Weight entry for a geofence
+    /// </summary>
+    public class GeofenceWeight
+    {
+      public Guid geofenceUid { get; set; }
+      public double weight { get; set; }
+
+      /// <summary>
+      /// ToString override
+      /// </summary>
+      /// <returns>A string representation of weight entry</returns>
+      public override string ToString()
+      {
+        return String.Format("geofenceUid:{0}, weight:{1}", geofenceUid, weight);
+      }
+    }
+
+    /// <summary>
+    /// Weight entry submitted by the user for a geofence
+    /// </summary>
+    public class GeofenceWeightEntry
+    {
+      public DateTime date { get; set; }
+      public bool entryPresent { get; set; }    // true if any site has a weight present
+      public IEnumerable<GeofenceWeight> geofenceWeights { get; set; }
+    }
+
+    /// <summary>
+    /// Encapsulates weight data sent to the client  
+    /// </summary>
+    public class WeightData
+    {
+      public IEnumerable<GeofenceWeightEntry> entries { get; set; }
+      public bool retrievingVolumes { get; set; }          // is the service currently retrieving volumes for this project?
+      public Project project { get; set; }   
+    }
+
 
     /// <summary>
     /// Encapsulates project data sent to the client 

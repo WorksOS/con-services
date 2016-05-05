@@ -139,6 +139,75 @@ namespace LandfillService.WebApi.Controllers
 
         }
 
+        /// <summary>
+        /// Returns the weights for all geofences for the project for the date range 
+        /// of the last 2 years to today in the project time zone.
+        /// </summary>
+        /// <param name="id">Project ID</param>
+        /// <returns>List of entries for each day in date range and the weight for each geofence for that day</returns>
+        [System.Web.Http.Route("{id}/weights")]
+        public IHttpActionResult GetWeights(uint id)
+        {
+          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          //Secure with project list
+          if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+          {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+          }
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving weights");
+
+          return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects => 
+          {
+              try
+              {
+                var project = projects.Where(p => p.id == id).First();
+
+                var data = new WeightData
+                              {
+                                  project = project,
+                                  entries = GetGeofenceWeights(project),
+                                  retrievingVolumes = LandfillDb.RetrievalInProgress(project)
+                              };
+
+                return Ok(data);
+
+              }
+              catch (InvalidOperationException)
+              {
+                  return Ok();
+              }
+          });
+
+        }
+
+        /// <summary>
+        /// Retrieves weights entries for each geofence in the project.
+        /// </summary>
+        /// <param name="project">Project</param>
+        /// <returns>List of dates with the weight for each geofence for that date</returns>
+        private List<GeofenceWeightEntry> GetGeofenceWeights(Project project)
+        {
+          Dictionary<DateTime, List<GeofenceWeight>> weights = new Dictionary<DateTime, List<GeofenceWeight>>();
+          IEnumerable<Guid> geofenceUids = LandfillDb.GetGeofences(project.id).Select(g => g.uid);
+          foreach (var geofenceUid in geofenceUids)
+          {
+            var entries = LandfillDb.GetEntries(project, geofenceUid.ToString(), null, null);
+            foreach (var entry in entries)
+            {
+              if (!weights.ContainsKey(entry.date))
+                weights.Add(entry.date, new List<GeofenceWeight>());
+              weights[entry.date].Add(new GeofenceWeight { geofenceUid = geofenceUid, weight = entry.weight });
+            }
+          }
+
+          return (from w in weights
+                  select new GeofenceWeightEntry
+                  {
+                    date = w.Key,
+                    entryPresent = w.Value.Any(v => v.weight != 0),
+                    geofenceWeights = w.Value
+                  }).ToList();       
+        }
 
         /// <summary>
         /// Retrieves volume summary from Raptor and saves it to the landfill DB
@@ -227,7 +296,7 @@ namespace LandfillService.WebApi.Controllers
                 const int parallelRequestCount = 1;
 
                 var geofenceUids = entries.Where(d => !string.IsNullOrEmpty(d.geofenceUid)).Select(d => d.geofenceUid).Distinct().ToList();
-                var geofences = GetGeofences(project.id, geofenceUids);
+                var geofences = GetGeofenceBoundaries(project.id, geofenceUids);
 
                 for (var offset = 0; offset <= entries.Count() / parallelRequestCount; offset++)
                 {
@@ -245,7 +314,7 @@ namespace LandfillService.WebApi.Controllers
             });
         }
 
-        private Dictionary<string, List<WGSPoint>> GetGeofences(uint id, List<string> geofenceUids)
+        private Dictionary<string, List<WGSPoint>> GetGeofenceBoundaries(uint id, List<string> geofenceUids)
         {
           Dictionary<string, List<WGSPoint>> geofences = geofenceUids.ToDictionary(g => g,
               g => LandfillDb.GetGeofencePoints(g).ToList());
@@ -333,10 +402,10 @@ namespace LandfillService.WebApi.Controllers
 
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
 
-                return Ok(new ProjectData
+                return Ok(new WeightData
                           {
                               project = project,
-                              entries = LandfillDb.GetEntries(project, geofenceUidStr, null, null), //TODO: This will change when CCA changes implemented
+                              entries = GetGeofenceWeights(project),
                               retrievingVolumes = true
                           });
 

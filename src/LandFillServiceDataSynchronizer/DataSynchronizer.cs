@@ -38,7 +38,7 @@ namespace LandFillServiceDataSynchronizer
       return entries;
     }
 
-    private Dictionary<string, List<WGSPoint>> GetGeofences(uint id, List<string> geofenceUids)
+    private Dictionary<string, List<WGSPoint>> GetGeofenceBoundaries(uint id, List<string> geofenceUids)
     {
       Dictionary<string, List<WGSPoint>> geofences = geofenceUids.ToDictionary(g => g,
           g => LandfillDb.GetGeofencePoints(g).ToList());
@@ -54,7 +54,7 @@ namespace LandFillServiceDataSynchronizer
       foreach (var project in datesToUpdate)
       {
         var geofenceUids = project.Value.Select(d => d.geofenceUid).Distinct().ToList();
-        var geofences = GetGeofences(project.Key.id, geofenceUids);
+        var geofences = GetGeofenceBoundaries(project.Key.id, geofenceUids);
 
         Log.DebugFormat("Processing project {0} with {1} entries", project.Key.id, project.Value.Count());        
         foreach (var dateEntry in project.Value)

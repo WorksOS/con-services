@@ -57,7 +57,8 @@ namespace LandfillService.WebApi.Areas.HelpPage
 
             config.SetActualResponseType(typeof(IEnumerable<Project>), "Projects", "Get");
             config.SetActualResponseType(typeof(ProjectData), "Projects", "Get", "id");
-            config.SetActualResponseType(typeof(ProjectData), "Projects", "PostWeights");
+            config.SetActualResponseType(typeof(WeightData), "Projects", "GetWeights", "id");
+            config.SetActualResponseType(typeof(WeightData), "Projects", "PostWeights");
             config.SetActualResponseType(typeof(IEnumerable<Geofence>), "Projects", "GetGeofences", "id");
             List<string> parms = new List<string>{"id", "geofenceUid"};
             config.SetActualResponseType(typeof(IEnumerable<WGSPoint>), "Projects", "GetGeofenceBoundary", parms.ToArray());

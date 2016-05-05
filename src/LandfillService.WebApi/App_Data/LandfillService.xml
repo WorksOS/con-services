@@ -763,6 +763,21 @@
             <param name="endDate">End date in project time zone for which to return data</param>
             <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
         </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetWeights(System.UInt32)">
+            <summary>
+            Returns the weights for all geofences for the project for the date range 
+            of the last 2 years to today in the project time zone.
+            </summary>
+            <param name="id">Project ID</param>
+            <returns>List of entries for each day in date range and the weight for each geofence for that day</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofenceWeights(LandfillService.Common.Models.Project)">
+            <summary>
+            Retrieves weights entries for each geofence in the project.
+            </summary>
+            <param name="project">Project</param>
+            <returns>List of dates with the weight for each geofence for that date</returns>
+        </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeInBackground(System.String,LandfillService.Common.Models.Project,System.Collections.Generic.List{LandfillService.Common.Models.WGSPoint},LandfillService.Common.Models.DateEntry)">
             <summary>
             Retrieves volume summary from Raptor and saves it to the landfill DB
@@ -804,7 +819,7 @@
             <summary>
             Returns a list of geofences for the project. A geofence is associated with a project if its
             boundary is inside or intersects that of the project and it is of type 'Landfill'. The project
-            site is also returned.
+            geofence is also returned.
             </summary>
             <param name="id">Project ID</param>
             <returns>List of geofences</returns>
