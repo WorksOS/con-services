@@ -72,6 +72,11 @@ namespace VSS.Project.Data
         project.customerUid = projectEvent.CustomerUID.ToString();
         project.lastActionedUtc = projectEvent.ActionUTC;
         eventType = "AssociateProjectCustomerEvent";
+        //TODO: We need to check for project geofence for this project by name
+        //and if it exists and is unassigned then assign it to this project.
+        //If assignment successful then also need to check for unassigned landfill sites to 
+        //possibly assign to project (same as in geofence repo).
+        //Do in processor, not in repo!!!
       }
       else if (evt is DissociateProjectCustomer)
       {

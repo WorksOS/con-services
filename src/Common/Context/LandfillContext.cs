@@ -532,8 +532,6 @@ namespace LandfillService.Common.Context
         /// <returns>A list of WGS84 points</returns>
         public static IEnumerable<WGSPoint> GetGeofencePoints(string geofenceUid)
         {
-          const double DEGREES_TO_RADIANS = Math.PI / 180;
-
           return WithConnection((conn) =>
           {
             var command = @"SELECT GeometryWKT FROM Geofence
@@ -541,24 +539,32 @@ namespace LandfillService.Common.Context
 
             using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@geofenceUid", geofenceUid)))
             {
-              List<WGSPoint> latlngs = new List<WGSPoint>();
+              IEnumerable<WGSPoint> latlngs = null;
               while (reader.Read())
               {
-                var wkt = reader.GetString(0);
-                //Trim off the "POLYGON((" and "))"
-                wkt = wkt.Substring(9, wkt.Length - 11);
-                var points = wkt.Split(',');
-                foreach (var point in points)
-                {
-                  var parts = point.Split(' ');
-                  var lat = double.Parse(parts[0]);
-                  var lng = double.Parse(parts[0]);
-                  latlngs.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
-                }
+                latlngs = GeometryToPoints(reader.GetString(0));
               }
               return latlngs;
             }
           });
+        }
+
+        public static IEnumerable<WGSPoint> GeometryToPoints(string geometry)
+        {
+          const double DEGREES_TO_RADIANS = Math.PI / 180;
+
+          List<WGSPoint> latlngs = new List<WGSPoint>();
+          //Trim off the "POLYGON((" and "))"
+          geometry = geometry.Substring(9, geometry.Length - 11);
+          var points = geometry.Split(',');
+          foreach (var point in points)
+          {
+            var parts = point.Split(' ');
+            var lat = double.Parse(parts[0]);
+            var lng = double.Parse(parts[0]);
+            latlngs.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
+          }
+          return latlngs;
         }
       #endregion
 
