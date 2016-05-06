@@ -77,11 +77,11 @@ namespace LandfillService.AcceptanceTests.Scenarios
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Add weight yesterday")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Add weight to a site - yesterday")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Weights")]
-        public virtual void AddWeightYesterday()
+        public virtual void AddWeightToASite_Yesterday()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add weight yesterday", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add weight to a site - yesterday", ((string[])(null)));
 #line 6
 this.ScenarioSetup(scenarioInfo);
 #line 3
@@ -97,11 +97,11 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Add weight multi days")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Add weight to a site - multi days")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Weights")]
-        public virtual void AddWeightMultiDays()
+        public virtual void AddWeightToASite_MultiDays()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add weight multi days", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add weight to a site - multi days", ((string[])(null)));
 #line 10
 this.ScenarioSetup(scenarioInfo);
 #line 3
@@ -117,11 +117,11 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Add weight specific date")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Add weight to a site - specific date")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Weights")]
-        public virtual void AddWeightSpecificDate()
+        public virtual void AddWeightToASite_SpecificDate()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add weight specific date", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add weight to a site - specific date", ((string[])(null)));
 #line 14
 this.ScenarioSetup(scenarioInfo);
 #line 3
@@ -132,6 +132,28 @@ this.FeatureBackground();
 #line 16
  testRunner.Then("the weight is added for \'2016-04-01\' to site \'fb4f0e9d-12f4-11e5-b129-0050568838e" +
                     "5\' of project \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Get weights of all sites")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Weights")]
+        public virtual void GetWeightsOfAllSites()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get weights of all sites", ((string[])(null)));
+#line 18
+this.ScenarioSetup(scenarioInfo);
+#line 3
+this.FeatureBackground();
+#line 19
+ testRunner.When("I add weight for \'2016-04-01\' to site \'fb4f0e9d-12f4-11e5-b129-0050568838e5\' of p" +
+                    "roject \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 20
+  testRunner.And("I request all weights for all sites of project \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 21
+ testRunner.Then("project \'Casella-Stanley Landfill\' has the correct weight for site \'fb4f0e9d-12f4" +
+                    "-11e5-b129-0050568838e5\' on \'2016-04-01\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
