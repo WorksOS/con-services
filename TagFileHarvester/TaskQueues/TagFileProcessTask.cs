@@ -44,7 +44,7 @@ namespace TagFileHarvester.TaskQueues
           log.DebugFormat("Archiving file {0} for org {1}", tagFilename, org.shortName);
           if (!unityContainer.Resolve<IFileRepository>()
               .MoveFile(org, tagFilename,
-                  tagFilename.Replace(OrgsHandler.TCCSynchProductionDataFolder,
+                  tagFilename.Remove(tagFilename.IndexOf(OrgsHandler.tccSynchMachineFolder), OrgsHandler.tccSynchMachineFolder.Length+1).Replace(OrgsHandler.TCCSynchProductionDataFolder,
                       OrgsHandler.TCCSynchProductionDataArchivedFolder)))
             return null;
         }
