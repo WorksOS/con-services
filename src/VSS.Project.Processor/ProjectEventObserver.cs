@@ -6,8 +6,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.consumer;
 using VSS.Project.Data.Interfaces;
-using VSS.Project.Data.Models;
 using VSS.Project.Processor.Helpers;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Project.Processor
 {
@@ -39,14 +39,14 @@ namespace VSS.Project.Processor
         string val = (string)value.value();
 
           bool success = false;
-          Log.DebugFormat("Recieved Project Payload : {0} ", val);
+          Log.DebugFormat("Received Project Payload : {0} ", val);
           var json = JObject.Parse(val);
           string tokenName;
 
           JToken token;
           if ((token = json.SelectToken(tokenName = "CreateProjectEvent")) != null)
           {
-            Log.Debug(String.Format("Recieved Create Project Payload : {0} ", token.ToString()));
+            Log.Debug(String.Format("Received Create Project Payload : {0} ", token.ToString()));
             var createProjectEvent =
               JsonConvert.DeserializeObject<CreateProjectEvent>(token.ToString());
             int updatedCount = _ProjectService.StoreProject(createProjectEvent);
@@ -54,7 +54,7 @@ namespace VSS.Project.Processor
           }
           else if ((token = json.SelectToken(tokenName = "UpdateProjectEvent")) != null)
           {
-            Log.Debug(String.Format("Recieved Update Project Payload : {0} ", token.ToString()));
+            Log.Debug(String.Format("Received Update Project Payload : {0} ", token.ToString()));
             var updateProjectEvent =
               JsonConvert.DeserializeObject<UpdateProjectEvent>(token.ToString());
             int updatedCount = _ProjectService.StoreProject(updateProjectEvent);
@@ -62,7 +62,7 @@ namespace VSS.Project.Processor
           }
           else if ((token = json.SelectToken(tokenName = "DeleteProjectEvent")) != null)
           {
-            Log.Debug(String.Format("Recieved Delete Project Payload : {0} ", token.ToString()));
+            Log.Debug(String.Format("Received Delete Project Payload : {0} ", token.ToString()));
             var deleteProjectEvent =
               JsonConvert.DeserializeObject<DeleteProjectEvent>(token.ToString());
             int updatedCount = _ProjectService.StoreProject(deleteProjectEvent);
@@ -70,7 +70,7 @@ namespace VSS.Project.Processor
           }
           else if ((token = json.SelectToken(tokenName = "AssociateProjectCustomerEvent")) != null)
           {
-            Log.Debug(String.Format("Recieved Associate Project-Customer Payload : {0} ", token.ToString()));
+            Log.Debug(String.Format("Received Associate Project-Customer Payload : {0} ", token.ToString()));
             var associateProjectCustomerEvent =
               JsonConvert.DeserializeObject<AssociateProjectCustomer>(token.ToString());
             int updatedCount = _ProjectService.StoreProject(associateProjectCustomerEvent);
@@ -78,7 +78,7 @@ namespace VSS.Project.Processor
           }
           else if ((token = json.SelectToken(tokenName = "DissociateProjectCustomerEvent")) != null)
           {
-            Log.Debug(String.Format("Recieved Update Project Payload : {0} ", token.ToString()));
+            Log.Debug(String.Format("Received Update Project Payload : {0} ", token.ToString()));
             var dissociateProjectCustomerEvent =
               JsonConvert.DeserializeObject<DissociateProjectCustomer>(token.ToString());
             int updatedCount = _ProjectService.StoreProject(dissociateProjectCustomerEvent);

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using VSS.Project.Data;
-using VSS.Project.Data.Models;
-using VSS.Subscription.Data.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Subscription.Data.Tests
 {

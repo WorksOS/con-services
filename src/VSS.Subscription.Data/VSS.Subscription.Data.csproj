@@ -132,23 +132,17 @@
       <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\VSS.Kafka.Ikvm.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
+      <HintPath>..\..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\DapperHelper.cs" />
     <Compile Include="Helpers\GuidExtensions.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="Helpers\TypeHelper.cs" />
-    <Compile Include="Interfaces\ISubscriptionEvent.cs" />
     <Compile Include="Interfaces\ISubscriptionService.cs" />
-    <Compile Include="Models\AssociateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\CreateCustomerSubscriptionEvent.cs" />
-    <Compile Include="Models\CreateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\DissociateProjectSubscriptionEvent.cs" />
-    <Compile Include="Models\CreateAssetSubscriptionEvent.cs" />
     <Compile Include="Models\Subscription.cs" />
-    <Compile Include="Models\UpdateAssetSubscriptionEvent.cs" />
-    <Compile Include="Models\UpdateCustomerSubscriptionEvent.cs" />
-    <Compile Include="Models\UpdateProjectSubscriptionEvent.cs" />
     <Compile Include="MySqlSubscriptionRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
 using log4net;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using VSS.Customer.Data.Interfaces;
-using VSS.Customer.Data.Models;
 using LandfillService.Common.Repositories;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Customer.Data
 {
@@ -34,7 +33,7 @@ namespace VSS.Customer.Data
         var customerEvent = (CreateCustomerEvent)evt;
         customer.CustomerName = customerEvent.CustomerName;
         customer.CustomerUid = customerEvent.CustomerUID.ToString();
-        customer.CustomerType = customerEvent.CustomerType;
+        customer.CustomerType = (CustomerType) Enum.Parse(typeof (CustomerType), customerEvent.CustomerType, true);
         customer.LastActionedUtc = customerEvent.ActionUTC;        
 
         eventType = "CreateCustomerEvent";

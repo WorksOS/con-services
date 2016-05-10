@@ -53,16 +53,16 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
+      <HintPath>..\..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\DapperHelper.cs" />
     <Compile Include="Helpers\GuidExtensions.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="Helpers\TypeHelper.cs" />
-    <Compile Include="Interfaces\IUserCustomerEvent.cs" />
     <Compile Include="Interfaces\IUserCustomerService.cs" />
-    <Compile Include="Models\AssociateCustomerUserEvent.cs" />
-    <Compile Include="Models\DissociateCustomerUserEvent.cs" />
     <Compile Include="Models\UserCustomer.cs" />
     <Compile Include="MySqlUserCustomerRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

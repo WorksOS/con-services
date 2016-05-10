@@ -56,23 +56,18 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
+      <HintPath>..\..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\DapperHelper.cs" />
     <Compile Include="Helpers\GuidExtensions.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="Helpers\TypeHelper.cs" />
-    <Compile Include="Interfaces\IProjectEvent.cs" />
     <Compile Include="Interfaces\IProjectService.cs" />
-    <Compile Include="Models\AssociateProjectCustomer.cs" />
-    <Compile Include="Models\CreateProjectEvent.cs" />
-    <Compile Include="Models\DeleteProjectEvent.cs" />
-    <Compile Include="Models\DissociateProjectCustomer.cs" />
     <Compile Include="Models\Project.cs" />
-    <Compile Include="Models\ProjectType.cs" />
-    <Compile Include="Models\RelationType.cs" />
     <Compile Include="Models\TimeZone.cs" />
-    <Compile Include="Models\UpdateProjectEvent.cs" />
     <Compile Include="MySqlProjectRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

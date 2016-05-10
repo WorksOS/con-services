@@ -5,9 +5,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.consumer;
 using VSS.Geofence.Data.Interfaces;
-using VSS.Geofence.Data.Models;
 using VSS.Geofence.Processor.Helpers;
 using MySql.Data.MySqlClient;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Geofence.Processor
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Customer.Data.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Customer.Data.Tests
 {
@@ -20,7 +20,7 @@ namespace VSS.Customer.Data.Tests
        {
          CustomerUID = Guid.NewGuid(),
          CustomerName = "Test Customer",
-         CustomerType = CustomerType.Dealer,
+         CustomerType = CustomerType.Dealer.ToString(),
          ActionUTC = DateTime.UtcNow,
          ReceivedUTC = DateTime.UtcNow.AddMilliseconds(1000)
        };

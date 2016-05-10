@@ -7,8 +7,8 @@ using MySql.Data.MySqlClient;
 using org.apache.kafka.clients.consumer;
 using VSP.MasterData.Common.Logging;
 using VSS.Customer.Data.Interfaces;
-using VSS.Customer.Data.Models;
 using VSS.Customer.Processor.Helpers;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Customer.Processor
 {
@@ -38,7 +38,7 @@ namespace VSS.Customer.Processor
       {
           string val = (string)value.value();
           bool success = false;
-          Log.DebugFormat("Recieved Customer Payload : {0} ", val);
+          Log.DebugFormat("Received Customer Payload : {0} ", val);
           var json = JObject.Parse(val);
           string tokenName;
 

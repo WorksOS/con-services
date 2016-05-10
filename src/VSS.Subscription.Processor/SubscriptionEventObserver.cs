@@ -5,10 +5,9 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.consumer;
-using VSS.Subscription.Data.Models;
 using VSS.Subscription.Processor.Helpers;
-using VSS.Kafka.DotNetClient.Model;
 using VSS.Subscription.Data.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Subscription.Processor
 {
@@ -41,14 +40,14 @@ namespace VSS.Subscription.Processor
             {
                   string val = (string)value.value();
                   bool success = false;
-                  Log.DebugFormat("Recieved Subscription Payload : {0} ", val);
+                  Log.DebugFormat("Received Subscription Payload : {0} ", val);
                   var json = JObject.Parse(val);
                   string tokenName;
 
                   JToken token;
                   if ((token = json.SelectToken(tokenName = "CreateAssetSubscriptionEvent")) != null)
                   {
-                      Log.Debug(String.Format("Recieved Create Asset Subscription Payload : {0} ", token.ToString()));
+                      Log.Debug(String.Format("Received Create Asset Subscription Payload : {0} ", token.ToString()));
                         
                       var createAssetSubscriptionEvent = JsonConvert.DeserializeObject<CreateAssetSubscriptionEvent>(token.ToString());
 
@@ -58,11 +57,11 @@ namespace VSS.Subscription.Processor
                   }
                   else if ((token = json.SelectToken(tokenName = "UpdateAssetSubscriptionEvent")) != null)
                   {
-                      Log.Debug(String.Format("Recieved Update Asset Subscription Payload : {0} ", token.ToString()));
+                      Log.Debug(String.Format("Received Update Asset Subscription Payload : {0} ", token.ToString()));
 
                       var updateAssetSubscriptionEvent =  JsonConvert.DeserializeObject<UpdateAssetSubscriptionEvent>(token.ToString());
                         
-                      Log.Debug(String.Format("Recieved Update Asset Subscription Payload deserialized : {0} ", updateAssetSubscriptionEvent));
+                      Log.Debug(String.Format("Received Update Asset Subscription Payload deserialized : {0} ", updateAssetSubscriptionEvent));
 
                       int updatedCount = _subscriptionService.StoreSubscription(updateAssetSubscriptionEvent, _projectService);
 
@@ -72,7 +71,7 @@ namespace VSS.Subscription.Processor
                   }
                   else if ((token = json.SelectToken(tokenName = "CreateProjectSubscriptionEvent")) != null)
                   {
-                    Log.Debug(String.Format("Recieved Create Project Subscription Payload : {0} ", token.ToString()));
+                    Log.Debug(String.Format("Received Create Project Subscription Payload : {0} ", token.ToString()));
                       
                     var createProjectSubscriptionEvent = JsonConvert.DeserializeObject<CreateProjectSubscriptionEvent>(token.ToString());
                       
@@ -84,7 +83,7 @@ namespace VSS.Subscription.Processor
                   }
                   else if ((token = json.SelectToken(tokenName = "UpdateProjectSubscriptionEvent")) != null)
                   {
-                    Log.Debug(String.Format("Recieved Update Project Subscription Payload : {0} ", token.ToString()));
+                    Log.Debug(String.Format("Received Update Project Subscription Payload : {0} ", token.ToString()));
 
                     var updateProjectSubscriptionEvent = JsonConvert.DeserializeObject<UpdateProjectSubscriptionEvent>(token.ToString());
 
@@ -96,7 +95,7 @@ namespace VSS.Subscription.Processor
                   }
                   else if ((token = json.SelectToken(tokenName = "AssociateProjectSubscriptionEvent")) != null)
                   {
-                    Log.Debug(String.Format("Recieved Associate Project Subscription Payload : {0} ", token.ToString()));
+                    Log.Debug(String.Format("Received Associate Project Subscription Payload : {0} ", token.ToString()));
 
                     var associateProjectSubscriptionEvent = JsonConvert.DeserializeObject<AssociateProjectSubscriptionEvent>(token.ToString());
 
@@ -106,7 +105,7 @@ namespace VSS.Subscription.Processor
                   }
                   else if ((token = json.SelectToken(tokenName = "DissociateProjectSubscriptionEvent")) != null)
                   {
-                    Log.Debug(String.Format("Recieved Dissociate Project Subscription Payload : {0} ", token.ToString()));
+                    Log.Debug(String.Format("Received Dissociate Project Subscription Payload : {0} ", token.ToString()));
 
                     var dissociateProjectSubscriptionEvent = JsonConvert.DeserializeObject<DissociateProjectSubscriptionEvent>(token.ToString());
 
@@ -116,7 +115,7 @@ namespace VSS.Subscription.Processor
                   }
                   else if ((token = json.SelectToken(tokenName = "CreateCustomerSubscriptionEvent")) != null)
                   {
-                      Log.Debug(String.Format("Recieved Create Customer Subscription Payload : {0} ", token.ToString()));
+                      Log.Debug(String.Format("Received Create Customer Subscription Payload : {0} ", token.ToString()));
 
                       var createCustomerSubscriptionEvent = JsonConvert.DeserializeObject<CreateCustomerSubscriptionEvent>(token.ToString());
 
@@ -126,7 +125,7 @@ namespace VSS.Subscription.Processor
                   }
                   else if ((token = json.SelectToken(tokenName = "UpdateCustomerSubscriptionEvent")) != null)
                   {
-                      Log.Debug(String.Format("Recieved Update Customer Subscription Payload : {0} ", token.ToString()));
+                      Log.Debug(String.Format("Received Update Customer Subscription Payload : {0} ", token.ToString()));
 
                       var updateCustomerSubscriptionEvent = JsonConvert.DeserializeObject<UpdateCustomerSubscriptionEvent>(token.ToString());
 

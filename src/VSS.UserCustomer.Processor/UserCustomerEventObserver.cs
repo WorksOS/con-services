@@ -7,9 +7,8 @@ using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.consumer;
 using VSP.MasterData.Common.Logging;
 using VSS.UserCustomer.Data.Interfaces;
-using VSS.UserCustomer.Data.Models;
 using VSS.UserCustomer.Processor.Helpers;
-using VSS.Kafka.DotNetClient.Model;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.UserCustomer.Processor
 {
@@ -39,7 +38,7 @@ namespace VSS.UserCustomer.Processor
       {
         string val = (string)value.value();
         bool success = false;
-        Log.DebugFormat("Recieved Customer Payload : {0} ", val);
+        Log.DebugFormat("Received Customer Payload : {0} ", val);
         var json = JObject.Parse(val);
         string tokenName;
 

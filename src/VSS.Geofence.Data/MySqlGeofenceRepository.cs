@@ -11,6 +11,8 @@ using log4net;
 using VSS.Geofence.Data.Interfaces;
 using VSS.Geofence.Data.Models;
 using ClipperLib;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 
 namespace VSS.Geofence.Data

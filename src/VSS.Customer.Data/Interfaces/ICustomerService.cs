@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using VSS.Customer.Data.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Customer.Data.Interfaces
 {

@@ -52,19 +52,19 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
+      <HintPath>..\..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\UserCustomer.cs" />
     <Compile Include="MySqlCustomerRepository.cs" />
     <Compile Include="Helpers\DapperHelper.cs" />
     <Compile Include="Helpers\GuidExtensions.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="Helpers\TypeHelper.cs" />
     <Compile Include="Interfaces\ICustomerService.cs" />
-    <Compile Include="Interfaces\ICustomerEvent.cs" />
-    <Compile Include="Models\CreateCustomerEvent.cs" />
     <Compile Include="Models\Customer.cs" />
-    <Compile Include="Models\DeleteCustomerEvent.cs" />
-    <Compile Include="Models\UpdateCustomerEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

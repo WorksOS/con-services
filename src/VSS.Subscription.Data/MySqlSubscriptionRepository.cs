@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using Dapper;
-using MySql.Data.MySqlClient;
 using VSS.Project.Data.Interfaces;
-using VSS.Project.Data.Models;
 using VSS.Subscription.Data.Models;
 using log4net;
 using VSS.Subscription.Data.Interfaces;
 using LandfillService.Common.Repositories;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Subscription.Data
 {

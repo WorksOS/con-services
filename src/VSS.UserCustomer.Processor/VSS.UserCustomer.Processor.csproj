@@ -134,6 +134,9 @@
     <Reference Include="VSS.Kafka.Ikvm.Client">
       <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.61\lib\net451\VSS.Kafka.Ikvm.Client.dll</HintPath>
     </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
+      <HintPath>..\..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\StringExtensions.cs" />

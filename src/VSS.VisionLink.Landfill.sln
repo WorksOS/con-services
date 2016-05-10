@@ -17,6 +17,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LandFillServiceDataSynchronizer", "LandFillServiceDataSynchronizer\LandFillServiceDataSynchronizer.csproj", "{14532BBA-AB6A-4CDA-99B1-04FB7C9AEEE2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{950A1645-323E-4C9D-A428-015AE9E59CF3}"
+	ProjectSection(SolutionItems) = preProject
+		..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll = ..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Subscription.Processor", "VSS.Subscription.Processor\VSS.Subscription.Processor.csproj", "{98ADDF8C-D1D9-48F0-833D-B7A3B147A5DB}"
 EndProject

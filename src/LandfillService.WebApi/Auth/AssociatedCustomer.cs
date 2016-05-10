@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
-using VSS.Customer.Data.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSP.MasterData.Customer.WebAPI.Models
 {

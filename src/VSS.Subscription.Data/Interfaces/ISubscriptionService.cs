@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Subscription.Data.Interfaces
 {

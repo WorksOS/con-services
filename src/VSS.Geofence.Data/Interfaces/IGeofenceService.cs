@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
+﻿using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Geofence.Data.Interfaces
 {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MySql.Data.MySqlClient;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Project.Data.Interfaces
 {

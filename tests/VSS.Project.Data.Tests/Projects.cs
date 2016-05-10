@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Project.Data.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+
 
 namespace VSS.Project.Data.Tests
 {

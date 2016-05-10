@@ -5,9 +5,7 @@ using System.Net.Http.Headers;
 using VSP.MasterData.Customer.WebAPI.Models;
 using VSS.Customer.Data.Interfaces;
 using VSS.Project.Data.Interfaces;
-using VSS.Project.Data.Models;
 using VSS.Subscription.Data.Interfaces;
-using VSS.Subscription.Data.Models;
 using VSS.UserCustomer.Data.Interfaces;
 using VSS.VisionLink.Utilization.WebApi.Helpers;
 

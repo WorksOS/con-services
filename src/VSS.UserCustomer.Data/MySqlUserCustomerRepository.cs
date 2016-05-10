@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using Dapper;
 using log4net;
-using MySql.Data.MySqlClient;
 using VSS.UserCustomer.Data.Interfaces;
-using VSS.UserCustomer.Data.Models;
 using LandfillService.Common.Repositories;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.UserCustomer.Data
 {
@@ -22,7 +19,7 @@ namespace VSS.UserCustomer.Data
     //  _connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
     //}
 
-    public int StoreUserCustomer(IUserCustomerEvent evt)
+    public int StoreUserCustomer(ICustomerUserEvent evt)
     {
       var upsertedCount = 0;
       var userCustomer = new Models.UserCustomer();
