@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -18,13 +19,11 @@ namespace LandFillServiceDataSynchronizer
 {
   class Program
   {
-
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
-
     private static void ConfigureLogging()
     {
       var layout = new PatternLayout("%utcdate [%thread] %-5level %method - %message%newline");
@@ -52,10 +51,8 @@ namespace LandFillServiceDataSynchronizer
       l.AddAppender(appenderF);
     }
 
-
     static void Main(string[] args)
     {
-
       ConfigureLogging();
       AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
@@ -107,18 +104,16 @@ namespace LandFillServiceDataSynchronizer
     {
       return new ServiceController();
     }
-    }
+  }
 
   public class ServiceController
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
     private static Timer SyncTimer = null;
 
     private static void ConfigureLogging()
     {
       var layout = new PatternLayout("%utcdate [%thread] %-5level %method - %message%newline");
-
 
       FileAppender appenderF = new FileAppender();
       appenderF.Name = "logfile";
@@ -131,36 +126,25 @@ namespace LandFillServiceDataSynchronizer
 
       appenderF.Layout = layoutF;
       appenderF.ActivateOptions();
-
-
       layout.ActivateOptions();
-
-
-
       Logger l = (Logger)Log.Logger;
-
       l.AddAppender(appenderF);
     }
 
-
     public void Start()
     {
-
       ConfigureLogging();
-
-      var dataSync = new DataSynchronizer(Log);
-      
+      var dataSync = new DataSynchronizer(Log);     
 
       Log.Debug("Starting service...");
-      //here we need to sync filespaces and tasks
       SyncTimer = new System.Threading.Timer(dataSync.RunUpdateDataFromRaptor);
-      SyncTimer.Change(TimeSpan.FromSeconds(5), TimeSpan.FromHours(2));
+      var sleepTime = ConfigurationManager.AppSettings["HoursToSleepForVolumes"];
+      var hoursToSleep = string.IsNullOrEmpty(sleepTime) ? 2 : double.Parse(sleepTime);
+      SyncTimer.Change(TimeSpan.FromSeconds(5), TimeSpan.FromHours(hoursToSleep));
     }
 
     public void Stop()
     {
-
     }
-
   }
 }

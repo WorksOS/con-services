@@ -16,24 +16,8 @@ namespace LandfillService.AcceptanceTests.Scenarios
     {
         List<WeightEntry> entries = new List<WeightEntry>();
 
-        [When(@"I add a weight for yesterday to project '(.*)'")]
-        public void WhenIAddAWeightForYesterdayToProject(string projName)
-        {
-            Project project = ProjectsUtils.GetProjectDetails(projName);
-
-            entries.Add(new WeightEntry 
-            { 
-                date = WeightsUtils.ConvertToProjectTime(DateTime.Today.AddDays(-1), project.timeZoneName).Date, 
-                weight = LandfillCommonUtils.Random.Next(1, 1000) 
-            });
-
-            string requestString = JsonConvert.SerializeObject(entries.ToArray());
-            RestClientUtil.DoHttpRequest(string.Format("{0}/{1}/weights", Config.LandfillBaseUri, project.id), "POST", TPaaS.BearerToken,
-                RestClientConfig.JsonMediaType, requestString, System.Net.HttpStatusCode.OK, "Bearer", null);
-        }
-
-        [When(@"I add weights for the past (.*) days to project '(.*)'")]
-        public void WhenIAddWeightsForThePastDaysToProject(int numDays, string projName)
+        [When(@"I add weights for the past (.*) days to site '(.*)' of project '(.*)'")]
+        public void WhenIAddWeightsForThePastDaysToSiteOfProject(int numDays, string geoFenceUid, string projName)
         {
             Project project = ProjectsUtils.GetProjectDetails(projName);
 
@@ -47,12 +31,12 @@ namespace LandfillService.AcceptanceTests.Scenarios
             }
 
             string requestString = JsonConvert.SerializeObject(entries.ToArray());
-            RestClientUtil.DoHttpRequest(string.Format("{0}/{1}/weights", Config.LandfillBaseUri, project.id), "POST", TPaaS.BearerToken,
+            RestClientUtil.DoHttpRequest(string.Format("{0}/{1}/weights?geofenceUid={2}", Config.LandfillBaseUri, project.id, geoFenceUid), "POST", TPaaS.BearerToken,
                 RestClientConfig.JsonMediaType, requestString, System.Net.HttpStatusCode.OK, "Bearer", null);
         }
 
-        [When(@"I add weight for '(.*)' to project '(.*)'")]
-        public void WhenIAddWeightForToProject(string dateString, string projName)
+        [When(@"I add weight for '(.*)' to site '(.*)' of project '(.*)'")]
+        public void WhenIAddWeightForToSiteOfProject(string dateString, string geofenceUid, string projName)
         {
             Project project = ProjectsUtils.GetProjectDetails(projName);
 
@@ -63,29 +47,18 @@ namespace LandfillService.AcceptanceTests.Scenarios
             });
 
             string requestString = JsonConvert.SerializeObject(entries.ToArray());
-            RestClientUtil.DoHttpRequest(string.Format("{0}/{1}/weights", Config.LandfillBaseUri, project.id), "POST", TPaaS.BearerToken,
+            RestClientUtil.DoHttpRequest(string.Format("{0}/{1}/weights?geofenceUid={2}", Config.LandfillBaseUri, project.id, geofenceUid), "POST", TPaaS.BearerToken,
                 RestClientConfig.JsonMediaType, requestString, System.Net.HttpStatusCode.OK, "Bearer", null);
         }
 
-        [Then(@"the weight is added for yesterday to project '(.*)'")]
-        public void ThenTheWeightIsAddedForYesterdayToProject(string projName)
+        [Then(@"the weights are added for the past (.*) days to site '(.*)' of project '(.*)'")]
+        public void ThenTheWeightsAreAddedForThePastDaysToSiteOfProject(int numDays, string geofenceUid, string projName)
         {
-            Project project = ProjectsUtils.GetProjectDetails(projName);
+            string uri = string.Format("{0}/{1}?geofenceUid={2}&startDate={3}&endDate={4}", 
+                Config.LandfillBaseUri, ProjectsUtils.GetProjectDetails(projName).id, geofenceUid,
+                DateTime.Today.AddDays(-numDays).ToString("yyyy-MM-dd"), DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd"));
 
-            string response = RestClientUtil.DoHttpRequest(string.Format("{0}/{1}", Config.LandfillBaseUri, project.id), "GET", TPaaS.BearerToken,
-                RestClientConfig.JsonMediaType, null, System.Net.HttpStatusCode.OK, "Bearer", null);
-            ProjectData data = JsonConvert.DeserializeObject<ProjectData>(response);
-
-            List<DayEntry> projDataEntries = data.entries.ToList();
-            Assert.AreEqual(entries[0].weight, projDataEntries[projDataEntries.Count - 1].weight);
-        }
-
-        [Then(@"the weights are added for the past (.*) days to project '(.*)'")]
-        public void ThenTheWeightsAreAddedForThePastDaysToProject(int numDays, string projName)
-        {
-            Project project = ProjectsUtils.GetProjectDetails(projName);
-
-            string response = RestClientUtil.DoHttpRequest(string.Format("{0}/{1}", Config.LandfillBaseUri, project.id), "GET", TPaaS.BearerToken,
+            string response = RestClientUtil.DoHttpRequest(uri, "GET", TPaaS.BearerToken,
                 RestClientConfig.JsonMediaType, null, System.Net.HttpStatusCode.OK, "Bearer", null);
             ProjectData data = JsonConvert.DeserializeObject<ProjectData>(response);
             List<DayEntry> projDataEntries = data.entries.ToList();
@@ -99,21 +72,19 @@ namespace LandfillService.AcceptanceTests.Scenarios
             }
         }
 
-        [Then(@"the weight is added for '(.*)' to project '(.*)'")]
-        public void ThenTheWeightIsAddedForToProject(string dateString, string projName)
+        [Then(@"the weight is added for '(.*)' to site '(.*)' of project '(.*)'")]
+        public void ThenTheWeightIsAddedForToSiteOfProject(string dateString, string geofenceUid, string projName)
         {
             Project project = ProjectsUtils.GetProjectDetails(projName);
-
-            string response = RestClientUtil.DoHttpRequest(string.Format("{0}/{1}", Config.LandfillBaseUri, project.id), "GET", TPaaS.BearerToken,
-                RestClientConfig.JsonMediaType, null, System.Net.HttpStatusCode.OK, "Bearer", null);
-            ProjectData data = JsonConvert.DeserializeObject<ProjectData>(response);
-
-            List<DayEntry> projDataEntries = data.entries.ToList();
             DateTime date = WeightsUtils.ConvertToProjectTime(DateTime.ParseExact(dateString, "yyyy-MM-dd", null), project.timeZoneName).Date;
-            DayEntry entry = projDataEntries.First(e => e.date == date);
 
+            string uri = string.Format("{0}/{1}?geofenceUid={2}&startDate={3}&endDate={4}",
+                Config.LandfillBaseUri, project.id, geofenceUid, date.ToString("yyyy-MM-dd"), date.ToString("yyyy-MM-dd"));
+            string response = RestClientUtil.DoHttpRequest(uri, "GET", TPaaS.BearerToken,
+                RestClientConfig.JsonMediaType, null, System.Net.HttpStatusCode.OK, "Bearer", null);
+
+            DayEntry entry = JsonConvert.DeserializeObject<ProjectData>(response).entries.ToList()[0];
             Assert.AreEqual(entries[0].weight, entry.weight, "Weight not equal");
         }
-
     }
 }

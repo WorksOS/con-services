@@ -3,6 +3,7 @@
 CREATE TABLE IF NOT EXISTS `Entries` (
   `ID` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `ProjectID` int(10) unsigned NOT NULL,
+  `GeofenceUID` varchar(36),
   `Date` date NOT NULL,
   `Weight` double NOT NULL,
   `Volume` double DEFAULT NULL,
@@ -15,4 +16,19 @@ CREATE TABLE IF NOT EXISTS `Entries` (
   PRIMARY KEY (`ID`)  COMMENT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name = 'Entries'
+        AND table_schema = DATABASE()
+        AND column_name = 'GeofenceUID'
+    ) > 0,
+    "SELECT 1",
+    "ALTER TABLE `Entries` ADD COLUMN `GeofenceUID` varchar(36) AFTER `ProjectID`"
+));
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
