@@ -21,7 +21,7 @@ namespace TagFileHarvester.Implementation
   {
     private Bookmarks bookmarks;
     private Bookmarks bookmarksToMerge;
-    public static readonly string filename = OrgsHandler.BookmarkPath + "/bookmarks.xml";
+    public static string filename;
     public static readonly string filenameToMerge = OrgsHandler.BookmarkPath + "/update_bookmarks.xml";
     private static readonly LimitedConcurrencyLevelTaskScheduler bkmschdl = new LimitedConcurrencyLevelTaskScheduler(1);
     private static readonly TaskFactory factory = new TaskFactory(bkmschdl);
@@ -142,6 +142,7 @@ namespace TagFileHarvester.Implementation
 
     private XMLBookMarkManager()
     {
+      filename=OrgsHandler.BookmarkPath + "\\bookmarks.xml";
       try
       {
         lock (lockContext)
