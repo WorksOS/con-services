@@ -804,7 +804,7 @@
             <summary>
             Returns a list of geofences for the project. A geofence is associated with a project if its
             boundary is inside or intersects that of the project and it is of type 'Landfill'. The project
-            site is also returned.
+            geofence is also returned.
             </summary>
             <param name="id">Project ID</param>
             <returns>List of geofences</returns>
