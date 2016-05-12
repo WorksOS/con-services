@@ -14,9 +14,7 @@ using LandfillService.Common;
 using Newtonsoft.Json;
 using VSS.Customer.Data;
 using VSS.Subscription.Data;
-using VSS.Subscription.Data.Models;
 using VSS.Project.Data;
-using VSS.UserCustomer.Data;
 using VSS.VisionLink.Utilization.WebApi.Configuration.Principal;
 using VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models;
 
@@ -35,7 +33,7 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
       {
         //Passing the WebAPI Request headers to JWTHelper function to obtain the JWT Token
         var utils = new AuthUtilities(new MySqlCustomerRepository(), new MySqlSubscriptionRepository(),
-            new MySqlProjectRepository(), new MySqlUserCustomerRepository());
+            new MySqlProjectRepository());
         string message = string.Empty;
         string userUid = string.Empty;
         var customer = utils.GetContext(context.Request.Headers, out message, out userUid);

@@ -6,7 +6,6 @@ using VSP.MasterData.Customer.WebAPI.Models;
 using VSS.Customer.Data.Interfaces;
 using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data.Interfaces;
-using VSS.UserCustomer.Data.Interfaces;
 using VSS.VisionLink.Utilization.WebApi.Helpers;
 
 public class AuthUtilities
@@ -14,14 +13,12 @@ public class AuthUtilities
   private readonly ICustomerService _customerService;
   private readonly ISubscriptionService _subscriptionService;
   private readonly IProjectService _projectService;
-  private readonly IUserCustomerService _userCustomerService;
 
-  public AuthUtilities(ICustomerService customerService, ISubscriptionService subscriptionService, IProjectService projectService, IUserCustomerService userCustomerService)
+  public AuthUtilities(ICustomerService customerService, ISubscriptionService subscriptionService, IProjectService projectService)
   {
     _subscriptionService = subscriptionService;
     _customerService = customerService;
     _projectService = projectService;
-    _userCustomerService = userCustomerService;
   }
 
   public AssociatedCustomer GetContext(HttpRequestHeaders headers, out string errorMessage, out string userId)

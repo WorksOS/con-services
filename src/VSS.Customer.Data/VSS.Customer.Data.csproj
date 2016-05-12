@@ -57,7 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\UserCustomer.cs" />
+    <Compile Include="Models\CustomerUser.cs" />
     <Compile Include="MySqlCustomerRepository.cs" />
     <Compile Include="Interfaces\ICustomerService.cs" />
     <Compile Include="Models\Customer.cs" />

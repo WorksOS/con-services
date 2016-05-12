@@ -200,19 +200,127 @@ namespace VSS.Customer.Data
       return customer;
     }
 
-    public IEnumerable<Models.Customer> GetCustomers()
+    public int StoreCustomerUser(ICustomerUserEvent evt)
     {
+      var upsertedCount = 0;
+      var customerUser = new Models.CustomerUser();
+      string eventType = "Unknown";
+
+      if (evt is AssociateCustomerUserEvent)
+      {
+        var customerEvent = (AssociateCustomerUserEvent)evt;
+        customerUser.fk_CustomerUID = customerEvent.CustomerUID.ToString();
+        customerUser.fk_UserUID = customerEvent.UserUID.ToString();
+        customerUser.LastActionedUTC = customerEvent.ActionUTC;
+
+        eventType = "AssociateCustomerUserEvent";
+      }
+      else if (evt is DissociateCustomerUserEvent)
+      {
+        var customerEvent = (DissociateCustomerUserEvent)evt;
+        customerUser.fk_CustomerUID = customerEvent.CustomerUID.ToString();
+        customerUser.fk_UserUID = customerEvent.UserUID.ToString();
+        customerUser.LastActionedUTC = customerEvent.ActionUTC;
+
+        eventType = "DissociateCustomerUserEvent";
+      }
+
+      upsertedCount = UpsertCustomerUserDetail(customerUser, eventType);
+
+      return upsertedCount;
+    }
+
+    /// <summary>
+    /// All CustomerUser detail-related columns can be inserted, 
+    /// but only certain columns can be updated.
+    /// On the deletion, a corresponded entry will be deleted.
+    /// </summary>
+    /// <param name="customerUser"></param>
+    /// <param name="eventType"></param>
+    /// <returns></returns>
+    private int UpsertCustomerUserDetail(Models.CustomerUser customerUser, string eventType)
+    {
+      int upsertedCount = 0;
+
       PerhapsOpenConnection();
-      
-      var customers = Connection.Query<Models.Customer>
-          (@"SELECT 
-                   CustomerUID AS CustomerUid, CustomerName, fk_CustomerTypeID AS CustomerType, LastActionedUTC AS LastActionedUtc
-                FROM Customer");
+
+      Log.DebugFormat("CustomerRepository: Upserting eventType{0} CustomerUid={1}, UserUID={2}",
+        eventType, customerUser.fk_CustomerUID, customerUser.fk_UserUID);
+
+      var existing = Connection.Query<Models.CustomerUser>
+        (@"SELECT 
+            fk_UserUID, fk_CustomerUID, LastActionedUTC
+              FROM CustomerUser
+              WHERE fk_CustomerUID = @customerUID AND fk_UserUID = @userUID", new { customerUID = customerUser.fk_CustomerUID, userUID = customerUser.fk_UserUID }).FirstOrDefault();
+
+      if (eventType == "AssociateCustomerUserEvent")
+      {
+        upsertedCount = AssociateCustomerUser(customerUser, existing);
+      }
+
+      if (eventType == "DissociateCustomerUserEvent")
+      {
+        upsertedCount = DissociateCustomerUser(customerUser, existing);
+      }
+
+      Log.DebugFormat("CustomerRepository: upserted {0} rows", upsertedCount);
 
       PerhapsCloseConnection();
 
-      return customers;
+      return upsertedCount;
     }
+
+    private int AssociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
+    {
+      if (existing == null)
+      {
+        //TODO: May need to dummy this like projects and customers due to out of order events
+
+        var customer = Connection.Query<VSS.Customer.Data.Models.Customer>
+          (@"SELECT *
+              FROM Customer
+              WHERE CustomerUID = @customerUID", new { customerUID = customerUser.fk_CustomerUID }).FirstOrDefault();
+
+        if (customer == null) return 0;
+
+
+        const string insert =
+          @"INSERT CustomerUser
+            (fk_UserUID, fk_CustomerUID, LastActionedUTC)
+            VALUES
+            (@fk_UserUid, @fk_CustomerUID, @LastActionedUTC)";
+
+        return Connection.Execute(insert, customerUser);
+      }
+
+      Log.DebugFormat("CustomerRepository: can't create as already exists newActionedUTC={0}", customerUser.LastActionedUTC);
+      return 0;
+    }
+
+    private int DissociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
+    {
+      if (existing != null)
+      {
+        if (customerUser.LastActionedUTC >= existing.LastActionedUTC)
+        {
+          const string delete =
+            @"DELETE 
+              FROM CustomerUser               
+              WHERE fk_CustomerUID = @fk_CustomerUID AND fk_UserUID = @fk_UserUID";
+          return Connection.Execute(delete, customerUser);
+        }
+
+        Log.DebugFormat("CustomerRepository: old delete event ignored currentActionedUTC{0} newActionedUTC{1}",
+          existing.LastActionedUTC, customerUser.LastActionedUTC);
+      }
+      else
+      {
+        Log.DebugFormat("CustomerRepository: can't delete as none existing newActionedUTC {0}",
+          customerUser.LastActionedUTC);
+      }
+      return 0;
+    }
+
 
   }
 }

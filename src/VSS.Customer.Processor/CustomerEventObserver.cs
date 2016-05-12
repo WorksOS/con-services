@@ -116,6 +116,29 @@ namespace VSS.Customer.Processor
 
             Log.Info(success ? "Customer deleted successfully" : "Failed to delete customer");
           }
+          else if ((token = json.SelectToken(tokenName = "AssociateCustomerUserEvent")) != null)
+          {
+            var associateCustomerUserEvent = JsonConvert.DeserializeObject<AssociateCustomerUserEvent>(token.ToString());
+            Log.InfoFormat("Received a AssociateCustomerUserEvent for CustomerUid:{0} and UserUid:{1}",
+              associateCustomerUserEvent.CustomerUID, associateCustomerUserEvent.UserUID);
+            Log.DebugFormat("Payload :{0}", token.ToString());
+
+            success = (_customerService.StoreCustomerUser(associateCustomerUserEvent) == 1);
+
+            Log.Info(success ? "Customer user association created successfully" : "Customer user association could not be created ");
+          }
+          else if ((token = json.SelectToken(tokenName = "DissociateCustomerUserEvent")) != null)
+          {
+            var dissociateCustomerUserEvent =
+              JsonConvert.DeserializeObject<DissociateCustomerUserEvent>(token.ToString());
+            Log.InfoFormat("Received a DissociateCustomerUserEvent for CustomerUid:{0} and UserUid:{1}",
+              dissociateCustomerUserEvent.CustomerUID, dissociateCustomerUserEvent.UserUID);
+            Log.DebugFormat("Payload :{0}", token.ToString());
+
+            success = _customerService.StoreCustomerUser(dissociateCustomerUserEvent) == 1;
+
+            Log.Info(success ? "Customer user association removed successfully" : "Customer user association could not be removed");
+          }
 
           if (success)
           {
