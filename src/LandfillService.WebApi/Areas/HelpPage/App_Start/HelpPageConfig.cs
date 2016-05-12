@@ -56,11 +56,12 @@ namespace LandfillService.WebApi.Areas.HelpPage
                 new MediaTypeHeaderValue("application/bson"));
 
             config.SetActualResponseType(typeof(IEnumerable<Project>), "Projects", "Get");
-            config.SetActualResponseType(typeof(ProjectData), "Projects", "Get", "id");
+            List<string> parms = new List<string> { "id", "geofenceUid" , "startDate", "endDate"};
+            config.SetActualResponseType(typeof(ProjectData), "Projects", "Get", parms.ToArray());
             config.SetActualResponseType(typeof(WeightData), "Projects", "GetWeights", "id");
             config.SetActualResponseType(typeof(WeightData), "Projects", "PostWeights");
             config.SetActualResponseType(typeof(IEnumerable<Geofence>), "Projects", "GetGeofences", "id");
-            List<string> parms = new List<string>{"id", "geofenceUid"};
+            parms = new List<string>{"id", "geofenceUid"};
             config.SetActualResponseType(typeof(IEnumerable<WGSPoint>), "Projects", "GetGeofenceBoundary", parms.ToArray());
 
             //// Uncomment the following to use "[0]=foo&[1]=bar" directly as the sample for all actions that support form URL encoded format
