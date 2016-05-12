@@ -1,50 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using java.util;
 using log4net;
-using System;
-using System.Reflection;
 using org.apache.kafka.clients.consumer;
-using VSS.Customer.Data.Interfaces;
-using VSS.Landfill.Common.Processor;
-using Random = System.Random;
+using Autofac;
 
-namespace VSS.Customer.Processor
+namespace VSS.Landfill.Common.Processor
 {
-  public class CustomerProcessor : IProcessor
+  public class Processor 
   {
-    private readonly CustomerEventObserver _subscriber;
+    private readonly IObserver<ConsumerRecord> _subscriber;
     private readonly KafkaConsumer javaConsumer;
 
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    public CustomerProcessor(ICustomerService service)
+    public Processor(IObserver<ConsumerRecord> subscriber)
     {
       try
       {
         log4net.Config.XmlConfigurator.Configure();
 
-        var random = new Random();
-
-        var props = new Properties();
-        props.put("bootstrap.servers", Settings.Default.KafkaUri);
+        var props = new java.util.Properties();
+        props.put("bootstrap.servers", ConfigurationManager.AppSettings["KafkaUri"]);
         props.put("client.id", "11111");
-        props.put("group.id", Settings.Default.ConsumerGroupName);
-        props.put("enable.auto.commit", "true");
+        props.put("group.id", ConfigurationManager.AppSettings["ConsumerGroupName"]);
+        props.put("enable.auto.commit", "false");
         props.put("auto.commit.interval.ms", "1000");
         props.put("session.timeout.ms", "30000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("auto.offset.reset", "earliest");
-        props.put("fetch.min.bytes", "1");
+        props.put("fetch.min.bytes", "10000");
         props.put("receive.buffer.bytes", "214400");
         props.put("max.partition.fetch.bytes", "571520");
         props.put("heartbeat.interval.ms", "1000");
-        
         javaConsumer = new KafkaConsumer(props);
 
-        _subscriber = new CustomerEventObserver(service);
+        _subscriber = subscriber;
       }
       catch (Exception error)
       {
@@ -54,7 +50,7 @@ namespace VSS.Customer.Processor
 
     public void Process()
     {
-      javaConsumer.subscribe(Arrays.asList(Settings.Default.TopicName));
+      javaConsumer.subscribe(Arrays.asList(ConfigurationManager.AppSettings["TopicName"]));
       var consumingThread = new Thread(JavaConsumerWorker);
       consumingThread.Start();   
     }
@@ -68,13 +64,13 @@ namespace VSS.Customer.Processor
       {
         var records = javaConsumer.poll(3000);
         buffer.AddRange(records.Cast<ConsumerRecord>());
-        Log.DebugFormat("Receieved {0} messages", buffer.Count);
+        Log.DebugFormat("Received {0} messages", buffer.Count);
         if (buffer.Count < 1) continue;
 
-        Log.DebugFormat("Procesing {0} messages", buffer.Count);
+        Log.DebugFormat("Processing {0} messages", buffer.Count);
         foreach (var consumerRecord in buffer)
         {
-          Log.DebugFormat("Procesing messages partition {0} offset {1}", consumerRecord.partition(), consumerRecord.offset());
+          Log.DebugFormat("Processing messages partition {0} offset {1}", consumerRecord.partition(), consumerRecord.offset());
 
           _subscriber.OnNext(consumerRecord);
         }

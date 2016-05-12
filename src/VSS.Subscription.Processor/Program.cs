@@ -10,6 +10,7 @@ using VSS.Project.Data;
 using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data;
 using VSS.Subscription.Data.Interfaces;
+using System.Configuration;
 
 namespace VSS.Subscription.Processor
 {
@@ -53,11 +54,11 @@ namespace VSS.Subscription.Processor
         .AsSelf()
         .SingleInstance();
 
-      string confluentBaseUrl = Settings.Default.KafkaUri; //["RestProxyBaseUrl"];
+      string confluentBaseUrl = ConfigurationManager.AppSettings["KafkaUri"];
       if (string.IsNullOrWhiteSpace(confluentBaseUrl))
         throw new ArgumentNullException("RestProxy Base Url is empty");
 
-      builder.RegisterType<SubscriptionProcessor>().As<IProcessor>().SingleInstance();
+      builder.RegisterType<VSS.Landfill.Common.Processor.Processor>().As<IProcessor>().SingleInstance();
       builder.RegisterType<SubscriptionEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlSubscriptionRepository>().As<ISubscriptionService>().SingleInstance();
 

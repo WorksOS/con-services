@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Configuration;
+using Autofac;
 using log4net;
 using System;
 using System.Reflection;
@@ -51,11 +52,11 @@ namespace VSS.Project.Processor
         .AsSelf()
         .SingleInstance();
       
-      string confluentBaseUrl = Settings.Default.KafkaUri; //["RestProxyBaseUrl"];
+      string confluentBaseUrl = ConfigurationManager.AppSettings["KafkaUri"]; 
       if (string.IsNullOrWhiteSpace(confluentBaseUrl))
         throw new ArgumentNullException("RestProxy Base Url is empty");
 
-      builder.RegisterType<ProjectProcessor>().As<IProcessor>().SingleInstance();
+      builder.RegisterType<VSS.Landfill.Common.Processor.Processor>().As<IProcessor>().SingleInstance();
       builder.RegisterType<ProjectEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlProjectRepository>().As<IProjectService>().SingleInstance();
 

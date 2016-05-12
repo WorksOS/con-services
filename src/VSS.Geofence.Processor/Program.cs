@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Reflection;
 using Autofac;
 using log4net;
@@ -7,7 +8,6 @@ using Topshelf;
 using Topshelf.Runtime;
 using VSS.Geofence.Data;
 using VSS.Geofence.Data.Interfaces;
-using VSS.Geofence.Processor.Properties;
 using VSS.Landfill.Common.Processor;
 
 namespace VSS.Geofence.Processor
@@ -52,11 +52,11 @@ namespace VSS.Geofence.Processor
         .AsSelf()
         .SingleInstance();
 
-      string confluentBaseUrl = Settings.Default.KafkaUri; //["RestProxyBaseUrl"];
+      string confluentBaseUrl = ConfigurationManager.AppSettings["KafkaUri"]; 
       if (string.IsNullOrWhiteSpace(confluentBaseUrl))
         throw new ArgumentNullException("RestProxy Base Url is empty");
 
-      builder.RegisterType<GeofenceProcessor>().As<IProcessor>().SingleInstance();
+      builder.RegisterType<VSS.Landfill.Common.Processor.Processor>().As<IProcessor>().SingleInstance();
       builder.RegisterType<GeofenceEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlGeofenceRepository>().As<IGeofenceService>().SingleInstance();
 
