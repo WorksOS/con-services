@@ -186,10 +186,8 @@
   <ItemGroup>
     <Compile Include="CustomerEventObserver.cs" />
     <Compile Include="CustomerProcessor.cs" />
-    <Compile Include="Interfaces\ICustomerProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceController.cs" />
     <Compile Include="Settings.Designer.cs">
       <DependentUpon>Settings.settings</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -215,6 +213,10 @@
     <ProjectReference Include="..\VSS.Customer.Data\VSS.Customer.Data.csproj">
       <Project>{70ca8791-9379-4236-8849-d29cbeb2e251}</Project>
       <Name>VSS.Customer.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Landfill.Common\VSS.Landfill.Common.csproj">
+      <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
+      <Name>VSS.Landfill.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

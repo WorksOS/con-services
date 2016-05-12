@@ -5,7 +5,7 @@ using System.Reflection;
 using log4net;
 using MySql.Data.MySqlClient;
 
-namespace LandfillService.Common.Repositories
+namespace VSS.Landfill.Common.Repositories
 {
   public class RepositoryBase
   {

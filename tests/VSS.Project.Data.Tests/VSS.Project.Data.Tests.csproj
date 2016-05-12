@@ -84,6 +84,10 @@
       <Project>{a8af9ffb-e896-4368-8b18-127dea4753ed}</Project>
       <Name>VSS.Common.Tests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\VSS.Landfill.Common\VSS.Landfill.Common.csproj">
+      <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
+      <Name>VSS.Landfill.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\VSS.Project.Data\VSS.Project.Data.csproj">
       <Project>{225fbdea-c77f-4208-8942-1ca40eceef2d}</Project>
       <Name>VSS.Project.Data</Name>

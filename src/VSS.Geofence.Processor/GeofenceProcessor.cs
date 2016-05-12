@@ -7,13 +7,13 @@ using System;
 using System.Reflection;
 using org.apache.kafka.clients.consumer;
 using VSS.Geofence.Data.Interfaces;
-using VSS.Geofence.Processor.Interfaces;
 using VSS.Geofence.Processor.Properties;
+using VSS.Landfill.Common.Processor;
 using Random = System.Random;
 
 namespace VSS.Geofence.Processor
 {
-  public class GeofenceProcessor : IGeofenceProcessor
+  public class GeofenceProcessor : IProcessor
   {
     private readonly GeofenceEventObserver _subscriber;
     private readonly KafkaConsumer javaConsumer;

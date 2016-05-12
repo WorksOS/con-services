@@ -1,23 +1,20 @@
 ﻿using Autofac;
 using log4net;
 using System;
-using System.Configuration;
-using System.Net;
 using System.Reflection;
 using org.apache.kafka.clients.consumer;
 using Topshelf;
 using Topshelf.Runtime;
 using VSS.Customer.Data;
 using VSS.Customer.Data.Interfaces;
-using VSS.Kafka.DotNetClient.Model;
-using VSS.Customer.Processor.Interfaces;
+using VSS.Landfill.Common.Processor;
 
 namespace VSS.Customer.Processor
 {
   internal class Program
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    protected static IContainer Container { get; set; }
+    private static IContainer Container { get; set; }
 
     public static void Main(string[] args)
     {
@@ -57,7 +54,7 @@ namespace VSS.Customer.Processor
       if (string.IsNullOrWhiteSpace(confluentBaseUrl))
         throw new ArgumentNullException("RestProxy Base Url is empty");
 
-      builder.RegisterType<CustomerProcessor>().As<ICustomerProcessor>().SingleInstance();
+      builder.RegisterType<CustomerProcessor>().As<IProcessor>().SingleInstance();
       builder.RegisterType<CustomerEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlCustomerRepository>().As<ICustomerService>().SingleInstance();
 

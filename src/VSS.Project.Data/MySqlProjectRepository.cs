@@ -4,8 +4,8 @@ using System.Reflection;
 using Dapper;
 using MySql.Data.MySqlClient;
 using log4net;
+using VSS.Landfill.Common.Repositories;
 using VSS.Project.Data.Interfaces;
-using LandfillService.Common.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

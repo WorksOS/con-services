@@ -6,13 +6,13 @@ using log4net;
 using System;
 using System.Reflection;
 using org.apache.kafka.clients.consumer;
+using VSS.Landfill.Common.Processor;
 using VSS.Project.Data.Interfaces;
-using VSS.Project.Processor.Interfaces;
 using Random = System.Random;
 
 namespace VSS.Project.Processor
 {
-  public class ProjectProcessor : IProjectProcessor
+  public class ProjectProcessor : IProcessor
   {
     private readonly ProjectEventObserver _subscriber;
     private readonly KafkaConsumer javaConsumer;

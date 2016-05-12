@@ -7,12 +7,12 @@ using System;
 using System.Reflection;
 using org.apache.kafka.clients.consumer;
 using VSS.Customer.Data.Interfaces;
-using VSS.Customer.Processor.Interfaces;
+using VSS.Landfill.Common.Processor;
 using Random = System.Random;
 
 namespace VSS.Customer.Processor
 {
-  public class CustomerProcessor : ICustomerProcessor
+  public class CustomerProcessor : IProcessor
   {
     private readonly CustomerEventObserver _subscriber;
     private readonly KafkaConsumer javaConsumer;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Landfill.Common.Helpers
+namespace VSS.Landfill.Common.Helpers
 {
   public static class StringExtensions
   {

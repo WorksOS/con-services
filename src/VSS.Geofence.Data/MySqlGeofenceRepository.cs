@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
 using LandfillService.Common.Context;
 using LandfillService.Common.Models;
-using LandfillService.Common.Repositories;
 using log4net;
 using VSS.Geofence.Data.Interfaces;
 using VSS.Geofence.Data.Models;
 using ClipperLib;
+using VSS.Landfill.Common.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

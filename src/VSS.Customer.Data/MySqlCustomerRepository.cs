@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
 using log4net;
 using Newtonsoft.Json;
 using VSS.Customer.Data.Interfaces;
-using LandfillService.Common.Repositories;
+using VSS.Landfill.Common.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

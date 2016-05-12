@@ -5,18 +5,18 @@ using System.Reflection;
 using org.apache.kafka.clients.consumer;
 using Topshelf;
 using Topshelf.Runtime;
+using VSS.Landfill.Common.Processor;
 using VSS.Project.Data;
 using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data;
 using VSS.Subscription.Data.Interfaces;
-using VSS.Subscription.Processor.Interfaces;
 
 namespace VSS.Subscription.Processor
 {
   internal class Program
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    protected static IContainer Container { get; set; }
+    private static IContainer Container { get; set; }
 
     public static void Main(string[] args)
     {
@@ -57,10 +57,7 @@ namespace VSS.Subscription.Processor
       if (string.IsNullOrWhiteSpace(confluentBaseUrl))
         throw new ArgumentNullException("RestProxy Base Url is empty");
 
-      string kafkaTopicName = Settings.Default.TopicName;
-      string consumerGroupName = Settings.Default.ConsumerGroupName;
-
-      builder.RegisterType<SubscriptionProcessor>().As<ISubscriptionProcessor>().SingleInstance();
+      builder.RegisterType<SubscriptionProcessor>().As<IProcessor>().SingleInstance();
       builder.RegisterType<SubscriptionEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlSubscriptionRepository>().As<ISubscriptionService>().SingleInstance();
 

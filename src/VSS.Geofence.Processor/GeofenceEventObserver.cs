@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Reflection;
-using Landfill.Common.Helpers;
 using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.consumer;
 using VSS.Geofence.Data.Interfaces;
 using MySql.Data.MySqlClient;
+using VSS.Landfill.Common.Helpers;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Geofence.Processor

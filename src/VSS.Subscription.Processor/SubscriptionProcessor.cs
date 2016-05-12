@@ -6,14 +6,14 @@ using System;
 using System.Reflection;
 using java.util;
 using org.apache.kafka.clients.consumer;
+using VSS.Landfill.Common.Processor;
 using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data.Interfaces;
-using VSS.Subscription.Processor.Interfaces;
 using Random = System.Random;
 
 namespace VSS.Subscription.Processor
 {
-  public class SubscriptionProcessor : ISubscriptionProcessor
+  public class SubscriptionProcessor : IProcessor
   {
     private readonly SubscriptionEventObserver _subscriber;
     private readonly KafkaConsumer javaConsumer;
