@@ -22,7 +22,7 @@ namespace LandfillService.WebApi.Controllers
     /// <summary>
     /// Handles project related requests
     /// </summary>
-    [System.Web.Http.RoutePrefix("api/v1/projects")]
+    [System.Web.Http.RoutePrefix("api/v2/projects")]
     public class ProjectsController : ApiController
     {
         private RaptorApiClient raptorApiClient = new RaptorApiClient();
