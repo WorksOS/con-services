@@ -7,7 +7,6 @@ using System;
 using System.Reflection;
 using org.apache.kafka.clients.consumer;
 using VSS.Customer.Data.Interfaces;
-using VSS.Kafka.DotNetClient.Model;
 using VSS.Customer.Processor.Interfaces;
 using Random = System.Random;
 

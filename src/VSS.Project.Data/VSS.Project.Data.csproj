@@ -61,10 +61,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\DapperHelper.cs" />
-    <Compile Include="Helpers\GuidExtensions.cs" />
-    <Compile Include="Helpers\StringExtensions.cs" />
-    <Compile Include="Helpers\TypeHelper.cs" />
     <Compile Include="Interfaces\IProjectService.cs" />
     <Compile Include="Models\Project.cs" />
     <Compile Include="Models\TimeZone.cs" />

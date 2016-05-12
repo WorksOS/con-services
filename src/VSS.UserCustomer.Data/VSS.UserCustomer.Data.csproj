@@ -58,10 +58,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\DapperHelper.cs" />
-    <Compile Include="Helpers\GuidExtensions.cs" />
-    <Compile Include="Helpers\StringExtensions.cs" />
-    <Compile Include="Helpers\TypeHelper.cs" />
     <Compile Include="Interfaces\IUserCustomerService.cs" />
     <Compile Include="Models\UserCustomer.cs" />
     <Compile Include="MySqlUserCustomerRepository.cs" />

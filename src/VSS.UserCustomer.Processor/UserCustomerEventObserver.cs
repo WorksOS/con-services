@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Landfill.Common.Helpers;
 using log4net;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
@@ -7,7 +8,6 @@ using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.consumer;
 using VSP.MasterData.Common.Logging;
 using VSS.UserCustomer.Data.Interfaces;
-using VSS.UserCustomer.Processor.Helpers;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.UserCustomer.Processor

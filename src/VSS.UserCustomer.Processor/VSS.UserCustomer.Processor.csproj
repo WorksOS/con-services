@@ -139,9 +139,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\StringExtensions.cs" />
-    <Compile Include="Interfaces\IConsumer.cs" />
-    <Compile Include="Interfaces\IConsumerConfigurator.cs" />
     <Compile Include="Interfaces\IUserCustomerProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -161,9 +158,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\LandfillService.Common.csproj">

@@ -1,18 +1,14 @@
 ﻿using Autofac;
 using log4net;
 using System;
-using System.Configuration;
-using System.Net;
 using System.Reflection;
 using org.apache.kafka.clients.consumer;
 using Topshelf;
 using Topshelf.Runtime;
-using VSS.Kafka.DotNetClient.Model;
 using VSS.Project.Data;
 using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data;
 using VSS.Subscription.Data.Interfaces;
-using VSS.Subscription.Processor.Consumer;
 using VSS.Subscription.Processor.Interfaces;
 
 namespace VSS.Subscription.Processor

@@ -8,7 +8,6 @@ using java.util;
 using org.apache.kafka.clients.consumer;
 using VSS.UserCustomer.Data.Interfaces;
 using VSS.UserCustomer.Processor.Interfaces;
-using VSS.Kafka.DotNetClient.Model;
 using Random = System.Random;
 
 namespace VSS.UserCustomer.Processor

@@ -186,9 +186,6 @@
   <ItemGroup>
     <Compile Include="CustomerEventObserver.cs" />
     <Compile Include="CustomerProcessor.cs" />
-    <Compile Include="Helpers\StringExtensions.cs" />
-    <Compile Include="Interfaces\IConsumer.cs" />
-    <Compile Include="Interfaces\IConsumerConfigurator.cs" />
     <Compile Include="Interfaces\ICustomerProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -236,9 +233,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

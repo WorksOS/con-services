@@ -169,11 +169,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Consumer\ConsumerConfigurator.cs" />
-    <Compile Include="Consumer\ConsumerWrapper.cs" />
-    <Compile Include="Helpers\StringExtensions.cs" />
-    <Compile Include="Interfaces\IConsumer.cs" />
-    <Compile Include="Interfaces\IConsumerConfigurator.cs" />
     <Compile Include="Interfaces\ISubscriptionProcessor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -230,9 +225,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

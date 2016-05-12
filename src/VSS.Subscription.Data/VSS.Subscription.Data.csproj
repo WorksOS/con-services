@@ -137,10 +137,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\DapperHelper.cs" />
-    <Compile Include="Helpers\GuidExtensions.cs" />
-    <Compile Include="Helpers\StringExtensions.cs" />
-    <Compile Include="Helpers\TypeHelper.cs" />
     <Compile Include="Interfaces\ISubscriptionService.cs" />
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="MySqlSubscriptionRepository.cs" />

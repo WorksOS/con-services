@@ -59,10 +59,6 @@
   <ItemGroup>
     <Compile Include="Models\UserCustomer.cs" />
     <Compile Include="MySqlCustomerRepository.cs" />
-    <Compile Include="Helpers\DapperHelper.cs" />
-    <Compile Include="Helpers\GuidExtensions.cs" />
-    <Compile Include="Helpers\StringExtensions.cs" />
-    <Compile Include="Helpers\TypeHelper.cs" />
     <Compile Include="Interfaces\ICustomerService.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
