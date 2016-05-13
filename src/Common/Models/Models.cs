@@ -265,6 +265,34 @@ namespace LandfillService.Common.Models
         {
             return String.Format("cut:{0}, fill:{1}", Cut, Fill);
         }
+    }
 
+    /// <summary>
+    /// An entry for CCA for a machine 
+    /// </summary>
+    public class CCAEntry
+    {
+      public DateTime date { get; set; }
+      public double ccaPercent { get; set; }
+    }
+
+    /// <summary>
+    /// CCA% representation for a machine
+    /// </summary>
+    public class CCAData
+    {
+      public string machineName { get; set; }
+      public IEnumerable<CCAEntry> entries { get; set; }
+    }
+
+    /// <summary>
+    /// Volume and time sumamry data 
+    /// </summary>
+    public class VolumeTime
+    {
+      public double currentWeekVolume { get; set; }
+      public double currentMonthVolume { get; set; }
+      public double remainingVolume { get; set; }
+      public double remainingTime { get; set; }
     }
 }

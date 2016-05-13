@@ -778,6 +778,14 @@
             <param name="project">Project</param>
             <returns>List of dates with the weight for each geofence for that date</returns>
         </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32,System.Nullable{System.Guid})">
+            <summary>
+            Saves weights submitted in the request.
+            </summary>
+            <param name="id">Project ID</param>
+            <param name="geofenceUid">Geofence UID</param>
+            <returns>Project data and status of volume retrieval</returns>
+        </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeInBackground(System.String,LandfillService.Common.Models.Project,System.Collections.Generic.List{LandfillService.Common.Models.WGSPoint},LandfillService.Common.Models.DateEntry)">
             <summary>
             Retrieves volume summary from Raptor and saves it to the landfill DB
@@ -806,13 +814,12 @@
             <param name="onComplete">Code to execute on completion</param>
             <returns></returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.PostWeights(System.UInt32,System.Nullable{System.Guid})">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeTimeSummary(System.UInt32)">
             <summary>
-            Saves weights submitted in the request.
+            Gets volume and time summary for a landfill project.
             </summary>
             <param name="id">Project ID</param>
-            <param name="geofenceUid">Geofence UID</param>
-            <returns>Project data and status of volume retrieval</returns>
+            <returns>Current week volume, current month volume, remaining volume (air space) and time remaining (days)</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofences(System.UInt32)">
             <summary>
@@ -830,6 +837,15 @@
             <param name="id">Project ID</param>
             <param name="geofenceUid">Geofence UID</param>
             <returns>List of WGS84 boundary points in radians</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCA(System.UInt32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Gets CCA summary for a landfill project.
+            </summary>
+            <param name="id">Project ID</param>
+            <param name="startDate">Start date in project time zone for which to return data</param>
+            <param name="endDate">End date in project time zone for which to return data</param>
+            <returns>List of machines and daily CCA %</returns>
         </member>
     </members>
 </doc>
