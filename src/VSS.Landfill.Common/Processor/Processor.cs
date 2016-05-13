@@ -58,7 +58,6 @@ namespace VSS.Landfill.Common.Processor
     private void JavaConsumerWorker()
     {
       var buffer = new List<ConsumerRecord>();
-      const int minBatchSize = 1;
 
       while (true)
       {

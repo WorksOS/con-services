@@ -329,7 +329,6 @@ namespace LandfillService.WebApi.Controllers
         /// </summary>
         /// <param name="id">Project ID</param>
         /// <param name="geofenceUid">Geofence UID</param>
-        /// <param name="entries">array of weight entries</param>
         /// <returns>Project data and status of volume retrieval</returns>
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("{id}/weights")]
@@ -445,6 +444,7 @@ namespace LandfillService.WebApi.Controllers
         /// <summary>
         /// Returns a geofence boundary.
         /// </summary>
+        /// <param name="id">Project ID</param>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <returns>List of WGS84 boundary points in radians</returns>
         [System.Web.Http.Route("{id}/geofences/{geofenceUid}")]
