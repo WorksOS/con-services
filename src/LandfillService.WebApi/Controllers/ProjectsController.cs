@@ -32,6 +32,7 @@ namespace LandfillService.WebApi.Controllers
         //    LandfillDb.UnlockAllProjects();  // if the service terminates, some projects can be left locked for volume retrieval; unlock them
         //}
 
+        #region Projects
         /// <summary>
         /// Retrieves a list of projects from the db
         /// </summary>
@@ -100,7 +101,7 @@ namespace LandfillService.WebApi.Controllers
         /// <param name="endDate">End date in project time zone for which to return data</param>
         /// <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
         [System.Web.Http.Route("{id}")]
-        public IHttpActionResult Get(uint id, Guid? geofenceUid, DateTime? startDate, DateTime? endDate)
+        public IHttpActionResult Get(uint id, Guid? geofenceUid=null, DateTime? startDate=null, DateTime? endDate=null)
         {
             // Get the available data
             // Kick off missing volumes retrieval IF not already running
@@ -138,7 +139,9 @@ namespace LandfillService.WebApi.Controllers
             });
 
         }
+        #endregion
 
+        #region Weights
         /// <summary>
         /// Returns the weights for all geofences for the project for the date range 
         /// of the last 2 years to today in the project time zone.
@@ -208,122 +211,7 @@ namespace LandfillService.WebApi.Controllers
                     geofenceWeights = w.Value
                   }).ToList();       
         }
-
-        /// <summary>
-        /// Retrieves volume summary from Raptor and saves it to the landfill DB
-        /// </summary>
-        /// <param name="userUid">User ID</param>
-        /// <param name="project">Project</param>
-        /// <param name="geofence">Geofence</param>
-        /// <param name="entry">Weight entry from the client</param>
-        /// <returns></returns>
-        private async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, DateEntry entry)
-        {
-            try
-            {
-                var res = await raptorApiClient.GetVolumesAsync(userUid, project, entry.date, geofence);
-
-                System.Diagnostics.Debug.WriteLine("Volume res:" + res);
-                System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill ));
-
-                LandfillDb.SaveVolume(project.id, entry.geofenceUid, entry.date, res.Fill);
-            }
-            catch (RaptorApiException e)
-            {
-                if (e.code == HttpStatusCode.BadRequest)
-                {
-                    // this response code is returned when the volume isn't available (e.g. the time range
-                    // is outside project extents); the assumption is that's the only reason we will
-                    // receive a 400 Bad Request 
-                    System.Diagnostics.Debug.Write("RaptorApiException while retrieving volumes: " + e);
-                    LandfillDb.MarkVolumeNotAvailable(project.id, entry.geofenceUid, entry.date);
-
-                    // TESTING CODE
-                    // Volume range in m3 should be ~ [478, 1020]
-                    //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478, entry.geofenceUid);
-                }
-                else
-                  LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.Write("Exception while retrieving volumes: " + e);
-                LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Retries volume summary retrieval from Raptor for volumes marked not retrieved
-        /// </summary>
-        /// <param name="userUid">User ID</param>
-        /// <param name="project">Project</param>
-        /// <returns></returns>
-        private void GetMissingVolumesInBackground(string userUid, Project project)
-        {
-            // get a "lock" on the project so that only a single background task at a time is retrieving 
-            // missing volumes 
-            var noRetrievalInProgress = LandfillDb.LockForRetrieval(project);
-
-            if (noRetrievalInProgress)
-            {
-                var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project);
-                System.Diagnostics.Debug.Write("Dates without volumes: {0}", dates.ToString());
-                GetVolumesInBackground(userUid, project, dates, () =>
-                {
-                    var retrievalWasInProgress = LandfillDb.LockForRetrieval(project, false);  // "unlock" the project
-                    if (!retrievalWasInProgress)
-                        LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + project.id.ToString(),
-                            "Project wasn't locked for retrieval when it should have been");
-                });
-            }
-            else
-                System.Diagnostics.Debug.Write("Retrieval of missing volumes already in progress");  // this would indicate a bug
-        }
-
-        /// <summary>
-        /// Retrieves volumes via a background task in batches of 10 parallel requests
-        /// </summary>
-        /// <param name="userUid">User ID</param>
-        /// <param name="project">Project</param>
-        /// <param name="entries">Date entries (providing dates and geofence uids to request)</param>
-        /// <param name="onComplete">Code to execute on completion</param>
-        /// <returns></returns>
-        private void GetVolumesInBackground(string userUid, Project project, IEnumerable<DateEntry> entries, Action onComplete)
-        {
-            HostingEnvironment.QueueBackgroundWorkItem(async (CancellationToken cancel) =>
-            {
-                const int parallelRequestCount = 1;
-
-                var geofenceUids = entries.Where(d => !string.IsNullOrEmpty(d.geofenceUid)).Select(d => d.geofenceUid).Distinct().ToList();
-                var geofences = GetGeofenceBoundaries(project.id, geofenceUids);
-
-                for (var offset = 0; offset <= entries.Count() / parallelRequestCount; offset++)
-                {
-                    var tasks = entries.Skip(offset * parallelRequestCount)
-                      .Take(parallelRequestCount)
-                      .Select(entry => GetVolumeInBackground(
-                        userUid, 
-                        project, 
-                        geofences.ContainsKey(entry.geofenceUid) ? geofences[entry.geofenceUid] : null, 
-                        entry));
-                    await Task.WhenAll(tasks);
-                }
-
-                onComplete();
-            });
-        }
-
-        private Dictionary<string, List<WGSPoint>> GetGeofenceBoundaries(uint id, List<string> geofenceUids)
-        {
-          Dictionary<string, List<WGSPoint>> geofences = geofenceUids.ToDictionary(g => g,
-              g => LandfillDb.GetGeofencePoints(g).ToList());
-          LoggerSvc.LogMessage(null, null, null, string.Format("Got {0} geofences to process for project {1}", geofenceUids.Count, id));          
-
-          return geofences;
-        }
-
-
+  
         /// <summary>
         /// Saves weights submitted in the request.
         /// </summary>
@@ -333,7 +221,7 @@ namespace LandfillService.WebApi.Controllers
         /// <returns>Project data and status of volume retrieval</returns>
         [System.Web.Http.HttpPost]
         [System.Web.Http.Route("{id}/weights")]
-        public IHttpActionResult PostWeights(uint id, Guid? geofenceUid /*, [FromBody] WeightEntry[] entries*/)
+        public IHttpActionResult PostWeights(uint id, Guid? geofenceUid=null /*, [FromBody] WeightEntry[] entries*/)
         {
           //When the request goes through TPaaS the headers get changed to Transfer-Encoding: chunked and the Content-Length is 0.
           //For some reason the Web API framework can't handle this and doesn't deserialize the 'entries'.
@@ -411,7 +299,152 @@ namespace LandfillService.WebApi.Controllers
 
             });
         }
+        #endregion
 
+        #region Volumes
+
+        /// <summary>
+        /// Retrieves volume summary from Raptor and saves it to the landfill DB
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">Project</param>
+        /// <param name="geofence">Geofence</param>
+        /// <param name="entry">Weight entry from the client</param>
+        /// <returns></returns>
+        private async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, DateEntry entry)
+        {
+          try
+          {
+            var res = await raptorApiClient.GetVolumesAsync(userUid, project, entry.date, geofence);
+
+            System.Diagnostics.Debug.WriteLine("Volume res:" + res);
+            System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill));
+
+            LandfillDb.SaveVolume(project.id, entry.geofenceUid, entry.date, res.Fill);
+          }
+          catch (RaptorApiException e)
+          {
+            if (e.code == HttpStatusCode.BadRequest)
+            {
+              // this response code is returned when the volume isn't available (e.g. the time range
+              // is outside project extents); the assumption is that's the only reason we will
+              // receive a 400 Bad Request 
+              System.Diagnostics.Debug.Write("RaptorApiException while retrieving volumes: " + e);
+              LandfillDb.MarkVolumeNotAvailable(project.id, entry.geofenceUid, entry.date);
+
+              // TESTING CODE
+              // Volume range in m3 should be ~ [478, 1020]
+              //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478, entry.geofenceUid);
+            }
+            else
+              LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
+          }
+          catch (Exception e)
+          {
+            System.Diagnostics.Debug.Write("Exception while retrieving volumes: " + e);
+            LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
+            throw;
+          }
+        }
+
+        /// <summary>
+        /// Retries volume summary retrieval from Raptor for volumes marked not retrieved
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">Project</param>
+        /// <returns></returns>
+        private void GetMissingVolumesInBackground(string userUid, Project project)
+        {
+          // get a "lock" on the project so that only a single background task at a time is retrieving 
+          // missing volumes 
+          var noRetrievalInProgress = LandfillDb.LockForRetrieval(project);
+
+          if (noRetrievalInProgress)
+          {
+            var dates = LandfillDb.GetDatesWithVolumesNotRetrieved(project);
+            System.Diagnostics.Debug.Write("Dates without volumes: {0}", dates.ToString());
+            GetVolumesInBackground(userUid, project, dates, () =>
+            {
+              var retrievalWasInProgress = LandfillDb.LockForRetrieval(project, false);  // "unlock" the project
+              if (!retrievalWasInProgress)
+                LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + project.id.ToString(),
+                    "Project wasn't locked for retrieval when it should have been");
+            });
+          }
+          else
+            System.Diagnostics.Debug.Write("Retrieval of missing volumes already in progress");  // this would indicate a bug
+        }
+
+        /// <summary>
+        /// Retrieves volumes via a background task in batches of 10 parallel requests
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">Project</param>
+        /// <param name="entries">Date entries (providing dates and geofence uids to request)</param>
+        /// <param name="onComplete">Code to execute on completion</param>
+        /// <returns></returns>
+        private void GetVolumesInBackground(string userUid, Project project, IEnumerable<DateEntry> entries, Action onComplete)
+        {
+          HostingEnvironment.QueueBackgroundWorkItem(async (CancellationToken cancel) =>
+          {
+            const int parallelRequestCount = 1;
+
+            var geofenceUids = entries.Where(d => !string.IsNullOrEmpty(d.geofenceUid)).Select(d => d.geofenceUid).Distinct().ToList();
+            var geofences = GetGeofenceBoundaries(project.id, geofenceUids);
+
+            for (var offset = 0; offset <= entries.Count() / parallelRequestCount; offset++)
+            {
+              var tasks = entries.Skip(offset * parallelRequestCount)
+                .Take(parallelRequestCount)
+                .Select(entry => GetVolumeInBackground(
+                  userUid,
+                  project,
+                  geofences.ContainsKey(entry.geofenceUid) ? geofences[entry.geofenceUid] : null,
+                  entry));
+              await Task.WhenAll(tasks);
+            }
+
+            onComplete();
+          });
+        }
+
+        /// <summary>
+        /// Gets volume and time summary for a landfill project.
+        /// </summary>
+        /// <param name="id">Project ID</param>
+        /// <returns>Current week volume, current month volume, remaining volume (air space) and time remaining (days)</returns>
+        [System.Web.Http.Route("{id}/volumeTime")]
+        public IHttpActionResult GetVolumeTimeSummary(uint id)
+        {
+          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          //Secure with project list
+          if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+          {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+          }
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving CCA %");
+
+          try
+          {
+            //TODO: Implement this - for now we use Mock data
+            VolumeTime data = new VolumeTime
+                              {
+                                currentWeekVolume = 3360,
+                                currentMonthVolume = 12561,
+                                remainingVolume = 68234765,
+                                remainingTime = 1087
+                              };
+
+            return Ok(data);
+          }
+          catch (InvalidOperationException)
+          {
+            return Ok();
+          }
+        }
+        #endregion
+
+        #region Geofences
 
         /// <summary>
         /// Returns a list of geofences for the project. A geofence is associated with a project if its
@@ -469,5 +502,85 @@ namespace LandfillService.WebApi.Controllers
             return Ok();
           }
         }
+
+        private Dictionary<string, List<WGSPoint>> GetGeofenceBoundaries(uint id, List<string> geofenceUids)
+        {
+          Dictionary<string, List<WGSPoint>> geofences = geofenceUids.ToDictionary(g => g,
+              g => LandfillDb.GetGeofencePoints(g).ToList());
+          LoggerSvc.LogMessage(null, null, null, string.Format("Got {0} geofences to process for project {1}", geofenceUids.Count, id));
+
+          return geofences;
+        }
+        #endregion
+
+        #region CCA
+        /// <summary>
+        /// Gets CCA summary for a landfill project.
+        /// </summary>
+        /// <param name="id">Project ID</param>
+        /// <param name="startDate">Start date in project time zone for which to return data</param>
+        /// <param name="endDate">End date in project time zone for which to return data</param>
+        /// <returns>List of machines and daily CCA %</returns>
+        [System.Web.Http.Route("{id}/cca")]
+        public IHttpActionResult GetCCA(uint id, DateTime? startDate=null, DateTime? endDate=null)
+        {
+          var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+          //Secure with project list
+          if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+          {
+            throw new HttpResponseException(HttpStatusCode.Forbidden);
+          }
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving CCA %");
+
+          try
+          {
+            //TODO: Implement this - for now we use Mock data
+            IEnumerable<CCAData> data = new List<CCAData>
+                {
+                  new CCAData
+                  {
+                    machineName = "CAT11",
+                    entries = new List<CCAEntry>
+                    {
+                      new CCAEntry{ date = new DateTime(2016,02,01), ccaPercent = 15.2 },
+                      new CCAEntry{ date = new DateTime(2016,02,02), ccaPercent = 17.1 },
+                      new CCAEntry{ date = new DateTime(2016,02,03), ccaPercent = 26.6 },
+                      new CCAEntry{ date = new DateTime(2016,02,04), ccaPercent = 35.2 },
+                      new CCAEntry{ date = new DateTime(2016,02,05), ccaPercent = 37.8 }
+                    },
+                  },
+                                   new CCAData
+                  {
+                    machineName = "CAT23",
+                    entries = new List<CCAEntry>
+                    {
+                      new CCAEntry{ date = new DateTime(2016,02,01), ccaPercent = 16.1 },
+                      new CCAEntry{ date = new DateTime(2016,02,02), ccaPercent = 20.1 },
+                      new CCAEntry{ date = new DateTime(2016,02,03), ccaPercent = 29.6 },
+                      new CCAEntry{ date = new DateTime(2016,02,04), ccaPercent = 45.2 },
+                      new CCAEntry{ date = new DateTime(2016,02,05), ccaPercent = 58.8 }
+                    },
+                  },
+                                   new CCAData
+                  {
+                    machineName = "CAT51",
+                    entries = new List<CCAEntry>
+                    {
+                      new CCAEntry{ date = new DateTime(2016,02,01), ccaPercent = 29.2 },
+                      new CCAEntry{ date = new DateTime(2016,02,02), ccaPercent = 45.1 },
+                      new CCAEntry{ date = new DateTime(2016,02,03), ccaPercent = 49.1 },
+                      new CCAEntry{ date = new DateTime(2016,02,04), ccaPercent = 60.0 },
+                      new CCAEntry{ date = new DateTime(2016,02,05), ccaPercent = 60.0 }
+                    },
+                  }        
+                };
+            return Ok(data);
+          }
+          catch (InvalidOperationException)
+          {
+            return Ok();
+          }
+        }
+        #endregion
     }
 }
