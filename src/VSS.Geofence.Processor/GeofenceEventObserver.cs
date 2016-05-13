@@ -14,11 +14,11 @@ namespace VSS.Geofence.Processor
   public class GeofenceEventObserver : IObserver<ConsumerRecord>
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    private IGeofenceService _GeofenceService;
+    private IGeofenceService _geofenceService;
 
-    public GeofenceEventObserver(IGeofenceService GeofenceService)
+    public GeofenceEventObserver(IGeofenceService geofenceService)
     {
-      _GeofenceService = GeofenceService;
+      this._geofenceService = geofenceService;
     }
 
     public void OnCompleted()
@@ -49,7 +49,7 @@ namespace VSS.Geofence.Processor
             Log.Debug(String.Format("Received Create Geofence Payload : {0} ", token.ToString()));
             var createGeofenceEvent =
               JsonConvert.DeserializeObject<CreateGeofenceEvent>(token.ToString());
-            int updatedCount = _GeofenceService.StoreGeofence(createGeofenceEvent);
+            int updatedCount = this._geofenceService.StoreGeofence(createGeofenceEvent);
             success = (updatedCount == 1);
           }
           else if ((token = json.SelectToken(tokenName = "UpdateGeofenceEvent")) != null)
@@ -57,7 +57,7 @@ namespace VSS.Geofence.Processor
             Log.Debug(String.Format("Received Update Geofence Payload : {0} ", token.ToString()));
             var updateGeofenceEvent =
               JsonConvert.DeserializeObject<UpdateGeofenceEvent>(token.ToString());
-            int updatedCount = _GeofenceService.StoreGeofence(updateGeofenceEvent);
+            int updatedCount = this._geofenceService.StoreGeofence(updateGeofenceEvent);
             success = (updatedCount == 1);
           }
           else if ((token = json.SelectToken(tokenName = "DeleteGeofenceEvent")) != null)
@@ -65,7 +65,7 @@ namespace VSS.Geofence.Processor
             Log.Debug(String.Format("Received Delete Geofence Payload : {0} ", token.ToString()));
             var deleteGeofenceEvent =
               JsonConvert.DeserializeObject<DeleteGeofenceEvent>(token.ToString());
-            int updatedCount = _GeofenceService.StoreGeofence(deleteGeofenceEvent);
+            int updatedCount = this._geofenceService.StoreGeofence(deleteGeofenceEvent);
             success = (updatedCount == 1);
           }
 

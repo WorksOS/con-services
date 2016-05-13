@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.consumer;
 using VSS.Landfill.Common.Helpers;
 using VSS.Subscription.Data.Interfaces;
+using VSS.Project.Data.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Subscription.Processor
@@ -15,9 +16,9 @@ namespace VSS.Subscription.Processor
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private ISubscriptionService _subscriptionService;
-        private Project.Data.Interfaces.IProjectService _projectService;
+        private IProjectService _projectService;
 
-        public SubscriptionEventObserver(ISubscriptionService subscriptionService, Project.Data.Interfaces.IProjectService projectService)
+        public SubscriptionEventObserver(ISubscriptionService subscriptionService, IProjectService projectService)
         {
             _subscriptionService = subscriptionService;
             _projectService = projectService;

@@ -11,7 +11,7 @@ using Autofac;
 
 namespace VSS.Landfill.Common.Processor
 {
-  public class Processor 
+  public class Processor : IProcessor
   {
     private readonly IObserver<ConsumerRecord> _subscriber;
     private readonly KafkaConsumer javaConsumer;
