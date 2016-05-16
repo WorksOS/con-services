@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
@@ -118,6 +119,9 @@ namespace TagFileHarvester
       OrgsHandler.FolderSearchTimeSpan = TagFileHarvesterServiceSettings.Default.FolderSearchTimeSpan;
       OrgsHandler.UseModifyTimeInsteadOfCreateTime =
         TagFileHarvesterServiceSettings.Default.UseModifyTimeInsteadOfCreateTime;
+      OrgsHandler.BookmarkPath = TagFileHarvesterServiceSettings.Default.BookmarkPath;
+
+      Directory.CreateDirectory(OrgsHandler.BookmarkPath);
 
       Log.Debug("TagFileHarvester.Start: Entered Start()");
       //register dependencies here
