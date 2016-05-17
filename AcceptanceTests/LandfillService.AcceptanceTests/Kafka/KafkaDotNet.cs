@@ -9,13 +9,13 @@ using Newtonsoft.Json;
 
 namespace LandfillService.AcceptanceTests.LandFillKafka
 {
-    public class KafkaDotNet
+    public class KafkaDotNet : IKafkaDriver
     {
-        private static string endpoint;
-        private static KafkaOptions options;
-        private static Producer producer;
+        private string endpoint;
+        private KafkaOptions options;
+        private Producer producer;
 
-        static KafkaDotNet()
+        public KafkaDotNet()
         {
             endpoint = Config.KafkaEndpoint;
             options = new KafkaOptions(new Uri(endpoint));
@@ -26,7 +26,7 @@ namespace LandfillService.AcceptanceTests.LandFillKafka
             };
         }
 
-        public static string SendMessage(string topic, string message)
+        public string SendMessage(string topic, string message)
         {
             var result = producer.SendMessageAsync(topic, new[] { new Message(message) }).Result;
             Thread.Sleep(500);

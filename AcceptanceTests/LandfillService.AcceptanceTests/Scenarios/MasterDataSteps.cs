@@ -83,14 +83,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     break;
             }
 
-            if (Config.KafkaDriver == "JAVA")
-            {
-                KafkaResolver.SendMessage(topic, messageStr);
-            }
-            if (Config.KafkaDriver == ".NET")
-            {
-                KafkaDotNet.SendMessage(topic, messageStr);
-            }
+            Config.KafkaDriver.SendMessage(topic, messageStr);
         }
 
         [Given(@"I make a Web API request for a list of projects")]

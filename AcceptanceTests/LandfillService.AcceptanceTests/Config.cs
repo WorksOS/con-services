@@ -4,14 +4,28 @@ using System.Configuration;
 using AutomationCore.API.Framework.Common.Features.TPaaS;
 using LandfillService.AcceptanceTests.Models;
 using LandfillService.AcceptanceTests.Auth;
+using LandfillService.AcceptanceTests.LandFillKafka;
 
 namespace LandfillService.AcceptanceTests
 {
     public class Config
     {
         #region Kafka
-        public static string KafkaDriver = ConfigurationManager.AppSettings["KafkaDriver"];
         public static string KafkaEndpoint = ConfigurationManager.AppSettings["KafkaEndpoint"];
+        public static IKafkaDriver KafkaDriver
+        {
+            get
+            {
+                if(ConfigurationManager.AppSettings["KafkaDriver"] == "JAVA")
+                {
+                    return new KafkaResolver();
+                }
+                else
+                {
+                    return new KafkaDotNet();
+                }
+            }
+        }
 
         public static string CustomerTopic = ConfigurationManager.AppSettings["CustomerTopic"];
         public static string ProjectTopic = ConfigurationManager.AppSettings["ProjectTopic"];

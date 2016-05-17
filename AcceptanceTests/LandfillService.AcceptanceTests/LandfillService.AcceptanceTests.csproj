@@ -211,6 +211,7 @@
     <Compile Include="Auth\Jwt.cs" />
     <Compile Include="Auth\TPaaS.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Kafka\IKafkaDriver.cs" />
     <Compile Include="Kafka\KafkaResolver.cs" />
     <Compile Include="Models\Landfill\GeofenceWeight.cs" />
     <Compile Include="Models\Landfill\GeofenceWeightEntry.cs" />
