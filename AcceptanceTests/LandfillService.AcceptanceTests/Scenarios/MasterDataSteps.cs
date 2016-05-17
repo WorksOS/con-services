@@ -37,27 +37,27 @@ namespace LandfillService.AcceptanceTests.Scenarios
             {
                 case "CreateCustomerEvent":
                     messageStr = mdSupport.CreateCustomer(customerUID);
-                    topic = Config.CustomerMasterDataTopic;
+                    topic = Config.CustomerTopic;
                     break;
                 case "UpdateCustomerEvent":
                     messageStr = mdSupport.UpdateCustomer(customerUID);
-                    topic = Config.CustomerMasterDataTopic;
+                    topic = Config.CustomerTopic;
                     break;
                 case "DeleteCustomerEvent":
                     messageStr = mdSupport.DeleteCustomer(customerUID);
-                    topic = Config.CustomerMasterDataTopic;
+                    topic = Config.CustomerTopic;
                     break;
                 case "CreateProjectEvent":
                     messageStr = mdSupport.CreateProject(projectUID);
-                    topic = Config.ProjectMasterDataTopic;
+                    topic = Config.ProjectTopic;
                     break;
                 case "UpdateProjectEvent":
                     messageStr = mdSupport.UpdateProject(projectUID);
-                    topic = Config.ProjectMasterDataTopic;
+                    topic = Config.ProjectTopic;
                     break;
                 case "DeleteProjectEvent":
                     messageStr = mdSupport.DeleteProject(projectUID);
-                    topic = Config.ProjectMasterDataTopic;
+                    topic = Config.ProjectTopic;
                     break;
                 case "CreateProjectSubscriptionEvent":
                     messageStr = mdSupport.CreateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUID);
@@ -65,13 +65,13 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     break;
                 case "AssociateCustomerUserEvent":
                     messageStr = mdSupport.AssociateCustomerUser(customerUID, userUID);
-                    topic = Config.CustomerUserMasterDataTopic;
+                    topic = Config.CustomerTopic;
                     break;
                 case "AssociateProjectCustomer":
                     string query = string.Format("DELETE FROM {0}.Project WHERE CustomerUID = '{1}'", Config.MySqlDbName, Config.MasterDataCustomerUID);
                     LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query);
                     messageStr = mdSupport.AssociateProjectCustomer(projectUID, Config.MasterDataCustomerUID);
-                    topic = Config.ProjectMasterDataTopic;
+                    topic = Config.ProjectTopic;
                     break;
                 case "AssociateProjectSubscriptionEvent":
                     messageStr = mdSupport.AssociateProjectSubscription(projectUID, projSubscripUID);

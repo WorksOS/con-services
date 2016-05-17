@@ -13,10 +13,10 @@ namespace LandfillService.AcceptanceTests
         public static string KafkaDriver = ConfigurationManager.AppSettings["KafkaDriver"];
         public static string KafkaEndpoint = ConfigurationManager.AppSettings["KafkaEndpoint"];
 
-        public static string CustomerMasterDataTopic = ConfigurationManager.AppSettings["CustomerMasterDataTopic"];
-        public static string ProjectMasterDataTopic = ConfigurationManager.AppSettings["ProjectMasterDataTopic"];
+        public static string CustomerTopic = ConfigurationManager.AppSettings["CustomerTopic"];
+        public static string ProjectTopic = ConfigurationManager.AppSettings["ProjectTopic"];
         public static string SubscriptionTopic = ConfigurationManager.AppSettings["SubscriptionTopic"];
-        public static string CustomerUserMasterDataTopic = ConfigurationManager.AppSettings["CustomerUserMasterDataTopic"];
+        public static string GeofenceTopic = ConfigurationManager.AppSettings["GeofenceTopic"];
         #endregion
 
         #region Database
