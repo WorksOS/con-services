@@ -208,6 +208,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Auth\Jwt.cs" />
     <Compile Include="Auth\TPaaS.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Kafka\KafkaResolver.cs" />
@@ -265,20 +266,6 @@
     <None Include="App.Debug.config">
       <DependentUpon>App.config</DependentUpon>
       <SubType>Designer</SubType>
-    </None>
-    <None Include="App.DeployToFolderForDev.config">
-      <DependentUpon>App.config</DependentUpon>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="App.DeployToFolderForBeta.config">
-      <DependentUpon>App.config</DependentUpon>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="App.DeployToFolderForT01.config">
-      <DependentUpon>App.config</DependentUpon>
-    </None>
-    <None Include="App.DeployToFolderForT02.config">
-      <DependentUpon>App.config</DependentUpon>
     </None>
     <None Include="App.Release.config">
       <DependentUpon>App.config</DependentUpon>

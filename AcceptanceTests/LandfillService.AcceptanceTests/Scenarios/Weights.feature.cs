@@ -68,28 +68,18 @@ namespace LandfillService.AcceptanceTests.Scenarios
             testRunner.CollectScenarioErrors();
         }
         
-        public virtual void FeatureBackground()
-        {
-#line 3
-#line 4
- testRunner.Given("I am logged in with good credentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-        }
-        
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Add weight to a site - yesterday")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Weights")]
         public virtual void AddWeightToASite_Yesterday()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add weight to a site - yesterday", ((string[])(null)));
-#line 6
-this.ScenarioSetup(scenarioInfo);
 #line 3
-this.FeatureBackground();
-#line 7
+this.ScenarioSetup(scenarioInfo);
+#line 4
  testRunner.When("I add weights for the past 1 days to site \'1863fb2e-fd25-e311-9e53-0050568824d7\' " +
                     "of project \'Pegasus\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 8
+#line 5
  testRunner.Then("the weights are added for the past 1 days to site \'1863fb2e-fd25-e311-9e53-005056" +
                     "8824d7\' of project \'Pegasus\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -102,14 +92,12 @@ this.FeatureBackground();
         public virtual void AddWeightToASite_MultiDays()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add weight to a site - multi days", ((string[])(null)));
-#line 10
+#line 7
 this.ScenarioSetup(scenarioInfo);
-#line 3
-this.FeatureBackground();
-#line 11
+#line 8
  testRunner.When("I add weights for the past 3 days to site \'1863fb2e-fd25-e311-9e53-0050568824d7\' " +
                     "of project \'Pegasus\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 12
+#line 9
  testRunner.Then("the weights are added for the past 3 days to site \'1863fb2e-fd25-e311-9e53-005056" +
                     "8824d7\' of project \'Pegasus\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -122,14 +110,12 @@ this.FeatureBackground();
         public virtual void AddWeightToASite_SpecificDate()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Add weight to a site - specific date", ((string[])(null)));
-#line 14
+#line 11
 this.ScenarioSetup(scenarioInfo);
-#line 3
-this.FeatureBackground();
-#line 15
+#line 12
  testRunner.When("I add weight for \'2016-04-01\' to site \'fb4f0e9d-12f4-11e5-b129-0050568838e5\' of p" +
                     "roject \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 16
+#line 13
  testRunner.Then("the weight is added for \'2016-04-01\' to site \'fb4f0e9d-12f4-11e5-b129-0050568838e" +
                     "5\' of project \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
@@ -142,16 +128,14 @@ this.FeatureBackground();
         public virtual void GetWeightsOfAllSites()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Get weights of all sites", ((string[])(null)));
-#line 18
+#line 15
 this.ScenarioSetup(scenarioInfo);
-#line 3
-this.FeatureBackground();
-#line 19
+#line 16
  testRunner.When("I add weight for \'2016-04-01\' to site \'fb4f0e9d-12f4-11e5-b129-0050568838e5\' of p" +
                     "roject \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 20
+#line 17
   testRunner.And("I request all weights for all sites of project \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 21
+#line 18
  testRunner.Then("project \'Casella-Stanley Landfill\' has the correct weight for site \'fb4f0e9d-12f4" +
                     "-11e5-b129-0050568838e5\' on \'2016-04-01\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

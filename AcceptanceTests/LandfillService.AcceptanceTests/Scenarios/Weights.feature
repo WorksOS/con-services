@@ -1,8 +1,5 @@
 ﻿Feature: Weights
 
-Background: 
-	Given I am logged in with good credentials
-
 Scenario: Add weight to a site - yesterday
 	When I add weights for the past 1 days to site '1863fb2e-fd25-e311-9e53-0050568824d7' of project 'Pegasus'
 	Then the weights are added for the past 1 days to site '1863fb2e-fd25-e311-9e53-0050568824d7' of project 'Pegasus'

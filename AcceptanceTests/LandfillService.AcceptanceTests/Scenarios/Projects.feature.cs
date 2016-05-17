@@ -68,25 +68,15 @@ namespace LandfillService.AcceptanceTests.Scenarios
             testRunner.CollectScenarioErrors();
         }
         
-        public virtual void FeatureBackground()
-        {
-#line 3
-#line 4
- testRunner.Given("I am logged in with good credentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-        }
-        
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Project list")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Projects")]
         public virtual void ProjectList()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project list", ((string[])(null)));
-#line 6
-this.ScenarioSetup(scenarioInfo);
 #line 3
-this.FeatureBackground();
-#line 7
+this.ScenarioSetup(scenarioInfo);
+#line 4
  testRunner.When("I try to get a list of all projects", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
@@ -97,7 +87,7 @@ this.FeatureBackground();
                         "06A92E4F-FAA2-E511-80E5-0050568821E6",
                         "America/Chicago",
                         "Central Standard Time"});
-#line 8
+#line 5
  testRunner.Then("the project \'Casella-Stanley Landfill\' is in the list with details", ((string)(null)), table1, "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -109,10 +99,8 @@ this.FeatureBackground();
         public virtual void ProjectData_OneDay()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project data - one day", ((string[])(null)));
-#line 12
+#line 9
 this.ScenarioSetup(scenarioInfo);
-#line 3
-this.FeatureBackground();
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
                         "ProjectName",
@@ -122,9 +110,9 @@ this.FeatureBackground();
                         "Casella-Stanley Landfill",
                         "fb4f0e9d-12f4-11e5-b129-0050568838e5",
                         "OneDay"});
-#line 13
+#line 10
  testRunner.When("I try to get data for", ((string)(null)), table2, "When ");
-#line 16
+#line 13
  testRunner.Then("the response contains data for \'OneDay\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -136,10 +124,8 @@ this.FeatureBackground();
         public virtual void ProjectData_ThreeDays()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project data - three days", ((string[])(null)));
-#line 18
+#line 15
 this.ScenarioSetup(scenarioInfo);
-#line 3
-this.FeatureBackground();
 #line hidden
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                         "ProjectName",
@@ -149,9 +135,9 @@ this.FeatureBackground();
                         "Casella-Stanley Landfill",
                         "fb4f0e9d-12f4-11e5-b129-0050568838e5",
                         "ThreeDays"});
-#line 19
+#line 16
  testRunner.When("I try to get data for", ((string)(null)), table3, "When ");
-#line 22
+#line 19
  testRunner.Then("the response contains data for \'ThreeDays\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -163,10 +149,8 @@ this.FeatureBackground();
         public virtual void ProjectData_TwoYears()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Project data - two years", ((string[])(null)));
-#line 24
+#line 21
 this.ScenarioSetup(scenarioInfo);
-#line 3
-this.FeatureBackground();
 #line hidden
             TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                         "ProjectName",
@@ -176,9 +160,9 @@ this.FeatureBackground();
                         "Casella-Stanley Landfill",
                         "fb4f0e9d-12f4-11e5-b129-0050568838e5",
                         "TwoYears"});
-#line 25
+#line 22
  testRunner.When("I try to get data for", ((string)(null)), table4, "When ");
-#line 28
+#line 25
  testRunner.Then("the response contains data for \'TwoYears\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

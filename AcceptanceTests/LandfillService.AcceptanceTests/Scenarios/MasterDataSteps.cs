@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Linq;
 using System.Collections.Generic;
 using System.Configuration;
@@ -96,8 +97,8 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [When(@"I make a Web API request for a list of projects")]
         public void WhenIMakeAWebAPIRequestForAListOfProjects()
         {
-            string response = RestClientUtil.DoHttpRequest(Config.LandfillBaseUri, "GET", TPaaS.BearerToken,
-                RestClientConfig.JsonMediaType, null, System.Net.HttpStatusCode.OK, "Bearer", null);
+            string response = RestClientUtil.DoHttpRequest(Config.ConstructGetProjectListUri(), "GET",
+                RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
             projects = JsonConvert.DeserializeObject<List<Project>>(response);
         }
 
