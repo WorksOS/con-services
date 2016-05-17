@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
+using VSS.Geofence.Data;
 using VSS.Project.Data;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -11,12 +12,15 @@ namespace VSS.Subscription.Data.Tests
   {
     private readonly MySqlSubscriptionRepository _subscriptionService;
     private readonly MySqlProjectRepository _projectService;
+    private readonly MySqlGeofenceRepository _geofenceService;
 
     public Subscriptions()
     {
       _subscriptionService = new MySqlSubscriptionRepository();
       _projectService = new MySqlProjectRepository();
       _projectService.SetInTransactionState(true);
+      _geofenceService = new MySqlGeofenceRepository();
+      _geofenceService.SetInTransactionState(true);
     }
 
     private CreateProjectSubscriptionEvent GetNewCreateProjectSubscriptionEvent()
@@ -82,7 +86,7 @@ namespace VSS.Subscription.Data.Tests
       {
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
         var savedSubscriptionUID = createProjectSubscriptionEvent.SubscriptionUID;
-        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project subscription!");
 
         var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -91,7 +95,7 @@ namespace VSS.Subscription.Data.Tests
         createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
         createProjectSubscriptionEvent.SubscriptionUID = savedSubscriptionUID;
 
-        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to update the existing Landfill project subscription!");
 
         return null;
@@ -106,7 +110,7 @@ namespace VSS.Subscription.Data.Tests
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
         createProjectSubscriptionEvent.SubscriptionType = "Unified Fleet";
 
-        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsFalse(upsertCount == 1, "Should fail failed to create a Landfill project subscription due to the wrong subscription's type!");
 
         var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -119,7 +123,7 @@ namespace VSS.Subscription.Data.Tests
     [TestMethod]
     public void UpsertSubscription_Fails()
     {
-      var upsertCount = _subscriptionService.StoreSubscription(null, null);
+      var upsertCount = _subscriptionService.StoreSubscription(null, null, null);
       Assert.IsTrue(upsertCount == 0, "Should fail to upsert a subscription!");
     }
 
@@ -129,7 +133,7 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
-        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project subscription!");
 
         var updateProjectSubscriptionEvent = GetNewUpdateProjectSubscriptionEvent(createProjectSubscriptionEvent.SubscriptionUID,
@@ -139,7 +143,7 @@ namespace VSS.Subscription.Data.Tests
                                                                                   createProjectSubscriptionEvent.EndDate.AddDays(3),
                                                                                   DateTime.UtcNow);
 
-        upsertCount = _subscriptionService.StoreSubscription(updateProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(updateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to update the existing Landfill project subscription!");
 
         var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -162,7 +166,7 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
-        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project subscription!");
 
         var updateProjectSubscriptionEvent = GetNewUpdateProjectSubscriptionEvent(createProjectSubscriptionEvent.SubscriptionUID,
@@ -172,7 +176,7 @@ namespace VSS.Subscription.Data.Tests
                                                                                   createProjectSubscriptionEvent.EndDate.AddMonths(3),
                                                                                   DateTime.UtcNow);
 
-        upsertCount = _subscriptionService.StoreSubscription(updateProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(updateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsFalse(upsertCount == 1, "Should fail to update the existing Landfill project subscription due to the wrong subscription's type!");
 
         return null;
@@ -189,13 +193,14 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         _projectService.SetConnection((MySqlConnection)o);
+        _geofenceService.SetConnection((MySqlConnection)o);
 
         var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(Guid.NewGuid(), 
                                                                                         Guid.NewGuid(), 
                                                                                         DateTime.UtcNow, 
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
 
-        var upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        var upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to associate a subscription with a Landfill project!");
 
         var subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -221,9 +226,10 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         _projectService.SetConnection((MySqlConnection)o);
+        _geofenceService.SetConnection((MySqlConnection)o);
 
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
-        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project subscription that is to be associated with a project!");
 
         var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -234,7 +240,7 @@ namespace VSS.Subscription.Data.Tests
                                                                                         DateTime.UtcNow,
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
 
-        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the existing subscription with a Landfill project!");
 
         subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -260,9 +266,10 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         _projectService.SetConnection((MySqlConnection)o);
+        _geofenceService.SetConnection((MySqlConnection)o);
 
         var createProjectEvent = GetNewCreateProjectEvent();
-        var upsertCount = _projectService.StoreProject(createProjectEvent);
+        var upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -273,7 +280,7 @@ namespace VSS.Subscription.Data.Tests
                                                                                         DateTime.UtcNow,
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
 
-        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with the existing Landfill project!");
 
         var subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -300,10 +307,11 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         _projectService.SetConnection((MySqlConnection)o);
+        _geofenceService.SetConnection((MySqlConnection)o);
         
         // CreateProject event...
         var createProjectEvent = GetNewCreateProjectEvent();
-        var upsertCount = _projectService.StoreProject(createProjectEvent);
+        var upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -311,7 +319,7 @@ namespace VSS.Subscription.Data.Tests
 
         // CreateProjectSubscription event...
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
-        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with a project!");
 
         var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -323,7 +331,7 @@ namespace VSS.Subscription.Data.Tests
                                                                                         DateTime.UtcNow,
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
 
-        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with the existing Landfill project!");
 
         subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -350,10 +358,11 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         _projectService.SetConnection((MySqlConnection)o);
+        _geofenceService.SetConnection((MySqlConnection)o);
 
         // CreateProjectSubscription event...
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
-        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with a project!");
 
         var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -361,7 +370,7 @@ namespace VSS.Subscription.Data.Tests
 
         // CreateProject event...
         var createProjectEvent = GetNewCreateProjectEvent();
-        upsertCount = _projectService.StoreProject(createProjectEvent);
+        upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -373,7 +382,7 @@ namespace VSS.Subscription.Data.Tests
                                                                                         DateTime.UtcNow,
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
 
-        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with the existing Landfill project!");
 
         subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -400,6 +409,7 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         _projectService.SetConnection((MySqlConnection)o);
+        _geofenceService.SetConnection((MySqlConnection)o);
 
         // AssociateProjectSubscription event...
         var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(Guid.NewGuid(),
@@ -407,7 +417,7 @@ namespace VSS.Subscription.Data.Tests
                                                                                         DateTime.UtcNow,
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
 
-        var upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        var upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with a Landfill project!");
 
         var subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -416,7 +426,7 @@ namespace VSS.Subscription.Data.Tests
         // CreateProject event...
         var createProjectEvent = GetNewCreateProjectEvent();
         createProjectEvent.ProjectUID = associateProjectSubscriptionEvent.ProjectUID;
-        upsertCount = _projectService.StoreProject(createProjectEvent);
+        upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -425,7 +435,7 @@ namespace VSS.Subscription.Data.Tests
         // CreateProjectSubscription event...
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
         createProjectSubscriptionEvent.SubscriptionUID = associateProjectSubscriptionEvent.SubscriptionUID;
-        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with the existing Landfill project!");
 
         subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -456,6 +466,7 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         _projectService.SetConnection((MySqlConnection)o);
+        _geofenceService.SetConnection((MySqlConnection)o);
 
         // AssociateProjectSubscription event...
         var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(Guid.NewGuid(),
@@ -463,7 +474,7 @@ namespace VSS.Subscription.Data.Tests
                                                                                         DateTime.UtcNow,
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
 
-        var upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        var upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with a Landfill project!");
 
         var subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -472,7 +483,7 @@ namespace VSS.Subscription.Data.Tests
         // CreateProjectSubscription event...
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
         createProjectSubscriptionEvent.SubscriptionUID = associateProjectSubscriptionEvent.SubscriptionUID;
-        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with the existing Landfill project!");
 
         subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -481,7 +492,7 @@ namespace VSS.Subscription.Data.Tests
         // CreateProject event...
         var createProjectEvent = GetNewCreateProjectEvent();
         createProjectEvent.ProjectUID = associateProjectSubscriptionEvent.ProjectUID;
-        upsertCount = _projectService.StoreProject(createProjectEvent);
+        upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -512,10 +523,11 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         _projectService.SetConnection((MySqlConnection)o);
+        _geofenceService.SetConnection((MySqlConnection)o);
 
         // CreateProject event...
         var createProjectEvent = GetNewCreateProjectEvent();
-        var upsertCount = _projectService.StoreProject(createProjectEvent);
+        var upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -527,7 +539,7 @@ namespace VSS.Subscription.Data.Tests
                                                                                         DateTime.UtcNow,
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
 
-        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with a Landfill project!");
 
         var subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -536,7 +548,7 @@ namespace VSS.Subscription.Data.Tests
         // CreateProjectSubscription event...
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
         createProjectSubscriptionEvent.SubscriptionUID = associateProjectSubscriptionEvent.SubscriptionUID;
-        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with the existing Landfill project!");
 
         subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -567,10 +579,11 @@ namespace VSS.Subscription.Data.Tests
       _subscriptionService.InRollbackTransaction<object>(o =>
       {
         _projectService.SetConnection((MySqlConnection)o);
+        _geofenceService.SetConnection((MySqlConnection)o);
 
         // CreateProjectSubscription event...
         var createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent();
-        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService);
+        var upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project subscription that is to be associated with the existing Landfill project!");
 
         var subscription = _subscriptionService.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -582,7 +595,7 @@ namespace VSS.Subscription.Data.Tests
                                                                                         DateTime.UtcNow,
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
 
-        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService);
+        upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent, _projectService, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the subscription with a Landfill project!");
 
         subscription = _subscriptionService.GetSubscription(associateProjectSubscriptionEvent.SubscriptionUID.ToString());
@@ -591,7 +604,7 @@ namespace VSS.Subscription.Data.Tests
         // CreateProject event...
         var createProjectEvent = GetNewCreateProjectEvent();
         createProjectEvent.ProjectUID = associateProjectSubscriptionEvent.ProjectUID;
-        upsertCount = _projectService.StoreProject(createProjectEvent);
+        upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
         Assert.IsTrue(upsertCount == 1, "Failed to create a Landfill project that is to be associated with a subscription!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());

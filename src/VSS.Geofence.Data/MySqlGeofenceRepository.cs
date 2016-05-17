@@ -47,11 +47,6 @@ namespace VSS.Geofence.Data
           else if (geofence.geofenceType == GeofenceType.Project)
           {
             geofence.projectUid = GetProjectUidForName(geofence.customerUid, geofence.name);
-            //TODO: Check for unassigned Landfill geofences which may belong to this project
-            //i.e. repeat FindAssociatedProjectUidForLandfillGeofence for each unassigned Landfill
-            //geofence for this customer
-
-            //TODO *** All this other processing should be done in the processor for the event, not in the repo !!!
           }
           geofence.lastActionedUtc = geofenceEvent.ActionUTC;
           eventType = "CreateGeofenceEvent";
@@ -59,10 +54,9 @@ namespace VSS.Geofence.Data
         else if (evt is UpdateGeofenceEvent)
         {
           var geofenceEvent = (UpdateGeofenceEvent) evt;
-          geofence.geofenceUid = geofenceEvent.GeofenceUID.ToString();
           geofence.name = geofenceEvent.GeofenceName;
           //cannot update the following in update event:
-          //GeofenceType, GeometryWKT
+          //GeofenceUID, GeofenceType, GeometryWKT
           geofence.fillColor = geofenceEvent.FillColor;
           geofence.isTransparent = geofenceEvent.IsTransparent;
           geofence.lastActionedUtc = geofenceEvent.ActionUTC;
@@ -77,6 +71,11 @@ namespace VSS.Geofence.Data
         }
 
         upsertedCount = UpsertGeofenceDetail(geofence, eventType);
+
+        if (evt is CreateGeofenceEvent && geofence.geofenceType == GeofenceType.Project && !string.IsNullOrEmpty(geofence.projectUid))
+        {
+          AssignApplicableLandfillGeofencesToProject(geofence.geometryWKT, geofence.customerUid, geofence.projectUid);
+        }
       }
       return upsertedCount;
     }
@@ -219,6 +218,20 @@ namespace VSS.Geofence.Data
     }
 
     #region Link Geofences to Projects
+
+    public void AssignApplicableLandfillGeofencesToProject(string projectGeometry, string customerUid, string projectUid)
+    {
+      //Check for unassigned Landfill geofences and see if they belong to this project
+      var unassignedGeofences = GetUnassignedLandfillGeofences(customerUid);
+      foreach (var unassignedGeofence in unassignedGeofences)
+      {
+        if (GeofencesOverlap(projectGeometry, unassignedGeofence.geometryWKT))
+        {
+          AssignGeofenceToProject(unassignedGeofence.geofenceUid, projectUid);
+        }
+      }      
+    }
+
     private IEnumerable<Models.Geofence> GetProjectGeofences(string customerUid)
     {
       PerhapsOpenConnection();
@@ -236,7 +249,7 @@ namespace VSS.Geofence.Data
       return projectGeofences;
     }
 
-    private IEnumerable<Models.Geofence> GetUnassignedLandfillGeofences(string customerUid)
+    public IEnumerable<Models.Geofence> GetUnassignedLandfillGeofences(string customerUid)
     {
       PerhapsOpenConnection();
 
@@ -253,7 +266,7 @@ namespace VSS.Geofence.Data
       return landfillGeofences;
     }
 
-    private int AssignGeofenceToProject(string geofenceUid, string projectUid)
+    public int AssignGeofenceToProject(string geofenceUid, string projectUid)
     {
       Log.DebugFormat("GeofenceRepository: Assigning geofence {0} to project {1}", geofenceUid, projectUid);
 
@@ -268,7 +281,6 @@ namespace VSS.Geofence.Data
       return rowsUpdated;
     }
 
-    private const float SCALE = 100000;
 
     private List<List<IntPoint>> ClipperIntersects(List<IntPoint> oldPolygon, List<IntPoint> newPolygon)
     {
@@ -284,6 +296,8 @@ namespace VSS.Geofence.Data
 
     private List<IntPoint> ClipperPolygon(string geofenceGeometry)
     {
+      const float SCALE = 100000;
+
       //TODO: Make a common utility method for GeometryToPoints
       IEnumerable<WGSPoint> points = LandfillDb.GeometryToPoints(geofenceGeometry);
       return points.Select(p => new IntPoint {X = (Int64) (p.Lon * SCALE), Y = (Int64) (p.Lat * SCALE)}).ToList();
@@ -295,9 +309,7 @@ namespace VSS.Geofence.Data
       IEnumerable<Models.Geofence> projectGeofences = GetProjectGeofences(customerUid);
       foreach (var projectGeofence in projectGeofences)
       {
-        List<List<IntPoint>> intersectingPolys = ClipperIntersects(
-          ClipperPolygon(projectGeofence.geometryWKT), geofencePolygon);
-        if (intersectingPolys != null && intersectingPolys.Count > 0)
+        if (GeofencesOverlap(projectGeofence.geometryWKT, geofencePolygon))
         {
           if (string.IsNullOrEmpty(projectGeofence.projectUid))
           {
@@ -313,8 +325,22 @@ namespace VSS.Geofence.Data
       return null;
     }
 
- 
-    //TODO: This should be in the project repo !!!
+    private bool GeofencesOverlap(string projectGeometry, string geofenceGeometry)
+    {
+      List<IntPoint> geofencePolygon = ClipperPolygon(geofenceGeometry);
+      return GeofencesOverlap(projectGeometry, geofencePolygon);
+    }
+
+    private bool GeofencesOverlap(string projectGeometry, List<IntPoint> geofencePolygon)
+    {
+      List<List<IntPoint>> intersectingPolys = ClipperIntersects(
+        ClipperPolygon(projectGeometry), geofencePolygon);
+      return intersectingPolys != null && intersectingPolys.Count > 0;
+    }
+
+    #endregion
+
+
     private string GetProjectUidForName(string customerUid, string name)
     {
       PerhapsOpenConnection();
@@ -323,15 +349,32 @@ namespace VSS.Geofence.Data
          (@"SELECT ProjectUID
             FROM Project 
             WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND Name = @name;",
-              new  {customerUid, name }
+              new { customerUid, name }
          ).FirstOrDefault();
 
       PerhapsCloseConnection();
 
-      Log.DebugFormat("GeofenceRepository: Get project {0} for name {1} for customer {2}", projectUid, name, customerUid);
+      Log.DebugFormat("ProjectRepository: Get project {0} for name {1} for customer {2}", projectUid, name, customerUid);
 
       return projectUid;
     }
-    #endregion
+
+    public Models.Geofence GetGeofenceByName(string customerUid, string name)
+    {
+      PerhapsOpenConnection();
+
+      var geofence = Connection.Query<Models.Geofence>
+          (@"SELECT 
+                GeofenceUID, Name, CustomerUID, ProjectUID, GeometryWKT
+              FROM Geofence
+              WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND Name = @name;"
+          , new { customerUid, name }
+        ).FirstOrDefault();
+
+      PerhapsCloseConnection();
+
+      return geofence;     
+    }
+
   }
 }

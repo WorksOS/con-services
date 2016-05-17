@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
+using VSS.Geofence.Data.Interfaces;
 using VSS.Landfill.Common.Repositories;
 using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data.Models;
@@ -22,13 +23,11 @@ namespace VSS.Subscription.Data
 
         public MySqlSubscriptionRepository()
         {
-          //_connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
-
           _serviceTypes = GetServiceTypes().ToDictionary(k => k.Name, v => v);
         }
 
  
-        public int StoreSubscription(ISubscriptionEvent evt, IProjectService projectService)
+        public int StoreSubscription(ISubscriptionEvent evt, IProjectService projectService, IGeofenceService geofenceService)
         {
           var upsertedCount = 0;
           string eventType = "Unknown";
@@ -102,10 +101,12 @@ namespace VSS.Subscription.Data
               
               if (project == null)
                 {
-                  upsertedCount = projectService.StoreProject(new CreateProjectEvent(){ ProjectUID = subscriptionEvent.ProjectUID, 
-                                                                                        ProjectName = String.Empty,
-                                                                                        ProjectTimezone = String.Empty, 
-                                                                                        ActionUTC = subscriptionEvent.ActionUTC });
+                  upsertedCount = projectService.StoreProject(
+                    new CreateProjectEvent(){ ProjectUID = subscriptionEvent.ProjectUID, 
+                                              ProjectName = String.Empty,
+                                              ProjectTimezone = String.Empty, 
+                                              ActionUTC = subscriptionEvent.ActionUTC },
+                                              geofenceService);
                 }
 
               if (upsertedCount > 0)

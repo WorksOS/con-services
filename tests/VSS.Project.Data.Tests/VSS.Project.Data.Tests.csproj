@@ -38,7 +38,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\MySql.Data.6.9.8\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
       <HintPath>..\..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
     </Reference>
@@ -67,6 +72,10 @@
     <ProjectReference Include="..\..\src\VSS.Common.Tests\VSS.Common.Tests.csproj">
       <Project>{a8af9ffb-e896-4368-8b18-127dea4753ed}</Project>
       <Name>VSS.Common.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\VSS.Geofence.Data\VSS.Geofence.Data.csproj">
+      <Project>{740f7458-cb19-4422-9b45-173d7a6e9b51}</Project>
+      <Name>VSS.Geofence.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\VSS.Landfill.Common\VSS.Landfill.Common.csproj">
       <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>

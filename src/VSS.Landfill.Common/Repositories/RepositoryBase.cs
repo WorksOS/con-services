@@ -10,7 +10,7 @@ namespace VSS.Landfill.Common.Repositories
   public class RepositoryBase
   {
     protected static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    protected readonly string connectionString;
+    private readonly string connectionString;
 
     protected MySqlConnection Connection;
     private bool isInTransaction;
@@ -85,5 +85,12 @@ namespace VSS.Landfill.Common.Repositories
         }
       }
     }
+
+    //This is for unit tests
+    public void SetConnection(MySqlConnection connection)
+    {
+      Connection = connection;
+    }
+
   }
 }

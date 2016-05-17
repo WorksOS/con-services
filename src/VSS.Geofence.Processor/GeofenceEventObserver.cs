@@ -16,9 +16,10 @@ namespace VSS.Geofence.Processor
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     private IGeofenceService _geofenceService;
 
+
     public GeofenceEventObserver(IGeofenceService geofenceService)
     {
-      this._geofenceService = geofenceService;
+      _geofenceService = geofenceService;
     }
 
     public void OnCompleted()

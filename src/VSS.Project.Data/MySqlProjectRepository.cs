@@ -4,6 +4,7 @@ using System.Reflection;
 using Dapper;
 using MySql.Data.MySqlClient;
 using log4net;
+using VSS.Geofence.Data.Interfaces;
 using VSS.Landfill.Common.Repositories;
 using VSS.Project.Data.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -15,19 +16,8 @@ namespace VSS.Project.Data
   public class MySqlProjectRepository : RepositoryBase, IProjectService
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    //private readonly string _connectionString;
 
-    //public MySqlProjectRepository()
-    //{
-    //  connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
-    //}
-
-    public void SetConnection(MySqlConnection connection)
-    {
-      Connection = connection;
-    }
-
-    public int StoreProject(IProjectEvent evt)
+    public int StoreProject(IProjectEvent evt, IGeofenceService geofenceService)
     {
       var upsertedCount = 0;
       var project = new Models.Project();
@@ -69,12 +59,7 @@ namespace VSS.Project.Data
         project.projectUid = projectEvent.ProjectUID.ToString();
         project.customerUid = projectEvent.CustomerUID.ToString();
         project.lastActionedUtc = projectEvent.ActionUTC;
-        eventType = "AssociateProjectCustomerEvent";
-        //TODO: We need to check for project geofence for this project by name
-        //and if it exists and is unassigned then assign it to this project.
-        //If assignment successful then also need to check for unassigned landfill sites to 
-        //possibly assign to project (same as in geofence repo).
-        //Do in processor, not in repo!!!
+        eventType = "AssociateProjectCustomerEvent";   
       }
       else if (evt is DissociateProjectCustomer)
       {
@@ -87,6 +72,23 @@ namespace VSS.Project.Data
       }
 
       upsertedCount = UpsertProjectDetail(project, eventType);
+
+      if (evt is AssociateProjectCustomer)
+      {
+        //Now we have the customerUID, check for geofence for this project 
+        //and if it exists and is unassigned then assign it to this project
+        //and also assign relevant unassigned Landfill geofences.
+        var geofence = geofenceService.GetGeofenceByName(project.customerUid, project.name);
+        if (geofence != null && string.IsNullOrEmpty(geofence.projectUid))
+        {
+          int result = geofenceService.AssignGeofenceToProject(geofence.geofenceUid, project.projectUid);
+          if (result > 0)
+          {
+            geofenceService.AssignApplicableLandfillGeofencesToProject(geofence.geometryWKT, geofence.customerUid, geofence.projectUid);
+          }
+        }
+     
+      }
       return upsertedCount;
     }
 
@@ -312,6 +314,8 @@ namespace VSS.Project.Data
 
       return projects;
     }
+
+    
 
   }
 }

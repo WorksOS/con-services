@@ -5,6 +5,7 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using org.apache.kafka.clients.consumer;
+using VSS.Geofence.Data.Interfaces;
 using VSS.Landfill.Common.Helpers;
 using VSS.Project.Data.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -15,10 +16,12 @@ namespace VSS.Project.Processor
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     private IProjectService _projectService;
+    private IGeofenceService _geofenceService;
 
-    public ProjectEventObserver(IProjectService projectService)
+    public ProjectEventObserver(IProjectService projectService, IGeofenceService geofenceService)
     {
-      this._projectService = projectService;
+      _projectService = projectService;
+      _geofenceService = geofenceService;
     }
 
     public void OnCompleted()
@@ -49,7 +52,7 @@ namespace VSS.Project.Processor
             Log.Debug(String.Format("Received Create Project Payload : {0} ", token.ToString()));
             var createProjectEvent =
               JsonConvert.DeserializeObject<CreateProjectEvent>(token.ToString());
-            int updatedCount = this._projectService.StoreProject(createProjectEvent);
+            int updatedCount = this._projectService.StoreProject(createProjectEvent, _geofenceService);
             success = (updatedCount == 1);
           }
           else if ((token = json.SelectToken(tokenName = "UpdateProjectEvent")) != null)
@@ -57,7 +60,7 @@ namespace VSS.Project.Processor
             Log.Debug(String.Format("Received Update Project Payload : {0} ", token.ToString()));
             var updateProjectEvent =
               JsonConvert.DeserializeObject<UpdateProjectEvent>(token.ToString());
-            int updatedCount = this._projectService.StoreProject(updateProjectEvent);
+            int updatedCount = this._projectService.StoreProject(updateProjectEvent, _geofenceService);
             success = (updatedCount == 1);
           }
           else if ((token = json.SelectToken(tokenName = "DeleteProjectEvent")) != null)
@@ -65,7 +68,7 @@ namespace VSS.Project.Processor
             Log.Debug(String.Format("Received Delete Project Payload : {0} ", token.ToString()));
             var deleteProjectEvent =
               JsonConvert.DeserializeObject<DeleteProjectEvent>(token.ToString());
-            int updatedCount = this._projectService.StoreProject(deleteProjectEvent);
+            int updatedCount = this._projectService.StoreProject(deleteProjectEvent, _geofenceService);
             success = (updatedCount == 1);
           }
           else if ((token = json.SelectToken(tokenName = "AssociateProjectCustomerEvent")) != null)
@@ -73,7 +76,7 @@ namespace VSS.Project.Processor
             Log.Debug(String.Format("Received Associate Project-Customer Payload : {0} ", token.ToString()));
             var associateProjectCustomerEvent =
               JsonConvert.DeserializeObject<AssociateProjectCustomer>(token.ToString());
-            int updatedCount = this._projectService.StoreProject(associateProjectCustomerEvent);
+            int updatedCount = this._projectService.StoreProject(associateProjectCustomerEvent, _geofenceService);
             success = (updatedCount == 1);
           }
           else if ((token = json.SelectToken(tokenName = "DissociateProjectCustomerEvent")) != null)
@@ -81,7 +84,7 @@ namespace VSS.Project.Processor
             Log.Debug(String.Format("Received Update Project Payload : {0} ", token.ToString()));
             var dissociateProjectCustomerEvent =
               JsonConvert.DeserializeObject<DissociateProjectCustomer>(token.ToString());
-            int updatedCount = this._projectService.StoreProject(dissociateProjectCustomerEvent);
+            int updatedCount = this._projectService.StoreProject(dissociateProjectCustomerEvent, _geofenceService);
             success = (updatedCount == 1);
           }
 

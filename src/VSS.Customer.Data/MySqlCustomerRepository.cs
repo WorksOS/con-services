@@ -14,13 +14,7 @@ namespace VSS.Customer.Data
   public class MySqlCustomerRepository : RepositoryBase, ICustomerService
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    //private readonly string _connectionString;
-
-    //public MySqlCustomerRepository()
-    //{
-    //  _connectionString = ConfigurationManager.ConnectionStrings["MySql.Connection"].ConnectionString;
-    //}
-
+  
     public int StoreCustomer(ICustomerEvent evt)
     {
       var upsertedCount = 0;
