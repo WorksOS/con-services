@@ -51,10 +51,18 @@ namespace LandfillService.AcceptanceTests
         #region Web API
         public static string LandfillBaseUri = ConfigurationManager.AppSettings["LandFillWebApiBaseUrl"];
 
+        /// <summary>
+        /// Returns the list of projects available to the user
+        /// </summary>
         public static string ConstructGetProjectListUri()
         {
             return LandfillBaseUri + "/api/v2/projects";
         }
+        /// <summary>
+        /// Returns the project data for the given project. If geofenceUid is not specified, data for the entire project area 
+        /// is returned otherwise data for the geofenced area is returned. If no date range specified, returns data for the last 
+        /// 2 years to today in the project time zone otherwise returns data for the specified date range.
+        /// </summary>
         public static string ConstructGetProjectDataUri(uint projectId, Guid geofenceUid = default(Guid), 
             DateTime startDate = default(DateTime), DateTime endDate = default(DateTime))
         {
@@ -65,26 +73,45 @@ namespace LandfillService.AcceptanceTests
             return string.Format("{0}/api/v2/projects/{1}?geofenceUid={2}&startDate={3}&endDate={4}",
                 LandfillBaseUri, projectId, geofenceUidStr, startDateStr, endDateStr);
         }
+        /// <summary>
+        /// Returns the weights for all geofences for the project for the date range of the last 2 years to today in the project time zone.
+        /// </summary>
         public static string ConstructGetWeightsUri(uint projectId)
         {
             return string.Format("{0}/api/v2/projects/{1}/weights", LandfillBaseUri, projectId);
         }
+        /// <summary>
+        /// Saves weights submitted in the request.
+        /// </summary>
         public static string ConstructSubmitWeightsUri(uint projectId, Guid geofenceUid)
         {
             return string.Format("{0}/api/v2/projects/{1}/weights?geofenceUid={2}", LandfillBaseUri, projectId, geofenceUid);
         }
+        /// <summary>
+        /// Gets volume and time summary for a landfill project.
+        /// </summary>
         public static string ConstructGetVolumesUri(uint projectId)
         {
             return string.Format("{0}/api/v2/projects/{1}/volumeTime", LandfillBaseUri, projectId);
         }
+        /// <summary>
+        /// Returns a list of geofences for the project. A geofence is associated with a project if its boundary is 
+        /// inside or intersects that of the project and it is of type 'Landfill'. The project geofence is also returned.
+        /// </summary>
         public static string ConstructGetGeofencesUri(uint projectId)
         {
             return string.Format("{0}/api/v2/projects/{1}/geofences", LandfillBaseUri, projectId);
         }
+        /// <summary>
+        /// Returns a geofence boundary.
+        /// </summary>
         public static string ConstructGetGeofencesBoundaryUri(uint projectId, Guid geofenceUid)
         {
             return string.Format("{0}/api/v2/projects/{1}/geofences/{2}", LandfillBaseUri, projectId, geofenceUid);
         }
+        /// <summary>
+        /// Gets CCA summary for a landfill project.
+        /// </summary>
         public static string ConstructGetCcaSummaryUri(uint projectId, DateTime startDate, DateTime endDate)
         {
             return string.Format("{0}/api/v2/projects/{1}/cca?startDate={2}&endDate={3}",

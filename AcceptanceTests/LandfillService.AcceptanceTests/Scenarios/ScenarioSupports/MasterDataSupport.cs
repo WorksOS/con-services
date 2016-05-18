@@ -23,6 +23,10 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
         public AssociateProjectCustomer AssociateProjectCustomerEvt;
         public UpdateProjectSubscriptionEvent UpdateProjectSubscriptionEvt;
 
+        public CreateGeofenceEvent CreateGeofenceEvt;
+        public UpdateGeofenceEvent UpdateGeofenceEvt;
+        public DeleteGeofenceEvent DeleteGeofenceEvt;
+
         public string CreateProject(Guid projectUid)
         {
             var projectName = "AT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss");
@@ -45,7 +49,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
         }
         public string UpdateProject(Guid projectUid)
         {
-            var projectName = "AT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss");
+            var projectName = "upAT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss");
             var projectId = LandFillMySqlDb.GetTheHighestProjectId() + 1;
             UpdateProjectEvt = new UpdateProjectEvent
             {
@@ -88,7 +92,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
             UpdateCustomerEvt = new UpdateCustomerEvent
             {
                 CustomerUID = customerUid,
-                CustomerName = "AT_CUS-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
+                CustomerName = "upAT_CUS-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
                 ActionUTC = DateTime.UtcNow,
                 ReceivedUTC = DateTime.UtcNow
             };
@@ -175,6 +179,59 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 EndDate = DateTime.Now.AddMonths(7)
             };
             return JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = UpdateProjectSubscriptionEvt },
+                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        }
+
+        public string CreateGeofence(Guid geofenceUid, Guid customerUid, Guid userUid)
+        {
+            CreateGeofenceEvt = new CreateGeofenceEvent
+            {
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow,
+                GeofenceUID = geofenceUid,
+                CustomerUID = customerUid,
+                UserUID = userUid,
+                GeofenceName = "AT_Geo-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
+                Description = "Created geofence",
+                FillColor = 0x00FF00,
+                IsTransparent = true,
+                GeofenceType = "Project",
+                GeometryWKT = "POLYGON((-77.100849 42.836199,-77.110119 42.863635,-77.061367 42.866025,-77.050896 42.836451,-77.100849 42.836199,-77.100849 42.836199))"
+            };
+
+            return JsonConvert.SerializeObject(new { CreateGeofenceEvent = CreateGeofenceEvt },
+                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        }
+        public string UpdateGeofence(Guid geofenceUid, Guid userUid)
+        {
+            UpdateGeofenceEvt = new UpdateGeofenceEvent
+            {
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow,
+                GeofenceUID = geofenceUid,
+                UserUID = userUid,
+                GeofenceName = "upAT_Geo-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
+                Description = "Updated geofence",
+                FillColor = 0x00FF00,
+                IsTransparent = true,
+                GeofenceType = "Project",
+                GeometryWKT = "POLYGON((-77.100849 42.836199,-77.110119 42.863635,-77.061367 42.866025,-77.050896 42.836451,-77.100849 42.836199,-77.100849 42.836199))"
+            };
+
+            return JsonConvert.SerializeObject(new { UpdateGeofenceEvent = UpdateGeofenceEvt },
+                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        }
+        public string DeleteGeofence(Guid geofenceUid, Guid userUid)
+        {
+            DeleteGeofenceEvt = new DeleteGeofenceEvent
+            {
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow,
+                GeofenceUID = geofenceUid,
+                UserUID = userUid
+            };
+
+            return JsonConvert.SerializeObject(new { DeleteGeofenceEvent = DeleteGeofenceEvt },
                 new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
         }
     }

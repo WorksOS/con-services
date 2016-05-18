@@ -23,8 +23,11 @@ namespace LandfillService.AcceptanceTests.Scenarios
         Guid projectUID = Guid.NewGuid();
         Guid customerUID = Guid.NewGuid();
         Guid userUID = Guid.NewGuid();
+        Guid geofenceUID = Guid.NewGuid();
         MasterDataSupport mdSupport = new MasterDataSupport();
         List<Project> projects;
+        List<Geofence> geofences;
+        List<WGSPoint> boundary;
         
         [Given(@"I inject '(.*)' into Kafka")]
         [When(@"I inject '(.*)' into Kafka")]
@@ -59,10 +62,6 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     messageStr = mdSupport.DeleteProject(projectUID);
                     topic = Config.ProjectTopic;
                     break;
-                case "CreateProjectSubscriptionEvent":
-                    messageStr = mdSupport.CreateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUID);
-                    topic = Config.SubscriptionTopic;
-                    break;
                 case "AssociateCustomerUserEvent":
                     messageStr = mdSupport.AssociateCustomerUser(customerUID, userUID);
                     topic = Config.CustomerTopic;
@@ -73,6 +72,10 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     messageStr = mdSupport.AssociateProjectCustomer(projectUID, Config.MasterDataCustomerUID);
                     topic = Config.ProjectTopic;
                     break;
+                case "CreateProjectSubscriptionEvent":
+                    messageStr = mdSupport.CreateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUID);
+                    topic = Config.SubscriptionTopic;
+                    break;
                 case "AssociateProjectSubscriptionEvent":
                     messageStr = mdSupport.AssociateProjectSubscription(projectUID, projSubscripUID);
                     topic = Config.SubscriptionTopic;
@@ -80,6 +83,18 @@ namespace LandfillService.AcceptanceTests.Scenarios
                 case "UpdateProjectSubscriptionEvent":
                     messageStr = mdSupport.UpdateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUID);
                     topic = Config.SubscriptionTopic;
+                    break;
+                case "CreateGeofenceEvent":
+                    messageStr = mdSupport.CreateGeofence(geofenceUID, Config.MasterDataCustomerUID, Config.MasterDataUserUID);
+                    topic = Config.GeofenceTopic;
+                    break;
+                case "UpdateGeofenceEvent":
+                    messageStr = mdSupport.UpdateGeofence(geofenceUID, Config.MasterDataUserUID);
+                    topic = Config.GeofenceTopic;
+                    break;
+                case "DeleteGeofenceEvent":
+                    messageStr = mdSupport.DeleteGeofence(geofenceUID, Config.MasterDataUserUID);
+                    topic = Config.GeofenceTopic;
                     break;
             }
 
@@ -95,6 +110,26 @@ namespace LandfillService.AcceptanceTests.Scenarios
             projects = JsonConvert.DeserializeObject<List<Project>>(response);
         }
 
+        [Given(@"I make a Web API request for a list of geofences")]
+        [When(@"I make a Web API request for a list of geofences")]
+        public void WhenIMakeAWebAPIRequestForAListOfGeofences()
+        {
+            uint projectId = projects.First(p => p.name == mdSupport.CreateProjectEvt.ProjectName).id;
+            string response = RestClientUtil.DoHttpRequest(Config.ConstructGetGeofencesUri(projectId), "GET",
+                RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
+            geofences = JsonConvert.DeserializeObject<List<Geofence>>(response);
+        }
+
+        [When(@"I make a Web API request for the boundary of the geofence")]
+        public void WhenIMakeAWebAPIRequestForTheBoundaryOfTheGeofence()
+        {
+            uint projectId = projects.First(p => p.name == mdSupport.CreateProjectEvt.ProjectName).id;
+            string uri = Config.ConstructGetGeofencesBoundaryUri(projectId, geofenceUID);
+
+            string response = RestClientUtil.DoHttpRequest(uri, "GET", RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
+            boundary = JsonConvert.DeserializeObject<List<WGSPoint>>(response);
+        }
+
         [Given(@"the created project is in the list")]
         [Then(@"the created project is in the list")]
         public void ThenTheCreatedProjectIsInTheList()
@@ -105,7 +140,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [Then(@"the created project is not in the list")]
         public void ThenTheCreatedProjectIsNotInTheList()
         {
-            Assert.IsFalse(projects.Exists(p => p.name == mdSupport.CreateProjectEvt.ProjectName), "Project found.");
+            Assert.IsFalse(projects.Exists(p => p.name == mdSupport.CreateProjectEvt.ProjectName), "Project not deleted.");
         }
 
         [Then(@"the number of days to subscription expiry is correct")]
@@ -200,5 +235,52 @@ namespace LandfillService.AcceptanceTests.Scenarios
             Assert.AreEqual(userUID, associatedUserUid, "User and customer not associated.");
         }
 
+        [Given(@"the created geofence is in the list")]
+        [Then(@"the created geofence is in the list")]
+        public void ThenTheCreatedGeofenceIsInTheList()
+        {
+            Assert.IsTrue(geofences.Exists(g => g.uid == mdSupport.CreateGeofenceEvt.GeofenceUID &&
+                g.name == mdSupport.CreateGeofenceEvt.GeofenceName && 
+                g.type == (int)Enum.Parse(typeof(GeofenceType), mdSupport.CreateGeofenceEvt.GeofenceType)), "Geofence not found.");
+        }
+
+        [Then(@"the geofence details are updated")]
+        public void ThenTheGeofenceDetailsAreUpdated()
+        {
+            Assert.AreEqual(mdSupport.UpdateGeofenceEvt.GeofenceName, geofences.FirstOrDefault(g => g.uid == geofenceUID).name,
+                "Geofence details not updated.");
+        }
+
+        [Then(@"the created geofence is not in the list")]
+        public void ThenTheCreatedGeofenceIsNotInTheList()
+        {
+            Assert.IsFalse(geofences.Exists(g => g.name == mdSupport.CreateGeofenceEvt.GeofenceName), "Geofence not deleted.");
+        }
+
+        [Then(@"the geofence boundary points are correct")]
+        public void ThenTheGeofenceBoundaryPointsAreCorrect()
+        {
+            const double DEGREES_TO_RADIANS = Math.PI / 180;
+
+            List<WGSPoint> expectedBoundary = new List<WGSPoint>();          
+            string geometry = mdSupport.CreateGeofenceEvt.GeometryWKT;
+            //Trim off the "POLYGON((" and "))"
+            geometry = mdSupport.CreateGeofenceEvt.GeometryWKT.Substring(9, geometry.Length - 11);
+            var points = geometry.Split(',');
+            foreach (var point in points)
+            {
+                var parts = point.Split(' ');
+                var lat = double.Parse(parts[0]);
+                var lng = double.Parse(parts[0]);
+                expectedBoundary.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
+            }
+
+            for(int i = 0; i < expectedBoundary.Count; ++i)
+            {
+                Assert.IsTrue(Math.Round(expectedBoundary[i].Lat) == Math.Round(boundary[i].Lat) &&
+                    Math.Round(expectedBoundary[i].Lon) == Math.Round(boundary[i].Lon),
+                    "Incorrect geofence boundary.");
+            }
+        }
     }
 }
