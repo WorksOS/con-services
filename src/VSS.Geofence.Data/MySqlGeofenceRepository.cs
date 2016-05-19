@@ -25,7 +25,7 @@ namespace VSS.Geofence.Data
       var upsertedCount = 0;
       //Only save Project and Landfill type geofences
       GeofenceType geofenceType = GetGeofenceType(evt);
-      if (geofenceType == GeofenceType.Project || geofenceType == GeofenceType.Landfill)
+      if (geofenceType == GeofenceType.Project || geofenceType == GeofenceType.Landfill || evt is DeleteGeofenceEvent)
       {
         var geofence = new Models.Geofence();
         string eventType = "Unknown";
@@ -374,6 +374,25 @@ namespace VSS.Geofence.Data
       PerhapsCloseConnection();
 
       return geofence;     
+    }
+
+    //for unit tests
+    public Models.Geofence GetGeofence(string geofenceUid)
+    {
+      PerhapsOpenConnection();
+
+      var geofence = Connection.Query<Models.Geofence>
+          (@"SELECT 
+               GeofenceUID, Name, CustomerUID, ProjectUID, GeometryWKT, FillColor, IsTransparent
+                LastActionedUTC, fk_GeofenceTypeID AS GeofenceType, IsDeleted
+              FROM Geofence
+              WHERE GeofenceUID = @geofenceUid;"
+          , new { geofenceUid }
+        ).FirstOrDefault();
+
+      PerhapsCloseConnection();
+
+      return geofence;
     }
 
   }

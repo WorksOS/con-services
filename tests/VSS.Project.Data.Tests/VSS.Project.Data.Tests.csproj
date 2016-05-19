@@ -65,14 +65,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Common\LandfillService.Common.csproj">
-      <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
-      <Name>LandfillService.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\VSS.Common.Tests\VSS.Common.Tests.csproj">
-      <Project>{a8af9ffb-e896-4368-8b18-127dea4753ed}</Project>
-      <Name>VSS.Common.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\VSS.Geofence.Data\VSS.Geofence.Data.csproj">
       <Project>{740f7458-cb19-4422-9b45-173d7a6e9b51}</Project>
       <Name>VSS.Geofence.Data</Name>
