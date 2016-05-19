@@ -40,7 +40,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 ProjectName = projectName,
                 ProjectTimezone = "New Zealand Standard Time",
                 ProjectType = ProjectType.LandFill,
-                ProjectID = projectId == 1 ? LandfillCommonUtils.Random.Next(3000, 4000) : projectId,
+                ProjectID = projectId == 1 ? LandfillCommonUtils.Random.Next(2000, 3000) : projectId,
                 ProjectUID = projectUid,                
                 ReceivedUTC = DateTime.UtcNow
             };
@@ -50,7 +50,6 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
         public string UpdateProject(Guid projectUid)
         {
             var projectName = "upAT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss");
-            var projectId = LandFillMySqlDb.GetTheHighestProjectId() + 1;
             UpdateProjectEvt = new UpdateProjectEvent
             {
                 ActionUTC = DateTime.UtcNow,

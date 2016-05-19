@@ -28,7 +28,8 @@ namespace LandfillService.AcceptanceTests.Scenarios
         List<Project> projects;
         List<Geofence> geofences;
         List<WGSPoint> boundary;
-        
+
+        #region Given/When
         [Given(@"I inject '(.*)' into Kafka")]
         [When(@"I inject '(.*)' into Kafka")]
         public void GivenIInjectIntoKafka(string eventType)
@@ -36,7 +37,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             string messageStr = "";
             string topic = "";
 
-            switch(eventType)
+            switch (eventType)
             {
                 case "CreateCustomerEvent":
                     messageStr = mdSupport.CreateCustomer(customerUID);
@@ -128,10 +129,12 @@ namespace LandfillService.AcceptanceTests.Scenarios
 
             string response = RestClientUtil.DoHttpRequest(uri, "GET", RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
             boundary = JsonConvert.DeserializeObject<List<WGSPoint>>(response);
-        }
+        } 
+        #endregion
 
-        [Given(@"the created project is in the list")]
+        #region Then
         [Then(@"the created project is in the list")]
+        [Given(@"the created project is in the list")]
         public void ThenTheCreatedProjectIsInTheList()
         {
             Assert.IsTrue(projects.Exists(p => p.name == mdSupport.CreateProjectEvt.ProjectName), "Project not found.");
@@ -148,7 +151,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         {
             int expected = (mdSupport.CreateProjectSubscriptionEvt.EndDate - DateTime.Today).Days;
             int actual = (int)projects.FirstOrDefault(p => p.name == mdSupport.CreateProjectEvt.ProjectName).daysToSubscriptionExpiry;
-            
+
             int diff = expected - actual;
             Assert.IsFalse(diff < -1 || diff > 1, "daysToSubscriptionExpiry incorrect.");
         }
@@ -206,7 +209,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     Assert.AreEqual(mdSupport.UpdateProjectEvt.ProjectName, LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query),
                         "Project not updated.");
                     break;
-            }  
+            }
         }
 
         [Then(@"the new '(.*)' is deleted")]
@@ -235,12 +238,12 @@ namespace LandfillService.AcceptanceTests.Scenarios
             Assert.AreEqual(userUID, associatedUserUid, "User and customer not associated.");
         }
 
-        [Given(@"the created geofence is in the list")]
         [Then(@"the created geofence is in the list")]
+        [Given(@"the created geofence is in the list")]
         public void ThenTheCreatedGeofenceIsInTheList()
         {
             Assert.IsTrue(geofences.Exists(g => g.uid == mdSupport.CreateGeofenceEvt.GeofenceUID &&
-                g.name == mdSupport.CreateGeofenceEvt.GeofenceName && 
+                g.name == mdSupport.CreateGeofenceEvt.GeofenceName &&
                 g.type == (int)Enum.Parse(typeof(GeofenceType), mdSupport.CreateGeofenceEvt.GeofenceType)), "Geofence not found.");
         }
 
@@ -262,7 +265,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
         {
             const double DEGREES_TO_RADIANS = Math.PI / 180;
 
-            List<WGSPoint> expectedBoundary = new List<WGSPoint>();          
+            List<WGSPoint> expectedBoundary = new List<WGSPoint>();
             string geometry = mdSupport.CreateGeofenceEvt.GeometryWKT;
             //Trim off the "POLYGON((" and "))"
             geometry = mdSupport.CreateGeofenceEvt.GeometryWKT.Substring(9, geometry.Length - 11);
@@ -275,12 +278,13 @@ namespace LandfillService.AcceptanceTests.Scenarios
                 expectedBoundary.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
             }
 
-            for(int i = 0; i < expectedBoundary.Count; ++i)
+            for (int i = 0; i < expectedBoundary.Count; ++i)
             {
                 Assert.IsTrue(Math.Round(expectedBoundary[i].Lat) == Math.Round(boundary[i].Lat) &&
                     Math.Round(expectedBoundary[i].Lon) == Math.Round(boundary[i].Lon),
                     "Incorrect geofence boundary.");
             }
-        }
+        } 
+        #endregion
     }
 }

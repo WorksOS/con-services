@@ -213,9 +213,11 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Kafka\IKafkaDriver.cs" />
     <Compile Include="Kafka\KafkaResolver.cs" />
+    <Compile Include="Models\Landfill\CCAData.cs" />
     <Compile Include="Models\Landfill\Geofence.cs" />
     <Compile Include="Models\Landfill\GeofenceWeight.cs" />
     <Compile Include="Models\Landfill\GeofenceWeightEntry.cs" />
+    <Compile Include="Models\Landfill\VolumeTime.cs" />
     <Compile Include="Models\Landfill\WeightData.cs" />
     <Compile Include="Models\Landfill\WGSPoint.cs" />
     <Compile Include="Models\MasterData\Customer\DeleteCustomerEvent.cs" />

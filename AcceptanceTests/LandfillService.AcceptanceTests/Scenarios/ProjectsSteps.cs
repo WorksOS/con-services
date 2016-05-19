@@ -18,23 +18,13 @@ namespace LandfillService.AcceptanceTests.Scenarios
         List<Project> projects;
         ProjectData data;
 
+        #region When
         [When(@"I try to get a list of all projects")]
         public void WhenITryToGetAListOfAllProjects()
         {
-            string response = RestClientUtil.DoHttpRequest(Config.ConstructGetProjectListUri(), "GET", 
+            string response = RestClientUtil.DoHttpRequest(Config.ConstructGetProjectListUri(), "GET",
                 RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
             projects = JsonConvert.DeserializeObject<List<Project>>(response);
-        }
-        
-        [Then(@"the project '(.*)' is in the list with details")]
-        public void ThenTheProjectIsInTheListWithDetails(string projName, Table projDetails)
-        {
-            Assert.IsTrue(projects.Exists(p => p.name == projName), "Project not found.");
-
-            Project project = projects.First(p => p.name == projName);
-            Assert.AreEqual(projDetails.Rows[0]["UID"], project.projectUid, "Incorrect projectUid.");
-            Assert.AreEqual(projDetails.Rows[0]["TimezoneName"], project.timeZoneName, "Incorrect project timeZoneName.");
-            Assert.AreEqual(projDetails.Rows[0]["LegacyTimezoneName"], project.legacyTimeZoneName, "Incorrect project legacyTimezoneName.");
         }
 
         [When(@"I try to get data for")]
@@ -47,7 +37,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             DateTime startDate;
             DateTime endDate;
             string uri = "";
-            switch(dateRange)
+            switch (dateRange)
             {
                 case "OneDay":
                     startDate = DateTime.Today.AddDays(-LandfillCommonUtils.Random.Next(5, 730));
@@ -66,19 +56,32 @@ namespace LandfillService.AcceptanceTests.Scenarios
 
             string response = RestClientUtil.DoHttpRequest(uri, "GET", RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
             data = JsonConvert.DeserializeObject<ProjectData>(response);
+        } 
+        #endregion
+
+        #region Then
+        [Then(@"the project '(.*)' is in the list with details")]
+        public void ThenTheProjectIsInTheListWithDetails(string projName, Table projDetails)
+        {
+            Assert.IsTrue(projects.Exists(p => p.name == projName), "Project not found.");
+
+            Project project = projects.First(p => p.name == projName);
+            Assert.AreEqual(projDetails.Rows[0]["UID"], project.projectUid, "Incorrect projectUid.");
+            Assert.AreEqual(projDetails.Rows[0]["TimezoneName"], project.timeZoneName, "Incorrect project timeZoneName.");
+            Assert.AreEqual(projDetails.Rows[0]["LegacyTimezoneName"], project.legacyTimeZoneName, "Incorrect project legacyTimezoneName.");
         }
 
         [Then(@"the response contains data for the past two years")]
         public void ThenTheResponseContainsDataForThePastTwoYears()
         {
-            Assert.IsTrue(data.entries.ToList().Count == 730 || data.entries.ToList().Count == 731, 
+            Assert.IsTrue(data.entries.ToList().Count == 730 || data.entries.ToList().Count == 731,
                 "Incorrect number of project data entries.");
         }
 
         [Then(@"the response contains data for '(.*)'")]
         public void ThenTheResponseContainsDataFor(string dateRange)
         {
-            switch(dateRange)
+            switch (dateRange)
             {
                 case "OneDay":
                     Assert.IsTrue(data.entries.ToList().Count == 1,
@@ -93,7 +96,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
                         "Incorrect number of project data entries.");
                     break;
             }
-        }
-
+        } 
+        #endregion
     }
 }
