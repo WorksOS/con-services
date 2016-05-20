@@ -49,31 +49,7 @@ namespace VSS.Subscription.Processor
                   string tokenName;
 
                   JToken token;
-                  if ((token = json.SelectToken(tokenName = "CreateAssetSubscriptionEvent")) != null)
-                  {
-                      Log.Debug(String.Format("Received Create Asset Subscription Payload : {0} ", token.ToString()));
-                        
-                      var createAssetSubscriptionEvent = JsonConvert.DeserializeObject<CreateAssetSubscriptionEvent>(token.ToString());
-
-                      success = _subscriptionService.StoreSubscription(createAssetSubscriptionEvent, _projectService, _geofenceService) == 1;
-
-                      Log.Info(success ? "Asset Subscription created successfully" : "Failed to create Asset Subscription");
-                  }
-                  else if ((token = json.SelectToken(tokenName = "UpdateAssetSubscriptionEvent")) != null)
-                  {
-                      Log.Debug(String.Format("Received Update Asset Subscription Payload : {0} ", token.ToString()));
-
-                      var updateAssetSubscriptionEvent =  JsonConvert.DeserializeObject<UpdateAssetSubscriptionEvent>(token.ToString());
-                        
-                      Log.Debug(String.Format("Received Update Asset Subscription Payload deserialized : {0} ", updateAssetSubscriptionEvent));
-
-                      int updatedCount = _subscriptionService.StoreSubscription(updateAssetSubscriptionEvent, _projectService, _geofenceService);
-
-                      success = (updatedCount == 1);
-
-                      Log.InfoFormat(success ? String.Format("Asset Subscription updated successfully: {0} record(s) updated", updatedCount) : "Failed to update Asset Subscription");
-                  }
-                  else if ((token = json.SelectToken(tokenName = "CreateProjectSubscriptionEvent")) != null)
+                  if ((token = json.SelectToken(tokenName = "CreateProjectSubscriptionEvent")) != null)
                   {
                     Log.Debug(String.Format("Received Create Project Subscription Payload : {0} ", token.ToString()));
                       
@@ -116,28 +92,6 @@ namespace VSS.Subscription.Processor
                     success = _subscriptionService.StoreSubscription(dissociateProjectSubscriptionEvent, _projectService, _geofenceService) == 1;
 
                     Log.Info(success ? "Project Subscription was dissociated successfully" : "Failed to dissociate Project Subscription");
-                  }
-                  else if ((token = json.SelectToken(tokenName = "CreateCustomerSubscriptionEvent")) != null)
-                  {
-                      Log.Debug(String.Format("Received Create Customer Subscription Payload : {0} ", token.ToString()));
-
-                      var createCustomerSubscriptionEvent = JsonConvert.DeserializeObject<CreateCustomerSubscriptionEvent>(token.ToString());
-
-                      success = _subscriptionService.StoreSubscription(createCustomerSubscriptionEvent, _projectService, _geofenceService) == 1;
-
-                      Log.Info(success ? "Customer Subscription created successfully" : "Failed to create Customer Subscription");
-                  }
-                  else if ((token = json.SelectToken(tokenName = "UpdateCustomerSubscriptionEvent")) != null)
-                  {
-                      Log.Debug(String.Format("Received Update Customer Subscription Payload : {0} ", token.ToString()));
-
-                      var updateCustomerSubscriptionEvent = JsonConvert.DeserializeObject<UpdateCustomerSubscriptionEvent>(token.ToString());
-
-                      int updatedCount = _subscriptionService.StoreSubscription(updateCustomerSubscriptionEvent, _projectService, _geofenceService);
-
-                      success = (updatedCount == 1);
-
-                      Log.InfoFormat(success ? String.Format("Customer Subscription updated successfully: {0} record(s) updated", updatedCount) : "Failed to update Customer Subscription");
                   }
 
                 if (success)
