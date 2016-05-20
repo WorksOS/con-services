@@ -1,48 +1,32 @@
-﻿using log4net;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Reflection;
-using MySql.Data.MySqlClient;
-using org.apache.kafka.clients.consumer;
-using VSP.MasterData.Common.Logging;
-using VSS.Customer.Data.Interfaces;
-using VSS.Landfill.Common.Helpers;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+﻿using VSS.Customer.Data.Interfaces;
+using VSS.Landfill.Common.JsonConverters;
+using VSS.Landfill.Common.Processor;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Customer.Processor
 {
-  public class CustomerEventObserver : IObserver<ConsumerRecord>
+  public class CustomerEventObserver : EventObserverBase<ICustomerEvent, CustomerEventConverter>
   {
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     private ICustomerService _customerService;
 
     public CustomerEventObserver(ICustomerService customerService)
     {
       _customerService = customerService;
+      EventName = "Customer";
     }
 
-    public void OnCompleted()
+    protected override bool ProcessEvent(ICustomerEvent evt)
     {
-      Log.IfInfo("Completed consuming customer event messages");
+      int updatedCount = _customerService.StoreCustomer(evt);
+      return updatedCount == 1;
+
+      //TODO: 1. Check - duplicate customer & create/update stuff done in repo - can remove here ???
+      //2. FIX Unit test UpdateCustomer_Suceeds fails (failed to update the customer)
+
     }
 
-    public void OnError(Exception error)
-    {
-      Log.IfError("Failed consuming customer event messages");
-    }
-
-    public void OnNext(ConsumerRecord value)
-    {
-      try
-      {
-          string val = (string)value.value();
-          bool success = false;
-          Log.DebugFormat("Received Customer Payload : {0} ", val);
-          var json = JObject.Parse(val);
-          string tokenName;
-
-          JToken token;
+ 
+        /*
           if ((token = json.SelectToken(tokenName = "CreateCustomerEvent")) != null)
           {
             var createCustomerEvent = JsonConvert.DeserializeObject<CreateCustomerEvent>(token.ToString());
@@ -139,37 +123,8 @@ namespace VSS.Customer.Processor
 
             Log.Info(success ? "Customer user association removed successfully" : "Customer user association could not be removed");
           }
+         */
 
-          if (success)
-          {
-            if (Log.IsDebugEnabled)
-              Log.Debug("Consumed " + tokenName);
-          }
-          else
-          {
-            if (Log.IsWarnEnabled)
-              Log.WarnFormat("Consumed a message and was unable to find a proper token. Message Sample: {0}... ",
-                val.Truncate(15));
-          }
-      }
-      catch (MySqlException ex)
-      {
-        Log.Error("MySql Error  occured while Processing the Customer Payload", ex);
-        switch (ex.Number)
-        {
-          case 0: //Cannot connect to server
-          case 1045: //Invalid user name and/or password
-            throw;
-          default:
-            //todo: log exception and payload here
-            break;
-        }
-      }
-      catch (Exception ex)
-      {
-        //deliberately supppress
-        Log.Error("Error  occured while Processing the Customer Payload", ex);
-      }
-    }
+
   }
 }

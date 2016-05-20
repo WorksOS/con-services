@@ -9,8 +9,6 @@ namespace VSS.Customer.Data.Interfaces
     Models.Customer GetAssociatedCustomerbyUserUid(Guid userUID);
     Models.Customer GetCustomer(Guid customerUID);
     int StoreCustomer(ICustomerEvent evt);
-    int StoreCustomerUser(ICustomerUserEvent evt);
-
   }
 }
 

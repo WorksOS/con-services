@@ -1,20 +1,13 @@
-﻿using System;
-using System.Reflection;
-using log4net;
-using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using org.apache.kafka.clients.consumer;
-using VSS.Geofence.Data.Interfaces;
-using VSS.Landfill.Common.Helpers;
+﻿using VSS.Geofence.Data.Interfaces;
+using VSS.Landfill.Common.JsonConverters;
+using VSS.Landfill.Common.Processor;
 using VSS.Project.Data.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Project.Processor
 {
-  public class ProjectEventObserver : IObserver<ConsumerRecord>
+  public class ProjectEventObserver : EventObserverBase<IProjectEvent, ProjectEventConverter>
   {
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     private IProjectService _projectService;
     private IGeofenceService _geofenceService;
 
@@ -22,102 +15,14 @@ namespace VSS.Project.Processor
     {
       _projectService = projectService;
       _geofenceService = geofenceService;
+      EventName = "Project";
     }
 
-    public void OnCompleted()
+    protected override bool ProcessEvent(IProjectEvent evt)
     {
-      Log.Info("Completed consuming subcscription event messages");
+      int updatedCount = _projectService.StoreProject(evt, _geofenceService);
+      return updatedCount == 1;    
     }
 
-    public void OnError(Exception error)
-    {
-      Log.DebugFormat("Failed consuming subcscription event messages: {0} ", error.ToString());
-    }
-
-    public void OnNext(ConsumerRecord value)
-    {
-      Log.Debug("ProjectEventObserver.OnNext()");
-      try
-      {
-        string val = (string)value.value();
-
-          bool success = false;
-          Log.DebugFormat("Received Project Payload : {0} ", val);
-          var json = JObject.Parse(val);
-          string tokenName;
-
-          JToken token;
-          if ((token = json.SelectToken(tokenName = "CreateProjectEvent")) != null)
-          {
-            Log.Debug(String.Format("Received Create Project Payload : {0} ", token.ToString()));
-            var createProjectEvent =
-              JsonConvert.DeserializeObject<CreateProjectEvent>(token.ToString());
-            int updatedCount = this._projectService.StoreProject(createProjectEvent, _geofenceService);
-            success = (updatedCount == 1);
-          }
-          else if ((token = json.SelectToken(tokenName = "UpdateProjectEvent")) != null)
-          {
-            Log.Debug(String.Format("Received Update Project Payload : {0} ", token.ToString()));
-            var updateProjectEvent =
-              JsonConvert.DeserializeObject<UpdateProjectEvent>(token.ToString());
-            int updatedCount = this._projectService.StoreProject(updateProjectEvent, _geofenceService);
-            success = (updatedCount == 1);
-          }
-          else if ((token = json.SelectToken(tokenName = "DeleteProjectEvent")) != null)
-          {
-            Log.Debug(String.Format("Received Delete Project Payload : {0} ", token.ToString()));
-            var deleteProjectEvent =
-              JsonConvert.DeserializeObject<DeleteProjectEvent>(token.ToString());
-            int updatedCount = this._projectService.StoreProject(deleteProjectEvent, _geofenceService);
-            success = (updatedCount == 1);
-          }
-          else if ((token = json.SelectToken(tokenName = "AssociateProjectCustomerEvent")) != null)
-          {
-            Log.Debug(String.Format("Received Associate Project-Customer Payload : {0} ", token.ToString()));
-            var associateProjectCustomerEvent =
-              JsonConvert.DeserializeObject<AssociateProjectCustomer>(token.ToString());
-            int updatedCount = this._projectService.StoreProject(associateProjectCustomerEvent, _geofenceService);
-            success = (updatedCount == 1);
-          }
-          else if ((token = json.SelectToken(tokenName = "DissociateProjectCustomerEvent")) != null)
-          {
-            Log.Debug(String.Format("Received Update Project Payload : {0} ", token.ToString()));
-            var dissociateProjectCustomerEvent =
-              JsonConvert.DeserializeObject<DissociateProjectCustomer>(token.ToString());
-            int updatedCount = this._projectService.StoreProject(dissociateProjectCustomerEvent, _geofenceService);
-            success = (updatedCount == 1);
-          }
-
-          if (success)
-          {
-            if (Log.IsDebugEnabled)
-              Log.Debug("Consumed " + tokenName);
-          }
-          else
-          {
-            if (Log.IsWarnEnabled)
-              Log.WarnFormat("Consumed a message but discarded as not relavant {0}... ", val.Truncate(30));
-          }
-
-      }
-      catch (MySqlException ex)
-      {
-        Log.Error("MySql Error  occured while Processing the Project Payload", ex);
-        switch (ex.Number)
-        {
-          case 0: //Cannot connect to server
-          case 1045: //Invalid user name and/or password
-            throw;
-          default:
-            //todo: log exception and payload here
-            break;
-        }
-      }
-      catch (Exception ex)
-      {
-        //deliberately supppress
-        Log.Error("Error  occured while Processing the Project Payload", ex);
-      }
-    }
   }
 }

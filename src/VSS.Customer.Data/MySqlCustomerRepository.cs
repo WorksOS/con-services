@@ -19,6 +19,7 @@ namespace VSS.Customer.Data
     {
       var upsertedCount = 0;
       var customer = new Models.Customer();
+      var customerUser = new Models.CustomerUser();
       string eventType = "Unknown";
 
       if (evt is CreateCustomerEvent)
@@ -30,6 +31,7 @@ namespace VSS.Customer.Data
         customer.LastActionedUTC = customerEvent.ActionUTC;        
 
         eventType = "CreateCustomerEvent";
+        upsertedCount = UpsertCustomerDetail(customer, eventType);
       }
       else if (evt is UpdateCustomerEvent)
       {
@@ -39,6 +41,7 @@ namespace VSS.Customer.Data
         customer.LastActionedUTC = customerEvent.ActionUTC;
         
         eventType = "UpdateCustomerEvent";
+        upsertedCount = UpsertCustomerDetail(customer, eventType);
       }
       else if (evt is DeleteCustomerEvent)
       {
@@ -47,10 +50,29 @@ namespace VSS.Customer.Data
         customer.LastActionedUTC = customerEvent.ActionUTC;
 
         eventType = "DeleteCustomerEvent";
+        upsertedCount = UpsertCustomerDetail(customer, eventType);
       }
+      else if (evt is AssociateCustomerUserEvent)
+      {
+        var customerEvent = (AssociateCustomerUserEvent)evt;
+        customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
+        customerUser.UserUID = customerEvent.UserUID.ToString();
+        customerUser.LastActionedUTC = customerEvent.ActionUTC;
 
-      upsertedCount = UpsertCustomerDetail(customer, eventType);
-      
+        eventType = "AssociateCustomerUserEvent";
+        upsertedCount = UpsertCustomerUserDetail(customerUser, eventType);
+      }
+      else if (evt is DissociateCustomerUserEvent)
+      {
+        var customerEvent = (DissociateCustomerUserEvent)evt;
+        customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
+        customerUser.UserUID = customerEvent.UserUID.ToString();
+        customerUser.LastActionedUTC = customerEvent.ActionUTC;
+
+        eventType = "DissociateCustomerUserEvent";
+        upsertedCount = UpsertCustomerUserDetail(customerUser, eventType);
+      }
+   
       return upsertedCount;
     }
 
@@ -96,7 +118,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    public int CreateCustomer(Models.Customer customer, Models.Customer existing)
+    private int CreateCustomer(Models.Customer customer, Models.Customer existing)
     {
       if (existing == null)
       {
@@ -116,7 +138,7 @@ namespace VSS.Customer.Data
       return 0;
     }
 
-    public int UpdateCustomer(Models.Customer customer, Models.Customer existing)
+    private int UpdateCustomer(Models.Customer customer, Models.Customer existing)
     {
       if (existing != null)
       {
@@ -141,7 +163,7 @@ namespace VSS.Customer.Data
       return 0;
     }
 
-    public int DeleteCustomer(Models.Customer customer, Models.Customer existing)
+    private int DeleteCustomer(Models.Customer customer, Models.Customer existing)
     {
       if (existing != null)
       {
@@ -191,36 +213,6 @@ namespace VSS.Customer.Data
       PerhapsCloseConnection();
 
       return customer;
-    }
-
-    public int StoreCustomerUser(ICustomerUserEvent evt)
-    {
-      var upsertedCount = 0;
-      var customerUser = new Models.CustomerUser();
-      string eventType = "Unknown";
-
-      if (evt is AssociateCustomerUserEvent)
-      {
-        var customerEvent = (AssociateCustomerUserEvent)evt;
-        customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
-        customerUser.UserUID = customerEvent.UserUID.ToString();
-        customerUser.LastActionedUTC = customerEvent.ActionUTC;
-
-        eventType = "AssociateCustomerUserEvent";
-      }
-      else if (evt is DissociateCustomerUserEvent)
-      {
-        var customerEvent = (DissociateCustomerUserEvent)evt;
-        customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
-        customerUser.UserUID = customerEvent.UserUID.ToString();
-        customerUser.LastActionedUTC = customerEvent.ActionUTC;
-
-        eventType = "DissociateCustomerUserEvent";
-      }
-
-      upsertedCount = UpsertCustomerUserDetail(customerUser, eventType);
-
-      return upsertedCount;
     }
 
     /// <summary>

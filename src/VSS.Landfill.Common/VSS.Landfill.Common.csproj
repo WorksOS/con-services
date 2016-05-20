@@ -109,6 +109,10 @@
       <HintPath>..\packages\MySql.Data.6.9.8\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="slf4j-api, Version=1.7.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.59\lib\net451\slf4j-api.dll</HintPath>
       <Private>True</Private>
@@ -129,9 +133,18 @@
       <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.0.59\lib\net451\VSS.Kafka.Ikvm.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData">
+      <HintPath>..\..\lib\Interfaces\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\StringExtensions.cs" />
+    <Compile Include="JsonConverters\CustomerEventConverter.cs" />
+    <Compile Include="JsonConverters\GeofenceEventConverter.cs" />
+    <Compile Include="JsonConverters\JsonCreationConverter.cs" />
+    <Compile Include="JsonConverters\ProjectEventConverter.cs" />
+    <Compile Include="JsonConverters\SubscriptionEventConverter.cs" />
+    <Compile Include="Processor\EventObserverBase.cs" />
     <Compile Include="Processor\IProcessor.cs" />
     <Compile Include="Processor\Processor.cs" />
     <Compile Include="Processor\ServiceController.cs" />
