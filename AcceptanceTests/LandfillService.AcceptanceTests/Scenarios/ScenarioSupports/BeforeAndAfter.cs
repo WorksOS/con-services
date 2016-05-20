@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TechTalk.SpecFlow;
 using LandfillService.AcceptanceTests;
 using LandfillService.AcceptanceTests.Utils;
+using LandfillService.AcceptanceTests.Auth;
 
 namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
 {
@@ -16,13 +17,11 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
         {
             if (FeatureContext.Current.FeatureInfo.Title.Contains("MasterData"))
             {
-                LandfillCommonUtils.UpdateAppSetting("StagingTPaaSTokenUsername", Config.MasterDataUserName);
-                LandfillCommonUtils.UpdateAppSetting("StagingTPaaSTokenPassWord", Config.MasterDataUserPassword);
+                Config.JwtToken = Jwt.GetJwtToken(Config.MasterDataUserUID);
             }
             else
             {
-                LandfillCommonUtils.UpdateAppSetting("StagingTPaaSTokenUsername", Config.LandfillUserName);
-                LandfillCommonUtils.UpdateAppSetting("StagingTPaaSTokenPassWord", Config.LandfillUserPassword);
+                Config.JwtToken = Jwt.GetJwtToken(Config.LandfillUserUID);
             }
         }
     }

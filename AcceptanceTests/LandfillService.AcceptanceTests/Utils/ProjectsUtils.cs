@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,8 +16,8 @@ namespace LandfillService.AcceptanceTests.Utils
     {
         public static Project GetProjectDetails(string name)
         {
-            string response = RestClientUtil.DoHttpRequest(Config.LandfillBaseUri, "GET", TPaaS.BearerToken,
-                RestClientConfig.JsonMediaType, null, System.Net.HttpStatusCode.OK, "Bearer", null);
+            string response = RestClientUtil.DoHttpRequest(Config.ConstructGetProjectListUri(), "GET", 
+                RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
             List<Project> projects = JsonConvert.DeserializeObject<List<Project>>(response);
             Project project = projects.FirstOrDefault(p => p.name == name);
 

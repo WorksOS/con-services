@@ -6,10 +6,10 @@ using org.apache.kafka.clients.producer;
 
 namespace LandfillService.AcceptanceTests.LandFillKafka
 {
-    public static class KafkaResolver
+    public class KafkaResolver : IKafkaDriver
     {
-        public static KafkaProducer javaProducer;
-        static KafkaResolver()
+        public KafkaProducer javaProducer;
+        public KafkaResolver()
         {
             IkvmKafkaInitializer.Initialize();
             log4net.Config.XmlConfigurator.Configure();
@@ -29,14 +29,14 @@ namespace LandfillService.AcceptanceTests.LandFillKafka
         /// <summary>
         /// Send the message to Kafka
         /// </summary>        
-        public static void SendMessage(string topic, string inMessage)
+        public string SendMessage(string topic, string message)
         {
             Thread.Sleep(50);
-            var producerRecord = new ProducerRecord(topic, inMessage);
-            javaProducer.send(producerRecord, new MainCallback()).get();
+            var producerRecord = new ProducerRecord(topic, message);
+            return javaProducer.send(producerRecord, new MainCallback()).get().ToString();
         }
 
-        public class MainCallback : Callback
+        class MainCallback : Callback
         {
             public void onCompletion(RecordMetadata metadata, java.lang.Exception e)
             {
@@ -47,7 +47,7 @@ namespace LandfillService.AcceptanceTests.LandFillKafka
             }
         }
 
-        public static void CloseProducer()
+        public void CloseProducer()
         {
             javaProducer.flush();
             javaProducer.close();
