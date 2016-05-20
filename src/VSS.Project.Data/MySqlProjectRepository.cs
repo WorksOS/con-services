@@ -25,49 +25,49 @@ namespace VSS.Project.Data
       if (evt is CreateProjectEvent)
       {
         var projectEvent = (CreateProjectEvent)evt;
-        project.projectId = projectEvent.ProjectID;
-        project.name = projectEvent.ProjectName;
-        project.projectTimeZone = projectEvent.ProjectTimezone;
-        project.landfillTimeZone = TimeZone.WindowsToIana(projectEvent.ProjectTimezone);
-        project.projectUid = projectEvent.ProjectUID.ToString();
-        project.projectEndDate = projectEvent.ProjectEndDate;
-        project.lastActionedUtc = projectEvent.ActionUTC;
-        project.projectStartDate = projectEvent.ProjectStartDate;
-        project.projectType = projectEvent.ProjectType;
+        project.ProjectID = projectEvent.ProjectID;
+        project.Name = projectEvent.ProjectName;
+        project.ProjectTimeZone = projectEvent.ProjectTimezone;
+        project.LandfillTimeZone = TimeZone.WindowsToIana(projectEvent.ProjectTimezone);
+        project.ProjectUID = projectEvent.ProjectUID.ToString();
+        project.ProjectEndDate = projectEvent.ProjectEndDate;
+        project.LastActionedUTC = projectEvent.ActionUTC;
+        project.ProjectStartDate = projectEvent.ProjectStartDate;
+        project.ProjectType = projectEvent.ProjectType;
         eventType = "CreateProjectEvent";
       }
       else if (evt is UpdateProjectEvent)
       {
         var projectEvent = (UpdateProjectEvent)evt;
-        project.projectUid = projectEvent.ProjectUID.ToString();
-        project.name = projectEvent.ProjectName;
-        project.projectEndDate = projectEvent.ProjectEndDate;
-        project.lastActionedUtc = projectEvent.ActionUTC;
-        project.projectType = projectEvent.ProjectType;
+        project.ProjectUID = projectEvent.ProjectUID.ToString();
+        project.Name = projectEvent.ProjectName;
+        project.ProjectEndDate = projectEvent.ProjectEndDate;
+        project.LastActionedUTC = projectEvent.ActionUTC;
+        project.ProjectType = projectEvent.ProjectType;
         eventType = "UpdateProjectEvent";
       }
       else if (evt is DeleteProjectEvent)
       {
         var projectEvent = (DeleteProjectEvent)evt;
-        project.projectUid = projectEvent.ProjectUID.ToString();
-        project.lastActionedUtc = projectEvent.ActionUTC;
+        project.ProjectUID = projectEvent.ProjectUID.ToString();
+        project.LastActionedUTC = projectEvent.ActionUTC;
         eventType = "DeleteProjectEvent";
       }
       else if (evt is AssociateProjectCustomer)
       {
         var projectEvent = (AssociateProjectCustomer)evt;
-        project.projectUid = projectEvent.ProjectUID.ToString();
-        project.customerUid = projectEvent.CustomerUID.ToString();
-        project.lastActionedUtc = projectEvent.ActionUTC;
+        project.ProjectUID = projectEvent.ProjectUID.ToString();
+        project.CustomerUID = projectEvent.CustomerUID.ToString();
+        project.LastActionedUTC = projectEvent.ActionUTC;
         eventType = "AssociateProjectCustomerEvent";   
       }
       else if (evt is DissociateProjectCustomer)
       {
         //TODO Do we realy need to support this?
         var projectEvent = (DissociateProjectCustomer)evt;
-        project.projectUid = projectEvent.ProjectUID.ToString();
-        project.customerUid = projectEvent.CustomerUID.ToString();
-        project.lastActionedUtc = projectEvent.ActionUTC;
+        project.ProjectUID = projectEvent.ProjectUID.ToString();
+        project.CustomerUID = projectEvent.CustomerUID.ToString();
+        project.LastActionedUTC = projectEvent.ActionUTC;
         eventType = "DissociateProjectCustomerEvent";
       }
 
@@ -78,13 +78,13 @@ namespace VSS.Project.Data
         //Now we have the customerUID, check for geofence for this project 
         //and if it exists and is unassigned then assign it to this project
         //and also assign relevant unassigned Landfill geofences.
-        var geofence = geofenceService.GetGeofenceByName(project.customerUid, project.name);
-        if (geofence != null && string.IsNullOrEmpty(geofence.projectUid))
+        var geofence = geofenceService.GetGeofenceByName(project.CustomerUID, project.Name);
+        if (geofence != null && string.IsNullOrEmpty(geofence.ProjectUID))
         {
-          int result = geofenceService.AssignGeofenceToProject(geofence.geofenceUid, project.projectUid);
+          int result = geofenceService.AssignGeofenceToProject(geofence.GeofenceUID, project.ProjectUID);
           if (result > 0)
           {
-            geofenceService.AssignApplicableLandfillGeofencesToProject(geofence.geometryWKT, geofence.customerUid, geofence.projectUid);
+            geofenceService.AssignApplicableLandfillGeofencesToProject(geofence.GeometryWKT, geofence.CustomerUID, geofence.ProjectUID);
           }
         }
      
@@ -106,14 +106,14 @@ namespace VSS.Project.Data
       
       PerhapsOpenConnection();
       
-      Log.DebugFormat("ProjectRepository: Upserting eventType{0} projectUid={1}", eventType, project.projectUid);
+      Log.DebugFormat("ProjectRepository: Upserting eventType{0} projectUid={1}", eventType, project.ProjectUID);
 
       var existing = Connection.Query<Models.Project>
         (@"SELECT 
                 ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
                 LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID AS ProjectType, IsDeleted
               FROM Project
-              WHERE ProjectUID = @projectUid", new { project.projectUid }).FirstOrDefault();
+              WHERE ProjectUID = @projectUid", new { projectUid = project.ProjectUID }).FirstOrDefault();
 
       if (eventType == "CreateProjectEvent")
       {
@@ -146,25 +146,25 @@ namespace VSS.Project.Data
     {
       if (existing != null)
       {
-        if (project.lastActionedUtc >= existing.lastActionedUtc)
+        if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
           const string update =
             @"UPDATE Project                
-                SET customerUID = @customerUid,
-                  LastActionedUTC = @lastActionedUtc
-              WHERE ProjectUID = @projectUid";
+                SET CustomerUID = @CustomerUID,
+                  LastActionedUTC = @LastActionedUTC
+              WHERE ProjectUID = @ProjectUID";
           return Connection.Execute(update, project);
         }
         else
         {
           Log.DebugFormat("ProjectRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
-            existing.lastActionedUtc, project.lastActionedUtc);
+            existing.LastActionedUTC, project.LastActionedUTC);
         }
       }
       else
       {
         Log.DebugFormat("ProjectRepository: can't update as none existing newActionedUTC {0}",
-          project.lastActionedUtc);
+          project.LastActionedUTC);
       }
       return 0;
     }
@@ -177,11 +177,11 @@ namespace VSS.Project.Data
           @"INSERT Project
                 (ProjectID, Name, ProjectTimeZone, LandfillTimeZone, ProjectUID, LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID)
             VALUES
-                (@projectId, @name, @projectTimeZone, @landfillTimeZone, @projectUid, @lastActionedUtc, @projectStartDate, @projectEndDate, @projectType)";
+                (@ProjectID, @Name, @ProjectTimeZone, @LandfillTimeZone, @ProjectUID, @LastActionedUTC, @ProjectStartDate, @ProjectEndDate, @ProjectType)";
         return Connection.Execute(insert, project);
       }
 
-      Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", project.lastActionedUtc);
+      Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", project.LastActionedUTC);
 
       return UpdateProject(project, existing);
     }
@@ -190,25 +190,25 @@ namespace VSS.Project.Data
     {
       if (existing != null)
       {
-        if (project.lastActionedUtc >= existing.lastActionedUtc)
+        if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
           const string update =
             @"UPDATE Project                
                 SET IsDeleted = 1,
-                  LastActionedUTC = @lastActionedUtc
-              WHERE ProjectUID = @projectUid";
+                  LastActionedUTC = @LastActionedUTC
+              WHERE ProjectUID = @ProjectUID";
           return Connection.Execute(update, project);
         }
         else
         {
           Log.DebugFormat("ProjectRepository: old delete event ignored currentActionedUTC={0} newActionedUTC={1}",
-            existing.lastActionedUtc, project.lastActionedUtc);
+            existing.LastActionedUTC, project.LastActionedUTC);
         }
       }
       else
       {
         Log.DebugFormat("ProjectRepository: can't delete as none existing newActionedUTC={0}",
-          project.lastActionedUtc);
+          project.LastActionedUTC);
       }
       return 0;
     }
@@ -217,27 +217,27 @@ namespace VSS.Project.Data
     {
       if (existing != null)
       {
-        if (project.lastActionedUtc >= existing.lastActionedUtc)
+        if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
           const string update =
             @"UPDATE Project                
-                SET Name = @name,
-                  LastActionedUTC = @lastActionedUtc,
-                  EndDate = @projectEndDate, 
-                  fk_ProjectTypeID = @projectType
-              WHERE ProjectUID = @projectUid";
+                SET Name = @Name,
+                  LastActionedUTC = @LastActionedUTC,
+                  EndDate = @ProjectEndDate, 
+                  fk_ProjectTypeID = @ProjectType
+              WHERE ProjectUID = @ProjectUID";
           return Connection.Execute(update, project);
         }
         else
         {
           Log.DebugFormat("ProjectRepository: old update event ignored currentActionedUTC={0} newActionedUTC={1}",
-            existing.lastActionedUtc, project.lastActionedUtc);
+            existing.LastActionedUTC, project.LastActionedUTC);
         }
       }
       else
       {
         Log.DebugFormat("ProjectRepository: can't update as none existing newActionedUTC={0}",
-          project.lastActionedUtc);
+          project.LastActionedUTC);
       }
       return 0;
     }
@@ -249,7 +249,7 @@ namespace VSS.Project.Data
       var project = Connection.Query<Models.Project>
         (@"SELECT 
                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
-                  LastActionedUTC, IsDeleted, StartDate AS projectStartDate, EndDate AS projectEndDate, fk_ProjectTypeID as ProjectType
+                  LastActionedUTC, IsDeleted, StartDate AS ProjectStartDate, EndDate AS ProjectEndDate, fk_ProjectTypeID as ProjectType
               FROM Project
               WHERE ProjectUID = @projectUid AND IsDeleted = 0"
           , new {projectUid}
@@ -267,7 +267,7 @@ namespace VSS.Project.Data
       var projects = Connection.Query<Models.Project>
           (@"SELECT 
                    ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
-                    LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
+                    LastActionedUTC, IsDeleted, StartDate AS ProjectStartDate, EndDate AS ProjectEndDate, fk_ProjectTypeID as ProjectType
                 FROM Project
                 WHERE SubscriptionUID = @subscriptionUid AND IsDeleted = 0"
           );
@@ -284,7 +284,7 @@ namespace VSS.Project.Data
       var projects = Connection.Query<Models.Project>
          (@"SELECT 
                    ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
-                   LastActionedUTC, IsDeleted, StartDate AS projectStartDate, EndDate AS projectEndDate, fk_ProjectTypeID as ProjectType
+                   LastActionedUTC, IsDeleted, StartDate AS ProjectStartDate, EndDate AS ProjectEndDate, fk_ProjectTypeID as ProjectType
                 FROM Project
                 WHERE IsDeleted = 0"
          );
@@ -302,7 +302,7 @@ namespace VSS.Project.Data
          (@"SELECT 
                    p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, p.CustomerUID, p.SubscriptionUID, 
                    p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-                   p.fk_ProjectTypeID as ProjectType, s.EndDate AS SubEndDate
+                   p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
                 FROM Project p
                 JOIN Subscription s on p.SubscriptionUID = s.SubscriptionUID
                 JOIN CustomerUser cu on p.CustomerUID = cu.fk_CustomerUID

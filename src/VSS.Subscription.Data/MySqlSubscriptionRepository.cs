@@ -209,7 +209,7 @@ namespace VSS.Subscription.Data
                     CustomerUID = @CustomerUID,
                     StartDate=@StartDate, 
                     EndDate=@EndDate, 
-                    fk_ServiceTypeId=@ServiceTypeID,
+                    fk_ServiceTypeID=@ServiceTypeID,
                     LastActionedUTC=@LastActionedUTC
               WHERE SubscriptionUID = @SubscriptionUID";
               return Connection.Execute(update, subscription);

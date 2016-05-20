@@ -48,11 +48,11 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
           projectList = new Dictionary<long, ProjectDescriptor>();
           foreach (var userProject in userProjects)
           {
-            projectList.Add(userProject.projectId,
+            projectList.Add(userProject.ProjectID,
               new ProjectDescriptor
               {
                 isLandFill = true,
-                isArchived = userProject.isDeleted || userProject.subEndDate < DateTime.UtcNow
+                isArchived = userProject.IsDeleted || userProject.SubEndDate < DateTime.UtcNow
               });
           }
           Log.DebugFormat("Authorization: for Customer: {0} projectList is: {1}", customer, projectList.ToString());

@@ -111,8 +111,8 @@ namespace VSS.Geofence.Data.Tests
 
         var geofence = _geofenceService.GetGeofence(createGeofenceEvent.GeofenceUID.ToString());
         Assert.IsNotNull(geofence, "Failed to get the updated geofence!");
-        Assert.AreEqual(fillColor, geofence.fillColor, "Wrong fillColor");
-        Assert.AreEqual(isTransparent, geofence.isTransparent, "Wrong isTransparent");
+        Assert.AreEqual(fillColor, geofence.FillColor, "Wrong fillColor");
+        Assert.AreEqual(isTransparent, geofence.IsTransparent, "Wrong isTransparent");
         return null;
       });
     }
@@ -132,7 +132,7 @@ namespace VSS.Geofence.Data.Tests
         Assert.IsTrue(upsertCount == 1, "Failed to delete the geofence!");
 
         var geofence = _geofenceService.GetGeofence(createGeofenceEvent.GeofenceUID.ToString());
-        Assert.IsNull(geofence, "Succeeded to get the deleted geofence!");
+        Assert.AreEqual(true, geofence.IsDeleted, "Geofence is not deleted!");
 
         return null;
       });

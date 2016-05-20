@@ -131,11 +131,11 @@ namespace VSS.Project.Data.Tests
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the updated project!");
 
-        Assert.IsTrue(project.projectUid == updateProjectEvent.ProjectUID.ToString(), "ProjectUID should not be changed!");
-        Assert.IsTrue(project.name == updateProjectEvent.ProjectName, "Project Name should not be changed!");
-        Assert.IsTrue(project.projectTimeZone == updateProjectEvent.ProjectTimezone, "Project Time Zone should not be changed!");
-        Assert.IsTrue((project.projectEndDate - createProjectEvent.ProjectEndDate).Days == 3, "ProjectEndDate of the updated project was incorectly updated!");
-        Assert.IsTrue(project.lastActionedUtc > createProjectEvent.ActionUTC, "LastActionedUtc of the updated project was incorectly updated!");
+        Assert.IsTrue(project.ProjectUID == updateProjectEvent.ProjectUID.ToString(), "ProjectUID should not be changed!");
+        Assert.IsTrue(project.Name == updateProjectEvent.ProjectName, "Project Name should not be changed!");
+        Assert.IsTrue(project.ProjectTimeZone == updateProjectEvent.ProjectTimezone, "Project Time Zone should not be changed!");
+        Assert.IsTrue((project.ProjectEndDate - createProjectEvent.ProjectEndDate).Days == 3, "ProjectEndDate of the updated project was incorectly updated!");
+        Assert.IsTrue(project.LastActionedUTC > createProjectEvent.ActionUTC, "LastActionedUtc of the updated project was incorectly updated!");
 
         return null;
       });
@@ -183,7 +183,7 @@ namespace VSS.Project.Data.Tests
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the customer associated project!");
 
-        Assert.IsTrue(project.customerUid == associateProjectCustomerEvent.CustomerUID.ToString(), "The project was associated with wrong customer!");
+        Assert.IsTrue(project.CustomerUID == associateProjectCustomerEvent.CustomerUID.ToString(), "The project was associated with wrong customer!");
 
         return null;
       });

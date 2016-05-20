@@ -36,7 +36,7 @@ public class AuthUtilities
           var customer = this._customerService.GetAssociatedCustomerbyUserUid(Guid.Parse(userId));
           AssociatedCustomer associatedCustomer = new AssociatedCustomer()
           {
-              CustomerUID = Guid.Parse(customer.CustomerUid),
+              CustomerUID = Guid.Parse(customer.CustomerUID),
               CustomerName = customer.CustomerName,
               CustomerType = customer.CustomerType
           };

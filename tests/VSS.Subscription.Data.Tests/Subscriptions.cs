@@ -209,7 +209,7 @@ namespace VSS.Subscription.Data.Tests
         var project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the project associated with the subscription!");
 
-        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the Subscription's one!");
+        Assert.IsTrue(project.SubscriptionUID == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the Subscription's one!");
 
         return null;
       });
@@ -249,7 +249,7 @@ namespace VSS.Subscription.Data.Tests
         var project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the project associated with the existing subscription!");
 
-        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+        Assert.IsTrue(project.SubscriptionUID == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
 
         return null;
       });
@@ -289,7 +289,7 @@ namespace VSS.Subscription.Data.Tests
         project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
 
-        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+        Assert.IsTrue(project.SubscriptionUID == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
 
         return null;
       });
@@ -340,7 +340,7 @@ namespace VSS.Subscription.Data.Tests
         project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
 
-        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+        Assert.IsTrue(project.SubscriptionUID == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
 
         return null;
       });
@@ -391,7 +391,7 @@ namespace VSS.Subscription.Data.Tests
         project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
 
-        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+        Assert.IsTrue(project.SubscriptionUID == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
 
         return null;
       });
@@ -448,7 +448,7 @@ namespace VSS.Subscription.Data.Tests
         project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
 
-        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+        Assert.IsTrue(project.SubscriptionUID == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
 
         return null;
       });
@@ -505,7 +505,7 @@ namespace VSS.Subscription.Data.Tests
         project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
 
-        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+        Assert.IsTrue(project.SubscriptionUID == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
 
         return null;
       });
@@ -561,7 +561,7 @@ namespace VSS.Subscription.Data.Tests
         project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
 
-        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+        Assert.IsTrue(project.SubscriptionUID == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
 
         return null;
       });
@@ -617,7 +617,7 @@ namespace VSS.Subscription.Data.Tests
         project = _projectService.GetProject(associateProjectSubscriptionEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
 
-        Assert.IsTrue(project.subscriptionUid == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
+        Assert.IsTrue(project.SubscriptionUID == associateProjectSubscriptionEvent.SubscriptionUID.ToString(), "The accociated Project's SubscriptionUID does not match the existing Subscription's one!");
 
         return null;
       });

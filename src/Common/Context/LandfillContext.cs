@@ -78,7 +78,7 @@ namespace LandfillService.Common.Context
                               FROM Project prj  
                               JOIN CustomerUser cu ON prj.CustomerUID = cu.fk_CustomerUID
                               JOIN Subscription sub ON prj.SubscriptionUID = sub.SubscriptionUID
-                              WHERE cu.fk_UserUID = @userUid and prj.IsDeleted = 0;";
+                              WHERE cu.fk_UserUID = @userUid and prj.IsDeleted = 0";
               var projects = new List<Project>();
 
               using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
@@ -271,7 +271,7 @@ namespace LandfillService.Common.Context
           var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name
                           FROM Project prj 
                           LEFT JOIN Entries etr ON prj.ProjectID = etr.ProjectID 
-                          WHERE etr.Weight IS NOT NULL AND prj.IsDeleted = 0;";
+                          WHERE etr.Weight IS NOT NULL AND prj.IsDeleted = 0";
           using (var reader = MySqlHelper.ExecuteReader(conn, command))
           {
             var projects = new List<Project>();
@@ -446,7 +446,7 @@ namespace LandfillService.Common.Context
             string projectGeofenceUid = null;
             var command = @"SELECT GeofenceUID
                               FROM Geofence 
-                              WHERE ProjectUID = @projectUid AND fk_GeofenceTypeID = 1;";//Project type
+                              WHERE ProjectUID = @projectUid AND fk_GeofenceTypeID = 1";//Project type
             using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", project.projectUid)))
             {
               while (reader.Read())

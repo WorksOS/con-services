@@ -32,49 +32,50 @@ namespace VSS.Geofence.Data
         if (evt is CreateGeofenceEvent)
         {
           var geofenceEvent = (CreateGeofenceEvent) evt;
-          geofence.geofenceUid = geofenceEvent.GeofenceUID.ToString();
-          geofence.name = geofenceEvent.GeofenceName;
-          geofence.geofenceType = geofenceType;
-          geofence.geometryWKT = geofenceEvent.GeometryWKT;
-          geofence.fillColor = geofenceEvent.FillColor;
-          geofence.isTransparent = geofenceEvent.IsTransparent;
-          geofence.isDeleted = false;
-          geofence.customerUid = geofenceEvent.CustomerUID.ToString();
-          if (geofence.geofenceType == GeofenceType.Landfill)
+          geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
+          geofence.Name = geofenceEvent.GeofenceName;
+          geofence.GeofenceType = geofenceType;
+          geofence.GeometryWKT = geofenceEvent.GeometryWKT;
+          geofence.FillColor = geofenceEvent.FillColor;
+          geofence.IsTransparent = geofenceEvent.IsTransparent;
+          geofence.IsDeleted = false;
+          geofence.CustomerUID = geofenceEvent.CustomerUID.ToString();
+          if (geofence.GeofenceType == GeofenceType.Landfill)
           {
-            geofence.projectUid = FindAssociatedProjectUidForLandfillGeofence(geofence.customerUid, geofence.geometryWKT);
+            geofence.ProjectUID = FindAssociatedProjectUidForLandfillGeofence(geofence.CustomerUID, geofence.GeometryWKT);
           }
-          else if (geofence.geofenceType == GeofenceType.Project)
+          else if (geofence.GeofenceType == GeofenceType.Project)
           {
-            geofence.projectUid = GetProjectUidForName(geofence.customerUid, geofence.name);
+            geofence.ProjectUID = GetProjectUidForName(geofence.CustomerUID, geofence.Name);
           }
-          geofence.lastActionedUtc = geofenceEvent.ActionUTC;
+          geofence.LastActionedUTC = geofenceEvent.ActionUTC;
           eventType = "CreateGeofenceEvent";
         }
         else if (evt is UpdateGeofenceEvent)
         {
           var geofenceEvent = (UpdateGeofenceEvent) evt;
-          geofence.name = geofenceEvent.GeofenceName;
+          geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();//Select existing with this
+          geofence.Name = geofenceEvent.GeofenceName;
           //cannot update the following in update event:
-          //GeofenceUID, GeofenceType, GeometryWKT
-          geofence.fillColor = geofenceEvent.FillColor;
-          geofence.isTransparent = geofenceEvent.IsTransparent;
-          geofence.lastActionedUtc = geofenceEvent.ActionUTC;
+          //GeofenceType, GeometryWKT
+          geofence.FillColor = geofenceEvent.FillColor;
+          geofence.IsTransparent = geofenceEvent.IsTransparent;
+          geofence.LastActionedUTC = geofenceEvent.ActionUTC;
           eventType = "UpdateGeofenceEvent";
         }
         else if (evt is DeleteGeofenceEvent)
         {
           var geofenceEvent = (DeleteGeofenceEvent) evt;
-          geofence.geofenceUid = geofenceEvent.GeofenceUID.ToString();
-          geofence.lastActionedUtc = geofenceEvent.ActionUTC;
+          geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
+          geofence.LastActionedUTC = geofenceEvent.ActionUTC;
           eventType = "DeleteGeofenceEvent";
         }
 
         upsertedCount = UpsertGeofenceDetail(geofence, eventType);
 
-        if (evt is CreateGeofenceEvent && geofence.geofenceType == GeofenceType.Project && !string.IsNullOrEmpty(geofence.projectUid))
+        if (evt is CreateGeofenceEvent && geofence.GeofenceType == GeofenceType.Project && !string.IsNullOrEmpty(geofence.ProjectUID))
         {
-          AssignApplicableLandfillGeofencesToProject(geofence.geometryWKT, geofence.customerUid, geofence.projectUid);
+          AssignApplicableLandfillGeofencesToProject(geofence.GeometryWKT, geofence.CustomerUID, geofence.ProjectUID);
         }
       }
       return upsertedCount;
@@ -109,14 +110,14 @@ namespace VSS.Geofence.Data
 
       PerhapsOpenConnection();
 
-      Log.DebugFormat("GeofenceRepository: Upserting eventType{0} geofenceUid={1}", eventType, geofence.geofenceUid);
+      Log.DebugFormat("GeofenceRepository: Upserting eventType{0} geofenceUid={1}", eventType, geofence.GeofenceUID);
 
       var existing = Connection.Query<Models.Geofence>
         (@"SELECT 
-                GeofenceUID, Name, CustomerUID, ProjectUID, GeometryWKT, FillColor, IsTransparent
+                GeofenceUID, Name, CustomerUID, ProjectUID, GeometryWKT, FillColor, IsTransparent,
                 LastActionedUTC, fk_GeofenceTypeID AS GeofenceType, IsDeleted
               FROM Geofence
-              WHERE GeofenceUID = @geofenceUid", new { geofence.geofenceUid }).FirstOrDefault();
+              WHERE GeofenceUID = @geofenceUid", new { geofenceUid = geofence.GeofenceUID }).FirstOrDefault();
 
       if (eventType == "CreateGeofenceEvent")
       {
@@ -148,11 +149,11 @@ namespace VSS.Geofence.Data
           @"INSERT Geofence
                 (GeofenceUID, Name, GeometryWKT, FillColor, IsTransparent, IsDeleted, CustomerUID, ProjectUID, LastActionedUTC, fk_GeofenceTypeID)
             VALUES
-                (@geofenceUid, @name, @geometryWKT, @fillColor, @isTransparent, @isDeleted, @customerUID, @projectUID, @lastActionedUtc, @geofenceType)";
+                (@GeofenceUID, @Name, @GeometryWKT, @FillColor, IsTransparent, @IsDeleted, @CustomerUID, @ProjectUID, @LastActionedUTC, @GeofenceType)";
         return Connection.Execute(insert, geofence);
       }
 
-      Log.DebugFormat("GeofenceRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", geofence.lastActionedUtc);
+      Log.DebugFormat("GeofenceRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", geofence.LastActionedUTC);
 
       return UpdateGeofence(geofence, existing);
     }
@@ -161,25 +162,25 @@ namespace VSS.Geofence.Data
     {
       if (existing != null)
       {
-        if (geofence.lastActionedUtc >= existing.lastActionedUtc)
+        if (geofence.LastActionedUTC >= existing.LastActionedUTC)
         {
           const string update =
             @"UPDATE Geofence                
                 SET IsDeleted = 1,
-                  LastActionedUTC = @lastActionedUtc
-              WHERE GeofenceUID = @geofenceUid";
+                  LastActionedUTC = @LastActionedUTC
+              WHERE GeofenceUID = @GeofenceUID";
           return Connection.Execute(update, geofence);
         }
         else
         {
           Log.DebugFormat("GeofenceRepository: old delete event ignored currentActionedUTC={0} newActionedUTC={1}",
-            existing.lastActionedUtc, geofence.lastActionedUtc);
+            existing.LastActionedUTC, geofence.LastActionedUTC);
         }
       }
       else
       {
         Log.DebugFormat("GeofenceRepository: can't delete as none existing newActionedUTC={0}",
-          geofence.lastActionedUtc);
+          geofence.LastActionedUTC);
       }
       return 0;
     }
@@ -188,31 +189,31 @@ namespace VSS.Geofence.Data
     {
       if (existing != null)
       {
-        if (!geofence.isTransparent.HasValue)
-          geofence.isTransparent = existing.isTransparent;
-        if (!geofence.fillColor.HasValue)
-          geofence.fillColor = existing.fillColor;
-        if (string.IsNullOrEmpty(geofence.name))
-          geofence.name = existing.name;
+        if (!geofence.IsTransparent.HasValue)
+          geofence.IsTransparent = existing.IsTransparent;
+        if (!geofence.FillColor.HasValue)
+          geofence.FillColor = existing.FillColor;
+        if (string.IsNullOrEmpty(geofence.Name))
+          geofence.Name = existing.Name;
 
-        if (geofence.lastActionedUtc >= existing.lastActionedUtc)
+        if (geofence.LastActionedUTC >= existing.LastActionedUTC)
         {
           const string update =
             @"UPDATE Geofence                
-                SET Name = @name, FillColor = @fillColor, IsTransparent = @isTransparent, LastActionedUTC = @lastActionedUtc                  
-              WHERE GeofenceUID = @geofenceUid";
+                SET Name = @Name, FillColor = @FillColor, IsTransparent = @IsTransparent, LastActionedUTC = @LastActionedUTC                  
+              WHERE GeofenceUID = @GeofenceUID";
           return Connection.Execute(update, geofence);
         }
         else
         {
           Log.DebugFormat("GeofenceRepository: old update event ignored currentActionedUTC={0} newActionedUTC={1}",
-            existing.lastActionedUtc, geofence.lastActionedUtc);
+            existing.LastActionedUTC, geofence.LastActionedUTC);
         }
       }
       else
       {
         Log.DebugFormat("GeofenceRepository: can't update as none existing newActionedUTC={0}",
-          geofence.lastActionedUtc);
+          geofence.LastActionedUTC);
       }
       return 0;
     }
@@ -225,9 +226,9 @@ namespace VSS.Geofence.Data
       var unassignedGeofences = GetUnassignedLandfillGeofences(customerUid);
       foreach (var unassignedGeofence in unassignedGeofences)
       {
-        if (GeofencesOverlap(projectGeometry, unassignedGeofence.geometryWKT))
+        if (GeofencesOverlap(projectGeometry, unassignedGeofence.GeometryWKT))
         {
-          AssignGeofenceToProject(unassignedGeofence.geofenceUid, projectUid);
+          AssignGeofenceToProject(unassignedGeofence.GeofenceUID, projectUid);
         }
       }      
     }
@@ -239,7 +240,7 @@ namespace VSS.Geofence.Data
       var projectGeofences = Connection.Query<Models.Geofence>
          (@"SELECT GeofenceUID, Name, GeometryWKT, ProjectUID
             FROM Geofence 
-            WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND fk_GeofenceTypeID = 1;"//Project type
+            WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND fk_GeofenceTypeID = 1"//Project type
          );
 
       PerhapsCloseConnection();
@@ -256,7 +257,7 @@ namespace VSS.Geofence.Data
       var landfillGeofences = Connection.Query<Models.Geofence>
          (@"SELECT GeofenceUID, Name, GeometryWKT
             FROM Geofence 
-            WHERE CustomerUID = @customerUid AND ProjectUID IS NULL AND AND IsDeleted = 0 AND fk_GeofenceTypeID = 10;"//Landfill type
+            WHERE CustomerUID = @customerUid AND ProjectUID IS NULL AND AND IsDeleted = 0 AND fk_GeofenceTypeID = 10"//Landfill type
          );
 
       PerhapsCloseConnection();
@@ -309,17 +310,17 @@ namespace VSS.Geofence.Data
       IEnumerable<Models.Geofence> projectGeofences = GetProjectGeofences(customerUid);
       foreach (var projectGeofence in projectGeofences)
       {
-        if (GeofencesOverlap(projectGeofence.geometryWKT, geofencePolygon))
+        if (GeofencesOverlap(projectGeofence.GeometryWKT, geofencePolygon))
         {
-          if (string.IsNullOrEmpty(projectGeofence.projectUid))
+          if (string.IsNullOrEmpty(projectGeofence.ProjectUID))
           {
-            projectGeofence.projectUid = GetProjectUidForName(customerUid, projectGeofence.name);
-            if (!string.IsNullOrEmpty(projectGeofence.projectUid))
+            projectGeofence.ProjectUID = GetProjectUidForName(customerUid, projectGeofence.Name);
+            if (!string.IsNullOrEmpty(projectGeofence.ProjectUID))
             {
-              AssignGeofenceToProject(projectGeofence.geofenceUid, projectGeofence.projectUid);
+              AssignGeofenceToProject(projectGeofence.GeofenceUID, projectGeofence.ProjectUID);
             }
           }
-          return projectGeofence.projectUid;
+          return projectGeofence.ProjectUID;
         }
       }
       return null;
@@ -348,7 +349,7 @@ namespace VSS.Geofence.Data
       var projectUid = Connection.Query<string>
          (@"SELECT ProjectUID
             FROM Project 
-            WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND Name = @name;",
+            WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND Name = @name",
               new { customerUid, name }
          ).FirstOrDefault();
 
@@ -367,7 +368,7 @@ namespace VSS.Geofence.Data
           (@"SELECT 
                 GeofenceUID, Name, CustomerUID, ProjectUID, GeometryWKT
               FROM Geofence
-              WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND Name = @name;"
+              WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND Name = @name"
           , new { customerUid, name }
         ).FirstOrDefault();
 
@@ -380,15 +381,15 @@ namespace VSS.Geofence.Data
     public Models.Geofence GetGeofence(string geofenceUid)
     {
       PerhapsOpenConnection();
-
+      
       var geofence = Connection.Query<Models.Geofence>
           (@"SELECT 
-               GeofenceUID, Name, CustomerUID, ProjectUID, GeometryWKT, FillColor, IsTransparent
+               GeofenceUID, Name, CustomerUID, ProjectUID, GeometryWKT, FillColor, IsTransparent,
                 LastActionedUTC, fk_GeofenceTypeID AS GeofenceType, IsDeleted
               FROM Geofence
-              WHERE GeofenceUID = @geofenceUid;"
+              WHERE GeofenceUID = @geofenceUid"
           , new { geofenceUid }
-        ).FirstOrDefault();
+        ).FirstOrDefault(); 
 
       PerhapsCloseConnection();
 

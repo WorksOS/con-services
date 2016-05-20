@@ -89,9 +89,9 @@ namespace VSS.Customer.Data.Tests
         var customer = _customerService.GetCustomer(createCustomerEvent.CustomerUID);
         Assert.IsNotNull(customer, "Failed to get the updated customer!");
 
-        Assert.IsTrue(customer.CustomerUid == updateCustomerEvent.CustomerUID.ToString(), "CustomerUID should not be changed!");
+        Assert.IsTrue(customer.CustomerUID == updateCustomerEvent.CustomerUID.ToString(), "CustomerUID should not be changed!");
         Assert.IsTrue(customer.CustomerName == updateCustomerEvent.CustomerName, "Customer Name should not be changed!");
-        Assert.IsTrue(customer.LastActionedUtc > createCustomerEvent.ActionUTC, "LastActionedUtc of the updated customer was incorectly updated!");
+        Assert.IsTrue(customer.LastActionedUTC > createCustomerEvent.ActionUTC, "LastActionedUtc of the updated customer was incorectly updated!");
 
         return null;
       });
