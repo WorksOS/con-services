@@ -22,6 +22,18 @@ namespace VSS.Landfill.Common.JsonConverters
       {
         return jObject["DeleteProjectEvent"].ToObject<DeleteProjectEvent>();
       }
+      if (jObject["AssociateProjectCustomer"] != null)
+      {
+        return jObject["AssociateProjectCustomer"].ToObject<AssociateProjectCustomer>();
+      }
+      if (jObject["DissociateProjectCustomer"] != null)
+      {
+        return jObject["DissociateProjectCustomer"].ToObject<DissociateProjectCustomer>();
+      }
+      if (jObject["RestoreProjectEvent"] != null)
+      {
+        return jObject["RestoreProjectEvent"].ToObject<RestoreProjectEvent>();
+      }
       return null;
     }
   }

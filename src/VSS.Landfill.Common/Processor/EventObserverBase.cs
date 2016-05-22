@@ -69,6 +69,7 @@ namespace VSS.Landfill.Common.Processor
       }
     }
 
+    //This is where each event observer should save the event and apply business rules.
     protected abstract bool ProcessEvent(T evt);
 
   }

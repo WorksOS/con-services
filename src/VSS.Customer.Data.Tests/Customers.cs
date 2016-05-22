@@ -91,7 +91,7 @@ namespace VSS.Customer.Data.Tests
 
         Assert.IsTrue(customer.CustomerUID == updateCustomerEvent.CustomerUID.ToString(), "CustomerUID should not be changed!");
         Assert.IsTrue(customer.CustomerName == updateCustomerEvent.CustomerName, "Customer Name should not be changed!");
-        Assert.IsTrue(customer.LastActionedUTC > createCustomerEvent.ActionUTC, "LastActionedUtc of the updated customer was incorectly updated!");
+        Assert.IsTrue(customer.LastActionedUTC > createCustomerEvent.ActionUTC, "LastActionedUtc of the updated customer was incorrectly updated!");
 
         return null;
       });

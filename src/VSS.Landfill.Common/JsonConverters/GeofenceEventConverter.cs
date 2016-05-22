@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -24,6 +20,14 @@ namespace VSS.Landfill.Common.JsonConverters
       if (jObject["DeleteGeofenceEvent"] != null)
       {
         return jObject["DeleteGeofenceEvent"].ToObject<DeleteGeofenceEvent>();
+      }
+      if (jObject["FavoriteGeofenceEvent"] != null)
+      {
+        return jObject["FavoriteGeofenceEvent"].ToObject<FavoriteGeofenceEvent>();
+      }
+      if (jObject["UnfavoriteGeofenceEvent"] != null)
+      {
+        return jObject["UnfavoriteGeofenceEvent"].ToObject<UnfavoriteGeofenceEvent>();
       }
       return null;
     }

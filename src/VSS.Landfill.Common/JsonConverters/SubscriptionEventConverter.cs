@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -28,6 +24,22 @@ namespace VSS.Landfill.Common.JsonConverters
       if (jObject["DissociateProjectSubscriptionEvent"] != null)
       {
         return jObject["DissociateProjectSubscriptionEvent"].ToObject<DissociateProjectSubscriptionEvent>();
+      }
+      if (jObject["CreateAssetSubscriptionEvent"] != null)
+      {
+        return jObject["CreateAssetSubscriptionEvent"].ToObject<CreateAssetSubscriptionEvent>();
+      }
+      if (jObject["UpdateAssetSubscriptionEvent"] != null)
+      {
+        return jObject["UpdateAssetSubscriptionEvent"].ToObject<UpdateAssetSubscriptionEvent>();
+      }
+      if (jObject["CreateCustomerSubscriptionEvent"] != null)
+      {
+        return jObject["CreateCustomerSubscriptionEvent"].ToObject<CreateCustomerSubscriptionEvent>();
+      }
+      if (jObject["UpdateCustomerSubscriptionEvent"] != null)
+      {
+        return jObject["UpdateCustomerSubscriptionEvent"].ToObject<UpdateCustomerSubscriptionEvent>();
       }
       return null;
     }
