@@ -180,6 +180,10 @@
       <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
       <Name>VSS.Landfill.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VSS.Project.Data\VSS.Project.Data.csproj">
+      <Project>{225fbdea-c77f-4208-8942-1ca40eceef2d}</Project>
+      <Name>VSS.Project.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

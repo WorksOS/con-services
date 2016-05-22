@@ -153,10 +153,6 @@
       <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
       <Name>LandfillService.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.Geofence.Data\VSS.Geofence.Data.csproj">
-      <Project>{740f7458-cb19-4422-9b45-173d7a6e9b51}</Project>
-      <Name>VSS.Geofence.Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VSS.Landfill.Common\VSS.Landfill.Common.csproj">
       <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
       <Name>VSS.Landfill.Common</Name>

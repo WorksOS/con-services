@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Dapper;
-using MySql.Data.MySqlClient;
 using log4net;
-using VSS.Geofence.Data.Interfaces;
 using VSS.Landfill.Common.Repositories;
 using VSS.Project.Data.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -17,7 +15,7 @@ namespace VSS.Project.Data
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    public int StoreProject(IProjectEvent evt, IGeofenceService geofenceService)
+    public int StoreProject(IProjectEvent evt)
     {
       var upsertedCount = 0;
       var project = new Models.Project();
@@ -72,23 +70,6 @@ namespace VSS.Project.Data
       }
 
       upsertedCount = UpsertProjectDetail(project, eventType);
-
-      if (evt is AssociateProjectCustomer)
-      {
-        //Now we have the customerUID, check for geofence for this project 
-        //and if it exists and is unassigned then assign it to this project
-        //and also assign relevant unassigned Landfill geofences.
-        var geofence = geofenceService.GetGeofenceByName(project.CustomerUID, project.Name);
-        if (geofence != null && string.IsNullOrEmpty(geofence.ProjectUID))
-        {
-          int result = geofenceService.AssignGeofenceToProject(geofence.GeofenceUID, project.ProjectUID);
-          if (result > 0)
-          {
-            geofenceService.AssignApplicableLandfillGeofencesToProject(geofence.GeometryWKT, geofence.CustomerUID, geofence.ProjectUID);
-          }
-        }
-     
-      }
       return upsertedCount;
     }
 
@@ -315,7 +296,25 @@ namespace VSS.Project.Data
       return projects;
     }
 
-    
+
+    public string GetProjectUidForName(string customerUid, string name)
+    {
+      PerhapsOpenConnection();
+
+      var projectUid = Connection.Query<string>
+         (@"SELECT ProjectUID
+            FROM Project 
+            WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND Name = @name",
+              new { customerUid, name }
+         ).FirstOrDefault();
+
+      PerhapsCloseConnection();
+
+      Log.DebugFormat("ProjectRepository: Get project {0} for name {1} for customer {2}", projectUid, name, customerUid);
+
+      return projectUid;
+    }
+
 
   }
 }

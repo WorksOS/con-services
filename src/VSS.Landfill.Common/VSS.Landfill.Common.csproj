@@ -138,6 +138,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\clipper.cs" />
+    <Compile Include="Helpers\Geometry.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="JsonConverters\CustomerEventConverter.cs" />
     <Compile Include="JsonConverters\GeofenceEventConverter.cs" />
@@ -151,7 +153,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Common\LandfillService.Common.csproj">
+      <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
+      <Name>LandfillService.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />

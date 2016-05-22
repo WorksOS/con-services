@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
-using VSS.Geofence.Data.Interfaces;
 using VSS.Landfill.Common.Repositories;
 using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data.Models;
@@ -27,7 +26,7 @@ namespace VSS.Subscription.Data
         }
 
  
-        public int StoreSubscription(ISubscriptionEvent evt, IProjectService projectService, IGeofenceService geofenceService)
+        public int StoreSubscription(ISubscriptionEvent evt, IProjectService projectService)
         {
           var upsertedCount = 0;
           string eventType = "Unknown";
@@ -105,8 +104,7 @@ namespace VSS.Subscription.Data
                     new CreateProjectEvent(){ ProjectUID = subscriptionEvent.ProjectUID, 
                                               ProjectName = String.Empty,
                                               ProjectTimezone = String.Empty, 
-                                              ActionUTC = subscriptionEvent.ActionUTC },
-                                              geofenceService);
+                                              ActionUTC = subscriptionEvent.ActionUTC });
                 }
 
               if (upsertedCount > 0)

@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
-using LandfillService.Common.Context;
-using LandfillService.Common.Models;
 using log4net;
 using VSS.Geofence.Data.Interfaces;
 using VSS.Geofence.Data.Models;
-using ClipperLib;
+using VSS.Landfill.Common.Helpers;
 using VSS.Landfill.Common.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -40,14 +38,6 @@ namespace VSS.Geofence.Data
           geofence.IsTransparent = geofenceEvent.IsTransparent;
           geofence.IsDeleted = false;
           geofence.CustomerUID = geofenceEvent.CustomerUID.ToString();
-          if (geofence.GeofenceType == GeofenceType.Landfill)
-          {
-            geofence.ProjectUID = FindAssociatedProjectUidForLandfillGeofence(geofence.CustomerUID, geofence.GeometryWKT);
-          }
-          else if (geofence.GeofenceType == GeofenceType.Project)
-          {
-            geofence.ProjectUID = GetProjectUidForName(geofence.CustomerUID, geofence.Name);
-          }
           geofence.LastActionedUTC = geofenceEvent.ActionUTC;
           eventType = "CreateGeofenceEvent";
         }
@@ -72,16 +62,11 @@ namespace VSS.Geofence.Data
         }
 
         upsertedCount = UpsertGeofenceDetail(geofence, eventType);
-
-        if (evt is CreateGeofenceEvent && geofence.GeofenceType == GeofenceType.Project && !string.IsNullOrEmpty(geofence.ProjectUID))
-        {
-          AssignApplicableLandfillGeofencesToProject(geofence.GeometryWKT, geofence.CustomerUID, geofence.ProjectUID);
-        }
       }
       return upsertedCount;
     }
 
-    private GeofenceType GetGeofenceType(IGeofenceEvent evt)
+    public GeofenceType GetGeofenceType(IGeofenceEvent evt)
     {
       string geofenceType = null;
       if (evt is CreateGeofenceEvent)
@@ -226,14 +211,14 @@ namespace VSS.Geofence.Data
       var unassignedGeofences = GetUnassignedLandfillGeofences(customerUid);
       foreach (var unassignedGeofence in unassignedGeofences)
       {
-        if (GeofencesOverlap(projectGeometry, unassignedGeofence.GeometryWKT))
+        if (Geometry.GeofencesOverlap(projectGeometry, unassignedGeofence.GeometryWKT))
         {
           AssignGeofenceToProject(unassignedGeofence.GeofenceUID, projectUid);
         }
       }      
     }
 
-    private IEnumerable<Models.Geofence> GetProjectGeofences(string customerUid)
+    public IEnumerable<Models.Geofence> GetProjectGeofences(string customerUid)
     {
       PerhapsOpenConnection();
 
@@ -250,7 +235,7 @@ namespace VSS.Geofence.Data
       return projectGeofences;
     }
 
-    public IEnumerable<Models.Geofence> GetUnassignedLandfillGeofences(string customerUid)
+    private IEnumerable<Models.Geofence> GetUnassignedLandfillGeofences(string customerUid)
     {
       PerhapsOpenConnection();
 
@@ -283,82 +268,10 @@ namespace VSS.Geofence.Data
     }
 
 
-    private List<List<IntPoint>> ClipperIntersects(List<IntPoint> oldPolygon, List<IntPoint> newPolygon)
-    {
-      //Note: the clipper library uses 2D geometry while we have spherical coordinates. But it should be near enough for our purposes.
-
-      Clipper c = new Clipper();
-      c.AddPath(oldPolygon, PolyType.ptSubject, true);
-      c.AddPath(newPolygon, PolyType.ptClip, true);
-      List<List<IntPoint>> solution = new List<List<IntPoint>>();
-      bool succeeded = c.Execute(ClipType.ctIntersection, solution, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
-      return succeeded ? solution : null;
-    }
-
-    private List<IntPoint> ClipperPolygon(string geofenceGeometry)
-    {
-      const float SCALE = 100000;
-
-      //TODO: Make a common utility method for GeometryToPoints
-      IEnumerable<WGSPoint> points = LandfillDb.GeometryToPoints(geofenceGeometry);
-      return points.Select(p => new IntPoint {X = (Int64) (p.Lon * SCALE), Y = (Int64) (p.Lat * SCALE)}).ToList();
-    }
-
-    private string FindAssociatedProjectUidForLandfillGeofence(string customerUid, string geofenceGeometry)
-    {
-      List<IntPoint> geofencePolygon = ClipperPolygon(geofenceGeometry);
-      IEnumerable<Models.Geofence> projectGeofences = GetProjectGeofences(customerUid);
-      foreach (var projectGeofence in projectGeofences)
-      {
-        if (GeofencesOverlap(projectGeofence.GeometryWKT, geofencePolygon))
-        {
-          if (string.IsNullOrEmpty(projectGeofence.ProjectUID))
-          {
-            projectGeofence.ProjectUID = GetProjectUidForName(customerUid, projectGeofence.Name);
-            if (!string.IsNullOrEmpty(projectGeofence.ProjectUID))
-            {
-              AssignGeofenceToProject(projectGeofence.GeofenceUID, projectGeofence.ProjectUID);
-            }
-          }
-          return projectGeofence.ProjectUID;
-        }
-      }
-      return null;
-    }
-
-    private bool GeofencesOverlap(string projectGeometry, string geofenceGeometry)
-    {
-      List<IntPoint> geofencePolygon = ClipperPolygon(geofenceGeometry);
-      return GeofencesOverlap(projectGeometry, geofencePolygon);
-    }
-
-    private bool GeofencesOverlap(string projectGeometry, List<IntPoint> geofencePolygon)
-    {
-      List<List<IntPoint>> intersectingPolys = ClipperIntersects(
-        ClipperPolygon(projectGeometry), geofencePolygon);
-      return intersectingPolys != null && intersectingPolys.Count > 0;
-    }
+ 
 
     #endregion
 
-
-    private string GetProjectUidForName(string customerUid, string name)
-    {
-      PerhapsOpenConnection();
-
-      var projectUid = Connection.Query<string>
-         (@"SELECT ProjectUID
-            FROM Project 
-            WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND Name = @name",
-              new { customerUid, name }
-         ).FirstOrDefault();
-
-      PerhapsCloseConnection();
-
-      Log.DebugFormat("ProjectRepository: Get project {0} for name {1} for customer {2}", projectUid, name, customerUid);
-
-      return projectUid;
-    }
 
     public Models.Geofence GetGeofenceByName(string customerUid, string name)
     {

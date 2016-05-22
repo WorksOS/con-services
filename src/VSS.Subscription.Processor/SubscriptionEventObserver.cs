@@ -23,7 +23,7 @@ namespace VSS.Subscription.Processor
 
         protected override bool ProcessEvent(ISubscriptionEvent evt)
         {
-          int updatedCount = _subscriptionService.StoreSubscription(evt, _projectService, _geofenceService);
+          int updatedCount = _subscriptionService.StoreSubscription(evt, _projectService);
           return updatedCount == 1;
         }
     }

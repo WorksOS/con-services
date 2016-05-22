@@ -11,15 +11,10 @@ namespace VSS.Project.Data.Tests
   public class Projects
   {
      private readonly MySqlProjectRepository _projectService;
-     private readonly MySqlGeofenceRepository _geofenceService;
-
 
      public Projects()
     {
       _projectService = new MySqlProjectRepository();
-      _geofenceService = new MySqlGeofenceRepository();
-      _geofenceService.SetInTransactionState(true);
-
     }
 
     private CreateProjectEvent GetNewCreateProjectEvent()
@@ -89,10 +84,8 @@ namespace VSS.Project.Data.Tests
     {
       _projectService.InRollbackTransaction<object>(o =>
       {
-        _geofenceService.SetConnection((MySqlConnection)o);
-
         var createProjectEvent = GetNewCreateProjectEvent();
-        var upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
+        var upsertCount = _projectService.StoreProject(createProjectEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -105,7 +98,7 @@ namespace VSS.Project.Data.Tests
     [TestMethod]
     public void UpsertProject_Fails()
     {
-      var upsertCount = _projectService.StoreProject(null, null);
+      var upsertCount = _projectService.StoreProject(null);
       Assert.IsTrue(upsertCount == 0, "Should fail to upsert a project!");
     }
 
@@ -114,10 +107,8 @@ namespace VSS.Project.Data.Tests
     {
       _projectService.InRollbackTransaction<object>(o =>
       {
-        _geofenceService.SetConnection((MySqlConnection)o);
-
         var createProjectEvent = GetNewCreateProjectEvent();
-        var upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
+        var upsertCount = _projectService.StoreProject(createProjectEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
 
         var updateProjectEvent = GetNewUpdateProjectEvent(createProjectEvent.ProjectUID, 
@@ -125,7 +116,7 @@ namespace VSS.Project.Data.Tests
                                                           createProjectEvent.ProjectTimezone,
                                                           createProjectEvent.ProjectEndDate.AddDays(3),
                                                           DateTime.UtcNow);
-        upsertCount = _projectService.StoreProject(updateProjectEvent, _geofenceService);
+        upsertCount = _projectService.StoreProject(updateProjectEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to update the project!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -146,15 +137,13 @@ namespace VSS.Project.Data.Tests
     {
       _projectService.InRollbackTransaction<object>(o =>
       {
-        _geofenceService.SetConnection((MySqlConnection)o);
-
         var createProjectEvent = GetNewCreateProjectEvent();
-        var upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
+        var upsertCount = _projectService.StoreProject(createProjectEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
 
         var deleteProjectEvent = GetNewDeleteProjectEvent(createProjectEvent.ProjectUID, DateTime.UtcNow);
 
-        upsertCount = _projectService.StoreProject(deleteProjectEvent, _geofenceService);
+        upsertCount = _projectService.StoreProject(deleteProjectEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to delete the project!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -169,15 +158,13 @@ namespace VSS.Project.Data.Tests
     {
       _projectService.InRollbackTransaction<object>(o =>
       {
-        _geofenceService.SetConnection((MySqlConnection)o);
-
         var createProjectEvent = GetNewCreateProjectEvent();
-        var upsertCount = _projectService.StoreProject(createProjectEvent, _geofenceService);
+        var upsertCount = _projectService.StoreProject(createProjectEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
 
         var associateProjectCustomerEvent = GetNewAssociateProjectCustomerEvent(createProjectEvent.ProjectUID, Guid.NewGuid(), DateTime.UtcNow);
 
-        upsertCount = _projectService.StoreProject(associateProjectCustomerEvent, _geofenceService);
+        upsertCount = _projectService.StoreProject(associateProjectCustomerEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the project with a customer!");
 
         var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());

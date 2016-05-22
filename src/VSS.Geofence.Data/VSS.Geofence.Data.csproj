@@ -62,7 +62,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="clipper.cs" />
     <Compile Include="Interfaces\IGeofenceService.cs" />
     <Compile Include="Models\Geofence.cs" />
     <Compile Include="Models\GeofenceType.cs" />
