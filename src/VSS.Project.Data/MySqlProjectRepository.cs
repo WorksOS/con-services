@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
@@ -113,7 +114,7 @@ namespace VSS.Project.Data
 
       if (eventType == "AssociateProjectCustomerEvent")
       {
-        upsertedCount = AssociateProject(project, existing);
+        upsertedCount = AssociateProjectCustomer(project, existing);
       }
 
       Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
@@ -123,7 +124,7 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private int AssociateProject(Models.Project project, Models.Project existing)
+    private int AssociateProjectCustomer(Models.Project project, Models.Project existing)
     {
       if (existing != null)
       {
@@ -161,10 +162,27 @@ namespace VSS.Project.Data
                 (@ProjectID, @Name, @ProjectTimeZone, @LandfillTimeZone, @ProjectUID, @LastActionedUTC, @ProjectStartDate, @ProjectEndDate, @ProjectType)";
         return Connection.Execute(insert, project);
       }
+      else if (string.IsNullOrEmpty(existing.Name))
+      {
+        //Dummy one was inserted, so update with actual data
+        const string update =
+       @"UPDATE Project                
+                SET ProjectID = @ProjectID,
+                  Name = @Name,
+                  ProjectTimeZone = @ProjectTimeZone,
+                  LandfillTimeZone = @LandfillTimeZone,
+                  StartDate = @ProjectStartDate,
+                  EndDate = @ProjectEndDate,
+                  LastActionedUTC = @LastActionedUTC,
+                  EndDate = @ProjectEndDate, 
+                  fk_ProjectTypeID = @ProjectType
+              WHERE ProjectUID = @ProjectUID";
+        return Connection.Execute(update, project);
+      }
 
-      Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", project.LastActionedUTC);
+      Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC {0}.", project.LastActionedUTC);
 
-      return UpdateProject(project, existing);
+      return 0;
     }
 
     private int DeleteProject(Models.Project project, Models.Project existing)
@@ -313,6 +331,24 @@ namespace VSS.Project.Data
       Log.DebugFormat("ProjectRepository: Get project {0} for name {1} for customer {2}", projectUid, name, customerUid);
 
       return projectUid;
+    }
+
+    public int AssociateProjectSubscription(string projectUid, string subscriptionUid, DateTime lastActionedUtc)
+    {
+      PerhapsOpenConnection();
+
+      const string update =
+        @"UPDATE Project                
+                    SET SubscriptionUID = @subscriptionUid, LastActionedUTC = @lastActionedUtc
+                    WHERE ProjectUID = @projectUid";
+
+      int upsertedCount = Connection.Execute(update, new { projectUid, subscriptionUid, lastActionedUtc });
+
+      PerhapsCloseConnection();
+
+      Log.DebugFormat("ProjectRepository: Associated project {0} with subscription {1}", projectUid, subscriptionUid);
+
+      return upsertedCount;
     }
 
 

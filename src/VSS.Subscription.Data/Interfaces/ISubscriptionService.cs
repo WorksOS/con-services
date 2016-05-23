@@ -5,7 +5,8 @@ namespace VSS.Subscription.Data.Interfaces
 {
 	public interface ISubscriptionService
 	{
-    int StoreSubscription(ISubscriptionEvent evt, IProjectService projectService);
-   
+    int StoreSubscription(ISubscriptionEvent evt);
+	  Models.Subscription GetSubscription(string subscriptionUid);
+
 	}
 }
