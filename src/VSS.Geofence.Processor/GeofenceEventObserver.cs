@@ -37,19 +37,19 @@ namespace VSS.Geofence.Processor
 
           if (geofenceType == GeofenceType.Landfill)
           {
-            projectUid = FindAssociatedProjectUidForLandfillGeofence(createEvent.CustomerUID.toString(), createEvent.GeometryWKT);
+            projectUid = FindAssociatedProjectUidForLandfillGeofence(createEvent.CustomerUID.ToString(), createEvent.GeometryWKT);
           }
           else if (geofenceType == GeofenceType.Project)
           {
-            projectUid = _projectService.GetProjectUidForName(createEvent.CustomerUID.toString(), createEvent.GeofenceName);
+            projectUid = _projectService.GetProjectUidForName(createEvent.CustomerUID.ToString(), createEvent.GeofenceName);
           }
 
           if (!string.IsNullOrEmpty(projectUid))
           {
-            _geofenceService.AssignGeofenceToProject(createEvent.GeofenceUID.toString(), projectUid);
+            _geofenceService.AssignGeofenceToProject(createEvent.GeofenceUID.ToString(), projectUid);
             if (geofenceType == GeofenceType.Project)
             {
-              _geofenceService.AssignApplicableLandfillGeofencesToProject(createEvent.GeometryWKT, createEvent.CustomerUID.toString(), projectUid);
+              _geofenceService.AssignApplicableLandfillGeofencesToProject(createEvent.GeometryWKT, createEvent.CustomerUID.ToString(), projectUid);
             }
           }
         }

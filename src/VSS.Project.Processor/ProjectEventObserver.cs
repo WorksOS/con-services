@@ -30,7 +30,7 @@ namespace VSS.Project.Processor
         //and if it exists and is unassigned then assign it to this project
         //and also assign relevant unassigned Landfill geofences.
         var associateEvent = evt as AssociateProjectCustomer;
-        var project = _projectService.GetProject(associateEvent.ProjectUID.toString());
+        var project = _projectService.GetProject(associateEvent.ProjectUID.ToString());
         var geofence = _geofenceService.GetGeofenceByName(project.CustomerUID, project.Name);
         if (geofence != null && string.IsNullOrEmpty(geofence.ProjectUID))
         {

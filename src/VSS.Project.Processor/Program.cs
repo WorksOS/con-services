@@ -6,6 +6,8 @@ using System.Reflection;
 using org.apache.kafka.clients.consumer;
 using Topshelf;
 using Topshelf.Runtime;
+using VSS.Geofence.Data;
+using VSS.Geofence.Data.Interfaces;
 using VSS.Landfill.Common.Processor;
 using VSS.Project.Data;
 using VSS.Project.Data.Interfaces;
@@ -59,6 +61,7 @@ namespace VSS.Project.Processor
       builder.RegisterType<VSS.Landfill.Common.Processor.Processor>().As<IProcessor>().SingleInstance();
       builder.RegisterType<ProjectEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlProjectRepository>().As<IProjectService>().SingleInstance();
+      builder.RegisterType<MySqlGeofenceRepository>().As<IGeofenceService>().SingleInstance();
 
       Container = builder.Build();
 
