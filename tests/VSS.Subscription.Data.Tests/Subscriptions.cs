@@ -246,7 +246,7 @@ namespace VSS.Subscription.Data.Tests
 
         subscription = _subscriptionService.GetSubscription(subscriptionUid.ToString());
         Assert.IsNotNull(subscription, "Failed to get the subscription associated with a Landfill project!");
-        Assert.AreEqual(effectiveUtc, subscription.EffectiveUTC, "Wrong EffectiveUTC");
+        Assert.IsTrue((effectiveUtc - subscription.EffectiveUTC).TotalMilliseconds < 2, "Wrong EffectiveUTC");
 
         return null;
       });

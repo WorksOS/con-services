@@ -223,9 +223,10 @@ namespace VSS.Geofence.Data
       PerhapsOpenConnection();
 
       var projectGeofences = Connection.Query<Models.Geofence>
-         (@"SELECT GeofenceUID, Name, GeometryWKT, ProjectUID
+         (@"SELECT GeofenceUID, Name, CustomerUID, GeometryWKT, ProjectUID
             FROM Geofence 
-            WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND fk_GeofenceTypeID = 1"//Project type
+            WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND fk_GeofenceTypeID = 1",//Project type
+          new { customerUid }
          );
 
       PerhapsCloseConnection();
@@ -235,14 +236,16 @@ namespace VSS.Geofence.Data
       return projectGeofences;
     }
 
-    private IEnumerable<Models.Geofence> GetUnassignedLandfillGeofences(string customerUid)
+    //Public so can do unit test
+    public IEnumerable<Models.Geofence> GetUnassignedLandfillGeofences(string customerUid)
     {
       PerhapsOpenConnection();
 
       var landfillGeofences = Connection.Query<Models.Geofence>
          (@"SELECT GeofenceUID, Name, GeometryWKT
             FROM Geofence 
-            WHERE CustomerUID = @customerUid AND ProjectUID IS NULL AND AND IsDeleted = 0 AND fk_GeofenceTypeID = 10"//Landfill type
+            WHERE CustomerUID = @customerUid AND ProjectUID IS NULL AND IsDeleted = 0 AND fk_GeofenceTypeID = 10",//Landfill type
+          new { customerUid }
          );
 
       PerhapsCloseConnection();
@@ -267,28 +270,8 @@ namespace VSS.Geofence.Data
       return rowsUpdated;
     }
 
-
- 
-
     #endregion
 
-
-    public Models.Geofence GetGeofenceByName(string customerUid, string name)
-    {
-      PerhapsOpenConnection();
-
-      var geofence = Connection.Query<Models.Geofence>
-          (@"SELECT 
-                GeofenceUID, Name, CustomerUID, ProjectUID, GeometryWKT
-              FROM Geofence
-              WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND Name = @name"
-          , new { customerUid, name }
-        ).FirstOrDefault();
-
-      PerhapsCloseConnection();
-
-      return geofence;     
-    }
 
     //for unit tests
     public Models.Geofence GetGeofence(string geofenceUid)

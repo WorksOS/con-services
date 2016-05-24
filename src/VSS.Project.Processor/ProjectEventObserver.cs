@@ -1,4 +1,5 @@
-﻿using ikvm.extensions;
+﻿using System.Linq;
+using ikvm.extensions;
 using VSS.Geofence.Data.Interfaces;
 using VSS.Landfill.Common.JsonConverters;
 using VSS.Landfill.Common.Processor;
@@ -31,7 +32,8 @@ namespace VSS.Project.Processor
         //and also assign relevant unassigned Landfill geofences.
         var associateEvent = evt as AssociateProjectCustomer;
         var project = _projectService.GetProject(associateEvent.ProjectUID.ToString());
-        var geofence = _geofenceService.GetGeofenceByName(project.CustomerUID, project.Name);
+        var geofences = _geofenceService.GetProjectGeofences(project.CustomerUID);
+        var geofence = (from g in geofences where g.Name == project.Name select g).FirstOrDefault();
         if (geofence != null && string.IsNullOrEmpty(geofence.ProjectUID))
         {
           int result = _geofenceService.AssignGeofenceToProject(geofence.GeofenceUID, project.ProjectUID);
