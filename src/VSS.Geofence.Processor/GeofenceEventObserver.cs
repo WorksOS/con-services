@@ -18,9 +18,10 @@ namespace VSS.Geofence.Processor
     private IGeofenceService _geofenceService;
     private IProjectService _projectService;
 
-    public GeofenceEventObserver(IGeofenceService geofenceService)
+    public GeofenceEventObserver(IGeofenceService geofenceService, IProjectService projectService)
     {
       _geofenceService = geofenceService;
+      _projectService = projectService;
       EventName = "Geofence";
     }
 

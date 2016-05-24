@@ -88,7 +88,7 @@ namespace VSS.Project.Data
       
       PerhapsOpenConnection();
       
-      Log.DebugFormat("ProjectRepository: Upserting eventType{0} projectUid={1}", eventType, project.ProjectUID);
+      Log.DebugFormat("ProjectRepository: Upserting eventType={0} projectUid={1}", eventType, project.ProjectUID);
 
       var existing = Connection.Query<Models.Project>
         (@"SELECT 

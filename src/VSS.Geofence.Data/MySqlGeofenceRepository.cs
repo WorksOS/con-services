@@ -95,7 +95,7 @@ namespace VSS.Geofence.Data
 
       PerhapsOpenConnection();
 
-      Log.DebugFormat("GeofenceRepository: Upserting eventType{0} geofenceUid={1}", eventType, geofence.GeofenceUID);
+      Log.DebugFormat("GeofenceRepository: Upserting eventType={0} geofenceUid={1}", eventType, geofence.GeofenceUID);
 
       var existing = Connection.Query<Models.Geofence>
         (@"SELECT 

@@ -94,7 +94,7 @@ namespace VSS.Subscription.Data
 
           PerhapsOpenConnection();
 
-          Log.DebugFormat("SubscriptionRepository: Upserting eventType{0} SubscriptionUID={1}", eventType, subscription.SubscriptionUID);
+          Log.DebugFormat("SubscriptionRepository: Upserting eventType={0} SubscriptionUID={1}", eventType, subscription.SubscriptionUID);
 
           var existing = Connection.Query<Models.Subscription>
             (@"SELECT 
