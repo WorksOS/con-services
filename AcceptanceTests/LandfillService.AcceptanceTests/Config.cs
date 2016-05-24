@@ -42,10 +42,21 @@ namespace LandfillService.AcceptanceTests
 
         public static Guid MasterDataUserUID = Guid.Parse("2fa7e8f2-670e-4fa3-964b-7549c9cb196d"); // "acceptance_test@vss.com"
         public static Guid MasterDataCustomerUID = Guid.Parse("465a6189-9be3-48fc-a30b-1a525bd376b1"); // "AcceptTestGoldenCustomer" 
+        public static string MasterDataProjectBoundary = "POLYGON((-43.54369850667017 172.58596658706665, -43.543574077936206 172.59169578552246, -43.54674693042763 172.59156703948975, -43.546684719238826 172.58615970611572))";
+        public static string MasterDataInBoundaryLandfillBoundary = "POLYGON((-43.54486501356116 172.588369846344, -43.54489612010259, 172.58955001831055, -43.54544048197943 172.58959293365479, -43.54542492885117 172.58869171142578))";
+
+        public static Guid MasterData2ndUserUID = Guid.NewGuid();
+        public static Guid MasterData2ndCustomerUID = Guid.NewGuid();
+        public static Guid MasterData2ndProjectUID = Guid.NewGuid();
+        public static Guid MasterData2ndProjectSubscriptionUID = Guid.NewGuid();
+        public static Guid MasterData2ndProjectGeofenceUID = Guid.NewGuid();
+        public static string MasterData2ndProjectBoundary = "POLYGON((-43.5422986686057 172.60130882263184, -43.54245420777355 172.6069736480713, -43.545596013041354 172.60690927505493, -43.545689331485896 172.60188817977905))";
+        public static string MasterDataOutBoundaryLandfillBoundary = "POLYGON((-43.54368295309247 172.6031756401062, -43.543278558663744 172.6040554046631, -43.54402513087493 172.60482788085938, -43.544367306715166 172.6042914390564))";
         #endregion
 
         #region Auth
         public static string JwtToken;
+        public static string JwtToken2ndCustomerUser = Jwt.GetJwtToken(MasterData2ndUserUID);
         #endregion
 
         #region Web API

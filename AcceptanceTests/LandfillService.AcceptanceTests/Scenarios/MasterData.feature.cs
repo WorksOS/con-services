@@ -277,7 +277,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 71
   testRunner.And("the created project is in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 72
-  testRunner.And("I inject \'CreateGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("I inject \'CreateProjectGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 73
  testRunner.When("I make a Web API request for a list of geofences", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 74
@@ -307,7 +307,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 82
   testRunner.And("the created project is in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 83
-  testRunner.And("I inject \'CreateGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("I inject \'CreateProjectGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 84
   testRunner.And("I make a Web API request for a list of geofences", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 85
@@ -341,13 +341,13 @@ this.ScenarioSetup(scenarioInfo);
 #line 95
   testRunner.And("the created project is in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 96
-  testRunner.And("I inject \'CreateGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("I inject \'CreateProjectGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 97
   testRunner.And("I make a Web API request for a list of geofences", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 98
   testRunner.And("the created geofence is in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 99
-  testRunner.And("I inject \'UpdateGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("I inject \'UpdateProjectGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 100
  testRunner.When("I make a Web API request for a list of geofences", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 101
@@ -377,17 +377,62 @@ this.ScenarioSetup(scenarioInfo);
 #line 109
   testRunner.And("the created project is in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 110
-  testRunner.And("I inject \'CreateGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("I inject \'CreateProjectGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 111
   testRunner.And("I make a Web API request for a list of geofences", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 112
   testRunner.And("the created geofence is in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 113
-  testRunner.And("I inject \'DeleteGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("I inject \'DeleteProjectGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 114
  testRunner.When("I make a Web API request for a list of geofences", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 115
  testRunner.Then("the created geofence is not in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Create landfill geofence")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "MasterData")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("require2ndCustomer")]
+        public virtual void CreateLandfillGeofence()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create landfill geofence", new string[] {
+                        "require2ndCustomer"});
+#line 118
+this.ScenarioSetup(scenarioInfo);
+#line 119
+ testRunner.Given("I inject \'CreateProjectEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 120
+  testRunner.And("I inject \'CreateProjectSubscriptionEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 121
+  testRunner.And("I inject \'AssociateProjectCustomer\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 122
+  testRunner.And("I inject \'AssociateProjectSubscriptionEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 123
+  testRunner.And("I make a Web API request for a list of projects", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 124
+  testRunner.And("the created project is in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 125
+  testRunner.And("I inject \'CreateProjectGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 126
+  testRunner.And("I make a Web API request for a list of geofences", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 127
+  testRunner.And("the created geofence is in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 128
+  testRunner.And("I inject \'CreateInBoundaryLandfillGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 129
+  testRunner.And("I inject \'CreateOutBoundaryLandfillGeofenceEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 130
+ testRunner.When("I make a Web API request for a list of geofences", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 131
+ testRunner.Then("the created in boundary landfill geofence is in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 132
+  testRunner.And("the created out boundary landfill geofence is not in the list", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 133
+  testRunner.And("the created out boundary landfill geofence does not get associated to other proje" +
+                    "ct that encompasses it but belong to another customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

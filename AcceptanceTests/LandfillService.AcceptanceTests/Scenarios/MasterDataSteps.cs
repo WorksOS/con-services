@@ -85,16 +85,17 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     messageStr = mdSupport.UpdateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUID);
                     topic = Config.SubscriptionTopic;
                     break;
-                case "CreateGeofenceEvent":
-                    messageStr = mdSupport.CreateGeofence(geofenceUID, Config.MasterDataCustomerUID, Config.MasterDataUserUID);
+                case "CreateProjectGeofenceEvent":
+                    messageStr = mdSupport.CreateProjectGeofence(geofenceUID, Config.MasterDataCustomerUID, Config.MasterDataUserUID, 
+                        mdSupport.CreateProjectEvt.ProjectName);
                     topic = Config.GeofenceTopic;
                     break;
-                case "UpdateGeofenceEvent":
-                    messageStr = mdSupport.UpdateGeofence(geofenceUID, Config.MasterDataUserUID);
+                case "UpdateProjectGeofenceEvent":
+                    messageStr = mdSupport.UpdateProjectGeofence(geofenceUID, Config.MasterDataUserUID);
                     topic = Config.GeofenceTopic;
                     break;
-                case "DeleteGeofenceEvent":
-                    messageStr = mdSupport.DeleteGeofence(geofenceUID, Config.MasterDataUserUID);
+                case "DeleteProjectGeofenceEvent":
+                    messageStr = mdSupport.DeleteProjectGeofence(geofenceUID, Config.MasterDataUserUID);
                     topic = Config.GeofenceTopic;
                     break;
             }
@@ -242,22 +243,22 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [Given(@"the created geofence is in the list")]
         public void ThenTheCreatedGeofenceIsInTheList()
         {
-            Assert.IsTrue(geofences.Exists(g => g.uid == mdSupport.CreateGeofenceEvt.GeofenceUID &&
-                g.name == mdSupport.CreateGeofenceEvt.GeofenceName &&
-                g.type == (int)Enum.Parse(typeof(GeofenceType), mdSupport.CreateGeofenceEvt.GeofenceType)), "Geofence not found.");
+            Assert.IsTrue(geofences.Exists(g => g.uid == mdSupport.CreateProjectGeofenceEvt.GeofenceUID &&
+                g.name == mdSupport.CreateProjectGeofenceEvt.GeofenceName &&
+                g.type == (int)Enum.Parse(typeof(GeofenceType), mdSupport.CreateProjectGeofenceEvt.GeofenceType)), "Geofence not found.");
         }
 
         [Then(@"the geofence details are updated")]
         public void ThenTheGeofenceDetailsAreUpdated()
         {
-            Assert.AreEqual(mdSupport.UpdateGeofenceEvt.GeofenceName, geofences.FirstOrDefault(g => g.uid == geofenceUID).name,
+            Assert.AreEqual(mdSupport.UpdateProjectGeofenceEvt.GeofenceName, geofences.FirstOrDefault(g => g.uid == geofenceUID).name,
                 "Geofence details not updated.");
         }
 
         [Then(@"the created geofence is not in the list")]
         public void ThenTheCreatedGeofenceIsNotInTheList()
         {
-            Assert.IsFalse(geofences.Exists(g => g.name == mdSupport.CreateGeofenceEvt.GeofenceName), "Geofence not deleted.");
+            Assert.IsFalse(geofences.Exists(g => g.name == mdSupport.CreateProjectGeofenceEvt.GeofenceName), "Geofence not deleted.");
         }
 
         [Then(@"the geofence boundary points are correct")]
@@ -266,9 +267,9 @@ namespace LandfillService.AcceptanceTests.Scenarios
             const double DEGREES_TO_RADIANS = Math.PI / 180;
 
             List<WGSPoint> expectedBoundary = new List<WGSPoint>();
-            string geometry = mdSupport.CreateGeofenceEvt.GeometryWKT;
+            string geometry = mdSupport.CreateProjectGeofenceEvt.GeometryWKT;
             //Trim off the "POLYGON((" and "))"
-            geometry = mdSupport.CreateGeofenceEvt.GeometryWKT.Substring(9, geometry.Length - 11);
+            geometry = mdSupport.CreateProjectGeofenceEvt.GeometryWKT.Substring(9, geometry.Length - 11);
             var points = geometry.Split(',');
             foreach (var point in points)
             {

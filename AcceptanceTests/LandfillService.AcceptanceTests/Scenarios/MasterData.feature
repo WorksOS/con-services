@@ -69,7 +69,7 @@ Scenario: Create geofence - geofence list
 		And I inject 'AssociateProjectSubscriptionEvent' into Kafka
 		And I make a Web API request for a list of projects
 		And the created project is in the list
-		And I inject 'CreateGeofenceEvent' into Kafka
+		And I inject 'CreateProjectGeofenceEvent' into Kafka
 	When I make a Web API request for a list of geofences
 	Then the created geofence is in the list
 
@@ -80,7 +80,7 @@ Scenario: Create geofence - geofence boundary
 		And I inject 'AssociateProjectSubscriptionEvent' into Kafka
 		And I make a Web API request for a list of projects
 		And the created project is in the list
-		And I inject 'CreateGeofenceEvent' into Kafka
+		And I inject 'CreateProjectGeofenceEvent' into Kafka
 		And I make a Web API request for a list of geofences
 		And the created geofence is in the list
 	When I make a Web API request for the boundary of the geofence
@@ -93,10 +93,10 @@ Scenario: Update geofence
 		And I inject 'AssociateProjectSubscriptionEvent' into Kafka
 		And I make a Web API request for a list of projects
 		And the created project is in the list
-		And I inject 'CreateGeofenceEvent' into Kafka
+		And I inject 'CreateProjectGeofenceEvent' into Kafka
 		And I make a Web API request for a list of geofences
 		And the created geofence is in the list
-		And I inject 'UpdateGeofenceEvent' into Kafka
+		And I inject 'UpdateProjectGeofenceEvent' into Kafka
 	When I make a Web API request for a list of geofences
 	Then the geofence details are updated
 
@@ -107,9 +107,27 @@ Scenario: Delete geofence
 		And I inject 'AssociateProjectSubscriptionEvent' into Kafka
 		And I make a Web API request for a list of projects
 		And the created project is in the list
-		And I inject 'CreateGeofenceEvent' into Kafka
+		And I inject 'CreateProjectGeofenceEvent' into Kafka
 		And I make a Web API request for a list of geofences
 		And the created geofence is in the list
-		And I inject 'DeleteGeofenceEvent' into Kafka
+		And I inject 'DeleteProjectGeofenceEvent' into Kafka
 	When I make a Web API request for a list of geofences
 	Then the created geofence is not in the list
+
+@require2ndCustomer
+Scenario: Create landfill geofence
+	Given I inject 'CreateProjectEvent' into Kafka
+		And I inject 'CreateProjectSubscriptionEvent' into Kafka
+		And I inject 'AssociateProjectCustomer' into Kafka
+		And I inject 'AssociateProjectSubscriptionEvent' into Kafka
+		And I make a Web API request for a list of projects
+		And the created project is in the list
+		And I inject 'CreateProjectGeofenceEvent' into Kafka
+		And I make a Web API request for a list of geofences
+		And the created geofence is in the list
+		And I inject 'CreateInBoundaryLandfillGeofenceEvent' into Kafka
+		And I inject 'CreateOutBoundaryLandfillGeofenceEvent' into Kafka
+	When I make a Web API request for a list of geofences
+	Then the created in boundary landfill geofence is in the list
+		And the created out boundary landfill geofence is not in the list
+		And the created out boundary landfill geofence does not get associated to other project that encompasses it but belong to another customer
