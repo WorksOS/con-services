@@ -229,7 +229,7 @@ namespace VSS.Customer.Data
 
       PerhapsOpenConnection();
 
-      Log.DebugFormat("CustomerRepository: Upserting eventType{0} CustomerUid={1}, UserUid={2}",
+      Log.DebugFormat("CustomerRepository: Upserting eventType={0} CustomerUid={1}, UserUid={2}",
         eventType, customerUser.CustomerUID, customerUser.UserUID);
 
       var existing = Connection.Query<Models.CustomerUser>

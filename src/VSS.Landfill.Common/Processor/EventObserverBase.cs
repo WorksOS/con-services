@@ -32,7 +32,7 @@ namespace VSS.Landfill.Common.Processor
       {
         string val = (string)value.value();
 
-          Log.DebugFormat("Received {1}  Payload : {0} ", val, EventName);
+        Log.DebugFormat("Received {1} Payload : {0} ", val, EventName);
 
         T evt = JsonConvert.DeserializeObject<T>(val, new U());
         bool success = ProcessEvent(evt);
@@ -51,7 +51,7 @@ namespace VSS.Landfill.Common.Processor
       }
       catch (MySqlException ex)
       {
-        Log.Error(string.Format("MySql Error  occured while Processing the {0} Payload", EventName), ex);
+        Log.Error(string.Format("MySql Error occurred while Processing the {0} Payload", EventName), ex);
         switch (ex.Number)
         {
           case 0: //Cannot connect to server
@@ -65,7 +65,7 @@ namespace VSS.Landfill.Common.Processor
       catch (Exception ex)
       {
         //deliberately suppress
-        Log.Error(string.Format("Error  occured while Processing the {0} Payload", EventName), ex);
+        Log.Error(string.Format("Error occurred while Processing the {0} Payload", EventName), ex);
       }
     }
 
