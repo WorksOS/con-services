@@ -12,7 +12,7 @@ using LandfillService.AcceptanceTests.Models.Landfill;
 using Newtonsoft.Json;
 using LandfillService.AcceptanceTests.Auth;
 using LandfillService.AcceptanceTests.Utils;
-
+using LandfillService.AcceptanceTests.TestData;
 
 namespace LandfillService.AcceptanceTests.Scenarios
 {
@@ -29,7 +29,26 @@ namespace LandfillService.AcceptanceTests.Scenarios
         List<Geofence> geofences;
         List<WGSPoint> boundary;
 
+        MDMTestCustomer middleton;
+        MDMTestCustomer addington;
+        Site landfillSite;
+
         #region Given/When
+        [Given(@"I set up a project for customer '(.*)'")]
+        public void GivenISetUpAProjectForCustomer(string customer)
+        {
+            if(customer == "Middleton")
+            {
+                middleton = MDMTestCustomer.Middleton;
+                middleton.Create();
+            }
+            if (customer == "Addington")
+            {
+                addington = MDMTestCustomer.Addington;
+                addington.Create();
+            }
+        }
+
         [Given(@"I inject '(.*)' into Kafka")]
         [When(@"I inject '(.*)' into Kafka")]
         public void GivenIInjectIntoKafka(string eventType)
@@ -68,13 +87,13 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     topic = Config.CustomerTopic;
                     break;
                 case "AssociateProjectCustomer":
-                    string query = string.Format("DELETE FROM {0}.Project WHERE CustomerUID = '{1}'", Config.MySqlDbName, Config.MasterDataCustomerUID);
+                    string query = string.Format("DELETE FROM {0}.Project WHERE CustomerUID = '{1}'", Config.MySqlDbName, Config.MasterDataCustomerUid);
                     LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query);
-                    messageStr = mdSupport.AssociateProjectCustomer(projectUID, Config.MasterDataCustomerUID);
+                    messageStr = mdSupport.AssociateProjectCustomer(projectUID, Config.MasterDataCustomerUid);
                     topic = Config.ProjectTopic;
                     break;
                 case "CreateProjectSubscriptionEvent":
-                    messageStr = mdSupport.CreateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUID);
+                    messageStr = mdSupport.CreateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUid);
                     topic = Config.SubscriptionTopic;
                     break;
                 case "AssociateProjectSubscriptionEvent":
@@ -82,20 +101,20 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     topic = Config.SubscriptionTopic;
                     break;
                 case "UpdateProjectSubscriptionEvent":
-                    messageStr = mdSupport.UpdateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUID);
+                    messageStr = mdSupport.UpdateProjectSubscription(projSubscripUID, Config.MasterDataCustomerUid);
                     topic = Config.SubscriptionTopic;
                     break;
                 case "CreateProjectGeofenceEvent":
-                    messageStr = mdSupport.CreateProjectGeofence(geofenceUID, Config.MasterDataCustomerUID, Config.MasterDataUserUID, 
+                    messageStr = mdSupport.CreateProjectGeofence(geofenceUID, Config.MasterDataCustomerUid, Config.MasterDataUserUid, 
                         mdSupport.CreateProjectEvt.ProjectName);
                     topic = Config.GeofenceTopic;
                     break;
                 case "UpdateProjectGeofenceEvent":
-                    messageStr = mdSupport.UpdateProjectGeofence(geofenceUID, Config.MasterDataUserUID);
+                    messageStr = mdSupport.UpdateProjectGeofence(geofenceUID, Config.MasterDataUserUid);
                     topic = Config.GeofenceTopic;
                     break;
                 case "DeleteProjectGeofenceEvent":
-                    messageStr = mdSupport.DeleteProjectGeofence(geofenceUID, Config.MasterDataUserUID);
+                    messageStr = mdSupport.DeleteProjectGeofence(geofenceUID, Config.MasterDataUserUid);
                     topic = Config.GeofenceTopic;
                     break;
             }
@@ -130,7 +149,29 @@ namespace LandfillService.AcceptanceTests.Scenarios
 
             string response = RestClientUtil.DoHttpRequest(uri, "GET", RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
             boundary = JsonConvert.DeserializeObject<List<WGSPoint>>(response);
-        } 
+        }
+
+        [When(@"I add landfill site '(.*)' to the project of customer '(.*)'")]
+        public void WhenIAddLandfillSiteToTheProjectOfCustomer(string site, string customer)
+        {
+            if(site == "Marylands")
+            {
+                landfillSite = Site.MarylandsLandfill;
+            }
+            if(site == "AmiStadium")
+            {
+                landfillSite = Site.AmiStadiumLandfill;
+            }
+
+            if (customer == "Middleton")
+            {
+                middleton.AddLandfillSite(landfillSite);
+            }
+            if (customer == "Addington")
+            {
+                addington.AddLandfillSite(landfillSite);
+            }
+        }
         #endregion
 
         #region Then
@@ -275,7 +316,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             {
                 var parts = point.Split(' ');
                 var lat = double.Parse(parts[0]);
-                var lng = double.Parse(parts[0]);
+                var lng = double.Parse(parts[1]);
                 expectedBoundary.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
             }
 
@@ -285,7 +326,33 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     Math.Round(expectedBoundary[i].Lon) == Math.Round(boundary[i].Lon),
                     "Incorrect geofence boundary.");
             }
-        } 
+        }
+
+        [Then(@"the landfill site is in the geofence list of the project of customer '(.*)'")]
+        public void ThenTheLandfillSiteIsInTheGeofenceListOfTheProjectOfCustomer(string customer)
+        {
+            if(customer == "Middleton")
+            {
+                Assert.IsTrue(middleton.HasSite(landfillSite), "Landfill geofence not in the list.");
+            }
+            if(customer == "Addington")
+            {
+                Assert.IsTrue(addington.HasSite(landfillSite), "Landfill geofence not in the list.");
+            }
+        }
+
+        [Then(@"the landfill site is not in the geofence list of the project of customer '(.*)'")]
+        public void ThenTheLandfillSiteIsNotInTheGeofenceListOfTheProjectOfCustomer(string customer)
+        {
+            if (customer == "Middleton")
+            {
+                Assert.IsFalse(middleton.HasSite(landfillSite), "Landfill geofence in the list.");
+            }
+            if (customer == "Addington")
+            {
+                Assert.IsFalse(addington.HasSite(landfillSite), "Landfill geofence in the list.");
+            }
+        }
         #endregion
     }
 }

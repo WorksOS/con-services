@@ -114,20 +114,14 @@ Scenario: Delete geofence
 	When I make a Web API request for a list of geofences
 	Then the created geofence is not in the list
 
-@require2ndCustomer
-Scenario: Create landfill geofence
-	Given I inject 'CreateProjectEvent' into Kafka
-		And I inject 'CreateProjectSubscriptionEvent' into Kafka
-		And I inject 'AssociateProjectCustomer' into Kafka
-		And I inject 'AssociateProjectSubscriptionEvent' into Kafka
-		And I make a Web API request for a list of projects
-		And the created project is in the list
-		And I inject 'CreateProjectGeofenceEvent' into Kafka
-		And I make a Web API request for a list of geofences
-		And the created geofence is in the list
-		And I inject 'CreateInBoundaryLandfillGeofenceEvent' into Kafka
-		And I inject 'CreateOutBoundaryLandfillGeofenceEvent' into Kafka
-	When I make a Web API request for a list of geofences
-	Then the created in boundary landfill geofence is in the list
-		And the created out boundary landfill geofence is not in the list
-		And the created out boundary landfill geofence does not get associated to other project that encompasses it but belong to another customer
+Scenario: Add landfill geofence
+	Given I set up a project for customer 'Middleton'
+	When I add landfill site 'Marylands' to the project of customer 'Middleton'
+	Then the landfill site is in the geofence list of the project of customer 'Middleton'
+
+Scenario: Add out of boundary landfill geofence
+	Given I set up a project for customer 'Middleton'
+		And I set up a project for customer 'Addington'
+	When I add landfill site 'AmiStadium' to the project of customer 'Middleton'
+	Then the landfill site is not in the geofence list of the project of customer 'Middleton'
+		Then the landfill site is not in the geofence list of the project of customer 'Addington'
