@@ -122,36 +122,30 @@ namespace LandfillService.Common.ApiClients
         /// <returns>Response as a string; throws an exception if the request is not successful</returns>
         public async Task<SummaryVolumesResult> GetVolumesAsync(string userUid, Project project, DateTime date, List<WGSPoint> geofence)
         {
-          TimeZoneInfo hwZone = GetTimeZoneInfoForTzdbId(project.timeZoneName);
+          DateTime startUtc;
+          DateTime endUtc;
+          ConvertToUtc(date, project.timeZoneName, out startUtc, out endUtc);
 
-/*            var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
-            var dateInProjTimeZone = projTimeZone.AtLeniently(new LocalDateTime(date.Year, date.Month, date.Day, 0, 0));
-            var utcDateTime = dateInProjTimeZone.ToDateTimeUtc();*/
-      
-          //use only utc dates and times in the service contracts. Ignore time for now.
-          var utcDateTime = date.Date.Add(-hwZone.BaseUtcOffset);
-          Log.DebugFormat("UTC time range in volume request: {0} - {1}", utcDateTime.ToString(), utcDateTime.AddDays(1).ToString());
-
-            var volumeParams = new VolumeParams
+          var volumeParams = new VolumeParams
+          {
+            projectId = project.id,
+            volumeCalcType = 4,
+            baseFilter = new VolumeFilter
             {
-                projectId = project.id,
-                volumeCalcType = 4,
-                baseFilter = new VolumeFilter
-                             {
-                                 startUTC = utcDateTime, 
-                                 endUTC = utcDateTime.AddDays(1).AddMinutes(-1), 
-                                 returnEarliest = true,
-                                 polygonLL = geofence
-                             },
-                topFilter = new VolumeFilter
-                            {
-                                startUTC = utcDateTime, 
-                                endUTC = utcDateTime.AddDays(1).AddMinutes(-1), 
-                                returnEarliest = false,
-                                polygonLL = geofence
-                            }
-            };
-            return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", userUid, volumeParams));
+              startUTC = startUtc,
+              endUTC = endUtc,
+              returnEarliest = true,
+              polygonLL = geofence
+            },
+            topFilter = new VolumeFilter
+            {
+              startUTC = startUtc,
+              endUTC = endUtc,
+              returnEarliest = false,
+              polygonLL = geofence
+            }
+          };
+          return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", userUid, volumeParams));
         }
 
 
@@ -161,6 +155,49 @@ namespace LandfillService.Common.ApiClients
           var map = mappings.FirstOrDefault(x =>
               x.TzdbIds.Any(z => z.Equals(tzdbId, StringComparison.OrdinalIgnoreCase)));
           return map == null ? null : TimeZoneInfo.FindSystemTimeZoneById(map.WindowsId);
+        }
+
+        private void ConvertToUtc(DateTime date, string timeZoneName, out DateTime startUtc, out DateTime endUtc)
+        {
+          TimeZoneInfo hwZone = GetTimeZoneInfoForTzdbId(timeZoneName);
+
+          //use only utc dates and times in the service contracts. Ignore time for now.
+          var utcDateTime = date.Date.Add(-hwZone.BaseUtcOffset);
+          Log.DebugFormat("UTC time range in CCA request: {0} - {1}", utcDateTime.ToString(), utcDateTime.AddDays(1).ToString());
+
+          startUtc = utcDateTime;
+          endUtc = utcDateTime.AddDays(1).AddMinutes(-1);
+        }
+
+        /// <summary>
+        /// Retrieves CCA summary information for a given project, date and machine
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">VisionLink project to retrieve volumes for</param>
+        /// <param name="date">Date to retrieve CCA for (in project time zone)</param>
+        /// <param name="machine">Machine to retrieve CCA for</param>
+        /// <param name="geofence">Geofence to retrieve CCA for. If not specified then CCA retrieved for entire project area</param>
+        /// <param name="liftId">Lift/layer number to retrieve CCA for. If not specified then CCA retrieved for all lifts</param>
+        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
+        public async Task<SummaryVolumesResult> GetCCAAsync(string userUid, Project project, DateTime date, MachineDetails machine, int? liftId, List<WGSPoint> geofence)
+        {
+          DateTime startUtc;
+          DateTime endUtc;
+          ConvertToUtc(date, project.timeZoneName, out startUtc, out endUtc);
+
+          var ccaParams = new CCASummaryParams
+          {
+            projectId = project.id,
+            filter = new CCAFilter
+            {
+              startUTC = startUtc,
+              endUTC = endUtc,
+              contributingMachines = new List<MachineDetails>{machine},
+              layerNumber = liftId,
+              polygonLL = geofence
+            },         
+          };
+          return ParseResponse<SummaryVolumesResult>(await Request("compaction/cca/summary", userUid, ccaParams));
         }
 
     }

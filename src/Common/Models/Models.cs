@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 namespace LandfillService.Common.Models
 {
-    /// <summary>
+  #region WEb API Models
+  /// <summary>
     /// Project representation
     /// </summary>
     public class Project
@@ -111,7 +112,6 @@ namespace LandfillService.Common.Models
       public Project project { get; set; }   
     }
 
-
     /// <summary>
     /// Encapsulates project data sent to the client 
     /// </summary>
@@ -122,6 +122,38 @@ namespace LandfillService.Common.Models
         public Project project { get; set; }   
     }
 
+    /// <summary>
+    /// An entry for CCA for a machine 
+    /// </summary>
+    public class CCAEntry
+    {
+      public DateTime date { get; set; }
+      public double ccaPercent { get; set; }
+    }
+
+    /// <summary>
+    /// CCA% representation for a machine
+    /// </summary>
+    public class CCAData
+    {
+      public string machineName { get; set; }
+      public IEnumerable<CCAEntry> entries { get; set; }
+    }
+
+    /// <summary>
+    /// Volume and time sumamry data 
+    /// </summary>
+    public class VolumeTime
+    {
+      public double currentWeekVolume { get; set; }
+      public double currentMonthVolume { get; set; }
+      public double remainingVolume { get; set; }
+      public double remainingTime { get; set; }
+    }
+
+  #endregion
+
+    #region Raptor API Models
     /// <summary>
     /// WGS point for volume summary requests sent to the Raptor API; see Raptor API documentation for details
     /// </summary>
@@ -268,31 +300,114 @@ namespace LandfillService.Common.Models
     }
 
     /// <summary>
-    /// An entry for CCA for a machine 
+    /// Machine details sent to/received from the Raptor API; see Raptor API documentation for details
     /// </summary>
-    public class CCAEntry
+    public class MachineDetails
     {
-      public DateTime date { get; set; }
-      public double ccaPercent { get; set; }
+      public long assetId;
+      public string machineName;
+      public bool isJohnDoe;
+
+      /// <summary>
+      /// ToString override
+      /// </summary>
+      /// <returns>A string representation of machine details params</returns>
+      public override string ToString()
+      {
+        return string.Format("({0},{1},{2})", assetId, machineName, isJohnDoe);
+      }
     }
 
     /// <summary>
-    /// CCA% representation for a machine
+    /// Filter for CCA summary requests sent to the Raptor API; see Raptor API documentation for details
     /// </summary>
-    public class CCAData
+    public class CCAFilter
     {
-      public string machineName { get; set; }
-      public IEnumerable<CCAEntry> entries { get; set; }
+      public DateTime startUTC;
+      public DateTime endUTC;
+      public List<WGSPoint> polygonLL;
+      public List<MachineDetails> contributingMachines;
+      public int? layerNumber;
+
+      /// <summary>
+      /// ToString override
+      /// </summary>
+      /// <returns>A string representation of CCA filter params</returns>
+      public override string ToString()
+      {
+        var poly = string.Empty;
+        if (polygonLL != null)
+        {
+          foreach (WGSPoint pt in polygonLL)
+          {
+            poly = string.Format("{0}{1}", poly, pt);
+          }
+        }
+        return string.Format("startUTC:{0}, endUTC:{1}, layerNumber:{2}, contributingMachines:{3}, polygonLL:{4}", 
+          startUTC, endUTC, layerNumber, contributingMachines, poly);
+      }
     }
 
     /// <summary>
-    /// Volume and time sumamry data 
+    /// CCA summary parameters sent to the Raptor API; see Raptor API documentation for details
     /// </summary>
-    public class VolumeTime
+    public class CCASummaryParams
     {
-      public double currentWeekVolume { get; set; }
-      public double currentMonthVolume { get; set; }
-      public double remainingVolume { get; set; }
-      public double remainingTime { get; set; }
+      public long projectId;
+      public CCAFilter filter;
+
+      /// <summary>
+      /// ToString override
+      /// </summary>
+      /// <returns>A string representation of volume request params</returns>
+      public override string ToString()
+      {
+        return String.Format("projectId:{0}, filter:{1}", projectId, filter);
+      }
+
     }
+
+    /// <summary>
+    /// CCA summary entry returned from the Raptor API
+    /// </summary>
+    public class CCASummaryResult
+    {
+      /// <summary>
+      /// The percentage of cells that are complete within the target bounds
+      /// </summary>
+      public double completePercent { get; private set; }
+
+      /// <summary>
+      /// The percentage of the cells that are over-complete
+      /// </summary>
+      public double overCompletePercent { get; private set; }
+
+      /// <summary>
+      /// The internal result code of the request. Documented elsewhere.
+      /// </summary>
+      public short returnCode { get; private set; }
+
+      /// <summary>
+      /// The total area covered by non-null cells in the request area
+      /// </summary>
+      public double totalAreaCoveredSqMeters { get; private set; }
+
+      /// <summary>
+      /// The percentage of the cells that are under complete
+      /// </summary>
+      public double underCompletePercent { get; private set; }
+
+      /// <summary>
+      /// ToString override
+      /// </summary>
+      /// <returns>A string representation of CCA summary results</returns>
+      public override string ToString()
+      {
+        return String.Format("under:{0}, complete:{1}, over:{2}", 
+          underCompletePercent, completePercent, overCompletePercent);
+      }
+    }
+    #endregion
+
+  
 }
