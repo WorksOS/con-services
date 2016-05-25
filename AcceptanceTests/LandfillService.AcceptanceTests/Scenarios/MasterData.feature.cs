@@ -423,11 +423,15 @@ this.ScenarioSetup(scenarioInfo);
 #line 124
   testRunner.And("I set up a project for customer \'Addington\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 125
- testRunner.When("I add landfill site \'AmiStadium\' to the project of customer \'Middleton\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+  testRunner.And("I add landfill site \'Marylands\' to the project of customer \'Middleton\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 126
+  testRunner.And("the landfill site is in the geofence list of the project of customer \'Middleton\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 127
+ testRunner.When("I add landfill site \'AmiStadium\' to the project of customer \'Middleton\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 128
  testRunner.Then("the landfill site is not in the geofence list of the project of customer \'Middlet" +
                     "on\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 127
+#line 129
   testRunner.Then("the landfill site is not in the geofence list of the project of customer \'Addingt" +
                     "on\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

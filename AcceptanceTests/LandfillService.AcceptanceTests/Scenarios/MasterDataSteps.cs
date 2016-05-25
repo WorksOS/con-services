@@ -151,6 +151,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             boundary = JsonConvert.DeserializeObject<List<WGSPoint>>(response);
         }
 
+        [Given(@"I add landfill site '(.*)' to the project of customer '(.*)'")]
         [When(@"I add landfill site '(.*)' to the project of customer '(.*)'")]
         public void WhenIAddLandfillSiteToTheProjectOfCustomer(string site, string customer)
         {
@@ -327,7 +328,8 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     "Incorrect geofence boundary.");
             }
         }
-
+ 
+        [Given(@"the landfill site is in the geofence list of the project of customer '(.*)'")]
         [Then(@"the landfill site is in the geofence list of the project of customer '(.*)'")]
         public void ThenTheLandfillSiteIsInTheGeofenceListOfTheProjectOfCustomer(string customer)
         {

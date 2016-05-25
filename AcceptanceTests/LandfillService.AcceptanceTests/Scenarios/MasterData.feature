@@ -122,6 +122,8 @@ Scenario: Add landfill geofence
 Scenario: Add out of boundary landfill geofence
 	Given I set up a project for customer 'Middleton'
 		And I set up a project for customer 'Addington'
+		And I add landfill site 'Marylands' to the project of customer 'Middleton' 
+		And the landfill site is in the geofence list of the project of customer 'Middleton'
 	When I add landfill site 'AmiStadium' to the project of customer 'Middleton'
 	Then the landfill site is not in the geofence list of the project of customer 'Middleton'
 		Then the landfill site is not in the geofence list of the project of customer 'Addington'
