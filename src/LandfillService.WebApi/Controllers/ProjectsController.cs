@@ -319,7 +319,7 @@ namespace LandfillService.WebApi.Controllers
             System.Diagnostics.Debug.WriteLine("Volume res:" + res);
             System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill));
 
-            LandfillDb.SaveVolume(project.id, entry.geofenceUid, entry.date, res.Fill);
+            LandfillDb.SaveVolume(project.projectUid, entry.geofenceUid, entry.date, res.Fill);
           }
           catch (RaptorApiException e)
           {
@@ -329,19 +329,19 @@ namespace LandfillService.WebApi.Controllers
               // is outside project extents); the assumption is that's the only reason we will
               // receive a 400 Bad Request 
               System.Diagnostics.Debug.Write("RaptorApiException while retrieving volumes: " + e);
-              LandfillDb.MarkVolumeNotAvailable(project.id, entry.geofenceUid, entry.date);
+              LandfillDb.MarkVolumeNotAvailable(project.projectUid, entry.geofenceUid, entry.date);
 
               // TESTING CODE
               // Volume range in m3 should be ~ [478, 1020]
               //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478, entry.geofenceUid);
             }
             else
-              LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
+              LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
           }
           catch (Exception e)
           {
             System.Diagnostics.Debug.Write("Exception while retrieving volumes: " + e);
-            LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
+            LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
             throw;
           }
         }
