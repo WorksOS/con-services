@@ -246,6 +246,9 @@ namespace LandfillService.WebApi.Controllers
                     "Missing weight entries"));
           }
 
+          /*NOTE: Do NOT DELETE the following code - it is the real code for Landfill 2.0
+               * but tempoarrily reverting to 1.5 code as UI does not use new contract yet
+               * and Weights Page is needed for for demoing
           if (!geofenceUid.HasValue || geofenceUid == Guid.Empty)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
@@ -253,6 +256,9 @@ namespace LandfillService.WebApi.Controllers
                            "Missing geofence UID"));            
           }
           var geofenceUidStr = geofenceUid.Value.ToString();
+           */
+          string geofenceUidStr = null;
+ 
 
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
           //LoggerSvc.LogMessage(null, null, null, "PostWeights: userUid=" + userUid);          
@@ -261,6 +267,11 @@ namespace LandfillService.WebApi.Controllers
             return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects =>
             {
                 var project = projects.Where(p => p.id == id).First();
+
+                /*** TEMP for 1.5 revert ***/
+                geofenceUidStr = LandfillDb.UpdateEntriesIfRequired(project, null);
+                /*** TEMP ***/
+
 
                 var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
 
@@ -290,12 +301,23 @@ namespace LandfillService.WebApi.Controllers
 
                 System.Diagnostics.Debug.WriteLine("Finished posting weights");
 
+              /* NOTE: Do NOT DELETE the following code - it is the real code for Landfill 2.0
+               * but tempoarrily reverting to 1.5 code as UI does not use new contract yet
+               * and Weights Page is needed for for demoing
+               * 
                 return Ok(new WeightData
                           {
                               project = project,
                               entries = GetGeofenceWeights(project),
                               retrievingVolumes = true
                           });
+               */
+                return Ok(new ProjectData
+                {
+                  project = project,
+                  entries = LandfillDb.GetEntries(project, geofenceUidStr, null, null), //TODO: This will change when CCA changes implemented
+                  retrievingVolumes = true
+                });
 
             });
         }

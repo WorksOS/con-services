@@ -438,7 +438,7 @@ namespace LandfillService.Common.Context
         /// <param name="project">Project</param>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <returns>The geofence UID. If none was specified returns the project geofence UID</returns>
-        private static string UpdateEntriesIfRequired(Project project, string geofenceUid)
+        public static string UpdateEntriesIfRequired(Project project, string geofenceUid)
         {
           return WithConnection((conn) =>
           {
