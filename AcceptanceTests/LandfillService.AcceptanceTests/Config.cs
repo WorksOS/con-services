@@ -37,11 +37,11 @@ namespace LandfillService.AcceptanceTests
         public static string MySqlConnString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
         public static string MySqlDbName = "`" + MySqlConnString.Split(';')[1].Split('=')[1] + "`";
 
-        public static Guid LandfillUserUID = Guid.Parse("b80b542b-556f-4df7-9383-a630a7615536"); // "clay_anderson@trimble.com"
-        public static Guid LandfillCustomerUID = Guid.Parse("b80b542b-556f-4df7-9383-a630a7615536"); // "Test customer"
+        public static Guid LandfillUserUid = Guid.Parse("b80b542b-556f-4df7-9383-a630a7615536"); // "clay_anderson@trimble.com"
+        public static Guid LandfillCustomerUid = Guid.Parse("b80b542b-556f-4df7-9383-a630a7615536"); // "Test customer"
 
-        public static Guid MasterDataUserUID = Guid.Parse("2fa7e8f2-670e-4fa3-964b-7549c9cb196d"); // "acceptance_test@vss.com"
-        public static Guid MasterDataCustomerUID = Guid.Parse("465a6189-9be3-48fc-a30b-1a525bd376b1"); // "AcceptTestGoldenCustomer" 
+        public static Guid MasterDataUserUid = Guid.Parse("2fa7e8f2-670e-4fa3-964b-7549c9cb196d"); // "acceptance_test@vss.com"
+        public static Guid MasterDataCustomerUid = Guid.Parse("465a6189-9be3-48fc-a30b-1a525bd376b1"); // "AcceptTestGoldenCustomer" 
         #endregion
 
         #region Auth
