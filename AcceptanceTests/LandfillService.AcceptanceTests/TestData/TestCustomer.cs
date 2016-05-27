@@ -20,7 +20,6 @@ namespace LandfillService.AcceptanceTests.TestData
         public List<Guid> Users;
         public Dictionary<Guid, TestSubscription> Subscriptions;
         public Dictionary<Guid, TestProject> Projects;
-        public Dictionary<Guid, TestGeofence> Geofences;
 
         public TestCustomer(Guid uid = default(Guid), string name = null)
         {
@@ -29,7 +28,6 @@ namespace LandfillService.AcceptanceTests.TestData
             Users = new List<Guid>();
             Subscriptions = new Dictionary<Guid, TestSubscription>();
             Projects = new Dictionary<Guid,TestProject>();
-            Geofences = new Dictionary<Guid,TestGeofence>();
 
             CreateCustomerEvent CreateCustomerEvt = new CreateCustomerEvent
             {
@@ -40,7 +38,6 @@ namespace LandfillService.AcceptanceTests.TestData
                 ReceivedUTC = DateTime.UtcNow
             };
             Config.KafkaDriver.SendMessage(Config.CustomerTopic, JsonConvert.SerializeObject(new { CreateCustomerEvent = CreateCustomerEvt }));
-
         }
 
         public void AddUser(Guid userUid)
@@ -175,7 +172,28 @@ namespace LandfillService.AcceptanceTests.TestData
 
         public void AddGeofence(TestGeofence geofence, Guid userUid = default(Guid))
         {
-            Geofences.Add(geofence.GeofenceUID, geofence);
+            if(geofence.GeofenceType == GeofenceType.Project)
+            {
+                bool foundProjectWithSameName = false;
+                foreach(Guid projUid in Projects.Keys)
+                {
+                    if (Projects[projUid].ProjectName == geofence.GeofenceName)
+                    {
+                        // TODO: what if the project already has a project geofence?
+                        Projects[projUid].Geofences.Add(geofence.GeofenceUID, geofence);
+                        foundProjectWithSameName = true;
+                        break;
+                    }
+                }
+                if(!foundProjectWithSameName)
+                {
+                    return;
+                }
+            }
+            if(geofence.GeofenceType == GeofenceType.Landfill)
+            {
+                // TODO: add landfill geofence to project if if falls within project boundary, otherwise return immediately
+            }
             CreateGeofenceEvent CreateProjectGeofenceEvt = new CreateGeofenceEvent
             {
                 CustomerUID = CustomerUid,
@@ -195,37 +213,49 @@ namespace LandfillService.AcceptanceTests.TestData
         }
         public void UpdateGeofence(Guid geoUid, string geoName, Guid userUid = default(Guid))
         {
-            Geofences[geoUid].GeofenceName = geoName;
-
-            UpdateGeofenceEvent UpdateProjectGeofenceEvt = new UpdateGeofenceEvent
+            foreach (Guid projUid in Projects.Keys)
             {
-                GeofenceUID = geoUid,
-                UserUID = userUid == default(Guid) ? Users[0] : userUid,
-                GeofenceName = geoName,
-                Description = geoName,
-                FillColor = 0x00FF00,
-                IsTransparent = true,
-                GeofenceType = ((Enum)Geofences[geoUid].GeofenceType).ToString(),
-                GeometryWKT = Geofences[geoUid].GeometryWKT,
-                ActionUTC = DateTime.UtcNow,
-                ReceivedUTC = DateTime.UtcNow,
-            };
+                if(Projects[projUid].Geofences.ContainsKey(geoUid))
+                {
+                    Projects[projUid].Geofences[geoUid].GeofenceName = geoName;
 
-            Config.KafkaDriver.SendMessage(Config.GeofenceTopic, JsonConvert.SerializeObject(new { UpdateGeofenceEvent = UpdateProjectGeofenceEvt }));
+                    UpdateGeofenceEvent UpdateGeofenceEvt = new UpdateGeofenceEvent
+                    {
+                        GeofenceUID = geoUid,
+                        UserUID = userUid == default(Guid) ? Users[0] : userUid,
+                        GeofenceName = geoName,
+                        Description = geoName,
+                        FillColor = 0x00FF00,
+                        IsTransparent = true,
+                        GeofenceType = ((Enum)Projects[projUid].Geofences[geoUid].GeofenceType).ToString(),
+                        GeometryWKT = Projects[projUid].Geofences[geoUid].GeometryWKT,
+                        ActionUTC = DateTime.UtcNow,
+                        ReceivedUTC = DateTime.UtcNow,
+                    };
+                    Config.KafkaDriver.SendMessage(Config.GeofenceTopic, JsonConvert.SerializeObject(new { UpdateGeofenceEvent = UpdateGeofenceEvt }));
+                    break;
+                }
+            }
         }
         public void DeleteGeofence(Guid geoUid, Guid userUid = default(Guid))
         {
-            Geofences.Remove(geoUid);
-
-            DeleteGeofenceEvent DeleteProjectGeofenceEvt = new DeleteGeofenceEvent
+            foreach (Guid projUid in Projects.Keys)
             {
-                GeofenceUID = geoUid,
-                UserUID = userUid == default(Guid) ? Users[0] : userUid,
-                ActionUTC = DateTime.UtcNow,
-                ReceivedUTC = DateTime.UtcNow
-            };
+                if (Projects[projUid].Geofences.ContainsKey(geoUid))
+                {
+                    Projects[projUid].Geofences.Remove(geoUid);
 
-            Config.KafkaDriver.SendMessage(Config.GeofenceTopic, JsonConvert.SerializeObject(new { DeleteGeofenceEvent = DeleteProjectGeofenceEvt }));
+                    DeleteGeofenceEvent DeleteProjectGeofenceEvt = new DeleteGeofenceEvent
+                    {
+                        GeofenceUID = geoUid,
+                        UserUID = userUid == default(Guid) ? Users[0] : userUid,
+                        ActionUTC = DateTime.UtcNow,
+                        ReceivedUTC = DateTime.UtcNow
+                    };
+                    Config.KafkaDriver.SendMessage(Config.GeofenceTopic, JsonConvert.SerializeObject(new { DeleteGeofenceEvent = DeleteProjectGeofenceEvt }));
+                    break;
+                }
+            }
         }
     }
 
@@ -236,6 +266,7 @@ namespace LandfillService.AcceptanceTests.TestData
         public DateTime ProjectStartDate;
         public DateTime ProjectEndDate;
         public Guid? SubscriptionUid;
+        public Dictionary<Guid, TestGeofence> Geofences;
         
         public TestProject(Guid uid = default(Guid), string name = null, DateTime start = default(DateTime), DateTime end = default(DateTime))
         {
@@ -243,6 +274,7 @@ namespace LandfillService.AcceptanceTests.TestData
             ProjectName = name == null ? "AT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss") : name;
             ProjectStartDate = start == default(DateTime) ? DateTime.UtcNow.AddMonths(-3) : start;
             ProjectEndDate = end == default(DateTime) ? DateTime.UtcNow.AddMonths(10) : end;
+            Geofences = new Dictionary<Guid, TestGeofence>();
         }
     }
     public class TestSubscription
