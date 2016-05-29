@@ -248,6 +248,7 @@
     <Compile Include="Models\MasterData\Subscription\UpdateProjectSubscriptionEvent.cs" />
     <Compile Include="Scenarios\AuthenticationSteps.cs" />
     <Compile Include="TestData\MDMTestCustomer.cs" />
+    <Compile Include="TestData\TestCustomer.cs" />
     <Compile Include="Utils\LandFillDb.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
