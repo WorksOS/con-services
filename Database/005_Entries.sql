@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `Entries` (
   `VolumesUpdatedTimestampUTC` datetime DEFAULT NULL,
   `InsertUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `UpdateUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  UNIQUE KEY `UIX_Entries_ProjectID_Date` (`ProjectID`,`Date`),
+  UNIQUE KEY `UIX_Entries_ProjectID_GeofenceUID_Date` (`ProjectID`,`GeofenceUID`, `Date`),
   PRIMARY KEY (`ID`)  COMMENT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -31,4 +31,10 @@ SET @s = (SELECT IF(
 PREPARE stmt FROM @s;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
+
+ALTER TABLE Entries
+	DROP KEY UIX_Entries_ProjectID_Date;
+	
+ALTER TABLE Entries
+	ADD UNIQUE KEY UIX_Entries_ProjectID_GeofenceUID_Date (ProjectID, GeofenceUID, Date);
 

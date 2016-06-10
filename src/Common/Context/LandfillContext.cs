@@ -131,14 +131,14 @@ namespace LandfillService.Common.Context
             return WithConnection((conn) =>
             {
                 var command = @"SELECT COUNT(*) FROM Project 
-                                WHERE ProjectID = @projectId AND 
+                                WHERE ProjectUID = @projectUid AND 
                                 (RetrievalStartedAt >= DATE_SUB(UTC_TIMESTAMP(), INTERVAL " + 
                                 lockTimeout.ToString() + " HOUR) OR " +
                                 @"(SELECT COUNT(*) FROM Entries 
-                                   WHERE ProjectID = @projectId AND
+                                   WHERE ProjectUID = @projectUid AND
                                    Volume IS NULL AND VolumeNotAvailable = 0) > 0)";
 
-                var count = MySqlHelper.ExecuteScalar(conn, command, new MySqlParameter("@projectId", project.id));
+                var count = MySqlHelper.ExecuteScalar(conn, command, new MySqlParameter("@projectUid", project.projectUid));
                 return Convert.ToUInt32(count) > 0;
             });
         }
@@ -155,14 +155,14 @@ namespace LandfillService.Common.Context
             {          
                 var command = shouldLock ? 
                     @"UPDATE Project SET RetrievalStartedAt = UTC_TIMESTAMP()
-                      WHERE ProjectID = @projectId AND 
+                      WHERE ProjectUID = @projectUid AND 
                       RetrievalStartedAt < DATE_SUB(UTC_TIMESTAMP(), INTERVAL " + lockTimeout.ToString() + " HOUR)"
                     :
                     @"UPDATE Project SET RetrievalStartedAt = DATE_SUB(UTC_TIMESTAMP(), INTERVAL 10 YEAR)
-                      WHERE ProjectID = @projectId AND 
+                      WHERE ProjectUID = @projectUid AND 
                       RetrievalStartedAt >= DATE_SUB(UTC_TIMESTAMP(), INTERVAL " + lockTimeout.ToString() + " HOUR)";
 
-                var rowsAffected = MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@projectId", project.id));
+                var rowsAffected = MySqlHelper.ExecuteNonQuery(conn, command, new MySqlParameter("@projectUid", project.projectUid));
                 return rowsAffected > 0;
             });
         }
@@ -215,12 +215,12 @@ namespace LandfillService.Common.Context
         /// <summary>
         /// Saves a volume for a given project, geofence and date
         /// </summary>
-        /// <param name="projectId">Project ID</param>
+        /// <param name="projectUid">Project UID</param>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="date">Date</param>
         /// <param name="volume">Volume</param>
         /// <returns></returns>
-        public static void SaveVolume(uint projectId, string geofenceUid, DateTime date, double volume)
+        public static void SaveVolume(string projectUid, string geofenceUid, DateTime date, double volume)
         {
             WithConnection<object>((conn) =>
             {
@@ -229,11 +229,11 @@ namespace LandfillService.Common.Context
               var command = @"UPDATE Entries 
                               SET Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, 
                                   VolumeNotAvailable = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP()
-                              WHERE ProjectID = @projectId AND Date = @date AND GeofenceUID = @geofenceUid";
+                              WHERE ProjectUID = @projectUid AND Date = @date AND GeofenceUID = @geofenceUid";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
                     new MySqlParameter("@volume", volume),
-                    new MySqlParameter("@projectId", projectId),
+                    new MySqlParameter("@projectUid", projectUid),
                     new MySqlParameter("@geofenceUid", geofenceUid),
                     new MySqlParameter("@date", date));
 
@@ -244,19 +244,19 @@ namespace LandfillService.Common.Context
         /// <summary>
         /// Marks an entry with "volume not retrieved" so it can be retried later
         /// </summary>
-        /// <param name="projectId">Project id</param>
+        /// <param name="projectUid">Project UID</param>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="date">Date of the entry</param>
         /// <returns></returns>
-        public static void MarkVolumeNotRetrieved(uint projectId, string geofenceUid, DateTime date)
+        public static void MarkVolumeNotRetrieved(string projectUid, string geofenceUid, DateTime date)
         {
             WithConnection<object>((conn) =>
             {
                 var command = @"UPDATE Entries SET VolumeNotRetrieved = 1
-                                WHERE ProjectID = @projectId AND Date = @date AND GeofenceUID = @geofenceUid";
+                                WHERE ProjectUID = @projectUid AND Date = @date AND GeofenceUID = @geofenceUid";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
-                    new MySqlParameter("@projectId", projectId),
+                    new MySqlParameter("@projectUid", projectUid),
                     new MySqlParameter("@geofenceUid", geofenceUid),
                     new MySqlParameter("@date", date));
 
@@ -294,20 +294,20 @@ namespace LandfillService.Common.Context
         /// <summary>
         /// Marks an entry with "volume not available" to indicate that there is no volume information in Raptor for that date
         /// </summary>
-        /// <param name="projectId">Project ID</param>
+        /// <param name="projectUid">Project UID</param>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="date">Date of the entry</param>
         /// <returns></returns>
-        public static void MarkVolumeNotAvailable(uint projectId, string geofenceUid, DateTime date)
+        public static void MarkVolumeNotAvailable(string projectUid, string geofenceUid, DateTime date)
         {
             WithConnection<object>((conn) =>
             {
               var command = @"UPDATE Entries 
                               SET VolumeNotAvailable = 1, VolumeNotRetrieved = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP()
-                              WHERE ProjectID = @projectId AND Date = @date AND GeofenceUID = @geofenceUid";
+                              WHERE ProjectUID = @projectUid AND Date = @date AND GeofenceUID = @geofenceUid";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
-                    new MySqlParameter("@projectId", projectId),
+                    new MySqlParameter("@projectUid", projectUid),
                     new MySqlParameter("@geofenceUid", geofenceUid),
                     new MySqlParameter("@date", date));
 
@@ -439,7 +439,7 @@ namespace LandfillService.Common.Context
         /// <param name="project">Project</param>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <returns>The geofence UID. If none was specified returns the project geofence UID</returns>
-        private static string UpdateEntriesIfRequired(Project project, string geofenceUid)
+        public static string UpdateEntriesIfRequired(Project project, string geofenceUid)
         {
           return WithConnection((conn) =>
           {
@@ -463,10 +463,10 @@ namespace LandfillService.Common.Context
               {
                 //Update project entries geofence UID
                 command =
-                    "UPDATE Entries SET GeofenceUID = @geofenceUid WHERE ProjectID = @projectId AND GeofenceUID IS NULL";
+                    "UPDATE Entries SET GeofenceUID = @geofenceUid WHERE ProjectUID = @projectUid AND GeofenceUID IS NULL";
 
                 MySqlHelper.ExecuteNonQuery(conn, command,
-                    new MySqlParameter("@projectId", project.id),
+                    new MySqlParameter("@projectUid", project.projectUid),
                     new MySqlParameter("@geofenceUid", projectGeofenceUid));
 
 

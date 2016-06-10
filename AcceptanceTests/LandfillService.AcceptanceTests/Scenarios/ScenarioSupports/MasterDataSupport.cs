@@ -23,13 +23,15 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
         public AssociateProjectCustomer AssociateProjectCustomerEvt;
         public UpdateProjectSubscriptionEvent UpdateProjectSubscriptionEvt;
 
-        public CreateGeofenceEvent CreateGeofenceEvt;
-        public UpdateGeofenceEvent UpdateGeofenceEvt;
-        public DeleteGeofenceEvent DeleteGeofenceEvt;
+        public CreateGeofenceEvent CreateProjectGeofenceEvt;
+        public UpdateGeofenceEvent UpdateProjectGeofenceEvt;
+        public DeleteGeofenceEvent DeleteProjectGeofenceEvt;
+
+        public CreateGeofenceEvent CreateInBoundaryLandfillGeofenceEvt;
+        public CreateGeofenceEvent CreateOutBoundaryLandfillGeofenceEvt;
 
         public string CreateProject(Guid projectUid)
         {
-            var projectName = "AT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss");
             var projectId = LandFillMySqlDb.GetTheHighestProjectId() + 1;
             CreateProjectEvt = new CreateProjectEvent
             {
@@ -37,15 +39,14 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 ProjectBoundary = " ",
                 ProjectEndDate = DateTime.Today.AddMonths(10),
                 ProjectStartDate = DateTime.Today.AddMonths(-3),
-                ProjectName = projectName,
+                ProjectName = "AT_PRO-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
                 ProjectTimezone = "New Zealand Standard Time",
                 ProjectType = ProjectType.LandFill,
                 ProjectID = projectId == 1 ? LandfillCommonUtils.Random.Next(2000, 3000) : projectId,
                 ProjectUID = projectUid,                
                 ReceivedUTC = DateTime.UtcNow
             };
-            return JsonConvert.SerializeObject(new { CreateProjectEvent = CreateProjectEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { CreateProjectEvent = CreateProjectEvt });
         }
         public string UpdateProject(Guid projectUid)
         {
@@ -58,8 +59,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 ProjectType = ProjectType.LandFill,
                 ProjectUID = projectUid,
             };
-            return JsonConvert.SerializeObject(new { UpdateProjectEvent = UpdateProjectEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { UpdateProjectEvent = UpdateProjectEvt });
         }
         public string DeleteProject(Guid projectUid)
         {
@@ -69,8 +69,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 ReceivedUTC = DateTime.UtcNow,
                 ProjectUID = projectUid
             };
-            return JsonConvert.SerializeObject(new { DeleteProjectEvent = DeleteProjectEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { DeleteProjectEvent = DeleteProjectEvt });
         }
 
         public string CreateCustomer(Guid customerUid)
@@ -83,8 +82,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 ActionUTC = DateTime.UtcNow,
                 ReceivedUTC = DateTime.UtcNow
            };
-            return JsonConvert.SerializeObject(new { CreateCustomerEvent = CreateCustomerEvt },
-               new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { CreateCustomerEvent = CreateCustomerEvt });
         }
         public string UpdateCustomer(Guid customerUid)
         {
@@ -95,8 +93,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 ActionUTC = DateTime.UtcNow,
                 ReceivedUTC = DateTime.UtcNow
             };
-            return JsonConvert.SerializeObject(new { UpdateCustomerEvent = UpdateCustomerEvt },
-               new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { UpdateCustomerEvent = UpdateCustomerEvt });
         }
         public string DeleteCustomer(Guid customerUid)
         {
@@ -106,8 +103,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 ActionUTC = DateTime.UtcNow,
                 ReceivedUTC = DateTime.UtcNow
             };
-            return JsonConvert.SerializeObject(new { DeleteCustomerEvent = DeleteCustomerEvt },
-               new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { DeleteCustomerEvent = DeleteCustomerEvt });
         }
         public string AssociateCustomerUser(Guid customerUid, Guid userUid)
         {
@@ -119,8 +115,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 UserUID = userUid
             };
 
-            return JsonConvert.SerializeObject(new { AssociateCustomerUserEvent = AssociateCustomerUserEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { AssociateCustomerUserEvent = AssociateCustomerUserEvt });
         }
 
         public string CreateProjectSubscription(Guid subscriptionUid, Guid customerUid)
@@ -136,8 +131,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 EndDate = DateTime.UtcNow.AddMonths(11)
             };
 
-            return JsonConvert.SerializeObject(new { CreateProjectSubscriptionEvent = CreateProjectSubscriptionEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { CreateProjectSubscriptionEvent = CreateProjectSubscriptionEvt });
         }
         public string AssociateProjectSubscription(Guid projectUid, Guid subscriptionUid)
         {
@@ -149,8 +143,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 EffectiveDate = DateTime.Now.AddMonths(-1),
                 ProjectUID = projectUid
             };
-            return JsonConvert.SerializeObject(new { AssociateProjectSubscriptionEvent = AssociateProjectSubscriptionEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { AssociateProjectSubscriptionEvent = AssociateProjectSubscriptionEvt });
         }
         public string AssociateProjectCustomer(Guid projectUid, Guid customerUid)
         {
@@ -162,8 +155,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 CustomerUID = customerUid
             };
 
-            return JsonConvert.SerializeObject(new { AssociateProjectCustomerEvent = AssociateProjectCustomerEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { AssociateProjectCustomer = AssociateProjectCustomerEvt });
         }
         public string UpdateProjectSubscription(Guid subscriptionUid, Guid customerUid)
         {
@@ -177,52 +169,49 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 StartDate = DateTime.Now.AddMonths(-5),
                 EndDate = DateTime.Now.AddMonths(7)
             };
-            return JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = UpdateProjectSubscriptionEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = UpdateProjectSubscriptionEvt });
         }
 
-        public string CreateGeofence(Guid geofenceUid, Guid customerUid, Guid userUid)
+        public string CreateProjectGeofence(Guid geofenceUid, Guid customerUid, Guid userUid, string projectName)
         {
-            CreateGeofenceEvt = new CreateGeofenceEvent
+            CreateProjectGeofenceEvt = new CreateGeofenceEvent
             {
                 ActionUTC = DateTime.UtcNow,
                 ReceivedUTC = DateTime.UtcNow,
                 GeofenceUID = geofenceUid,
                 CustomerUID = customerUid,
                 UserUID = userUid,
-                GeofenceName = "AT_Geo-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
-                Description = "Created geofence",
+                GeofenceName = projectName,
+                Description = "Created project geofence",
                 FillColor = 0x00FF00,
                 IsTransparent = true,
                 GeofenceType = "Project",
                 GeometryWKT = "POLYGON((-77.100849 42.836199,-77.110119 42.863635,-77.061367 42.866025,-77.050896 42.836451,-77.100849 42.836199,-77.100849 42.836199))"
             };
 
-            return JsonConvert.SerializeObject(new { CreateGeofenceEvent = CreateGeofenceEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { CreateGeofenceEvent = CreateProjectGeofenceEvt });
         }
-        public string UpdateGeofence(Guid geofenceUid, Guid userUid)
+        public string UpdateProjectGeofence(Guid geofenceUid, Guid userUid)
         {
-            UpdateGeofenceEvt = new UpdateGeofenceEvent
+            UpdateProjectGeofenceEvt = new UpdateGeofenceEvent
             {
                 ActionUTC = DateTime.UtcNow,
                 ReceivedUTC = DateTime.UtcNow,
                 GeofenceUID = geofenceUid,
                 UserUID = userUid,
                 GeofenceName = "upAT_Geo-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
-                Description = "Updated geofence",
+                Description = "Updated project geofence",
                 FillColor = 0x00FF00,
                 IsTransparent = true,
                 GeofenceType = "Project",
                 GeometryWKT = "POLYGON((-77.100849 42.836199,-77.110119 42.863635,-77.061367 42.866025,-77.050896 42.836451,-77.100849 42.836199,-77.100849 42.836199))"
             };
 
-            return JsonConvert.SerializeObject(new { UpdateGeofenceEvent = UpdateGeofenceEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { UpdateGeofenceEvent = UpdateProjectGeofenceEvt });
         }
-        public string DeleteGeofence(Guid geofenceUid, Guid userUid)
+        public string DeleteProjectGeofence(Guid geofenceUid, Guid userUid)
         {
-            DeleteGeofenceEvt = new DeleteGeofenceEvent
+            DeleteProjectGeofenceEvt = new DeleteGeofenceEvent
             {
                 ActionUTC = DateTime.UtcNow,
                 ReceivedUTC = DateTime.UtcNow,
@@ -230,8 +219,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
                 UserUID = userUid
             };
 
-            return JsonConvert.SerializeObject(new { DeleteGeofenceEvent = DeleteGeofenceEvt },
-                new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+            return JsonConvert.SerializeObject(new { DeleteGeofenceEvent = DeleteProjectGeofenceEvt });
         }
     }
 }

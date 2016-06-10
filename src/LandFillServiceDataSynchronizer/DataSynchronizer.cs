@@ -86,7 +86,7 @@ namespace LandFillServiceDataSynchronizer
 
         Log.Debug("Volume: " + (res.Fill));
 
-        LandfillDb.SaveVolume(project.id, entry.geofenceUid, entry.date, res.Fill);
+        LandfillDb.SaveVolume(project.projectUid, entry.geofenceUid, entry.date, res.Fill);
       }
       catch (RaptorApiException e)
       {
@@ -97,7 +97,7 @@ namespace LandFillServiceDataSynchronizer
           // receive a 400 Bad Request 
 
           Log.Warn("RaptorApiException while retrieving volumes: " + e.Message);
-          LandfillDb.MarkVolumeNotAvailable(project.id, entry.geofenceUid, entry.date);
+          LandfillDb.MarkVolumeNotAvailable(project.projectUid, entry.geofenceUid, entry.date);
 
           // TESTING CODE
           // Volume range in m3 should be ~ [478, 1020]
@@ -106,13 +106,13 @@ namespace LandFillServiceDataSynchronizer
         else
         {
           Log.Error("RaptorApiException while retrieving volumes: " + e.Message);
-          LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
+          LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
         }
       }
       catch (Exception e)
       {
         Log.Error("Exception while retrieving volumes: " + e.Message);
-        LandfillDb.MarkVolumeNotRetrieved(project.id, entry.geofenceUid, entry.date);
+        LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
       }
     }
 
