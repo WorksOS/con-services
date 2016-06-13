@@ -288,7 +288,7 @@ namespace LandfillService.WebApi.Controllers
     
                     if (valid)
                     { 
-                        LandfillDb.SaveEntry(id, geofenceUidStr, entry);
+                        LandfillDb.SaveEntry(project, geofenceUidStr, entry);
                         validEntries.Add(new DateEntry{date = entry.date, geofenceUid = geofenceUidStr});
                     }
                 };

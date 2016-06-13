@@ -189,20 +189,21 @@ namespace LandfillService.Common.Context
         /// <summary>
         /// Saves a weight entry for a given project
         /// </summary>
-        /// <param name="projectId">Project ID</param>
+        /// <param name="project">Project</param>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="entry">Weight entry from the client</param>
         /// <returns></returns>
-        public static void SaveEntry(uint projectId, string geofenceUid, WeightEntry entry)
+        public static void SaveEntry(Project project, string geofenceUid, WeightEntry entry)
         {
             WithConnection<object>((conn) =>
             {
-                var command = @"INSERT INTO Entries (ProjectID, Date, Weight, GeofenceUID) 
-                                VALUES (@projectId, @date, @weight, @geofenceUid) 
+                var command = @"INSERT INTO Entries (ProjectID, ProjectUID, Date, Weight, GeofenceUID) 
+                                VALUES (@projectId, @projectUid, @date, @weight, @geofenceUid) 
                                 ON DUPLICATE KEY UPDATE Weight = @weight";
 
               MySqlHelper.ExecuteNonQuery(conn, command,
-                  new MySqlParameter("@projectId", projectId),
+                  new MySqlParameter("@projectId", project.id),
+                  new MySqlParameter("@projectUid", project.projectUid),
                   new MySqlParameter("@geofenceUid", geofenceUid),
                   new MySqlParameter("@date", entry.date),
                   new MySqlParameter("@weight", entry.weight));
@@ -271,7 +272,7 @@ namespace LandfillService.Common.Context
         {
           var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name
                           FROM Project prj 
-                          LEFT JOIN Entries etr ON prj.ProjectID = etr.ProjectID 
+                          LEFT JOIN Entries etr ON prj.ProjectUID = etr.ProjectUID 
                           WHERE etr.Weight IS NOT NULL AND prj.IsDeleted = 0";
           using (var reader = MySqlHelper.ExecuteReader(conn, command))
           {
@@ -332,13 +333,13 @@ namespace LandfillService.Common.Context
                 // BUT it allows the service to tolerate background tasks dying
               var command = @"SELECT etr.Date, etr.GeofenceUID FROM Entries etr
                               JOIN Geofence geo ON etr.GeofenceUID = geo.GeofenceUID
-                            WHERE etr.ProjectID = @projectId AND geo.IsDeleted = 0 AND
+                            WHERE etr.ProjectUID = @projectUid AND geo.IsDeleted = 0 AND
                             (etr.VolumeNotRetrieved = 1 OR (etr.Volume IS NULL AND etr.VolumeNotAvailable = 0) OR 
                             (etr.VolumesUpdatedTimestampUTC IS NULL) OR 
                             ( (etr.VolumesUpdatedTimestampUTC < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) AND 
                               (etr.VolumesUpdatedTimestampUTC > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
 
-                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", project.id)))
+                using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", project.projectUid)))
                 {
                     var dates = new List<DateEntry>();
                     while (reader.Read())
@@ -397,11 +398,11 @@ namespace LandfillService.Common.Context
                 //Now get the actual data and merge       
                 var command = @"SELECT Date, Weight, Volume FROM Entries 
                                 WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
-                                AND ProjectID = @projectId AND GeofenceUID = @geofenceUid
+                                AND ProjectUID = @projectUid AND GeofenceUID = @geofenceUid
                                 ORDER BY Date";
 
                 using (var reader = MySqlHelper.ExecuteReader(conn, command,
-                  new MySqlParameter("@projectId", project.id),
+                  new MySqlParameter("@projectUid", project.projectUid),
                   new MySqlParameter("@geofenceUid", geofenceUid),
                   new MySqlParameter("@startDate", startDate.Value), //twoYearsAgo
                   new MySqlParameter("@endDate", endDate.Value)//yesterday
