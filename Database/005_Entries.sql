@@ -3,6 +3,7 @@
 CREATE TABLE IF NOT EXISTS `Entries` (
   `ID` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `ProjectID` int(10) unsigned NOT NULL,
+  `ProjectUID` varchar(36) DEFAULT NULL,
   `GeofenceUID` varchar(36),
   `Date` date NOT NULL,
   `Weight` double NOT NULL,
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `Entries` (
   PRIMARY KEY (`ID`)  COMMENT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+/* Add GeofenceUID column if not there */
 SET @s = (SELECT IF(
     (SELECT COUNT(*)
        FROM INFORMATION_SCHEMA.COLUMNS
@@ -32,9 +33,75 @@ PREPARE stmt FROM @s;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
-ALTER TABLE Entries
-	DROP KEY UIX_Entries_ProjectID_Date;
-	
+/* Add ProjectUID column if not there */
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name = 'Entries'
+        AND table_schema = DATABASE()
+        AND column_name = 'ProjectUID'
+    ) > 0,
+    "SELECT 1",
+    "ALTER TABLE `Entries` ADD COLUMN `ProjectUID` varchar(36) AFTER `ProjectID`"
+));
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+/* Drop old index if there */
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.STATISTICS
+        WHERE table_name = 'Entries'
+        AND table_schema = DATABASE()
+        AND index_name = 'UIX_Entries_ProjectID_Date'
+    ) = 0,
+    "SELECT 1",
+    "ALTER TABLE `Entries` DROP KEY UIX_Entries_ProjectID_Date"
+));
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+/* Add ProjectUID unique key if not there */
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.STATISTICS
+        WHERE table_name = 'Entries'
+        AND table_schema = DATABASE()
+        AND index_name = 'UIX_Entries_ProjectUID_GeofenceUID_Date'
+    ) > 0,
+    "SELECT 1",
+    "ALTER TABLE `Entries` ADD UNIQUE KEY UIX_Entries_ProjectUID_GeofenceUID_Date (ProjectUID, GeofenceUID, Date);"
+));
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+/* Add ProjectID unique key if not there */
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.STATISTICS
+        WHERE table_name = 'Entries'
+        AND table_schema = DATABASE()
+        AND index_name = 'UIX_Entries_ProjectID_GeofenceUID_Date'
+    ) > 0,
+    "SELECT 1",
+    "ALTER TABLE `Entries` ADD UNIQUE KEY UIX_Entries_ProjectID_GeofenceUID_Date (ProjectID, GeofenceUID, Date);"
+));
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+/*
 ALTER TABLE Entries
 	ADD UNIQUE KEY UIX_Entries_ProjectID_GeofenceUID_Date (ProjectID, GeofenceUID, Date);
+	
+ALTER TABLE Entries
+	ADD UNIQUE KEY UIX_Entries_ProjectUID_GeofenceUID_Date (ProjectUID, GeofenceUID, Date);
+	*/
 
