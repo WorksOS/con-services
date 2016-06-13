@@ -695,7 +695,7 @@ namespace LandfillService.Common.Context
             new MySqlParameter("@isJohnDoe", details.isJohnDoe)
           }.ToArray();
 
-          var existingId = GetMachineId(conn, parms);
+          var existingId = GetMachineId(conn, parms, details.machineName);
           if (existingId == 0)
           {
             var command =
@@ -703,7 +703,7 @@ namespace LandfillService.Common.Context
                   VALUES (@assetId, @machineName, @isJohnDoe)";
 
             MySqlHelper.ExecuteNonQuery(conn, command, parms);
-            existingId = GetMachineId(conn, parms);
+            existingId = GetMachineId(conn, parms, details.machineName);
           }
           return existingId;
         });
@@ -714,19 +714,28 @@ namespace LandfillService.Common.Context
       /// </summary>
       /// <param name="sqlConn">SQL database connection</param>
       /// <param name="sqlParams">SQL parameters for the machine to get</param>
+      /// <param name="machineName">Machine name. Updates this in database if necessary</param>
       /// <returns>The machine ID</returns>
-      private static long GetMachineId(MySqlConnection sqlConn, MySqlParameter[] sqlParams)
+      private static long GetMachineId(MySqlConnection sqlConn, MySqlParameter[] sqlParams, string machineName)
       {
-        var query = @"SELECT ID FROM Machine
-                      WHERE AssetID = @assetId AND MachineName = @machineName AND IsjohnDoe = @isJohnDoe";
+        //Match on AssetID and IsJohnDoe only as MachineName can change.
+        var query = @"SELECT ID, MachineName FROM Machine
+                      WHERE AssetID = @assetId AND IsjohnDoe = @isJohnDoe";
 
         long existingId = 0;
+        bool updateName = false;
         using (var reader = MySqlHelper.ExecuteReader(sqlConn, query, sqlParams))
         {
           while (reader.Read())
           {
-            existingId = reader.GetUInt32(0);
+            existingId = reader.GetUInt32(reader.GetOrdinal("ID"));
+            updateName = reader.GetString(reader.GetOrdinal("MachineName")) != machineName;
           }
+        }
+        if (updateName)
+        {
+          var command = @"UPDATE Machine SET MachineName = @machineName";
+          MySqlHelper.ExecuteNonQuery(sqlConn, command, sqlParams);
         }
         return existingId;
       }
