@@ -31,7 +31,7 @@ namespace LandFillServiceDataSynchronizer
 
       FileAppender appenderF = new FileAppender();
       appenderF.Name = "logfile";
-      appenderF.File = "LandFillServiceServiceSync.log";
+      appenderF.File = "LandFillServiceSync.log";
       appenderF.AppendToFile = true;
 
       PatternLayout layoutF = new PatternLayout();
@@ -109,8 +109,10 @@ namespace LandFillServiceDataSynchronizer
   public class ServiceController
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    private static Timer SyncTimer = null;
+    private static Timer SyncVolumesTimer = null;
+    private static Timer SyncCCATimer = null;
 
+    /*
     private static void ConfigureLogging()
     {
       var layout = new PatternLayout("%utcdate [%thread] %-5level %method - %message%newline");
@@ -130,17 +132,23 @@ namespace LandFillServiceDataSynchronizer
       Logger l = (Logger)Log.Logger;
       l.AddAppender(appenderF);
     }
+     */
 
     public void Start()
     {
-      ConfigureLogging();
+      //ConfigureLogging();
       var dataSync = new DataSynchronizer(Log);     
 
       Log.Debug("Starting service...");
-      SyncTimer = new System.Threading.Timer(dataSync.RunUpdateDataFromRaptor);
+
+      SyncVolumesTimer = new Timer(dataSync.RunUpdateVolumesFromRaptor);
       var sleepTime = ConfigurationManager.AppSettings["HoursToSleepForVolumes"];
       var hoursToSleep = string.IsNullOrEmpty(sleepTime) ? 2 : double.Parse(sleepTime);
-      SyncTimer.Change(TimeSpan.FromSeconds(5), TimeSpan.FromHours(hoursToSleep));
+      SyncVolumesTimer.Change(TimeSpan.FromSeconds(5), TimeSpan.FromHours(hoursToSleep));
+
+      sleepTime = ConfigurationManager.AppSettings["HoursToSleepForCCA"];
+      hoursToSleep = string.IsNullOrEmpty(sleepTime) ? 24 : double.Parse(sleepTime);
+      SyncCCATimer = new Timer(dataSync.RunUpdateCCAFromRaptor, DateTime.UtcNow.Date, TimeSpan.FromSeconds(5), TimeSpan.FromHours(hoursToSleep));
     }
 
     public void Stop()

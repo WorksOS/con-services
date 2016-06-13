@@ -12,7 +12,7 @@ namespace LandFillServiceDataSynchronizer
 {
   public class DataSynchronizer
   {
-
+    private const string userId = "sUpErSeCretIdTuSsupport348215890UnknownRa754291";
     private ILog Log;
 
     public DataSynchronizer(ILog logger)
@@ -30,10 +30,10 @@ namespace LandFillServiceDataSynchronizer
     private Dictionary<Project, List<DateEntry>> GetListOfEntriesToUpdate()
     {
       var projects = GetListOfProjectsToRetrieve();
-      Log.DebugFormat("Got {0} projects to process",projects.Count);
+      Log.DebugFormat("Got {0} projects to process for volumes",projects.Count);
       Dictionary<Project, List<DateEntry>> entries = projects.ToDictionary(project => project,
           project => LandfillDb.GetDatesWithVolumesNotRetrieved(project).ToList());
-      Log.DebugFormat("Got {0} entries to process", entries.Count);
+      Log.DebugFormat("Got {0} entries to process for volumes", entries.Count);
 
       return entries;
     }
@@ -47,7 +47,7 @@ namespace LandFillServiceDataSynchronizer
       return geofences;
     }
 
-    public void RunUpdateDataFromRaptor(object state)
+    public void RunUpdateVolumesFromRaptor(object state)
     {
       var datesToUpdate = GetListOfEntriesToUpdate();
 
@@ -60,62 +60,61 @@ namespace LandFillServiceDataSynchronizer
         foreach (var dateEntry in project.Value)
         {
           var geofence = geofences.ContainsKey(dateEntry.geofenceUid) ? geofences[dateEntry.geofenceUid] : null;
-          GetVolumeInBackground("sUpErSeCretIdTuSsupport348215890UnknownRa754291", project.Key, geofence, dateEntry).Wait();
+          raptorApiClient.GetVolumeInBackground(userId, project.Key, geofence, dateEntry).Wait();
         }
       }
 
     }
 
-    /// <summary>
-    /// Retrieves volume summary from Raptor and saves it to the landfill DB
-    /// </summary>
-    /// <param name="userUid">User ID</param>
-    /// <param name="project">Project</param>
-    /// <param name="geofence">Geofence</param>
-    /// <param name="entry">Weight entry from the client</param>
-    /// <returns></returns>
-    private async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, DateEntry entry)
+    private Dictionary<Project, List<MachineLiftDetails>> GetListOfMachinesToProcess(DateTime utcDate)
     {
-      try
-      {
-        Log.DebugFormat("Get volume for project {0} date {1}", project.id,entry.date);
+      //Use same criteria as volumes to select projects to process. 
+      //No point in getting CCA if no weights or volumes and therefoe density data.
+      var projects = GetListOfProjectsToRetrieve();
+      Log.DebugFormat("Got {0} projects to process for CCA", projects.Count);
+      Dictionary<Project, List<MachineLiftDetails>> machines = projects.ToDictionary(project => project,
+          project => raptorApiClient.GetMachineLiftList(userId, project, utcDate).Result.ToList());
+      Log.DebugFormat("Got {0} machines to process for CCA", machines.Count);
 
-        var res = await raptorApiClient.GetVolumesAsync(userUid, project, entry.date, geofence);
-
-        Log.Debug("Volume res:" + res);
-
-        Log.Debug("Volume: " + (res.Fill));
-
-        LandfillDb.SaveVolume(project.projectUid, entry.geofenceUid, entry.date, res.Fill);
-      }
-      catch (RaptorApiException e)
-      {
-        if (e.code == HttpStatusCode.BadRequest)
-        {
-          // this response code is returned when the volume isn't available (e.g. the time range
-          // is outside project extents); the assumption is that's the only reason we will
-          // receive a 400 Bad Request 
-
-          Log.Warn("RaptorApiException while retrieving volumes: " + e.Message);
-          LandfillDb.MarkVolumeNotAvailable(project.projectUid, entry.geofenceUid, entry.date);
-
-          // TESTING CODE
-          // Volume range in m3 should be ~ [478, 1020]
-          //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478, entry.geofenceUid);
-        }
-        else
-        {
-          Log.Error("RaptorApiException while retrieving volumes: " + e.Message);
-          LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
-        }
-      }
-      catch (Exception e)
-      {
-        Log.Error("Exception while retrieving volumes: " + e.Message);
-        LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
-      }
+      return machines;
+       
     }
+     
+    public void RunUpdateCCAFromRaptor(object state)
+    {
+      var utcDate = (DateTime) state;
+      var machinesToProcess = GetListOfMachinesToProcess(utcDate);
 
+      foreach (var project in machinesToProcess)
+      {
+        Log.DebugFormat("START Processing project {0} with {1} machines", project.Key.id, project.Value.Count);
+
+        var geofenceUids = LandfillDb.GetGeofences(project.Key.id).Select(g => g.uid.ToString()).ToList();
+        var geofences = GetGeofenceBoundaries(project.Key.id, geofenceUids);
+
+        var machineIds = project.Value.ToDictionary(m => m, m => LandfillDb.GetMachineId(m));
+
+        foreach (var geofenceUid in geofenceUids)
+        {
+          var geofence = geofences.ContainsKey(geofenceUid) ? geofences[geofenceUid] : null;
+
+          foreach (var machine in project.Value)
+          {
+            foreach (var lift in machine.lifts)
+            {
+              Log.DebugFormat("Processing project {0}, geofence {1}, machine {2}, lift {3}", project.Key.id, geofenceUid, machine, lift.layerId);
+              raptorApiClient.GetCCAInBackground(
+                userId, project.Key, geofenceUid, geofence, utcDate, machineIds[machine], machine, lift.layerId).Wait();
+            }
+            //Also do the 'All Lifts'
+            raptorApiClient.GetCCAInBackground(
+              userId, project.Key, geofenceUid, geofence, utcDate, machineIds[machine], machine, null).Wait();
+          }
+        }
+        Log.DebugFormat("END Processing project {0}", project.Key.id);
+      }
+
+    }
 
   }
 }

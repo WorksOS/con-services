@@ -786,16 +786,6 @@
             <param name="geofenceUid">Geofence UID</param>
             <returns>Project data and status of volume retrieval</returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetVolumeInBackground(System.String,LandfillService.Common.Models.Project,System.Collections.Generic.List{LandfillService.Common.Models.WGSPoint},LandfillService.Common.Models.DateEntry)">
-            <summary>
-            Retrieves volume summary from Raptor and saves it to the landfill DB
-            </summary>
-            <param name="userUid">User ID</param>
-            <param name="project">Project</param>
-            <param name="geofence">Geofence</param>
-            <param name="entry">Weight entry from the client</param>
-            <returns></returns>
-        </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetMissingVolumesInBackground(System.String,LandfillService.Common.Models.Project)">
             <summary>
             Retries volume summary retrieval from Raptor for volumes marked not retrieved
@@ -838,14 +828,14 @@
             <param name="geofenceUid">Geofence UID</param>
             <returns>List of WGS84 boundary points in radians</returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCA(System.UInt32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCARatio(System.UInt32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
-            Gets CCA summary for a landfill project.
+            Gets CCA ratio summary for a landfill project for all machines.
             </summary>
             <param name="id">Project ID</param>
             <param name="startDate">Start date in project time zone for which to return data</param>
             <param name="endDate">End date in project time zone for which to return data</param>
-            <returns>List of machines and daily CCA %</returns>
+            <returns>List of machines and daily CCA ratio</returns>
         </member>
     </members>
 </doc>

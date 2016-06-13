@@ -325,50 +325,6 @@ namespace LandfillService.WebApi.Controllers
         #region Volumes
 
         /// <summary>
-        /// Retrieves volume summary from Raptor and saves it to the landfill DB
-        /// </summary>
-        /// <param name="userUid">User ID</param>
-        /// <param name="project">Project</param>
-        /// <param name="geofence">Geofence</param>
-        /// <param name="entry">Weight entry from the client</param>
-        /// <returns></returns>
-        private async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, DateEntry entry)
-        {
-          try
-          {
-            var res = await raptorApiClient.GetVolumesAsync(userUid, project, entry.date, geofence);
-
-            System.Diagnostics.Debug.WriteLine("Volume res:" + res);
-            System.Diagnostics.Debug.WriteLine("Volume: " + (res.Fill));
-
-            LandfillDb.SaveVolume(project.projectUid, entry.geofenceUid, entry.date, res.Fill);
-          }
-          catch (RaptorApiException e)
-          {
-            if (e.code == HttpStatusCode.BadRequest)
-            {
-              // this response code is returned when the volume isn't available (e.g. the time range
-              // is outside project extents); the assumption is that's the only reason we will
-              // receive a 400 Bad Request 
-              System.Diagnostics.Debug.Write("RaptorApiException while retrieving volumes: " + e);
-              LandfillDb.MarkVolumeNotAvailable(project.projectUid, entry.geofenceUid, entry.date);
-
-              // TESTING CODE
-              // Volume range in m3 should be ~ [478, 1020]
-              //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478, entry.geofenceUid);
-            }
-            else
-              LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
-          }
-          catch (Exception e)
-          {
-            System.Diagnostics.Debug.Write("Exception while retrieving volumes: " + e);
-            LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
-            throw;
-          }
-        }
-
-        /// <summary>
         /// Retries volume summary retrieval from Raptor for volumes marked not retrieved
         /// </summary>
         /// <param name="userUid">User ID</param>
@@ -417,7 +373,7 @@ namespace LandfillService.WebApi.Controllers
             {
               var tasks = entries.Skip(offset * parallelRequestCount)
                 .Take(parallelRequestCount)
-                .Select(entry => GetVolumeInBackground(
+                .Select(entry => raptorApiClient.GetVolumeInBackground(
                   userUid,
                   project,
                   geofences.ContainsKey(entry.geofenceUid) ? geofences[entry.geofenceUid] : null,
@@ -537,14 +493,14 @@ namespace LandfillService.WebApi.Controllers
 
         #region CCA
         /// <summary>
-        /// Gets CCA summary for a landfill project.
+        /// Gets CCA ratio summary for a landfill project for all machines.
         /// </summary>
         /// <param name="id">Project ID</param>
         /// <param name="startDate">Start date in project time zone for which to return data</param>
         /// <param name="endDate">End date in project time zone for which to return data</param>
-        /// <returns>List of machines and daily CCA %</returns>
-        [System.Web.Http.Route("{id}/cca")]
-        public IHttpActionResult GetCCA(uint id, DateTime? startDate=null, DateTime? endDate=null)
+        /// <returns>List of machines and daily CCA ratio</returns>
+        [System.Web.Http.Route("{id}/ccaratio")]
+        public IHttpActionResult GetCCARatio(uint id, DateTime? startDate=null, DateTime? endDate=null)
         {
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
           //Secure with project list
@@ -557,42 +513,42 @@ namespace LandfillService.WebApi.Controllers
           try
           {
             //TODO: Implement this - for now we use Mock data
-            IEnumerable<CCAData> data = new List<CCAData>
+            IEnumerable<CCARatioData> data = new List<CCARatioData>
                 {
-                  new CCAData
+                  new CCARatioData
                   {
                     machineName = "CAT11",
-                    entries = new List<CCAEntry>
+                    entries = new List<CCARatioEntry>
                     {
-                      new CCAEntry{ date = new DateTime(2016,02,01), ccaPercent = 15.2 },
-                      new CCAEntry{ date = new DateTime(2016,02,02), ccaPercent = 17.1 },
-                      new CCAEntry{ date = new DateTime(2016,02,03), ccaPercent = 26.6 },
-                      new CCAEntry{ date = new DateTime(2016,02,04), ccaPercent = 35.2 },
-                      new CCAEntry{ date = new DateTime(2016,02,05), ccaPercent = 37.8 }
+                      new CCARatioEntry{ date = new DateTime(2016,02,01), ccaRatio = 15.2 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,02), ccaRatio = 17.1 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,03), ccaRatio = 26.6 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,04), ccaRatio = 35.2 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,05), ccaRatio = 37.8 }
                     },
                   },
-                                   new CCAData
+                                   new CCARatioData
                   {
                     machineName = "CAT23",
-                    entries = new List<CCAEntry>
+                    entries = new List<CCARatioEntry>
                     {
-                      new CCAEntry{ date = new DateTime(2016,02,01), ccaPercent = 16.1 },
-                      new CCAEntry{ date = new DateTime(2016,02,02), ccaPercent = 20.1 },
-                      new CCAEntry{ date = new DateTime(2016,02,03), ccaPercent = 29.6 },
-                      new CCAEntry{ date = new DateTime(2016,02,04), ccaPercent = 45.2 },
-                      new CCAEntry{ date = new DateTime(2016,02,05), ccaPercent = 58.8 }
+                      new CCARatioEntry{ date = new DateTime(2016,02,01), ccaRatio = 16.1 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,02), ccaRatio = 20.1 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,03), ccaRatio = 29.6 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,04), ccaRatio = 45.2 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,05), ccaRatio = 58.8 }
                     },
                   },
-                                   new CCAData
+                                   new CCARatioData
                   {
                     machineName = "CAT51",
-                    entries = new List<CCAEntry>
+                    entries = new List<CCARatioEntry>
                     {
-                      new CCAEntry{ date = new DateTime(2016,02,01), ccaPercent = 29.2 },
-                      new CCAEntry{ date = new DateTime(2016,02,02), ccaPercent = 45.1 },
-                      new CCAEntry{ date = new DateTime(2016,02,03), ccaPercent = 49.1 },
-                      new CCAEntry{ date = new DateTime(2016,02,04), ccaPercent = 60.0 },
-                      new CCAEntry{ date = new DateTime(2016,02,05), ccaPercent = 60.0 }
+                      new CCARatioEntry{ date = new DateTime(2016,02,01), ccaRatio = 29.2 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,02), ccaRatio = 45.1 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,03), ccaRatio = 49.1 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,04), ccaRatio = 60.0 },
+                      new CCARatioEntry{ date = new DateTime(2016,02,05), ccaRatio = 60.0 }
                     },
                   }        
                 };

@@ -1,4 +1,5 @@
-﻿using LandfillService.Common.Models;
+﻿using LandfillService.Common.Context;
+using LandfillService.Common.Models;
 using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -53,22 +54,22 @@ namespace LandfillService.Common.ApiClients
         }
 
         /// <summary>
-        /// Makes a JSON POST request to the Raptor API
+        /// Makes a JSON GET or POST request to the Raptor API
         /// </summary>
         /// <param name="endpoint">URL path fragment for the request</param>
+        /// <param name="method">Method of request (GET or POST)</param>
         /// <param name="userUid">User ID</param>
-        /// <param name="parameters">JSON parameters</param>
+        /// <param name="content">Request content</param>
         /// <returns>Response as a string; throws an exception if the request is not successful</returns>
-        private async Task<string> Request<TParams>(string endpoint, string userUid, TParams parameters)  
+        private async Task<string> Request(string endpoint, HttpMethod method, string userUid, HttpContent content)  
         {
-            Log.DebugFormat("In RaptorApiClient::Request to " + endpoint + " with " + parameters);
+            Log.DebugFormat("In RaptorApiClient::Request to " + endpoint + " with " + content);
 
-            LoggerSvc.LogRequest(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, parameters);
+            LoggerSvc.LogRequest(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, content);
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint);
+            HttpRequestMessage request = new HttpRequestMessage(method, endpoint);
             request.Headers.Add("Authorization", "VL " + userUid);
-            request.Content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
-
+            request.Content = content;
             
             // Syncronous processing can be forced by calling .Result
             var response = await client.SendAsync(request); 
@@ -88,6 +89,20 @@ namespace LandfillService.Common.ApiClients
             var res = await responseContent.ReadAsStringAsync();
             return res;
         }
+
+        /// <summary>
+        /// Makes a JSON POST request to the Raptor API
+        /// </summary>
+        /// <param name="endpoint">URL path fragment for the request</param>
+        /// <param name="userUid">User ID</param>
+        /// <param name="parameters">JSON parameters</param>
+        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
+        private async Task<string> Request<TParams>(string endpoint, string userUid, TParams parameters)
+        {
+         var content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
+          return await Request(endpoint, HttpMethod.Post, userUid, content);
+        }
+  
 
         /// <summary>
         /// Parses a JSON response from the Raptor API
@@ -120,7 +135,7 @@ namespace LandfillService.Common.ApiClients
         /// <param name="date">Date to retrieve volumes for (in project time zone)</param>
         /// <param name="geofence">Geofence to retrieve volumes for. If not specified then volume retrieved for entire project area</param>
         /// <returns>Response as a string; throws an exception if the request is not successful</returns>
-        public async Task<SummaryVolumesResult> GetVolumesAsync(string userUid, Project project, DateTime date, List<WGSPoint> geofence)
+        private async Task<SummaryVolumesResult> GetVolumesAsync(string userUid, Project project, DateTime date, List<WGSPoint> geofence)
         {
           DateTime startUtc;
           DateTime endUtc;
@@ -148,6 +163,54 @@ namespace LandfillService.Common.ApiClients
           return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", userUid, volumeParams));
         }
 
+        /// <summary>
+        /// Retrieves volume summary from Raptor and saves it to the landfill DB
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">Project</param>
+        /// <param name="geofence">Geofence</param>
+        /// <param name="entry">Weight entry from the client</param>
+        /// <returns></returns>
+        public async Task GetVolumeInBackground(string userUid, Project project, List<WGSPoint> geofence, DateEntry entry)
+        {
+          try
+          {
+            Log.DebugFormat("Get volume for project {0} date {1}", project.id, entry.date);
+
+            var res = await GetVolumesAsync(userUid, project, entry.date, geofence);
+
+            Log.Debug("Volume res:" + res);
+            Log.Debug("Volume: " + (res.Fill));
+
+            LandfillDb.SaveVolume(project.projectUid, entry.geofenceUid, entry.date, res.Fill);
+          }
+          catch (RaptorApiException e)
+          {
+            if (e.code == HttpStatusCode.BadRequest)
+            {
+              // this response code is returned when the volume isn't available (e.g. the time range
+              // is outside project extents); the assumption is that's the only reason we will
+              // receive a 400 Bad Request 
+
+              Log.Warn("RaptorApiException while retrieving volumes: " + e.Message);
+              LandfillDb.MarkVolumeNotAvailable(project.projectUid, entry.geofenceUid, entry.date);
+
+              // TESTING CODE
+              // Volume range in m3 should be ~ [478, 1020]
+              //LandfillDb.SaveVolume(project.id, entry.date, new Random().Next(541) + 478, entry.geofenceUid);
+            }
+            else
+            {
+              Log.Error("RaptorApiException while retrieving volumes: " + e.Message);
+              LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
+            }
+          }
+          catch (Exception e)
+          {
+            Log.Error("Exception while retrieving volumes: " + e.Message);
+            LandfillDb.MarkVolumeNotRetrieved(project.projectUid, entry.geofenceUid, entry.date);
+          }
+        }
 
         private TimeZoneInfo GetTimeZoneInfoForTzdbId(string tzdbId)
         {
@@ -179,7 +242,7 @@ namespace LandfillService.Common.ApiClients
         /// <param name="geofence">Geofence to retrieve CCA for. If not specified then CCA retrieved for entire project area</param>
         /// <param name="liftId">Lift/layer number to retrieve CCA for. If not specified then CCA retrieved for all lifts</param>
         /// <returns>Response as a string; throws an exception if the request is not successful</returns>
-        public async Task<SummaryVolumesResult> GetCCAAsync(string userUid, Project project, DateTime date, MachineDetails machine, int? liftId, List<WGSPoint> geofence)
+        private async Task<CCASummaryResult> GetCCAAsync(string userUid, Project project, DateTime date, MachineDetails machine, int? liftId, List<WGSPoint> geofence)
         {
           DateTime startUtc;
           DateTime endUtc;
@@ -197,8 +260,72 @@ namespace LandfillService.Common.ApiClients
               polygonLL = geofence
             },         
           };
-          return ParseResponse<SummaryVolumesResult>(await Request("compaction/cca/summary", userUid, ccaParams));
+          return ParseResponse<CCASummaryResult>(await Request("compaction/cca/summary", userUid, ccaParams));
         }
 
+        /// <summary>
+        /// Retrieves CCA summary from Raptor and saves it to the landfill DB
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">Project</param>
+        /// <param name="geofence">Geofence boundary</param>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <param name="date">Date to retrieve CCA for (in project time zone)</param>
+        /// <param name="machineId">Landfill Machine ID</param>
+        /// <param name="machine">Machine details</param>
+        /// <param name="liftId">Lift/layer number. If not specified then CCA retrieved for all lifts</param>
+        /// <returns></returns>
+        public async Task GetCCAInBackground(string userUid, Project project, string geofenceUid, List<WGSPoint> geofence, DateTime date, long machineId, MachineDetails machine, int? liftId)
+        {
+          try
+          {
+            Log.DebugFormat("Get CCA for project {0} date {1} machine {2}", project.id, date, machine.machineName);
+
+            var res = await GetCCAAsync(userUid, project, date, machine, liftId, geofence);
+
+            Log.Debug("CCA res:" + res);
+            Log.DebugFormat("CCA: incomplete {0}, complete {1}, overcomplete {2}", res.incompletePercent, res.completePercent, res.overcompletePercent);
+
+            LandfillDb.SaveCCA(project.projectUid, geofenceUid, date, machineId, liftId, res.incompletePercent, res.completePercent, res.overcompletePercent);
+          }
+          catch (RaptorApiException e)
+          {
+            if (e.code == HttpStatusCode.BadRequest)
+            {
+              // this response code is returned when the CCA isn't available (e.g. the time range
+              // is outside project extents); the assumption is that's the only reason we will
+              // receive a 400 Bad Request 
+
+              Log.Warn("RaptorApiException while retrieving CCA: " + e.Message);
+              LandfillDb.MarkCCANotAvailable(project.projectUid, geofenceUid, date, machineId, liftId);
+            }
+            else
+            {
+              Log.Error("RaptorApiException while retrieving CCA: " + e.Message);
+              LandfillDb.MarkCCANotRetrieved(project.projectUid, geofenceUid, date, machineId, liftId);
+            }
+          }
+          catch (Exception e)
+          {
+            Log.Error("Exception while retrieving CCA: " + e.Message);
+            LandfillDb.MarkCCANotRetrieved(project.projectUid, geofenceUid, date, machineId, liftId);
+          }
+        }
+
+      /// <summary>
+      /// Rerieves a list of machines and lifts for the project for the given date
+      /// </summary>
+      /// <param name="userUid">User ID</param>
+      /// <param name="project">Project</param>
+      /// <param name="date">Date in project time zone</param>
+      /// <returns></returns>
+        public async Task<MachineLiftDetails[]> GetMachineLiftList(string userUid, Project project, DateTime utcDate)
+      {
+        var startUtc = utcDate.Date;
+        var endUtc = startUtc.AddDays(1).AddMilliseconds(-1);
+        string url = string.Format("projects/{0}/machinelifts?startUtc={1}&endUtc={2}", project.id, startUtc, endUtc);
+        return ParseResponse<MachineLiftDetails[]>(await Request(url, HttpMethod.Get, userUid, null));
+
+      }
     }
 }

@@ -551,6 +551,188 @@ namespace LandfillService.Common.Context
         }
       #endregion
 
+      #region CCA
+        /// <summary>
+        /// Saves a CCA summary for a given project, geofence, date, machine and lift
+        /// </summary>
+        /// <param name="projectUid">Project UID</param>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <param name="date">Date</param>
+        /// <param name="machineId">Machine ID</param>
+        /// <param name="liftId">Lift/Layer ID</param>
+        /// <param name="incomplete">Incomplete %</param>
+        /// <param name="complete">Complete %</param>
+        /// <param name="overcomplete">Over complete %</param>
+        /// <returns></returns>
+        public static void SaveCCA(string projectUid, string geofenceUid, DateTime date, long machineId, int? liftId, double incomplete, double complete, double overcomplete)
+        {
+          UpsertCCA(projectUid, geofenceUid, date, machineId, liftId, incomplete, complete, overcomplete, false, false);
+        }
+
+        /// <summary>
+        /// Marks an entry with "CCA not retrieved" so it can be retried later
+        /// </summary>
+        /// <param name="projectUid">Project UID</param>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <param name="date">Date of the entry</param>
+        /// <param name="machineId">Machine ID</param>
+        /// <param name="liftId">Lift/Layer ID</param>
+        /// <returns></returns>
+        public static void MarkCCANotRetrieved(string projectUid, string geofenceUid, DateTime date, long machineId, int? liftId)
+        {
+          UpsertCCA(projectUid, geofenceUid, date, machineId, liftId, null, null, null, true, false);
+        }
+
+        /// <summary>
+        /// Marks an entry with "CCA not available" to indicate that there is no CCA information in Raptor for that date
+        /// </summary>
+        /// <param name="projectUid">Project UID</param>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <param name="date">Date of the entry</param>
+        /// <param name="machineId">Machine ID</param>
+        /// <param name="liftId">Lift/Layer ID</param>
+        /// <returns></returns>
+        public static void MarkCCANotAvailable(string projectUid, string geofenceUid, DateTime date, long machineId, int? liftId)
+        {
+          UpsertCCA(projectUid, geofenceUid, date, machineId, liftId, null, null, null, false, true);
+        }
+
+        /// <summary>
+        /// Inserts or updates a CCA entry in the database.
+        /// </summary>
+        /// <param name="projectUid">Project UID</param>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <param name="date">Date of the entry</param>
+        /// <param name="machineId">Machine ID</param>
+        /// <param name="liftId">Lift/Layer ID</param>
+        /// <param name="incomplete">Incomplete %</param>
+        /// <param name="complete">Complete %</param>
+        /// <param name="overcomplete">Over complete %</param>
+        /// <param name="notRetrieved">Flag to indicate CCA not retrieved from Raptor</param>
+        /// <param name="notAvailable">Flag to indicate no CCA value available from Raptor</param>
+        private static void UpsertCCA(string projectUid, string geofenceUid, DateTime date, long machineId, int? liftId, 
+          double? incomplete, double? complete, double? overcomplete, bool notRetrieved, bool notAvailable)
+        {
+          WithConnection<object>((conn) =>
+          {
+            var command =
+                @"INSERT INTO CCA 
+                      (ProjectUID, Date, Incomplete, Complete, Overcomplete, GeofenceUID, MachineID, LiftID, 
+                          CCANotRetrieved, CCANotAvailable, CCAUpdatedTimestampUTC)
+                    VALUES (@projectUid, @date, @incomplete, @complete, @overcomplete, @geofenceUid, @machineId, 
+                          @liftId, @notRetrieved, @notAvailable, UTC_TIMESTAMP())
+                    ON DUPLICATE KEY UPDATE
+                      Incomplete = @incomplete, Complete = @complete, Overcomplete = @overcomplete, 
+                      CCANotRetrieved = @notRetrieved, CCANotAvailable = @notAvailable, CCAUpdatedTimestampUTC = UTC_TIMESTAMP()";
+
+            MySqlHelper.ExecuteNonQuery(conn, command,
+                new MySqlParameter("@incomplete", (object)incomplete ?? DBNull.Value),
+                new MySqlParameter("@complete", (object)complete ?? DBNull.Value),
+                new MySqlParameter("@overcomplete", (object)overcomplete ?? DBNull.Value),
+                new MySqlParameter("@projectUid", projectUid),
+                new MySqlParameter("@geofenceUid", geofenceUid),
+                new MySqlParameter("@machineId", machineId),
+                new MySqlParameter("@liftId", liftId),
+                new MySqlParameter("@date", date),
+                new MySqlParameter("@notRetrieved", notRetrieved ? 1 : 0),
+                new MySqlParameter("@notAvailable", notAvailable ? 1 : 0));
+
+            return null;
+          });  
+        }
+
+        /// <summary>
+        /// Retrieves a list of entries for which CCA couldn't be retrieved previously (used to retry retrieval)
+        /// </summary>
+        /// <param name="project">Project for which to retrieve data</param>
+        /// <returns>A list of CCA entries</returns>
+        public static IEnumerable<CCA> GetEntriesWithCCANotRetrieved(Project project)
+        {
+          return WithConnection((conn) =>
+          {
+            // selects entries where CCA retrieval failed OR was never completed
+            var command = @"SELECT cca.Date, cca.GeofenceUID, cca.MachineID, cca.LiftID FROM CCA cca 
+                              JOIN Geofence geo ON cca.GeofenceUID = geo.GeofenceUID
+                            WHERE cca.ProjectUID = @projectUid AND geo.IsDeleted = 0 AND
+                            (cca.CCANotRetrieved = 1 OR (cca.Complete IS NULL AND cca.CCANotAvailable = 0) OR 
+                            (cca.CCAUpdatedTimestampUTC IS NULL) OR 
+                            ( (cca.CCAUpdatedTimestampUTC < SUBDATE(UTC_TIMESTAMP(), INTERVAL 1 DAY)) AND 
+                              (cca.CCAUpdatedTimestampUTC > SUBDATE(UTC_TIMESTAMP(), INTERVAL 30 DAY))  ))";
+
+            using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", project.projectUid)))
+            {
+              var ccaEntries = new List<CCA>();
+              while (reader.Read())
+              {
+                ccaEntries.Add(new CCA
+                               {
+                                   date = reader.GetDateTime(reader.GetOrdinal("Date")),
+                                   geofenceUid = reader.GetString(reader.GetOrdinal("GeofenceUID")),
+                                   machineId = reader.GetUInt32(reader.GetOrdinal("MachineID")),
+                                   liftId = reader.GetInt32(reader.GetOrdinal("LiftID"))
+                               });
+              }
+              return ccaEntries;
+            }
+          });
+        }
+      #endregion
+
+      #region Machines
+      /// <summary>
+      /// Get the ID of the machine with the given details. If it doesn't exist then create it.
+      /// </summary>
+      /// <param name="details">Machine details</param>
+      /// <returns>ID of the machine</returns>
+      public static long GetMachineId(MachineDetails details)
+      {
+        return WithConnection((conn) =>
+        {
+          var parms = new List<MySqlParameter>
+          {
+            new MySqlParameter("@assetId", details.assetId),
+            new MySqlParameter("@machineName", details.machineName),
+            new MySqlParameter("@isJohnDoe", details.isJohnDoe)
+          }.ToArray();
+
+          var existingId = GetMachineId(conn, parms);
+          if (existingId == 0)
+          {
+            var command =
+                @"INSERT INTO Machine (AssetID, MachineName, IsJohnDoe)
+                  VALUES (@assetId, @machineName, @isJohnDoe)";
+
+            MySqlHelper.ExecuteNonQuery(conn, command, parms);
+            existingId = GetMachineId(conn, parms);
+          }
+          return existingId;
+        });
+      }
+
+      /// <summary>
+      /// Gets the ID of a machine from the Landfill database.
+      /// </summary>
+      /// <param name="sqlConn">SQL database connection</param>
+      /// <param name="sqlParams">SQL parameters for the machine to get</param>
+      /// <returns>The machine ID</returns>
+      private static long GetMachineId(MySqlConnection sqlConn, MySqlParameter[] sqlParams)
+      {
+        var query = @"SELECT ID FROM Machine
+                      WHERE AssetID = @assetId AND MachineName = @machineName AND IsjohnDoe = @isJohnDoe";
+
+        long existingId = 0;
+        using (var reader = MySqlHelper.ExecuteReader(sqlConn, query, sqlParams))
+        {
+          while (reader.Read())
+          {
+            existingId = reader.GetUInt32(0);
+          }
+        }
+        return existingId;
+      }
+
+      #endregion
+
     }
 
 }

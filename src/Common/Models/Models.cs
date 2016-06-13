@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace LandfillService.Common.Models
 {
-  #region WEb API Models
+  #region Web API Models
   /// <summary>
     /// Project representation
     /// </summary>
@@ -123,25 +123,39 @@ namespace LandfillService.Common.Models
     }
 
     /// <summary>
-    /// An entry for CCA for a machine 
+    /// A CCA ratio for a machine for one day (for all lifts)
     /// </summary>
-    public class CCAEntry
+    public class CCARatioEntry
     {
       public DateTime date { get; set; }
-      public double ccaPercent { get; set; }
+      public double ccaRatio { get; set; }
     }
 
     /// <summary>
-    /// CCA% representation for a machine
+    /// CCA ratio representation for a machine
     /// </summary>
-    public class CCAData
+    public class CCARatioData
     {
       public string machineName { get; set; }
-      public IEnumerable<CCAEntry> entries { get; set; }
+      public IEnumerable<CCARatioEntry> entries { get; set; }
     }
 
     /// <summary>
-    /// Volume and time sumamry data 
+    /// Represents a CCA entry from the database
+    /// </summary>
+    public class CCA
+    {
+      public string geofenceUid { get; set; }
+      public DateTime date { get; set; }
+      public long machineId { get; set; }
+      public int? liftId { get; set; }
+      public double incomplete { get; set; }
+      public double complete { get; set; }
+      public double overcomplete { get; set; }    
+    }
+
+    /// <summary>
+    /// Volume and time summary data 
     /// </summary>
     public class VolumeTime
     {
@@ -373,6 +387,11 @@ namespace LandfillService.Common.Models
     public class CCASummaryResult
     {
       /// <summary>
+      /// The percentage of the cells that are incomplete
+      /// </summary>
+      public double incompletePercent { get; private set; }
+
+      /// <summary>
       /// The percentage of cells that are complete within the target bounds
       /// </summary>
       public double completePercent { get; private set; }
@@ -380,7 +399,7 @@ namespace LandfillService.Common.Models
       /// <summary>
       /// The percentage of the cells that are over-complete
       /// </summary>
-      public double overCompletePercent { get; private set; }
+      public double overcompletePercent { get; private set; }
 
       /// <summary>
       /// The internal result code of the request. Documented elsewhere.
@@ -390,12 +409,7 @@ namespace LandfillService.Common.Models
       /// <summary>
       /// The total area covered by non-null cells in the request area
       /// </summary>
-      public double totalAreaCoveredSqMeters { get; private set; }
-
-      /// <summary>
-      /// The percentage of the cells that are under complete
-      /// </summary>
-      public double underCompletePercent { get; private set; }
+      public double totalAreaCoveredSqMeters { get; private set; } 
 
       /// <summary>
       /// ToString override
@@ -404,9 +418,27 @@ namespace LandfillService.Common.Models
       public override string ToString()
       {
         return String.Format("under:{0}, complete:{1}, over:{2}", 
-          underCompletePercent, completePercent, overCompletePercent);
+          this.incompletePercent, completePercent, this.overcompletePercent);
       }
     }
+
+    /// <summary>
+    /// Machine Lift/Layer Details returned from the Raptor API
+    /// </summary>
+     public class MachineLiftDetails : MachineDetails
+     {
+      public LiftDetails[] lifts { get; set; }
+     }
+
+     /// <summary>
+     /// Lift details returned from the Raptor API
+     /// </summary>
+    public class LiftDetails
+    {
+      public int layerId { get; set; }
+      public DateTime endUtc { get; set; }
+    }
+
     #endregion
 
   
