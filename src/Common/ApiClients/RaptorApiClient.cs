@@ -36,6 +36,8 @@ namespace LandfillService.Common.ApiClients
     public class RaptorApiClient : IDisposable
     {
         private HttpClient client;
+        private string reportEndpoint;
+        private string prodDataEndpoint;
 
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -46,6 +48,8 @@ namespace LandfillService.Common.ApiClients
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.Timeout = TimeSpan.FromSeconds(60 * 60);
+            this.reportEndpoint = ConfigurationManager.AppSettings["RaptorReportEndpoint"];
+            this.prodDataEndpoint = ConfigurationManager.AppSettings["RaptorProdDataEndpoint"];
         }
 
         public void Dispose()
@@ -160,7 +164,7 @@ namespace LandfillService.Common.ApiClients
               polygonLL = geofence
             }
           };
-          return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", userUid, volumeParams));
+          return ParseResponse<SummaryVolumesResult>(await Request(this.reportEndpoint + "volumes/summary", userUid, volumeParams));
         }
 
         /// <summary>
@@ -260,7 +264,7 @@ namespace LandfillService.Common.ApiClients
               polygonLL = geofence
             },         
           };
-          return ParseResponse<CCASummaryResult>(await Request("compaction/cca/summary", userUid, ccaParams));
+          return ParseResponse<CCASummaryResult>(await Request(this.reportEndpoint + "compaction/cca/summary", userUid, ccaParams));
         }
 
         /// <summary>
@@ -319,11 +323,12 @@ namespace LandfillService.Common.ApiClients
       /// <param name="project">Project</param>
       /// <param name="date">Date in project time zone</param>
       /// <returns></returns>
-        public async Task<MachineLiftDetails[]> GetMachineLiftList(string userUid, Project project, DateTime utcDate)
+      public async Task<MachineLiftDetails[]> GetMachineLiftList(string userUid, Project project, DateTime utcDate)
       {
         var startUtc = utcDate.Date;
         var endUtc = startUtc.AddDays(1).AddMilliseconds(-1);
-        string url = string.Format("projects/{0}/machinelifts?startUtc={1}&endUtc={2}", project.id, startUtc, endUtc);
+        string url = string.Format("{0}projects/{1}/machinelifts?startUtc={2}&endUtc={3}", 
+          this.prodDataEndpoint, project.id, startUtc, endUtc);
         return ParseResponse<MachineLiftDetails[]>(await Request(url, HttpMethod.Get, userUid, null));
 
       }
