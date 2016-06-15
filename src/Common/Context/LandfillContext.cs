@@ -369,22 +369,7 @@ namespace LandfillService.Common.Context
 
             return WithConnection((conn) =>
             {
-                //Check date range within 2 years ago to today in project time zone
-                var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
-                DateTime utcNow = DateTime.UtcNow;
-                Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
-                DateTime todayinProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;
-                DateTime twoYearsAgo = todayinProjTimeZone.AddYears(-2);
-                //DateTime yesterday = todayinProjTimeZone.AddDays(-1);
-                if (!startDate.HasValue)
-                  startDate = twoYearsAgo;
-                if (!endDate.HasValue)
-                  endDate = todayinProjTimeZone;
-                if (startDate < twoYearsAgo || endDate > todayinProjTimeZone)
-                {
-                  throw new ArgumentException("Invalid date range. Valid range is 2 years ago to today.");
-                }
-                var dateRange = GetDateRange(startDate.Value, endDate.Value);
+                var dateRange = CheckDateRange(project.timeZoneName, startDate, endDate);
 
                 var entriesLookup = (from dr in dateRange
                                      select new DayEntry
@@ -404,8 +389,8 @@ namespace LandfillService.Common.Context
                 using (var reader = MySqlHelper.ExecuteReader(conn, command,
                   new MySqlParameter("@projectUid", project.projectUid),
                   new MySqlParameter("@geofenceUid", geofenceUid),
-                  new MySqlParameter("@startDate", startDate.Value), //twoYearsAgo
-                  new MySqlParameter("@endDate", endDate.Value)//yesterday
+                  new MySqlParameter("@startDate", dateRange.First()), 
+                  new MySqlParameter("@endDate", dateRange.Last())
                   ))
                 {
                     const double EPSILON = 0.001;
@@ -492,24 +477,43 @@ namespace LandfillService.Common.Context
           }
         }
 
+        private static IEnumerable<DateTime> CheckDateRange(string timeZoneName, DateTime? startDate, DateTime? endDate)
+        {
+          //Check date range within 2 years ago to today in project time zone
+          var projTimeZone = DateTimeZoneProviders.Tzdb[timeZoneName];
+          DateTime utcNow = DateTime.UtcNow;
+          Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
+          DateTime todayinProjTimeZone = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;
+          DateTime twoYearsAgo = todayinProjTimeZone.AddYears(-2);
+          //DateTime yesterday = todayinProjTimeZone.AddDays(-1);
+          if (!startDate.HasValue)
+            startDate = twoYearsAgo;
+          if (!endDate.HasValue)
+            endDate = todayinProjTimeZone;
+          if (startDate < twoYearsAgo || endDate > todayinProjTimeZone)
+          {
+            throw new ArgumentException("Invalid date range. Valid range is 2 years ago to today.");
+          }
+          return GetDateRange(startDate.Value, endDate.Value);       
+        }
+
         #endregion
 
       #region Geofences
         /// <summary>
         /// Retrieves the geofences associated with the project.
         /// </summary>
-        /// <param name="projectId">Project ID</param>
+        /// <param name="projectUid">Project UID</param>
         /// <returns>A list of geofences</returns>
-        public static IEnumerable<Geofence> GetGeofences(uint projectId)
+        public static IEnumerable<Geofence> GetGeofences(string projectUid)
         {
           return WithConnection((conn) =>
           {
-            var command = @"SELECT geo.GeofenceUID, geo.Name, geo.fk_GeofenceTypeID FROM Geofence geo
-                            INNER JOIN Project prj ON geo.ProjectUID = prj.ProjectUID
-                            WHERE prj.ProjectID = @projectId AND geo.IsDeleted = 0 
-                                AND (geo.fk_GeofenceTypeID = 1 OR geo.fk_GeofenceTypeID = 10)";
+            var command = @"SELECT GeofenceUID, Name, fk_GeofenceTypeID FROM Geofence
+                            WHERE ProjectUID = @projectUid AND IsDeleted = 0 
+                                AND (fk_GeofenceTypeID = 1 OR fk_GeofenceTypeID = 10)";
 
-            using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectId", projectId)))
+            using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectUid)))
             {
               List<Geofence> geofences = new List<Geofence>();
               while (reader.Read())
@@ -677,6 +681,78 @@ namespace LandfillService.Common.Context
             }
           });
         }
+
+      /// <summary>
+      /// Gets CCA data for the project for all machines for all lifts. If date range is not specified, returns data 
+      /// for 2 years ago to today in poject time zone. If geofence is not specified returns data for 
+      /// entire project area otherwise for geofenced area.
+      /// </summary>
+      /// <param name="project">Project</param>
+      /// <param name="geofenceUid">Geofence UID</param>
+      /// <param name="startDate">Start date in project time zone</param>
+      /// <param name="endDate">End date in project time zone</param>
+      /// <returns>A list of CCA entries</returns>
+      public static IEnumerable<CCA> GetCCA(Project project, string geofenceUid, DateTime? startDate, DateTime? endDate)
+      {
+        string projectGeofenceUid = UpdateEntriesIfRequired(project, geofenceUid);
+        if (string.IsNullOrEmpty(geofenceUid))
+          geofenceUid = projectGeofenceUid;
+
+        return WithConnection((conn) =>
+        {
+          var dateRange = CheckDateRange(project.timeZoneName, startDate, endDate);
+
+          //Get the actual data 
+          var actualData = new List<CCA>();
+          var command = @"SELECT Date, MachineID, LiftID, Incomplete, Complete, Overcomplete FROM CCA 
+                          WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
+                            AND ProjectUID = @projectUid AND GeofenceUID = @geofenceUid AND LiftID IS NULL
+                          ORDER BY MachineId, Date";
+
+          using (var reader = MySqlHelper.ExecuteReader(conn, command,
+            new MySqlParameter("@projectUid", project.projectUid),
+            new MySqlParameter("@geofenceUid", geofenceUid),
+            new MySqlParameter("@startDate", dateRange.First()), 
+            new MySqlParameter("@endDate", dateRange.Last())
+            ))
+          {
+            while (reader.Read())
+            {
+              actualData.Add(
+                new CCA
+                {
+                  date = reader.GetDateTime(reader.GetOrdinal("Date")),
+                  geofenceUid = geofenceUid,
+                  machineId = reader.GetUInt32(reader.GetOrdinal("MachineID")),
+                  liftId = null,//all lifts
+                  incomplete = reader.IsDBNull(reader.GetOrdinal("Incomplete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Incomplete")),
+                  complete = reader.IsDBNull(reader.GetOrdinal("Complete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Complete")),
+                  overcomplete = reader.IsDBNull(reader.GetOrdinal("Overcomplete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Overcomplete"))
+                });  
+            }
+          }
+          //Now add the missing data for each machine
+          var machineIds = actualData.Select(a => a.machineId).Distinct();
+          foreach (var machineId in machineIds)
+          {
+            var actualDates = actualData.Where(a => a.machineId == machineId).Select(d => d.date);
+            var missingData = (from dr in dateRange
+                                 where !actualDates.Contains(dr.Date)
+                                 select new CCA
+                                        {
+                                            date = dr.Date,
+                                            geofenceUid = geofenceUid,
+                                            machineId = machineId,
+                                            liftId = null,
+                                            incomplete = 0,
+                                            complete = 0,
+                                            overcomplete = 0
+                                        });
+            actualData.AddRange(missingData);
+          }
+          return actualData.OrderBy(a => a.machineId).ThenBy(a => a.date);
+        });
+      }
       #endregion
 
       #region Machines
@@ -739,6 +815,67 @@ namespace LandfillService.Common.Context
           MySqlHelper.ExecuteNonQuery(sqlConn, command, sqlParams);
         }
         return existingId;
+      }
+
+      /*
+      /// <summary>
+      /// Gets the machine details for the specified machines.
+      /// </summary>
+      /// <param name="machineIds">IDs of machines to get</param>
+      /// <returns>List of machine details</returns>
+      public static IEnumerable<MachineDetails> GetMachines(IEnumerable<long> machineIds)
+      {
+        return WithConnection((conn) =>
+        {
+          var command = @"SELECT AssetID, MachineName, IsJohnDoe FROM Machine WHERE ID IN @machineIds";
+
+          string machineIdList = string.Format("({0})", string.Join(",", machineIds));
+          using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@machineIds", machineIdList)))
+          {
+            List<MachineDetails> machines = new List<MachineDetails>();
+            while (reader.Read())
+            {
+              machines.Add(new MachineDetails
+              {
+                assetId = reader.GetUInt32(reader.GetOrdinal("AssetID")),
+                machineName = reader.GetString(reader.GetOrdinal("MachineName")),
+                isJohnDoe = reader.GetInt16(reader.GetOrdinal("IsJohnDoe")) == 1,
+              });
+
+            }
+            return machines;
+          }
+        });                
+      }
+       */
+
+      /// <summary>
+      /// Gets the machine details for the specified machine.
+      /// </summary>
+      /// <param name="machineId">ID of machine to get</param>
+      /// <returns>Machine details</returns>
+      public static MachineDetails GetMachine(long machineId)
+      {
+        return WithConnection((conn) =>
+        {
+          var command = @"SELECT AssetID, MachineName, IsJohnDoe FROM Machine WHERE ID = @machineId";
+
+          using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@machineId", machineId)))
+          {
+            MachineDetails machine = null;
+            while (reader.Read())
+            {
+              machine = new MachineDetails
+              {
+                assetId = reader.GetUInt32(reader.GetOrdinal("AssetID")),
+                machineName = reader.GetString(reader.GetOrdinal("MachineName")),
+                isJohnDoe = reader.GetInt16(reader.GetOrdinal("IsJohnDoe")) == 1,
+              };
+
+            }
+            return machine;
+          }
+        });
       }
 
       #endregion

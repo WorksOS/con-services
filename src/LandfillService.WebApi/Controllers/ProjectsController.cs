@@ -22,7 +22,7 @@ namespace LandfillService.WebApi.Controllers
     /// <summary>
     /// Handles project related requests
     /// </summary>
-    [System.Web.Http.RoutePrefix("api/v2/projects")]
+    [RoutePrefix("api/v2/projects")]
     public class ProjectsController : ApiController
     {
         private RaptorApiClient raptorApiClient = new RaptorApiClient();
@@ -49,7 +49,7 @@ namespace LandfillService.WebApi.Controllers
         /// Returns the list of projects available to the user
         /// </summary>
         /// <returns>List of available projects</returns>
-        [System.Web.Http.Route("")]
+        [Route("")]
         public IHttpActionResult Get()
         {
           return PerhapsUpdateProjectList((RequestContext.Principal as LandfillPrincipal).UserUid).Case(errorResponse => errorResponse, projects => Ok(projects));
@@ -100,7 +100,7 @@ namespace LandfillService.WebApi.Controllers
         /// <param name="startDate">Start date in project time zone for which to return data</param>
         /// <param name="endDate">End date in project time zone for which to return data</param>
         /// <returns>List of data entries for each day in date range and the status of volume retrieval for the project</returns>
-        [System.Web.Http.Route("{id}")]
+        [Route("{id}")]
         public IHttpActionResult Get(uint id, Guid? geofenceUid=null, DateTime? startDate=null, DateTime? endDate=null)
         {
             // Get the available data
@@ -148,7 +148,7 @@ namespace LandfillService.WebApi.Controllers
         /// </summary>
         /// <param name="id">Project ID</param>
         /// <returns>List of entries for each day in date range and the weight for each geofence for that day</returns>
-        [System.Web.Http.Route("{id}/weights")]
+        [Route("{id}/weights")]
         public IHttpActionResult GetWeights(uint id)
         {
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
@@ -191,7 +191,7 @@ namespace LandfillService.WebApi.Controllers
         private List<GeofenceWeightEntry> GetGeofenceWeights(Project project)
         {
           Dictionary<DateTime, List<GeofenceWeight>> weights = new Dictionary<DateTime, List<GeofenceWeight>>();
-          IEnumerable<Guid> geofenceUids = LandfillDb.GetGeofences(project.id).Select(g => g.uid);
+          IEnumerable<Guid> geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid);
           foreach (var geofenceUid in geofenceUids)
           {
             var entries = LandfillDb.GetEntries(project, geofenceUid.ToString(), null, null);
@@ -218,8 +218,8 @@ namespace LandfillService.WebApi.Controllers
         /// <param name="id">Project ID</param>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <returns>Project data and status of volume retrieval</returns>
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("{id}/weights")]
+        [HttpPost]
+        [Route("{id}/weights")]
         public IHttpActionResult PostWeights(uint id, Guid? geofenceUid=null /*, [FromBody] WeightEntry[] entries*/)
         {
           //When the request goes through TPaaS the headers get changed to Transfer-Encoding: chunked and the Content-Length is 0.
@@ -390,7 +390,7 @@ namespace LandfillService.WebApi.Controllers
         /// </summary>
         /// <param name="id">Project ID</param>
         /// <returns>Current week volume, current month volume, remaining volume (air space) and time remaining (days)</returns>
-        [System.Web.Http.Route("{id}/volumeTime")]
+        [Route("{id}/volumeTime")]
         public IHttpActionResult GetVolumeTimeSummary(uint id)
         {
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
@@ -399,7 +399,7 @@ namespace LandfillService.WebApi.Controllers
           {
             throw new HttpResponseException(HttpStatusCode.Forbidden);
           }
-          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving CCA %");
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving Volume/Time");
 
           try
           {
@@ -430,7 +430,7 @@ namespace LandfillService.WebApi.Controllers
         /// </summary>
         /// <param name="id">Project ID</param>
         /// <returns>List of geofences</returns>
-        [System.Web.Http.Route("{id}/geofences")]
+        [Route("{id}/geofences")]
         public IHttpActionResult GetGeofences(uint id)
         {
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
@@ -443,7 +443,8 @@ namespace LandfillService.WebApi.Controllers
          
           try
           {
-            IEnumerable<Geofence> geofences = LandfillDb.GetGeofences(id);            
+            var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
+            IEnumerable<Geofence> geofences = LandfillDb.GetGeofences(project.projectUid);            
             return Ok(geofences);
           }
           catch (InvalidOperationException)
@@ -458,7 +459,7 @@ namespace LandfillService.WebApi.Controllers
         /// <param name="id">Project ID</param>
         /// <param name="geofenceUid">Geofence UID</param>
         /// <returns>List of WGS84 boundary points in radians</returns>
-        [System.Web.Http.Route("{id}/geofences/{geofenceUid}")]
+        [Route("{id}/geofences/{geofenceUid}")]
         public IHttpActionResult GetGeofenceBoundary(uint id, Guid geofenceUid)
         {
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
@@ -493,14 +494,18 @@ namespace LandfillService.WebApi.Controllers
 
         #region CCA
         /// <summary>
-        /// Gets CCA ratio summary for a landfill project for all machines.
+        /// Gets CCA ratio for a landfill project for all machines. If geofenceUid is not specified, 
+        /// CCA data for the entire project area is returned otherwise CCA data for the geofenced area is returned.
+        /// If no date range specified, returns CCA data for the last 2 years to today in the project time zone
+        /// otherwise returns CCA data for the specified date range.
         /// </summary>
         /// <param name="id">Project ID</param>
+        /// <param name="geofenceUid">Geofence UID</param>
         /// <param name="startDate">Start date in project time zone for which to return data</param>
         /// <param name="endDate">End date in project time zone for which to return data</param>
         /// <returns>List of machines and daily CCA ratio</returns>
-        [System.Web.Http.Route("{id}/ccaratio")]
-        public IHttpActionResult GetCCARatio(uint id, DateTime? startDate=null, DateTime? endDate=null)
+        [Route("{id}/ccaratio")]
+        public IHttpActionResult GetCCARatio(uint id, Guid? geofenceUid=null, DateTime? startDate=null, DateTime? endDate=null)
         {
           var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
           //Secure with project list
@@ -512,46 +517,17 @@ namespace LandfillService.WebApi.Controllers
 
           try
           {
-            //TODO: Implement this - for now we use Mock data
-            IEnumerable<CCARatioData> data = new List<CCARatioData>
-                {
-                  new CCARatioData
+            var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
+            var ccaData = LandfillDb.GetCCA(project, geofenceUid.HasValue ? geofenceUid.ToString() : null, startDate, endDate);
+            var groupedData = ccaData.GroupBy(c => c.machineId).ToDictionary(k => k.Key, v => v.ToList());
+            var data = groupedData.Select(d => new CCARatioData
                   {
-                    machineName = "CAT11",
-                    entries = new List<CCARatioEntry>
-                    {
-                      new CCARatioEntry{ date = new DateTime(2016,02,01), ccaRatio = 15.2 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,02), ccaRatio = 17.1 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,03), ccaRatio = 26.6 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,04), ccaRatio = 35.2 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,05), ccaRatio = 37.8 }
-                    },
-                  },
-                                   new CCARatioData
-                  {
-                    machineName = "CAT23",
-                    entries = new List<CCARatioEntry>
-                    {
-                      new CCARatioEntry{ date = new DateTime(2016,02,01), ccaRatio = 16.1 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,02), ccaRatio = 20.1 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,03), ccaRatio = 29.6 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,04), ccaRatio = 45.2 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,05), ccaRatio = 58.8 }
-                    },
-                  },
-                                   new CCARatioData
-                  {
-                    machineName = "CAT51",
-                    entries = new List<CCARatioEntry>
-                    {
-                      new CCARatioEntry{ date = new DateTime(2016,02,01), ccaRatio = 29.2 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,02), ccaRatio = 45.1 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,03), ccaRatio = 49.1 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,04), ccaRatio = 60.0 },
-                      new CCARatioEntry{ date = new DateTime(2016,02,05), ccaRatio = 60.0 }
-                    },
-                  }        
-                };
+                    machineName = LandfillDb.GetMachine(d.Key).machineName,
+                    entries = groupedData[d.Key].Select(v => new CCARatioEntry
+                              {
+                                date = v.date, ccaRatio = v.complete + v.overcomplete
+                              }).ToList()                             
+                  }).ToList();
             return Ok(data);
           }
           catch (InvalidOperationException)

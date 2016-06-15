@@ -89,7 +89,7 @@ namespace LandFillServiceDataSynchronizer
       {
         Log.DebugFormat("START Processing project {0} with {1} machines", project.Key.id, project.Value.Count);
 
-        var geofenceUids = LandfillDb.GetGeofences(project.Key.id).Select(g => g.uid.ToString()).ToList();
+        var geofenceUids = LandfillDb.GetGeofences(project.Key.projectUid).Select(g => g.uid.ToString()).ToList();
         var geofences = GetGeofenceBoundaries(project.Key.id, geofenceUids);
 
         var machineIds = project.Value.ToDictionary(m => m, m => LandfillDb.GetMachineId(m));

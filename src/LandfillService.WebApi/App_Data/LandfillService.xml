@@ -828,11 +828,15 @@
             <param name="geofenceUid">Geofence UID</param>
             <returns>List of WGS84 boundary points in radians</returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCARatio(System.UInt32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCARatio(System.UInt32,System.Nullable{System.Guid},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
-            Gets CCA ratio summary for a landfill project for all machines.
+            Gets CCA ratio for a landfill project for all machines. If geofenceUid is not specified, 
+            CCA data for the entire project area is returned otherwise CCA data for the geofenced area is returned.
+            If no date range specified, returns CCA data for the last 2 years to today in the project time zone
+            otherwise returns CCA data for the specified date range.
             </summary>
             <param name="id">Project ID</param>
+            <param name="geofenceUid">Geofence UID</param>
             <param name="startDate">Start date in project time zone for which to return data</param>
             <param name="endDate">End date in project time zone for which to return data</param>
             <returns>List of machines and daily CCA ratio</returns>
