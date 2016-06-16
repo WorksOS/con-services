@@ -60,16 +60,7 @@ namespace VSS.Project.Data
         project.LastActionedUTC = projectEvent.ActionUTC;
         eventType = "AssociateProjectCustomerEvent";   
       }
-      else if (evt is DissociateProjectCustomer)
-      {
-        //TODO Do we realy need to support this?
-        var projectEvent = (DissociateProjectCustomer)evt;
-        project.ProjectUID = projectEvent.ProjectUID.ToString();
-        project.CustomerUID = projectEvent.CustomerUID.ToString();
-        project.LastActionedUTC = projectEvent.ActionUTC;
-        eventType = "DissociateProjectCustomerEvent";
-      }
-
+      //Ignore DissociateProjectCustomer (not used) and AssociateProjectGeofence (handled elsewhere)
       upsertedCount = UpsertProjectDetail(project, eventType);
       return upsertedCount;
     }
