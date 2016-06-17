@@ -472,10 +472,10 @@ namespace LandfillService.WebApi.Controllers
 
         #region CCA
         /// <summary>
-        /// Gets CCA ratio for a landfill project for all machines. If geofenceUid is not specified, 
-        /// CCA data for the entire project area is returned otherwise CCA data for the geofenced area is returned.
-        /// If no date range specified, returns CCA data for the last 2 years to today in the project time zone
-        /// otherwise returns CCA data for the specified date range.
+        /// Gets CCA ratio data on a daily basis for a landfill project for all machines. If geofenceUid is not specified, 
+        /// CCA ratio data for the entire project area is returned otherwise CCA ratio data for the geofenced area is returned.
+        /// If no date range specified, returns CCA ratio data for the last 2 years to today in the project time zone
+        /// otherwise returns CCA ratio data for the specified date range.
         /// </summary>
         /// <param name="id">Project ID</param>
         /// <param name="geofenceUid">Geofence UID</param>
@@ -491,12 +491,12 @@ namespace LandfillService.WebApi.Controllers
           {
             throw new HttpResponseException(HttpStatusCode.Forbidden);
           }
-          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving CCA %");
+          LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving CCA Ratio");
 
           try
           {
             var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
-            var ccaData = LandfillDb.GetCCA(project, geofenceUid.HasValue ? geofenceUid.ToString() : null, startDate, endDate);
+            var ccaData = LandfillDb.GetCCA(project, geofenceUid.HasValue ? geofenceUid.ToString() : null, startDate, endDate, null, null);
             var groupedData = ccaData.GroupBy(c => c.machineId).ToDictionary(k => k.Key, v => v.ToList());
             var data = groupedData.Select(d => new CCARatioData
                   {
@@ -513,6 +513,124 @@ namespace LandfillService.WebApi.Controllers
             return Ok();
           }
         }
-        #endregion
+
+        /// <summary>
+        /// Gets CCA summary data for a landfill project for the specified date. If geofenceUid is not specified, 
+        /// CCA summary data for the entire project area is returned otherwise CCA data for the geofenced area is returned.
+        /// If machine (asset ID, machine name and John Doe flag) is not specified, returns data for all machines 
+        /// else for the specified machine. If lift ID is not specified returns data for all lifts else for the specified lift.
+        /// </summary>
+        /// <param name="id">Project ID</param>
+        /// <param name="date">Date in project time zone for which to return data</param>
+        /// <param name="geofenceUid">Geofence UID</param>
+        /// <param name="assetId">Asset ID (from MachineDetails)</param>
+        /// <param name="machineName">Machine name (from MachineDetails)</param>
+        /// <param name="isJohnDoe">IsJohnDoe flag (from MachineDetails)</param>
+        /// <param name="liftId">Lift/Layer ID</param>
+        /// <returns>CCA summary for the date</returns>
+      [Route("{id}/ccasummary")]
+      public IHttpActionResult GetCCASummary(uint id, DateTime? date, Guid? geofenceUid = null,
+          uint? assetId = null, string machineName = null, bool? isJohnDoe = null, int? liftId = null)
+      {
+        //NOTE: CCA summary is not cumulative. 
+        //If data for more than one day is required, client must call Raptor service directly
+
+        var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+        //Secure with project list
+        if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+        {
+          throw new HttpResponseException(HttpStatusCode.Forbidden);
+        }
+        LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving CCA Summary");
+
+        if (!date.HasValue)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+                  new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+                      "Missing date"));           
+        }
+
+        bool gotMachine = assetId.HasValue && isJohnDoe.HasValue && !string.IsNullOrEmpty(machineName);
+        bool noMachine = !assetId.HasValue && !isJohnDoe.HasValue && string.IsNullOrEmpty(machineName);
+        if (!gotMachine && !noMachine)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+                  "Either all or none of the machine details parameters must be provided"));
+        }
+
+        try
+        {
+          var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
+          long? machineId = noMachine ? (long?)null :
+              LandfillDb.GetMachineId(new MachineDetails
+                                      {
+                                          assetId = assetId.Value,
+                                          machineName = machineName,
+                                          isJohnDoe = isJohnDoe.Value
+                                      });
+          var ccaData = LandfillDb.GetCCA(project, geofenceUid.HasValue ? geofenceUid.ToString() : null, date, date, machineId, liftId);
+          //var groupedData = ccaData.GroupBy(c => c.machineId).ToDictionary(k => k.Key, v => v.ToList());
+          var data = ccaData.Select(d => new CCASummaryData()
+          {
+            machineName = LandfillDb.GetMachine(d.machineId).machineName,
+            liftId = d.liftId,
+            incomplete = d.complete,
+            complete = d.complete,
+            overcomplete = d.overcomplete
+          }).ToList();
+          return Ok(data);
+        }
+        catch (InvalidOperationException)
+        {
+          return Ok();
+        }
+      }
+
+      /// <summary>
+      /// Gets a list of machines and lifts for a landfill project. If no date range specified, 
+      /// the last 2 years to today in the project time zone is used.
+      /// </summary>
+      /// <param name="id">Project ID</param>
+      /// <param name="startDate">Start date in project time zone for which to return data</param>
+      /// <param name="endDate">End date in project time zone for which to return data</param>
+      /// <returns>List of machines and lifts</returns>
+      [Route("{id}/machinelifts")]
+      public IHttpActionResult GetMachineLifts(uint id, DateTime? startDate = null, DateTime? endDate = null)
+      {
+        var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+        //Secure with project list
+        if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+        {
+          throw new HttpResponseException(HttpStatusCode.Forbidden);
+        }
+        LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving Machines and lifts");
+
+        try
+        {
+          var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
+
+          var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
+
+          DateTime utcNow = DateTime.UtcNow;
+          Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
+          if (!startDate.HasValue)
+            startDate = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;//today in project time zone
+          if (!endDate.HasValue)
+            endDate = startDate.Value.AddYears(-2);
+          DateTime startUtc = startDate.Value - projTimeZoneOffsetFromUtc.ToTimeSpan();
+          DateTime endUtc = endDate.Value - projTimeZoneOffsetFromUtc.ToTimeSpan();
+          Task<MachineLiftDetails[]> result = raptorApiClient.GetMachineLiftList(userUid, project, startUtc, endUtc);
+          List<MachineLiftDetails> machines = result.Result.ToList();
+
+          return Ok(machines);
+        }
+        catch (InvalidOperationException)
+        {
+          return Ok();
+        }
+      }
+
+      #endregion
     }
 }

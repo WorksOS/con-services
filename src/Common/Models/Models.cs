@@ -141,6 +141,18 @@ namespace LandfillService.Common.Models
     }
 
     /// <summary>
+    /// CCA summary representation for a machine
+    /// </summary>
+    public class CCASummaryData
+    {
+      public string machineName { get; set; }
+      public int? liftId { get; set; }
+      public double incomplete { get; set; }
+      public double complete { get; set; }
+      public double overcomplete { get; set; }
+    }
+
+    /// <summary>
     /// Represents a CCA entry from the database
     /// </summary>
     public class CCA

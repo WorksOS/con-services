@@ -69,11 +69,11 @@ namespace LandFillServiceDataSynchronizer
     private Dictionary<Project, List<MachineLiftDetails>> GetListOfMachinesToProcess(DateTime utcDate)
     {
       //Use same criteria as volumes to select projects to process. 
-      //No point in getting CCA if no weights or volumes and therefoe density data.
+      //No point in getting CCA if no weights or volumes and therefore no density data.
       var projects = GetListOfProjectsToRetrieve();
-      Log.DebugFormat("Got {0} projects to process for CCA", projects.Count);
+      Log.DebugFormat("Got {0} projects to process for CCA for UTC date {1}", projects.Count, utcDate);
       Dictionary<Project, List<MachineLiftDetails>> machines = projects.ToDictionary(project => project,
-          project => raptorApiClient.GetMachineLiftList(userId, project, utcDate).Result.ToList());
+          project => raptorApiClient.GetMachineLiftList(userId, project, utcDate.Date, utcDate.Date.AddDays(1).AddMilliseconds(-1)).Result.ToList());
       Log.DebugFormat("Got {0} machines to process for CCA", machines.Count);
 
       return machines;

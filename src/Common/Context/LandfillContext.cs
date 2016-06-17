@@ -353,7 +353,7 @@ namespace LandfillService.Common.Context
 
         /// <summary>
         /// Retrieves data entries for a given project. If date range is not specified, returns data 
-        /// for 2 years ago to today in poject time zone. If geofence is not specified returns data for 
+        /// for 2 years ago to today in project time zone. If geofence is not specified returns data for 
         /// entire project area otherwise for geofenced area.
         /// </summary>
         /// <param name="project">Project</param>
@@ -684,15 +684,18 @@ namespace LandfillService.Common.Context
 
       /// <summary>
       /// Gets CCA data for the project for all machines for all lifts. If date range is not specified, returns data 
-      /// for 2 years ago to today in poject time zone. If geofence is not specified returns data for 
-      /// entire project area otherwise for geofenced area.
+      /// for 2 years ago to today in project time zone. If geofence is not specified returns data for 
+      /// entire project area otherwise for geofenced area. If machineId is not specified returns data for all machines.
+      /// If liftId is not specified returns data for all lifts.
       /// </summary>
       /// <param name="project">Project</param>
       /// <param name="geofenceUid">Geofence UID</param>
       /// <param name="startDate">Start date in project time zone</param>
-      /// <param name="endDate">End date in project time zone</param>
-      /// <returns>A list of CCA entries</returns>
-      public static IEnumerable<CCA> GetCCA(Project project, string geofenceUid, DateTime? startDate, DateTime? endDate)
+        /// <param name="endDate">End date in project time zone</param>
+        /// <param name="machineId">Machine ID</param>
+        /// <param name="liftId">Lift ID</param>
+        /// <returns>A list of CCA entries</returns>
+      public static IEnumerable<CCA> GetCCA(Project project, string geofenceUid, DateTime? startDate, DateTime? endDate, long? machineId, int? liftId)
       {
         string projectGeofenceUid = UpdateEntriesIfRequired(project, geofenceUid);
         if (string.IsNullOrEmpty(geofenceUid))
@@ -703,18 +706,32 @@ namespace LandfillService.Common.Context
           var dateRange = CheckDateRange(project.timeZoneName, startDate, endDate);
 
           //Get the actual data 
-          var actualData = new List<CCA>();
           var command = @"SELECT Date, MachineID, LiftID, Incomplete, Complete, Overcomplete FROM CCA 
                           WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
-                            AND ProjectUID = @projectUid AND GeofenceUID = @geofenceUid AND LiftID IS NULL
-                          ORDER BY MachineId, Date";
+                            AND ProjectUID = @projectUid AND GeofenceUID = @geofenceUid ";
+          if (machineId.HasValue)
+            command += " AND MachineID = @machineId ";
+          if (liftId.HasValue)
+            command += " AND LiftID = @liftId ";
+          else         
+            command += " AND LiftID IS NULL ";
+          
+          command += " ORDER BY MachineId, Date ";
+     
+          List<MySqlParameter> parms = new List<MySqlParameter>
+                                       {
+                                           new MySqlParameter("@projectUid", project.projectUid),
+                                           new MySqlParameter("@geofenceUid", geofenceUid),
+                                           new MySqlParameter("@startDate", dateRange.First()),
+                                           new MySqlParameter("@endDate", dateRange.Last())
+                                       };
+          if (machineId.HasValue)
+            parms.Add(new MySqlParameter("@machineId", machineId));
+          if (liftId.HasValue)
+            parms.Add(new MySqlParameter("@liftId", liftId));
 
-          using (var reader = MySqlHelper.ExecuteReader(conn, command,
-            new MySqlParameter("@projectUid", project.projectUid),
-            new MySqlParameter("@geofenceUid", geofenceUid),
-            new MySqlParameter("@startDate", dateRange.First()), 
-            new MySqlParameter("@endDate", dateRange.Last())
-            ))
+          var actualData = new List<CCA>();
+          using (var reader = MySqlHelper.ExecuteReader(conn, command, parms.ToArray()))
           {
             while (reader.Read())
             {
@@ -722,9 +739,9 @@ namespace LandfillService.Common.Context
                 new CCA
                 {
                   date = reader.GetDateTime(reader.GetOrdinal("Date")),
-                  geofenceUid = geofenceUid,
+                  geofenceUid = reader.GetString(reader.GetOrdinal("GeofenceUID")),
                   machineId = reader.GetUInt32(reader.GetOrdinal("MachineID")),
-                  liftId = null,//all lifts
+                  liftId = reader.GetInt16(reader.GetOrdinal("LiftID")),
                   incomplete = reader.IsDBNull(reader.GetOrdinal("Incomplete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Incomplete")),
                   complete = reader.IsDBNull(reader.GetOrdinal("Complete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Complete")),
                   overcomplete = reader.IsDBNull(reader.GetOrdinal("Overcomplete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Overcomplete"))
@@ -733,16 +750,16 @@ namespace LandfillService.Common.Context
           }
           //Now add the missing data for each machine
           var machineIds = actualData.Select(a => a.machineId).Distinct();
-          foreach (var machineId in machineIds)
+          foreach (var machId in machineIds)
           {
-            var actualDates = actualData.Where(a => a.machineId == machineId).Select(d => d.date);
+            var actualDates = actualData.Where(a => a.machineId == machId).Select(d => d.date);
             var missingData = (from dr in dateRange
                                  where !actualDates.Contains(dr.Date)
                                  select new CCA
                                         {
                                             date = dr.Date,
                                             geofenceUid = geofenceUid,
-                                            machineId = machineId,
+                                            machineId = machId,
                                             liftId = null,
                                             incomplete = 0,
                                             complete = 0,

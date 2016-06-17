@@ -830,16 +830,42 @@
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCARatio(System.UInt32,System.Nullable{System.Guid},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
             <summary>
-            Gets CCA ratio for a landfill project for all machines. If geofenceUid is not specified, 
-            CCA data for the entire project area is returned otherwise CCA data for the geofenced area is returned.
-            If no date range specified, returns CCA data for the last 2 years to today in the project time zone
-            otherwise returns CCA data for the specified date range.
+            Gets CCA ratio data on a daily basis for a landfill project for all machines. If geofenceUid is not specified, 
+            CCA ratio data for the entire project area is returned otherwise CCA ratio data for the geofenced area is returned.
+            If no date range specified, returns CCA ratio data for the last 2 years to today in the project time zone
+            otherwise returns CCA ratio data for the specified date range.
             </summary>
             <param name="id">Project ID</param>
             <param name="geofenceUid">Geofence UID</param>
             <param name="startDate">Start date in project time zone for which to return data</param>
             <param name="endDate">End date in project time zone for which to return data</param>
             <returns>List of machines and daily CCA ratio</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetCCASummary(System.UInt32,System.Nullable{System.DateTime},System.Nullable{System.Guid},System.Nullable{System.UInt32},System.String,System.Nullable{System.Boolean},System.Nullable{System.Int32})">
+            <summary>
+            Gets CCA summary data for a landfill project for the specified date. If geofenceUid is not specified, 
+            CCA summary data for the entire project area is returned otherwise CCA data for the geofenced area is returned.
+            If machine (asset ID, machine name and John Doe flag) is not specified, returns data for all machines 
+            else for the specified machine. If lift ID is not specified returns data for all lifts else for the specified lift.
+            </summary>
+            <param name="id">Project ID</param>
+            <param name="date">Date in project time zone for which to return data</param>
+            <param name="geofenceUid">Geofence UID</param>
+            <param name="assetId">Asset ID (from MachineDetails)</param>
+            <param name="machineName">Machine name (from MachineDetails)</param>
+            <param name="isJohnDoe">IsJohnDoe flag (from MachineDetails)</param>
+            <param name="liftId">Lift/Layer ID</param>
+            <returns>CCA summary for the date</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetMachineLifts(System.UInt32,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+            <summary>
+            Gets a list of machines and lifts for a landfill project. If no date range specified, 
+            the last 2 years to today in the project time zone is used.
+            </summary>
+            <param name="id">Project ID</param>
+            <param name="startDate">Start date in project time zone for which to return data</param>
+            <param name="endDate">End date in project time zone for which to return data</param>
+            <returns>List of machines and lifts</returns>
         </member>
     </members>
 </doc>

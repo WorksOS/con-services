@@ -317,16 +317,15 @@ namespace LandfillService.Common.ApiClients
         }
 
       /// <summary>
-      /// Rerieves a list of machines and lifts for the project for the given date
+      /// Rerieves a list of machines and lifts for the project for the given date range
       /// </summary>
       /// <param name="userUid">User ID</param>
       /// <param name="project">Project</param>
-      /// <param name="date">Date in project time zone</param>
+      /// <param name="startUtc">UTC start date</param>
+      /// <param name="endUtc">UTC end date</param>
       /// <returns></returns>
-      public async Task<MachineLiftDetails[]> GetMachineLiftList(string userUid, Project project, DateTime utcDate)
+      public async Task<MachineLiftDetails[]> GetMachineLiftList(string userUid, Project project, DateTime startUtc, DateTime endUtc)
       {
-        var startUtc = utcDate.Date;
-        var endUtc = startUtc.AddDays(1).AddMilliseconds(-1);
         string url = string.Format("{0}projects/{1}/machinelifts?startUtc={2}&endUtc={3}", 
           this.prodDataEndpoint, project.id, startUtc, endUtc);
         return ParseResponse<MachineLiftDetails[]>(await Request(url, HttpMethod.Get, userUid, null));
