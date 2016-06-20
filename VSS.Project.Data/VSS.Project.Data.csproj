@@ -56,6 +56,10 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1230.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1230.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\DapperHelper.cs" />
@@ -65,6 +69,7 @@
     <Compile Include="Interfaces\IProjectEvent.cs" />
     <Compile Include="Interfaces\IProjectService.cs" />
     <Compile Include="Models\AssociateProjectCustomer.cs" />
+    <Compile Include="Models\AssociateProjectGeofence.cs" />
     <Compile Include="Models\CreateProjectEvent.cs" />
     <Compile Include="Models\DeleteProjectEvent.cs" />
     <Compile Include="Models\DissociateProjectCustomer.cs" />

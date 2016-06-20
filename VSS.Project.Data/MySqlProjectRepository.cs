@@ -82,8 +82,11 @@ namespace VSS.Project.Data
         project.lastActionedUtc = projectEvent.ActionUTC;
         eventType = "DissociateProjectCustomerEvent";
       }
-
-      upsertedCount = UpsertProjectDetail(project, eventType);
+      //Currently AssociateProjectGeofence is ignored here (not needed for Project MDM)
+      if (eventType != "Unknown")
+      {
+        upsertedCount = UpsertProjectDetail(project, eventType);
+      }
       return upsertedCount;
     }
 

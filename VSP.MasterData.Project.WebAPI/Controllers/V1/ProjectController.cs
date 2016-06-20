@@ -255,5 +255,36 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       }
     }
 
+    /// <summary>
+    /// Associate geofence and project
+    /// </summary>
+    /// <param name="geofenceProject">Geofence - project</param>
+    /// <remarks>Associate geofence and project</remarks>
+    /// <response code="200">Ok</response>
+    /// <response code="500">Internal Server Error</response>
+    [HttpPost]
+    [Route("AssociateGeofence")]
+    public IHttpActionResult AssociateGeofenceProject([FromBody] AssociateProjectGeofence geofenceProject)
+    {
+      try
+      {
+        geofenceProject.ReceivedUTC = DateTime.UtcNow;
+        var messagePayload = new JsonHelper().SerializeObjectToJson(new { AssociateProjectGeofence = geofenceProject });
+
+        var producerRecord = new ProducerRecord(ConfigurationManager.AppSettings["KafkaTopicName"], messagePayload);
+        _producer.send(producerRecord).get();
+
+        var json = JObject.Parse(messagePayload);
+        _projectService.StoreProject(JsonConvert.DeserializeObject<VSS.Project.Data.Models.AssociateProjectGeofence>(json.SelectToken("AssociateProjectGeofence").ToString()));
+
+        return Ok();
+      }
+      catch (Exception ex)
+      {
+        Log.IfError(ex.Message + ex.StackTrace);
+        return InternalServerError(ex);
+      }
+    }
+
   }
 }
