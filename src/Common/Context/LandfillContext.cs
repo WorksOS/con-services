@@ -703,10 +703,12 @@ namespace LandfillService.Common.Context
 
         return WithConnection((conn) =>
         {
-          var dateRange = CheckDateRange(project.timeZoneName, startDate, endDate);
+          var dateRange = CheckDateRange(project.timeZoneName, startDate, endDate).ToList();
+          var firstDate = dateRange.First();
+          var lastDate = dateRange.Last();
 
           //Get the actual data 
-          var command = @"SELECT Date, MachineID, LiftID, Incomplete, Complete, Overcomplete FROM CCA 
+          var command = @"SELECT Date, GeofenceUID, MachineID, LiftID, Incomplete, Complete, Overcomplete FROM CCA 
                           WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
                             AND ProjectUID = @projectUid AND GeofenceUID = @geofenceUid ";
           if (machineId.HasValue)
@@ -722,8 +724,8 @@ namespace LandfillService.Common.Context
                                        {
                                            new MySqlParameter("@projectUid", project.projectUid),
                                            new MySqlParameter("@geofenceUid", geofenceUid),
-                                           new MySqlParameter("@startDate", dateRange.First()),
-                                           new MySqlParameter("@endDate", dateRange.Last())
+                                           new MySqlParameter("@startDate", firstDate),
+                                           new MySqlParameter("@endDate", lastDate)
                                        };
           if (machineId.HasValue)
             parms.Add(new MySqlParameter("@machineId", machineId));
@@ -741,7 +743,7 @@ namespace LandfillService.Common.Context
                   date = reader.GetDateTime(reader.GetOrdinal("Date")),
                   geofenceUid = reader.GetString(reader.GetOrdinal("GeofenceUID")),
                   machineId = reader.GetUInt32(reader.GetOrdinal("MachineID")),
-                  liftId = reader.GetInt16(reader.GetOrdinal("LiftID")),
+                  liftId = reader.IsDBNull(reader.GetOrdinal("LiftID")) ? (int?)null : reader.GetInt16(reader.GetOrdinal("LiftID")),
                   incomplete = reader.IsDBNull(reader.GetOrdinal("Incomplete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Incomplete")),
                   complete = reader.IsDBNull(reader.GetOrdinal("Complete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Complete")),
                   overcomplete = reader.IsDBNull(reader.GetOrdinal("Overcomplete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Overcomplete"))
@@ -749,7 +751,7 @@ namespace LandfillService.Common.Context
             }
           }
           //Now add the missing data for each machine
-          var machineIds = actualData.Select(a => a.machineId).Distinct();
+          var machineIds = actualData.Select(a => a.machineId).Distinct().ToList();
           foreach (var machId in machineIds)
           {
             var actualDates = actualData.Where(a => a.machineId == machId).Select(d => d.date);

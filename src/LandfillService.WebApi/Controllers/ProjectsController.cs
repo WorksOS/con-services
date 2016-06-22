@@ -620,8 +620,7 @@ namespace LandfillService.WebApi.Controllers
             endDate = startDate.Value.AddYears(-2);
           DateTime startUtc = startDate.Value - projTimeZoneOffsetFromUtc.ToTimeSpan();
           DateTime endUtc = endDate.Value - projTimeZoneOffsetFromUtc.ToTimeSpan();
-          Task<MachineLiftDetails[]> result = raptorApiClient.GetMachineLiftList(userUid, project, startUtc, endUtc);
-          List<MachineLiftDetails> machines = result.Result.ToList();
+          MachineLiftDetails[] machines = raptorApiClient.GetMachineLiftList(userUid, project, startUtc, endUtc);
 
           return Ok(machines);
         }

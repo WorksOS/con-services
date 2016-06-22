@@ -1,4 +1,5 @@
-﻿using LandfillService.Common.Context;
+﻿using System.Globalization;
+using LandfillService.Common.Context;
 using LandfillService.Common.Models;
 using log4net;
 using Newtonsoft.Json;
@@ -230,7 +231,7 @@ namespace LandfillService.Common.ApiClients
 
           //use only utc dates and times in the service contracts. Ignore time for now.
           var utcDateTime = date.Date.Add(-hwZone.BaseUtcOffset);
-          Log.DebugFormat("UTC time range in CCA request: {0} - {1}", utcDateTime.ToString(), utcDateTime.AddDays(1).ToString());
+          Log.DebugFormat("UTC time range in CCA request: {0} - {1}", utcDateTime, utcDateTime.AddDays(1));
 
           startUtc = utcDateTime;
           endUtc = utcDateTime.AddDays(1).AddMinutes(-1);
@@ -317,19 +318,61 @@ namespace LandfillService.Common.ApiClients
         }
 
       /// <summary>
-      /// Rerieves a list of machines and lifts for the project for the given date range
+      /// Retrieves a list of machines and lifts for the project for the given date range
       /// </summary>
       /// <param name="userUid">User ID</param>
       /// <param name="project">Project</param>
       /// <param name="startUtc">UTC start date</param>
       /// <param name="endUtc">UTC end date</param>
       /// <returns></returns>
-      public async Task<MachineLiftDetails[]> GetMachineLiftList(string userUid, Project project, DateTime startUtc, DateTime endUtc)
-      {
-        string url = string.Format("{0}projects/{1}/machinelifts?startUtc={2}&endUtc={3}", 
-          this.prodDataEndpoint, project.id, startUtc, endUtc);
-        return ParseResponse<MachineLiftDetails[]>(await Request(url, HttpMethod.Get, userUid, null));
+      private async Task<MachineLiftDetails[]> GetMachineLiftListAsync(string userUid, Project project, DateTime startUtc, DateTime endUtc)
+      {        
+          string url = string.Format("{0}projects/{1}/machinelifts?startUtc={2}&endUtc={3}",
+              this.prodDataEndpoint, project.id, FormatUtcDate(startUtc), FormatUtcDate(endUtc));
+          return ParseResponse<MachineLiftDetails[]>(Request(url, HttpMethod.Get, userUid, null).Result);
+      }
 
+      /// <summary>
+      /// Retrieves a list of machines and lifts for the project for the given date range
+      /// </summary>
+      /// <param name="userUid">User ID</param>
+      /// <param name="project">Project</param>
+      /// <param name="startUtc">UTC start date</param>
+      /// <param name="endUtc">UTC end date</param>
+      /// <returns></returns>
+      public MachineLiftDetails[] GetMachineLiftList(string userUid, Project project, DateTime startUtc, DateTime endUtc)
+      {
+        //TODO: We should retry for 400 error - means Raptor is down
+        try
+        {
+          var list = GetMachineLiftListAsync(userUid, project, startUtc, endUtc).Result;
+          return list;
+        }
+        catch (RaptorApiException e)
+        {
+          if (e.code == HttpStatusCode.BadRequest)
+          {
+            Log.Warn("RaptorApiException while retrieving machines & lifts: " + e.Message);
+          }
+        }
+        catch (Exception e)
+        {
+          Log.Error("Exception while retrieving machines & lifts: " + e.Message);
+        }
+        return new MachineLiftDetails[0];
+      }
+
+      /// <summary>
+      /// Formats UTC date in ISO 8601 format for Raptor Services Web API.
+      /// </summary>
+      /// <param name="utcDate">The UTC date to format</param>
+      /// <returns>ISO 8601 formatted date</returns>
+      private string FormatUtcDate(DateTime utcDate)
+      {
+        var dateUtc = new DateTime(utcDate.Ticks, DateTimeKind.Utc);
+        var utcStr = dateUtc.ToString("o", CultureInfo.InvariantCulture);
+        //Remove the trailing millisecs
+        return string.Format("{0}Z", utcStr.Remove(utcStr.IndexOf(".")));
       }
     }
 }

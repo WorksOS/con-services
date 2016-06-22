@@ -72,8 +72,12 @@ namespace LandFillServiceDataSynchronizer
       //No point in getting CCA if no weights or volumes and therefore no density data.
       var projects = GetListOfProjectsToRetrieve();
       Log.DebugFormat("Got {0} projects to process for CCA for UTC date {1}", projects.Count, utcDate);
+
+      //TODO: CHeck with Dmitry - does it matter if GetMachineLiftList is synchronous?
+      //or should it be async so does multiple projects at once?
+
       Dictionary<Project, List<MachineLiftDetails>> machines = projects.ToDictionary(project => project,
-          project => raptorApiClient.GetMachineLiftList(userId, project, utcDate.Date, utcDate.Date.AddDays(1).AddMilliseconds(-1)).Result.ToList());
+          project => raptorApiClient.GetMachineLiftList(userId, project, utcDate.Date, utcDate.Date.AddDays(1).AddMilliseconds(-1)).ToList());
       Log.DebugFormat("Got {0} machines to process for CCA", machines.Count);
 
       return machines;
