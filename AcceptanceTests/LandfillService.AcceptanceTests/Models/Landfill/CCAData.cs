@@ -7,20 +7,46 @@ using System.Threading.Tasks;
 namespace LandfillService.AcceptanceTests.Models.Landfill
 {
     /// <summary>
-    /// An entry for CCA for a machine 
+    /// A CCA ratio for a machine for one day (for all lifts)
     /// </summary>
-    public class CCAEntry
+    public class CCARatioEntry
     {
         public DateTime date { get; set; }
-        public double ccaPercent { get; set; }
+        public double ccaRatio { get; set; }
     }
 
     /// <summary>
-    /// CCA% representation for a machine
+    /// CCA ratio representation for a machine
     /// </summary>
-    public class CCAData
+    public class CCARatioData
     {
         public string machineName { get; set; }
-        public IEnumerable<CCAEntry> entries { get; set; }
+        public IEnumerable<CCARatioEntry> entries { get; set; }
+    }
+
+    /// <summary>
+    /// CCA summary representation for a machine
+    /// </summary>
+    public class CCASummaryData
+    {
+        public string machineName { get; set; }
+        public int? liftId { get; set; }
+        public double incomplete { get; set; }
+        public double complete { get; set; }
+        public double overcomplete { get; set; }
+    }
+
+    /// <summary>
+    /// Represents a CCA entry from the database
+    /// </summary>
+    public class CCA
+    {
+        public string geofenceUid { get; set; }
+        public DateTime date { get; set; }
+        public long machineId { get; set; }
+        public int? liftId { get; set; }
+        public double incomplete { get; set; }
+        public double complete { get; set; }
+        public double overcomplete { get; set; }
     }
 }

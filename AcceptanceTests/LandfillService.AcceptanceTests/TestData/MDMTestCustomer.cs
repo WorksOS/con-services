@@ -62,6 +62,24 @@ namespace LandfillService.AcceptanceTests.TestData
                 };
             }
         }
+        public static MDMTestCustomer Maddington
+        {
+            get
+            {
+                return new MDMTestCustomer()
+                {
+                    UserUid = Guid.NewGuid(),
+                    CustomerUid = Guid.NewGuid(),
+                    ProjectUid = Guid.NewGuid(),
+                    ProjectName = "Maddington-" + DateTime.Now.ToString("yyyyMMddhhmmss"),
+                    SubscriptionUid = Guid.NewGuid(),
+                    ProjectGeofenceUid = Guid.NewGuid(),
+                    ProjectGeofenceBoundary = "POLYGON((-43.539849 172.582082,-43.539663 172.608604,-43.549866 172.608346,-43.549990 172.582511))",
+                    LandfillGeofences = new List<Site>(),
+                    IsCreated = false
+                };
+            }
+        }
 
         public void Create()
         {
