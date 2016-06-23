@@ -37,6 +37,17 @@ namespace LandfillService.AcceptanceTests.Utils
                 return 0;
             }
         }
+        public static int GetTheHighestMachineId()
+        {
+            try
+            {
+                return Convert.ToInt32(ExecuteMySqlQueryResult(Config.MySqlConnString, "SELECT max(ID) FROM " + Config.MySqlDbName + ".Machine"));
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
 
         public static bool WaitForProjectToBeCreated(string projectName)
         {

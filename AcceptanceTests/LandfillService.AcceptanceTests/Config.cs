@@ -73,6 +73,7 @@ namespace LandfillService.AcceptanceTests
             return string.Format("{0}/api/v2/projects/{1}?geofenceUid={2}&startDate={3}&endDate={4}",
                 LandfillBaseUri, projectId, geofenceUidStr, startDateStr, endDateStr);
         }
+
         /// <summary>
         /// Returns the weights for all geofences for the project for the date range of the last 2 years to today in the project time zone.
         /// </summary>
@@ -87,13 +88,15 @@ namespace LandfillService.AcceptanceTests
         {
             return string.Format("{0}/api/v2/projects/{1}/weights?geofenceUid={2}", LandfillBaseUri, projectId, geofenceUid);
         }
+
         /// <summary>
         /// Gets volume and time summary for a landfill project.
         /// </summary>
-        public static string ConstructGetVolumesUri(uint projectId)
+        public static string ConstructGetVolumeTimeUri(uint projectId)
         {
             return string.Format("{0}/api/v2/projects/{1}/volumeTime", LandfillBaseUri, projectId);
         }
+
         /// <summary>
         /// Returns a list of geofences for the project. A geofence is associated with a project if its boundary is 
         /// inside or intersects that of the project and it is of type 'Landfill'. The project geofence is also returned.
@@ -109,14 +112,52 @@ namespace LandfillService.AcceptanceTests
         {
             return string.Format("{0}/api/v2/projects/{1}/geofences/{2}", LandfillBaseUri, projectId, geofenceUid);
         }
+
+        /// <summary>
+        /// Gets CCA ratio data on a daily basis for a landfill project for all machines. If geofenceUid is not specified, 
+        /// CCA ratio data for the entire project area is returned otherwise CCA ratio data for the geofenced area is returned. 
+        /// If no date range specified, returns CCA ratio data for the last 2 years to today in the project time zone otherwise 
+        /// returns CCA ratio data for the specified date range.
+        /// </summary>
+        public static string ConstructGetCcaRatioUri(uint projectId, Guid? geofenceUid = null, 
+            DateTime? startDate = null, DateTime? endDate = null)
+        {
+            return string.Format("{0}/api/v2/projects/{1}/ccaratio?geofenceUid={2}&startDate={3}&endDate={4}",
+                LandfillBaseUri, 
+                projectId, 
+                geofenceUid == null ? "" : geofenceUid.ToString(),
+                startDate == null ? "" : ((DateTime)startDate).ToString("yyyy-MM-dd"),
+                endDate == null ? "" : ((DateTime)endDate).ToString("yyyy-MM-dd"));
+        }
         /// <summary>
         /// Gets CCA summary for a landfill project.
         /// </summary>
-        public static string ConstructGetCcaSummaryUri(uint projectId, DateTime startDate, DateTime endDate)
+        public static string ConstructGetCcaSummaryUri(uint projectId, DateTime? date = null, Guid? geofenceUid = null,
+            uint? assetId = null, string machineName = null, bool? isJohnDoe = null, int? liftId = null)
         {
-            return string.Format("{0}/api/v2/projects/{1}/cca?startDate={2}&endDate={3}",
-                LandfillBaseUri, projectId, startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"));
-        } 
+            return string.Format("{0}/api/v2/projects/{1}/ccasummary?date={2}&geofenceUid={3}&assetId={4}&machineName={5}&isJohnDoe={6}&liftId={7}",
+                LandfillBaseUri, 
+                projectId,
+                date == null ? "" : ((DateTime)date).ToString("yyyy-MM-dd"),
+                geofenceUid == null ? "" : geofenceUid.ToString(), 
+                assetId == null ? "" : assetId.ToString(), 
+                machineName == null ? "" : machineName, 
+                isJohnDoe == null ? "" : isJohnDoe.ToString(), 
+                liftId == null ? "" : liftId.ToString());
+        }
+
+        /// <summary>
+        /// Gets a list of machines and lifts for a landfill project. If no date range specified, 
+        /// the last 2 years to today in the project time zone is used.
+        /// </summary>
+        public static string ConstructGetMachineLifts(uint projectId, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            return string.Format("{0}/api/v2/projects/{1}/machinelifts?startDate={2}&endDate={3}",
+                LandfillBaseUri, 
+                projectId,
+                startDate == null ? "" : ((DateTime)startDate).ToString("yyyy-MM-dd"),
+                endDate == null ? "" : ((DateTime)startDate).ToString("yyyy-MM-dd"));
+        }
         #endregion
     }
 }
