@@ -233,12 +233,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CCA.feature</DependentUpon>
     </Compile>
+    <Compile Include="Scenarios\CCASteps.cs" />
     <Compile Include="Scenarios\MasterData.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MasterData.feature</DependentUpon>
     </Compile>
     <Compile Include="Scenarios\MasterDataSteps.cs" />
+    <Compile Include="Scenarios\ScenarioSupports\GeneralSlave.cs" />
     <Compile Include="Scenarios\ScenarioSupports\MasterDataSupport.cs" />
     <Compile Include="Models\Landfill\Project.cs" />
     <Compile Include="Models\Landfill\WeightEntry.cs" />
