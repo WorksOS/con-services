@@ -354,6 +354,7 @@ namespace LandfillService.Common.Models
       public List<WGSPoint> polygonLL;
       public List<MachineDetails> contributingMachines;
       public int? layerNumber;
+      public int? layerType;
 
       /// <summary>
       /// ToString override
@@ -432,6 +433,14 @@ namespace LandfillService.Common.Models
         return String.Format("under:{0}, complete:{1}, over:{2}", 
           this.incompletePercent, completePercent, this.overcompletePercent);
       }
+    }
+
+    /// <summary>
+    /// List of machines and lifts returned from the Raptor API
+    /// </summary>
+    public class MachineLayerIdsExecutionResult 
+    {
+      public MachineLiftDetails[] MachineLiftDetails { get; set; }
     }
 
     /// <summary>

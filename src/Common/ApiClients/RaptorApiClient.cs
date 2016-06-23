@@ -86,7 +86,7 @@ namespace LandfillService.Common.ApiClients
                 throw new RaptorApiException(response.StatusCode, response.ReasonPhrase);
             }
 
-            Log.DebugFormat("POST request succeeded");
+            Log.DebugFormat("{0} request succeeded", method);
             LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
 
             var responseContent = response.Content;
@@ -253,7 +253,15 @@ namespace LandfillService.Common.ApiClients
           ConvertToUtc(date, project.timeZoneName, out startUtc, out endUtc);
           Log.DebugFormat("UTC time range in CCA request: {0} - {1}", startUtc, endUtc);
 
-
+          //This is because we sometimes pass MachineLiftDetails and the serialization
+          //will do the derived class and RaptorServices complains about the extra properties.
+          MachineDetails details = new MachineDetails
+                                   {
+                                       assetId = machine.assetId,
+                                       machineName = machine.machineName,
+                                       isJohnDoe = machine.isJohnDoe
+                                   };
+           
           var ccaParams = new CCASummaryParams
           {
             projectId = project.id,
@@ -261,8 +269,9 @@ namespace LandfillService.Common.ApiClients
             {
               startUTC = startUtc,
               endUTC = endUtc,
-              contributingMachines = new List<MachineDetails>{machine},
+              contributingMachines = new List<MachineDetails>{details},
               layerNumber = liftId,
+              layerType = liftId.HasValue ? 1 : (int?)null, //1 = AutoMapReset
               polygonLL = geofence
             },         
           };
@@ -326,7 +335,7 @@ namespace LandfillService.Common.ApiClients
         /// <param name="startDate">Start date to retrieve machines and lifts for (in project time zone)</param>
         /// <param name="endDate">End date to retrieve machines and lifts for (in project time zone)</param>
         /// <returns>Machines and lifts</returns>
-      private async Task<List<MachineLiftDetails>> GetMachineLiftListAsync(string userUid, Project project, DateTime startDate, DateTime endDate)
+      private async Task<MachineLayerIdsExecutionResult> GetMachineLiftListAsync(string userUid, Project project, DateTime startDate, DateTime endDate)
       {
         DateTime startUtc1;
         DateTime endUtc1;
@@ -336,7 +345,7 @@ namespace LandfillService.Common.ApiClients
         ConvertToUtc(endDate, project.timeZoneName, out startUtc2, out endUtc2);
         string url = string.Format("{0}projects/{1}/machinelifts?startUtc={2}&endUtc={3}",
             this.prodDataEndpoint, project.id, FormatUtcDate(startUtc1), FormatUtcDate(endUtc2));
-        return ParseResponse<MachineLiftDetails[]>(Request(url, HttpMethod.Get, userUid, null).Result).ToList();
+        return ParseResponse<MachineLayerIdsExecutionResult>(await Request(url, HttpMethod.Get, userUid, null));
       }
 
       /// <summary>
@@ -351,7 +360,8 @@ namespace LandfillService.Common.ApiClients
       {
         try
         {
-          return await GetMachineLiftListAsync(userUid, project, startDate, endDate);
+          var result = await GetMachineLiftListAsync(userUid, project, startDate, endDate);
+          return result.MachineLiftDetails.ToList();
         }
         catch (RaptorApiException e)
         {

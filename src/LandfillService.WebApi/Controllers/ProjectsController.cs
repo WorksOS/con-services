@@ -596,7 +596,7 @@ namespace LandfillService.WebApi.Controllers
       /// <param name="endDate">End date in project time zone for which to return data</param>
       /// <returns>List of machines and lifts</returns>
       [Route("{id}/machinelifts")]
-      public IHttpActionResult GetMachineLifts(uint id, DateTime? startDate = null, DateTime? endDate = null)
+      public async Task<IHttpActionResult> GetMachineLifts(uint id, DateTime? startDate = null, DateTime? endDate = null)
       {
         var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
         //Secure with project list
@@ -614,14 +614,13 @@ namespace LandfillService.WebApi.Controllers
 
           DateTime utcNow = DateTime.UtcNow;
           Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
-          if (!startDate.HasValue)
-            startDate = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;//today in project time zone
           if (!endDate.HasValue)
-            endDate = startDate.Value.AddYears(-2);
+            endDate = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;//today in project time zone
+          if (!startDate.HasValue)
+            startDate = endDate.Value.AddYears(-2);
           //TODO: Use Landfill database CCA table rather than calling Raptor
-          List<MachineLiftDetails> machines = raptorApiClient.GetMachineLiftsInBackground(userUid, project, startDate.Value, endDate.Value).Result;
-
-          return Ok(machines);
+          var task = await raptorApiClient.GetMachineLiftsInBackground(userUid, project, startDate.Value, endDate.Value);
+          return Ok(task);
         }
         catch (InvalidOperationException)
         {

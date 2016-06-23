@@ -267,7 +267,7 @@ namespace LandfillService.Common.Context
 
 
       public static List<Project> GetListOfAvailableProjects()
-      {
+      {        
         return InTransaction((conn) =>
         {
           var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name
@@ -289,7 +289,7 @@ namespace LandfillService.Common.Context
             }
             return projects;
           }
-        });
+        });         
       }
 
         /// <summary>

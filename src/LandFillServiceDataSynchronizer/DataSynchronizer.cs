@@ -90,20 +90,27 @@ namespace LandFillServiceDataSynchronizer
         //Process CCA for scheduled date
         TimeZoneInfo hwZone = raptorApiClient.GetTimeZoneInfoForTzdbId(project.timeZoneName);
         var projDate = utcDate.Date.Add(hwZone.BaseUtcOffset);
+        var nowDate = DateTime.UtcNow.Date.Add(hwZone.BaseUtcOffset);
+        //In case we're backfilling...
+        while (projDate <= nowDate)
+        {
+          var machinesToProcess =
+              raptorApiClient.GetMachineLiftsInBackground(userId, project, projDate, projDate).Result;
+          Log.DebugFormat("Processing project {0} with {1} machines for date {2}", project.id, machinesToProcess.Count,
+              projDate);
 
-        var machinesToProcess = raptorApiClient.GetMachineLiftsInBackground(userId, project, projDate, projDate).Result;
-        Log.DebugFormat("Processing project {0} with {1} machines for date {2}", project.id, machinesToProcess.Count, projDate);
-
-        ProcessCCA(projDate, project, geofenceUids, geofences, machinesToProcess);
+          ProcessCCA(projDate, project, geofenceUids, geofences, machinesToProcess);
+          projDate = projDate.AddDays(1);
+        }
 
         //Process CCA for missing dates
         var missingDates = LandfillDb.GetDatesWithNoCCA(project);
         foreach (var missingDate in missingDates)
         {
-          machinesToProcess = raptorApiClient.GetMachineLiftsInBackground(userId, project, missingDate, missingDate).Result;
+          var machinesToProcess = raptorApiClient.GetMachineLiftsInBackground(userId, project, missingDate, missingDate).Result;
           Log.DebugFormat("Processing project {0} with {1} machines for missing date {2}", project.id, machinesToProcess.Count, missingDate);
 
-          ProcessCCA(projDate, project, geofenceUids, geofences, machinesToProcess);          
+          ProcessCCA(missingDate, project, geofenceUids, geofences, machinesToProcess);          
         }
 
         //Process unretrieved ones
