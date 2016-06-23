@@ -139,12 +139,13 @@ namespace LandfillService.Common.ApiClients
         /// <param name="project">VisionLink project to retrieve volumes for</param>
         /// <param name="date">Date to retrieve volumes for (in project time zone)</param>
         /// <param name="geofence">Geofence to retrieve volumes for. If not specified then volume retrieved for entire project area</param>
-        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
+        /// <returns>Summary volumes</returns>
         private async Task<SummaryVolumesResult> GetVolumesAsync(string userUid, Project project, DateTime date, List<WGSPoint> geofence)
         {
           DateTime startUtc;
           DateTime endUtc;
           ConvertToUtc(date, project.timeZoneName, out startUtc, out endUtc);
+          Log.DebugFormat("UTC time range in Volume request: {0} - {1}", startUtc, endUtc);
 
           var volumeParams = new VolumeParams
           {
@@ -217,7 +218,7 @@ namespace LandfillService.Common.ApiClients
           }
         }
 
-        private TimeZoneInfo GetTimeZoneInfoForTzdbId(string tzdbId)
+        public TimeZoneInfo GetTimeZoneInfoForTzdbId(string tzdbId)
         {
           var mappings = TzdbDateTimeZoneSource.Default.WindowsMapping.MapZones;
           var map = mappings.FirstOrDefault(x =>
@@ -231,8 +232,6 @@ namespace LandfillService.Common.ApiClients
 
           //use only utc dates and times in the service contracts. Ignore time for now.
           var utcDateTime = date.Date.Add(-hwZone.BaseUtcOffset);
-          Log.DebugFormat("UTC time range in CCA request: {0} - {1}", utcDateTime, utcDateTime.AddDays(1));
-
           startUtc = utcDateTime;
           endUtc = utcDateTime.AddDays(1).AddMinutes(-1);
         }
@@ -252,6 +251,8 @@ namespace LandfillService.Common.ApiClients
           DateTime startUtc;
           DateTime endUtc;
           ConvertToUtc(date, project.timeZoneName, out startUtc, out endUtc);
+          Log.DebugFormat("UTC time range in CCA request: {0} - {1}", startUtc, endUtc);
+
 
           var ccaParams = new CCASummaryParams
           {
@@ -318,35 +319,39 @@ namespace LandfillService.Common.ApiClients
         }
 
       /// <summary>
-      /// Retrieves a list of machines and lifts for the project for the given date range
+      /// Retrieves a list of machines and lifts for the project for the given date range.
       /// </summary>
       /// <param name="userUid">User ID</param>
-      /// <param name="project">Project</param>
-      /// <param name="startUtc">UTC start date</param>
-      /// <param name="endUtc">UTC end date</param>
-      /// <returns></returns>
-      private async Task<MachineLiftDetails[]> GetMachineLiftListAsync(string userUid, Project project, DateTime startUtc, DateTime endUtc)
-      {        
-          string url = string.Format("{0}projects/{1}/machinelifts?startUtc={2}&endUtc={3}",
-              this.prodDataEndpoint, project.id, FormatUtcDate(startUtc), FormatUtcDate(endUtc));
-          return ParseResponse<MachineLiftDetails[]>(Request(url, HttpMethod.Get, userUid, null).Result);
+      /// <param name="project">Project to retrieve machines and lifts for</param>
+        /// <param name="startDate">Start date to retrieve machines and lifts for (in project time zone)</param>
+        /// <param name="endDate">End date to retrieve machines and lifts for (in project time zone)</param>
+        /// <returns>Machines and lifts</returns>
+      private async Task<List<MachineLiftDetails>> GetMachineLiftListAsync(string userUid, Project project, DateTime startDate, DateTime endDate)
+      {
+        DateTime startUtc1;
+        DateTime endUtc1;
+        ConvertToUtc(startDate, project.timeZoneName, out startUtc1, out endUtc1);
+        DateTime startUtc2;
+        DateTime endUtc2;
+        ConvertToUtc(endDate, project.timeZoneName, out startUtc2, out endUtc2);
+        string url = string.Format("{0}projects/{1}/machinelifts?startUtc={2}&endUtc={3}",
+            this.prodDataEndpoint, project.id, FormatUtcDate(startUtc1), FormatUtcDate(endUtc2));
+        return ParseResponse<MachineLiftDetails[]>(Request(url, HttpMethod.Get, userUid, null).Result).ToList();
       }
 
       /// <summary>
-      /// Retrieves a list of machines and lifts for the project for the given date range
+      /// Retrieves a list of machines and lifts for the project for the given date range.
       /// </summary>
       /// <param name="userUid">User ID</param>
       /// <param name="project">Project</param>
-      /// <param name="startUtc">UTC start date</param>
-      /// <param name="endUtc">UTC end date</param>
-      /// <returns></returns>
-      public MachineLiftDetails[] GetMachineLiftList(string userUid, Project project, DateTime startUtc, DateTime endUtc)
+      /// <param name="startDate">Start date in project time zone</param>
+      /// <param name="endDate">End date in project time zone</param>
+      /// <returns>List of machines and lifts</returns>
+      public async Task<List<MachineLiftDetails>> GetMachineLiftsInBackground(string userUid, Project project, DateTime startDate, DateTime endDate)
       {
-        //TODO: We should retry for 400 error - means Raptor is down
         try
         {
-          var list = GetMachineLiftListAsync(userUid, project, startUtc, endUtc).Result;
-          return list;
+          return await GetMachineLiftListAsync(userUid, project, startDate, endDate);
         }
         catch (RaptorApiException e)
         {
@@ -359,7 +364,7 @@ namespace LandfillService.Common.ApiClients
         {
           Log.Error("Exception while retrieving machines & lifts: " + e.Message);
         }
-        return new MachineLiftDetails[0];
+        return new List<MachineLiftDetails>();
       }
 
       /// <summary>
