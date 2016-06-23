@@ -618,9 +618,8 @@ namespace LandfillService.WebApi.Controllers
             startDate = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;//today in project time zone
           if (!endDate.HasValue)
             endDate = startDate.Value.AddYears(-2);
-          DateTime startUtc = startDate.Value - projTimeZoneOffsetFromUtc.ToTimeSpan();
-          DateTime endUtc = endDate.Value - projTimeZoneOffsetFromUtc.ToTimeSpan();
-          MachineLiftDetails[] machines = raptorApiClient.GetMachineLiftList(userUid, project, startUtc, endUtc);
+          //TODO: Use Landfill database CCA table rather than calling Raptor
+          List<MachineLiftDetails> machines = raptorApiClient.GetMachineLiftsInBackground(userUid, project, startDate.Value, endDate.Value).Result;
 
           return Ok(machines);
         }

@@ -674,13 +674,47 @@ namespace LandfillService.Common.Context
                                    date = reader.GetDateTime(reader.GetOrdinal("Date")),
                                    geofenceUid = reader.GetString(reader.GetOrdinal("GeofenceUID")),
                                    machineId = reader.GetUInt32(reader.GetOrdinal("MachineID")),
-                                   liftId = reader.GetInt32(reader.GetOrdinal("LiftID"))
+                                   liftId = reader.IsDBNull(reader.GetOrdinal("LiftID")) ? (int?)null : reader.GetInt16(reader.GetOrdinal("LiftID"))
                                });
               }
               return ccaEntries;
             }
           });
         }
+      /// <summary>
+      /// Gets a list of dates with no CCA data used to retry retrieval.
+      /// </summary>
+      /// <param name="project">Project for which to retrieve data</param>
+      /// <returns>A list of dates</returns>
+      public static IEnumerable<DateTime> GetDatesWithNoCCA(Project project)
+      {
+        return WithConnection((conn) =>
+        {
+          var command = @"SELECT DISTINCT cca.Date FROM CCA cca 
+                          JOIN Geofence geo ON cca.GeofenceUID = geo.GeofenceUID
+                          WHERE cca.ProjectUID = @projectUid AND geo.IsDeleted = 0
+                          ORDER BY cca.Date";
+
+          //Get the dates that have actual data
+          var ccaDates = new List<DateTime>();
+          using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", project.projectUid)))
+          {
+            while (reader.Read())
+            {
+              ccaDates.Add(reader.GetDateTime(0));
+            }
+          }
+          //If no data at all, do nothing
+          if (ccaDates.Count == 0)
+            return ccaDates;
+
+          //This is the entire date range
+          var dateRange = CheckDateRange(project.timeZoneName, ccaDates.First(), ccaDates.Last()).ToList();
+          //Return missing dates
+          return (from dr in dateRange where !ccaDates.Contains(dr) select dr).ToList();
+
+        });       
+      }
 
       /// <summary>
       /// Gets CCA data for the project for all machines for all lifts. If date range is not specified, returns data 
@@ -762,7 +796,7 @@ namespace LandfillService.Common.Context
                                             date = dr.Date,
                                             geofenceUid = geofenceUid,
                                             machineId = machId,
-                                            liftId = null,
+                                            liftId = liftId,
                                             incomplete = 0,
                                             complete = 0,
                                             overcomplete = 0

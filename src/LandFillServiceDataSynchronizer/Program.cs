@@ -148,7 +148,13 @@ namespace LandFillServiceDataSynchronizer
 
       sleepTime = ConfigurationManager.AppSettings["HoursToSleepForCCA"];
       hoursToSleep = string.IsNullOrEmpty(sleepTime) ? 24 : double.Parse(sleepTime);
-      SyncCCATimer = new Timer(dataSync.RunUpdateCCAFromRaptor, DateTime.UtcNow.Date, TimeSpan.FromSeconds(5), TimeSpan.FromHours(hoursToSleep));
+      string startDate = ConfigurationManager.AppSettings["StartDateForCCA"];
+      DateTime startUtc = DateTime.UtcNow.Date;
+      if (!string.IsNullOrEmpty(startDate))
+      {
+        DateTime.TryParse(startDate, out startUtc);
+      }
+      SyncCCATimer = new Timer(dataSync.RunUpdateCCAFromRaptor, startUtc, TimeSpan.FromSeconds(5), TimeSpan.FromHours(hoursToSleep));
     }
 
     public void Stop()
