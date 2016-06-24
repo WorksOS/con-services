@@ -637,7 +637,7 @@ namespace LandfillService.Common.Context
                 new MySqlParameter("@projectUid", projectUid),
                 new MySqlParameter("@geofenceUid", geofenceUid),
                 new MySqlParameter("@machineId", machineId),
-                new MySqlParameter("@liftId", liftId),
+                new MySqlParameter("@liftId", (object)liftId ?? DBNull.Value),
                 new MySqlParameter("@date", date),
                 new MySqlParameter("@notRetrieved", notRetrieved ? 1 : 0),
                 new MySqlParameter("@notAvailable", notAvailable ? 1 : 0));
