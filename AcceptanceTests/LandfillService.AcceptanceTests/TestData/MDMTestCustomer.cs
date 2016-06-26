@@ -220,11 +220,14 @@ namespace LandfillService.AcceptanceTests.TestData
         {
             if (IsCreated)
             {
-                string response = RestClientUtil.DoHttpRequest(Config.ConstructGetProjectListUri(), "GET", RestClientConfig.JsonMediaType, null, Jwt.GetJwtToken(UserUid), HttpStatusCode.OK);
+                // get project id by web api request
+                string response = RestClientUtil.DoHttpRequest(Config.ConstructGetProjectListUri(), "GET", 
+                    RestClientConfig.JsonMediaType, null, Jwt.GetJwtToken(UserUid), HttpStatusCode.OK);
                 List<Project> projects = JsonConvert.DeserializeObject<List<Project>>(response);
                 uint projectId = projects.First(p => p.name == ProjectName).id;
 
-                response = RestClientUtil.DoHttpRequest(Config.ConstructGetGeofencesUri(projectId), "GET", RestClientConfig.JsonMediaType, null, Jwt.GetJwtToken(UserUid), HttpStatusCode.OK);
+                response = RestClientUtil.DoHttpRequest(Config.ConstructGetGeofencesUri(projectId), "GET", 
+                    RestClientConfig.JsonMediaType, null, Jwt.GetJwtToken(UserUid), HttpStatusCode.OK);
                 List<Geofence> geofences = JsonConvert.DeserializeObject<List<Geofence>>(response);
 
                 return geofences.Exists(g => g.uid == site.uid && g.name == site.name && g.type == (int)site.type);
