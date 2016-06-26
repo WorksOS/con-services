@@ -12,6 +12,7 @@ namespace VSS.Project.Data.Models
     public DateTime retrievalStartedAt { get; set; }
     public string projectUid { get; set; }
     public string customerUid { get; set; }
+    public long legacyCustomerId { get; set; }
     public string subscriptionUid { get; set; }
     public DateTime projectEndDate { get; set; }
     public DateTime projectStartDate { get; set; }

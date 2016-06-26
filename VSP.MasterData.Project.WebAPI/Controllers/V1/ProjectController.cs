@@ -20,7 +20,6 @@ using VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V1
 {
-  [RoutePrefix("v1")]
   public class ProjectV1Controller : ApiController
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -35,7 +34,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
       _projectService = projectRepo;
     }
 
-    [Route("")]
+    [Route("v1")]
     [HttpGet]
     public Dictionary<long, ProjectDescriptor> CreateProject()
     {
@@ -56,7 +55,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     /// <remarks>Create new project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
-    [Route("")]
+    [Route("v1")]
     [HttpPost]
     public IHttpActionResult CreateProject([FromBody] CreateProjectEvent project)
     {
@@ -90,7 +89,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     /// <remarks>Updates existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
-    [Route("")]
+    [Route("v1")]
     [HttpPut]
     public IHttpActionResult UpdateProject([FromBody] UpdateProjectEvent project)
     {
@@ -127,7 +126,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
 
-    [Route("")]
+    [Route("v1")]
     [HttpDelete]
     public IHttpActionResult DeleteProject(Guid projectUID, DateTime actionUTC)
     {
@@ -168,7 +167,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     /// <remarks>Create new project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
-    [Route("Restore")]
+    [Route("v1/Restore")]
     [HttpPost]
     public IHttpActionResult RestoreProject([FromBody] RestoreProjectEvent project)
     {
@@ -201,7 +200,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     /// <response code="200">Ok</response>
     /// <response code="500">Internal Server Error</response>
     [HttpPost]
-    [Route("AssociateCustomer")]
+    [Route("v2/AssociateCustomer")]
     public IHttpActionResult AssociateCustomerProject([FromBody] AssociateProjectCustomer customerProject)
     {
       try
@@ -234,7 +233,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     /// <response code="200">Ok</response>
     /// <response code="500">Internal Server Error</response>
     [HttpPost]
-    [Route("DissociateCustomer")]
+    [Route("v1/DissociateCustomer")]
     public IHttpActionResult DissociateCustomerProject([FromBody] DissociateProjectCustomer customerProject)
     {
       /*This is only for debugging no actual project can be diassociated*/
@@ -263,7 +262,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     /// <response code="200">Ok</response>
     /// <response code="500">Internal Server Error</response>
     [HttpPost]
-    [Route("AssociateGeofence")]
+    [Route("v1/AssociateGeofence")]
     public IHttpActionResult AssociateGeofenceProject([FromBody] AssociateProjectGeofence geofenceProject)
     {
       try

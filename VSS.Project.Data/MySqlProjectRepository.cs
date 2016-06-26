@@ -70,6 +70,7 @@ namespace VSS.Project.Data
         var projectEvent = (AssociateProjectCustomer)evt;
         project.projectUid = projectEvent.ProjectUID.ToString();
         project.customerUid = projectEvent.CustomerUID.ToString();
+        project.legacyCustomerId = projectEvent.LegacyCustomerID;
         project.lastActionedUtc = projectEvent.ActionUTC;
         eventType = "AssociateProjectCustomerEvent";
       }
@@ -108,7 +109,7 @@ namespace VSS.Project.Data
 
       var existing = Connection.Query<Models.Project>
         (@"SELECT 
-                ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
+                ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, LegacyCustomerID, SubscriptionUID, 
                 LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID AS ProjectType, IsDeleted
               FROM Project
               WHERE ProjectUID = @projectUid", new { project.projectUid }).FirstOrDefault();
@@ -149,6 +150,7 @@ namespace VSS.Project.Data
           const string update =
             @"UPDATE Project                
                 SET customerUID = @customerUid,
+                    LegacyCustomerID = @legacyCustomerID,
                   LastActionedUTC = @lastActionedUtc
               WHERE ProjectUID = @projectUid";
           return Connection.Execute(update, project);
@@ -246,7 +248,7 @@ namespace VSS.Project.Data
 
       var project = Connection.Query<Models.Project>
         (@"SELECT 
-                  ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
+                  ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, LegacyCustomerID, SubscriptionUID, 
                   LastActionedUTC, IsDeleted, StartDate AS projectStartDate, EndDate AS projectEndDate, fk_ProjectTypeID as ProjectType
               FROM Project
               WHERE ProjectUID = @projectUid AND IsDeleted = 0"
@@ -264,7 +266,7 @@ namespace VSS.Project.Data
 
       var projects = Connection.Query<Models.Project>
           (@"SELECT 
-                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
+                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, LegacyCustomerID, SubscriptionUID, 
                     LastActionedUTC, IsDeleted, StartDate, EndDate, fk_ProjectTypeID as ProjectType
                 FROM Project
                 WHERE SubscriptionUID = @subscriptionUid AND IsDeleted = 0"
@@ -281,7 +283,7 @@ namespace VSS.Project.Data
 
       var projects = Connection.Query<Models.Project>
          (@"SELECT 
-                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, SubscriptionUID, 
+                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, LegacyCustomerID, SubscriptionUID, 
                    LastActionedUTC, IsDeleted, StartDate AS projectStartDate, EndDate AS projectEndDate, fk_ProjectTypeID as ProjectType
                 FROM Project
                 WHERE IsDeleted = 0"
@@ -298,12 +300,12 @@ namespace VSS.Project.Data
 
       var projects = Connection.Query<Models.Project>
          (@"SELECT 
-                   p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.CustomerUID, 
+                   p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.CustomerUID, p.LegacyCustomerID,
                    p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
                    p.fk_ProjectTypeID as ProjectType
                 FROM Project p
                 JOIN CustomerUser cu on p.CustomerUID = cu.fk_CustomerUID
-                WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0" , 
+                WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0", 
          new { userUid }
          );
 
