@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `Project` (
   `RetrievalStartedAt` DATETIME NOT NULL COMMENT '',
   `ProjectUID` varchar(36) DEFAULT NULL,
   `CustomerUID` varchar(36) DEFAULT NULL,
-  `CustomerID` INT(10) UNSIGNED NULL COMMENT '', 
+  `LegacyCustomerID` INT(10) UNSIGNED NULL COMMENT '', 
   `SubscriptionUID` varchar(36) DEFAULT NULL,
   `IsDeleted` tinyint(4) DEFAULT 0,
   `LastActionedUTC` datetime(6) DEFAULT NULL,
@@ -60,10 +60,10 @@ SET @s = (SELECT IF(
        FROM INFORMATION_SCHEMA.COLUMNS
         WHERE table_name = 'Project'
         AND table_schema = DATABASE()
-        AND column_name = 'CustomerID'
+        AND column_name = 'LegacyCustomerID'
     ) > 0,
     "SELECT 1",
-    "ALTER TABLE `Project` ADD COLUMN `CustomerID` INT(10) UNSIGNED NULL AFTER `CustomerUID`"
+    "ALTER TABLE `Project` ADD COLUMN `LegacyCustomerID` INT(10) UNSIGNED NULL AFTER `CustomerUID`"
 ));
 PREPARE stmt FROM @s;
 EXECUTE stmt;
