@@ -138,7 +138,7 @@ namespace LandFillServiceDataSynchronizer
      /// <param name="geofenceUids">Geofence UIDs</param>
      /// <param name="geofences">Geofence boundaries</param>
      /// <param name="machines">Machines and lifts to process for given date</param>
-    private void ProcessCCA(DateTime date, Project project, IEnumerable<string> geofenceUids, Dictionary<string, List<WGSPoint>> geofences, IEnumerable<MachineLiftDetails> machines)
+    private void ProcessCCA(DateTime date, Project project, IEnumerable<string> geofenceUids, Dictionary<string, List<WGSPoint>> geofences, IEnumerable<MachineLifts> machines)
     {
       var machineIds = machines.ToDictionary(m => m, m => LandfillDb.GetMachineId(m));
 
