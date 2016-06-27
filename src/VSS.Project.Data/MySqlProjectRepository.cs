@@ -57,7 +57,7 @@ namespace VSS.Project.Data
         var projectEvent = (AssociateProjectCustomer)evt;
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.CustomerUID = projectEvent.CustomerUID.ToString();
-        project.LegacyCustomerID = projectEvent.CustomerID;
+        project.LegacyCustomerID = projectEvent.LegacyCustomerID;
         project.LastActionedUTC = projectEvent.ActionUTC;
         eventType = "AssociateProjectCustomerEvent";   
       }

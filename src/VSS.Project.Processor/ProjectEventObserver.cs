@@ -44,7 +44,7 @@ namespace VSS.Project.Processor
 
         var associateEvent = evt as AssociateProjectGeofence;
         string projectUID = associateEvent.ProjectUID.ToString();
-        Geofence.Data.Models.Geofence geofence = _geofenceService.GetProjectGeofence(associateEvent.GeofenceUID.Totring());
+        Geofence.Data.Models.Geofence geofence = _geofenceService.GetGeofence(associateEvent.GeofenceUID.ToString());
         AssignGeofencesToProject(geofence, projectUID);
       }
       return updatedCount == 1;
