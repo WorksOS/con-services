@@ -12,6 +12,7 @@ namespace VSS.Project.Data.Models
     public string LandfillTimeZone { get; set; }
     public string ProjectUID { get; set; }
     public string CustomerUID { get; set; }
+    public long LegacyCustomerID { get; set; }
     public string SubscriptionUID { get; set; }
     public DateTime ProjectEndDate { get; set; }
     public DateTime ProjectStartDate { get; set; }

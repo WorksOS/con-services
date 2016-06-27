@@ -34,6 +34,10 @@ namespace VSS.Landfill.Common.JsonConverters
       {
         return jObject["RestoreProjectEvent"].ToObject<RestoreProjectEvent>();
       }
+      if (jObject["AssociateProjectGeofence"] != null)
+      {
+        return jObject["AssociateProjectGeofence"].ToObject<AssociateProjectGeofence>();
+      }
       return null;
     }
   }

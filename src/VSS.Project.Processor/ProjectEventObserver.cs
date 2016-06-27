@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using ikvm.extensions;
 using VSS.Geofence.Data.Interfaces;
 using VSS.Landfill.Common.JsonConverters;
 using VSS.Landfill.Common.Processor;
@@ -25,27 +24,52 @@ namespace VSS.Project.Processor
     {
       int updatedCount = _projectService.StoreProject(evt);
 
+      //Old way of associating through name match
       if (evt is AssociateProjectCustomer)
       {
         //Now we have the customerUID, check for geofence for this project 
         //and if it exists and is unassigned then assign it to this project
         //and also assign relevant unassigned Landfill geofences.
         var associateEvent = evt as AssociateProjectCustomer;
-        var project = _projectService.GetProject(associateEvent.ProjectUID.ToString());
+        string projectUID = associateEvent.ProjectUID.ToString();
+        var project = _projectService.GetProject(associateEvent.ProjectUID.ToString());        
         var geofences = _geofenceService.GetProjectGeofences(project.CustomerUID);
         var geofence = (from g in geofences where g.Name == project.Name select g).FirstOrDefault();
-        if (geofence != null && string.IsNullOrEmpty(geofence.ProjectUID))
-        {
-          int result = _geofenceService.AssignGeofenceToProject(geofence.GeofenceUID, project.ProjectUID);
-          if (result > 0)
-          {
-            _geofenceService.AssignApplicableLandfillGeofencesToProject(geofence.GeometryWKT, geofence.CustomerUID, geofence.ProjectUID);
-          }
-        }
+        AssignGeofencesToProject(geofence, projectUID);
+      }
+      //New way of associating through event
+      else if (evt is AssociateProjectGeofence)
+      {
+        updatedCount = 1; //StoreProject does nothing; handling event here
 
+        var associateEvent = evt as AssociateProjectGeofence;
+        string projectUID = associateEvent.ProjectUID.ToString();
+        Geofence.Data.Models.Geofence geofence = _geofenceService.GetGeofence(associateEvent.GeofenceUID.ToString());
+        AssignGeofencesToProject(geofence, projectUID);
       }
       return updatedCount == 1;
+    }
 
+    private void AssignGeofencesToProject(Geofence.Data.Models.Geofence geofence, string projectUID)
+    {
+      if (geofence != null)
+      {
+        if (string.IsNullOrEmpty(geofence.ProjectUID))
+        {
+          //Assign project geofence to project
+          int result = _geofenceService.AssignGeofenceToProject(geofence.GeofenceUID, projectUID);
+          if (result > 0)
+          {
+            //Assign landfill geofences to project where applicable
+            _geofenceService.AssignApplicableLandfillGeofencesToProject(geofence.GeometryWKT, geofence.CustomerUID,
+                geofence.ProjectUID);
+          }
+        }
+        else if (projectUID != geofence.ProjectUID)
+        {
+          Log.WarnFormat("ProjectEventObserver: Mismatch of assigned project for geofence {0}, {1}", projectUID, geofence.ProjectUID);
+        }
+      }
     }
 
   }

@@ -42,6 +42,8 @@ namespace VSS.Geofence.Processor
           }
           else if (geofenceType == GeofenceType.Project)
           {
+            //Old way of matching using name. Also in case this CreateGeofenceEvent is late and we've missed 
+            //doing it through AssociateProjectGeofence
             projectUid = _projectService.GetProjectUidForName(createEvent.CustomerUID.ToString(), createEvent.GeofenceName);
           }
 

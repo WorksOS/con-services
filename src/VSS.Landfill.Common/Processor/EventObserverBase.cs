@@ -12,7 +12,7 @@ namespace VSS.Landfill.Common.Processor
 {
   public abstract class EventObserverBase<T, U> : IObserver<ConsumerRecord> where U : JsonCreationConverter<T>, new()
   {
-    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     protected string EventName { get; set; } //for logging
 
     public void OnCompleted()
