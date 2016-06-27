@@ -460,6 +460,23 @@ namespace LandfillService.Common.Models
       public DateTime endUtc { get; set; }
     }
 
+    /// <summary>
+    /// Machine details with its lifts for the Web API
+    /// </summary>
+    public class MachineLifts : MachineDetails
+    {
+      public List<Lift> lifts { get; set; }
+    }
+
+    /// <summary>
+    /// Lift data for the Web API
+    /// </summary>
+    public class Lift
+    {
+      public int layerId { get; set; }
+      public DateTime endTime { get; set; }//in project time zone
+    }
+
     #endregion
 
   

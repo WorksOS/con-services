@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Web.Http.Controllers;
 using LandfillService.Common.Context;
 using LandfillService.Common.Models;
 using log4net;
@@ -328,23 +329,17 @@ namespace LandfillService.Common.ApiClients
         }
 
       /// <summary>
-      /// Retrieves a list of machines and lifts for the project for the given date range.
+      /// Retrieves a list of machines and lifts for the project for the given datetime range.
       /// </summary>
       /// <param name="userUid">User ID</param>
       /// <param name="project">Project to retrieve machines and lifts for</param>
-        /// <param name="startDate">Start date to retrieve machines and lifts for (in project time zone)</param>
-        /// <param name="endDate">End date to retrieve machines and lifts for (in project time zone)</param>
+        /// <param name="startUtc">Start UTC to retrieve machines and lifts for</param>
+        /// <param name="endUtc">End UTC to retrieve machines and lifts for</param>
         /// <returns>Machines and lifts</returns>
-      private async Task<MachineLayerIdsExecutionResult> GetMachineLiftListAsync(string userUid, Project project, DateTime startDate, DateTime endDate)
+      private async Task<MachineLayerIdsExecutionResult> GetMachineLiftListAsync(string userUid, Project project, DateTime startUtc, DateTime endUtc)
       {
-        DateTime startUtc1;
-        DateTime endUtc1;
-        ConvertToUtc(startDate, project.timeZoneName, out startUtc1, out endUtc1);
-        DateTime startUtc2;
-        DateTime endUtc2;
-        ConvertToUtc(endDate, project.timeZoneName, out startUtc2, out endUtc2);
         string url = string.Format("{0}projects/{1}/machinelifts?startUtc={2}&endUtc={3}",
-            this.prodDataEndpoint, project.id, FormatUtcDate(startUtc1), FormatUtcDate(endUtc2));
+            this.prodDataEndpoint, project.id, FormatUtcDate(startUtc), FormatUtcDate(endUtc));
         return ParseResponse<MachineLayerIdsExecutionResult>(await Request(url, HttpMethod.Get, userUid, null));
       }
 
@@ -355,13 +350,19 @@ namespace LandfillService.Common.ApiClients
       /// <param name="project">Project</param>
       /// <param name="startDate">Start date in project time zone</param>
       /// <param name="endDate">End date in project time zone</param>
-      /// <returns>List of machines and lifts</returns>
-      public async Task<List<MachineLiftDetails>> GetMachineLiftsInBackground(string userUid, Project project, DateTime startDate, DateTime endDate)
+      /// <returns>List of machines and lifts in project time zone</returns>
+      public async Task<List<MachineLifts>> GetMachineLiftsInBackground(string userUid, Project project, DateTime startDate, DateTime endDate)
       {
         try
         {
-          var result = await GetMachineLiftListAsync(userUid, project, startDate, endDate);
-          return result.MachineLiftDetails.ToList();
+          DateTime startUtc1;
+          DateTime endUtc1;
+          ConvertToUtc(startDate, project.timeZoneName, out startUtc1, out endUtc1);
+          DateTime startUtc2;
+          DateTime endUtc2;
+          ConvertToUtc(endDate, project.timeZoneName, out startUtc2, out endUtc2);
+          var result = await GetMachineLiftListAsync(userUid, project, startUtc1, endUtc2);
+          return GetMachineLiftsInProjectTimeZone(project, endUtc2, result.MachineLiftDetails.ToList());
         }
         catch (RaptorApiException e)
         {
@@ -374,7 +375,44 @@ namespace LandfillService.Common.ApiClients
         {
           Log.Error("Exception while retrieving machines & lifts: " + e.Message);
         }
-        return new List<MachineLiftDetails>();
+        return new List<MachineLifts>();
+      }
+
+      /// <summary>
+      /// Converts the list of machines and lifts from Raptor to the list for the Web API. 
+      /// Raptor can have multiple entries per day for a lift whereas the Web API only wants one.
+      /// Also Raptor uses UTC while the Web API uses the project time zone.
+      /// Finally Raptor lifts can continue past the end of the day while the Web API wants to stop at the end of the day.
+      /// </summary>
+      /// <param name="project">The project for which the machine/lifts conversion is occurring.</param>
+      /// <param name="endUtc">The start UTC for the machine/lifts</param>
+      /// <param name="machineList">The list of machines and lifts returned by Raptor</param>
+      /// <returns>List of machines and lifts in project time zone.</returns>
+      private List<MachineLifts> GetMachineLiftsInProjectTimeZone(Project project, DateTime endUtc, IEnumerable<MachineLiftDetails> machineList)
+      {
+        TimeZoneInfo hwZone = GetTimeZoneInfoForTzdbId(project.timeZoneName);
+
+        List<MachineLifts> machineLifts = new List<MachineLifts>();
+        foreach (var machine in machineList)
+        {
+          var machineLift = new MachineLifts {assetId = machine.assetId, machineName = machine.machineName, isJohnDoe = machine.isJohnDoe};
+          //Only want last lift of the day for each lift
+          var orderedLifts = machine.lifts.OrderBy(l => l.layerId).ThenByDescending(l => l.endUtc);
+          List<Lift> lifts = new List<Lift>();
+          foreach (var orderedLift in orderedLifts)
+          {
+            if (lifts.Where(l => l.layerId == orderedLift.layerId).FirstOrDefault() == null)
+            {
+              //If the lift is still active at the end of the day the use the end of the day
+              if (orderedLift.endUtc > endUtc)
+                orderedLift.endUtc = endUtc;
+              lifts.Add(new Lift { layerId = orderedLift.layerId, endTime = orderedLift.endUtc.Add(hwZone.BaseUtcOffset) });            
+            }
+          }
+          machineLift.lifts = lifts;
+          machineLifts.Add(machineLift);
+        }
+        return machineLifts;
       }
 
       /// <summary>

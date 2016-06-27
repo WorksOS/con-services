@@ -575,7 +575,7 @@ namespace LandfillService.WebApi.Controllers
           {
             machineName = LandfillDb.GetMachine(d.machineId).machineName,
             liftId = d.liftId,
-            incomplete = d.complete,
+            incomplete = d.incomplete,
             complete = d.complete,
             overcomplete = d.overcomplete
           }).ToList();
@@ -594,7 +594,7 @@ namespace LandfillService.WebApi.Controllers
       /// <param name="id">Project ID</param>
       /// <param name="startDate">Start date in project time zone for which to return data</param>
       /// <param name="endDate">End date in project time zone for which to return data</param>
-      /// <returns>List of machines and lifts</returns>
+      /// <returns>List of machines and lifts in project time zone</returns>
       [Route("{id}/machinelifts")]
       public async Task<IHttpActionResult> GetMachineLifts(uint id, DateTime? startDate = null, DateTime? endDate = null)
       {
@@ -618,7 +618,6 @@ namespace LandfillService.WebApi.Controllers
             endDate = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;//today in project time zone
           if (!startDate.HasValue)
             startDate = endDate.Value.AddYears(-2);
-          //TODO: Use Landfill database CCA table rather than calling Raptor
           var task = await raptorApiClient.GetMachineLiftsInBackground(userUid, project, startDate.Value, endDate.Value);
           return Ok(task);
         }

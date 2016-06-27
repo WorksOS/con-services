@@ -865,7 +865,7 @@
             <param name="id">Project ID</param>
             <param name="startDate">Start date in project time zone for which to return data</param>
             <param name="endDate">End date in project time zone for which to return data</param>
-            <returns>List of machines and lifts</returns>
+            <returns>List of machines and lifts in project time zone</returns>
         </member>
     </members>
 </doc>
