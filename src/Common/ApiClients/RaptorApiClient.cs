@@ -227,7 +227,7 @@ namespace LandfillService.Common.ApiClients
         /// <param name="project">VisionLink project to retrieve volumes for</param>
         /// <param name="date">Date to retrieve volumes for (in project time zone)</param>
         /// <param name="returnEarliest">Flag to indicate if earliest or latest cell pass to be used</param>
-        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
+        /// <returns>SummaryVolumesResult</returns>
         public async Task<SummaryVolumesResult> GetAirspaceVolumeAsync(string userUid, Project project, bool returnEarliest)
         {
           var volumeParams = new VolumeParams
@@ -241,7 +241,7 @@ namespace LandfillService.Common.ApiClients
               file = new DesignDescriptor { filespaceId = "", path = "", fileName = "" }
             }
           };
-          return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", userUid, volumeParams));
+          return ParseResponse<SummaryVolumesResult>(await Request(this.reportEndpoint + "volumes/summary", userUid, volumeParams));
         }
 
         /// <summary>
@@ -249,11 +249,11 @@ namespace LandfillService.Common.ApiClients
         /// </summary>
         /// <param name="userUid">User ID</param>
         /// <param name="project">VisionLink project to retrieve volumes for</param>
-        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
+        /// <returns>ProjectStatisticsResult</returns>
         public async Task<ProjectStatisticsResult> GetProjectStatisticsAsync(string userUid, Project project)
         {
           var statsParams = new StatisticsParams { projectId = project.id };
-          return ParseResponse<ProjectStatisticsResult>(await Request("statistics", userUid, statsParams));
+          return ParseResponse<ProjectStatisticsResult>(await Request(this.reportEndpoint + "statistics", userUid, statsParams));
         }
 
 
@@ -284,7 +284,7 @@ namespace LandfillService.Common.ApiClients
         /// <param name="machine">Machine to retrieve CCA for</param>
         /// <param name="geofence">Geofence to retrieve CCA for. If not specified then CCA retrieved for entire project area</param>
         /// <param name="liftId">Lift/layer number to retrieve CCA for. If not specified then CCA retrieved for all lifts</param>
-        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
+        /// <returns>CCASummaryResult</returns>
         private async Task<CCASummaryResult> GetCCAAsync(string userUid, Project project, DateTime date, MachineDetails machine, int? liftId, List<WGSPoint> geofence)
         {
           DateTime startUtc;
