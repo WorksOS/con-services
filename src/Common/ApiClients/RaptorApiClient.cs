@@ -219,6 +219,44 @@ namespace LandfillService.Common.ApiClients
           }
         }
 
+        /// <summary>
+        /// Retrieves airspace volume summary information for a given project and date. This is the volume remaining
+        /// for the project calculated as the volume between the current ground surface and the design surface.
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">VisionLink project to retrieve volumes for</param>
+        /// <param name="date">Date to retrieve volumes for (in project time zone)</param>
+        /// <param name="returnEarliest">Flag to indicate if earliest or latest cell pass to be used</param>
+        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
+        public async Task<SummaryVolumesResult> GetAirspaceVolumeAsync(string userUid, Project project, bool returnEarliest)
+        {
+          var volumeParams = new VolumeParams
+          {
+            projectId = project.id,
+            volumeCalcType = 5,
+            baseFilter = new VolumeFilter { returnEarliest = returnEarliest },
+            topDesignDescriptor = new VolumeDesign
+            {
+              //TODO: depends on #14594
+              file = new DesignDescriptor { filespaceId = "", path = "", fileName = "" }
+            }
+          };
+          return ParseResponse<SummaryVolumesResult>(await Request("volumes/summary", userUid, volumeParams));
+        }
+
+        /// <summary>
+        /// Retrieves project statistics information for a given project. 
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">VisionLink project to retrieve volumes for</param>
+        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
+        public async Task<ProjectStatisticsResult> GetProjectStatisticsAsync(string userUid, Project project)
+        {
+          var statsParams = new StatisticsParams { projectId = project.id };
+          return ParseResponse<ProjectStatisticsResult>(await Request("statistics", userUid, statsParams));
+        }
+
+
         public TimeZoneInfo GetTimeZoneInfoForTzdbId(string tzdbId)
         {
           var mappings = TzdbDateTimeZoneSource.Default.WindowsMapping.MapZones;

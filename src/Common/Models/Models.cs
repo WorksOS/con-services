@@ -203,8 +203,8 @@ namespace LandfillService.Common.Models
     /// </summary>
     public class VolumeFilter
     {
-        public DateTime startUTC;
-        public DateTime endUTC;
+        public DateTime? startUTC;
+        public DateTime? endUTC;
         public bool returnEarliest;
         public List<WGSPoint> polygonLL;
 
@@ -235,6 +235,7 @@ namespace LandfillService.Common.Models
         public int volumeCalcType;
         public VolumeFilter baseFilter;
         public VolumeFilter topFilter;
+        public VolumeDesign topDesignDescriptor;
 
         /// <summary>
         /// ToString override
@@ -242,11 +243,37 @@ namespace LandfillService.Common.Models
         /// <returns>A string representation of volume request params</returns>
         public override string ToString()
         {
-            return String.Format("projectId:{0}, volumeCalcType:{1}, baseFilter:{2}, topFilter:{3}", projectId, volumeCalcType, baseFilter, topFilter);
+          return String.Format("projectId:{0}, volumeCalcType:{1}, baseFilter:{2}, topFilter:{3}, topDesignDescriptor:{4}",
+              projectId, volumeCalcType, baseFilter, topFilter, topDesignDescriptor);
         }
 
     }
 
+    /// <summary>
+    /// Design for volume summary requests sent to the Raptor API; see Raptor API documentation for details
+    /// </summary>
+    public class VolumeDesign
+    {
+      public DesignDescriptor file;
+    }
+
+    /// <summary>
+    /// Design descriptor for volume summary requests sent to the Raptor API; see Raptor API documentation for details
+    /// </summary>
+    public class DesignDescriptor
+    {
+      public string filespaceId;
+      public string path;
+      public string fileName;
+    }
+
+    /// <summary>
+    /// Statistics parameters sent to the Raptor API; see Raptor API documentation for details
+    /// </summary>
+    public class StatisticsParams
+    {
+      public long projectId;
+    }
 
     /// <summary>
     /// 3D bounding box - returned in volume summary results from the Raptor API
@@ -323,6 +350,47 @@ namespace LandfillService.Common.Models
         {
             return String.Format("cut:{0}, fill:{1}", Cut, Fill);
         }
+    }
+
+    /// <summary>
+    /// A representation of a set of spatial and temporal stastics for the project as a whole
+    /// </summary>
+    public class ProjectStatisticsResult
+    {
+      /// <summary>
+      /// Earlist time stamped data present in the project, including both production and surveyed surface data.
+      /// </summary>
+      public DateTime startTime;
+
+      /// <summary>
+      /// Latest time stamped data present in the project, including both production and surveyed surface data.
+      /// </summary>
+      public DateTime endTime;
+
+      /// <summary>
+      /// Size of spatial data cells in the project (the default value is 34cm)
+      /// </summary>
+      public Double cellSize;
+
+      /// <summary>
+      /// The index origin offset from the absolute bottom left origin of the subgrid tree cartesian coordinate system to the centered origin of the cartesian
+      /// grid coordinate system used in the project, and the centered origin cartesian coordinates of cell addresses.
+      /// </summary>
+      public Int32 indexOriginOffset;
+
+      /// <summary>
+      /// The three dimensional extents of the project including both production and surveyed surface data.
+      /// </summary>
+      public BoundingBox3DGrid extents;
+
+      /// <summary>
+      /// ToString override
+      /// </summary>
+      /// <returns>Formatted string representation of the project statistics information.</returns>
+      public override string ToString()
+      {
+        return String.Format("Start time:{0}, end time:{1}, cellsize:{2}, indexOriginOffset:{3}, extents:{4}", this.startTime, this.endTime, this.cellSize, this.indexOriginOffset, this.extents);
+      }
     }
 
     /// <summary>
@@ -478,6 +546,5 @@ namespace LandfillService.Common.Models
     }
 
     #endregion
-
   
 }

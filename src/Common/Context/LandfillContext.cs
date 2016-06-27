@@ -417,6 +417,19 @@ namespace LandfillService.Common.Context
         }
 
         /// <summary>
+        /// Gets today's date in the project time zone.
+        /// </summary>
+        /// <param name="timeZoneName">Project time zone name</param>
+        /// <returns></returns>
+        public static DateTime GetTodayInProjectTimeZone(string timeZoneName)
+        {
+          var projTimeZone = DateTimeZoneProviders.Tzdb[timeZoneName];
+          DateTime utcNow = DateTime.UtcNow;
+          Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
+          return (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;
+        }
+
+        /// <summary>
         /// Updates entries for a project if required. Old landfill projects do not have the geofence UID set.
         /// Checks if the specified geofence UID is the project one and updates corresponding entries.
         /// If the geofence UID is not specified then it gets the project one from the Geofence table

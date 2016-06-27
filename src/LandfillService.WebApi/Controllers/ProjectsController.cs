@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -379,22 +380,125 @@ namespace LandfillService.WebApi.Controllers
           }
           LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving Volume/Time");
 
+          return PerhapsUpdateProjectList(userUid).Case(errorResponse => errorResponse, projects =>
+          {
+            try
+            {
+              var project = projects.Where(p => p.id == id).First();
+              DateTime todayinProjTimeZone = LandfillDb.GetTodayInProjectTimeZone(project.timeZoneName);
+              var startWeek = CurrentWeekMonday(todayinProjTimeZone);
+              var weekVol = LandfillDb.GetEntries(project, null, startWeek, todayinProjTimeZone).Sum(e => e.volume);
+              var startMonth = new DateTime(todayinProjTimeZone.Year, todayinProjTimeZone.Month, 1);
+              var monthVol = LandfillDb.GetEntries(project, null, startMonth, todayinProjTimeZone).Sum(e => e.volume);
+              double firstAirspaceVol = GetAirspaceVolumeInBackground(userUid, project, true).Result;
+              double lastAirspaceVol = GetAirspaceVolumeInBackground(userUid, project, false).Result;
+              List<DateTime> dates = GetProjectStatisticsInBackground(userUid, project).Result.ToList();
+              double volPerDay = Math.Abs(firstAirspaceVol - lastAirspaceVol) /
+                                 Math.Abs((dates[0] - dates[1]).TotalDays);
+              var timeLeft = lastAirspaceVol / volPerDay;
+
+              return Ok(new VolumeTime
+              {
+                currentWeekVolume = weekVol,
+                currentMonthVolume = monthVol,
+                remainingVolume = lastAirspaceVol,
+                remainingTime = timeLeft
+              });
+            }
+            catch (InvalidOperationException)
+            {
+              return Ok();
+            }
+          });
+        }
+
+        /// <summary>
+        /// Returns the date representing the Monday of the week the given date falls in.
+        /// </summary>
+        /// <param name="date">The date for which to find the start of the week</param>
+        /// <returns>The date of the Monday of that week</returns>
+        private static DateTime CurrentWeekMonday(DateTime date)
+        {
+          int daysToSubtract = 0;
+          switch (date.DayOfWeek)
+          {
+            case DayOfWeek.Sunday:
+              daysToSubtract = 6;
+              break;
+            case DayOfWeek.Saturday:
+              daysToSubtract = 5;
+              break;
+            case DayOfWeek.Friday:
+              daysToSubtract = 4;
+              break;
+            case DayOfWeek.Thursday:
+              daysToSubtract = 3;
+              break;
+            case DayOfWeek.Wednesday:
+              daysToSubtract = 2;
+              break;
+            case DayOfWeek.Tuesday:
+              daysToSubtract = 1;
+              break;
+            case DayOfWeek.Monday:
+              daysToSubtract = 0;
+              break;
+          }
+          return date.AddDays(-daysToSubtract);
+        }
+
+        /// <summary>
+        /// Retrieves airspace volume summary from Raptor.
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">Project</param>
+        /// <param name="date">Date in project time zone</param>
+        /// <param name="returnEarliest">Indicates if filtering by earliest or latest cell pass</param>
+        /// <returns></returns>
+        private async Task<double> GetAirspaceVolumeInBackground(string userUid, Project project, bool returnEarliest)
+        {
           try
           {
-            //TODO: Implement this - for now we use Mock data
-            VolumeTime data = new VolumeTime
-                              {
-                                currentWeekVolume = 3360,
-                                currentMonthVolume = 12561,
-                                remainingVolume = 68234765,
-                                remainingTime = 1087
-                              };
+            var res = await raptorApiClient.GetAirspaceVolumeAsync(userUid, project, returnEarliest);
 
-            return Ok(data);
+            System.Diagnostics.Debug.WriteLine("Airspace Volume res:" + res);
+            System.Diagnostics.Debug.WriteLine("Airspace Volume: " + res.Fill);
+
+            //Check for no cut. Cut means design is below ground surface.
+            if (res.Cut > 0)
+            {
+              throw new InvalidDataException("Bad design giving invalid results");
+            }
+            return res.Fill;
+
           }
-          catch (InvalidOperationException)
+          catch (Exception e)
           {
-            return Ok();
+            System.Diagnostics.Debug.Write("Exception while retrieving airspace volumes: " + e);
+            throw;
+          }
+        }
+
+        /// <summary>
+        /// Retrieves project statistics from Raptor.
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">Project</param>
+        /// <returns></returns>
+        private async Task<IEnumerable<DateTime>> GetProjectStatisticsInBackground(string userUid, Project project)
+        {
+          try
+          {
+            var res = await raptorApiClient.GetProjectStatisticsAsync(userUid, project);
+
+            System.Diagnostics.Debug.WriteLine("Statistics res:" + res);
+            System.Diagnostics.Debug.WriteLine("Statistics dates: " + res.startTime + " - " + res.endTime);
+            return new List<DateTime> { res.startTime, res.endTime };
+          }
+          catch (Exception e)
+          {
+            System.Diagnostics.Debug.Write("Exception while retrieving statistics: " + e);
+            throw;
           }
         }
         #endregion
