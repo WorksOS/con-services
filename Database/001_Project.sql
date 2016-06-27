@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `Project` (
   `RetrievalStartedAt` DATETIME NOT NULL COMMENT '',
   `ProjectUID` varchar(36) DEFAULT NULL,
   `CustomerUID` varchar(36) DEFAULT NULL,
+  `LegacyCustomerID` INT(10) UNSIGNED NULL COMMENT '', 
   `SubscriptionUID` varchar(36) DEFAULT NULL,
   `IsDeleted` tinyint(4) DEFAULT 0,
   `LastActionedUTC` datetime(6) DEFAULT NULL,
@@ -20,14 +21,6 @@ CREATE TABLE IF NOT EXISTS `Project` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-/*
-ALTER TABLE Project
-	DROP INDEX UIX_Project_ProjectID;
-	
-ALTER TABLE Project
-	ADD UNIQUE INDEX UIX_Project_ProjectUID (ProjectUID);
-*/
-	
 /* Drop old index if there */
 SET @s = (SELECT IF(
     (SELECT COUNT(*)
@@ -37,7 +30,7 @@ SET @s = (SELECT IF(
         AND index_name = 'UIX_Project_ProjectID'
     ) = 0,
     "SELECT 1",
-    "ALTER TABLE `Entries` DROP INDEX UIX_Project_ProjectID"
+    "ALTER TABLE `Project` DROP INDEX UIX_Project_ProjectID"
 ));
 
 PREPARE stmt FROM @s;
@@ -56,6 +49,22 @@ SET @s = (SELECT IF(
     "ALTER TABLE `Project` ADD UNIQUE INDEX UIX_Project_ProjectUID (ProjectUID)"
 ));
 
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+
+/* Add CustomerID if not there */
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name = 'Project'
+        AND table_schema = DATABASE()
+        AND column_name = 'LegacyCustomerID'
+    ) > 0,
+    "SELECT 1",
+    "ALTER TABLE `Project` ADD COLUMN `LegacyCustomerID` INT(10) UNSIGNED NULL AFTER `CustomerUID`"
+));
 PREPARE stmt FROM @s;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
