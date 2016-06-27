@@ -25,10 +25,11 @@ namespace LandfillService.AcceptanceTests.Scenarios
         List<CCARatioData> ccaRatio;
         List<CCASummaryData> ccaSummary;
 
+        #region Given
         [Given(@"I have a landfill project '(.*)' with landfill sites '(.*)'")]
         public void GivenIHaveALandfillProjectWithLandfillSites(string project, string sites)
         {
-            switch(project)
+            switch (project)
             {
                 case "Middleton":
                     customer = MDMTestCustomer.Middleton;
@@ -40,10 +41,10 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     customer = MDMTestCustomer.Maddington;
                     break;
             }
-            
-            foreach(string site in sites.Split(','))
+
+            foreach (string site in sites.Split(','))
             {
-                switch(site)
+                switch (site)
                 {
                     case "MarylandsLandfill":
                         customer.AddLandfillSite(Site.MarylandsLandfill);
@@ -56,30 +57,32 @@ namespace LandfillService.AcceptanceTests.Scenarios
 
             customer.Create();
         }
-        
+
         [Given(@"I have the following machines")]
         public void GivenIHaveTheFollowingMachines(Table machineTable)
         {
             machines = GeneralSlave.CreateMachines(machineTable);
         }
-        
+
         [Given(@"I have the following CCA data")]
         public void GivenIHaveTheFollowingCCAData(Table ccaTable)
         {
             GeneralSlave.CreateCcaData(ccaTable, customer, machines);
-        }
-        
+        } 
+        #endregion
+
+        #region When
         [When(@"I request CCA ratio for site '(.*)' for the past (.*) days")]
-        public void WhenIRequestCCARatioForSiteForThePastDays(string site, int numDays)
+        public void WhenIRequestCCARatioForSiteForThePastDays(string site, string numDays)
         {
             // uri parameters
-            Guid geofenceUid = customer.ProjectName.StartsWith(site) ? customer.ProjectGeofenceUid :
-                    customer.LandfillGeofences.First(s => s.name.StartsWith(site)).uid;
-            DateTime startDate = DateTime.Today.AddDays(-numDays);
-            DateTime endDate = DateTime.Today.AddDays(-1);
+            Guid? geofenceUid = site == "NotSpecified" ? null : (Guid?)(customer.ProjectName.StartsWith(site) ? customer.ProjectGeofenceUid :
+                    customer.LandfillGeofences.First(s => s.name.StartsWith(site)).uid);
+            DateTime? startDate = numDays == "NotSpecified" ? null : (DateTime?)DateTime.Today.AddDays(-Convert.ToInt32(numDays));
+            DateTime? endDate = numDays == "NotSpecified" ? null : (DateTime?)DateTime.Today.AddDays(-1);
 
             // get project id by web api request
-            string response = RestClientUtil.DoHttpRequest(Config.ConstructGetProjectListUri(), "GET", 
+            string response = RestClientUtil.DoHttpRequest(Config.ConstructGetProjectListUri(), "GET",
                 RestClientConfig.JsonMediaType, null, Jwt.GetJwtToken(customer.UserUid), HttpStatusCode.OK);
             List<Project> projects = JsonConvert.DeserializeObject<List<Project>>(response);
             uint projectId = projects.First(p => p.name == customer.ProjectName).id;
@@ -95,11 +98,11 @@ namespace LandfillService.AcceptanceTests.Scenarios
         {
             // uri parameters
             int? liftId = lift == "AllLifts" ? null : (int?)Convert.ToInt32(lift);
-            Guid geofenceUid = customer.ProjectName.StartsWith(site) ? customer.ProjectGeofenceUid :
-                    customer.LandfillGeofences.First(s => s.name.StartsWith(site)).uid;
+            Guid? geofenceUid = site == "NotSpecified" ? null : ((Guid?)(customer.ProjectName.StartsWith(site) ? customer.ProjectGeofenceUid :
+                    customer.LandfillGeofences.First(s => s.name.StartsWith(site)).uid));
             DateTime date = DateTime.Today.AddDays(dayToAdd);
             uint? assetId = machine == "AllMachines" ? null : (uint?)machines.First(m => m.machineName == machine).assetId;
-            bool? isJohnDoe = johnDoe == "AllJohnDoes" ? null : (bool?)(johnDoe == "JohnDoe" ? true : false);
+            bool? isJohnDoe = johnDoe == "JohnDoeOrNonJohnDoe" ? null : (bool?)(johnDoe == "JohnDoe" ? true : false);
             string machineName = machine == "AllMachines" ? null : machine;
 
             // get project id by web api request
@@ -112,8 +115,10 @@ namespace LandfillService.AcceptanceTests.Scenarios
             string uri = Config.ConstructGetCcaSummaryUri(projectId, date, geofenceUid, assetId, machineName, isJohnDoe, liftId);
             response = RestClientUtil.DoHttpRequest(uri, "GET", RestClientConfig.JsonMediaType, null, Jwt.GetJwtToken(customer.UserUid), HttpStatusCode.OK);
             ccaSummary = JsonConvert.DeserializeObject<List<CCASummaryData>>(response);
-        }
+        } 
+        #endregion
 
+        #region Then
         [Then(@"the response contains the following CCA ration data")]
         public void ThenTheResponseContainsTheFollowingCCARationData(Table ccaRatioTable)
         {
@@ -122,11 +127,11 @@ namespace LandfillService.AcceptanceTests.Scenarios
             List<string> machines = ccaRatioTable.Rows.Select(r => r["Machine"]).Distinct().ToList();
 
             Dictionary<string, List<CCARatioEntry>> dataDict = new Dictionary<string, List<CCARatioEntry>>();
-            foreach(string machine in machines)
+            foreach (string machine in machines)
             {
                 dataDict.Add(machine, new List<CCARatioEntry>());
             }
-            foreach(TableRow row in ccaRatioTable.Rows)
+            foreach (TableRow row in ccaRatioTable.Rows)
             {
                 dataDict[row["Machine"]].Add(new CCARatioEntry()
                 {
@@ -134,7 +139,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     ccaRatio = Convert.ToDouble(row["CCARatio"])
                 });
             }
-            foreach(string key in dataDict.Keys)
+            foreach (string key in dataDict.Keys)
             {
                 expectedRatio.Add(new CCARatioData()
                     {
@@ -146,12 +151,19 @@ namespace LandfillService.AcceptanceTests.Scenarios
             Assert.IsTrue(LandfillCommonUtils.ListsAreEqual<CCARatioData>(expectedRatio, ccaRatio));
         }
 
+        [Then(@"the response contains two years of CCA ration data")]
+        public void ThenTheResponseContainsTwoYearsOfCCARationData()
+        {
+            Assert.IsTrue(ccaRatio[0].entries.Count == 730 || ccaRatio[0].entries.Count == 731,
+                "Incorrect number of cca ratio data entries.");
+        }
+
         [Then(@"the response contains the following CCA summary data")]
         public void ThenTheResponseContainsTheFollowingCCASummaryData(Table ccaSummaryTable)
         {
             List<CCASummaryData> expectedSummary = new List<CCASummaryData>();
 
-            foreach(TableRow row in ccaSummaryTable.Rows)
+            foreach (TableRow row in ccaSummaryTable.Rows)
             {
                 expectedSummary.Add(new CCASummaryData()
                     {
@@ -164,6 +176,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
             }
 
             Assert.IsTrue(LandfillCommonUtils.ListsAreEqual<CCASummaryData>(expectedSummary, ccaSummary));
-        }
+        } 
+        #endregion
     }
 }

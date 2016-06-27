@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Net;
 using System.Linq;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
     {
         List<Project> projects;
         ProjectData data;
+        List<MachineLiftDetails> liftDetails; 
 
         #region When
         [When(@"I try to get a list of all projects")]
@@ -56,7 +58,32 @@ namespace LandfillService.AcceptanceTests.Scenarios
 
             string response = RestClientUtil.DoHttpRequest(uri, "GET", RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
             data = JsonConvert.DeserializeObject<ProjectData>(response);
-        } 
+        }
+
+        [When(@"I try to get machine lift details for project '(.*)' between dates '(.*)'")]
+        public void WhenITryToGetMachineLiftDetailsForProjectBetweenDates(string project, string dateRange)
+        {
+            uint projId = ProjectsUtils.GetProjectDetails(project).id;
+            DateTime? start = null;
+            DateTime? end = null;
+
+            if (dateRange != "NotSpecified")
+            {
+                try
+                {
+                    start = DateTime.ParseExact(dateRange.Split('&')[0], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    end = DateTime.ParseExact(dateRange.Split('&')[1], "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                }
+                catch(Exception)
+                {
+                    throw new Exception("Date range format for machine lift details should be 'yyyy-MM-dd&yyyy-MM-dd");
+                }
+            }
+
+            string response = RestClientUtil.DoHttpRequest(Config.ConstructGetMachineLifts(projId, start, end), "GET",
+                RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
+            liftDetails = JsonConvert.DeserializeObject<List<MachineLiftDetails>>(response);
+        }
         #endregion
 
         #region Then
@@ -96,7 +123,15 @@ namespace LandfillService.AcceptanceTests.Scenarios
                         "Incorrect number of project data entries.");
                     break;
             }
-        } 
+        }
+
+        [Then(@"the following machine lift details are returned")]
+        public void ThenTheFollowingMachineLiftDetailsAreReturned(string liftDetailString)
+        {
+            List<MachineLiftDetails> expectedLiftDetails = JsonConvert.DeserializeObject<List<MachineLiftDetails>>(liftDetailString);
+            Assert.IsTrue(LandfillCommonUtils.ListsAreEqual<MachineLiftDetails>(expectedLiftDetails, liftDetails));
+        }
+
         #endregion
     }
 }

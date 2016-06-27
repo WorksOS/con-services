@@ -158,7 +158,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 9
   testRunner.And("I have the following CCA data", ((string)(null)), table2, "And ");
 #line 17
- testRunner.When("I request CCA ratio for site \'Maddington\' for the past 2 days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request CCA ratio for site \'Maddington\' for the past \'2\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                         "Machine",
@@ -268,7 +268,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 29
   testRunner.And("I have the following CCA data", ((string)(null)), table5, "And ");
 #line 37
- testRunner.When("I request CCA ratio for site \'Marylands\' for the past 2 days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request CCA ratio for site \'Marylands\' for the past \'2\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
                         "Machine",
@@ -289,11 +289,11 @@ this.ScenarioSetup(scenarioInfo);
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CCA Summary - whole project all lifts all machines")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CCA Ratio - geofence not specified (defaults to whole project)")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CCA")]
-        public virtual void CCASummary_WholeProjectAllLiftsAllMachines()
+        public virtual void CCARatio_GeofenceNotSpecifiedDefaultsToWholeProject()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CCA Summary - whole project all lifts all machines", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CCA Ratio - geofence not specified (defaults to whole project)", ((string[])(null)));
 #line 43
 this.ScenarioSetup(scenarioInfo);
 #line 44
@@ -308,9 +308,6 @@ this.ScenarioSetup(scenarioInfo);
                         "false"});
             table7.AddRow(new string[] {
                         "Cat B",
-                        "true"});
-            table7.AddRow(new string[] {
-                        "Cat C",
                         "true"});
 #line 45
   testRunner.And("I have the following machines", ((string)(null)), table7, "And ");
@@ -327,7 +324,7 @@ this.ScenarioSetup(scenarioInfo);
             table8.AddRow(new string[] {
                         "Maddington",
                         "Marylands",
-                        "-1",
+                        "-2",
                         "Cat A",
                         "null",
                         "20",
@@ -345,7 +342,7 @@ this.ScenarioSetup(scenarioInfo);
             table8.AddRow(new string[] {
                         "Maddington",
                         "AmiStadium",
-                        "-1",
+                        "-2",
                         "Cat A",
                         "null",
                         "35",
@@ -363,12 +360,12 @@ this.ScenarioSetup(scenarioInfo);
             table8.AddRow(new string[] {
                         "Maddington",
                         "Maddington",
-                        "-1",
+                        "-2",
                         "Cat A",
                         "null",
-                        "16",
-                        "53",
-                        "31"});
+                        "65",
+                        "20",
+                        "15"});
             table8.AddRow(new string[] {
                         "Maddington",
                         "Maddington",
@@ -378,7 +375,217 @@ this.ScenarioSetup(scenarioInfo);
                         "25",
                         "30",
                         "45"});
-            table8.AddRow(new string[] {
+#line 49
+  testRunner.And("I have the following CCA data", ((string)(null)), table8, "And ");
+#line 57
+ testRunner.When("I request CCA ratio for site \'NotSpecified\' for the past \'2\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+            TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Machine",
+                        "DateAsAnOffsetFromToday",
+                        "CCARatio"});
+            table9.AddRow(new string[] {
+                        "Cat A",
+                        "-2",
+                        "35"});
+            table9.AddRow(new string[] {
+                        "Cat A",
+                        "-1",
+                        "0"});
+#line 58
+ testRunner.Then("the response contains the following CCA ration data", ((string)(null)), table9, "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CCA Ratio - dates not specified (defaults to two years)")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CCA")]
+        public virtual void CCARatio_DatesNotSpecifiedDefaultsToTwoYears()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CCA Ratio - dates not specified (defaults to two years)", ((string[])(null)));
+#line 63
+this.ScenarioSetup(scenarioInfo);
+#line 64
+ testRunner.Given("I have a landfill project \'Maddington\' with landfill sites \'MarylandsLandfill,Ami" +
+                    "StadiumLandfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+            TechTalk.SpecFlow.Table table10 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsJohnDoe"});
+            table10.AddRow(new string[] {
+                        "Cat A",
+                        "false"});
+            table10.AddRow(new string[] {
+                        "Cat B",
+                        "true"});
+#line 65
+  testRunner.And("I have the following machines", ((string)(null)), table10, "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table11 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Project",
+                        "Site",
+                        "DateAsAnOffsetFromToday",
+                        "Machine",
+                        "LiftID",
+                        "Incomplete",
+                        "Complete",
+                        "Overcomplete"});
+            table11.AddRow(new string[] {
+                        "Maddington",
+                        "Marylands",
+                        "-2",
+                        "Cat A",
+                        "null",
+                        "20",
+                        "35",
+                        "45"});
+            table11.AddRow(new string[] {
+                        "Maddington",
+                        "Marylands",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "15",
+                        "5",
+                        "80"});
+            table11.AddRow(new string[] {
+                        "Maddington",
+                        "AmiStadium",
+                        "-2",
+                        "Cat A",
+                        "null",
+                        "35",
+                        "15",
+                        "50"});
+            table11.AddRow(new string[] {
+                        "Maddington",
+                        "AmiStadium",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "10",
+                        "60",
+                        "30"});
+            table11.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-2",
+                        "Cat A",
+                        "null",
+                        "65",
+                        "20",
+                        "15"});
+            table11.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "25",
+                        "30",
+                        "45"});
+#line 69
+  testRunner.And("I have the following CCA data", ((string)(null)), table11, "And ");
+#line 77
+ testRunner.When("I request CCA ratio for site \'NotSpecified\' for the past \'NotSpecified\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 78
+ testRunner.Then("the response contains two years of CCA ration data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CCA Summary - whole project all machines all lifts")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CCA")]
+        public virtual void CCASummary_WholeProjectAllMachinesAllLifts()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CCA Summary - whole project all machines all lifts", ((string[])(null)));
+#line 80
+this.ScenarioSetup(scenarioInfo);
+#line 81
+ testRunner.Given("I have a landfill project \'Maddington\' with landfill sites \'MarylandsLandfill,Ami" +
+                    "StadiumLandfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+            TechTalk.SpecFlow.Table table12 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsJohnDoe"});
+            table12.AddRow(new string[] {
+                        "Cat A",
+                        "false"});
+            table12.AddRow(new string[] {
+                        "Cat B",
+                        "true"});
+            table12.AddRow(new string[] {
+                        "Cat C",
+                        "true"});
+#line 82
+  testRunner.And("I have the following machines", ((string)(null)), table12, "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table13 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Project",
+                        "Site",
+                        "DateAsAnOffsetFromToday",
+                        "Machine",
+                        "LiftID",
+                        "Incomplete",
+                        "Complete",
+                        "Overcomplete"});
+            table13.AddRow(new string[] {
+                        "Maddington",
+                        "Marylands",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "20",
+                        "35",
+                        "45"});
+            table13.AddRow(new string[] {
+                        "Maddington",
+                        "Marylands",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "15",
+                        "5",
+                        "80"});
+            table13.AddRow(new string[] {
+                        "Maddington",
+                        "AmiStadium",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "35",
+                        "15",
+                        "50"});
+            table13.AddRow(new string[] {
+                        "Maddington",
+                        "AmiStadium",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "10",
+                        "60",
+                        "30"});
+            table13.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "16",
+                        "53",
+                        "31"});
+            table13.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "25",
+                        "30",
+                        "45"});
+            table13.AddRow(new string[] {
                         "Maddington",
                         "Maddington",
                         "-1",
@@ -387,32 +594,407 @@ this.ScenarioSetup(scenarioInfo);
                         "72",
                         "16",
                         "12"});
-#line 50
-  testRunner.And("I have the following CCA data", ((string)(null)), table8, "And ");
-#line 59
- testRunner.When("I request CCA summary for lift \'AllLifts\' of \'AllJohnDoes\' machine \'AllMachines\' " +
-                    "in site \'Maddington\' for day -1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 87
+  testRunner.And("I have the following CCA data", ((string)(null)), table13, "And ");
+#line 96
+ testRunner.When("I request CCA summary for lift \'AllLifts\' of \'JohnDoeOrNonJohnDoe\' machine \'AllMa" +
+                    "chines\' in site \'Maddington\' for day -1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-            TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table14 = new TechTalk.SpecFlow.Table(new string[] {
                         "Machine",
                         "LiftID",
                         "Incomplete",
                         "Complete",
                         "Overcomplete"});
-            table9.AddRow(new string[] {
+            table14.AddRow(new string[] {
                         "Cat A",
                         "null",
                         "16",
                         "53",
                         "31"});
-            table9.AddRow(new string[] {
+            table14.AddRow(new string[] {
                         "Cat C",
                         "null",
                         "72",
                         "16",
                         "12"});
-#line 60
- testRunner.Then("the response contains the following CCA summary data", ((string)(null)), table9, "Then ");
+#line 97
+ testRunner.Then("the response contains the following CCA summary data", ((string)(null)), table14, "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CCA Summary - whole project specific machine all lifts")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CCA")]
+        public virtual void CCASummary_WholeProjectSpecificMachineAllLifts()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CCA Summary - whole project specific machine all lifts", ((string[])(null)));
+#line 102
+this.ScenarioSetup(scenarioInfo);
+#line 103
+ testRunner.Given("I have a landfill project \'Maddington\' with landfill sites \'MarylandsLandfill,Ami" +
+                    "StadiumLandfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+            TechTalk.SpecFlow.Table table15 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsJohnDoe"});
+            table15.AddRow(new string[] {
+                        "Cat A",
+                        "false"});
+            table15.AddRow(new string[] {
+                        "Cat B",
+                        "true"});
+            table15.AddRow(new string[] {
+                        "Cat C",
+                        "true"});
+#line 104
+  testRunner.And("I have the following machines", ((string)(null)), table15, "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table16 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Project",
+                        "Site",
+                        "DateAsAnOffsetFromToday",
+                        "Machine",
+                        "LiftID",
+                        "Incomplete",
+                        "Complete",
+                        "Overcomplete"});
+            table16.AddRow(new string[] {
+                        "Maddington",
+                        "Marylands",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "20",
+                        "35",
+                        "45"});
+            table16.AddRow(new string[] {
+                        "Maddington",
+                        "Marylands",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "15",
+                        "5",
+                        "80"});
+            table16.AddRow(new string[] {
+                        "Maddington",
+                        "AmiStadium",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "35",
+                        "15",
+                        "50"});
+            table16.AddRow(new string[] {
+                        "Maddington",
+                        "AmiStadium",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "10",
+                        "60",
+                        "30"});
+            table16.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "16",
+                        "53",
+                        "31"});
+            table16.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "25",
+                        "30",
+                        "45"});
+            table16.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat C",
+                        "null",
+                        "72",
+                        "16",
+                        "12"});
+#line 109
+  testRunner.And("I have the following CCA data", ((string)(null)), table16, "And ");
+#line 118
+ testRunner.When("I request CCA summary for lift \'AllLifts\' of \'JohnDoe\' machine \'Cat C\' in site \'M" +
+                    "addington\' for day -1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+            TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Machine",
+                        "LiftID",
+                        "Incomplete",
+                        "Complete",
+                        "Overcomplete"});
+            table17.AddRow(new string[] {
+                        "Cat C",
+                        "null",
+                        "72",
+                        "16",
+                        "12"});
+#line 119
+ testRunner.Then("the response contains the following CCA summary data", ((string)(null)), table17, "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CCA Summary - specific site specific machine specific lift")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CCA")]
+        public virtual void CCASummary_SpecificSiteSpecificMachineSpecificLift()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CCA Summary - specific site specific machine specific lift", ((string[])(null)));
+#line 123
+this.ScenarioSetup(scenarioInfo);
+#line 124
+ testRunner.Given("I have a landfill project \'Maddington\' with landfill sites \'MarylandsLandfill,Ami" +
+                    "StadiumLandfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+            TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsJohnDoe"});
+            table18.AddRow(new string[] {
+                        "Cat A",
+                        "false"});
+            table18.AddRow(new string[] {
+                        "Cat B",
+                        "true"});
+            table18.AddRow(new string[] {
+                        "Cat C",
+                        "true"});
+#line 125
+  testRunner.And("I have the following machines", ((string)(null)), table18, "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Project",
+                        "Site",
+                        "DateAsAnOffsetFromToday",
+                        "Machine",
+                        "LiftID",
+                        "Incomplete",
+                        "Complete",
+                        "Overcomplete"});
+            table19.AddRow(new string[] {
+                        "Maddington",
+                        "Marylands",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "20",
+                        "35",
+                        "45"});
+            table19.AddRow(new string[] {
+                        "Maddington",
+                        "Marylands",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "15",
+                        "5",
+                        "80"});
+            table19.AddRow(new string[] {
+                        "Maddington",
+                        "AmiStadium",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "35",
+                        "15",
+                        "50"});
+            table19.AddRow(new string[] {
+                        "Maddington",
+                        "AmiStadium",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "10",
+                        "60",
+                        "30"});
+            table19.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "16",
+                        "53",
+                        "31"});
+            table19.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "25",
+                        "30",
+                        "45"});
+            table19.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat C",
+                        "null",
+                        "72",
+                        "16",
+                        "12"});
+#line 130
+  testRunner.And("I have the following CCA data", ((string)(null)), table19, "And ");
+#line 139
+ testRunner.When("I request CCA summary for lift \'1\' of \'JohnDoe\' machine \'Cat B\' in site \'Maryland" +
+                    "s\' for day -1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+            TechTalk.SpecFlow.Table table20 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Machine",
+                        "LiftID",
+                        "Incomplete",
+                        "Complete",
+                        "Overcomplete"});
+            table20.AddRow(new string[] {
+                        "Cat B",
+                        "1",
+                        "15",
+                        "5",
+                        "80"});
+#line 140
+ testRunner.Then("the response contains the following CCA summary data", ((string)(null)), table20, "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CCA Summary - geofence not specified (defaults to whole project)")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CCA")]
+        public virtual void CCASummary_GeofenceNotSpecifiedDefaultsToWholeProject()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CCA Summary - geofence not specified (defaults to whole project)", ((string[])(null)));
+#line 144
+this.ScenarioSetup(scenarioInfo);
+#line 145
+ testRunner.Given("I have a landfill project \'Maddington\' with landfill sites \'MarylandsLandfill,Ami" +
+                    "StadiumLandfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+            TechTalk.SpecFlow.Table table21 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Name",
+                        "IsJohnDoe"});
+            table21.AddRow(new string[] {
+                        "Cat A",
+                        "false"});
+            table21.AddRow(new string[] {
+                        "Cat B",
+                        "true"});
+            table21.AddRow(new string[] {
+                        "Cat C",
+                        "true"});
+#line 146
+  testRunner.And("I have the following machines", ((string)(null)), table21, "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table22 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Project",
+                        "Site",
+                        "DateAsAnOffsetFromToday",
+                        "Machine",
+                        "LiftID",
+                        "Incomplete",
+                        "Complete",
+                        "Overcomplete"});
+            table22.AddRow(new string[] {
+                        "Maddington",
+                        "Marylands",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "20",
+                        "35",
+                        "45"});
+            table22.AddRow(new string[] {
+                        "Maddington",
+                        "Marylands",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "15",
+                        "5",
+                        "80"});
+            table22.AddRow(new string[] {
+                        "Maddington",
+                        "AmiStadium",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "35",
+                        "15",
+                        "50"});
+            table22.AddRow(new string[] {
+                        "Maddington",
+                        "AmiStadium",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "10",
+                        "60",
+                        "30"});
+            table22.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat A",
+                        "null",
+                        "16",
+                        "53",
+                        "31"});
+            table22.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat B",
+                        "1",
+                        "25",
+                        "30",
+                        "45"});
+            table22.AddRow(new string[] {
+                        "Maddington",
+                        "Maddington",
+                        "-1",
+                        "Cat C",
+                        "null",
+                        "72",
+                        "16",
+                        "12"});
+#line 151
+  testRunner.And("I have the following CCA data", ((string)(null)), table22, "And ");
+#line 160
+ testRunner.When("I request CCA summary for lift \'AllLifts\' of \'JohnDoeOrNonJohnDoe\' machine \'AllMa" +
+                    "chines\' in site \'NotSpecified\' for day -1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+            TechTalk.SpecFlow.Table table23 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Machine",
+                        "LiftID",
+                        "Incomplete",
+                        "Complete",
+                        "Overcomplete"});
+            table23.AddRow(new string[] {
+                        "Cat A",
+                        "null",
+                        "16",
+                        "53",
+                        "31"});
+            table23.AddRow(new string[] {
+                        "Cat C",
+                        "null",
+                        "72",
+                        "16",
+                        "12"});
+#line 161
+ testRunner.Then("the response contains the following CCA summary data", ((string)(null)), table23, "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

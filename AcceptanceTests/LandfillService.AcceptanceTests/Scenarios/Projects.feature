@@ -23,3 +23,79 @@ Scenario: Project data - two years
 		| ProjectName              | GeofenceUID                          | DateRange |
 		| Casella-Stanley Landfill | fb4f0e9d-12f4-11e5-b129-0050568838e5 | TwoYears  |
 	Then the response contains data for 'TwoYears'
+
+Scenario: Machine lifts - between specific dates
+	When I try to get machine lift details for project 'Casella-Stanley Landfill' between dates '2014-06-01&2015-06-01'
+	Then the following machine lift details are returned
+		"""
+		[
+		  {
+			"assetId": 1,
+			"machineName": "sample string 2",
+			"isJohnDoe": true,
+			"lifts": [
+			  {
+				"layerId": 1,
+				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
+			  },
+			  {
+				"layerId": 1,
+				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
+			  }
+			]
+		  },
+		  {
+			"assetId": 1,
+			"machineName": "sample string 2",
+			"isJohnDoe": true,
+			"lifts": [
+			  {
+				"layerId": 1,
+				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
+			  },
+			  {
+				"layerId": 1,
+				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
+			  }
+			]
+		  }
+		]
+		"""
+
+Scenario: Machine lifts - two years
+	When I try to get machine lift details for project 'Casella-Stanley Landfill' between dates 'NotSpecified'
+	Then the following machine lift details are returned
+		"""
+		[
+		  {
+			"assetId": 1,
+			"machineName": "sample string 2",
+			"isJohnDoe": true,
+			"lifts": [
+			  {
+				"layerId": 1,
+				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
+			  },
+			  {
+				"layerId": 1,
+				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
+			  }
+			]
+		  },
+		  {
+			"assetId": 1,
+			"machineName": "sample string 2",
+			"isJohnDoe": true,
+			"lifts": [
+			  {
+				"layerId": 1,
+				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
+			  },
+			  {
+				"layerId": 1,
+				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
+			  }
+			]
+		  }
+		]
+		"""

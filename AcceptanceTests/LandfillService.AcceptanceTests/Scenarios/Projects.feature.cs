@@ -167,6 +167,104 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
             this.ScenarioCleanup();
         }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Machine lifts - between specific dates")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Projects")]
+        public virtual void MachineLifts_BetweenSpecificDates()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Machine lifts - between specific dates", ((string[])(null)));
+#line 27
+this.ScenarioSetup(scenarioInfo);
+#line 28
+ testRunner.When("I try to get machine lift details for project \'Casella-Stanley Landfill\' between " +
+                    "dates \'2014-06-01&2015-06-01\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 29
+ testRunner.Then("the following machine lift details are returned", @"[
+  {
+	""assetId"": 1,
+	""machineName"": ""sample string 2"",
+	""isJohnDoe"": true,
+	""lifts"": [
+	  {
+		""layerId"": 1,
+		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
+	  },
+	  {
+		""layerId"": 1,
+		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
+	  }
+	]
+  },
+  {
+	""assetId"": 1,
+	""machineName"": ""sample string 2"",
+	""isJohnDoe"": true,
+	""lifts"": [
+	  {
+		""layerId"": 1,
+		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
+	  },
+	  {
+		""layerId"": 1,
+		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
+	  }
+	]
+  }
+]", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Machine lifts - two years")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Projects")]
+        public virtual void MachineLifts_TwoYears()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Machine lifts - two years", ((string[])(null)));
+#line 65
+this.ScenarioSetup(scenarioInfo);
+#line 66
+ testRunner.When("I try to get machine lift details for project \'Casella-Stanley Landfill\' between " +
+                    "dates \'NotSpecified\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 67
+ testRunner.Then("the following machine lift details are returned", @"[
+  {
+	""assetId"": 1,
+	""machineName"": ""sample string 2"",
+	""isJohnDoe"": true,
+	""lifts"": [
+	  {
+		""layerId"": 1,
+		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
+	  },
+	  {
+		""layerId"": 1,
+		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
+	  }
+	]
+  },
+  {
+	""assetId"": 1,
+	""machineName"": ""sample string 2"",
+	""isJohnDoe"": true,
+	""lifts"": [
+	  {
+		""layerId"": 1,
+		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
+	  },
+	  {
+		""layerId"": 1,
+		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
+	  }
+	]
+  }
+]", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore
