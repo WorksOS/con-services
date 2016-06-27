@@ -75,7 +75,8 @@ namespace LandfillService.Common.Context
             {
               var command = @"SELECT prj.ProjectID, prj.Name, prj.LandfillTimeZone,
                                      prj.ProjectUID, prj.ProjectTimeZone,
-                                     sub.StartDate AS SubStartDate, sub.EndDate AS SubEndDate 
+                                     sub.StartDate AS SubStartDate, sub.EndDate AS SubEndDate, 
+                                     prj.LegacyCustomerID 
                               FROM Project prj  
                               JOIN CustomerUser cu ON prj.CustomerUID = cu.fk_CustomerUID
                               JOIN Subscription sub ON prj.SubscriptionUID = sub.SubscriptionUID
@@ -110,6 +111,7 @@ namespace LandfillService.Common.Context
                                                    name = reader.GetString(reader.GetOrdinal("Name")),
                                                    timeZoneName = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
                                                    legacyTimeZoneName = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
+                                                   legacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID")),
                                                    daysToSubscriptionExpiry = daysToSubExpiry
                         });
                     }
@@ -270,7 +272,7 @@ namespace LandfillService.Common.Context
       {        
         return InTransaction((conn) =>
         {
-          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name
+          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name, prj.LegacyCustomerID
                           FROM Project prj 
                           LEFT JOIN Entries etr ON prj.ProjectUID = etr.ProjectUID 
                           WHERE etr.Weight IS NOT NULL AND prj.IsDeleted = 0";
@@ -284,7 +286,8 @@ namespace LandfillService.Common.Context
                 id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
                 timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone")),
                 projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
-                name = reader.GetString(reader.GetOrdinal("Name"))
+                name = reader.GetString(reader.GetOrdinal("Name")),
+                legacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID"))
               });
             }
             return projects;

@@ -16,6 +16,7 @@ namespace LandfillService.Common.Models
         public int? daysToSubscriptionExpiry { get; set; }
         public string projectUid { get; set; }
         public string legacyTimeZoneName { get; set; }
+        public long legacyCustomerID { get; set; }
     }
 
     /// <summary>

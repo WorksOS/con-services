@@ -230,6 +230,8 @@ namespace LandfillService.Common.ApiClients
         /// <returns>SummaryVolumesResult</returns>
         public async Task<SummaryVolumesResult> GetAirspaceVolumeAsync(string userUid, Project project, bool returnEarliest)
         {
+          string tccFilespaceId = ConfigurationManager.AppSettings["TCCfilespaceId"];
+          string topOfWasteDesignFilename = ConfigurationManager.AppSettings["TopOfWasteDesignFilename"];
           var volumeParams = new VolumeParams
           {
             projectId = project.id,
@@ -237,8 +239,7 @@ namespace LandfillService.Common.ApiClients
             baseFilter = new VolumeFilter { returnEarliest = returnEarliest },
             topDesignDescriptor = new VolumeDesign
             {
-              //TODO: depends on #14594
-              file = new DesignDescriptor { filespaceId = "", path = "", fileName = "" }
+              file = new DesignDescriptor { filespaceId = tccFilespaceId, path = String.Format("/{0}/{1}", project.legacyCustomerID, project.id), fileName = topOfWasteDesignFilename }
             }
           };
           return ParseResponse<SummaryVolumesResult>(await Request(this.reportEndpoint + "volumes/summary", userUid, volumeParams));

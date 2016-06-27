@@ -126,7 +126,7 @@ namespace VSS.Project.Data
             @"UPDATE Project                
                 SET CustomerUID = @CustomerUID,
                     LegacyCustomerID = @LegacyCustomerID,
-                  LastActionedUTC = @LastActionedUTC
+                    LastActionedUTC = @LastActionedUTC
               WHERE ProjectUID = @ProjectUID";
           return Connection.Execute(update, project);
         }
