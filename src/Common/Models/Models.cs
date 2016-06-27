@@ -174,8 +174,8 @@ namespace LandfillService.Common.Models
     {
       public double currentWeekVolume { get; set; }
       public double currentMonthVolume { get; set; }
-      public double remainingVolume { get; set; }
-      public double remainingTime { get; set; }
+      public double? remainingVolume { get; set; }
+      public double? remainingTime { get; set; }
     }
 
   #endregion

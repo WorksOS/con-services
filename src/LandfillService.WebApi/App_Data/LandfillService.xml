@@ -824,7 +824,6 @@
             </summary>
             <param name="userUid">User ID</param>
             <param name="project">Project</param>
-            <param name="date">Date in project time zone</param>
             <param name="returnEarliest">Indicates if filtering by earliest or latest cell pass</param>
             <returns></returns>
         </member>
@@ -834,7 +833,7 @@
             </summary>
             <param name="userUid">User ID</param>
             <param name="project">Project</param>
-            <returns></returns>
+            <returns>Date extents from project statistics</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofences(System.UInt32)">
             <summary>

@@ -254,7 +254,7 @@ namespace LandfillService.Common.ApiClients
         public async Task<ProjectStatisticsResult> GetProjectStatisticsAsync(string userUid, Project project)
         {
           var statsParams = new StatisticsParams { projectId = project.id };
-          return ParseResponse<ProjectStatisticsResult>(await Request(this.reportEndpoint + "statistics", userUid, statsParams));
+          return ParseResponse<ProjectStatisticsResult>(await Request(this.reportEndpoint + "projects/statistics", userUid, statsParams));
         }
 
 
