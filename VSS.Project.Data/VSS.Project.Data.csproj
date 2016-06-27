@@ -56,8 +56,8 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1230.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1230.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
+    <Reference Include="VSS.VisionLink.Interfaces.Events.MasterData, Version=1.0.1232.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.VisionLink.Interfaces.Events.MasterData.1.0.1232.0\lib\net45\VSS.VisionLink.Interfaces.Events.MasterData.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -85,12 +85,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\LandfillService.Common.csproj">
-      <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
-      <Name>LandfillService.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
