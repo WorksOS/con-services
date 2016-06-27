@@ -25,37 +25,18 @@ Scenario: Project data - two years
 	Then the response contains data for 'TwoYears'
 
 Scenario: Machine lifts - between specific dates
-	When I try to get machine lift details for project 'Casella-Stanley Landfill' between dates '2014-06-01&2015-06-01'
+	When I try to get machine lift details for project 'PPG Track Wheel' between dates '2016-05-03&2015-05-03'
 	Then the following machine lift details are returned
 		"""
 		[
 		  {
-			"assetId": 1,
-			"machineName": "sample string 2",
+			"assetId": 1000001,
+			"machineName": "BLUE TRUCK",
 			"isJohnDoe": true,
 			"lifts": [
 			  {
 				"layerId": 1,
-				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
-			  },
-			  {
-				"layerId": 1,
-				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
-			  }
-			]
-		  },
-		  {
-			"assetId": 1,
-			"machineName": "sample string 2",
-			"isJohnDoe": true,
-			"lifts": [
-			  {
-				"layerId": 1,
-				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
-			  },
-			  {
-				"layerId": 1,
-				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
+				"endTime": "2016-05-03T04:53:53.977"
 			  }
 			]
 		  }
@@ -63,37 +44,18 @@ Scenario: Machine lifts - between specific dates
 		"""
 
 Scenario: Machine lifts - two years
-	When I try to get machine lift details for project 'Casella-Stanley Landfill' between dates 'NotSpecified'
+	When I try to get machine lift details for project 'PPG Track Wheel' between dates 'NotSpecified'
 	Then the following machine lift details are returned
 		"""
 		[
 		  {
-			"assetId": 1,
-			"machineName": "sample string 2",
+			"assetId": 1000001,
+			"machineName": "BLUE TRUCK",
 			"isJohnDoe": true,
 			"lifts": [
 			  {
 				"layerId": 1,
-				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
-			  },
-			  {
-				"layerId": 1,
-				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
-			  }
-			]
-		  },
-		  {
-			"assetId": 1,
-			"machineName": "sample string 2",
-			"isJohnDoe": true,
-			"lifts": [
-			  {
-				"layerId": 1,
-				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
-			  },
-			  {
-				"layerId": 1,
-				"endUtc": "2016-06-27T11:20:42.9872875+12:00"
+				"endTime": "2016-05-03T04:53:53.977"
 			  }
 			]
 		  }

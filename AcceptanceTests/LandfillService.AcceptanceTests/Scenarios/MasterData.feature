@@ -32,8 +32,8 @@ Scenario: Associate project subscription
 
 Scenario: Associate project subscription out of order
 	Given I inject 'CreateProjectSubscriptionEvent' into Kafka
-		And I inject 'AssociateProjectCustomer' into Kafka
 		And I inject 'AssociateProjectSubscriptionEvent' into Kafka
+		And I inject 'AssociateProjectCustomer' into Kafka
 		And I inject 'CreateProjectEvent' into Kafka
 	When I make a Web API request for a list of projects
 	Then the created project is in the list

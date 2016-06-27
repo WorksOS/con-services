@@ -179,9 +179,9 @@ this.ScenarioSetup(scenarioInfo);
 #line 34
  testRunner.Given("I inject \'CreateProjectSubscriptionEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 35
-  testRunner.And("I inject \'AssociateProjectCustomer\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 36
   testRunner.And("I inject \'AssociateProjectSubscriptionEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 36
+  testRunner.And("I inject \'AssociateProjectCustomer\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 37
   testRunner.And("I inject \'CreateProjectEvent\' into Kafka", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 38

@@ -158,7 +158,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 9
   testRunner.And("I have the following CCA data", ((string)(null)), table2, "And ");
 #line 17
- testRunner.When("I request CCA ratio for site \'Maddington\' for the past \'2\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request CCA ratio for site \'Maddington\' for the last \'2\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                         "Machine",
@@ -268,7 +268,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 29
   testRunner.And("I have the following CCA data", ((string)(null)), table5, "And ");
 #line 37
- testRunner.When("I request CCA ratio for site \'Marylands\' for the past \'2\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request CCA ratio for site \'Marylands\' for the last \'2\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
                         "Machine",
@@ -378,7 +378,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 49
   testRunner.And("I have the following CCA data", ((string)(null)), table8, "And ");
 #line 57
- testRunner.When("I request CCA ratio for site \'NotSpecified\' for the past \'2\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request CCA ratio for site \'NotSpecified\' for the last \'2\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table9 = new TechTalk.SpecFlow.Table(new string[] {
                         "Machine",
@@ -488,7 +488,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 69
   testRunner.And("I have the following CCA data", ((string)(null)), table11, "And ");
 #line 77
- testRunner.When("I request CCA ratio for site \'NotSpecified\' for the past \'NotSpecified\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request CCA ratio for site \'NotSpecified\' for the last \'NotSpecified\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 78
  testRunner.Then("the response contains two years of CCA ration data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
