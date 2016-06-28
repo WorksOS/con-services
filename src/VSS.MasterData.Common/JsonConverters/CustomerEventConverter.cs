@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Landfill.Common.JsonConverters
+namespace VSS.MasterData.Common.JsonConverters
 {
   public class CustomerEventConverter : JsonCreationConverter<ICustomerEvent>
   {

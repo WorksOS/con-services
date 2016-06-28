@@ -4,11 +4,11 @@ using log4net;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using org.apache.kafka.clients.consumer;
-using VSS.Landfill.Common.Helpers;
-using VSS.Landfill.Common.JsonConverters;
+using VSS.MasterData.Common.Helpers;
+using VSS.MasterData.Common.JsonConverters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.Landfill.Common.Processor
+namespace VSS.MasterData.Common.Processor
 {
   public abstract class EventObserverBase<T, U> : IObserver<ConsumerRecord> where U : JsonCreationConverter<T>, new()
   {

@@ -5,7 +5,7 @@ using ClipperLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using VSS.Geofence.Data.Models;
-using VSS.Landfill.Common.Helpers;
+using VSS.MasterData.Common.Helpers;
 using VSS.Project.Data;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
-using VSS.Landfill.Common.Repositories;
+using VSS.MasterData.Common.Repositories;
 using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data.Models;
 using log4net;

@@ -9,7 +9,7 @@ using log4net;
 using org.apache.kafka.clients.consumer;
 using Autofac;
 
-namespace VSS.Landfill.Common.Processor
+namespace VSS.MasterData.Common.Processor
 {
   public class Processor : IProcessor
   {

@@ -6,8 +6,8 @@ using Dapper;
 using log4net;
 using VSS.Geofence.Data.Interfaces;
 using VSS.Geofence.Data.Models;
-using VSS.Landfill.Common.Helpers;
-using VSS.Landfill.Common.Repositories;
+using VSS.MasterData.Common.Helpers;
+using VSS.MasterData.Common.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

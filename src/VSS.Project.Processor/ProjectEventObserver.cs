@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using VSS.Geofence.Data.Interfaces;
-using VSS.Landfill.Common.JsonConverters;
-using VSS.Landfill.Common.Processor;
+using VSS.MasterData.Common.JsonConverters;
+using VSS.MasterData.Common.Processor;
 using VSS.Project.Data.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;

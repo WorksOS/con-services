@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.Landfill.Common.Processor
+namespace VSS.MasterData.Common.Processor
 {
   public interface IProcessor
   {

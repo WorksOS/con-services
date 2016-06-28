@@ -5,7 +5,7 @@ using Dapper;
 using log4net;
 using Newtonsoft.Json;
 using VSS.Customer.Data.Interfaces;
-using VSS.Landfill.Common.Repositories;
+using VSS.MasterData.Common.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

@@ -8,7 +8,7 @@ using Topshelf;
 using Topshelf.Runtime;
 using VSS.Geofence.Data;
 using VSS.Geofence.Data.Interfaces;
-using VSS.Landfill.Common.Processor;
+using VSS.MasterData.Common.Processor;
 using VSS.Project.Data;
 using VSS.Project.Data.Interfaces;
 
@@ -58,7 +58,7 @@ namespace VSS.Geofence.Processor
       if (string.IsNullOrWhiteSpace(confluentBaseUrl))
         throw new ArgumentNullException("RestProxy Base Url is empty");
 
-      builder.RegisterType<VSS.Landfill.Common.Processor.Processor>().As<IProcessor>().SingleInstance();
+      builder.RegisterType<VSS.MasterData.Common.Processor.Processor>().As<IProcessor>().SingleInstance();
       builder.RegisterType<GeofenceEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlGeofenceRepository>().As<IGeofenceService>().SingleInstance();
       builder.RegisterType<MySqlProjectRepository>().As<IProjectService>().SingleInstance();

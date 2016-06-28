@@ -176,9 +176,9 @@
       <Project>{740f7458-cb19-4422-9b45-173d7a6e9b51}</Project>
       <Name>VSS.Geofence.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.Landfill.Common\VSS.Landfill.Common.csproj">
+    <ProjectReference Include="..\VSS.MasterData.Common\VSS.MasterData.Common.csproj">
       <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
-      <Name>VSS.Landfill.Common</Name>
+      <Name>VSS.MasterData.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\VSS.Project.Data\VSS.Project.Data.csproj">
       <Project>{225fbdea-c77f-4208-8942-1ca40eceef2d}</Project>

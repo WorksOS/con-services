@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Dapper;
 using log4net;
-using VSS.Landfill.Common.Repositories;
+using VSS.MasterData.Common.Repositories;
 using VSS.Project.Data.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;

@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace VSS.Landfill.Common.JsonConverters
+namespace VSS.MasterData.Common.JsonConverters
 {
   public abstract class JsonCreationConverter<T> : JsonConverter
   {

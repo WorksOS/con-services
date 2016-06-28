@@ -7,8 +7,8 @@
     <ProjectGuid>{6BB07A92-FA0C-49C5-9984-8143D0853AC1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VSS.Landfill.Common</RootNamespace>
-    <AssemblyName>VSS.Landfill.Common</AssemblyName>
+    <RootNamespace>VSS.MasterData.Common</RootNamespace>
+    <AssemblyName>VSS.MasterData.Common</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

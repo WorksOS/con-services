@@ -74,9 +74,9 @@
       <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
       <Name>LandfillService.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.Landfill.Common\VSS.Landfill.Common.csproj">
+    <ProjectReference Include="..\VSS.MasterData.Common\VSS.MasterData.Common.csproj">
       <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
-      <Name>VSS.Landfill.Common</Name>
+      <Name>VSS.MasterData.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

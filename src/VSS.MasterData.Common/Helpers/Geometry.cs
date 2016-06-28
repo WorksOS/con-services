@@ -5,7 +5,7 @@ using ClipperLib;
 using Common.Utilities;
 using LandfillService.Common.Models;
 
-namespace VSS.Landfill.Common.Helpers
+namespace VSS.MasterData.Common.Helpers
 {
   public static class Geometry
   {

@@ -1,6 +1,6 @@
 ﻿using VSS.Customer.Data.Interfaces;
-using VSS.Landfill.Common.JsonConverters;
-using VSS.Landfill.Common.Processor;
+using VSS.MasterData.Common.JsonConverters;
+using VSS.MasterData.Common.Processor;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Customer.Processor

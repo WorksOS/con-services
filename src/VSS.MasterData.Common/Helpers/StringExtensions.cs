@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Landfill.Common.Helpers
+namespace VSS.MasterData.Common.Helpers
 {
   public static class StringExtensions
   {

@@ -61,9 +61,9 @@
       <Project>{70ca8791-9379-4236-8849-d29cbeb2e251}</Project>
       <Name>VSS.Customer.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VSS.Landfill.Common\VSS.Landfill.Common.csproj">
+    <ProjectReference Include="..\VSS.MasterData.Common\VSS.MasterData.Common.csproj">
       <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
-      <Name>VSS.Landfill.Common</Name>
+      <Name>VSS.MasterData.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

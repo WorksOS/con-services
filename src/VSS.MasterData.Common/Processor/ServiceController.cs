@@ -2,7 +2,7 @@
 using System;
 using System.Reflection;
 
-namespace VSS.Landfill.Common.Processor
+namespace VSS.MasterData.Common.Processor
 {
   public class ServiceController
   {
