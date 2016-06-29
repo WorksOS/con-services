@@ -99,3 +99,15 @@ Scenario: Machine lifts - two years
 		  }
 		]
 		"""
+
+Scenario: Gets volume and time summary for a landfill project
+	When I try to get volume and time summary for project 'Casella-Stanley Landfill'
+	Then the following volume and time summary are returned
+		"""
+		{
+		  "currentWeekVolume": 0,
+		  "currentMonthVolume": 12537.928201403798,
+		  "remainingVolume": null,
+		  "remainingTime": null
+		}
+		"""
