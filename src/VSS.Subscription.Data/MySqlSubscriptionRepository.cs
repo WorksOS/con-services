@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Dapper;
 using VSS.MasterData.Common.Repositories;
-using VSS.Project.Data.Interfaces;
 using VSS.Subscription.Data.Models;
 using log4net;
 using VSS.Subscription.Data.Interfaces;
@@ -18,7 +17,7 @@ namespace VSS.Subscription.Data
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         //private readonly string _connectionString;
-        public Dictionary<string, Models.ServiceType> _serviceTypes = null;
+        public Dictionary<string, ServiceType> _serviceTypes = null;
 
         public MySqlSubscriptionRepository()
         {

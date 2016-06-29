@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interfaces\ISubscriptionService.cs" />
+    <Compile Include="Models\ProjectSubscription.cs" />
     <Compile Include="Models\Subscription.cs" />
     <Compile Include="MySqlSubscriptionRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

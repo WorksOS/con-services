@@ -78,7 +78,8 @@ namespace LandfillService.Common.Context
                                      sub.StartDate AS SubStartDate, sub.EndDate AS SubEndDate 
                               FROM Project prj  
                               JOIN CustomerUser cu ON prj.CustomerUID = cu.fk_CustomerUID
-                              JOIN Subscription sub ON prj.SubscriptionUID = sub.SubscriptionUID
+                              JOIN CustomerSubscription cs ON prj.CustomerUID = cs.fk_CustomerUID
+                              JOIN Subscription sub ON cs.fk_SubscriptionUID = sub.SubscriptionUID
                               WHERE cu.fk_UserUID = @userUid and prj.IsDeleted = 0";
               var projects = new List<Project>();
 

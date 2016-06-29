@@ -18,59 +18,51 @@ namespace VSS.Customer.Data
     public int StoreCustomer(ICustomerEvent evt)
     {
       var upsertedCount = 0;
-      var customer = new Models.Customer();
-      var customerUser = new Models.CustomerUser();
-      string eventType = "Unknown";
 
       if (evt is CreateCustomerEvent)
       {
         var customerEvent = (CreateCustomerEvent)evt;
+        var customer = new Models.Customer();
         customer.CustomerName = customerEvent.CustomerName;
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.CustomerType = (CustomerType) Enum.Parse(typeof (CustomerType), customerEvent.CustomerType, true);
         customer.LastActionedUTC = customerEvent.ActionUTC;        
-
-        eventType = "CreateCustomerEvent";
-        upsertedCount = UpsertCustomerDetail(customer, eventType);
+        upsertedCount = UpsertCustomerDetail(customer, "CreateCustomerEvent");
       }
       else if (evt is UpdateCustomerEvent)
       {
         var customerEvent = (UpdateCustomerEvent)evt;
+        var customer = new Models.Customer();
         customer.CustomerName = customerEvent.CustomerName;
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.LastActionedUTC = customerEvent.ActionUTC;
-        
-        eventType = "UpdateCustomerEvent";
-        upsertedCount = UpsertCustomerDetail(customer, eventType);
+        upsertedCount = UpsertCustomerDetail(customer, "UpdateCustomerEvent");
       }
       else if (evt is DeleteCustomerEvent)
       {
         var customerEvent = (DeleteCustomerEvent)evt;
+        var customer = new Models.Customer();
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.LastActionedUTC = customerEvent.ActionUTC;
-
-        eventType = "DeleteCustomerEvent";
-        upsertedCount = UpsertCustomerDetail(customer, eventType);
+        upsertedCount = UpsertCustomerDetail(customer, "DeleteCustomerEvent");
       }
       else if (evt is AssociateCustomerUserEvent)
       {
         var customerEvent = (AssociateCustomerUserEvent)evt;
+        var customerUser = new Models.CustomerUser();
         customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
         customerUser.UserUID = customerEvent.UserUID.ToString();
         customerUser.LastActionedUTC = customerEvent.ActionUTC;
-
-        eventType = "AssociateCustomerUserEvent";
-        upsertedCount = UpsertCustomerUserDetail(customerUser, eventType);
+        upsertedCount = UpsertCustomerUserDetail(customerUser, "AssociateCustomerUserEvent");
       }
       else if (evt is DissociateCustomerUserEvent)
       {
         var customerEvent = (DissociateCustomerUserEvent)evt;
+        var customerUser = new Models.CustomerUser();
         customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
         customerUser.UserUID = customerEvent.UserUID.ToString();
         customerUser.LastActionedUTC = customerEvent.ActionUTC;
-
-        eventType = "DissociateCustomerUserEvent";
-        upsertedCount = UpsertCustomerUserDetail(customerUser, eventType);
+        upsertedCount = UpsertCustomerUserDetail(customerUser, "DissociateCustomerUserEvent");
       }
    
       return upsertedCount;
@@ -259,16 +251,6 @@ namespace VSS.Customer.Data
     {
       if (existing == null)
       {
-        //TODO: May need to dummy this like projects and customers due to out of order events
-
-        var customer = Connection.Query<Models.Customer>
-          (@"SELECT *
-              FROM Customer
-              WHERE CustomerUID = @customerUID", new { customerUID = customerUser.CustomerUID }).FirstOrDefault();
-
-        if (customer == null) return 0;
-
-
         const string insert =
           @"INSERT CustomerUser
             (fk_UserUID, fk_CustomerUID, LastActionedUTC)
