@@ -14,7 +14,7 @@ Scenario: CCA Ratio - whole project
 		| Maddington | AmiStadium | -1                      | Cat B   | 1      | 10         | 60       | 30           |
 		| Maddington | Maddington | -2                      | Cat A   | null   | 65         | 20       | 15           |
 		| Maddington | Maddington | -1                      | Cat B   | 1      | 25         | 30       | 45           |
-	When I request CCA ratio for site 'Maddington' for the past '2' days
+	When I request CCA ratio for site 'Maddington' for the last '2' days
 	Then the response contains the following CCA ration data
 	| Machine | DateAsAnOffsetFromToday | CCARatio |
 	| Cat A   | -2                      | 35       |
@@ -34,7 +34,7 @@ Scenario: CCA Ratio - Individual site
 		| Maddington | AmiStadium | -1                      | Cat B   | 1      | 10         | 60       | 30           |
 		| Maddington | Maddington | -2                      | Cat A   | null   | 65         | 20       | 15           |
 		| Maddington | Maddington | -1                      | Cat B   | 1      | 25         | 30       | 45           |
-	When I request CCA ratio for site 'Marylands' for the past '2' days
+	When I request CCA ratio for site 'Marylands' for the last '2' days
 	Then the response contains the following CCA ration data
 	| Machine | DateAsAnOffsetFromToday | CCARatio |
 	| Cat A   | -2                      | 80       |
@@ -54,7 +54,7 @@ Scenario: CCA Ratio - geofence not specified (defaults to whole project)
 		| Maddington | AmiStadium | -1                      | Cat B   | 1      | 10         | 60       | 30           |
 		| Maddington | Maddington | -2                      | Cat A   | null   | 65         | 20       | 15           |
 		| Maddington | Maddington | -1                      | Cat B   | 1      | 25         | 30       | 45           |
-	When I request CCA ratio for site 'NotSpecified' for the past '2' days
+	When I request CCA ratio for site 'NotSpecified' for the last '2' days
 	Then the response contains the following CCA ration data
 	| Machine | DateAsAnOffsetFromToday | CCARatio |
 	| Cat A   | -2                      | 35       |
@@ -74,7 +74,7 @@ Scenario: CCA Ratio - dates not specified (defaults to two years)
 		| Maddington | AmiStadium | -1                      | Cat B   | 1      | 10         | 60       | 30           |
 		| Maddington | Maddington | -2                      | Cat A   | null   | 65         | 20       | 15           |
 		| Maddington | Maddington | -1                      | Cat B   | 1      | 25         | 30       | 45           |
-	When I request CCA ratio for site 'NotSpecified' for the past 'NotSpecified' days
+	When I request CCA ratio for site 'NotSpecified' for the last 'NotSpecified' days
 	Then the response contains two years of CCA ration data
 
 Scenario: CCA Summary - whole project all machines all lifts 

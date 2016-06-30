@@ -177,42 +177,13 @@ this.ScenarioSetup(scenarioInfo);
 #line 27
 this.ScenarioSetup(scenarioInfo);
 #line 28
- testRunner.When("I try to get machine lift details for project \'Casella-Stanley Landfill\' between " +
-                    "dates \'2014-06-01&2015-06-01\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I try to get machine lift details for project \'PPG Track Wheel\' between dates \'20" +
+                    "16-05-03&2015-05-03\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 29
- testRunner.Then("the following machine lift details are returned", @"[
-  {
-	""assetId"": 1,
-	""machineName"": ""sample string 2"",
-	""isJohnDoe"": true,
-	""lifts"": [
-	  {
-		""layerId"": 1,
-		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
-	  },
-	  {
-		""layerId"": 1,
-		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
-	  }
-	]
-  },
-  {
-	""assetId"": 1,
-	""machineName"": ""sample string 2"",
-	""isJohnDoe"": true,
-	""lifts"": [
-	  {
-		""layerId"": 1,
-		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
-	  },
-	  {
-		""layerId"": 1,
-		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
-	  }
-	]
-  }
-]", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the following machine lift details are returned", "[\n  {\n\t\"assetId\": 1000001,\n\t\"machineName\": \"BLUE TRUCK\",\n\t\"isJohnDoe\": true,\n\t\"li" +
+                    "fts\": [\n\t  {\n\t\t\"layerId\": 1,\n\t\t\"endTime\": \"2016-05-03T04:53:53.977\"\n\t  }\n\t]\n  }\n" +
+                    "]", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -223,45 +194,16 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void MachineLifts_TwoYears()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Machine lifts - two years", ((string[])(null)));
-#line 65
+#line 46
 this.ScenarioSetup(scenarioInfo);
-#line 66
- testRunner.When("I try to get machine lift details for project \'Casella-Stanley Landfill\' between " +
-                    "dates \'NotSpecified\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 47
+ testRunner.When("I try to get machine lift details for project \'PPG Track Wheel\' between dates \'No" +
+                    "tSpecified\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 67
- testRunner.Then("the following machine lift details are returned", @"[
-  {
-	""assetId"": 1,
-	""machineName"": ""sample string 2"",
-	""isJohnDoe"": true,
-	""lifts"": [
-	  {
-		""layerId"": 1,
-		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
-	  },
-	  {
-		""layerId"": 1,
-		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
-	  }
-	]
-  },
-  {
-	""assetId"": 1,
-	""machineName"": ""sample string 2"",
-	""isJohnDoe"": true,
-	""lifts"": [
-	  {
-		""layerId"": 1,
-		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
-	  },
-	  {
-		""layerId"": 1,
-		""endUtc"": ""2016-06-27T11:20:42.9872875+12:00""
-	  }
-	]
-  }
-]", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 48
+ testRunner.Then("the following machine lift details are returned", "[\n  {\n\t\"assetId\": 1000001,\n\t\"machineName\": \"BLUE TRUCK\",\n\t\"isJohnDoe\": true,\n\t\"li" +
+                    "fts\": [\n\t  {\n\t\t\"layerId\": 1,\n\t\t\"endTime\": \"2016-05-03T04:53:53.977\"\n\t  }\n\t]\n  }\n" +
+                    "]", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

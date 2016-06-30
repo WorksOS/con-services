@@ -72,8 +72,8 @@ namespace LandfillService.AcceptanceTests.Scenarios
         #endregion
 
         #region When
-        [When(@"I request CCA ratio for site '(.*)' for the past (.*) days")]
-        public void WhenIRequestCCARatioForSiteForThePastDays(string site, string numDays)
+        [When(@"I request CCA ratio for site '(.*)' for the last '(.*)' days")]
+        public void WhenIRequestCCARatioForSiteForTheLastDays(string site, string numDays) 
         {
             // uri parameters
             Guid? geofenceUid = site == "NotSpecified" ? null : (Guid?)(customer.ProjectName.StartsWith(site) ? customer.ProjectGeofenceUid :
@@ -154,8 +154,8 @@ namespace LandfillService.AcceptanceTests.Scenarios
         [Then(@"the response contains two years of CCA ration data")]
         public void ThenTheResponseContainsTwoYearsOfCCARationData()
         {
-            Assert.IsTrue(ccaRatio[0].entries.Count == 730 || ccaRatio[0].entries.Count == 731,
-                "Incorrect number of cca ratio data entries.");
+            int numEntries = ccaRatio[0].entries.Count;
+            Assert.IsTrue(numEntries <= 732 && numEntries >= 730, "Incorrect number of cca ratio data entries.");
         }
 
         [Then(@"the response contains the following CCA summary data")]
