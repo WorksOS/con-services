@@ -324,8 +324,6 @@ namespace LandfillService.Common.Context
         /// <returns>A list of dates and geofence UIDs</returns>
         public static IEnumerable<DateEntry> GetDatesWithVolumesNotRetrieved(Project project)
         {
-            string projectGeofenceUid = UpdateEntriesIfRequired(project, null);
-
             return WithConnection((conn) =>
             {
                 // selects dates where volume retrieval failed OR was never completed OR hasn't yet happened;
@@ -364,7 +362,7 @@ namespace LandfillService.Common.Context
         /// <returns>A list of data entries</returns>
         public static IEnumerable<DayEntry> GetEntries(Project project, string geofenceUid, DateTime? startDate, DateTime? endDate)
         {
-            string projectGeofenceUid = UpdateEntriesIfRequired(project, geofenceUid);
+            string projectGeofenceUid = GetGeofenceUidForProject(project);
             if (string.IsNullOrEmpty(geofenceUid))
               geofenceUid = projectGeofenceUid;
 
@@ -418,15 +416,11 @@ namespace LandfillService.Common.Context
         }
 
         /// <summary>
-        /// Updates entries for a project if required. Old landfill projects do not have the geofence UID set.
-        /// Checks if the specified geofence UID is the project one and updates corresponding entries.
-        /// If the geofence UID is not specified then it gets the project one from the Geofence table
-        /// and updates the corresponding entries.
+        /// Gets the geofence UID for the project from the Geofence table
         /// </summary>
         /// <param name="project">Project</param>
-        /// <param name="geofenceUid">Geofence UID</param>
         /// <returns>The geofence UID. If none was specified returns the project geofence UID</returns>
-        public static string UpdateEntriesIfRequired(Project project, string geofenceUid)
+        private static string GetGeofenceUidForProject(Project project)
         {
           return WithConnection((conn) =>
           {
@@ -442,27 +436,7 @@ namespace LandfillService.Common.Context
                 projectGeofenceUid = reader.GetString(0);
               }      
             }
-
-            //See if handling entries for whole project
-            if (string.IsNullOrEmpty(geofenceUid) || projectGeofenceUid == geofenceUid)
-            {
-              if (!string.IsNullOrEmpty(projectGeofenceUid))
-              {
-                //Update project entries geofence UID
-                command =
-                    "UPDATE Entries SET GeofenceUID = @geofenceUid WHERE ProjectUID = @projectUid AND GeofenceUID IS NULL";
-
-                MySqlHelper.ExecuteNonQuery(conn, command,
-                    new MySqlParameter("@projectUid", project.projectUid),
-                    new MySqlParameter("@geofenceUid", projectGeofenceUid));
-
-
-                if (string.IsNullOrEmpty(geofenceUid))
-                  geofenceUid = projectGeofenceUid;
-              }
-            }
-
-            return geofenceUid;
+            return projectGeofenceUid;
           });        
         }
 
@@ -732,7 +706,7 @@ namespace LandfillService.Common.Context
         /// <returns>A list of CCA entries</returns>
       public static IEnumerable<CCA> GetCCA(Project project, string geofenceUid, DateTime? startDate, DateTime? endDate, long? machineId, int? liftId)
       {
-        string projectGeofenceUid = UpdateEntriesIfRequired(project, geofenceUid);
+        string projectGeofenceUid = GetGeofenceUidForProject(project);
         if (string.IsNullOrEmpty(geofenceUid))
           geofenceUid = projectGeofenceUid;
 

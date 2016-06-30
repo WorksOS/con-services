@@ -16,52 +16,16 @@ namespace VSS.Subscription.Processor
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private ISubscriptionService _subscriptionService;
-        private IProjectService _projectService;
 
-        public SubscriptionEventObserver(ISubscriptionService subscriptionService, IProjectService projectService)
+        public SubscriptionEventObserver(ISubscriptionService subscriptionService)
         {
             _subscriptionService = subscriptionService;
-            _projectService = projectService;
             EventName = "Subscription";
         }
 
         protected override bool ProcessEvent(ISubscriptionEvent evt)
         {
-          int updatedCount = 0;
-          if (evt is AssociateProjectSubscriptionEvent)
-          {
-            //Handle out of order events. Create a dummy project if required.
-            var subscriptionEvent = (AssociateProjectSubscriptionEvent)evt;
-            var lastActionUtc = subscriptionEvent.ActionUTC;
-            var project = _projectService.GetProject(subscriptionEvent.ProjectUID.ToString());
-            if (project == null)
-            {
-              lastActionUtc = DateTime.MinValue;
-              updatedCount = _projectService.StoreProject(
-                    new CreateProjectEvent
-                    {
-                      ProjectUID = subscriptionEvent.ProjectUID,
-                      ProjectName = string.Empty,
-                      ProjectTimezone = string.Empty,
-                      ActionUTC = lastActionUtc
-                    });
-              if (updatedCount == 0)
-              {
-                Log.WarnFormat("SubscriptionEventObserver: Failed to create dummy project for out of order event - subscription UID {0}, project UID {1}", 
-                subscriptionEvent.SubscriptionUID, subscriptionEvent.ProjectUID);                
-              }
-            }
-            updatedCount = _projectService.AssociateProjectSubscription(subscriptionEvent.ProjectUID.ToString(),
-                subscriptionEvent.SubscriptionUID.ToString(), lastActionUtc);
-            if (updatedCount == 0)
-            {
-              Log.WarnFormat("SubscriptionEventObserver: Failed to save subscription UID {0} for project UID {1}", 
-                subscriptionEvent.SubscriptionUID, subscriptionEvent.ProjectUID);
-              
-            }
-          }
-          updatedCount = _subscriptionService.StoreSubscription(evt);
-
+          int updatedCount = _subscriptionService.StoreSubscription(evt);
           return updatedCount == 1;
         }
     }

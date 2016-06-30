@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
+using ikvm.extensions;
 using VSS.MasterData.Common.Repositories;
 using VSS.Subscription.Data.Models;
 using log4net;
@@ -28,8 +29,6 @@ namespace VSS.Subscription.Data
         public int StoreSubscription(ISubscriptionEvent evt)
         {
           var upsertedCount = 0;
-          string eventType = "Unknown";
-          var subscription = new Models.Subscription();
 
           if (evt is CreateProjectSubscriptionEvent)
           {
@@ -37,6 +36,7 @@ namespace VSS.Subscription.Data
             var subscriptionEvent = (CreateProjectSubscriptionEvent)evt;
             if (subscriptionEvent.SubscriptionType.ToLower() == "landfill")
             {
+              var subscription = new Models.Subscription();
               subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
               subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
               subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
@@ -45,8 +45,7 @@ namespace VSS.Subscription.Data
               //In NG the end date is the maximum unless it is cancelled/terminated.
               subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow ? new DateTime(9999, 12, 31) : subscriptionEvent.EndDate;
               subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-
-              eventType = "CreateProjectSubscriptionEvent";
+              upsertedCount = UpsertSubscriptionDetail(subscription, "CreateProjectSubscriptionEvent");
             }
           }
           else if (evt is UpdateProjectSubscriptionEvent)
@@ -54,28 +53,25 @@ namespace VSS.Subscription.Data
             var subscriptionEvent = (UpdateProjectSubscriptionEvent)evt;
             if (subscriptionEvent.SubscriptionType.ToLower() == "landfill")
             {
+              var subscription = new Models.Subscription();
               subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
               subscription.CustomerUID = subscriptionEvent.CustomerUID.HasValue ? subscriptionEvent.CustomerUID.Value.ToString() : null;
               subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
               subscription.StartDate = subscriptionEvent.StartDate ?? DateTime.MinValue;
               subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
               subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-
-              eventType = "UpdateProjectSubscriptionEvent";
+              upsertedCount = UpsertSubscriptionDetail(subscription, "UpdateProjectSubscriptionEvent");
             }
           }
           else if (evt is AssociateProjectSubscriptionEvent)
           {
             var subscriptionEvent = (AssociateProjectSubscriptionEvent)evt;
-
-            subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
-            subscription.CustomerUID = String.Empty;            
-            subscription.EffectiveUTC = subscriptionEvent.EffectiveDate;
-            subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-
-            eventType = "AssociateProjectSubscriptionEvent";
+            var projectSubscription = new Models.ProjectSubscription();
+            projectSubscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+            projectSubscription.ProjectUID = subscriptionEvent.ProjectUID.toString();
+            projectSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+            upsertedCount = UpsertProjectSubscriptionDetail(projectSubscription, "AssociateProjectSubscriptionEvent");
           }
-          upsertedCount = UpsertSubscriptionDetail(subscription, eventType);
 
           return upsertedCount;
         }
@@ -103,17 +99,12 @@ namespace VSS.Subscription.Data
 
           if (eventType == "CreateProjectSubscriptionEvent")
           {
-            upsertedCount = CreateProjectSubscriptionEx(subscription, existing);
+            upsertedCount = CreateProjectSubscription(subscription, existing);
           }
 
           if (eventType == "UpdateProjectSubscriptionEvent")
           {
-            upsertedCount = UpdateProjectSubscriptionEx(subscription, existing);
-          }
-
-          if (eventType == "AssociateProjectSubscriptionEvent")
-          {
-            upsertedCount = AssociateProjectSubscriptionEx(subscription, existing);
+            upsertedCount = UpdateProjectSubscription(subscription, existing);
           }
 
           Log.DebugFormat("SubscriptionRepository: upserted {0} rows", upsertedCount);
@@ -123,7 +114,7 @@ namespace VSS.Subscription.Data
           return upsertedCount;
         }
 
-        private int CreateProjectSubscriptionEx(Models.Subscription subscription, Models.Subscription existing)
+        private int CreateProjectSubscription(Models.Subscription subscription, Models.Subscription existing)
         {
           if (existing == null)
           {
@@ -137,11 +128,10 @@ namespace VSS.Subscription.Data
           }
 
           Log.DebugFormat("SubscriptionRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", subscription.LastActionedUTC);
-
-          return UpdateProjectSubscriptionEx(subscription, existing);
+          return 0;
         }
 
-        private int UpdateProjectSubscriptionEx(Models.Subscription subscription, Models.Subscription existing)
+        private int UpdateProjectSubscription(Models.Subscription subscription, Models.Subscription existing)
         {
           if (existing != null)
           {
@@ -178,30 +168,50 @@ namespace VSS.Subscription.Data
           return 0;
         }
 
-        private int AssociateProjectSubscriptionEx(Models.Subscription subscription, Models.Subscription existing)
+        private int UpsertProjectSubscriptionDetail(Models.ProjectSubscription projectSubscription, string eventType)
         {
-          if (existing != null)
+          int upsertedCount = 0;
+
+          PerhapsOpenConnection();
+
+          Log.DebugFormat("SubscriptionRepository: Upserting eventType={0} ProjectUid={1}, SubscriptionUid={2}",
+            eventType, projectSubscription.ProjectUID, projectSubscription.SubscriptionUID);
+
+          var existing = Connection.Query<Models.ProjectSubscription>
+            (@"SELECT 
+              fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
+              FROM ProjectSubscription
+              WHERE fk_ProjectUID = @projectUID AND fk_SubscriptionUID = @subscriptionUID", 
+              new { projectUID = projectSubscription.ProjectUID, subscriptionUID = projectSubscription.SubscriptionUID }).FirstOrDefault();
+
+          if (eventType == "AssociateProjectSubscriptionEvent")
           {
-            if (subscription.LastActionedUTC >= existing.LastActionedUTC)
-            {
-              const string update =
-                @"UPDATE Subscription                
-                  SET SubscriptionUID = @SubscriptionUID,
-                      EffectiveUTC = @EffectiveUTC,
-                      LastActionedUTC = @LastActionedUTC
-                  WHERE SubscriptionUID = @SubscriptionUID";
-              return Connection.Execute(update, subscription);
-            }
-              Log.DebugFormat("SubscriptionRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
-                existing.LastActionedUTC, subscription.LastActionedUTC);
-          }
-          else
+            upsertedCount = AssociateProjectSubscription(projectSubscription, existing);
+          }    
+
+          Log.DebugFormat("SubscriptionRepository: upserted {0} rows", upsertedCount);
+
+          PerhapsCloseConnection();
+
+          return upsertedCount;
+        }
+
+        private int AssociateProjectSubscription(Models.ProjectSubscription projectSubscription, Models.ProjectSubscription existing)
+        {
+          if (existing == null)
           {
-            Log.DebugFormat("SubscriptionRepository: can't update as none existing newActionedUTC {0}. So, a new entry should be created.", subscription.LastActionedUTC);
+            const string insert =
+              @"INSERT ProjectSubscription
+                (fk_SubscriptionUID, fk_ProjectUID, LastActionedUTC)
+                VALUES
+                (@SubscriptionUID, @ProjectUID, @LastActionedUTC)";
+
+            return Connection.Execute(insert, projectSubscription);
           }
 
+          Log.DebugFormat("SubscriptionRepository: can't create as already exists newActionedUTC={0}", projectSubscription.LastActionedUTC);
           return 0;
-      }
+        }
 
       private IEnumerable<Models.ServiceType> GetServiceTypes()
       {

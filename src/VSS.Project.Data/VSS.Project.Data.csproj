@@ -67,6 +67,7 @@
     <Compile Include="Models\ProjectGeofence.cs" />
     <Compile Include="Models\TimeZone.cs" />
     <Compile Include="MySqlProjectRepository.cs" />
+    <Compile Include="ProjectGeofence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

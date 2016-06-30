@@ -61,7 +61,6 @@ namespace VSS.Subscription.Processor
       builder.RegisterType<VSS.MasterData.Common.Processor.Processor>().As<IProcessor>().SingleInstance();
       builder.RegisterType<SubscriptionEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlSubscriptionRepository>().As<ISubscriptionService>().SingleInstance();
-      builder.RegisterType<MySqlProjectRepository>().As<IProjectService>().SingleInstance();
 
       Container = builder.Build();
       return Container.Resolve<ServiceController>();

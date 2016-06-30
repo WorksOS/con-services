@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VSS.Project.Data.Models
 {
@@ -10,6 +6,7 @@ namespace VSS.Project.Data.Models
   {
     public string ProjectUID { get; set; }
     public string CustomerUID { get; set; }
+    public long LegacyCustomerID { get; set; }
     public DateTime LastActionedUTC { get; set; }
   }
 }

@@ -12,7 +12,6 @@ namespace VSS.Project.Data.Interfaces
     IEnumerable<Models.Project> GetProjects();
     IEnumerable<Models.Project> GetProjectsBySubcription(string subscriptionUid);
 	  string GetProjectUidForName(string customerUid, string name);
-	  int AssociateProjectSubscription(string projectUid, string subscriptionUid, DateTime lastActionedUtc);
 
 	}
 }

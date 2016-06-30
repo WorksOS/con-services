@@ -16,6 +16,22 @@ PREPARE stmt FROM @s;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+/* Drop LegacyCustomerID column from Project Table if there */
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name = 'Project'
+        AND table_schema = DATABASE()
+        AND column_name = 'LegacyCustomerID'
+    ) = 0,
+    "SELECT 1",
+    "ALTER TABLE `Project` DROP COLUMN `LegacyCustomerID`"
+));
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 /* Drop SubscriptionUID column from Project Table if there */
 SET @s = (SELECT IF(
     (SELECT COUNT(*)

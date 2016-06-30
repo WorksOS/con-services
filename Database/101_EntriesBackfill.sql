@@ -7,6 +7,12 @@ UPDATE `Entries` etr,
 SET etr.`ProjectUID` = prj.`ProjectUID`
 WHERE etr.`ProjectID` = prj.`ProjectID`;
 
+UPDATE `Entries` etr 
+INNER JOIN `GeofenceUID` geo ON etr.`ProjectUID` = geo.`ProjectUID`
+SET etr.`GeofenceUID` = geo.`GeofenceUID`
+WHERE etr.`ProjectUID` = geo.`ProjectUID` AND etr.`GeofenceUID` IS NULL;
+
 SET SQL_SAFE_UPDATES=1;
+
 
  

@@ -19,11 +19,10 @@ namespace VSS.Project.Data
     public int StoreProject(IProjectEvent evt)
     {
       var upsertedCount = 0;
-      var project = new Models.Project();
-      string eventType = "Unknown"; 
       if (evt is CreateProjectEvent)
       {
         var projectEvent = (CreateProjectEvent)evt;
+        var project = new Models.Project();
         project.ProjectID = projectEvent.ProjectID;
         project.Name = projectEvent.ProjectName;
         project.ProjectTimeZone = projectEvent.ProjectTimezone;
@@ -33,36 +32,47 @@ namespace VSS.Project.Data
         project.LastActionedUTC = projectEvent.ActionUTC;
         project.ProjectStartDate = projectEvent.ProjectStartDate;
         project.ProjectType = projectEvent.ProjectType;
-        eventType = "CreateProjectEvent";
+        upsertedCount = UpsertProjectDetail(project, "CreateProjectEvent");
       }
       else if (evt is UpdateProjectEvent)
       {
         var projectEvent = (UpdateProjectEvent)evt;
+        var project = new Models.Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.Name = projectEvent.ProjectName;
         project.ProjectEndDate = projectEvent.ProjectEndDate;
         project.LastActionedUTC = projectEvent.ActionUTC;
         project.ProjectType = projectEvent.ProjectType;
-        eventType = "UpdateProjectEvent";
+        upsertedCount = UpsertProjectDetail(project, "UpdateProjectEvent");
       }
       else if (evt is DeleteProjectEvent)
       {
         var projectEvent = (DeleteProjectEvent)evt;
+        var project = new Models.Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.LastActionedUTC = projectEvent.ActionUTC;
-        eventType = "DeleteProjectEvent";
+        upsertedCount = UpsertProjectDetail(project, "DeleteProjectEvent");
       }
       else if (evt is AssociateProjectCustomer)
       {
         var projectEvent = (AssociateProjectCustomer)evt;
-        project.ProjectUID = projectEvent.ProjectUID.ToString();
-        project.CustomerUID = projectEvent.CustomerUID.ToString();
-        project.LegacyCustomerID = projectEvent.LegacyCustomerID;
-        project.LastActionedUTC = projectEvent.ActionUTC;
-        eventType = "AssociateProjectCustomerEvent";   
+        var customerProject = new Models.CustomerProject();
+        customerProject.ProjectUID = projectEvent.ProjectUID.ToString();
+        customerProject.CustomerUID = projectEvent.CustomerUID.ToString();
+        customerProject.LegacyCustomerID = projectEvent.LegacyCustomerID;
+        customerProject.LastActionedUTC = projectEvent.ActionUTC;
+        upsertedCount = UpsertCustomerProjectDetail(customerProject, "AssociateProjectCustomerEvent");
       }
-      //Ignore DissociateProjectCustomer (not used) and AssociateProjectGeofence (handled elsewhere)
-      upsertedCount = UpsertProjectDetail(project, eventType);
+      else if (evt is AssociateProjectGeofence)
+      {
+        var projectEvent = (AssociateProjectGeofence)evt;
+        var projectGeofence = new Models.ProjectGeofence();
+        projectGeofence.ProjectUID = projectEvent.ProjectUID.ToString();
+        projectGeofence.GeofenceUID = projectEvent.GeofenceUID.ToString();
+        projectGeofence.LastActionedUTC = projectEvent.ActionUTC;
+        upsertedCount = UpsertProjectGeofenceDetail(projectGeofence, "AssociateProjectGeofenceEvent");
+      }
+      //Ignore DissociateProjectCustomer (not used) 
       return upsertedCount;
     }
 
@@ -104,44 +114,11 @@ namespace VSS.Project.Data
         upsertedCount = DeleteProject(project, existing);
       }
 
-      if (eventType == "AssociateProjectCustomerEvent")
-      {
-        upsertedCount = AssociateProjectCustomer(project, existing);
-      }
-
       Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
       
       PerhapsCloseConnection();
 
       return upsertedCount;
-    }
-
-    private int AssociateProjectCustomer(Models.Project project, Models.Project existing)
-    {
-      if (existing != null)
-      {
-        if (project.LastActionedUTC >= existing.LastActionedUTC)
-        {
-          const string update =
-            @"UPDATE Project                
-                SET CustomerUID = @CustomerUID,
-                    LegacyCustomerID = @LegacyCustomerID,
-                  LastActionedUTC = @LastActionedUTC
-              WHERE ProjectUID = @ProjectUID";
-          return Connection.Execute(update, project);
-        }
-        else
-        {
-          Log.DebugFormat("ProjectRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
-            existing.LastActionedUTC, project.LastActionedUTC);
-        }
-      }
-      else
-      {
-        Log.DebugFormat("ProjectRepository: can't update as none existing newActionedUTC {0}",
-          project.LastActionedUTC);
-      }
-      return 0;
     }
 
     private int CreateProject(Models.Project project, Models.Project existing)
@@ -231,6 +208,96 @@ namespace VSS.Project.Data
         Log.DebugFormat("ProjectRepository: can't update as none existing newActionedUTC={0}",
           project.LastActionedUTC);
       }
+      return 0;
+    }
+
+    private int UpsertCustomerProjectDetail(Models.CustomerProject customerProject, string eventType)
+    {
+      int upsertedCount = 0;
+
+      PerhapsOpenConnection();
+
+      Log.DebugFormat("ProjectRepository: Upserting eventType={0} CustomerUid={1}, ProjectUid={2}",
+        eventType, customerProject.CustomerUID, customerProject.ProjectUID);
+
+      var existing = Connection.Query<Models.CustomerProject>
+        (@"SELECT 
+            fk_CustomerUID AS CustomerUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
+              FROM CustomerProject
+              WHERE fk_CustomerUID = @customerUID AND fk_ProjectUID = @projectUID", 
+            new { customerUID = customerProject.CustomerUID, projectUID = customerProject.ProjectUID }).FirstOrDefault();
+
+      if (eventType == "AssociateCustomerProjectEvent")
+      {
+        upsertedCount = AssociateCustomerProject(customerProject, existing);
+      }
+
+      Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
+
+      PerhapsCloseConnection();
+
+      return upsertedCount;
+    }
+
+    private int AssociateCustomerProject(Models.CustomerProject customerProject, Models.CustomerProject existing)
+    {
+      if (existing == null)
+      {
+        const string insert =
+          @"INSERT CustomerProject
+            (fk_ProjectUID, fk_CustomerUID, LastActionedUTC)
+            VALUES
+            (@ProjectUID, @CustomerUID, @LastActionedUTC)";
+
+        return Connection.Execute(insert, customerProject);
+      }
+
+      Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC={0}", customerProject.LastActionedUTC);
+      return 0;
+    }
+
+    private int UpsertProjectGeofenceDetail(Models.ProjectGeofence projectGeofence, string eventType)
+    {
+      int upsertedCount = 0;
+
+      PerhapsOpenConnection();
+
+      Log.DebugFormat("ProjectRepository: Upserting eventType={0} ProjectUid={1}, GeofenceUid={2}",
+        eventType, projectGeofence.ProjectUID, projectGeofence.GeofenceUID);
+
+      var existing = Connection.Query<Models.ProjectGeofence>
+        (@"SELECT 
+            fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
+              FROM ProjectGeofence
+              WHERE fk_ProjectUID = @projectUID AND fk_GeofenceUID = @geofenceUID", 
+         new { projectUID = projectGeofence.ProjectUID, geofenceUID = projectGeofence.GeofenceUID }).FirstOrDefault();
+
+      if (eventType == "AssociateProjectGeofenceEvent")
+      {
+        upsertedCount = AssociateProjectGeofence(projectGeofence, existing);
+      }
+
+      Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
+
+      PerhapsCloseConnection();
+
+      return upsertedCount;
+    }
+
+    private int AssociateProjectGeofence(Models.ProjectGeofence projectGeofence, Models.ProjectGeofence existing)
+    {
+      if (existing == null)
+      {
+        const string insert =
+          @"INSERT ProjectGeofence
+            (fk_GeofenceUID, fk_ProjectUID, LastActionedUTC)
+            VALUES
+            (@GeofenceUID, @ProjectUID, @LastActionedUTC)";
+
+        return Connection.Execute(insert, projectGeofence);
+      }
+
+      Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC={0}", projectGeofence.LastActionedUTC);
       return 0;
     }
 
@@ -326,23 +393,7 @@ namespace VSS.Project.Data
       return projectUid;
     }
 
-    public int AssociateProjectSubscription(string projectUid, string subscriptionUid, DateTime lastActionedUtc)
-    {
-      PerhapsOpenConnection();
 
-      const string update =
-        @"UPDATE Project                
-                    SET SubscriptionUID = @subscriptionUid, LastActionedUTC = @lastActionedUtc
-                    WHERE ProjectUID = @projectUid";
-
-      int upsertedCount = Connection.Execute(update, new { projectUid, subscriptionUid, lastActionedUtc });
-
-      PerhapsCloseConnection();
-
-      Log.DebugFormat("ProjectRepository: Associated project {0} with subscription {1}", projectUid, subscriptionUid);
-
-      return upsertedCount;
-    }
 
 
   }
