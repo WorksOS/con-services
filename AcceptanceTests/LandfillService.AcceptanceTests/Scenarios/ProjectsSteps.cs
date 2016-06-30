@@ -142,11 +142,11 @@ namespace LandfillService.AcceptanceTests.Scenarios
             Assert.IsTrue(LandfillCommonUtils.ListsAreEqual<MachineLiftDetails>(expectedLiftDetails, liftDetails));
         }
 
-        [Then(@"the following volume and time summary are returned")]
-        public void ThenTheFollowingVolumeAndTimeSummaryAreReturned(string vtJson)
+        [Then(@"the remaining volume is (.*) and the remaining time is (.*)")]
+        public void ThenTheRemainingVolumeIsAndTheRemainingTimeIs(double expectedRemainingVol, double expectedRemainingTime)
         {
-            VolumeTime expected = JsonConvert.DeserializeObject<VolumeTime>(vtJson);
-            Assert.AreEqual(expected, vt);
+            Assert.IsTrue((int)expectedRemainingVol == (int)vt.remainingVolume && (int)expectedRemainingTime == (int)vt.remainingTime, 
+                "Incorrect remaining volume or/and time.");
         }
         #endregion
     }
