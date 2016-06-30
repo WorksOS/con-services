@@ -76,38 +76,6 @@ namespace VSS.Subscription.Data.Tests
         ReceivedUTC = DateTime.UtcNow.AddMilliseconds(1000)
       };
     }
-
-   
-    //This mimics SubscriptionEventObserver processing
-    private void AssociateProjectSubscription(AssociateProjectSubscriptionEvent evt)
-    {
-      var updatedCount = 0;
-      var lastActionUtc = evt.ActionUTC;
-      var project = _projectService.GetProject(evt.ProjectUID.ToString());
-      if (project == null)
-      {
-        //Create dummy project
-        lastActionUtc = DateTime.MinValue;
-        updatedCount = _projectService.StoreProject(
-              new CreateProjectEvent
-              {
-                ProjectUID = evt.ProjectUID,
-                ProjectName = string.Empty,
-                ProjectTimezone = string.Empty,
-                ActionUTC = lastActionUtc
-              });
-
-        Assert.AreEqual(1, updatedCount, "Failed to save dummy project");    
-      }
-      //save subscriptionUID in project
-      updatedCount = _projectService.AssociateProjectSubscription(evt.ProjectUID.ToString(),
-          evt.SubscriptionUID.ToString(), lastActionUtc);
-      Assert.AreEqual(1, updatedCount, "Failed to save subscription UID in project repo");
-   
-      //now save event
-      updatedCount = _subscriptionService.StoreSubscription(evt);
-      Assert.AreEqual(1, updatedCount, "Failed to save associate project subscription event");
-    }
     #endregion
 
     [TestMethod]
@@ -288,7 +256,8 @@ namespace VSS.Subscription.Data.Tests
                                                                                         projectUid,
                                                                                         DateTime.UtcNow,
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
-        AssociateProjectSubscription(associateProjectSubscriptionEvent);
+        int updatedCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent);
+        Assert.AreEqual(1, updatedCount, "Failed to save associate project subscription event");
 
         project = _projectService.GetProject(projectUid.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
@@ -333,9 +302,10 @@ namespace VSS.Subscription.Data.Tests
         // AssociateProjectSubscription event...
         var associateProjectSubscriptionEvent = GetNewAssociateProjectSubscriptionEvent(subscriptionUid,
                                                                                         projectUid,
-                                                                                        DateTime.UtcNow,
+                                                                                        DateTime.UtcNow,          
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
-        AssociateProjectSubscription(associateProjectSubscriptionEvent);
+        int updatedCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent);
+        Assert.AreEqual(1, updatedCount, "Failed to save associate project subscription event");
 
         project = _projectService.GetProject(projectUid.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
@@ -374,7 +344,8 @@ namespace VSS.Subscription.Data.Tests
                                                                                         projectUid,
                                                                                         DateTime.UtcNow,
                                                                                         DateTime.UtcNow.AddMilliseconds(100));
-        AssociateProjectSubscription(associateProjectSubscriptionEvent);
+        int updatedCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent);
+        Assert.AreEqual(1, updatedCount, "Failed to save associate project subscription event");
 
         // CreateProject event...
         var createProjectEvent = GetNewCreateProjectEvent(projectUid);
