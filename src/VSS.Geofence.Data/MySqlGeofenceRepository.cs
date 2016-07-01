@@ -66,7 +66,7 @@ namespace VSS.Geofence.Data
       return upsertedCount;
     }
 
-    public GeofenceType GetGeofenceType(IGeofenceEvent evt)
+    private GeofenceType GetGeofenceType(IGeofenceEvent evt)
     {
       string geofenceType = null;
       if (evt is CreateGeofenceEvent)
@@ -203,21 +203,6 @@ namespace VSS.Geofence.Data
       return 0;
     }
 
-    #region Link Geofences to Projects
-
-    public void AssignApplicableLandfillGeofencesToProject(string projectGeometry, string customerUid, string projectUid)
-    {
-      //Check for unassigned Landfill geofences and see if they belong to this project
-      var unassignedGeofences = GetUnassignedLandfillGeofences(customerUid);
-      foreach (var unassignedGeofence in unassignedGeofences)
-      {
-        if (Geometry.GeofencesOverlap(projectGeometry, unassignedGeofence.GeometryWKT))
-        {
-          AssignGeofenceToProject(unassignedGeofence.GeofenceUID, projectUid);
-        }
-      }      
-    }
-
     public IEnumerable<Models.Geofence> GetProjectGeofences(string customerUid)
     {
       PerhapsOpenConnection();
@@ -235,43 +220,6 @@ namespace VSS.Geofence.Data
 
       return projectGeofences;
     }
-
-    //Public so can do unit test
-    public IEnumerable<Models.Geofence> GetUnassignedLandfillGeofences(string customerUid)
-    {
-      PerhapsOpenConnection();
-
-      var landfillGeofences = Connection.Query<Models.Geofence>
-         (@"SELECT GeofenceUID, Name, GeometryWKT
-            FROM Geofence 
-            WHERE CustomerUID = @customerUid AND ProjectUID IS NULL AND IsDeleted = 0 AND fk_GeofenceTypeID = 10",//Landfill type
-          new { customerUid }
-         );
-
-      PerhapsCloseConnection();
-
-      Log.DebugFormat("GeofenceRepository: Found {0} Landfill geofences for customer {1}", landfillGeofences.Count(), customerUid);
-
-      return landfillGeofences;
-    }
-
-    public int AssignGeofenceToProject(string geofenceUid, string projectUid)
-    {
-      Log.DebugFormat("GeofenceRepository: Assigning geofence {0} to project {1}", geofenceUid, projectUid);
-
-      PerhapsOpenConnection();
-
-      const string update =
-              @"UPDATE Geofence                
-                SET ProjectUID = @projectUid                  
-              WHERE GeofenceUID = @geofenceUid";
-      int rowsUpdated = Connection.Execute(update, new { projectUid, geofenceUid });
-      PerhapsCloseConnection();
-      return rowsUpdated;
-    }
-
-    #endregion
-
 
     //for unit tests
     public Models.Geofence GetGeofence(string geofenceUid)

@@ -68,12 +68,12 @@ namespace VSS.Project.Data.Tests
       };
     }
 
-    private DissociateProjectCustomer GetNewDissociateProjectCustomerEvent(Guid projectUID, Guid customerUID, DateTime receivedUTC)
+    private AssociateProjectGeofence GetNewAssociateProjectGeofenceEvent(Guid projectUID, Guid geofenceUID, DateTime receivedUTC)
     {
-      return new DissociateProjectCustomer()
+      return new AssociateProjectGeofence
       {
         ProjectUID = projectUID,
-        CustomerUID = customerUID,
+        GeofenceUID = geofenceUID,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = receivedUTC
       };
@@ -88,7 +88,7 @@ namespace VSS.Project.Data.Tests
         var upsertCount = _projectService.StoreProject(createProjectEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
 
-        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        var project = _projectService.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the created project!");
 
         return null;
@@ -119,7 +119,7 @@ namespace VSS.Project.Data.Tests
         upsertCount = _projectService.StoreProject(updateProjectEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to update the project!");
 
-        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        var project = _projectService.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the updated project!");
 
         Assert.IsTrue(project.ProjectUID == updateProjectEvent.ProjectUID.ToString(), "ProjectUID should not be changed!");
@@ -146,7 +146,7 @@ namespace VSS.Project.Data.Tests
         upsertCount = _projectService.StoreProject(deleteProjectEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to delete the project!");
 
-        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        var project = _projectService.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
         Assert.IsNull(project, "Succeeded to get the deleted project!");
 
         return null;
@@ -167,10 +167,28 @@ namespace VSS.Project.Data.Tests
         upsertCount = _projectService.StoreProject(associateProjectCustomerEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the project with a customer!");
 
-        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        var project = _projectService.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the customer associated project!");
 
         Assert.IsTrue(project.CustomerUID == associateProjectCustomerEvent.CustomerUID.ToString(), "The project was associated with wrong customer!");
+
+        return null;
+      });
+    }
+
+    [TestMethod]
+    public void AssociateProjectGeofence_Succeeds()
+    {
+      _projectService.InRollbackTransaction<object>(o =>
+      {
+        var createProjectEvent = GetNewCreateProjectEvent();
+        var upsertCount = _projectService.StoreProject(createProjectEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
+
+        var associateProjectGeofenceEvent = GetNewAssociateProjectGeofenceEvent(createProjectEvent.ProjectUID, Guid.NewGuid(), DateTime.UtcNow);
+
+        upsertCount = _projectService.StoreProject(associateProjectGeofenceEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate the project with a geofence!");
 
         return null;
       });

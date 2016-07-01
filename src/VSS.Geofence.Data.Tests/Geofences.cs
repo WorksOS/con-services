@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using ClipperLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MySql.Data.MySqlClient;
 using VSS.Geofence.Data.Models;
-using VSS.MasterData.Common.Helpers;
 using VSS.Project.Data;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -15,20 +11,10 @@ namespace VSS.Geofence.Data.Tests
   public class Geofences
   {
     private readonly MySqlGeofenceRepository _geofenceService;
-    private readonly MySqlProjectRepository _projectService;
-
-    private readonly string _projectGeometry =
-        "POLYGON((172.572898643208 -43.5416737200023,172.591910140712 -43.542202557018,172.591652648643 -43.5491392248023,172.572941558559 -43.5492947463212,172.572898643208 -43.5416737200023,172.572898643208 -43.5416737200023))";
-    private readonly string _insideGeofenceGeometry =
-          "POLYGON((172.577791 -43.547148,172.583284 -43.543976,172.585301 -43.545904,172.578521 -43.548082,172.577791 -43.547148))";
-    private readonly string _outsideGeofenceGeometry =
-          "POLYGON((172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.59329966542 -43.542486101965))";
 
     public Geofences()
     {
       _geofenceService = new MySqlGeofenceRepository();
-      _projectService = new MySqlProjectRepository();
-      _projectService.SetInTransactionState(true);
     }
 
     #region Privates
@@ -73,33 +59,6 @@ namespace VSS.Geofence.Data.Tests
         UserUID = userUID,
         ActionUTC = lastActionedUTC,
         ReceivedUTC = DateTime.UtcNow.AddMilliseconds(100)
-      };
-    }
-
-    private CreateProjectEvent GetNewCreateProjectEvent(Guid projectUid)
-    {
-      return new CreateProjectEvent()
-      {
-        ProjectUID = projectUid,
-        ProjectID = 123,
-        ProjectName = "Test Project",
-        ProjectTimezone = "New Zealand Standard Time",
-        ProjectType = ProjectType.LandFill,
-        ProjectStartDate = DateTime.UtcNow.AddDays(-1).Date,
-        ProjectEndDate = DateTime.UtcNow.AddDays(1).Date,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow.AddMilliseconds(1000)
-      };
-    }
-
-    private AssociateProjectCustomer GetNewAssociateProjectCustomerEvent(Guid projectUid, Guid customerUid)
-    {
-      return new AssociateProjectCustomer()
-      {
-        ProjectUID = projectUid,
-        CustomerUID = customerUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
       };
     }
 
@@ -185,43 +144,6 @@ namespace VSS.Geofence.Data.Tests
     }
 
     [TestMethod]
-    public void GetProjectUidForNameTest()
-    {
-      _geofenceService.InRollbackTransaction<object>(o =>
-      {
-        _projectService.SetConnection((MySqlConnection)o);
-
-        var projectUid = Guid.NewGuid();
-        var createProjectEvent = GetNewCreateProjectEvent(projectUid);
-        var upsertCount = _projectService.StoreProject(createProjectEvent);
-        Assert.AreEqual(1, upsertCount, "Failed to create project");
-
-        var customerUid = Guid.NewGuid();
-        var associateProjectEvent = GetNewAssociateProjectCustomerEvent(projectUid, customerUid);
-        upsertCount = _projectService.StoreProject(associateProjectEvent);
-        Assert.AreEqual(1, upsertCount, "Failed to associate project with customer");
-
-        var retrievedUid = _projectService.GetProjectUidForName(customerUid.ToString(), createProjectEvent.ProjectName);
-        Assert.AreEqual(projectUid.ToString(), retrievedUid, "Wrong projectUid for name");
-
-        retrievedUid = _projectService.GetProjectUidForName(Guid.NewGuid().ToString(), createProjectEvent.ProjectName);
-        Assert.IsNull(retrievedUid, "Should be null projectUid for different customer");
-
-        retrievedUid = _projectService.GetProjectUidForName(customerUid.ToString(), "Dummy name");
-        Assert.IsNull(retrievedUid, "Should be null projectUid for different name");
-
-        return null;
-      });
-    }
-
-    [TestMethod]
-    public void GeofencesOverlapTest()
-    {
-      Assert.IsTrue(Geometry.GeofencesOverlap(_projectGeometry, _insideGeofenceGeometry), "Geofence should be inside project!");
-      Assert.IsFalse(Geometry.GeofencesOverlap(_projectGeometry, _outsideGeofenceGeometry), "Geofence should be outside project!");
-    }
-
-    [TestMethod]
     public void GetProjectGeofencesTest()
     {
       _geofenceService.InRollbackTransaction<object>(o =>
@@ -246,65 +168,5 @@ namespace VSS.Geofence.Data.Tests
       });     
     }
 
-    [TestMethod]
-    public void AssignGeofenceToProjectTest()
-    {
-      _geofenceService.InRollbackTransaction<object>(o =>
-      {
-        _projectService.SetConnection((MySqlConnection)o);
-
-        var projectUid = Guid.NewGuid();
-        var createProjectEvent = GetNewCreateProjectEvent(projectUid);
-        var upsertCount = _projectService.StoreProject(createProjectEvent);
-        Assert.AreEqual(1, upsertCount, "Failed to create project");
-
-        var customerUid = Guid.NewGuid();
-        var associateProjectEvent = GetNewAssociateProjectCustomerEvent(projectUid, customerUid);
-        upsertCount = _projectService.StoreProject(associateProjectEvent);
-        Assert.AreEqual(1, upsertCount, "Failed to associate project with customer");
-
-        var projectGeofence = GetNewCreateGeofenceEvent(Guid.NewGuid(), GeofenceType.Project, customerUid);
-        var landfillGeofence = GetNewCreateGeofenceEvent(Guid.NewGuid(), GeofenceType.Landfill, customerUid);
-
-        upsertCount =
-            _geofenceService.StoreGeofence(projectGeofence) +
-            _geofenceService.StoreGeofence(landfillGeofence);
-        Assert.AreEqual(2, upsertCount, "Failed to create all geofences");
-
-        upsertCount = _geofenceService.AssignGeofenceToProject(projectGeofence.GeofenceUID.ToString(), projectUid.ToString());
-        Assert.AreEqual(1, upsertCount, "Failed to assign project geofence to project");
-
-        upsertCount = _geofenceService.AssignGeofenceToProject(landfillGeofence.GeofenceUID.ToString(), projectUid.ToString());
-        Assert.AreEqual(1, upsertCount, "Failed to assign landfill geofence to project");
-
-        return null;
-      });        
-    }
-
-    [TestMethod]
-    public void GetUnassignedLandfillGeofencesTest()
-    {
-      _geofenceService.InRollbackTransaction<object>(o =>
-      {
-        var customerUid1 = Guid.NewGuid();
-        var projectGeofence1 = GetNewCreateGeofenceEvent(Guid.NewGuid(), GeofenceType.Project, customerUid1);
-        var landfillGeofence1 = GetNewCreateGeofenceEvent(Guid.NewGuid(), GeofenceType.Landfill, customerUid1);
-        var customerUid2 = Guid.NewGuid();
-        var landfillGeofence2 = GetNewCreateGeofenceEvent(Guid.NewGuid(), GeofenceType.Landfill, customerUid2);
-
-        var upsertCount =
-            _geofenceService.StoreGeofence(projectGeofence1) +
-            _geofenceService.StoreGeofence(landfillGeofence1) +
-            _geofenceService.StoreGeofence(landfillGeofence2);
-        Assert.AreEqual(3, upsertCount, "Failed to create all geofences");
-
-        var unassignedLandfillGeofences = _geofenceService.GetUnassignedLandfillGeofences(customerUid1.ToString());
-        Assert.AreEqual(1, unassignedLandfillGeofences.Count(), "Wrong number of unassigned landfill geofences");
-        Assert.AreEqual(landfillGeofence1.GeofenceUID.ToString(), unassignedLandfillGeofences.First().GeofenceUID, "Wrong landfill geofence returned");
-
-        return null;
-      });   
-    }
- 
   }
 }

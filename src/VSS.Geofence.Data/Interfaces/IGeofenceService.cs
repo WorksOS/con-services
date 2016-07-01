@@ -7,10 +7,7 @@ namespace VSS.Geofence.Data.Interfaces
   public interface IGeofenceService
   {
     int StoreGeofence(IGeofenceEvent evt);
-    int AssignGeofenceToProject(string geofenceUid, string projectUid);
-    void AssignApplicableLandfillGeofencesToProject(string projectGeometry, string customerUid, string projectUid);
     IEnumerable<Models.Geofence> GetProjectGeofences(string customerUid);
-    GeofenceType GetGeofenceType(IGeofenceEvent evt);
     Models.Geofence GetGeofence(string geofenceUid);
 
   }

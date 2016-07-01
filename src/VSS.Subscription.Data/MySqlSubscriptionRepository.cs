@@ -17,7 +17,6 @@ namespace VSS.Subscription.Data
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        //private readonly string _connectionString;
         public Dictionary<string, ServiceType> _serviceTypes = null;
 
         public MySqlSubscriptionRepository()

@@ -6,12 +6,10 @@ namespace VSS.Project.Data.Interfaces
 {
 	public interface IProjectService
 	{
-    Models.Project GetProject(string projectUid);
     int StoreProject(IProjectEvent evt);
-	  IEnumerable<Models.Project> GetProjectsForUser(string userUid);
+    Models.Project GetProject(string projectUid);
     IEnumerable<Models.Project> GetProjects();
     IEnumerable<Models.Project> GetProjectsBySubcription(string subscriptionUid);
-	  string GetProjectUidForName(string customerUid, string name);
-
+    IEnumerable<Models.Project> GetProjectsForUser(string userUid);
 	}
 }

@@ -46,10 +46,31 @@ namespace VSS.Customer.Data.Tests
          ReceivedUTC = DateTime.UtcNow.AddMilliseconds(100)
        };
      }
+
+    private AssociateCustomerUserEvent GetNewAssociateCustomerUserEvent(Guid customerUID)
+    {
+      return new AssociateCustomerUserEvent
+      {
+        CustomerUID = customerUID,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow.AddMilliseconds(1000)
+      };
+    }
+
+    private DissociateCustomerUserEvent GetNewDissociateCustomerUserEvent(Guid customerUID, Guid userUID)
+    {
+      return new DissociateCustomerUserEvent
+      {
+        CustomerUID = customerUID,
+        UserUID = userUID,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow.AddMilliseconds(1000)
+      };
+    }
     
- 
     [TestMethod]
-     public void CreateNewCustomer_Succeeds()
+     public void CreateCustomer_Succeeds()
      {
        _customerService.InRollbackTransaction<object>(o =>
        {
@@ -57,8 +78,8 @@ namespace VSS.Customer.Data.Tests
          var upsertCount = _customerService.StoreCustomer(createCustomerEvent);
          Assert.IsTrue(upsertCount == 1, "Failed to create a customer!");
 
-         var project = _customerService.GetCustomer(createCustomerEvent.CustomerUID);
-         Assert.IsNotNull(project, "Failed to get the created customer!");
+         var customer = _customerService.GetCustomer(createCustomerEvent.CustomerUID);
+         Assert.IsNotNull(customer, "Failed to get the created customer!");
 
          return null;
        });
@@ -117,6 +138,51 @@ namespace VSS.Customer.Data.Tests
         return null;
       });
     }
+
+    [TestMethod]
+    public void AssociateCustomerUser_Fails()
+    {
+      _customerService.InRollbackTransaction<object>(o =>
+      {
+        var associateEvent = GetNewAssociateCustomerUserEvent(Guid.NewGuid());
+        var upsertCount = _customerService.StoreCustomer(associateEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate customer with user!");
+
+        upsertCount = _customerService.StoreCustomer(associateEvent);
+        Assert.IsTrue(upsertCount == 0, "Should fail to associate customer with user");
+
+        return null;
+      });     
+    }
+
+    [TestMethod]
+    public void AssociateDissociateCustomerUser_Succeeds()
+    {
+      _customerService.InRollbackTransaction<object>(o =>
+      {
+        var createCustomerEvent = GetNewCreateCustomerEvent();
+        var upsertCount = _customerService.StoreCustomer(createCustomerEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to create a customer!");
+
+        var associateEvent = GetNewAssociateCustomerUserEvent(createCustomerEvent.CustomerUID);
+        upsertCount = _customerService.StoreCustomer(associateEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to associate customer with user!");
+
+        var customer = _customerService.GetAssociatedCustomerbyUserUid(associateEvent.UserUID);
+        Assert.IsNotNull(customer, "Failed to get the customer for the user!");
+
+        var dissociateEvent = GetNewDissociateCustomerUserEvent(associateEvent.CustomerUID, associateEvent.UserUID);
+        upsertCount = _customerService.StoreCustomer(dissociateEvent);
+        Assert.IsTrue(upsertCount == 1, "Failed to dissociate customer and user!");
+
+        customer = _customerService.GetAssociatedCustomerbyUserUid(associateEvent.UserUID);
+        Assert.IsNull(customer, "Should fail to get customer for user!");
+
+        return null;
+      });     
+    }
+
+
 
   }
 }

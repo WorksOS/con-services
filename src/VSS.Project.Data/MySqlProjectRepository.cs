@@ -227,9 +227,9 @@ namespace VSS.Project.Data
               WHERE fk_CustomerUID = @customerUID AND fk_ProjectUID = @projectUID", 
             new { customerUID = customerProject.CustomerUID, projectUID = customerProject.ProjectUID }).FirstOrDefault();
 
-      if (eventType == "AssociateCustomerProjectEvent")
+      if (eventType == "AssociateProjectCustomerEvent")
       {
-        upsertedCount = AssociateCustomerProject(customerProject, existing);
+        upsertedCount = AssociateProjectCustomer(customerProject, existing);
       }
 
       Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
@@ -239,7 +239,7 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private int AssociateCustomerProject(Models.CustomerProject customerProject, Models.CustomerProject existing)
+    private int AssociateProjectCustomer(Models.CustomerProject customerProject, Models.CustomerProject existing)
     {
       if (existing == null)
       {
@@ -307,10 +307,13 @@ namespace VSS.Project.Data
 
       var project = Connection.Query<Models.Project>
         (@"SELECT 
-                  ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, LegacyCustomerID, SubscriptionUID, 
-                  LastActionedUTC, IsDeleted, StartDate AS ProjectStartDate, EndDate AS ProjectEndDate, fk_ProjectTypeID as ProjectType
-              FROM Project
-              WHERE ProjectUID = @projectUid AND IsDeleted = 0"
+            p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
+            cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, ps.fk_SubscriptionUID AS SubscriptionUID, 
+            p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
+            p.fk_ProjectTypeID as ProjectType
+          FROM Project p JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
+               JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
+          WHERE p.ProjectUID = @projectUid AND p.IsDeleted = 0"
           , new {projectUid}
         ).FirstOrDefault();
 
@@ -325,10 +328,13 @@ namespace VSS.Project.Data
 
       var projects = Connection.Query<Models.Project>
           (@"SELECT 
-                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, LegacyCustomerID, SubscriptionUID, 
-                    LastActionedUTC, IsDeleted, StartDate AS ProjectStartDate, EndDate AS ProjectEndDate, fk_ProjectTypeID as ProjectType
-                FROM Project
-                WHERE SubscriptionUID = @subscriptionUid AND IsDeleted = 0"
+              p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
+              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, ps.fk_SubscriptionUID AS SubscriptionUID, 
+              p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
+              p.fk_ProjectTypeID as ProjectType
+          FROM Project p JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
+               JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
+          WHERE ps.fk_SubscriptionUID = @subscriptionUid AND p.IsDeleted = 0"
           );
 
       PerhapsCloseConnection();
@@ -341,12 +347,14 @@ namespace VSS.Project.Data
       PerhapsOpenConnection();
 
       var projects = Connection.Query<Models.Project>
-         (@"SELECT 
-                   ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, LegacyCustomerID, SubscriptionUID, 
-                   LastActionedUTC, IsDeleted, StartDate AS ProjectStartDate, EndDate AS ProjectEndDate, fk_ProjectTypeID as ProjectType
-                FROM Project
-                WHERE IsDeleted = 0"
-         );
+          (@"SELECT 
+            p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
+            cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, ps.fk_SubscriptionUID AS SubscriptionUID, 
+            p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
+            p.fk_ProjectTypeID as ProjectType
+          FROM Project p JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
+               JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
+          WHERE p.IsDeleted = 0");
 
       PerhapsCloseConnection();
 
@@ -359,13 +367,16 @@ namespace VSS.Project.Data
 
       var projects = Connection.Query<Models.Project>
          (@"SELECT 
-                   p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, p.CustomerUID, p.LegacyCustomerID, p.SubscriptionUID, 
-                   p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
-                   p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
-                FROM Project p
-                JOIN Subscription s on p.SubscriptionUID = s.SubscriptionUID
-                JOIN CustomerUser cu on p.CustomerUID = cu.fk_CustomerUID
-                WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0", 
+              p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
+              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, ps.SubscriptionUID AS SubscriptionUID, 
+              p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
+              p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
+          FROM Project p
+          JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
+          JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
+          JOIN CustomerProject cp on p.ProjectUID = cp.fk_ProjectUID
+          JOIN CustomerUser cu on p.CustomerUID = cu.fk_CustomerUID
+          WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0", 
          new { userUid }
          );
 
@@ -374,27 +385,27 @@ namespace VSS.Project.Data
       return projects;
     }
 
-
-    public string GetProjectUidForName(string customerUid, string name)
+    //for unit tests - so we don't have to create everything (associations) for a test
+    public Models.Project GetProject_UnitTest(string projectUid)
     {
       PerhapsOpenConnection();
 
-      var projectUid = Connection.Query<string>
-         (@"SELECT ProjectUID
-            FROM Project 
-            WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND Name = @name",
-              new { customerUid, name }
+      var project = Connection.Query<Models.Project>
+         (@"SELECT 
+                p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
+                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, ps.fk_SubscriptionUID AS SubscriptionUID, 
+                p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
+                p.fk_ProjectTypeID as ProjectType
+              FROM Project p LEFT JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
+                   LEFT JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
+              WHERE p.ProjectUID = @projectUid AND p.IsDeleted = 0"
+           , new { projectUid }
          ).FirstOrDefault();
 
       PerhapsCloseConnection();
 
-      Log.DebugFormat("ProjectRepository: Get project {0} for name {1} for customer {2}", projectUid, name, customerUid);
-
-      return projectUid;
+      return project;
     }
-
-
-
 
   }
 }

@@ -61,7 +61,6 @@ namespace VSS.Project.Processor
       builder.RegisterType<VSS.MasterData.Common.Processor.Processor>().As<IProcessor>().SingleInstance();
       builder.RegisterType<ProjectEventObserver>().As<IObserver<ConsumerRecord>>().SingleInstance();
       builder.RegisterType<MySqlProjectRepository>().As<IProjectService>().SingleInstance();
-      builder.RegisterType<MySqlGeofenceRepository>().As<IGeofenceService>().SingleInstance();
 
       Container = builder.Build();
 

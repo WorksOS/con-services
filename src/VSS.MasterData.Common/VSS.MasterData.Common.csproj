@@ -138,8 +138,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\clipper.cs" />
-    <Compile Include="Helpers\Geometry.cs" />
     <Compile Include="Helpers\StringExtensions.cs" />
     <Compile Include="JsonConverters\CustomerEventConverter.cs" />
     <Compile Include="JsonConverters\GeofenceEventConverter.cs" />

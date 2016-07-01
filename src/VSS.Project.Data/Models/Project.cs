@@ -11,12 +11,13 @@ namespace VSS.Project.Data.Models
     public string ProjectTimeZone { get; set; }
     public string LandfillTimeZone { get; set; }
     public string ProjectUID { get; set; }
-    public string CustomerUID { get; set; }
-    public long LegacyCustomerID { get; set; }
-    public string SubscriptionUID { get; set; }
     public DateTime ProjectEndDate { get; set; }
     public DateTime ProjectStartDate { get; set; }
     public ProjectType ProjectType { get; set; }
+    //These properties are associations from link tables
+    public string CustomerUID { get; set; }
+    public long LegacyCustomerID { get; set; }
+    public string SubscriptionUID { get; set; }
     //These 2 properties used for authentication stuff
     public bool IsDeleted { get; set; }
     public DateTime SubEndDate { get; set; } 

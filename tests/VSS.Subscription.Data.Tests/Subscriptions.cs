@@ -91,11 +91,6 @@ namespace VSS.Subscription.Data.Tests
         var subscription = _subscriptionService.GetSubscription(subscriptionUid.ToString());
         Assert.IsNotNull(subscription, "Failed to get the created project subscription!");
 
-        createProjectSubscriptionEvent = GetNewCreateProjectSubscriptionEvent(subscriptionUid);
-
-        upsertCount = _subscriptionService.StoreSubscription(createProjectSubscriptionEvent);
-        Assert.AreEqual(1, upsertCount, "Failed to update the existing Landfill project subscription!");
-
         return null;
       });
     }
@@ -212,10 +207,6 @@ namespace VSS.Subscription.Data.Tests
         upsertCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent);
         Assert.AreEqual(1, upsertCount, "Failed to associate the existing subscription with a Landfill project!");
 
-        subscription = _subscriptionService.GetSubscription(subscriptionUid.ToString());
-        Assert.IsNotNull(subscription, "Failed to get the subscription associated with a Landfill project!");
-        Assert.IsTrue((effectiveUtc - subscription.EffectiveUTC).TotalMilliseconds < 2, "Wrong EffectiveUTC");
-
         return null;
       });
     }
@@ -239,7 +230,7 @@ namespace VSS.Subscription.Data.Tests
         var upsertCount = _projectService.StoreProject(createProjectEvent);
         Assert.AreEqual(1, upsertCount, "Failed to create a Landfill project that is to be associated with a subscription!");
 
-        var project = _projectService.GetProject(projectUid.ToString());
+        var project = _projectService.GetProject_UnitTest(projectUid.ToString());
         Assert.IsNotNull(project, "Failed to get the created Landfill project that is to be associated with a subscription!");
 
         // CreateProjectSubscription event...
@@ -259,7 +250,7 @@ namespace VSS.Subscription.Data.Tests
         int updatedCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent);
         Assert.AreEqual(1, updatedCount, "Failed to save associate project subscription event");
 
-        project = _projectService.GetProject(projectUid.ToString());
+        project = _projectService.GetProject_UnitTest(projectUid.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
 
         Assert.AreEqual(project.SubscriptionUID, subscription.SubscriptionUID, "The associated Project's SubscriptionUID does not match the existing Subscription's one!");
@@ -296,7 +287,7 @@ namespace VSS.Subscription.Data.Tests
         upsertCount = _projectService.StoreProject(createProjectEvent);
         Assert.AreEqual(1, upsertCount, "Failed to create a Landfill project that is to be associated with a subscription!");
 
-        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        var project = _projectService.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the created Landfill project that is to be associated with a subscription!");
 
         // AssociateProjectSubscription event...
@@ -307,7 +298,7 @@ namespace VSS.Subscription.Data.Tests
         int updatedCount = _subscriptionService.StoreSubscription(associateProjectSubscriptionEvent);
         Assert.AreEqual(1, updatedCount, "Failed to save associate project subscription event");
 
-        project = _projectService.GetProject(projectUid.ToString());
+        project = _projectService.GetProject_UnitTest(projectUid.ToString());
         Assert.IsNotNull(project, "Failed to get the existing project associated with the subscription!");
 
         Assert.AreEqual(project.SubscriptionUID, subscriptionUid.ToString(), "The associated Project's SubscriptionUID does not match the existing Subscription's one!");
@@ -352,7 +343,7 @@ namespace VSS.Subscription.Data.Tests
         upsertCount = _projectService.StoreProject(createProjectEvent);
         Assert.AreEqual(1, upsertCount, "Failed to create a Landfill project that is to be associated with a subscription!");
 
-        var project = _projectService.GetProject(createProjectEvent.ProjectUID.ToString());
+        var project = _projectService.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
         Assert.IsNotNull(project, "Failed to get the created Landfill project that is to be associated with a subscription!");
 
         Assert.AreEqual(project.SubscriptionUID, subscriptionUid.ToString(), "The associated Project's SubscriptionUID does not match the existing Subscription's one!");
