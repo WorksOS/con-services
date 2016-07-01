@@ -73,14 +73,15 @@ namespace LandfillService.Common.Context
         {
             return InTransaction((conn) =>
             {
-              var command = @"SELECT prj.ProjectID, prj.Name, prj.LandfillTimeZone,
-                                     prj.ProjectUID, prj.ProjectTimeZone,
-                                     sub.StartDate AS SubStartDate, sub.EndDate AS SubEndDate 
-                              FROM Project prj  
-                              JOIN CustomerUser cu ON prj.CustomerUID = cu.fk_CustomerUID
-                              JOIN CustomerSubscription cs ON prj.CustomerUID = cs.fk_CustomerUID
-                              JOIN Subscription sub ON cs.fk_SubscriptionUID = sub.SubscriptionUID
-                              WHERE cu.fk_UserUID = @userUid and prj.IsDeleted = 0";
+              var command = @"SELECT p.ProjectID, p.Name, p.LandfillTimeZone,
+                                     p.ProjectUID, p.ProjectTimeZone,
+                                     s.StartDate AS SubStartDate, s.EndDate AS SubEndDate 
+                              FROM Project p  
+                              JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
+                              JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
+                              JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
+                              JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
+                              WHERE cu.fk_UserUID = @userUid and p.IsDeleted = 0";
               var projects = new List<Project>();
 
               using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
@@ -426,9 +427,9 @@ namespace LandfillService.Common.Context
           {
             //Get the project geofence uid
             string projectGeofenceUid = null;
-            var command = @"SELECT GeofenceUID
-                              FROM Geofence 
-                              WHERE ProjectUID = @projectUid AND fk_GeofenceTypeID = 1";//Project type
+            var command = @"SELECT g.GeofenceUID
+                              FROM Geofence g JOIN ProjectGeofence pg ON g.GeofenceUID = pg.fk_GeofenceUID 
+                              WHERE pg.fk_ProjectUID = @projectUid AND g.fk_GeofenceTypeID = 1";//Project type
             using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", project.projectUid)))
             {
               while (reader.Read())
@@ -484,9 +485,10 @@ namespace LandfillService.Common.Context
         {
           return WithConnection((conn) =>
           {
-            var command = @"SELECT GeofenceUID, Name, fk_GeofenceTypeID FROM Geofence
-                            WHERE ProjectUID = @projectUid AND IsDeleted = 0 
-                                AND (fk_GeofenceTypeID = 1 OR fk_GeofenceTypeID = 10)";
+            var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID FROM Geofence g
+                            JOIN ProjectGeofence pg on g.GeofenceUID = pg.fk_GeofenceUID
+                            WHERE pg.fk_ProjectUID = @projectUid AND g.IsDeleted = 0 
+                                AND (g.fk_GeofenceTypeID = 1 OR g.fk_GeofenceTypeID = 10)";
 
             using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectUid)))
             {

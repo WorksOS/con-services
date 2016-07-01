@@ -368,7 +368,7 @@ namespace VSS.Project.Data
       var projects = Connection.Query<Models.Project>
          (@"SELECT 
               p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
-              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, ps.SubscriptionUID AS SubscriptionUID, 
+              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
               p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
               p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
           FROM Project p
