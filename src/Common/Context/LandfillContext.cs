@@ -836,13 +836,15 @@ namespace LandfillService.Common.Context
           while (reader.Read())
           {
             existingId = reader.GetUInt32(reader.GetOrdinal("ID"));
-            updateName = reader.GetString(reader.GetOrdinal("MachineName")) != machineName;
+            updateName =
+                !machineName.Equals(reader.GetString(reader.GetOrdinal("MachineName")),
+                    StringComparison.OrdinalIgnoreCase);
           }
         }
         if (updateName)
         {
           var command = @"UPDATE Machine SET MachineName = @machineName WHERE ID = @machineId";
-          MySqlHelper.ExecuteNonQuery(sqlConn, command, new MySqlParameter("@machineId", existingId));
+          MySqlHelper.ExecuteNonQuery(sqlConn, command, new MySqlParameter("@machineId", existingId), new MySqlParameter("@machineName", machineName));
         }
         return existingId;
       }
