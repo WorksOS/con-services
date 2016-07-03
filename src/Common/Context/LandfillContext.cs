@@ -864,26 +864,28 @@ namespace LandfillService.Common.Context
       /// <returns>The machine ID</returns>
       private static long GetMachineId(MySqlConnection sqlConn, MySqlParameter[] sqlParams, string machineName)
       {
-        //Match on AssetID and IsJohnDoe only as MachineName can change.
-        var query = @"SELECT ID, MachineName FROM Machine
-                      WHERE AssetID = @assetId AND IsjohnDoe = @isJohnDoe";
+          //Match on AssetID and IsJohnDoe only as MachineName can change.
+          var query = @"SELECT ID, MachineName FROM Machine
+                      WHERE AssetID = @assetId AND IsJohnDoe = @isJohnDoe";
 
-        long existingId = 0;
-        bool updateName = false;
-        using (var reader = MySqlHelper.ExecuteReader(sqlConn, query, sqlParams))
-        {
-          while (reader.Read())
+          long existingId = 0;
+          bool updateName = false;
+          using (var reader = MySqlHelper.ExecuteReader(sqlConn, query, sqlParams))
           {
-            existingId = reader.GetUInt32(reader.GetOrdinal("ID"));
-            updateName = reader.GetString(reader.GetOrdinal("MachineName")) != machineName;
+              while (reader.Read())
+              {
+                  existingId = reader.GetUInt32(reader.GetOrdinal("ID"));
+                  updateName =
+                      !machineName.Equals(reader.GetString(reader.GetOrdinal("MachineName")),
+                          StringComparison.OrdinalIgnoreCase);
+              }
           }
-        }
-        if (updateName)
-        {
-          var command = @"UPDATE Machine SET MachineName = @machineName";
-          MySqlHelper.ExecuteNonQuery(sqlConn, command, sqlParams);
-        }
-        return existingId;
+          if (updateName)
+          {
+              var command = @"UPDATE Machine SET MachineName = @machineName WHERE ID = @machineId";
+              MySqlHelper.ExecuteNonQuery(sqlConn, command, new MySqlParameter("@machineId", existingId), new MySqlParameter("@machineName", machineName));
+          }
+          return existingId;
       }
 
       /*
