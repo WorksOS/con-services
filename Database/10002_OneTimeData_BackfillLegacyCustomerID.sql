@@ -1,7 +1,8 @@
  -- the only platform with valid CustomerUIDs, is production `VSS-Landfill`;
  
+ SET SQL_SAFE_UPDATES=0;
  
- UPDATE Project,
+ UPDATE CustomerProject,
 		(
 		SELECT 144577 AS custID, '7125465B-DFC0-11E4-BB59-0050569757E0' AS custUID
 		UNION
@@ -25,4 +26,6 @@
 		) AS fillData     
 	SET LegacyCustomerID = custID
   WHERE LegacyCustomerID IS NULL
-		AND CustomerUID = fillData.custUID;
+		AND fk_CustomerUID = fillData.custUID;
+    
+SET SQL_SAFE_UPDATES=1;    

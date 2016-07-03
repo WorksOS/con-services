@@ -96,12 +96,3 @@ SET @s = (SELECT IF(
 PREPARE stmt FROM @s;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
-
-/*
-ALTER TABLE Entries
-	ADD UNIQUE KEY UIX_Entries_ProjectID_GeofenceUID_Date (ProjectID, GeofenceUID, Date);
-	
-ALTER TABLE Entries
-	ADD UNIQUE KEY UIX_Entries_ProjectUID_GeofenceUID_Date (ProjectUID, GeofenceUID, Date);
-	*/
-

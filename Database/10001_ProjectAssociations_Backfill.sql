@@ -1,8 +1,8 @@
 /**** Landfill Customer Project, Project Geofence and Project Subscription Association Backfill ***/
-
+ 
 INSERT IGNORE INTO `CustomerProject` 
-(`fk_CustomerUID`, `fk_ProjectUID`, `LegacyCustomerID`)
-SELECT `CustomerUID`, `ProjectUID`, `LegacyCustomerID` FROM `Project`;
+(`fk_CustomerUID`, `fk_ProjectUID`)
+SELECT `CustomerUID`, `ProjectUID` FROM `Project`;
 
 INSERT IGNORE INTO `ProjectGeofence` 
 (`fk_ProjectUID`, `fk_GeofenceUID`)

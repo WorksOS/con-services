@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS `Project` (
   `ID` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `ProjectID` INT(10) UNSIGNED NOT NULL COMMENT '',
@@ -5,10 +6,7 @@ CREATE TABLE IF NOT EXISTS `Project` (
   `ProjectTimeZone` VARCHAR(255) NOT NULL COMMENT '',
   `LandfillTimeZone` VARCHAR(255) NOT NULL COMMENT '',
   `RetrievalStartedAt` DATETIME NOT NULL COMMENT '',
-  `ProjectUID` varchar(36) DEFAULT NULL,
-  `CustomerUID` varchar(36) DEFAULT NULL,
-  `LegacyCustomerID` INT(10) UNSIGNED NULL COMMENT '', 
-  `SubscriptionUID` varchar(36) DEFAULT NULL,
+  `ProjectUID` varchar(36) DEFAULT NULL, 
   `IsDeleted` tinyint(4) DEFAULT 0,
   `LastActionedUTC` datetime(6) DEFAULT NULL,
   `StartDate` datetime DEFAULT NULL,
@@ -49,22 +47,6 @@ SET @s = (SELECT IF(
     "ALTER TABLE `Project` ADD UNIQUE INDEX UIX_Project_ProjectUID (ProjectUID)"
 ));
 
-PREPARE stmt FROM @s;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
-
-/* Add CustomerID if not there */
-SET @s = (SELECT IF(
-    (SELECT COUNT(*)
-       FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE table_name = 'Project'
-        AND table_schema = DATABASE()
-        AND column_name = 'LegacyCustomerID'
-    ) > 0,
-    "SELECT 1",
-    "ALTER TABLE `Project` ADD COLUMN `LegacyCustomerID` INT(10) UNSIGNED NULL AFTER `CustomerUID`"
-));
 PREPARE stmt FROM @s;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;

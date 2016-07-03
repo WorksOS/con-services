@@ -99,7 +99,7 @@ namespace VSS.Geofence.Data
 
       var existing = Connection.Query<Models.Geofence>
         (@"SELECT 
-                GeofenceUID, Name, CustomerUID, ProjectUID, GeometryWKT, FillColor, IsTransparent,
+                GeofenceUID, Name, CustomerUID, GeometryWKT, FillColor, IsTransparent,
                 LastActionedUTC, fk_GeofenceTypeID AS GeofenceType, IsDeleted
               FROM Geofence
               WHERE GeofenceUID = @geofenceUid", new { geofenceUid = geofence.GeofenceUID }).FirstOrDefault();
@@ -132,9 +132,9 @@ namespace VSS.Geofence.Data
       {
         const string insert =
           @"INSERT Geofence
-                (GeofenceUID, Name, GeometryWKT, FillColor, IsTransparent, IsDeleted, CustomerUID, ProjectUID, LastActionedUTC, fk_GeofenceTypeID)
+                (GeofenceUID, Name, GeometryWKT, FillColor, IsTransparent, IsDeleted, CustomerUID, LastActionedUTC, fk_GeofenceTypeID)
             VALUES
-                (@GeofenceUID, @Name, @GeometryWKT, @FillColor, IsTransparent, @IsDeleted, @CustomerUID, @ProjectUID, @LastActionedUTC, @GeofenceType)";
+                (@GeofenceUID, @Name, @GeometryWKT, @FillColor, IsTransparent, @IsDeleted, @CustomerUID, @LastActionedUTC, @GeofenceType)";
         return Connection.Execute(insert, geofence);
       }
 
@@ -208,7 +208,7 @@ namespace VSS.Geofence.Data
       PerhapsOpenConnection();
 
       var projectGeofences = Connection.Query<Models.Geofence>
-         (@"SELECT GeofenceUID, Name, CustomerUID, GeometryWKT, ProjectUID
+         (@"SELECT GeofenceUID, Name, CustomerUID, GeometryWKT
             FROM Geofence 
             WHERE CustomerUID = @customerUid AND IsDeleted = 0 AND fk_GeofenceTypeID = 1",//Project type
           new { customerUid }
@@ -228,7 +228,7 @@ namespace VSS.Geofence.Data
       
       var geofence = Connection.Query<Models.Geofence>
           (@"SELECT 
-               GeofenceUID, Name, CustomerUID, ProjectUID, GeometryWKT, FillColor, IsTransparent,
+               GeofenceUID, Name, CustomerUID, GeometryWKT, FillColor, IsTransparent,
                 LastActionedUTC, fk_GeofenceTypeID AS GeofenceType, IsDeleted
               FROM Geofence
               WHERE GeofenceUID = @geofenceUid"

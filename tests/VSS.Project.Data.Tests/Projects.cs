@@ -57,12 +57,13 @@ namespace VSS.Project.Data.Tests
       };
     }
 
-    private AssociateProjectCustomer GetNewAssociateProjectCustomerEvent(Guid projectUID, Guid customerUID, DateTime receivedUTC)
+    private AssociateProjectCustomer GetNewAssociateProjectCustomerEvent(Guid projectUID, Guid customerUID, long legacyCustomerID, DateTime receivedUTC)
     {
       return new AssociateProjectCustomer()
       {
         ProjectUID = projectUID,
         CustomerUID = customerUID,
+        LegacyCustomerID = legacyCustomerID,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = receivedUTC
       };
@@ -161,8 +162,9 @@ namespace VSS.Project.Data.Tests
         var createProjectEvent = GetNewCreateProjectEvent();
         var upsertCount = _projectService.StoreProject(createProjectEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to create a project!");
+        long legacyCustomerID = 8888;
 
-        var associateProjectCustomerEvent = GetNewAssociateProjectCustomerEvent(createProjectEvent.ProjectUID, Guid.NewGuid(), DateTime.UtcNow);
+        var associateProjectCustomerEvent = GetNewAssociateProjectCustomerEvent(createProjectEvent.ProjectUID, Guid.NewGuid(), legacyCustomerID, DateTime.UtcNow);
 
         upsertCount = _projectService.StoreProject(associateProjectCustomerEvent);
         Assert.IsTrue(upsertCount == 1, "Failed to associate the project with a customer!");
