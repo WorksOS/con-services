@@ -827,7 +827,7 @@ namespace LandfillService.Common.Context
       {
         //Match on AssetID and IsJohnDoe only as MachineName can change.
         var query = @"SELECT ID, MachineName FROM Machine
-                      WHERE AssetID = @assetId AND IsjohnDoe = @isJohnDoe";
+                      WHERE AssetID = @assetId AND IsJohnDoe = @isJohnDoe";
 
         long existingId = 0;
         bool updateName = false;
@@ -836,13 +836,15 @@ namespace LandfillService.Common.Context
           while (reader.Read())
           {
             existingId = reader.GetUInt32(reader.GetOrdinal("ID"));
-            updateName = reader.GetString(reader.GetOrdinal("MachineName")) != machineName;
+            updateName =
+                !machineName.Equals(reader.GetString(reader.GetOrdinal("MachineName")),
+                    StringComparison.OrdinalIgnoreCase);
           }
         }
         if (updateName)
         {
-          var command = @"UPDATE Machine SET MachineName = @machineName";
-          MySqlHelper.ExecuteNonQuery(sqlConn, command, sqlParams);
+          var command = @"UPDATE Machine SET MachineName = @machineName WHERE ID = @machineId";
+          MySqlHelper.ExecuteNonQuery(sqlConn, command, new MySqlParameter("@machineId", existingId), new MySqlParameter("@machineName", machineName));
         }
         return existingId;
       }
