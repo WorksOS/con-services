@@ -201,3 +201,6 @@ UpgradeLog*.htm
 FakesAssemblies/
 /packages
 
+# exclude deploy folder
+Deploy_Production/
+
