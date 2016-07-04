@@ -1,5 +1,6 @@
 /**** Landfill Entries Backfill ***/
 
+
 SET SQL_SAFE_UPDATES=0;
 
 UPDATE `Entries` etr, 
@@ -8,7 +9,7 @@ SET etr.`ProjectUID` = prj.`ProjectUID`
 WHERE etr.`ProjectID` = prj.`ProjectID`;
 
 UPDATE `Entries` etr 
-INNER JOIN `GeofenceUID` geo ON etr.`ProjectUID` = geo.`ProjectUID`
+INNER JOIN `Geofence` geo ON etr.`ProjectUID` = geo.`ProjectUID`
 SET etr.`GeofenceUID` = geo.`GeofenceUID`
 WHERE etr.`ProjectUID` = geo.`ProjectUID` AND etr.`GeofenceUID` IS NULL;
 

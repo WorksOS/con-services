@@ -94,7 +94,7 @@ namespace VSS.Project.Data
 
       var existing = Connection.Query<Models.Project>
         (@"SELECT 
-                ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, CustomerUID, LegacyCustomerID, SubscriptionUID, 
+                ProjectUID, Name, ProjectID, ProjectTimeZone, LandfillTimeZone, 
                 LastActionedUTC, StartDate, EndDate, fk_ProjectTypeID AS ProjectType, IsDeleted
               FROM Project
               WHERE ProjectUID = @projectUid", new { projectUid = project.ProjectUID }).FirstOrDefault();
@@ -222,7 +222,7 @@ namespace VSS.Project.Data
 
       var existing = Connection.Query<Models.CustomerProject>
         (@"SELECT 
-            fk_CustomerUID AS CustomerUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
+            fk_CustomerUID AS CustomerUID, LegacyCustomerID, fk_ProjectUID AS ProjectUID, LastActionedUTC
               FROM CustomerProject
               WHERE fk_CustomerUID = @customerUID AND fk_ProjectUID = @projectUID", 
             new { customerUID = customerProject.CustomerUID, projectUID = customerProject.ProjectUID }).FirstOrDefault();
@@ -245,9 +245,9 @@ namespace VSS.Project.Data
       {
         const string insert =
           @"INSERT CustomerProject
-            (fk_ProjectUID, fk_CustomerUID, LastActionedUTC)
+            (fk_ProjectUID, fk_CustomerUID, LegacyCustomerID, LastActionedUTC)
             VALUES
-            (@ProjectUID, @CustomerUID, @LastActionedUTC)";
+            (@ProjectUID, @CustomerUID, @LegacyCustomerID, @LastActionedUTC)";
 
         return Connection.Execute(insert, customerProject);
       }
