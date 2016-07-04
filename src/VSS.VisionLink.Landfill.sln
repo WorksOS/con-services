@@ -36,13 +36,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Customer.Processor", "V
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Project.Data.Tests", "..\tests\VSS.Project.Data.Tests\VSS.Project.Data.Tests.csproj", "{1D17C611-A087-4832-B232-1AE0276DC06C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Customer.Data.Tests", "VSS.Customer.Data.Tests\VSS.Customer.Data.Tests.csproj", "{531447A7-EA47-4A1B-B958-57BAB9E247B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Customer.Data.Tests", "..\tests\VSS.Customer.Data.Tests\VSS.Customer.Data.Tests.csproj", "{531447A7-EA47-4A1B-B958-57BAB9E247B3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Geofence.Data", "VSS.Geofence.Data\VSS.Geofence.Data.csproj", "{740F7458-CB19-4422-9B45-173D7A6E9B51}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Geofence.Processor", "VSS.Geofence.Processor\VSS.Geofence.Processor.csproj", "{5E347D3C-60CF-4FA2-9109-C3BA3B98A46C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Geofence.Data.Tests", "VSS.Geofence.Data.Tests\VSS.Geofence.Data.Tests.csproj", "{8E8ECC27-059C-418E-9F7D-61CA32901EEA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Geofence.Data.Tests", "..\tests\VSS.Geofence.Data.Tests\VSS.Geofence.Data.Tests.csproj", "{8E8ECC27-059C-418E-9F7D-61CA32901EEA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.MasterData.Common", "VSS.MasterData.Common\VSS.MasterData.Common.csproj", "{6BB07A92-FA0C-49C5-9984-8143D0853AC1}"
 EndProject
