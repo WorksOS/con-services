@@ -181,9 +181,9 @@ this.ScenarioSetup(scenarioInfo);
                     "16-05-03&2015-05-03\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 29
- testRunner.Then("the following machine lift details are returned", "[\n  {\n\t\"assetId\": 1000001,\n\t\"machineName\": \"BLUE TRUCK\",\n\t\"isJohnDoe\": true,\n\t\"li" +
-                    "fts\": [\n\t  {\n\t\t\"layerId\": 1,\n\t\t\"endTime\": \"2016-05-03T04:53:53.977\"\n\t  }\n\t]\n  }\n" +
-                    "]", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the following machine lift details are returned", "[\r\n  {\r\n\t\"assetId\": 1000001,\r\n\t\"machineName\": \"BLUE TRUCK\",\r\n\t\"isJohnDoe\": true,\r" +
+                    "\n\t\"lifts\": [\r\n\t  {\r\n\t\t\"layerId\": 1,\r\n\t\t\"endTime\": \"2016-05-03T04:53:53.977\"\r\n\t  " +
+                    "}\r\n\t]\r\n  }\r\n]", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -201,9 +201,26 @@ this.ScenarioSetup(scenarioInfo);
                     "tSpecified\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 48
- testRunner.Then("the following machine lift details are returned", "[\n  {\n\t\"assetId\": 1000001,\n\t\"machineName\": \"BLUE TRUCK\",\n\t\"isJohnDoe\": true,\n\t\"li" +
-                    "fts\": [\n\t  {\n\t\t\"layerId\": 1,\n\t\t\"endTime\": \"2016-05-03T04:53:53.977\"\n\t  }\n\t]\n  }\n" +
-                    "]", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the following machine lift details are returned", "[\r\n  {\r\n\t\"assetId\": 1000001,\r\n\t\"machineName\": \"BLUE TRUCK\",\r\n\t\"isJohnDoe\": true,\r" +
+                    "\n\t\"lifts\": [\r\n\t  {\r\n\t\t\"layerId\": 1,\r\n\t\t\"endTime\": \"2016-05-03T04:53:53.977\"\r\n\t  " +
+                    "}\r\n\t]\r\n  }\r\n]", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Gets volume and time summary for a landfill project")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Projects")]
+        public virtual void GetsVolumeAndTimeSummaryForALandfillProject()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Gets volume and time summary for a landfill project", ((string[])(null)));
+#line 65
+this.ScenarioSetup(scenarioInfo);
+#line 66
+ testRunner.When("I try to get volume and time summary for project \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 67
+ testRunner.Then("the remaining volume is 98748.471408972138 and the remaining time is 105.10249164" +
+                    "632826", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

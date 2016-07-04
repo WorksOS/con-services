@@ -811,6 +811,30 @@
             <param name="id">Project ID</param>
             <returns>Current week volume, current month volume, remaining volume (air space) and time remaining (days)</returns>
         </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.CurrentWeekMonday(System.DateTime)">
+            <summary>
+            Returns the date representing the Monday of the week the given date falls in.
+            </summary>
+            <param name="date">The date for which to find the start of the week</param>
+            <returns>The date of the Monday of that week</returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetAirspaceVolumeInBackground(System.String,LandfillService.Common.Models.Project,System.Boolean)">
+            <summary>
+            Retrieves airspace volume summary from Raptor.
+            </summary>
+            <param name="userUid">User ID</param>
+            <param name="project">Project</param>
+            <param name="returnEarliest">Indicates if filtering by earliest or latest cell pass</param>
+            <returns></returns>
+        </member>
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetProjectStatisticsInBackground(System.String,LandfillService.Common.Models.Project)">
+            <summary>
+            Retrieves project statistics from Raptor.
+            </summary>
+            <param name="userUid">User ID</param>
+            <param name="project">Project</param>
+            <returns>Date extents from project statistics</returns>
+        </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofences(System.UInt32)">
             <summary>
             Returns a list of geofences for the project. A geofence is associated with a project if its

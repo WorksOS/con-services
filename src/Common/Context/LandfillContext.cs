@@ -73,15 +73,18 @@ namespace LandfillService.Common.Context
         {
             return InTransaction((conn) =>
             {
+    
               var command = @"SELECT p.ProjectID, p.Name, p.LandfillTimeZone,
                                      p.ProjectUID, p.ProjectTimeZone,
-                                     s.StartDate AS SubStartDate, s.EndDate AS SubEndDate 
+                                     s.StartDate AS SubStartDate, s.EndDate AS SubEndDate,
+									 p.LegacyCustomerID
                               FROM Project p  
                               JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
                               JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
                               JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
                               JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
                               WHERE cu.fk_UserUID = @userUid and p.IsDeleted = 0";
+      
               var projects = new List<Project>();
 
               using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@userUid", userUid)))
@@ -112,6 +115,7 @@ namespace LandfillService.Common.Context
                                                    name = reader.GetString(reader.GetOrdinal("Name")),
                                                    timeZoneName = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
                                                    legacyTimeZoneName = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
+                                                   legacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID")),
                                                    daysToSubscriptionExpiry = daysToSubExpiry
                         });
                     }
@@ -272,7 +276,7 @@ namespace LandfillService.Common.Context
       {        
         return InTransaction((conn) =>
         {
-          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name
+          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name, prj.LegacyCustomerID
                           FROM Project prj 
                           LEFT JOIN Entries etr ON prj.ProjectUID = etr.ProjectUID 
                           WHERE etr.Weight IS NOT NULL AND prj.IsDeleted = 0";
@@ -286,7 +290,8 @@ namespace LandfillService.Common.Context
                 id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
                 timeZoneName = reader.GetString(reader.GetOrdinal("TimeZone")),
                 projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
-                name = reader.GetString(reader.GetOrdinal("Name"))
+                name = reader.GetString(reader.GetOrdinal("Name")),
+                legacyCustomerID = reader.GetInt64(reader.GetOrdinal("LegacyCustomerID"))
               });
             }
             return projects;
@@ -417,6 +422,19 @@ namespace LandfillService.Common.Context
         }
 
         /// <summary>
+        /// Gets today's date in the project time zone.
+        /// </summary>
+        /// <param name="timeZoneName">Project time zone name</param>
+        /// <returns></returns>
+        public static DateTime GetTodayInProjectTimeZone(string timeZoneName)
+        {
+          var projTimeZone = DateTimeZoneProviders.Tzdb[timeZoneName];
+          DateTime utcNow = DateTime.UtcNow;
+          Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
+          return (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;
+        }
+
+        /// <summary>
         /// Gets the geofence UID for the project from the Geofence table
         /// </summary>
         /// <param name="project">Project</param>
@@ -440,6 +458,7 @@ namespace LandfillService.Common.Context
             return projectGeofenceUid;
           });        
         }
+
 
         private static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
         {
@@ -825,28 +844,28 @@ namespace LandfillService.Common.Context
       /// <returns>The machine ID</returns>
       private static long GetMachineId(MySqlConnection sqlConn, MySqlParameter[] sqlParams, string machineName)
       {
-        //Match on AssetID and IsJohnDoe only as MachineName can change.
-        var query = @"SELECT ID, MachineName FROM Machine
+          //Match on AssetID and IsJohnDoe only as MachineName can change.
+          var query = @"SELECT ID, MachineName FROM Machine
                       WHERE AssetID = @assetId AND IsJohnDoe = @isJohnDoe";
 
-        long existingId = 0;
-        bool updateName = false;
-        using (var reader = MySqlHelper.ExecuteReader(sqlConn, query, sqlParams))
-        {
-          while (reader.Read())
+          long existingId = 0;
+          bool updateName = false;
+          using (var reader = MySqlHelper.ExecuteReader(sqlConn, query, sqlParams))
           {
-            existingId = reader.GetUInt32(reader.GetOrdinal("ID"));
-            updateName =
-                !machineName.Equals(reader.GetString(reader.GetOrdinal("MachineName")),
-                    StringComparison.OrdinalIgnoreCase);
+              while (reader.Read())
+              {
+                  existingId = reader.GetUInt32(reader.GetOrdinal("ID"));
+                  updateName =
+                      !machineName.Equals(reader.GetString(reader.GetOrdinal("MachineName")),
+                          StringComparison.OrdinalIgnoreCase);
+              }
           }
-        }
-        if (updateName)
-        {
-          var command = @"UPDATE Machine SET MachineName = @machineName WHERE ID = @machineId";
-          MySqlHelper.ExecuteNonQuery(sqlConn, command, new MySqlParameter("@machineId", existingId), new MySqlParameter("@machineName", machineName));
-        }
-        return existingId;
+          if (updateName)
+          {
+            var command = @"UPDATE Machine SET MachineName = @machineName WHERE ID = @machineId";
+            MySqlHelper.ExecuteNonQuery(sqlConn, command, new MySqlParameter("@machineId", existingId), new MySqlParameter("@machineName", machineName));
+          }
+          return existingId;
       }
 
       /*

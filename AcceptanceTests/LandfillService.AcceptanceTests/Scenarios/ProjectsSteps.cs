@@ -18,7 +18,8 @@ namespace LandfillService.AcceptanceTests.Scenarios
     {
         List<Project> projects;
         ProjectData data;
-        List<MachineLiftDetails> liftDetails; 
+        List<MachineLiftDetails> liftDetails;
+        VolumeTime vt;
 
         #region When
         [When(@"I try to get a list of all projects")]
@@ -84,6 +85,15 @@ namespace LandfillService.AcceptanceTests.Scenarios
                 RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
             liftDetails = JsonConvert.DeserializeObject<List<MachineLiftDetails>>(response);
         }
+
+        [When(@"I try to get volume and time summary for project '(.*)'")]
+        public void WhenITryToGetVolumeAndTimeSummaryForProject(string project)
+        {
+            uint projId = ProjectsUtils.GetProjectDetails(project).id;
+            string uri = Config.ConstructGetVolumeTimeUri(projId);
+            string response = RestClientUtil.DoHttpRequest(uri, "GET", RestClientConfig.JsonMediaType, null, Config.JwtToken, HttpStatusCode.OK);
+            vt = JsonConvert.DeserializeObject<VolumeTime>(response);
+        }
         #endregion
 
         #region Then
@@ -132,6 +142,12 @@ namespace LandfillService.AcceptanceTests.Scenarios
             Assert.IsTrue(LandfillCommonUtils.ListsAreEqual<MachineLiftDetails>(expectedLiftDetails, liftDetails));
         }
 
+        [Then(@"the remaining volume is (.*) and the remaining time is (.*)")]
+        public void ThenTheRemainingVolumeIsAndTheRemainingTimeIs(double expectedRemainingVol, double expectedRemainingTime)
+        {
+            Assert.IsTrue((int)expectedRemainingVol == (int)vt.remainingVolume && (int)expectedRemainingTime == (int)vt.remainingTime, 
+                "Incorrect remaining volume or/and time.");
+        }
         #endregion
     }
 }

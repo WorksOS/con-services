@@ -219,6 +219,45 @@ namespace LandfillService.Common.ApiClients
           }
         }
 
+        /// <summary>
+        /// Retrieves airspace volume summary information for a given project and date. This is the volume remaining
+        /// for the project calculated as the volume between the current ground surface and the design surface.
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">VisionLink project to retrieve volumes for</param>
+        /// <param name="date">Date to retrieve volumes for (in project time zone)</param>
+        /// <param name="returnEarliest">Flag to indicate if earliest or latest cell pass to be used</param>
+        /// <returns>SummaryVolumesResult</returns>
+        public async Task<SummaryVolumesResult> GetAirspaceVolumeAsync(string userUid, Project project, bool returnEarliest)
+        {
+          string tccFilespaceId = ConfigurationManager.AppSettings["TCCfilespaceId"];
+          string topOfWasteDesignFilename = ConfigurationManager.AppSettings["TopOfWasteDesignFilename"];
+          var volumeParams = new VolumeParams
+          {
+            projectId = project.id,
+            volumeCalcType = 5,
+            baseFilter = new VolumeFilter { returnEarliest = returnEarliest },
+            topDesignDescriptor = new VolumeDesign
+            {
+              file = new DesignDescriptor { filespaceId = tccFilespaceId, path = String.Format("/{0}/{1}", project.legacyCustomerID, project.id), fileName = topOfWasteDesignFilename }
+            }
+          };
+          return ParseResponse<SummaryVolumesResult>(await Request(this.reportEndpoint + "volumes/summary", userUid, volumeParams));
+        }
+
+        /// <summary>
+        /// Retrieves project statistics information for a given project. 
+        /// </summary>
+        /// <param name="userUid">User ID</param>
+        /// <param name="project">VisionLink project to retrieve volumes for</param>
+        /// <returns>ProjectStatisticsResult</returns>
+        public async Task<ProjectStatisticsResult> GetProjectStatisticsAsync(string userUid, Project project)
+        {
+          var statsParams = new StatisticsParams { projectId = project.id };
+          return ParseResponse<ProjectStatisticsResult>(await Request(this.reportEndpoint + "projects/statistics", userUid, statsParams));
+        }
+
+
         public TimeZoneInfo GetTimeZoneInfoForTzdbId(string tzdbId)
         {
           var mappings = TzdbDateTimeZoneSource.Default.WindowsMapping.MapZones;
@@ -246,7 +285,7 @@ namespace LandfillService.Common.ApiClients
         /// <param name="machine">Machine to retrieve CCA for</param>
         /// <param name="geofence">Geofence to retrieve CCA for. If not specified then CCA retrieved for entire project area</param>
         /// <param name="liftId">Lift/layer number to retrieve CCA for. If not specified then CCA retrieved for all lifts</param>
-        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
+        /// <returns>CCASummaryResult</returns>
         private async Task<CCASummaryResult> GetCCAAsync(string userUid, Project project, DateTime date, MachineDetails machine, int? liftId, List<WGSPoint> geofence)
         {
           DateTime startUtc;
