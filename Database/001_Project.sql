@@ -7,9 +7,6 @@ CREATE TABLE IF NOT EXISTS `Project` (
   `LandfillTimeZone` VARCHAR(255) NOT NULL COMMENT '',
   `RetrievalStartedAt` DATETIME NOT NULL COMMENT '',
   `ProjectUID` varchar(36) DEFAULT NULL,
-  `CustomerUID` varchar(36) DEFAULT NULL,
-  `LegacyCustomerID` INT(10) UNSIGNED NULL COMMENT '', 
-  `SubscriptionUID` varchar(36) DEFAULT NULL,
   `IsDeleted` tinyint(4) DEFAULT 0,
   `LastActionedUTC` datetime(6) DEFAULT NULL,
   `StartDate` datetime DEFAULT NULL,
@@ -22,17 +19,51 @@ CREATE TABLE IF NOT EXISTS `Project` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-/* Add CustomerID if not there */
+
+/* Drop CustomerUID column from Project Table if there */
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name = 'Project'
+        AND table_schema = DATABASE()
+        AND column_name = 'CustomerUID'
+    ) = 0,
+    "SELECT 1",
+    "ALTER TABLE `Project` DROP COLUMN `CustomerUID`"
+));
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+/* Drop LegacyCustomerID column from Project Table if there */
 SET @s = (SELECT IF(
     (SELECT COUNT(*)
        FROM INFORMATION_SCHEMA.COLUMNS
         WHERE table_name = 'Project'
         AND table_schema = DATABASE()
         AND column_name = 'LegacyCustomerID'
-    ) > 0,
+    ) = 0,
     "SELECT 1",
-    "ALTER TABLE `Project` ADD COLUMN `LegacyCustomerID` INT(10) UNSIGNED NULL AFTER `CustomerUID`"
+    "ALTER TABLE `Project` DROP COLUMN `LegacyCustomerID`"
 ));
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+/* Drop SubscriptionUID column from Project Table if there */
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name = 'Project'
+        AND table_schema = DATABASE()
+        AND column_name = 'SubscriptionUID'
+    ) = 0,
+    "SELECT 1",
+    "ALTER TABLE `Project` DROP COLUMN `SubscriptionUID`"
+));
+
 PREPARE stmt FROM @s;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
