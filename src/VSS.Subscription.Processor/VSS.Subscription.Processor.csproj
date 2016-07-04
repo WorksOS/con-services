@@ -150,9 +150,6 @@
       <HintPath>..\packages\Topshelf.3.3.1\lib\net40-full\Topshelf.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="VSP.MasterData.Common.Logging">
-      <HintPath>..\libraries\VSP.MasterData.Common.Logging.dll</HintPath>
-    </Reference>
     <Reference Include="VSS.Kafka.DotNetClient, Version=1.1.74.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\VSS.Kafka.DotNetClient.1.1.74.0\lib\net451\VSS.Kafka.DotNetClient.dll</HintPath>
       <Private>True</Private>
@@ -182,14 +179,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\LandfillService.Common.csproj">
-      <Project>{bc7a519a-3dd6-4eb2-95a7-c8917f79ac15}</Project>
-      <Name>LandfillService.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VSS.Geofence.Data\VSS.Geofence.Data.csproj">
-      <Project>{740f7458-cb19-4422-9b45-173d7a6e9b51}</Project>
-      <Name>VSS.Geofence.Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VSS.MasterData.Common\VSS.MasterData.Common.csproj">
       <Project>{6bb07a92-fa0c-49c5-9984-8143d0853ac1}</Project>
       <Name>VSS.MasterData.Common</Name>
