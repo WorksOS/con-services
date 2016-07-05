@@ -77,7 +77,7 @@ namespace LandfillService.Common.Context
               var command = @"SELECT p.ProjectID, p.Name, p.LandfillTimeZone,
                                      p.ProjectUID, p.ProjectTimeZone,
                                      s.StartDate AS SubStartDate, s.EndDate AS SubEndDate,
-									 p.LegacyCustomerID
+									                   cp.LegacyCustomerID
                               FROM Project p  
                               JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
                               JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
