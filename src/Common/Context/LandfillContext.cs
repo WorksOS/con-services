@@ -276,8 +276,9 @@ namespace LandfillService.Common.Context
       {        
         return InTransaction((conn) =>
         {
-          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name, prj.LegacyCustomerID
+          var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name, cp.LegacyCustomerID
                           FROM Project prj 
+                          JOIN CustomerProject cp on prj.ProjectUID = cp.fk_ProjectUID
                           LEFT JOIN Entries etr ON prj.ProjectUID = etr.ProjectUID 
                           WHERE etr.Weight IS NOT NULL AND prj.IsDeleted = 0";
           using (var reader = MySqlHelper.ExecuteReader(conn, command))
