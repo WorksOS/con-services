@@ -87,7 +87,7 @@ namespace LandfillService.AcceptanceTests.Scenarios
                     topic = Config.CustomerTopic;
                     break;
                 case "AssociateProjectCustomer":
-                    string query = string.Format("DELETE FROM {0}.Project WHERE CustomerUID = '{1}'", Config.MySqlDbName, Config.MasterDataCustomerUid);
+                    string query = string.Format("DELETE FROM {0}.CustomerProject WHERE fk_CustomerUID = '{1}'", Config.MySqlDbName, Config.MasterDataCustomerUid);
                     LandFillMySqlDb.ExecuteMySqlQueryResult(Config.MySqlConnString, query);
                     messageStr = mdSupport.AssociateProjectCustomer(projectUID, Config.MasterDataCustomerUid);
                     topic = Config.ProjectTopic;

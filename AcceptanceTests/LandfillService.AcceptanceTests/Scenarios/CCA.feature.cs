@@ -488,7 +488,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 69
   testRunner.And("I have the following CCA data", ((string)(null)), table11, "And ");
 #line 77
- testRunner.When("I request CCA ratio for site \'NotSpecified\' for the last \'NotSpecified\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request CCA ratio for site \'Maddington\' for the last \'NotSpecified\' days", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 78
  testRunner.Then("the response contains two years of CCA ration data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

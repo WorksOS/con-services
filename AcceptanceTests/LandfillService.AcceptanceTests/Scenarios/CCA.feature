@@ -74,7 +74,7 @@ Scenario: CCA Ratio - dates not specified (defaults to two years)
 		| Maddington | AmiStadium | -1                      | Cat B   | 1      | 10         | 60       | 30           |
 		| Maddington | Maddington | -2                      | Cat A   | null   | 65         | 20       | 15           |
 		| Maddington | Maddington | -1                      | Cat B   | 1      | 25         | 30       | 45           |
-	When I request CCA ratio for site 'NotSpecified' for the last 'NotSpecified' days
+	When I request CCA ratio for site 'Maddington' for the last 'NotSpecified' days
 	Then the response contains two years of CCA ration data
 
 Scenario: CCA Summary - whole project all machines all lifts 

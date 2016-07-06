@@ -81,15 +81,16 @@ namespace LandfillService.AcceptanceTests.Scenarios
             DateTime? startDate = numDays == "NotSpecified" ? null : (DateTime?)DateTime.Today.AddDays(-Convert.ToInt32(numDays));
             DateTime? endDate = numDays == "NotSpecified" ? null : (DateTime?)DateTime.Today.AddDays(-1);
 
+            string jwt = Jwt.GetJwtToken(customer.UserUid);
+
             // get project id by web api request
-            string response = RestClientUtil.DoHttpRequest(Config.ConstructGetProjectListUri(), "GET",
-                RestClientConfig.JsonMediaType, null, Jwt.GetJwtToken(customer.UserUid), HttpStatusCode.OK);
+            string response = RestClientUtil.DoHttpRequest(Config.ConstructGetProjectListUri(), "GET", RestClientConfig.JsonMediaType, null, jwt, HttpStatusCode.OK);
             List<Project> projects = JsonConvert.DeserializeObject<List<Project>>(response);
             uint projectId = projects.First(p => p.name == customer.ProjectName).id;
 
             // request cca ratio
             string uri = Config.ConstructGetCcaRatioUri(projectId, geofenceUid, startDate, endDate);
-            response = RestClientUtil.DoHttpRequest(uri, "GET", RestClientConfig.JsonMediaType, null, Jwt.GetJwtToken(customer.UserUid), HttpStatusCode.OK);
+            response = RestClientUtil.DoHttpRequest(uri, "GET", RestClientConfig.JsonMediaType, null, jwt, HttpStatusCode.OK);
             ccaRatio = JsonConvert.DeserializeObject<List<CCARatioData>>(response);
         }
 

@@ -64,4 +64,4 @@ Scenario: Machine lifts - two years
 
 Scenario: Gets volume and time summary for a landfill project
 	When I try to get volume and time summary for project 'Casella-Stanley Landfill'
-	Then the remaining volume is 98748.471408972138 and the remaining time is 105.10249164632826
+	Then the remaining volume is 98745.9204653804 and the remaining time is 271.14651230890672

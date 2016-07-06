@@ -219,8 +219,8 @@ this.ScenarioSetup(scenarioInfo);
 #line 66
  testRunner.When("I try to get volume and time summary for project \'Casella-Stanley Landfill\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 67
- testRunner.Then("the remaining volume is 98748.471408972138 and the remaining time is 105.10249164" +
-                    "632826", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the remaining volume is 98745.9204653804 and the remaining time is 271.1465123089" +
+                    "0672", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
