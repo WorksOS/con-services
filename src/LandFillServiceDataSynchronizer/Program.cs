@@ -21,39 +21,11 @@ namespace LandFillServiceDataSynchronizer
   {
     private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    /// <summary>
-    /// The main entry point for the application.
-    /// </summary>
-    private static void ConfigureLogging()
-    {
-      var layout = new PatternLayout("%utcdate [%thread] %-5level %method - %message%newline");
-      var appender = new ConsoleAppender(layout);
-
-      FileAppender appenderF = new FileAppender();
-      appenderF.Name = "logfile";
-      appenderF.File = "LandFillServiceSync.log";
-      appenderF.AppendToFile = true;
-
-      PatternLayout layoutF = new PatternLayout();
-      layoutF.ConversionPattern = "%utcdate [%thread] %-5level %method - %message%newline";
-      layoutF.ActivateOptions();
-
-      appenderF.Layout = layoutF;
-      appenderF.ActivateOptions();
-
-      appender.Threshold = Level.All;
-      layout.ActivateOptions();
-      appender.ActivateOptions();
-      BasicConfigurator.Configure(appender);
-
-      Logger l = (Logger)Log.Logger;
-
-      l.AddAppender(appenderF);
-    }
 
     static void Main(string[] args)
     {
-      ConfigureLogging();
+      XmlConfigurator.Configure();
+
       AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
       TopshelfExitCode exitCode = HostFactory.Run(c =>
@@ -112,31 +84,8 @@ namespace LandFillServiceDataSynchronizer
     private static Timer SyncVolumesTimer = null;
     private static Timer SyncCCATimer = null;
 
-    /*
-    private static void ConfigureLogging()
-    {
-      var layout = new PatternLayout("%utcdate [%thread] %-5level %method - %message%newline");
-
-      FileAppender appenderF = new FileAppender();
-      appenderF.Name = "logfile";
-      appenderF.File = "LandFillServiceSync.log";
-      appenderF.AppendToFile = true;
-
-      PatternLayout layoutF = new PatternLayout();
-      layoutF.ConversionPattern = "%utcdate [%thread] %-5level %method - %message%newline";
-      layoutF.ActivateOptions();
-
-      appenderF.Layout = layoutF;
-      appenderF.ActivateOptions();
-      layout.ActivateOptions();
-      Logger l = (Logger)Log.Logger;
-      l.AddAppender(appenderF);
-    }
-     */
-
     public void Start()
     {
-      //ConfigureLogging();
       var dataSync = new DataSynchronizer(Log);     
 
       Log.Debug("Starting service...");
