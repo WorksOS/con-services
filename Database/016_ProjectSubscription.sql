@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS `ProjectSubscription` (
   `UpdateUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`fk_ProjectUID`, `fk_SubscriptionUID`),
   KEY (`fk_ProjectUID`, `fk_SubscriptionUID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=DEFAULT;

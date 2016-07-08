@@ -6,7 +6,7 @@
   PRIMARY KEY (ID),
   UNIQUE KEY UIX_ServiceTypeEnum (ID),
   KEY IX_ServiceTypeEnum_ServiceTypeFamilyID (fk_ServiceTypeFamilyID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=DEFAULT;
 
 INSERT IGNORE ServiceTypeEnum
   (ID,Description,fk_ServiceTypeFamilyID) VALUES (1, 'Essentials', 1);

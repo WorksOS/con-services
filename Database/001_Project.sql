@@ -15,9 +15,8 @@ CREATE TABLE IF NOT EXISTS `Project` (
   `InsertUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `UpdateUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`ID`)  COMMENT '',
-  UNIQUE INDEX `UIX_Project_ProjectID` (`ProjectID` ASC)  COMMENT '')
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
+  UNIQUE INDEX `UIX_Project_ProjectID` (`ProjectID` ASC)  COMMENT ''
+) ENGINE=InnoDB CHARSET=DEFAULT;
 
 
 /* Drop CustomerUID column from Project Table if there */

@@ -4,7 +4,7 @@
   Description varchar(20) NOT NULL,
   PRIMARY KEY (ID),
   UNIQUE KEY UIX_ServiceTypeFamilyEnum (ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=DEFAULT;
 
 INSERT IGNORE ServiceTypeFamilyEnum
   (ID,Description) VALUES (1, 'Asset');
