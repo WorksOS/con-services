@@ -634,7 +634,7 @@ namespace LandfillService.Common.Context
                 new MySqlParameter("@projectUid", projectUid),
                 new MySqlParameter("@geofenceUid", geofenceUid),
                 new MySqlParameter("@machineId", machineId),
-                new MySqlParameter("@liftId", (object)liftId ?? DBNull.Value),
+                new MySqlParameter("@liftId", (object)liftId ?? -1),
                 new MySqlParameter("@date", date),
                 new MySqlParameter("@notRetrieved", notRetrieved ? 1 : 0),
                 new MySqlParameter("@notAvailable", notAvailable ? 1 : 0));
@@ -671,7 +671,7 @@ namespace LandfillService.Common.Context
                                    date = reader.GetDateTime(reader.GetOrdinal("Date")),
                                    geofenceUid = reader.GetString(reader.GetOrdinal("GeofenceUID")),
                                    machineId = reader.GetUInt32(reader.GetOrdinal("MachineID")),
-                                   liftId = reader.IsDBNull(reader.GetOrdinal("LiftID")) ? (int?)null : reader.GetInt16(reader.GetOrdinal("LiftID"))
+                                   liftId = reader.GetOrdinal("LiftID") == -1 ? (int?)null : reader.GetInt16(reader.GetOrdinal("LiftID"))
                                });
               }
               return ccaEntries;
@@ -737,17 +737,16 @@ namespace LandfillService.Common.Context
           var dateRange = CheckDateRange(project.timeZoneName, startDate, endDate).ToList();
           var firstDate = dateRange.First();
           var lastDate = dateRange.Last();
+          liftId = liftId ?? -1;
 
           //Get the actual data 
           var command = @"SELECT Date, GeofenceUID, MachineID, LiftID, Incomplete, Complete, Overcomplete FROM CCA 
                           WHERE Date >= CAST(@startDate AS DATE) AND Date <= CAST(@endDate AS DATE)
-                            AND ProjectUID = @projectUid AND GeofenceUID = @geofenceUid ";
+                            AND ProjectUID = @projectUid 
+                            AND GeofenceUID = @geofenceUid 
+                            AND LiftID = @liftId ";
           if (machineId.HasValue)
             command += " AND MachineID = @machineId ";
-          if (liftId.HasValue)
-            command += " AND LiftID = @liftId ";
-          else         
-            command += " AND LiftID IS NULL ";
           
           command += " ORDER BY MachineId, Date ";
      
@@ -756,12 +755,11 @@ namespace LandfillService.Common.Context
                                            new MySqlParameter("@projectUid", project.projectUid),
                                            new MySqlParameter("@geofenceUid", geofenceUid),
                                            new MySqlParameter("@startDate", firstDate),
-                                           new MySqlParameter("@endDate", lastDate)
+                                           new MySqlParameter("@endDate", lastDate),
+                                           new MySqlParameter("@liftId", liftId)
                                        };
           if (machineId.HasValue)
             parms.Add(new MySqlParameter("@machineId", machineId));
-          if (liftId.HasValue)
-            parms.Add(new MySqlParameter("@liftId", liftId));
 
           var actualData = new List<CCA>();
           using (var reader = MySqlHelper.ExecuteReader(conn, command, parms.ToArray()))
@@ -774,7 +772,7 @@ namespace LandfillService.Common.Context
                   date = reader.GetDateTime(reader.GetOrdinal("Date")),
                   geofenceUid = reader.GetString(reader.GetOrdinal("GeofenceUID")),
                   machineId = reader.GetUInt32(reader.GetOrdinal("MachineID")),
-                  liftId = reader.IsDBNull(reader.GetOrdinal("LiftID")) ? (int?)null : reader.GetInt16(reader.GetOrdinal("LiftID")),
+                  liftId = reader.GetOrdinal("LiftID") == -1 ? (int?)null : reader.GetInt16(reader.GetOrdinal("LiftID")),
                   incomplete = reader.IsDBNull(reader.GetOrdinal("Incomplete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Incomplete")),
                   complete = reader.IsDBNull(reader.GetOrdinal("Complete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Complete")),
                   overcomplete = reader.IsDBNull(reader.GetOrdinal("Overcomplete")) ? 0 : reader.GetDouble(reader.GetOrdinal("Overcomplete"))
