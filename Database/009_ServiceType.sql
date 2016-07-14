@@ -1,12 +1,12 @@
   
-  CREATE TABLE IF NOT EXISTS ServiceTypeEnum (
+CREATE TABLE IF NOT EXISTS ServiceTypeEnum (
   ID int(11) NOT NULL,
   Description varchar(40) NOT NULL,
   fk_ServiceTypeFamilyID INT(11)  NOT NULL,
   PRIMARY KEY (ID),
   UNIQUE KEY UIX_ServiceTypeEnum (ID),
   KEY IX_ServiceTypeEnum_ServiceTypeFamilyID (fk_ServiceTypeFamilyID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ) ENGINE=InnoDB CHARSET=DEFAULT;
 
 INSERT IGNORE ServiceTypeEnum
   (ID,Description,fk_ServiceTypeFamilyID) VALUES (1, 'Essentials', 1);
@@ -50,4 +50,6 @@ INSERT IGNORE ServiceTypeEnum
   (ID,Description,fk_ServiceTypeFamilyID) VALUES (20, 'Project Monitoring', 3);
 INSERT IGNORE ServiceTypeEnum
   (ID,Description,fk_ServiceTypeFamilyID) VALUES (21, 'Operator Id / Manage Operators', 2);
+INSERT IGNORE ServiceTypeEnum
+  (ID,Description,fk_ServiceTypeFamilyID) VALUES (22, 'Forestry', 1);   
 
