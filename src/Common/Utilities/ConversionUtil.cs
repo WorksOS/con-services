@@ -17,8 +17,8 @@ namespace Common.Utilities
       foreach (var point in points)
       {
         var parts = point.Split(' ');
-        var lat = double.Parse(parts[0]);
-        var lng = double.Parse(parts[1]);
+        var lat = double.Parse(parts[1]);
+        var lng = double.Parse(parts[0]);
         latlngs.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
       }
       return latlngs;

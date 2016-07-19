@@ -118,17 +118,20 @@ namespace LandfillService.Common.ApiClients
         private T ParseResponse<T>(string response)
         {
           Log.DebugFormat("In RaptorApiClient::ParseResponse");
+          Log.DebugFormat("Parsing {0} into {1}",response,typeof(T));
+
 
             var resObj = JsonConvert.DeserializeObject<T>(response,
                  new JsonSerializerSettings
                  {
                      Error = delegate(object sender, ErrorEventArgs args)
                      {
-                         System.Diagnostics.Debug.WriteLine(args.ErrorContext.Error.Message);
-                         args.ErrorContext.Handled = true;
-                     }
+                       Log.DebugFormat("Error {0}", args.ErrorContext.Error.Message);
+                       args.ErrorContext.Handled = true;
+                     },
+                     MissingMemberHandling = MissingMemberHandling.Ignore
                  });
-
+            Log.DebugFormat("Reversed serialization {0}", JsonConvert.SerializeObject(resObj));
             return resObj;
         }
 
@@ -311,7 +314,7 @@ namespace LandfillService.Common.ApiClients
               endUTC = endUtc,
               contributingMachines = new List<MachineDetails>{details},
               layerNumber = liftId,
-              layerType = liftId.HasValue ? 1 : (int?)null, //1 = AutoMapReset
+              layerType = liftId.HasValue ? 7 : (int?)null, //7 = TagFile!
               polygonLL = geofence
             },         
           };
