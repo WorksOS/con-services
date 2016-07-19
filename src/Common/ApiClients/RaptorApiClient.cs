@@ -342,9 +342,9 @@ namespace LandfillService.Common.ApiClients
             var res = await GetCCAAsync(userUid, project, date, machine, liftId, geofence);
 
             Log.Debug("CCA res:" + res);
-            Log.DebugFormat("CCA: incomplete {0}, complete {1}, overcomplete {2}", res.incompletePercent, res.completePercent, res.overcompletePercent);
+            Log.DebugFormat("CCA: incomplete {0}, complete {1}, overcomplete {2}", res.undercompletePercent, res.completePercent, res.overcompletePercent);
 
-            LandfillDb.SaveCCA(project.projectUid, geofenceUid, date, machineId, liftId, res.incompletePercent, res.completePercent, res.overcompletePercent);
+            LandfillDb.SaveCCA(project.projectUid, geofenceUid, date, machineId, liftId, res.undercompletePercent, res.completePercent, res.overcompletePercent);
           }
           catch (RaptorApiException e)
           {

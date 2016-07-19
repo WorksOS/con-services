@@ -471,7 +471,7 @@ namespace LandfillService.Common.Models
       /// <summary>
       /// The percentage of the cells that are incomplete
       /// </summary>
-      public double incompletePercent { get; set; }
+      public double undercompletePercent { get; set; }
 
       /// <summary>
       /// The percentage of cells that are complete within the target bounds
@@ -500,7 +500,7 @@ namespace LandfillService.Common.Models
       public override string ToString()
       {
         return String.Format("under:{0}, complete:{1}, over:{2}", 
-          this.incompletePercent, completePercent, this.overcompletePercent);
+          this.undercompletePercent, completePercent, this.overcompletePercent);
       }
     }
 
