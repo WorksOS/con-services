@@ -6,7 +6,7 @@ namespace Common.Utilities
 {
   public class ConversionUtil
   {
-    public static IEnumerable<WGSPoint> GeometryToPoints(string geometry)
+    public static IEnumerable<WGSPoint> GeometryToPoints(string geometry, bool convertToRadians)
     {
       const double DEGREES_TO_RADIANS = Math.PI / 180;
 
@@ -19,7 +19,7 @@ namespace Common.Utilities
         var parts = point.Split(' ');
         var lat = double.Parse(parts[1]);
         var lng = double.Parse(parts[0]);
-        latlngs.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
+        latlngs.Add(new WGSPoint { Lat = convertToRadians ? lat * DEGREES_TO_RADIANS : lat, Lon = convertToRadians ? lng * DEGREES_TO_RADIANS : lng });
       }
       return latlngs;
     }

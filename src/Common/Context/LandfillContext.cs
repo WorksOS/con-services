@@ -505,7 +505,7 @@ namespace LandfillService.Common.Context
         {
           return WithConnection((conn) =>
           {
-            var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID FROM Geofence g
+            var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID g.GeometryWKT FROM Geofence g
                             JOIN ProjectGeofence pg on g.GeofenceUID = pg.fk_GeofenceUID
                             WHERE pg.fk_ProjectUID = @projectUid AND g.IsDeleted = 0 
                                 AND (g.fk_GeofenceTypeID = 1 OR g.fk_GeofenceTypeID = 10)";
@@ -520,12 +520,32 @@ namespace LandfillService.Common.Context
                                 uid = Guid.Parse(reader.GetString(reader.GetOrdinal("GeofenceUID"))),
                                 name = reader.GetString(reader.GetOrdinal("Name")),
                                 type = reader.GetInt32(reader.GetOrdinal("fk_GeofenceTypeID")),
+                                bbox = GetBoundingBox(reader.GetString(reader.GetOrdinal("GeometryWKT")))
                               });
 
               }
               return geofences;
             }
           });        
+        }
+
+        /// <summary>
+        /// Gets the bounding box of a geofence.
+        /// </summary>
+        /// <param name="geometryWKT">The geofence points</param>
+        /// <returns>Bounding box in decimal degrees</returns>
+        private static BoundingBox GetBoundingBox(string geometryWKT)
+        {
+          IEnumerable<WGSPoint> latlngs = ConversionUtil.GeometryToPoints(geometryWKT, false);
+          BoundingBox bbox = new BoundingBox{ minLat = double.MaxValue, minLng = double.MaxValue, maxLat = double.MinValue, maxLng = double.MinValue };
+          foreach (var latLng in latlngs)
+          {
+            if (latLng.Lat < bbox.minLat) bbox.minLat = latLng.Lat;
+            if (latLng.Lat > bbox.maxLat) bbox.maxLat = latLng.Lat;
+            if (latLng.Lon < bbox.minLng) bbox.minLng = latLng.Lon;
+            if (latLng.Lon > bbox.maxLng) bbox.maxLng = latLng.Lon;
+          }
+          return bbox;
         }
 
         /// <summary>
@@ -545,7 +565,7 @@ namespace LandfillService.Common.Context
               IEnumerable<WGSPoint> latlngs = null;
               while (reader.Read())
               {
-                latlngs = ConversionUtil.GeometryToPoints(reader.GetString(0));
+                latlngs = ConversionUtil.GeometryToPoints(reader.GetString(0), true);
               }
               return latlngs;
             }

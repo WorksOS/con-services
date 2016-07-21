@@ -529,7 +529,7 @@ namespace LandfillService.WebApi.Controllers
         /// geofence is also returned.
         /// </summary>
         /// <param name="id">Project ID</param>
-        /// <returns>List of geofences</returns>
+        /// <returns>List of geofences with their bounding boxes</returns>
         [Route("{id}/geofences")]
         public IHttpActionResult GetGeofences(uint id)
         {

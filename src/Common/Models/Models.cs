@@ -27,6 +27,18 @@ namespace LandfillService.Common.Models
       public Guid uid { get; set; }
       public string name { get; set; }
       public int type { get; set; }
+      public BoundingBox bbox { get; set; }
+    }
+
+    /// <summary>
+    /// Bounding box representation
+    /// </summary>
+    public class BoundingBox
+    {
+      public double minLat { get; set; }
+      public double minLng { get; set; }
+      public double maxLat { get; set; }
+      public double maxLng { get; set; }        
     }
 
     /// <summary>

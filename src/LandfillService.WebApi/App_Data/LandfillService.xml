@@ -842,7 +842,7 @@
             geofence is also returned.
             </summary>
             <param name="id">Project ID</param>
-            <returns>List of geofences</returns>
+            <returns>List of geofences with their bounding boxes</returns>
         </member>
         <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetGeofenceBoundary(System.UInt32,System.Guid)">
             <summary>
