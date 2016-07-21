@@ -380,7 +380,7 @@ namespace LandfillService.WebApi.Controllers
           }
           LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving Volume/Time");
 
-          try
+       try
           {
             var projects = LandfillDb.GetProjects(userUid);
             var project = projects.Where(p => p.id == id).First();
@@ -393,7 +393,7 @@ namespace LandfillService.WebApi.Controllers
             var lastAirspaceVol = await GetAirspaceVolumeInBackground(userUid, project, false);
             var statsDates = await GetProjectStatisticsInBackground(userUid, project);
             var dates = statsDates.ToList();
-            var volPerDay = firstAirspaceVol.HasValue && lastAirspaceVol.HasValue ? 
+            var volPerDay = firstAirspaceVol.HasValue && lastAirspaceVol.HasValue ?
               Math.Abs(firstAirspaceVol.Value - lastAirspaceVol.Value) /
               Math.Abs((dates[0] - dates[1]).TotalDays) : (double?)null;
             var timeLeft = volPerDay.HasValue ? lastAirspaceVol / volPerDay.Value : (double?)null;
@@ -697,9 +697,9 @@ namespace LandfillService.WebApi.Controllers
           {
             machineName = LandfillDb.GetMachine(d.machineId).machineName,
             liftId = d.liftId,
-            incomplete = d.incomplete,
-            complete = d.complete,
-            overcomplete = d.overcomplete
+            incomplete = Math.Round(d.incomplete),
+            complete = Math.Round(d.complete),
+            overcomplete = Math.Round(d.overcomplete)
           }).ToList();
           return Ok(data);
         }
