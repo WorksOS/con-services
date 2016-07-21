@@ -505,7 +505,7 @@ namespace LandfillService.Common.Context
         {
           return WithConnection((conn) =>
           {
-            var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID g.GeometryWKT FROM Geofence g
+            var command = @"SELECT g.GeofenceUID, g.Name, g.fk_GeofenceTypeID, g.GeometryWKT FROM Geofence g
                             JOIN ProjectGeofence pg on g.GeofenceUID = pg.fk_GeofenceUID
                             WHERE pg.fk_ProjectUID = @projectUid AND g.IsDeleted = 0 
                                 AND (g.fk_GeofenceTypeID = 1 OR g.fk_GeofenceTypeID = 10)";
