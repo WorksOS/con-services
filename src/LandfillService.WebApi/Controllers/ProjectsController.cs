@@ -625,7 +625,7 @@ namespace LandfillService.WebApi.Controllers
                     machineName = LandfillDb.GetMachine(d.Key).machineName,
                     entries = groupedData[d.Key].Select(v => new CCARatioEntry
                               {
-                                date = v.date, ccaRatio = v.complete + v.overcomplete
+                                date = v.date, ccaRatio = Math.Round(v.complete + v.overcomplete)
                               }).ToList()                             
                   }).ToList();
             return Ok(data);
