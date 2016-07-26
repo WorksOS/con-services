@@ -486,7 +486,7 @@ namespace LandfillService.Common.Context
             startDate = twoYearsAgo;
           if (!endDate.HasValue)
             endDate = todayinProjTimeZone;
-          if (startDate < twoYearsAgo || endDate > todayinProjTimeZone)
+          if (startDate < twoYearsAgo || endDate > todayinProjTimeZone.AddDays(1))
           {
             throw new ArgumentException("Invalid date range. Valid range is 2 years ago to today.");
           }
