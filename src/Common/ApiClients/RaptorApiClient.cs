@@ -337,7 +337,8 @@ namespace LandfillService.Common.ApiClients
         {
           try
           {
-            Log.DebugFormat("Get CCA for project {0} date {1} machine {2}", project.id, date, machine.machineName);
+            Log.DebugFormat("Get CCA for projectId {0} date {1} machine name {2} machine id {3} geofenceUid {4} liftId {5}", 
+              project.id, date, machine.machineName, machineId, geofenceUid, liftId);
 
             var res = await GetCCAAsync(userUid, project, date, machine, liftId, geofence);
 

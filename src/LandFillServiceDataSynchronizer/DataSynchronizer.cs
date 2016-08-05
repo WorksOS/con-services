@@ -140,7 +140,7 @@ namespace LandFillServiceDataSynchronizer
      /// <param name="machines">Machines and lifts to process for given date</param>
     private void ProcessCCA(DateTime date, Project project, IEnumerable<string> geofenceUids, Dictionary<string, List<WGSPoint>> geofences, IEnumerable<MachineLifts> machines)
     {
-      var machineIds = machines.ToDictionary(m => m, m => LandfillDb.GetMachineId(m));
+      var machineIds = machines.ToDictionary(m => m, m => LandfillDb.GetMachineId(project.projectUid, m));
 
       foreach (var geofenceUid in geofenceUids)
       {
@@ -150,12 +150,14 @@ namespace LandFillServiceDataSynchronizer
         {
           foreach (var lift in machine.lifts)
           {
-            Log.DebugFormat("Processing project {0}, geofence {1}, machine {2}, lift {3}", project.id, geofenceUid, machine, lift.layerId);
+            Log.DebugFormat("Processing project {0}, geofence {1}, machine {2}, lift {3}, machineId {4}", 
+              project.id, geofenceUid, machine, lift.layerId, machineIds[machine]);
             raptorApiClient.GetCCAInBackground(
               userId, project, geofenceUid, geofence, date, machineIds[machine], machine, lift.layerId).Wait();
           }
           //Also do the 'All Lifts'
-          Log.DebugFormat("Processing project {0}, geofence {1}, machine {2}, lift {3}", project.id, geofenceUid, machine, "ALL");
+          Log.DebugFormat("Processing project {0}, geofence {1}, machine {2}, lift {3}, machineId {4}", 
+            project.id, geofenceUid, machine, "ALL", machineIds[machine]);
           raptorApiClient.GetCCAInBackground(
             userId, project, geofenceUid, geofence, date, machineIds[machine], machine, null).Wait();
         }

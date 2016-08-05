@@ -620,9 +620,10 @@ namespace LandfillService.WebApi.Controllers
             var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
             var ccaData = LandfillDb.GetCCA(project, geofenceUid.HasValue ? geofenceUid.ToString() : null, startDate, endDate, null, null);
             var groupedData = ccaData.GroupBy(c => c.machineId).ToDictionary(k => k.Key, v => v.ToList());
+            var machines = groupedData.ToDictionary(k => k.Key, v => LandfillDb.GetMachine(v.Key));
             var data = groupedData.Select(d => new CCARatioData
                   {
-                    machineName = LandfillDb.GetMachine(d.Key).machineName,
+                    machineName = machines[d.Key] == null ? "Unknown" : machines[d.Key].machineName,
                     entries = groupedData[d.Key].Select(v => new CCARatioEntry
                               {
                                 date = v.date, ccaRatio = Math.Round(v.complete + v.overcomplete)
@@ -685,17 +686,28 @@ namespace LandfillService.WebApi.Controllers
         {
           var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
           long? machineId = noMachine ? (long?)null :
-              LandfillDb.GetMachineId(new MachineDetails
+              LandfillDb.GetMachineId(project.projectUid,
+                                      new MachineDetails
                                       {
                                           assetId = assetId.Value,
                                           machineName = machineName,
                                           isJohnDoe = isJohnDoe.Value
                                       });
+
+          if (gotMachine && machineId.Value == 0)
+          {
+            LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Failed to find machine");
+            throw new ServiceException(HttpStatusCode.BadRequest,
+               new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+                   "Machine does not exist"));
+          }
           var ccaData = LandfillDb.GetCCA(project, geofenceUid.HasValue ? geofenceUid.ToString() : null, date, date, machineId, liftId);
-          //var groupedData = ccaData.GroupBy(c => c.machineId).ToDictionary(k => k.Key, v => v.ToList());
+          var groupedData = ccaData.GroupBy(c => c.machineId).ToDictionary(k => k.Key, v => v.ToList());
+          var machines = groupedData.ToDictionary(k => k.Key, v => LandfillDb.GetMachine(v.Key));
+
           var data = ccaData.Select(d => new CCASummaryData()
           {
-            machineName = LandfillDb.GetMachine(d.machineId).machineName,
+            machineName = machines[d.machineId] == null ? "Unknown" : machines[d.machineId].machineName,
             liftId = d.liftId,
             incomplete = Math.Round(d.incomplete),
             complete = Math.Round(d.complete),

@@ -1,5 +1,7 @@
-﻿using Common.Utilities;
+﻿using System.Reflection;
+using Common.Utilities;
 using LandfillService.Common.Models;
+using log4net;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,8 @@ namespace LandfillService.Common.Context
     /// </summary>
     public class LandfillDb
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private static string connString = ConfigurationManager.ConnectionStrings["LandfillContext"].ConnectionString;
         private static int lockTimeout = 1; // hour
 
@@ -827,9 +831,10 @@ namespace LandfillService.Common.Context
       /// <summary>
       /// Get the ID of the machine with the given details. If it doesn't exist then create it.
       /// </summary>
+      /// <param name="projectUid">Project UID</param>
       /// <param name="details">Machine details</param>
       /// <returns>ID of the machine</returns>
-      public static long GetMachineId(MachineDetails details)
+      public static long GetMachineId(string projectUid, MachineDetails details)
       {
         return WithConnection((conn) =>
         {
@@ -837,19 +842,23 @@ namespace LandfillService.Common.Context
           {
             new MySqlParameter("@assetId", details.assetId),
             new MySqlParameter("@machineName", details.machineName),
-            new MySqlParameter("@isJohnDoe", details.isJohnDoe)
+            new MySqlParameter("@isJohnDoe", details.isJohnDoe),
+            new MySqlParameter("@projectUid", projectUid)
           }.ToArray();
 
           var existingId = GetMachineId(conn, parms, details.machineName);
           if (existingId == 0)
           {
+            Log.DebugFormat("Inserting machine {1} for project {0}", projectUid, details);
+
             var command =
-                @"INSERT INTO Machine (AssetID, MachineName, IsJohnDoe)
-                  VALUES (@assetId, @machineName, @isJohnDoe)";
+                @"INSERT INTO Machine (AssetID, MachineName, IsJohnDoe, ProjectUID)
+                  VALUES (@assetId, @machineName, @isJohnDoe, @projectUid)";
 
             MySqlHelper.ExecuteNonQuery(conn, command, parms);
             existingId = GetMachineId(conn, parms, details.machineName);
           }
+          Log.DebugFormat("GetMachineId for project {0}, machine {1} is {2}", projectUid, details, existingId);
           return existingId;
         });
       }
@@ -865,7 +874,7 @@ namespace LandfillService.Common.Context
       {
           //Match on AssetID and IsJohnDoe only as MachineName can change.
           var query = @"SELECT ID, MachineName FROM Machine
-                      WHERE AssetID = @assetId AND IsJohnDoe = @isJohnDoe";
+                      WHERE AssetID = @assetId AND IsJohnDoe = @isJohnDoe AND ProjectUID = @projectUid";
 
           long existingId = 0;
           bool updateName = false;
@@ -877,47 +886,21 @@ namespace LandfillService.Common.Context
                   updateName =
                       !machineName.Equals(reader.GetString(reader.GetOrdinal("MachineName")),
                           StringComparison.OrdinalIgnoreCase);
+                  Log.DebugFormat("Found machine ({0},{1},{2}) for project {3} machineId {4}",
+                    sqlParams[0].Value, sqlParams[1].Value, sqlParams[2].Value, sqlParams[3].Value, existingId);
               }
           }
           if (updateName)
           {
+            Log.DebugFormat("Updating machine ({0},{1},{2}) for project {3} machineId {4}", 
+              sqlParams[0].Value, sqlParams[1].Value, sqlParams[2].Value, sqlParams[3].Value, existingId);
+
             var command = @"UPDATE Machine SET MachineName = @machineName WHERE ID = @machineId";
             MySqlHelper.ExecuteNonQuery(sqlConn, command, new MySqlParameter("@machineId", existingId), new MySqlParameter("@machineName", machineName));
           }
           return existingId;
       }
 
-      /*
-      /// <summary>
-      /// Gets the machine details for the specified machines.
-      /// </summary>
-      /// <param name="machineIds">IDs of machines to get</param>
-      /// <returns>List of machine details</returns>
-      public static IEnumerable<MachineDetails> GetMachines(IEnumerable<long> machineIds)
-      {
-        return WithConnection((conn) =>
-        {
-          var command = @"SELECT AssetID, MachineName, IsJohnDoe FROM Machine WHERE ID IN @machineIds";
-
-          string machineIdList = string.Format("({0})", string.Join(",", machineIds));
-          using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@machineIds", machineIdList)))
-          {
-            List<MachineDetails> machines = new List<MachineDetails>();
-            while (reader.Read())
-            {
-              machines.Add(new MachineDetails
-              {
-                assetId = reader.GetUInt32(reader.GetOrdinal("AssetID")),
-                machineName = reader.GetString(reader.GetOrdinal("MachineName")),
-                isJohnDoe = reader.GetInt16(reader.GetOrdinal("IsJohnDoe")) == 1,
-              });
-
-            }
-            return machines;
-          }
-        });                
-      }
-       */
 
       /// <summary>
       /// Gets the machine details for the specified machine.
@@ -943,6 +926,8 @@ namespace LandfillService.Common.Context
               };
 
             }
+            Log.DebugFormat("Result of getting machine for machineId {0} is {1}", machineId, machine == null ? "null" : machine.ToString());
+
             return machine;
           }
         });
