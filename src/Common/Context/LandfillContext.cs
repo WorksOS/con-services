@@ -920,7 +920,7 @@ namespace LandfillService.Common.Context
             {
               machine = new MachineDetails
               {
-                assetId = reader.GetUInt32(reader.GetOrdinal("AssetID")),
+                assetId = reader.GetInt64(reader.GetOrdinal("AssetID")),
                 machineName = reader.GetString(reader.GetOrdinal("MachineName")),
                 isJohnDoe = reader.GetInt16(reader.GetOrdinal("IsJohnDoe")) == 1,
               };
