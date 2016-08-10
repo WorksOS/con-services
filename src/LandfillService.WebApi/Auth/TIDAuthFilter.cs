@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using VSS.Customer.Data;
 using VSS.Subscription.Data;
 using VSS.Project.Data;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Utilization.WebApi.Configuration.Principal;
 using VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models;
 
@@ -44,7 +45,7 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
 
         if (customer != null)
         {
-          userProjects = utils.GetProjectsForUser(userUid);
+          userProjects = utils.GetLandfillProjectsForUser(userUid);
           projectList = new Dictionary<long, ProjectDescriptor>();
           foreach (var userProject in userProjects)
           {
