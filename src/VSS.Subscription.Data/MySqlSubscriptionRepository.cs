@@ -64,6 +64,30 @@ namespace VSS.Subscription.Data
             projectSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
             upsertedCount = UpsertProjectSubscriptionDetail(projectSubscription, "AssociateProjectSubscriptionEvent");
           }
+          else if (evt is CreateCustomerSubscriptionEvent)
+          {
+            var subscriptionEvent = (CreateCustomerSubscriptionEvent)evt;
+            var subscription = new Models.Subscription();
+            subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+            subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
+            subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
+            subscription.StartDate = subscriptionEvent.StartDate;
+            //This is to handle CG subscriptions where we set the EndDate annually.
+            //In NG the end date is the maximum unless it is cancelled/terminated.
+            subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow ? new DateTime(9999, 12, 31) : subscriptionEvent.EndDate;
+            subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+            upsertedCount = UpsertSubscriptionDetail(subscription, "CreateCustomerSubscriptionEvent");
+          }
+          else if (evt is UpdateCustomerSubscriptionEvent)
+          {
+            var subscriptionEvent = (UpdateCustomerSubscriptionEvent)evt;
+            var subscription = new Models.Subscription();
+            subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+            subscription.StartDate = subscriptionEvent.StartDate ?? DateTime.MinValue;
+            subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
+            subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+            upsertedCount = UpsertSubscriptionDetail(subscription, "UpdateCustomerSubscriptionEvent");
+          }
 
           return upsertedCount;
         }
@@ -89,12 +113,12 @@ namespace VSS.Subscription.Data
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUID", new { subscriptionUID = subscription.SubscriptionUID }).FirstOrDefault();
 
-          if (eventType == "CreateProjectSubscriptionEvent")
+          if (eventType == "CreateProjectSubscriptionEvent" || eventType ==  "CreateCustomerSubscriptionEvent")
           {
             upsertedCount = CreateProjectSubscription(subscription, existing);
           }
 
-          if (eventType == "UpdateProjectSubscriptionEvent")
+          if (eventType == "UpdateProjectSubscriptionEvent" || eventType == "UpdateCustomerSubscriptionEvent")
           {
             upsertedCount = UpdateProjectSubscription(subscription, existing);
           }
