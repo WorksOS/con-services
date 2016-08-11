@@ -69,7 +69,7 @@ namespace LandfillService.Common.Context
         #region(Projects)
 
         /// <summary>
-        /// Retrieves a list of projects for a given user (via session ID)
+        /// Retrieves a list of projects for a given user 
         /// </summary>
         /// <param name="userUid">User ID used to associate projects with a user</param>
         /// <returns>A list of projects</returns>
@@ -87,7 +87,7 @@ namespace LandfillService.Common.Context
                               JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
                               JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
                               JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
-                              WHERE cu.fk_UserUID = @userUid and p.IsDeleted = 0";
+                              WHERE cu.fk_UserUID = @userUid and p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1";
       
               var projects = new List<Project>();
 

@@ -385,6 +385,31 @@ namespace VSS.Project.Data
       return projects;
     }
 
+    public IEnumerable<Models.Project> GetLandfillProjectsForUser(string userUid)
+    {
+      PerhapsOpenConnection();
+
+      var projects = Connection.Query<Models.Project>
+         (@"SELECT 
+              p.ProjectUID, p.Name, p.ProjectID, p.ProjectTimeZone, p.LandfillTimeZone, 
+              cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, s.SubscriptionUID, 
+              p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
+              p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
+          FROM Project p
+          JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
+          JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
+          JOIN CustomerProject cp on p.ProjectUID = cp.fk_ProjectUID
+          JOIN CustomerUser cu on cp.fk_CustomerUID = cu.fk_CustomerUID
+          WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0 AND p.fk_ProjectTypeID = 1",
+         new { userUid }
+         );
+
+      PerhapsCloseConnection();
+
+      return projects;
+    }
+
+
     //for unit tests - so we don't have to create everything (associations) for a test
     public Models.Project GetProject_UnitTest(string projectUid)
     {

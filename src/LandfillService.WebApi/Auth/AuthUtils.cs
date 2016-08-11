@@ -69,6 +69,18 @@ public class AuthUtilities
     }
   }
 
+  public List<VSS.Project.Data.Models.Project> GetLandfillProjectsForUser(string userUid)
+  {
+    try
+    {
+      return _projectService.GetLandfillProjectsForUser(userUid).ToList();
+    }
+    catch (Exception ex)
+    {
+      return null;
+    }
+  }
+
   
 
 }

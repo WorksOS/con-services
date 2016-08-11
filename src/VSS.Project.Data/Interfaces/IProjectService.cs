@@ -11,5 +11,6 @@ namespace VSS.Project.Data.Interfaces
     IEnumerable<Models.Project> GetProjects();
     IEnumerable<Models.Project> GetProjectsBySubcription(string subscriptionUid);
     IEnumerable<Models.Project> GetProjectsForUser(string userUid);
+    IEnumerable<Models.Project> GetLandfillProjectsForUser(string userUid);
 	}
 }
