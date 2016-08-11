@@ -1,9 +1,11 @@
+
+
 CREATE TABLE IF NOT EXISTS CustomerTypeEnum (
   ID int(11) NOT NULL,
   Description varchar(20) NOT NULL,
   PRIMARY KEY (ID),
   UNIQUE KEY UIX_CustomerTypeEnum (ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=DEFAULT;
 
 INSERT IGNORE CustomerTypeEnum
   (ID,Description) VALUES (0, 'Dealer');

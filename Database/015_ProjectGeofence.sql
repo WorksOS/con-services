@@ -1,3 +1,5 @@
+
+
 CREATE TABLE IF NOT EXISTS `ProjectGeofence` ( 
   `fk_ProjectUID` varchar(64) NOT NULL,
   `fk_GeofenceUID` varchar(64) NOT NULL,
@@ -6,4 +8,4 @@ CREATE TABLE IF NOT EXISTS `ProjectGeofence` (
   `UpdateUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (`fk_ProjectUID`, `fk_GeofenceUID`),
   KEY (`fk_ProjectUID`, `fk_GeofenceUID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=DEFAULT;

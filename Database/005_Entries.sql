@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `Entries` (
   `UpdateUTC` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   UNIQUE KEY `UIX_Entries_ProjectID_GeofenceUID_Date` (`ProjectID`,`GeofenceUID`, `Date`),
   PRIMARY KEY (`ID`)  COMMENT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=DEFAULT;
 
 /* Add GeofenceUID column if not there */
 SET @s = (SELECT IF(
