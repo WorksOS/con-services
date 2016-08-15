@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS GeofenceTypeEnum (
   Description varchar(20) NOT NULL,
   PRIMARY KEY (ID),
   UNIQUE KEY UIX_GeofenceTypeEnum_ID (ID)
-) ENGINE=InnoDB CHARSET=DEFAULT;
+) ENGINE=InnoDB CHARSET = DEFAULT COLLATE = DEFAULT;
 
 INSERT IGNORE GeofenceTypeEnum
   (ID,Description) VALUES (0, 'Generic');
