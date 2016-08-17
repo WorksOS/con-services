@@ -3,9 +3,8 @@
   2) running this schema change may require the reader be restarted before/during
   **/
 
-
 /***
-USE `VSS-Landfill-V2;
+USE `VSS-Landfill`;
 
 SELECT schema_name, default_character_set_name, default_collation_name 
 	FROM information_schema.SCHEMATA 
@@ -27,7 +26,7 @@ WHERE CCSA.collation_name = T.table_collation
 ORDER BY table_name;
 
 -- this command isn't supported in PREPARE statement so have to check it independantly 
-ALTER SCHEMA `VSS-Landfill-V2 DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
+ALTER SCHEMA `VSS-Landfill` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
 
 SET @s = (SELECT IF(
     (SELECT COUNT(*)
@@ -59,7 +58,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `Customer` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `Customer` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -78,7 +77,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `CustomerProject` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `CustomerProject` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -97,7 +96,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `CustomerTypeEnum` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `CustomerTypeEnum` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -117,7 +116,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `CustomerUser` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `CustomerUser` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -136,7 +135,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `Entries` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `Entries` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -155,7 +154,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `Geofence` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `Geofence` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -174,7 +173,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `GeofenceTypeEnum` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `GeofenceTypeEnum` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -193,7 +192,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `Machine` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `Machine` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -212,7 +211,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `Project` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `Project` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -232,7 +231,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `ProjectGeofence` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `ProjectGeofence` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -251,7 +250,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `ProjectSubscription` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `ProjectSubscription` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -270,7 +269,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `ProjectTypeEnum` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `ProjectTypeEnum` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -289,7 +288,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `ServiceTypeEnum` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `ServiceTypeEnum` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -308,7 +307,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `ServiceTypeFamilyEnum` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `ServiceTypeFamilyEnum` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
@@ -328,7 +327,7 @@ SET @s = (SELECT IF(
 								OR table_collation <> 'utf8mb4_unicode_ci'
 							)
     ) > 0,    
-    "ALTER TABLE `Subscription` CHARACTER SET = DEFAULT COLLATE DEFAULT",
+    "ALTER TABLE `Subscription` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci",
     "SELECT 1"
 ));
 
