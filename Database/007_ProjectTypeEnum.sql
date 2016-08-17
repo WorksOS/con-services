@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS ProjectTypeEnum (
   Description varchar(20) NOT NULL,
   PRIMARY KEY (ID),
   UNIQUE KEY UIX_ProjectTypeEnum (ID)
-) ENGINE=InnoDB CHARSET=DEFAULT;
+) ENGINE=InnoDB CHARSET = DEFAULT COLLATE = DEFAULT;
 
 INSERT IGNORE ProjectTypeEnum
   (ID,Description) VALUES (0, 'Standard');
