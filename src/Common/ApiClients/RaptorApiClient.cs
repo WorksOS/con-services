@@ -173,6 +173,18 @@ namespace LandfillService.Common.ApiClients
           return ParseResponse<SummaryVolumesResult>(await Request(this.reportEndpoint + "volumes/summary", userUid, volumeParams));
         }
 
+        private async Task<ProjectExtentsResult> GetProjectExtentsAsync(string userUid, Project project)
+        {
+          Log.DebugFormat("In GetProjectExtentsAsync");
+
+          var volumeParams = new ProjectExtentsParams()
+          {
+            projectId = project.id,
+            excludedSurveyedSurfaceIds = new int[0]
+          };
+          return ParseResponse<ProjectExtentsResult>(await Request(this.reportEndpoint + "projects/statistics", userUid, volumeParams));
+        }
+
         /// <summary>
         /// Retrieves volume summary from Raptor and saves it to the landfill DB
         /// </summary>

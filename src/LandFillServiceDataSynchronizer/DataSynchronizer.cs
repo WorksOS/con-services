@@ -1,8 +1,10 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LandfillService.Common.ApiClients;
 using LandfillService.Common.Context;
@@ -31,12 +33,25 @@ namespace LandFillServiceDataSynchronizer
     private Dictionary<Project, List<DateEntry>> GetListOfEntriesToUpdate()
     {
       var projects = GetListOfProjectsToRetrieve();
+      var result = new Dictionary<Project, List<DateEntry>>();
       Log.DebugFormat("Got {0} projects to process for volumes",projects.Count);
-      Dictionary<Project, List<DateEntry>> entries = projects.ToDictionary(project => project,
-          project => LandfillDb.GetDatesWithVolumesNotRetrieved(project).ToList());
-      Log.DebugFormat("Got {0} entries to process for volumes", entries.Count);
+      foreach (var project in projects)
+      {
+        var startDate = raptorApiClient.GetProjectStatisticsAsync(userId, project).Result.startTime.Date;
+        if (startDate < DateTime.Today.AddDays(-120))
+          startDate = DateTime.Today.AddDays(-120);
+        var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
 
-      return entries;
+        result.Add(project,geofenceUids.SelectMany(g => Enumerable.Range(0, 1 + DateTime.Today.Subtract(startDate).Days)
+          .Select(offset => startDate.AddDays(offset))
+          .Select(d => new DateEntry() {geofenceUid = g, date = d})).ToList());
+      }
+
+/*      Dictionary<Project, List<DateEntry>> entries = projects.ToDictionary(project => project,
+          project => LandfillDb.GetDatesWithVolumesNotRetrieved(project).ToList());*/
+      Log.DebugFormat("Got {0} entries to process for volumes", result.Count);
+
+      return result;
     }
 
     private Dictionary<string, List<WGSPoint>> GetGeofenceBoundaries(uint id, List<string> geofenceUids)

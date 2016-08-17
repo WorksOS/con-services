@@ -263,6 +263,16 @@ namespace LandfillService.Common.Models
     }
 
     /// <summary>
+    /// Volume calculation parameters sent to the Raptor API; see Raptor API documentation for details
+    /// </summary>
+    public class ProjectExtentsParams
+    {
+      public int[] excludedSurveyedSurfaceIds;
+      public uint projectId;
+
+    }
+
+    /// <summary>
     /// Design for volume summary requests sent to the Raptor API; see Raptor API documentation for details
     /// </summary>
     public class VolumeDesign
@@ -363,6 +373,16 @@ namespace LandfillService.Common.Models
         {
             return String.Format("cut:{0}, fill:{1}", Cut, Fill);
         }
+    }
+
+
+    /// <summary>
+    /// Project extents entry returned from the Raptor API
+    /// </summary>
+    public class ProjectExtentsResult
+    {
+      public DateTime startTime { get; set; }
+      public DateTime endTime { get; set; }      
     }
 
     /// <summary>

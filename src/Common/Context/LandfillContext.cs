@@ -222,37 +222,59 @@ namespace LandfillService.Common.Context
             });
         }
 
-
-        /// <summary>
-        /// Saves a volume for a given project, geofence and date
-        /// </summary>
-        /// <param name="projectUid">Project UID</param>
-        /// <param name="geofenceUid">Geofence UID</param>
-        /// <param name="date">Date</param>
-        /// <param name="volume">Volume</param>
-        /// <returns></returns>
-        public static void SaveVolume(string projectUid, string geofenceUid, DateTime date, double volume)
+      public static bool IfNeedToTouchEntries(Project project, string geofenceUid, DateTime date)
+      {
+        return WithConnection((conn) =>
         {
-            WithConnection<object>((conn) =>
-            {
-                // replace negative volumes with 0; they are possible (e.g. due to extra compaction 
-                // without new material coming in) but don't make sense in the context of the application
-              var command = @"UPDATE Entries 
+          var command = @"SELECT count(*) FROM Entries 
+                            WHERE ProjectUID = @projectUid  AND GeofenceUID = @geofenceUid and Date=@date";
+          var result = MySqlHelper.ExecuteScalar(conn, command,
+            new MySqlParameter("@projectUid", project.projectUid),
+            new MySqlParameter("@geofenceUid", geofenceUid),
+            new MySqlParameter("@date", date.Date));
+          return (int)result == 0;
+        });
+      }
+
+
+
+      /// <summary>
+      /// Saves a volume for a given project, geofence and date
+      /// </summary>
+      /// <param name="projectUid">Project UID</param>
+      /// <param name="geofenceUid">Geofence UID</param>
+      /// <param name="date">Date</param>
+      /// <param name="volume">Volume</param>
+      /// <returns></returns>
+      public static void SaveVolume(string projectUid, string geofenceUid, DateTime date, double volume)
+      {
+        WithConnection<object>((conn) =>
+        {
+          // replace negative volumes with 0; they are possible (e.g. due to extra compaction 
+          // without new material coming in) but don't make sense in the context of the application
+          var command = @"INSERT Entries 
+            (ProjectUID, Date, GeofenceUID, Volume, VolumeNotRetrieved, VolumeNotAvailable, VolumesUpdatedTimestampUTC)
+            VALUES
+            (@projectUid, @date, @geofenceUid, GREATEST(@volume, 0.0),0,0,UTC_TIMESTAMP())
+            ON DUPLICATE KEY UPDATE
+            Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, VolumeNotAvailable = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP()";
+
+/*              var command = @"UPDATE Entries 
                               SET Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, 
                                   VolumeNotAvailable = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP()
-                              WHERE ProjectUID = @projectUid AND Date = @date AND GeofenceUID = @geofenceUid";
+                              WHERE ProjectUID = @projectUid AND Date = @date AND GeofenceUID = @geofenceUid";*/
 
-                MySqlHelper.ExecuteNonQuery(conn, command,
-                    new MySqlParameter("@volume", volume),
-                    new MySqlParameter("@projectUid", projectUid),
-                    new MySqlParameter("@geofenceUid", geofenceUid),
-                    new MySqlParameter("@date", date));
+          MySqlHelper.ExecuteNonQuery(conn, command,
+            new MySqlParameter("@volume", volume),
+            new MySqlParameter("@projectUid", projectUid),
+            new MySqlParameter("@geofenceUid", geofenceUid),
+            new MySqlParameter("@date", date));
 
-                return null;
-            });
-        }
+          return null;
+        });
+      }
 
-        /// <summary>
+      /// <summary>
         /// Marks an entry with "volume not retrieved" so it can be retried later
         /// </summary>
         /// <param name="projectUid">Project UID</param>
