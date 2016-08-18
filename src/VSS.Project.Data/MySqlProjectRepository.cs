@@ -372,8 +372,8 @@ namespace VSS.Project.Data
               p.LastActionedUTC, p.IsDeleted, p.StartDate AS ProjectStartDate, p.EndDate AS ProjectEndDate, 
               p.fk_ProjectTypeID AS ProjectType, s.EndDate AS SubEndDate
           FROM Project p
-          JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
-          JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
+          LEFT OUTER JOIN ProjectSubscription ps ON p.ProjectUID = ps.fk_ProjectUID
+          LEFT OUTER JOIN Subscription s on ps.fk_SubscriptionUID = s.SubscriptionUID
           JOIN CustomerProject cp on p.ProjectUID = cp.fk_ProjectUID
           JOIN CustomerUser cu on cp.fk_CustomerUID = cu.fk_CustomerUID
           WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0", 
