@@ -305,8 +305,10 @@ namespace LandfillService.Common.Context
           var command = @"SELECT DISTINCT prj.ProjectID, prj.LandfillTimeZone as TimeZone, prj.ProjectUID, prj.Name, cp.LegacyCustomerID
                           FROM Project prj 
                           JOIN CustomerProject cp on prj.ProjectUID = cp.fk_ProjectUID
-                          LEFT JOIN Entries etr ON prj.ProjectUID = etr.ProjectUID 
-                          WHERE etr.Weight IS NOT NULL AND prj.IsDeleted = 0";
+						              JOIN CustomerUser cu ON cp.fk_CustomerUID = cu.fk_CustomerUID
+                          JOIN ProjectSubscription ps ON prj.ProjectUID = ps.fk_ProjectUID
+                          JOIN Subscription s ON ps.fk_SubscriptionUID = s.SubscriptionUID
+                          WHERE prj.fk_ProjectTypeID = 1 AND prj.IsDeleted = 0";
           using (var reader = MySqlHelper.ExecuteReader(conn, command))
           {
             var projects = new List<Project>();
