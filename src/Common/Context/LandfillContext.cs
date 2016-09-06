@@ -248,6 +248,12 @@ namespace LandfillService.Common.Context
       /// <returns></returns>
       public static void SaveVolume(string projectUid, string geofenceUid, DateTime date, double volume)
       {
+        //If we are getting 0 value whereas the actual value was non zero assume 3d subsystmen failure and exit
+        var entries = LandfillDb.GetEntries(LandfillDb.GetProject(projectUid).First(), geofenceUid, date, date);
+          if (entries.Any())
+            if (entries.First().volume > 0 && volume == 0)
+              return;
+
         WithConnection<object>((conn) =>
         {
           // replace negative volumes with 0; they are possible (e.g. due to extra compaction 
@@ -337,6 +343,7 @@ namespace LandfillService.Common.Context
         /// <returns></returns>
         public static void MarkVolumeNotAvailable(string projectUid, string geofenceUid, DateTime date)
         {
+
             WithConnection<object>((conn) =>
             {
               var command = @"UPDATE Entries 
@@ -384,6 +391,39 @@ namespace LandfillService.Common.Context
                 }
             });
         }
+
+      public static List<Project> GetProject(string projectUid)
+      {
+        return InTransaction((conn) =>
+        {
+
+          var command = @"SELECT ProjectID, Name, LandfillTimeZone,
+                                     ProjectUID, ProjectTimeZone
+                              FROM Project
+                              WHERE ProjectUID = @projectUid";
+
+          var projects = new List<Project>();
+
+          using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectUid", projectUid)))
+          {
+            while (reader.Read())
+            {
+
+
+              projects.Add(new Project
+              {
+                id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
+                projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
+                name = reader.GetString(reader.GetOrdinal("Name")),
+                timeZoneName = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
+                legacyTimeZoneName = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
+              });
+            }
+          }
+
+          return projects;
+        });
+      }
 
         /// <summary>
         /// Retrieves data entries for a given project. If date range is not specified, returns data 
@@ -663,6 +703,13 @@ namespace LandfillService.Common.Context
         private static void UpsertCCA(string projectUid, string geofenceUid, DateTime date, long machineId, int? liftId, 
           double? incomplete, double? complete, double? overcomplete, bool notRetrieved, bool notAvailable)
         {
+          //Assume Raptor failure and if we have some data in the Database don't wipe them out
+          var cca = LandfillDb.GetCCA(LandfillDb.GetProject(projectUid).First(), geofenceUid, date, date, machineId,
+            liftId);
+          if (cca.Any())
+            if ((cca.First().complete > 0 || cca.First().incomplete > 0 || cca.First().overcomplete > 0) && (incomplete==0 && complete==0 && overcomplete==0))
+              return;
+
           WithConnection<object>((conn) =>
           {
             var command =
