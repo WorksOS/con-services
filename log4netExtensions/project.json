@@ -1,0 +1,21 @@
+{
+  "name": "log4netExtensions.netcore",
+
+  "title": "log4net adapter for net core application",
+  "description": "Can be used as an adapter between log4net and ASP 5 logging facilities",
+
+  "version": "1.0.0",
+
+    "dependencies": {
+        "log4net.netcore": "3.0.0",
+        "Microsoft.AspNetCore.Hosting": "1.0.0",
+        "Microsoft.Extensions.Logging": "1.0.0",
+        "NETStandard.Library": "1.6.0"
+    },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50"
+    }
+  }
+}
