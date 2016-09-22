@@ -732,19 +732,19 @@ namespace LandfillService.WebApi.Controllers
       [Route("{id}/machinelifts")]
       public async Task<IHttpActionResult> GetMachineLifts(uint id, DateTime? startDate = null, DateTime? endDate = null)
       {
-   //     var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+        var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
         //Secure with project list
-     //   if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+        if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
         {
-       //   throw new HttpResponseException(HttpStatusCode.Forbidden);
+          throw new HttpResponseException(HttpStatusCode.Forbidden);
         }
         LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving Machines and lifts");
 
         try
         {
 
-      //    var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
-          var project = LandfillDb.GetProject(id).First(); 
+          var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
+      //    var project = LandfillDb.GetProject(id).First(); 
           var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
 
           DateTime utcNow = DateTime.UtcNow;
