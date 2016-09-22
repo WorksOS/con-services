@@ -425,6 +425,39 @@ namespace LandfillService.Common.Context
         });
       }
 
+      public static List<Project> GetProject(long projectId)
+      {
+        return InTransaction((conn) =>
+        {
+
+          var command = @"SELECT ProjectID, Name, LandfillTimeZone,
+                                     ProjectUID, ProjectTimeZone
+                              FROM Project
+                              WHERE ProjectID = @projectid";
+
+          var projects = new List<Project>();
+
+          using (var reader = MySqlHelper.ExecuteReader(conn, command, new MySqlParameter("@projectid", projectId)))
+          {
+            while (reader.Read())
+            {
+
+
+              projects.Add(new Project
+              {
+                id = reader.GetUInt32(reader.GetOrdinal("ProjectID")),
+                projectUid = reader.GetString(reader.GetOrdinal("ProjectUID")),
+                name = reader.GetString(reader.GetOrdinal("Name")),
+                timeZoneName = reader.GetString(reader.GetOrdinal("LandfillTimeZone")),
+                legacyTimeZoneName = reader.GetString(reader.GetOrdinal("ProjectTimeZone")),
+              });
+            }
+          }
+
+          return projects;
+        });
+      }
+
         /// <summary>
         /// Retrieves data entries for a given project. If date range is not specified, returns data 
         /// for 2 years ago to today in project time zone. If geofence is not specified returns data for 

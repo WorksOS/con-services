@@ -38,8 +38,8 @@ namespace LandFillServiceDataSynchronizer
       foreach (var project in projects)
       {
         var startDate = raptorApiClient.GetProjectStatisticsAsync(userId, project).Result.startTime.Date;
-        if (startDate < DateTime.Today.AddDays(-120))
-          startDate = DateTime.Today.AddDays(-120);
+        if (startDate < DateTime.Today.AddDays(-7))
+          startDate = DateTime.Today.AddDays(-7);
         var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
 
         result.Add(project,geofenceUids.SelectMany(g => Enumerable.Range(0, 1 + DateTime.Today.Subtract(startDate).Days)

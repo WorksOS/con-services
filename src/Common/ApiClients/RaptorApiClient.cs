@@ -15,6 +15,7 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using NodaTime;
 using NodaTime.TimeZones;
 
 namespace LandfillService.Common.ApiClients
@@ -283,10 +284,11 @@ namespace LandfillService.Common.ApiClients
 
         private void ConvertToUtc(DateTime date, string timeZoneName, out DateTime startUtc, out DateTime endUtc)
         {
-          TimeZoneInfo hwZone = GetTimeZoneInfoForTzdbId(timeZoneName);
-
+          var projTimeZone = DateTimeZoneProviders.Tzdb[timeZoneName];
+          DateTime utcNow = DateTime.UtcNow;
+          Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
           //use only utc dates and times in the service contracts. Ignore time for now.
-          var utcDateTime = date.Date.Add(-hwZone.BaseUtcOffset);
+          var utcDateTime = date.Date.Add(projTimeZoneOffsetFromUtc.ToTimeSpan());
           startUtc = utcDateTime;
           endUtc = utcDateTime.AddDays(1).AddMinutes(-1);
         }

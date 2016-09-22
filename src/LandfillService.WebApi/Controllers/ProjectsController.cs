@@ -732,18 +732,19 @@ namespace LandfillService.WebApi.Controllers
       [Route("{id}/machinelifts")]
       public async Task<IHttpActionResult> GetMachineLifts(uint id, DateTime? startDate = null, DateTime? endDate = null)
       {
-        var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
+   //     var userUid = (RequestContext.Principal as LandfillPrincipal).UserUid;
         //Secure with project list
-        if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
+     //   if (!(RequestContext.Principal as LandfillPrincipal).Projects.ContainsKey(id))
         {
-          throw new HttpResponseException(HttpStatusCode.Forbidden);
+       //   throw new HttpResponseException(HttpStatusCode.Forbidden);
         }
         LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Project id: " + id.ToString(), "Retrieving Machines and lifts");
 
         try
         {
-          var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
 
+      //    var project = LandfillDb.GetProjects(userUid).Where(p => p.id == id).First();
+          var project = LandfillDb.GetProject(id).First(); 
           var projTimeZone = DateTimeZoneProviders.Tzdb[project.timeZoneName];
 
           DateTime utcNow = DateTime.UtcNow;
@@ -752,7 +753,7 @@ namespace LandfillService.WebApi.Controllers
             endDate = (utcNow + projTimeZoneOffsetFromUtc.ToTimeSpan()).Date;//today in project time zone
           if (!startDate.HasValue)
             startDate = endDate.Value.AddYears(-2);
-          var task = await raptorApiClient.GetMachineLiftsInBackground(userUid, project, startDate.Value, endDate.Value);
+          var task = await raptorApiClient.GetMachineLiftsInBackground(null, project, startDate.Value, endDate.Value);
           return Ok(task);
         }
         catch (InvalidOperationException)
