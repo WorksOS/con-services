@@ -249,7 +249,8 @@ namespace LandfillService.Common.Context
       public static void SaveVolume(string projectUid, string geofenceUid, DateTime date, double volume)
       {
         //If we are getting 0 value whereas the actual value was non zero assume 3d subsystmen failure and exit
-        var entries = LandfillDb.GetEntries(LandfillDb.GetProject(projectUid).First(), geofenceUid, date, date);
+        var project = LandfillDb.GetProject(projectUid).First();
+        var entries = LandfillDb.GetEntries(project, geofenceUid, date, date);
           if (entries.Any())
             if (entries.First().volume > 0 && volume == 0)
               return;
@@ -259,9 +260,9 @@ namespace LandfillService.Common.Context
           // replace negative volumes with 0; they are possible (e.g. due to extra compaction 
           // without new material coming in) but don't make sense in the context of the application
           var command = @"INSERT Entries 
-            (ProjectUID, Date, GeofenceUID, Volume, VolumeNotRetrieved, VolumeNotAvailable, VolumesUpdatedTimestampUTC)
+            (ProjectID, ProjectUID, Date, GeofenceUID, Volume, VolumeNotRetrieved, VolumeNotAvailable, VolumesUpdatedTimestampUTC)
             VALUES
-            (@projectUid, @date, @geofenceUid, GREATEST(@volume, 0.0),0,0,UTC_TIMESTAMP())
+            (@projectId, @projectUid, @date, @geofenceUid, GREATEST(@volume, 0.0),0,0,UTC_TIMESTAMP())
             ON DUPLICATE KEY UPDATE
             Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, VolumeNotAvailable = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP()";
 
@@ -271,6 +272,7 @@ namespace LandfillService.Common.Context
                               WHERE ProjectUID = @projectUid AND Date = @date AND GeofenceUID = @geofenceUid";*/
 
           MySqlHelper.ExecuteNonQuery(conn, command,
+            new MySqlParameter("@projectId", project.id),
             new MySqlParameter("@volume", volume),
             new MySqlParameter("@projectUid", projectUid),
             new MySqlParameter("@geofenceUid", geofenceUid),
