@@ -288,7 +288,7 @@ namespace LandfillService.Common.ApiClients
           DateTime utcNow = DateTime.UtcNow;
           Offset projTimeZoneOffsetFromUtc = projTimeZone.GetUtcOffset(Instant.FromDateTimeUtc(utcNow));
           //use only utc dates and times in the service contracts. Ignore time for now.
-          var utcDateTime = date.Date.Add(projTimeZoneOffsetFromUtc.ToTimeSpan().Negate());
+          var utcDateTime = date.Date.Add(projTimeZoneOffsetFromUtc.ToTimeSpan());
           startUtc = utcDateTime;
           endUtc = utcDateTime.AddDays(1).AddMinutes(-1);
         }

@@ -38,8 +38,8 @@ namespace LandFillServiceDataSynchronizer
       foreach (var project in projects)
       {
         var startDate = raptorApiClient.GetProjectStatisticsAsync(userId, project).Result.startTime.Date;
-        if (startDate < DateTime.Today.AddDays(-30))
-          startDate = DateTime.Today.AddDays(-30);
+        if (startDate < DateTime.Today.AddDays(-90))
+          startDate = DateTime.Today.AddDays(-90);
         var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
 
         result.Add(project,geofenceUids.SelectMany(g => Enumerable.Range(0, 1 + DateTime.Today.Subtract(startDate).Days)
@@ -89,6 +89,7 @@ namespace LandFillServiceDataSynchronizer
       //3. Retry unretrieved entries for each project (also project time zone)
 
       var utcDate = (DateTime) state;
+      utcDate = DateTime.SpecifyKind(utcDate, DateTimeKind.Utc);
 
       //Use same criteria as volumes to select projects to process. 
       //No point in getting CCA if no weights or volumes and therefore no density data.
@@ -110,12 +111,13 @@ namespace LandFillServiceDataSynchronizer
         while (projDate <= nowDate)
         {
           var machinesToProcess =
-              raptorApiClient.GetMachineLiftsInBackground(userId, project, projDate, projDate).Result;
+              raptorApiClient.GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
           Log.DebugFormat("Processing project {0} with {1} machines for date {2}", project.id, machinesToProcess.Count,
-              projDate);
+              utcDate.Date);
 
-          ProcessCCA(projDate, project, geofenceUids, geofences, machinesToProcess);
-          projDate = projDate.AddDays(1);
+          ProcessCCA(utcDate.Date, project, geofenceUids, geofences, machinesToProcess);
+          utcDate = utcDate.Date.AddDays(1);
+          projDate = projDate.Date.AddDays(1);
         }
 
         //Process CCA for missing dates
