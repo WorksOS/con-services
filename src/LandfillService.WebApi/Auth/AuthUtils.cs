@@ -57,6 +57,44 @@ public class AuthUtilities
     }
   }
 
+  public AssociatedCustomer GetContext(HttpRequestHeaders headers, out string errorMessage, out string userId, out string jwtToken)
+  {
+    userId = String.Empty;
+    jwtToken = String.Empty;
+    try
+    {
+      string token = String.Empty;
+      var jwt = JwtHelper.TryGetJwtToken(headers, out token);
+      if (jwt)
+      {
+        jwtToken = token;
+        if (JwtHelper.IsValidJwtToken(token))
+        {
+          userId = JwtHelper.DecodeJwtToken(token).Uuid;
+          var customer = this._customerService.GetAssociatedCustomerbyUserUid(Guid.Parse(userId));
+          AssociatedCustomer associatedCustomer = new AssociatedCustomer()
+          {
+            CustomerUID = Guid.Parse(customer.CustomerUID),
+            CustomerName = customer.CustomerName,
+            CustomerType = customer.CustomerType
+          };
+
+          errorMessage = "";
+          return associatedCustomer;
+        }
+        errorMessage = "Invalid token";
+        return null;
+      }
+      errorMessage = "No token";
+      return null;
+    }
+    catch (Exception ex)
+    {
+      errorMessage = "Can not retrieve cusomer context";
+      return null;
+    }
+  }
+
   public List<VSS.Project.Data.Models.Project> GetProjectsForUser(string userUid)
   {
     try

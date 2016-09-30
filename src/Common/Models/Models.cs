@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Security;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -277,6 +278,7 @@ namespace LandfillService.Common.Models
     /// </summary>
     public class VolumeDesign
     {
+      public long id; 
       public DesignDescriptor file;
     }
 
@@ -285,6 +287,7 @@ namespace LandfillService.Common.Models
     /// </summary>
     public class DesignDescriptor
     {
+
       public string filespaceId;
       public string path;
       public string fileName;
@@ -333,6 +336,15 @@ namespace LandfillService.Common.Models
         /// </summary>
         public double minZ { get; set; }
     }
+
+  public class DesignDescriptiorLegacy
+  {
+    public string name { get; set; }
+    public string fileType { get; set; }
+    public string insertUTC { get; set; }
+    public int id { get; set; }
+  }
+
 
 
     /// <summary>

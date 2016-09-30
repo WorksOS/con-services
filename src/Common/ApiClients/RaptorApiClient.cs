@@ -98,6 +98,42 @@ namespace LandfillService.Common.ApiClients
         }
 
         /// <summary>
+        /// Makes a JSON GET or POST request to the Raptor API
+        /// </summary>
+        /// <param name="endpoint">URL path fragment for the request</param>
+        /// <param name="method">Method of request (GET or POST)</param>
+        /// <param name="userUid">User ID</param>
+        /// <param name="content">Request content</param>
+        /// <returns>Response as a string; throws an exception if the request is not successful</returns>
+        private async Task<string> Request(string endpoint, HttpMethod method, string jwt, string customer)
+        {
+          Log.DebugFormat("In RaptorApiClient::Request to " + endpoint + " with " + endpoint);
+
+
+          HttpRequestMessage request = new HttpRequestMessage(method, endpoint);
+          request.Headers.Add("X-Jwt-Assertion", jwt);
+          request.Headers.Add("X-VisionLink-CustomerUid", customer);
+
+          // Syncronous processing can be forced by calling .Result
+          var response = await client.SendAsync(request);
+
+          if (!response.IsSuccessStatusCode)
+          {
+            LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
+            Log.WarnFormat("Bad response from ProjectMonitoring {0}", response);
+            throw new RaptorApiException(response.StatusCode, response.ReasonPhrase);
+          }
+
+          Log.DebugFormat("{0} request succeeded", method);
+          LoggerSvc.LogResponse(GetType().Name, MethodBase.GetCurrentMethod().Name, client.BaseAddress + endpoint, response);
+
+          var responseContent = response.Content;
+
+          var res = await responseContent.ReadAsStringAsync();
+          return res;
+        }
+
+        /// <summary>
         /// Makes a JSON POST request to the Raptor API
         /// </summary>
         /// <param name="endpoint">URL path fragment for the request</param>
@@ -244,7 +280,7 @@ namespace LandfillService.Common.ApiClients
         /// <param name="date">Date to retrieve volumes for (in project time zone)</param>
         /// <param name="returnEarliest">Flag to indicate if earliest or latest cell pass to be used</param>
         /// <returns>SummaryVolumesResult</returns>
-        public async Task<SummaryVolumesResult> GetAirspaceVolumeAsync(string userUid, Project project, bool returnEarliest)
+        public async Task<SummaryVolumesResult> GetAirspaceVolumeAsync(string userUid, Project project, bool returnEarliest, int designId)
         {
           string tccFilespaceId = ConfigurationManager.AppSettings["TCCfilespaceId"];
           string topOfWasteDesignFilename = ConfigurationManager.AppSettings["TopOfWasteDesignFilename"];
@@ -255,10 +291,18 @@ namespace LandfillService.Common.ApiClients
             baseFilter = new VolumeFilter { returnEarliest = returnEarliest },
             topDesignDescriptor = new VolumeDesign
             {
-              file = new DesignDescriptor { filespaceId = tccFilespaceId, path = String.Format("/{0}/{1}", project.legacyCustomerID, project.id), fileName = topOfWasteDesignFilename }
+              id = designId, 
+              file = new DesignDescriptor {filespaceId = tccFilespaceId, path = String.Format("/{0}/{1}", project.legacyCustomerID, project.id), fileName = topOfWasteDesignFilename }
             }
           };
           return ParseResponse<SummaryVolumesResult>(await Request(this.reportEndpoint + "volumes/summary", userUid, volumeParams));
+        }
+
+        public async Task<List<DesignDescriptiorLegacy>> GetDesignID(string jwt, Project project, string customerUid)
+        {
+          string projectMonitoringURL = ConfigurationManager.AppSettings["ProjectMonitoringURL"];
+          var requestURL = String.Format(projectMonitoringURL + "api/v2/projects/{0}/importedfiles", project.id);
+          return ParseResponse<List<DesignDescriptiorLegacy>>(await Request(requestURL, HttpMethod.Get, jwt, customerUid));
         }
 
         /// <summary>
@@ -397,7 +441,7 @@ namespace LandfillService.Common.ApiClients
       {
         string url = string.Format("{0}projects/{1}/machinelifts?startUtc={2}&endUtc={3}",
             this.prodDataEndpoint, project.id, FormatUtcDate(startUtc), FormatUtcDate(endUtc));
-        return ParseResponse<MachineLayerIdsExecutionResult>(await Request(url, HttpMethod.Get, userUid, null));
+        return ParseResponse<MachineLayerIdsExecutionResult>(await Request(url, HttpMethod.Get, userUid, null as HttpContent));
       }
 
       /// <summary>

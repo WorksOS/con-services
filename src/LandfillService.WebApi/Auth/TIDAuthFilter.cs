@@ -28,7 +28,6 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
 
     public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
     {
-      string jwtToken;
 
       if (ConfigurationManager.AppSettings["JWT"] != "Disabled")
       {
@@ -37,7 +36,8 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
             new MySqlProjectRepository());
         string message = string.Empty;
         string userUid = string.Empty;
-        var customer = utils.GetContext(context.Request.Headers, out message, out userUid);
+        string jwt = string.Empty;
+        var customer = utils.GetContext(context.Request.Headers, out message, out userUid, out jwt);
         Log.DebugFormat("Authorization: For userID {0} customer is {1}", userUid, customer);
 
         Dictionary<long, ProjectDescriptor> projectList = new Dictionary<long, ProjectDescriptor>();
@@ -58,7 +58,7 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
           }
           Log.DebugFormat("Authorization: for Customer: {0} projectList is: {1}", customer, projectList.ToString());
 
-          context.Principal = new LandfillPrincipal(projectList, userUid, customer.CustomerUID.ToString());
+          context.Principal = new LandfillPrincipal(projectList, userUid, customer.CustomerUID.ToString(), jwt);
           LoggerSvc.LogMessage("Principal", "BuildPrincipal", "Claims", JsonConvert.SerializeObject(projectList));
         }
         else
@@ -102,8 +102,19 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
       CustomerUid = customerUid;
     }
 
+    public LandfillPrincipal(Dictionary<long, ProjectDescriptor> projects, string userUid, string customerUid, string jwt) : this()
+    {
+      //Identity = new GenericIdentity("LandfillUser");
+
+      Projects = projects;
+      UserUid = userUid;
+      CustomerUid = customerUid;
+      JWT = jwt;
+    }
+
     public string UserUid { get; private set; }
     public string CustomerUid { get; private set; }
+    public string JWT { get; private set; }
 
     public IIdentity Identity { get; private set; }
 
@@ -116,5 +127,6 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration
     Dictionary<long, ProjectDescriptor> Projects { get; }
     string UserUid { get; }
     string CustomerUid { get; }
+    string JWT { get; }
   }
 }

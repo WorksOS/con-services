@@ -818,7 +818,7 @@
             <param name="date">The date for which to find the start of the week</param>
             <returns>The date of the Monday of that week</returns>
         </member>
-        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetAirspaceVolumeInBackground(System.String,LandfillService.Common.Models.Project,System.Boolean)">
+        <member name="M:LandfillService.WebApi.Controllers.ProjectsController.GetAirspaceVolumeInBackground(System.String,LandfillService.Common.Models.Project,System.Boolean,System.Int32)">
             <summary>
             Retrieves airspace volume summary from Raptor.
             </summary>

@@ -384,13 +384,18 @@ namespace LandfillService.WebApi.Controllers
           {
             var projects = LandfillDb.GetProjects(userUid);
             var project = projects.Where(p => p.id == id).First();
+            //var project = LandfillDb.GetProject(id).First();
             DateTime todayinProjTimeZone = LandfillDb.GetTodayInProjectTimeZone(project.timeZoneName);
             var startWeek = CurrentWeekMonday(todayinProjTimeZone);
             var weekVol = LandfillDb.GetEntries(project, null, startWeek, todayinProjTimeZone).Sum(e => e.volume);
             var startMonth = new DateTime(todayinProjTimeZone.Year, todayinProjTimeZone.Month, 1);
             var monthVol = LandfillDb.GetEntries(project, null, startMonth, todayinProjTimeZone).Sum(e => e.volume);
-            var firstAirspaceVol = await GetAirspaceVolumeInBackground(userUid, project, true);
-            var lastAirspaceVol = await GetAirspaceVolumeInBackground(userUid, project, false);
+            //Get designIds from ProjectMonitoring service
+            var res = await raptorApiClient.GetDesignID((RequestContext.Principal as LandfillPrincipal).JWT, project,(RequestContext.Principal as LandfillPrincipal).CustomerUid );
+            var designId = res.Where(r => r.name == "TOW.ttm").Select(i => i.id).First();
+            LoggerSvc.LogMessage(GetType().Name, MethodBase.GetCurrentMethod().Name, "Design id: " + designId.ToString(), "Retrieving DesignID");
+            var firstAirspaceVol = await GetAirspaceVolumeInBackground(userUid, project, true, designId);
+            var lastAirspaceVol = await GetAirspaceVolumeInBackground(userUid, project, false, designId);
             var statsDates = await GetProjectStatisticsInBackground(userUid, project);
             var dates = statsDates.ToList();
             var volPerDay = firstAirspaceVol.HasValue && lastAirspaceVol.HasValue ?
@@ -454,12 +459,11 @@ namespace LandfillService.WebApi.Controllers
         /// <param name="project">Project</param>
         /// <param name="returnEarliest">Indicates if filtering by earliest or latest cell pass</param>
         /// <returns></returns>
-        private async Task<double?> GetAirspaceVolumeInBackground(string userUid, Project project, bool returnEarliest)
+        private async Task<double?> GetAirspaceVolumeInBackground(string userUid, Project project, bool returnEarliest, int designId)
         {
           try
           {
-            var res = await raptorApiClient.GetAirspaceVolumeAsync(userUid, project, returnEarliest);
-
+            var res = await raptorApiClient.GetAirspaceVolumeAsync(userUid, project, returnEarliest, designId);
             System.Diagnostics.Debug.WriteLine("Airspace Volume res:" + res);
             System.Diagnostics.Debug.WriteLine("Airspace Volume: " + res.Fill);
 
