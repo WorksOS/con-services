@@ -88,8 +88,7 @@ namespace LandFillServiceDataSynchronizer
       //2. Do missing dates with no CCA for each project (note: these are project time zone)
       //3. Retry unretrieved entries for each project (also project time zone)
 
-      var utcDate = (DateTime) state;
-      utcDate = DateTime.SpecifyKind(utcDate, DateTimeKind.Utc);
+
 
       //Use same criteria as volumes to select projects to process. 
       //No point in getting CCA if no weights or volumes and therefore no density data.
@@ -98,6 +97,8 @@ namespace LandFillServiceDataSynchronizer
 
       foreach (var project in projects)
       {
+        var utcDate = (DateTime)state;
+        utcDate = DateTime.SpecifyKind(utcDate, DateTimeKind.Utc);
         Log.InfoFormat("START Processing project {0}", project.id);
 
         var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
