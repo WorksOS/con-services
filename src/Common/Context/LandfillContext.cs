@@ -250,10 +250,10 @@ namespace LandfillService.Common.Context
       {
         //If we are getting 0 value whereas the actual value was non zero assume 3d subsystmen failure and exit
         var project = LandfillDb.GetProject(projectUid).First();
-        var entries = LandfillDb.GetEntries(project, geofenceUid, date, date);
+      /*  var entries = LandfillDb.GetEntries(project, geofenceUid, date, date);
           if (entries.Any())
             if (entries.First().volume > 0 && volume == 0)
-              return;
+              return;*/
 
         WithConnection<object>((conn) =>
         {
@@ -264,7 +264,7 @@ namespace LandfillService.Common.Context
             VALUES
             (@projectId, @projectUid, @date, @geofenceUid, GREATEST(@volume, 0.0),0,0,UTC_TIMESTAMP())
             ON DUPLICATE KEY UPDATE
-            Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, VolumeNotAvailable = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP()";
+            Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, VolumeNotAvailable = 0, VolumesUpdatedTimestampUTC = UTC_TIMESTAMP(), ProjectId=@projectId";
 
 /*              var command = @"UPDATE Entries 
                               SET Volume = GREATEST(@volume, 0.0), VolumeNotRetrieved = 0, 

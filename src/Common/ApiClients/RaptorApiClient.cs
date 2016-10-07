@@ -253,6 +253,7 @@ namespace LandfillService.Common.ApiClients
 
               Log.Warn("RaptorApiException while retrieving volumes: " + e.Message);
               LandfillDb.MarkVolumeNotAvailable(project.projectUid, entry.geofenceUid, entry.date);
+              LandfillDb.SaveVolume(project.projectUid, entry.geofenceUid, entry.date, 0);
 
               // TESTING CODE
               // Volume range in m3 should be ~ [478, 1020]
