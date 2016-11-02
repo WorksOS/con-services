@@ -495,6 +495,7 @@ namespace LandfillService.Common.Models
     {
       public long projectId;
       public CCAFilter filter;
+      public LiftBuildSettings liftBuildSettings = new LiftBuildSettings();
 
       /// <summary>
       /// ToString override
@@ -506,6 +507,11 @@ namespace LandfillService.Common.Models
       }
 
     }
+
+  public class LiftBuildSettings
+  {
+    public long liftDetectionType=4;
+  }
 
     /// <summary>
     /// CCA summary entry returned from the Raptor API
