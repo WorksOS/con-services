@@ -226,6 +226,7 @@
     <Compile Include="Models\MasterData\Geofence\CreateGeofenceEvent.cs" />
     <Compile Include="Models\MasterData\Geofence\DeleteGeofenceEvent.cs" />
     <Compile Include="Models\MasterData\Geofence\UpdateGeofenceEvent.cs" />
+    <Compile Include="Models\MasterData\Project\AssociateProjectGeofence.cs" />
     <Compile Include="Models\MasterData\Project\DeleteProjectEvent.cs" />
     <Compile Include="Models\MasterData\Project\UpdateProjectEvent.cs" />
     <Compile Include="Scenarios\CCA.feature.cs">

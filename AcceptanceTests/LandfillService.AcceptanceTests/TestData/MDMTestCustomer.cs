@@ -172,6 +172,15 @@ namespace LandfillService.AcceptanceTests.TestData
             };
             Config.KafkaDriver.SendMessage(Config.GeofenceTopic, JsonConvert.SerializeObject(new { CreateGeofenceEvent = CreateProjectGeofenceEvt }));
 
+            AssociateProjectGeofence AssociateProjectGeofenceEvt = new AssociateProjectGeofence
+            {
+                ProjectUID = ProjectUid,
+                GeofenceUID = ProjectGeofenceUid,
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow
+            };
+            Config.KafkaDriver.SendMessage(Config.ProjectTopic, JsonConvert.SerializeObject(new { AssociateProjectGeofence = AssociateProjectGeofenceEvt }));
+
             // create landfill geofences
             foreach(Site landfill in LandfillGeofences)
             {
@@ -190,6 +199,15 @@ namespace LandfillService.AcceptanceTests.TestData
                     GeometryWKT = landfill.boundary
                 };
                 Config.KafkaDriver.SendMessage(Config.GeofenceTopic, JsonConvert.SerializeObject(new { CreateGeofenceEvent = CreateLandfillGeofenceEvt }));
+
+                AssociateProjectGeofence AssociateProjectLandfillGeofenceEvt = new AssociateProjectGeofence
+                {
+                    ProjectUID = ProjectUid,
+                    GeofenceUID = landfill.uid,
+                    ActionUTC = DateTime.UtcNow,
+                    ReceivedUTC = DateTime.UtcNow
+                };
+                Config.KafkaDriver.SendMessage(Config.ProjectTopic, JsonConvert.SerializeObject(new { AssociateProjectGeofence = AssociateProjectLandfillGeofenceEvt }));
             }
 
             IsCreated = true;
@@ -214,6 +232,15 @@ namespace LandfillService.AcceptanceTests.TestData
                     GeometryWKT = site.boundary
                 };
                 Config.KafkaDriver.SendMessage(Config.GeofenceTopic, JsonConvert.SerializeObject(new { CreateGeofenceEvent = CreateLandfillGeofenceEvt }));
+
+                AssociateProjectGeofence AssociateProjectLandfillGeofenceEvt = new AssociateProjectGeofence
+                {
+                    ProjectUID = ProjectUid,
+                    GeofenceUID = site.uid,
+                    ActionUTC = DateTime.UtcNow,
+                    ReceivedUTC = DateTime.UtcNow
+                };
+                Config.KafkaDriver.SendMessage(Config.ProjectTopic, JsonConvert.SerializeObject(new { AssociateProjectGeofence = AssociateProjectLandfillGeofenceEvt }));
             }
         }
         public bool HasSite(Site site)

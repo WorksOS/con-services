@@ -109,6 +109,10 @@ namespace LandfillService.AcceptanceTests.Scenarios
                         mdSupport.CreateProjectEvt.ProjectName);
                     topic = Config.GeofenceTopic;
                     break;
+                case "AssociateProjectGeofenceEvent":
+                    messageStr = mdSupport.AssociateProjectGeofence(projectUID, geofenceUID);
+                    topic = Config.ProjectTopic;
+                    break;
                 case "UpdateProjectGeofenceEvent":
                     messageStr = mdSupport.UpdateProjectGeofence(geofenceUID, Config.MasterDataUserUid);
                     topic = Config.GeofenceTopic;
@@ -316,15 +320,15 @@ namespace LandfillService.AcceptanceTests.Scenarios
             foreach (var point in points)
             {
                 var parts = point.Split(' ');
-                var lat = double.Parse(parts[0]);
-                var lng = double.Parse(parts[1]);
+                var lat = double.Parse(parts[1]);
+                var lng = double.Parse(parts[0]);
                 expectedBoundary.Add(new WGSPoint { Lat = lat * DEGREES_TO_RADIANS, Lon = lng * DEGREES_TO_RADIANS });
             }
 
             for (int i = 0; i < expectedBoundary.Count; ++i)
             {
-                Assert.IsTrue(Math.Round(expectedBoundary[i].Lat) == Math.Round(boundary[i].Lat) &&
-                    Math.Round(expectedBoundary[i].Lon) == Math.Round(boundary[i].Lon),
+                Assert.IsTrue(Math.Round(expectedBoundary[i].Lat, 2) == Math.Round(boundary[i].Lat, 2) &&
+                    Math.Round(expectedBoundary[i].Lon, 2) == Math.Round(boundary[i].Lon, 2),
                     "Incorrect geofence boundary.");
             }
         }

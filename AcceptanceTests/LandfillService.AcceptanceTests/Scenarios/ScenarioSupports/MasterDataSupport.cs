@@ -29,6 +29,7 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
 
         public CreateGeofenceEvent CreateInBoundaryLandfillGeofenceEvt;
         public CreateGeofenceEvent CreateOutBoundaryLandfillGeofenceEvt;
+        public AssociateProjectGeofence AssociateProjectGeofenceEvt;
 
         public string CreateProject(Guid projectUid)
         {
@@ -190,6 +191,18 @@ namespace LandfillService.AcceptanceTests.Scenarios.ScenarioSupports
             };
 
             return JsonConvert.SerializeObject(new { CreateGeofenceEvent = CreateProjectGeofenceEvt });
+        }
+        public string AssociateProjectGeofence(Guid projectUID, Guid geofenceUID)
+        {
+            AssociateProjectGeofenceEvt = new AssociateProjectGeofence
+            {
+                ProjectUID = projectUID,
+                GeofenceUID = geofenceUID,
+                ActionUTC = DateTime.UtcNow,
+                ReceivedUTC = DateTime.UtcNow
+            };
+
+            return JsonConvert.SerializeObject(new { AssociateProjectGeofence = AssociateProjectGeofenceEvt });
         }
         public string UpdateProjectGeofence(Guid geofenceUid, Guid userUid)
         {
