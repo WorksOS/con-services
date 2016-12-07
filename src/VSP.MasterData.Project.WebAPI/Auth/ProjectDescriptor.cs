@@ -37,5 +37,33 @@ namespace VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models
     /// The type of the project.
     /// </value>
     public ProjectType ProjectType { get; set; }
+    /// <summary>
+    /// Gets or sets the start date.
+    /// </summary>
+    /// <value>
+    /// The start date.
+    /// </value>
+    public string StartDate { get; set; }
+    /// <summary>
+    /// Gets or sets the end date.
+    /// </summary>
+    /// <value>
+    /// The end date.
+    /// </value>
+    public string EndDate { get; set; }
+    /// <summary>
+    /// Gets or sets the project uid.
+    /// </summary>
+    /// <value>
+    /// The project uid.
+    /// </value>
+    public string ProjectUid { get; set; }
+    /// <summary>
+    /// Gets or sets the project geofence.
+    /// </summary>
+    /// <value>
+    /// The project geofence.
+    /// </value>
+    public string ProjectGeofence { get; set; }
   }
 }

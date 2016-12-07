@@ -51,7 +51,10 @@ namespace VSP.MasterData.Project.WebAPI.Auth
                 ProjectType = userProject.ProjectType,
                 Name = userProject.Name,
                 ProjectTimeZone = userProject.ProjectTimeZone,
-                isArchived = userProject.IsDeleted || userProject.SubEndDate < DateTime.UtcNow
+                isArchived = userProject.IsDeleted || userProject.SubEndDate < DateTime.UtcNow,
+                StartDate = userProject.ProjectStartDate.ToString("O"),
+                EndDate = userProject.ProjectStartDate.ToString("O"),
+                ProjectUid = userProject.ProjectUID
               });
           }
           Log.DebugFormat("Authorization: for Customer: {0} projectList is: {1}", customer, projectList.ToString());
