@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "VSS.Velociraptor.Interfaces": "1.0.26"
+  },
+
+  "frameworks": {
+    "net451": {
+      "buildOptions": {
+        "define": [ "TRACE", "STRONG", "NET", "NET_2_0", "NET_4_0", "NET_4_5" ]
+      },
+      "dependencies": {
+      }
+    }
+  }
+}

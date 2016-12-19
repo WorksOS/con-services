@@ -1,0 +1,21 @@
+﻿{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.AspNetCore.Authentication": "1.0.0",
+    "Polly": "4.5.0-beta-netstandar-0001",
+    "Common": "1.0.0-*"
+  },
+
+  "frameworks": {
+    "net451": {
+      "buildOptions": {
+        "define": [ "TRACE", "STRONG", "NET", "NET_2_0", "NET_4_0", "NET_4_5" ]
+      },
+      "dependencies": {
+      }
+    }
+  }
+}

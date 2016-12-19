@@ -1,0 +1,222 @@
+﻿using System;
+using System.IO;
+using ASNode.CMVChange.RPC;
+using ASNode.ElevationStatistics.RPC;
+using ASNode.ExportProductionDataCSV.RPC;
+using ASNode.SpeedSummary.RPC;
+using ASNode.ThicknessSummary.RPC;
+using ASNode.UserPreferences;
+using ASNode.Volumes.RPC;
+using ASNodeDecls;
+using ASNodeRPC;
+using BoundingExtents;
+using DesignProfilerDecls;
+using ShineOn.Rtl;
+using SVOICDecls;
+using SVOICFilterSettings;
+using SVOICLiftBuildSettings;
+using SVOICOptionsDecls;
+using SVOICStatistics;
+using SVOICVolumeCalculationsDecls;
+using VLPDDecls;
+
+namespace VSS.Raptor.Service.Common.Interfaces
+{
+  /// <summary>
+  /// Interface for Raptor AS Node
+  /// </summary>
+  public interface IASNodeClient
+  {
+    bool GetProductionDataExport(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
+        TASNodeUserPreferences UserPreferences, int ExportType, string CallerId,
+        TICFilterSettings Filter, TICLiftBuildSettings LiftBuildSettings, bool TimeStampRequired,
+        bool CellSizeRequired, bool RawData, bool RestrictSize,
+        bool ZipFile, double Tolerance, bool IncludeSurveydSurface, bool Precheckonly, string Filename,
+        TMachine[] MachineList, int CoordType, int OutputType,
+        TDateTime DateFromUTC, TDateTime DateToUTC, TTranslation[] Translations, T3DBoundingWorldExtent ProjectExtents,
+        out TDataExport DataExport);
+
+    bool GetPassCountSummary(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
+        TPassCountSettings passCountSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+        out TPassCountSummary passCountSummary);
+
+    bool GetPassCountDetails(long projectID, TASNodeRequestDescriptor externalRequestDescriptor,
+        TPassCountSettings passCountSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+        out TPassCountDetails passCountDetails);
+
+    bool GetDataModelStatistics(long projectID, TSurveyedSurfaceID[] exclusionList,
+              out TICDataModelStatistics statistics);
+
+    TASNodeErrorStatus PassSelectedCoordinateSystemFile(Stream csFileContent, string csFileName, long projectID, out TCoordinateSystemSettings csSettings);
+
+    TASNodeErrorStatus RequestCoordinateSystemDetails(long projectId, out TCoordinateSystemSettings csSettings);
+
+    TDesignProfilerRequestResult UpdateCacheWithDesign(long dataModelId, string designFileName, long designId, bool deleteTTM);
+
+    bool GetSummaryVolumes(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
+              TComputeICVolumesType VolumeType,
+              TICFilterSettings BaseFilter, TVLPDDesignDescriptor BaseDesign,
+              TICFilterSettings TopFilter, TVLPDDesignDescriptor TopDesign,
+              TICFilterSettings AdditionalSpatialFilter,
+              TICLiftBuildSettings LiftBuildSettings,
+              out TASNodeSimpleVolumesResult Results);
+
+
+    bool GetSummaryVolumes(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
+      TComputeICVolumesType VolumeType, TICFilterSettings BaseFilter, TVLPDDesignDescriptor BaseDesign,
+      TICFilterSettings TopFilter, TVLPDDesignDescriptor TopDesign, TICFilterSettings AdditionalSpatialFilter,
+      double CutTolerance, double FillTolerance,
+      TICLiftBuildSettings LiftBuildSettings, out TASNodeSimpleVolumesResult Results);
+
+    bool GetSummaryThickness(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
+              TICFilterSettings BaseFilter,
+              TICFilterSettings TopFilter,
+              TICFilterSettings AdditionalSpatialFilter,
+              TICLiftBuildSettings LiftBuildSettings,
+              out TASNodeThicknessSummaryResult Results);
+
+    bool GetSummarySpeed(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
+      TICFilterSettings filter,
+      TICLiftBuildSettings LiftBuildSettings,
+      out TASNodeSpeedSummaryResult Results);
+
+    int GetOnMachineLayers(long DataModelID, out TDesignLayer[] LayerList);
+
+
+    bool GetDataModelExtents(long DataModelID, VLPDDecls.TSurveyedSurfaceID[] SurveyedSurfaceExclusionList,
+        out BoundingExtents.T3DBoundingWorldExtent extents);
+
+    /// <summary>
+    /// Gets the machine details for the project
+    /// </summary>
+    /// <param name="projectId">The project identifier.</param>
+    /// <returns></returns>
+    TMachineDetail[] GetMachineIDs(long projectId);
+
+    /// <summary>
+    /// Requests the configuration.
+    /// </summary>
+    /// <param name="xml">The XML configuration.</param>
+    void RequestConfig(out string xml);
+
+
+    int RequestCellProfile(long ADataModelID, SubGridTreesDecls.TSubGridCellAddress ACellAddress, double AProbePositionX,
+        double AProbePositionY, bool AProbePositionIsGridCoord,
+        TICLiftBuildSettings ALiftBuildSettings, int AGridDataType,
+        TICFilterSettings AFilter, out SVOICProfileCell.TICProfileCell ACellProfile);
+
+
+    bool GetCellProductionData(long projectId, int displayMode, double AProbePositionX,
+            double AProbePositionY, TWGS84Point point, bool AProbePositionIsGridCoord, TICFilterSettings AFilter,
+            TICLiftBuildSettings ALiftBuildSettings,
+            TVLPDDesignDescriptor designDescriptor, out TCellProductionData data);
+
+
+    TASNodeErrorStatus RequestDataPatchPage(long dataModelID, TASNodeRequestDescriptor requestDescr,
+            TICDisplayMode mode, TColourPalettes palettes, bool colored, TICFilterSettings filter1,
+            TICFilterSettings filter2, TSVOICOptions options, TVLPDDesignDescriptor design,
+            TComputeICVolumesType volumetype, int dataPatchPage, int dataPatchSize, out MemoryStream Patch,
+            out int numPatches);
+
+    TASNodeErrorStatus GetRenderedMapTileWithRepresentColor(long projectId, TASNodeRequestDescriptor requestDescr,
+      TICDisplayMode mode, TColourPalettes palettes, TWGS84Point bl, TWGS84Point tr, bool coordsAreGrid,
+      ushort width, ushort height, TICFilterSettings filter1, TICFilterSettings filter2, TSVOICOptions options,
+      TVLPDDesignDescriptor design, TComputeICVolumesType volumetype, uint representColor, out MemoryStream tile);
+
+    MemoryStream GetAlignmentProfile(ASNode.RequestAlignmentProfile.RPC.TASNodeServiceRPCVerb_RequestAlignmentProfile_Args Args);
+
+    MemoryStream GetProfile(ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args Args);
+
+
+    /// <summary>
+    /// Gets the onmachine designs.
+    /// </summary>
+    /// <param name="DataModelID">The data model identifier.</param>
+    /// <returns></returns>
+    TDesignName[] GetOnMachineDesigns(long DataModelID);
+
+    TDesignName[] GetOverriddenDesigns(long projectId, long assetId);
+    TDesignLayer[] GetOverriddenLayers(long projectId, long assetId);
+
+    bool GetCMVSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+              TCMVSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+              out TCMVSummary cmvSummary);
+
+
+    bool GetCMVChangeSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+              TASNodeCMVChangeSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+              out TASNodeCMVChangeResult cmvSummary);
+
+    bool GetCMVDetails(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+     TCMVSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+     out TCMVDetails cmvDetails);
+
+    /// <summary>
+    /// Stores Surveyed Surface data.
+    /// </summary>
+    /// <param name="args">Description of the request data.</param>
+    /// <returns>True if successfully saved, false - otherwise.</returns>
+    /// 
+    bool StoreGroundSurfaceFile(ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args);
+
+    /// <summary>
+    /// Discards Surveyed Surface data.
+    /// </summary>
+    /// <param name="projectId">The model/project identifier.</param>
+    /// <param name="surveyedSurfaceId">The Surveyed Surface identifier.</param>
+    /// <returns>True if successfully deleted, false - otherwise.</returns>
+    /// 
+    bool DiscardGroundSurfaceFileDetails(long projectId, long surveyedSurfaceId);
+
+    /// <summary>
+    /// Gets Surveyed Surface list.
+    /// </summary>
+    /// <param name="projectId">The model/project identifier.</param>
+    /// <returns>True if successfully received, false - otherwise.</returns>
+    /// 
+    bool GetKnownGroundSurfaceFileDetails(long projectId, out TSurveyedSurfaceDetails[] groundSurfaces);
+
+    /// <summary>
+    /// Updates Surveyed Surface data.
+    /// </summary>
+    /// <param name="args">Description of the request data.</param>
+    /// <returns>True if successfully updated, false - otherwise.</returns>
+    /// 
+    bool UpdateGroundSurfaceFile(ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args);
+
+    /// <summary>
+    /// Gets a list of grid coordinates converted either from NE or Latitude/Longidude.
+    /// </summary>
+    /// <param name="projectId">The model/project identifier.</param>
+    /// <param name="latlongs">The list of NE or Latitude/Longidude coordinates.</param>
+    /// <param name="conversionType">Coordinate conversion type: 
+    ///                               0 - from Latitude/Longitude to North/East,
+    ///                               1 - from North/East to Latitude/Longitude.
+    /// </param>
+    /// <param name="pointList">The list of converted coordinates.</param>
+    /// <returns>An error code: 
+    ///                         0 - No error,
+    ///                         1 - Unknown error,
+    ///                         2 - No connection to Server,
+    ///                         3 - Missing coordinates,
+    ///                         4 - Failed to convert coordinates.
+    /// </returns>
+    /// 
+    TCoordReturnCode GetGridCoordinates(long projectId, TWGS84FenceContainer latlongs, TCoordConversionType conversionType, out TCoordPointList pointList);
+
+    /// <summary>
+    /// Computes the minimum and maximum elevation of the cells matching the filter
+    /// </summary>
+    TASNodeErrorStatus GetElevationStatistics(long DataModelID,
+                                              TASNodeRequestDescriptor ExternalRequestDescriptor,
+                                              TICFilterSettings Filter,
+                                              TICLiftBuildSettings LiftBuildSettings,
+                                              out TASNodeElevationStatisticsResult Results);
+
+    bool GetCCASummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+     TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings, out TCCASummary ccaSummary);
+
+    bool GetMachineCCAColourPalettes(long dataModelId, long machineId, DateTime? startUtc, DateTime? endUtc, int? liftId, out TColourPalettes palettes);
+
+  }
+}
