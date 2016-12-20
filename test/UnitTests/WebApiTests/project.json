@@ -1,0 +1,37 @@
+﻿{
+    "version": "1.0.0-*",
+
+    "testRunner": "mstest",
+
+  "dependencies": {
+    "dotnet-test-mstest": "1.1.1-preview",
+    "MSTest.TestFramework": "1.0.1-preview",
+    "log4net.netcore": "3.0.0",
+    "log4netExtensions.netcore": "1.0.1",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Logging": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.Extensions.Logging.Debug": "1.0.0",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+    "WebApiModels": "1.0.0-*"
+  },
+
+   "frameworks": {
+    "net451": {
+        "buildOptions": {
+            "define": [ "TRACE", "STRONG", "NET", "NET_2_0", "NET_4_0", "NET_4_5" ],
+            "copyToOutput": [
+                "appsettings.json"
+            ]
+        },
+        "frameworkAssemblies": {
+            "System.ComponentModel.DataAnnotations": "4.0.0.0"
+        },
+      "dependencies": {
+        "Microsoft.AspNet.WebApi.Core": "5.2.3"
+      }
+    }
+  }
+}
