@@ -77,6 +77,7 @@ namespace VSS.Raptor.Service.WebApi
 
       //Configure application services
       services.AddScoped<IASNodeClient, ASNodeClient>();
+      services.AddScoped<ITAGProcessor, TAGProcessor>();
       services.AddSingleton<IConfigurationRoot>(Configuration);
       serviceCollection = services;
     }

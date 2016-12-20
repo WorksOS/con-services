@@ -19,15 +19,20 @@ namespace VSS.Raptor.Service.WebApiModels.Interfaces
     protected IASNodeClient raptorClient;
 
     /// <summary>
-    ///   Generates the errorlist for instantiated executor.
+    /// Generates the dynamic errorlist for instanciated executor.
     /// </summary>
     /// <returns>List of errors with corresponding descriptions.</returns>
     public List<Tuple<int, string>> GenerateErrorlist()
     {
-      return (from object enumVal in Enum.GetValues(typeof(ContractExecutionStatesEnum))
-              select new Tuple<int, string>((int)enumVal, enumVal.ToString())).ToList();
+      List<Tuple<int, string>> result = new List<Tuple<int, string>>();
+      for (int i = 0; i < ContractExecutionStates.Count; i++)
+      {
+        result.Add(new Tuple<int, string>(ContractExecutionStates.ValueAt(i),
+               ContractExecutionStates.NameAt(i)));
+      }
+      ContractExecutionStates.ClearDynamic();
+      return result;
     }
-
 
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
@@ -53,6 +58,42 @@ namespace VSS.Raptor.Service.WebApiModels.Interfaces
     }
 
     /// <summary>
+    /// Gets the available contract execution error states.
+    /// </summary>
+    /// <value>
+    /// The contract execution states.
+    /// </value>
+    protected ContractExecutionStatesEnum ContractExecutionStates { get; private set; }
+
+    /// <summary>
+    /// Dynamically defines new error codes for the executor instance. Don't forget to clean them up after exit.
+    /// </summary>
+    protected virtual void ProcessErrorCodes()
+    {
+    }
+
+    /// <summary>
+    /// Default constructor which creates all structures necessary for error handling.
+    /// </summary>
+    protected RequestExecutorContainer()
+    {
+      ContractExecutionStates = new ContractExecutionStatesEnum();
+      ProcessErrorCodes();
+    }
+
+    //TODO: Check if this works
+    /// <summary>
+    /// Default destructor which destroys all structures necessary for error handling.
+    /// </summary>
+    ~RequestExecutorContainer()
+    {
+      if (ContractExecutionStates != null)
+      {
+        ContractExecutionStates.ClearDynamic();
+      }
+    }
+
+    /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -63,5 +104,6 @@ namespace VSS.Raptor.Service.WebApiModels.Interfaces
       var executor = new TExecutor() { raptorClient = raptorClient };
       return executor;
     }
+
   }
 }
