@@ -19,6 +19,8 @@ namespace VSS.UnifiedProductivity.Service.Utils
     private IConfigurationBuilder configBuilder = null;
         private IConfigurationRoot configuration = null;
 
+
+
         public KafkaConsumerConfiguration()
         {
             var builder = configBuilder = new ConfigurationBuilder()
@@ -67,8 +69,46 @@ namespace VSS.UnifiedProductivity.Service.Utils
       return true;
     }
 
+        public string GetConnectionString(string connectionType)
+        {
+            string serverName = null;
+            if (connectionType == "VSPDB")
+                serverName = Environment.GetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB");
+            else if (connectionType == "ReadVSPDB")
+                serverName = Environment.GetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB");
 
-    public string GetValueString(string key)
+            var serverPort = Environment.GetEnvironmentVariable("MYSQL_PORT");
+            var serverDatabaseName = Environment.GetEnvironmentVariable("MYSQL_DATABASE_NAME");
+            var serverUserName = Environment.GetEnvironmentVariable("MYSQL_USERNAME");
+            var serverPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD");
+
+          /*  log.LogInformation("MYSQL_SERVER_NAME_VSPDB" + serverName);
+            log.LogInformation("MYSQL_PORT" + serverPort);
+            log.LogInformation("MYSQL_DATABASE_NAME" + serverDatabaseName);
+            log.LogInformation("MYSQL_USERNAME" + serverUserName);
+            log.LogInformation("MYSQL_ROOT_PASSWORD" + serverPassword);*/
+
+            if (serverName == null || serverPort == null || serverDatabaseName == null || serverUserName == null || serverPassword == null)
+            {
+                var errorString = string.Format(
+                      "Your application is attempting to use the {0} connectionType but is missing an environment variable. serverName {1} serverPort {2} serverDatabaseName {3} serverUserName {4} serverPassword {5}",
+                      connectionType, serverName, serverPort, serverDatabaseName, serverUserName, serverPassword);
+                //log.LogError(errorString);
+                throw new InvalidOperationException(errorString);
+            }
+
+            var connString =
+              "server=" + serverName +
+              ";port=" + serverPort +
+              ";database=" + serverDatabaseName +
+              ";userid=" + serverUserName +
+              ";password=" + serverPassword +
+              ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
+
+            return connString;
+        }
+
+        public string GetValueString(string key)
     {     
       return configuration[key];
     }

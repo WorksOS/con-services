@@ -11,6 +11,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ConfigurationStore", "src\C
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SendMessage", "src\sendMessage\SendMessage.xproj", "{9F965F09-1CB9-44C0-95C3-712D7E206267}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Repositories", "src\Repositories\Repositories.xproj", "{D7D7C2F1-BFF3-4E6D-83D2-E3B23862F1A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{9F965F09-1CB9-44C0-95C3-712D7E206267}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F965F09-1CB9-44C0-95C3-712D7E206267}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F965F09-1CB9-44C0-95C3-712D7E206267}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7D7C2F1-BFF3-4E6D-83D2-E3B23862F1A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7D7C2F1-BFF3-4E6D-83D2-E3B23862F1A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7D7C2F1-BFF3-4E6D-83D2-E3B23862F1A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7D7C2F1-BFF3-4E6D-83D2-E3B23862F1A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

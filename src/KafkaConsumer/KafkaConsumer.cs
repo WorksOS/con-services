@@ -65,7 +65,7 @@ namespace KafkaConsumer
                             messageResolver.GetConverter<T>());
                         dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
                     }
-                    catch (Exception e)
+                    catch 
                     {
 
                     }
@@ -87,27 +87,5 @@ namespace KafkaConsumer
             kafkaDriver.Dispose();
         }
 
-    }
-
-    public interface IMessageTypeResolver
-    {
-        JsonConverter GetConverter<T>();
-    }
-
-    public interface IRepositoryFactory
-    {
-        IRepository<T> GetRepository<T>();
-    }
-
-    public interface IRepository<T>
-    {
-        void StoreEvent(T deserializedObject);
-    }
-
-    public interface IKafkaConsumer<T> : IDisposable
-    {
-        void SetTopic(string topic);
-        Task StartProcessingAsync(CancellationTokenSource token);
-        void StopProcessing();
     }
 }

@@ -15,12 +15,12 @@ namespace sendMessage
         {
             var random = new Random();
             using (Producer producer = new Producer("localhost:9092"))
-            using (Topic topic = producer.Topic("VSS.Interfaces.Events.MasterData.IAssetEvent-VUP"))
+            using (Topic topic = producer.Topic("VSS.Interfaces.Events.MasterData.ISubscriptionEvent-VUP"))
             {
-                var asset = new CreateAssetEvent();
+                var asset = new CreateAssetSubscriptionEvent();
 
                 var jsonHelper = new JsonHelper();
-                var messagePayload = jsonHelper.SerializeObjectToJson(new {CreateAssetEvent = asset});
+                var messagePayload = jsonHelper.SerializeObjectToJson(new { CreateProjectSubscriptionEvent = asset});
                 byte[] data = Encoding.UTF8.GetBytes(messagePayload);
                 DeliveryReport deliveryReport = topic.Produce(data).Result;
                 Console.WriteLine($"Produced to Partition: {deliveryReport.Partition}, Offset: {deliveryReport.Offset}");
