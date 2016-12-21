@@ -1,0 +1,60 @@
+version: '2'
+services:
+  webapi:
+    build: ./Artifacts/WebApi
+    env_file:
+     - docker-compose-local.env
+    volumes:
+      - ./Artifacts/Logs:/app/logs 
+    ports:
+     - "3001:80"
+    depends_on:
+      - schema
+  datafeed:
+    build: ./Artifacts/DatafeedService
+    env_file:
+     - docker-compose-local.env
+    volumes:
+      - ./Artifacts/Logs:/app/logs
+    depends_on:
+      - schema
+      - kafka
+  schema:
+    build: ./Database
+    env_file:
+     - docker-compose-local.env
+    depends_on:
+      - db
+  db:
+    image: mysql/mysql-server:5.7.15
+    env_file:
+     - docker-compose-local.env
+    ports:
+      - "3306:3306"
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    ports:
+     - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka:latest
+    env_file:
+     - docker-compose-local.env  
+    environment:
+     - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+     - KAFKA_CREATE_TOPICS=VSS.VisionLink.Interfaces.Events.Telematics.Machine.SwitchStateEvent-VUP:1:1,VSS.VisionLink.Interfaces.Events.Telematics.Machine.LocationEvent-VUP:1:1,VSS.Interfaces.Events.MasterData.IAssetEvent-VUP:1:1,VSS.VisionLink.Interfaces.Events.Telematics.Machine.OdometerEvent-VUP:1:1
+    ports:
+     - "9092:9092"
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+     - zookeeper
+  accepttest:
+    build: ./AcceptanceTests/deploy
+    env_file:
+     - docker-compose-local.env
+    volumes:
+      - ./AcceptanceTests/deploy/testresults:/app/testresults
+    depends_on:
+      - webapi
+      - datafeed
+      - kafka
