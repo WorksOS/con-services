@@ -14,6 +14,8 @@ namespace MasterDataConsumer
                 return new AssetEventConverter();
             if (typeof(T) == typeof(ISubscriptionEvent))
                 return new SubscriptionEventConverter();
+            if (typeof(T) == typeof(ICustomerEvent))
+                return new CustomerEventConverter();
             return null;
         }
     }

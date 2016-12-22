@@ -12,7 +12,8 @@
     "VSS.Interfaces.netcore": "1.0.0",
     "ConfigurationStore": "1.0.0-*",
     "KafkaConsumer": "1.0.0-*",
-    "System.Linq": "4.3.0"
+    "System.Linq": "4.3.0",
+    "NodaTime": "2.0.0-alpha20160729"
   },
 
   "frameworks": {
