@@ -196,4 +196,5 @@ src/*.boltdata
 src/Deploy
 Log.*
 .vs/*
+Artifacts/
 
