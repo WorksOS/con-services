@@ -11,11 +11,11 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Customer.Data
 {
-    public class MySqlCustomerRepository : RepositoryBase, IRepository<ICustomerEvent>
+    public class CustomerRepository : RepositoryBase, IRepository<ICustomerEvent>
     {
     //    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public MySqlCustomerRepository(IConfigurationStore _connectionString) : base(_connectionString)
+        public CustomerRepository(IConfigurationStore _connectionString) : base(_connectionString)
         {
         }
 

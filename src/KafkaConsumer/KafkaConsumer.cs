@@ -21,6 +21,7 @@ namespace KafkaConsumer
 
         private string topicName;
         private CancellationTokenSource stopToken;
+        private int batchSize = 100;
 
         public KafkaConsumer(IConfigurationStore config, IKafka driver, IRepositoryFactory repositoryFactory, IMessageTypeResolver resolver)
         {
@@ -28,6 +29,7 @@ namespace KafkaConsumer
             configurationStore = config;
             dbRepositoryFactory = repositoryFactory;
             messageResolver = resolver;
+            batchSize=configurationStore.GetValueInt("KAFKA_BATCH_SIZE");
         }
 
 
@@ -52,17 +54,23 @@ namespace KafkaConsumer
 
         }
 
+
+        private int batchCounter = 0;
         private void ProcessMessage()
         {
-            var messages = kafkaDriver.Consume(TimeSpan.FromSeconds(10));
+            Console.WriteLine("Consuming");
+            var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(100));
             if (messages.message == Error.NO_ERROR)
                 foreach (var message in messages.payload)
                 {
                     try
                     {
                         string bytesAsString = Encoding.UTF8.GetString(message, 0, message.Length);
+                        //Debugging only
+                        Console.WriteLine(typeof(T)+" : "+bytesAsString );
                         var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString,
                             messageResolver.GetConverter<T>());
+                        Console.WriteLine("Saving");
                         dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
                     }
                     catch 
@@ -71,9 +79,21 @@ namespace KafkaConsumer
                     }
                     finally
                     {
-                        kafkaDriver.Commit();
+                        Console.WriteLine("Commiting");
+                        if (batchCounter > batchSize)
+                        {
+                            kafkaDriver.Commit();
+                            batchCounter = 0;
+                        }
+                        else
+                            batchCounter++;
                     }
                 }
+            if (messages.message == Error.NO_DATA&&batchCounter!=0)
+            {
+                kafkaDriver.Commit();
+                batchCounter = 0;
+            }
 
         }
 

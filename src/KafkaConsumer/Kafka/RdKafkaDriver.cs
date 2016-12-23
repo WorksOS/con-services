@@ -30,7 +30,7 @@ namespace VSS.UnifiedProductivity.Service.Utils.Kafka
 
         public void Commit()
         {
-            rdConsumer.Commit();
+            rdConsumer?.Commit();
         }
 
         public Interfaces.Message Consume(TimeSpan timeout)
@@ -49,6 +49,7 @@ namespace VSS.UnifiedProductivity.Service.Utils.Kafka
             }
         }
 
+     
         public void InitConsumer(IConfigurationStore configurationStore, string groupName = null)
         {
             ConsumerGroup = groupName == null ? configurationStore.GetValueString("KAFKA_GROUP_NAME") : groupName;
