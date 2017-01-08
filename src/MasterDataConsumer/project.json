@@ -20,9 +20,13 @@
   },
   "publishOptions": {
     "include": [
-      "appsettings.json"
+        "Dockerfile",
+        "runme.sh",
+        "wait-for-it.sh",
+        "appsettings.json"
     ]
   },
+
   "dependencies": {
     "Repositories": "1.0.0-*"
   }
