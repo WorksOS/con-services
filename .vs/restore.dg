@@ -1,3 +1,16 @@
+#:C:\Sources\VSS.VisionLink.Project\src\MasterDataConsumer\MasterDataConsumer.xproj
+C:\Sources\VSS.VisionLink.Project\src\MasterDataConsumer\MasterDataConsumer.xproj|C:\Sources\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
+C:\Sources\VSS.VisionLink.Project\src\MasterDataConsumer\MasterDataConsumer.xproj|C:\Sources\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj
+C:\Sources\VSS.VisionLink.Project\src\MasterDataConsumer\MasterDataConsumer.xproj|C:\Sources\VSS.VisionLink.Project\src\Repositories\Repositories.xproj
+C:\Sources\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj|C:\Sources\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
+C:\Sources\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\Sources\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
+C:\Sources\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\Sources\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj
+#:C:\Sources\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj
+C:\Sources\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj|C:\Sources\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
+#:C:\Sources\VSS.VisionLink.Project\src\Repositories\Repositories.xproj
+C:\Sources\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\Sources\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
+C:\Sources\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\Sources\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj
+C:\Sources\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj|C:\Sources\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
 #:C:\Sources\VSS.VisionLink.Project\src\ProjectWebApi\ProjectWebApi.xproj
 C:\Sources\VSS.VisionLink.Project\src\ProjectWebApi\ProjectWebApi.xproj|C:\Sources\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
 C:\Sources\VSS.VisionLink.Project\src\ProjectWebApi\ProjectWebApi.xproj|C:\Sources\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj
@@ -5,3 +18,5 @@ C:\Sources\VSS.VisionLink.Project\src\ProjectWebApi\ProjectWebApi.xproj|C:\Sourc
 C:\Sources\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj|C:\Sources\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
 C:\Sources\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\Sources\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
 C:\Sources\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\Sources\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj
+#:C:\Sources\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
+#:C:\Sources\VSS.VisionLink.Project\src\sendMessage\SendMessage.xproj
