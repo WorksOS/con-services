@@ -53,7 +53,12 @@
       "Areas/**/Views",
       "appsettings.json",
       "web.config",
-      "log4net.xml"
+      "log4net.xml",
+      "docker-compose.yml",
+      "docker-compose.debug.yml",
+      "Dockerfile.debug",
+      "Dockerfile",
+      ".dockerignore"
     ]
   },
   "scripts": {

@@ -4,15 +4,15 @@ services:
     build: ./Artifacts/WebApi
     env_file:
      - docker-compose-local.env
-    volumes:
-      - ./Artifacts/Logs:/app/logs 
     ports:
      - "3001:80"
   accepttest:
     build: ./AcceptanceTests/deploy
     env_file:
      - docker-compose-local.env
-    volumes:
-      - ./AcceptanceTests/deploy/testresults:/app/testresults
     depends_on:
-      - webapi
+     - webapi
+networks:
+  default:
+    external:
+      name: nat
