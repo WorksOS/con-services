@@ -104,9 +104,9 @@ node('Ubuntu_Slave') {
 
 //Here we need to find test results and decide if the build successfull
 /*    stage 'Publish test results and logs'
-    workspacePath = pwd()
-    step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
-    publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])*/
+    workspacePath = pwd()                */
+//    step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
+//    publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])
  
 //    mail body: 'Unified Productivity ${branch} ${fullVersion} build successful',
 //         from: 'david_glassenbury@trimble.com',
