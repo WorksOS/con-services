@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
-using VSS.UnifiedProductivity.Service.Utils;
+using VSS.Project.Service.Utils;
 
-namespace VSS.UnifiedProductivity.Service.Repositories
+namespace VSS.Project.Service.Repositories
 {
   public class RepositoryBase 
   {

@@ -7,8 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using VSS.UnifiedProductivity.Service.Interfaces;
-using VSS.UnifiedProductivity.Service.Utils;
+using VSS.Project.Service.Interfaces;
+using VSS.Project.Service.Utils;
 
 namespace KafkaConsumer
 {

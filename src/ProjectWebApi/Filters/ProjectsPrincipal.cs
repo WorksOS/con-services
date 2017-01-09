@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Security.Principal;
-using VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models;
+using VSS.Project.WebApi.Configuration.Principal.Models;
 
-namespace VSS.UnifiedProductivity.Service.WebApiModels.Filters
+namespace VSS.Project.Service.WebApiModels.Filters
 {
     public class ProjectsPrincipal : GenericPrincipal
     {

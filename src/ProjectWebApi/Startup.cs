@@ -10,8 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using VSS.Project.Data;
-using VSS.UnifiedProductivity.Service.Utils;
-using VSS.UnifiedProductivity.Service.WebApiModels.Filters;
+using VSS.Project.Service.Utils;
+using VSS.Project.Service.WebApiModels.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace ProjectWebApi
@@ -51,7 +51,7 @@ namespace ProjectWebApi
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
-            services.AddSingleton<IConfigurationStore, KafkaConsumerConfiguration>();
+            services.AddSingleton<IConfigurationStore, GenericConfiguration>();
             services.AddMvc();
             //Configure swagger
             services.AddSwaggerGen();

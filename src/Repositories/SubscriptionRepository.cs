@@ -8,16 +8,16 @@ using Newtonsoft.Json;
 
 using Microsoft.Extensions.Logging;
 using VSS.Subscription.Data.Models;
-using VSS.UnifiedProductivity.Service.Utils;
+using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.UnifiedProductivity.Service.Repositories
+namespace VSS.Project.Service.Repositories
 {
 
-    public class Subscriptionepository : RepositoryBase, IRepository<ISubscriptionEvent>
+    public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>
     {
-        public Subscriptionepository(IConfigurationStore connectionString)
+        public SubscriptionRepository(IConfigurationStore connectionString)
             : base(connectionString)
         {
 

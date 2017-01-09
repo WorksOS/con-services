@@ -3,7 +3,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace VSS.UnifiedProductivity.Service.Utils.JsonConverters
+namespace VSS.Project.Service.Utils.JsonConverters
 {
   public abstract class JsonCreationConverter<T> : JsonConverter
   {

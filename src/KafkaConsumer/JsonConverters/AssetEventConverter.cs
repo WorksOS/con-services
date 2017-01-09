@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.UnifiedProductivity.Service.Utils.JsonConverters
+namespace VSS.Project.Service.Utils.JsonConverters
 {
   public class AssetEventConverter : JsonCreationConverter<IAssetEvent>
   {

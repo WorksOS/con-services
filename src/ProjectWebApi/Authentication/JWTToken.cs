@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace VSS.UnifiedProductivity.Service.WebApi.Authentication
+namespace VSS.Project.Service.WebApi.Authentication
 {
   /// <summary>
   ///   Model class for Jwt

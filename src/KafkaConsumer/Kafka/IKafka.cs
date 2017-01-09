@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VSS.UnifiedProductivity.Service.Utils;
+using VSS.Project.Service.Utils;
 
-namespace VSS.UnifiedProductivity.Service.Interfaces
+namespace VSS.Project.Service.Interfaces
 {
     public interface IKafka
     {

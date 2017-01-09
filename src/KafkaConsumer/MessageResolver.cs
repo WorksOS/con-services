@@ -1,7 +1,7 @@
 using KafkaConsumer;
 using KafkaConsumer.JsonConverters;
 using Newtonsoft.Json;
-using VSS.UnifiedProductivity.Service.Utils.JsonConverters;
+using VSS.Project.Service.Utils.JsonConverters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace MasterDataConsumer

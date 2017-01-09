@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.UnifiedProductivity.Service.Utils;
+using VSS.Project.Service.Utils;
 
-namespace VSS.UnifiedProductivity.Service.WebApiModels.Filters
+namespace VSS.Project.Service.WebApiModels.Filters
 {
     public class ExceptionsTrap
     {

@@ -4,8 +4,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Dapper;
 using KafkaConsumer;
-using VSS.UnifiedProductivity.Service.Repositories;
-using VSS.UnifiedProductivity.Service.Utils;
+using VSS.Project.Service.Repositories;
+using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

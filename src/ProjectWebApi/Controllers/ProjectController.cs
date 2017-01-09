@@ -8,12 +8,12 @@ using KafkaConsumer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
-using VSS.UnifiedProductivity.Service.Interfaces;
-using VSS.UnifiedProductivity.Service.Utils;
-using VSS.UnifiedProductivity.Service.WebApiModels.Filters;
+using VSS.Project.Service.Interfaces;
+using VSS.Project.Service.Utils;
+using VSS.Project.Service.WebApiModels.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models;
+using VSS.Project.WebApi.Configuration.Principal.Models;
 
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V1

@@ -1,7 +1,7 @@
 using VSS.Project.Data.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models
+namespace VSS.Project.WebApi.Configuration.Principal.Models
 {
   /// <summary>
   ///   Describes VL project

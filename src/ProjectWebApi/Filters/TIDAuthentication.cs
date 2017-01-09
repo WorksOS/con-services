@@ -9,11 +9,11 @@ using KafkaConsumer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using VSS.Project.Data;
-using VSS.UnifiedProductivity.Service.WebApi.Authentication;
+using VSS.Project.Service.WebApi.Authentication;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Utilization.WebApi.Configuration.Principal.Models;
+using VSS.Project.WebApi.Configuration.Principal.Models;
 
-namespace VSS.UnifiedProductivity.Service.WebApiModels.Filters
+namespace VSS.Project.Service.WebApiModels.Filters
 {
     public class TIDAuthentication
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.UnifiedProductivity.Service.Utils
+namespace VSS.Project.Service.Utils
 {
   public class DependencyInjectionProvider
   {

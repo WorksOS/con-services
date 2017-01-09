@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.UnifiedProductivity.Service.Utils;
-using VSS.UnifiedProductivity.Service.Interfaces;
+using VSS.Project.Service.Utils;
+using VSS.Project.Service.Interfaces;
 
-namespace VSS.UnifiedProductivity.Service.Utils.Kafka
+namespace VSS.Project.Service.Utils.Kafka
 {
     public class RdKafkaDriver : IKafka
     {

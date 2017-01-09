@@ -7,10 +7,10 @@ using KafkaConsumer;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Customer.Data;
 using VSS.Project.Data;
-using VSS.UnifiedProductivity.Service.Interfaces;
-using VSS.UnifiedProductivity.Service.Repositories;
-using VSS.UnifiedProductivity.Service.Utils;
-using VSS.UnifiedProductivity.Service.Utils.Kafka;
+using VSS.Project.Service.Interfaces;
+using VSS.Project.Service.Repositories;
+using VSS.Project.Service.Utils;
+using VSS.Project.Service.Utils.Kafka;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace MasterDataConsumer
@@ -27,10 +27,10 @@ namespace MasterDataConsumer
                 .AddTransient<IKafkaConsumer<ICustomerEvent>, KafkaConsumer<ICustomerEvent>>()
                 .AddTransient<IMessageTypeResolver, MessageResolver>()
                 .AddTransient<IRepositoryFactory,RepositoryFactory>()
-                .AddTransient<IRepository<ISubscriptionEvent>, Subscriptionepository>()
+                .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
                 .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
                 .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
-                .AddSingleton<IConfigurationStore, KafkaConsumerConfiguration>()
+                .AddSingleton<IConfigurationStore, GenericConfiguration>()
                 .BuildServiceProvider();
 
             var bar = serviceProvider.GetService<IKafkaConsumer<ISubscriptionEvent>>();

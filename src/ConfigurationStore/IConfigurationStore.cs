@@ -1,4 +1,4 @@
-﻿namespace VSS.UnifiedProductivity.Service.Utils
+﻿namespace VSS.Project.Service.Utils
 {
     public interface IConfigurationStore
     {
