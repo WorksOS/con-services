@@ -12,33 +12,30 @@ using Microsoft.Extensions.Logging;
 
 namespace VSS.Project.Service.Utils
 {
-    public class GenericConfiguration : IConfigurationStore
-    {
+  public class GenericConfiguration : IConfigurationStore
+  {
 
 
     private IConfigurationBuilder configBuilder = null;
-        private IConfigurationRoot configuration = null;
+    private IConfigurationRoot configuration = null;
 
 
 
-        public GenericConfiguration()
-        {
-            var builder = configBuilder = new ConfigurationBuilder()
-                .AddEnvironmentVariables();
-            try
-            {
+    public GenericConfiguration()
+    {
+      var builder = configBuilder = new ConfigurationBuilder()
+          .AddEnvironmentVariables();
+      try
+      {
 
-                builder.SetBasePath(System.AppContext.BaseDirectory) // for appsettings.json location
-                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            }
-            catch (ArgumentException ex)
-            {
-                
-            }
-            finally
-            {
-                configuration = configBuilder.Build();
-            }
+        builder.SetBasePath(System.AppContext.BaseDirectory) // for appsettings.json location
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        configuration = configBuilder.Build();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex);
+      }
     }
 
     public bool Init()
@@ -48,7 +45,7 @@ namespace VSS.Project.Service.Utils
       log.LogInformation("KAFKA_PORT: " + GetValueInt("KAFKA_PORT"));
       log.LogInformation("KAFKA_GROUP_NAME: " + GetValueString("KAFKA_GROUP_NAME"));
       log.LogInformation("KAFKA_STACKSIZE: " + GetValueInt("KAFKA_STACKSIZE"));
-      log.LogInformation("KAFKA_AUTO_COMMIT: " +GetValueBool("KAFKA_AUTO_COMMIT"));
+      log.LogInformation("KAFKA_AUTO_COMMIT: " + GetValueBool("KAFKA_AUTO_COMMIT"));
       log.LogInformation("KAFKA_OFFSET: " + GetValueString("KAFKA_OFFSET"));
       log.LogInformation("KAFKA_TOPIC_NAME_SUFFIX: " + GetValueString("KAFKA_TOPIC_NAME_SUFFIX"));
       log.LogInformation("KAFKA_POLL_PERIOD: " + GetValueInt("KAFKA_POLL_PERIOD"));
@@ -69,55 +66,55 @@ namespace VSS.Project.Service.Utils
       return true;
     }
 
-        public string GetConnectionString(string connectionType)
-        {
-            string serverName = null;
-            if (connectionType == "VSPDB")
-                serverName = Environment.GetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB");
-            else if (connectionType == "ReadVSPDB")
-                serverName = Environment.GetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB");
+    public string GetConnectionString(string connectionType)
+    {
+      string serverName = null;
+      if (connectionType == "VSPDB")
+        serverName = GetValueString("MYSQL_SERVER_NAME_VSPDB");
+      else if (connectionType == "ReadVSPDB")
+        serverName = GetValueString("MYSQL_SERVER_NAME_ReadVSPDB");
 
-            var serverPort = Environment.GetEnvironmentVariable("MYSQL_PORT");
-            var serverDatabaseName = Environment.GetEnvironmentVariable("MYSQL_DATABASE_NAME");
-            var serverUserName = Environment.GetEnvironmentVariable("MYSQL_USERNAME");
-            var serverPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD");
+      var serverPort = GetValueString("MYSQL_PORT");
+      var serverDatabaseName = GetValueString("MYSQL_DATABASE_NAME");
+      var serverUserName = GetValueString("MYSQL_USERNAME");
+      var serverPassword = GetValueString("MYSQL_ROOT_PASSWORD");
 
-          /*  log.LogInformation("MYSQL_SERVER_NAME_VSPDB" + serverName);
-            log.LogInformation("MYSQL_PORT" + serverPort);
-            log.LogInformation("MYSQL_DATABASE_NAME" + serverDatabaseName);
-            log.LogInformation("MYSQL_USERNAME" + serverUserName);
-            log.LogInformation("MYSQL_ROOT_PASSWORD" + serverPassword);*/
+      /*  log.LogInformation("MYSQL_SERVER_NAME_VSPDB" + serverName);
+        log.LogInformation("MYSQL_PORT" + serverPort);
+        log.LogInformation("MYSQL_DATABASE_NAME" + serverDatabaseName);
+        log.LogInformation("MYSQL_USERNAME" + serverUserName);
+        log.LogInformation("MYSQL_ROOT_PASSWORD" + serverPassword);*/
 
-            if (serverName == null || serverPort == null || serverDatabaseName == null || serverUserName == null || serverPassword == null)
-            {
-                var errorString = string.Format(
-                      "Your application is attempting to use the {0} connectionType but is missing an environment variable. serverName {1} serverPort {2} serverDatabaseName {3} serverUserName {4} serverPassword {5}",
-                      connectionType, serverName, serverPort, serverDatabaseName, serverUserName, serverPassword);
-                //log.LogError(errorString);
-                throw new InvalidOperationException(errorString);
-            }
+      if (serverName == null || serverPort == null || serverDatabaseName == null || serverUserName == null || serverPassword == null)
+      {
+        var errorString = string.Format(
+              "Your application is attempting to use the {0} connectionType but is missing an environment variable. serverName {1} serverPort {2} serverDatabaseName {3} serverUserName {4} serverPassword {5}",
+              connectionType, serverName, serverPort, serverDatabaseName, serverUserName, serverPassword);
+        //log.LogError(errorString);
+        throw new InvalidOperationException(errorString);
+      }
 
-            var connString =
-              "server=" + serverName +
-              ";port=" + serverPort +
-              ";database=" + serverDatabaseName +
-              ";userid=" + serverUserName +
-              ";password=" + serverPassword +
-              ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
+      var connString =
+        "server=" + serverName +
+        ";port=" + serverPort +
+        ";database=" + serverDatabaseName +
+        ";userid=" + serverUserName +
+        ";password=" + serverPassword +
+        ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
 
-            return connString;
-        }
+      return connString;
+    }
 
-        public string GetValueString(string key)
-    {     
+    public string GetValueString(string key)
+    {
       return configuration[key];
     }
 
     public int GetValueInt(string key)
     {
       // zero is valid. Returns int.MinValue on error
-      int theInt ;
-      if ( !int.TryParse(configuration[key], out theInt))
+      int theInt;
+      if (!int.TryParse(configuration[key], out theInt))
       {
         theInt = -1;
       }

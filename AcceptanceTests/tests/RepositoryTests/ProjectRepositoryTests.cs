@@ -1,8 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.Project.Service.Repositories;
 using VSS.Project.Service.Utils;
-
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Project.Data;
+using VSS.Project.Data.Models;
+using VSS.Customer.Data;
 
 namespace RepositoryTests
 {
@@ -16,6 +21,156 @@ namespace RepositoryTests
       serviceCollection.AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug());
       new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
     }
+
+    /// <summary>
+    /// Test copying between kafka and repository models
+    /// todo could be a unit test
+    /// </summary>
+    [TestMethod]
+    public void CopyModels()
+    {
+      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var project = new Project()
+      {
+        ProjectUID = Guid.NewGuid().ToString(),
+        LegacyProjectID = 12343,
+        Name = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        IsDeleted = false,
+
+        ProjectTimeZone = projectTimeZone,
+        LandfillTimeZone = TimeZone.WindowsToIana(projectTimeZone),
+
+        LastActionedUTC = now,
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(2017, 02, 01)
+      };
+
+      var kafkaProjectEvent = CopyModel(project);
+      var copiedProject = CopyModel(kafkaProjectEvent);
+
+      Assert.AreEqual(project, copiedProject, "Project model conversion not completed sucessfully");
+    }
+
+
+    /// <summary>
+    /// Happy path i.e. 
+    ///   customer and CustomerProject relationship also added
+    ///   project doesn't exist already.
+    /// </summary>
+    [TestMethod]
+    public void CreateProjectWithCustomer_HappyPath()
+    {
+      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Project Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = now
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = now
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = now
+      };
+
+      var customerContext = new CustomerRepository(new GenericConfiguration());
+      var projectContext = new ProjectRepository(new GenericConfiguration());
+
+      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Project shouldn't be there yet");
+
+      var s = projectContext.StoreEvent(createProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not written");
+
+      s = customerContext.StoreEvent(createCustomerEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Customer event not written");
+
+      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not written");
+
+      Project project = CopyModel(createProjectEvent);
+      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
+    }
+
+    ///// RelationShips not setup i.e. 
+    /////   customer and CustomerProject relationship NOT added
+    /////   project doesn't exist already.
+    ///// </summary>
+    [TestMethod]
+    public void CreateProject_NoCustomer()
+    {
+      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = now
+      };
+
+      var projectContext = new ProjectRepository(new GenericConfiguration());
+
+      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Project shouldn't be there yet");
+
+      var s = projectContext.StoreEvent(createProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not written");
+
+      Project project = CopyModel(createProjectEvent);
+      g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
+
+      // should fail as there is no Customer or CustProject
+      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Project should not be available from ProjectRepo");
+    }
+
+
+    // todo Project repo assumes there is 1 and only 1 subscription or a project
+    //      or that there is at most 1 sub per project
+
 
     ///// <summary>
     ///// Happy path i.e. asset doesn't exist already.
@@ -1278,6 +1433,99 @@ namespace RepositoryTests
 
     //#endregion
 
+    private CreateProjectEvent CopyModel(Project project)
+    {
+      return new CreateProjectEvent()
+      {
+        ProjectUID = Guid.Parse(project.ProjectUID),
+        ProjectID = project.LegacyProjectID,
+        ProjectName = project.Name,
+        ProjectType = project.ProjectType,
+        ProjectTimezone = project.ProjectTimeZone,
+
+        ProjectStartDate = project.StartDate,
+        ProjectEndDate = project.EndDate,
+        ActionUTC = project.LastActionedUTC
+      };
+    }
+
+    private Project CopyModel(CreateProjectEvent kafkaProjectEvent)
+    {
+      return new Project()
+      {
+        ProjectUID = kafkaProjectEvent.ProjectUID.ToString(),
+        LegacyProjectID = kafkaProjectEvent.ProjectID,
+        Name = kafkaProjectEvent.ProjectName,
+        ProjectType = kafkaProjectEvent.ProjectType,
+        // IsDeleted =  N/A
+
+        ProjectTimeZone = kafkaProjectEvent.ProjectTimezone,
+        LandfillTimeZone = TimeZone.WindowsToIana(kafkaProjectEvent.ProjectTimezone),
+
+        LastActionedUTC = kafkaProjectEvent.ActionUTC,
+        StartDate = kafkaProjectEvent.ProjectStartDate,
+        EndDate = kafkaProjectEvent.ProjectEndDate
+      };
+    }
+
+    //private CreateProjectEvent GetNewCreateProjectEvent(Guid projectUid, int projectId, string projectName, string projectTimeZone, ProjectType projectType, 
+    //  DateTime projectStartDate, DateTime projectEndDate, DateTime actionUtc)
+    //{
+    //  return new CreateProjectEvent()
+    //  {
+    //    ProjectUID = projectUid,
+    //    ProjectID = projectId,
+    //    ProjectName = projectName,
+    //    ProjectTimezone = projectTimeZone,
+    //    ProjectType = projectType,
+    //    ProjectStartDate = projectStartDate,
+    //    ProjectEndDate = projectEndDate,
+    //    ActionUTC = actionUtc
+    //  };
+    //}
+
+    //private UpdateProjectEvent GetNewUpdateProjectEvent(Guid projectUid, string projectName, string projectTimeZone, DateTime projectEndDate, DateTime actionUtc)
+    //{
+    //  return new UpdateProjectEvent()
+    //  {
+    //    ProjectUID = projectUid,
+    //    ProjectName = projectName,
+    //    ProjectTimezone = projectTimeZone,
+    //    ProjectType = ProjectType.LandFill,
+    //    ProjectEndDate = projectEndDate,
+    //    ActionUTC = actionUtc
+    //  };
+    //}
+
+    //private DeleteProjectEvent GetNewDeleteProjectEvent(Guid projectUid, DateTime actionUtc)
+    //{
+    //  return new DeleteProjectEvent()
+    //  {
+    //    ProjectUID = projectUid,
+    //    ActionUTC = actionUtc
+    //  };
+    //}
+
+    //private AssociateProjectCustomer GetNewAssociateProjectCustomerEvent(Guid projectUid, Guid customerUid, long legacyCustomerId, DateTime actionUtc)
+    //{
+    //  return new AssociateProjectCustomer()
+    //  {
+    //    ProjectUID = projectUid,
+    //    CustomerUID = customerUid,
+    //    LegacyCustomerID = legacyCustomerId,
+    //    ActionUTC = actionUtc
+    //  };
+    //}
+
+    //private AssociateProjectGeofence GetNewAssociateProjectGeofenceEvent(Guid projectUID, Guid geofenceUID, DateTime actionUtc)
+    //{
+    //  return new AssociateProjectGeofence
+    //  {
+    //    ProjectUID = projectUID,
+    //    GeofenceUID = geofenceUID,
+    //    ActionUTC = actionUtc
+    //  };
+    //}
   }
 
 }

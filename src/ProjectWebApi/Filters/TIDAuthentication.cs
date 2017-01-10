@@ -58,15 +58,15 @@ namespace VSS.Project.Service.WebApiModels.Filters
             var projectList = new Dictionary<long, ProjectDescriptor>();
             foreach (var userProject in projects)
             {
-                projectList.Add(userProject.ProjectID,
+                projectList.Add(userProject.LegacyProjectID,
                   new ProjectDescriptor
                   {
                       ProjectType = userProject.ProjectType,
                       Name = userProject.Name,
                       ProjectTimeZone = userProject.ProjectTimeZone,
-                      isArchived = userProject.IsDeleted || userProject.SubEndDate < DateTime.UtcNow,
-                      StartDate = userProject.ProjectStartDate.ToString("O"),
-                      EndDate = userProject.ProjectStartDate.ToString("O"),
+                      isArchived = userProject.IsDeleted || userProject.SubscriptionEndDate < DateTime.UtcNow,
+                      StartDate = userProject.StartDate.ToString("O"),
+                      EndDate = userProject.StartDate.ToString("O"),
                       ProjectUid = userProject.ProjectUID
                   });
             }

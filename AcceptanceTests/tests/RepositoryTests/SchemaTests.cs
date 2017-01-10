@@ -4,7 +4,6 @@ using System.Linq;
 using Dapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
-//using VSS.Project.Service;
 using VSS.Project.Service.Utils;
 
 namespace RepositoryTests
@@ -12,72 +11,101 @@ namespace RepositoryTests
   [TestClass]
   public class SchemaTests
   {
-   [TestMethod]
-    public void AssetSchemaExists()
+    GenericConfiguration gc = new GenericConfiguration();
+
+    [TestMethod]
+    public void CustomerSchemaExists()
     {
-      const string tableName = "Asset";
+      const string tableName = "Customer";
       List<string> columnNames = new List<string>
           {
-            "AssetUID", "Name" , "MakeCode" , "SerialNumber", "Model", "IconKey", "AssetType", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ID", "CustomerUID", "Name" , "fk_CustomerTypeID" , "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
-    public void AssetConfigSchemaExists()
+    public void CustomerUserSchemaExists()
     {
-      const string tableName = "AssetConfiguration";
+      const string tableName = "CustomerUser";
       List<string> columnNames = new List<string>
           {
-            "AssetUID", "StartKeyDate", "LoadSwitchNumber", "LoadSwitchWorkStartState", "DumpSwitchNumber", "DumpSwitchWorkStartState", "TargetCyclesPerDay", "VolumePerCycleCubicMeter", "InsertUTC"
+            "fk_CustomerUID", "UserUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
 
-      [TestMethod]
-      public void OdometerSchemaExists()
-      {
-          const string tableName = "OdometerMeterEvent";
-          List<string> columnNames = new List<string>
-          {
-              "ID",
-              "AssetUID",
-              "OdometerMeter",
-              "EventUTC",
-              "EventDeviceTime",
-              "EventKeyDate",
-              "InsertUTC",
-              "UpdateUTC",
-          };
-          CheckSchema(tableName, columnNames);
-      }
 
-
-      [TestMethod]
-    public void AssetUtcOffsetSchemaExists()
+    [TestMethod]
+    public void ProjectSchemaExists()
     {
-      const string tableName = "AssetUTCOffset";
+      const string tableName = "Project";
       List<string> columnNames = new List<string>
           {
-            "AssetUID", "EventUTC", "UTCOffsetMinutes" , "InsertUTC", "UpdateUTC"
+            "ID", "ProjectUID", "LegacyProjectID", "Name", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
 
     [TestMethod]
-    public void AssetBookmarksSchemaExists()
+    public void CustomerProjectSchemaExists()
     {
-      const string tableName = "AssetBookmarks";
+      const string tableName = "CustomerProject";
       List<string> columnNames = new List<string>
           {
-            "AssetUID", "LastReportedEventUTC", "InsertUTC", "UpdateUTC"
+            "fk_CustomerUID", "fk_ProjectUID", "LegacyCustomerID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
+
+    [TestMethod]
+    public void SubscriptionSchemaExists()
+    {
+      const string tableName = "Subscription";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "SubscriptionUID", "fk_CustomerUID", "fk_ServiceTypeID", "StartDate", "EndDate", "EffectiveDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void ProjectSubscriptionSchemaExists()
+    {
+      const string tableName = "ProjectSubscription";
+      List<string> columnNames = new List<string>
+          {
+            "fk_ProjectUID", "fk_SubscriptionUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void GeofenceSchemaExists()
+    {
+      const string tableName = "Geofence";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "GeofenceUID", "Name", "fk_GeofenceTypeID", "GeometryWKT", "FillColor", "IsTransparent", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void ProjectGeofenceSchemaExists()
+    {
+      const string tableName = "ProjectGeofence";
+      List<string> columnNames = new List<string>
+          {
+            "fk_ProjectUID", "fk_GeofenceUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
 
     private void CheckSchema(string tableName, List<string> columnNames)
     {
-      using (var connection = new MySqlConnection(new GenericConfiguration().GetConnectionString("VSPDB")))
+      using (var connection = new MySqlConnection(gc.GetConnectionString("VSPDB")))
       {
         try
         {
@@ -106,7 +134,7 @@ namespace RepositoryTests
     {
       string what = selectTable ? "TABLE_NAME" : "COLUMN_NAME";
       var query = string.Format("SELECT {0} FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{1}' AND TABLE_NAME ='{2}'",
-        what, Environment.GetEnvironmentVariable("MYSQL_DATABASE_NAME"), tableName);
+        what, gc.GetValueString("MYSQL_DATABASE_NAME"), tableName);
       return query;
     }
 

@@ -1,5 +1,5 @@
   
-  CREATE TABLE IF NOT EXISTS ServiceTypeEnum (
+CREATE TABLE IF NOT EXISTS ServiceTypeEnum (
   ID int(11) NOT NULL,
   Description varchar(40) NOT NULL,
   fk_ServiceTypeFamilyID INT(11)  NOT NULL,

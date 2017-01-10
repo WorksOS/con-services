@@ -27,7 +27,7 @@ namespace VSS.Customer.Data
             {
                 var customerEvent = (CreateCustomerEvent)evt;
                 var customer = new Models.Customer();
-                customer.CustomerName = customerEvent.CustomerName;
+                customer.Name = customerEvent.CustomerName;
                 customer.CustomerUID = customerEvent.CustomerUID.ToString();
                 customer.CustomerType = (CustomerType)Enum.Parse(typeof(CustomerType), customerEvent.CustomerType, true);
                 customer.LastActionedUTC = customerEvent.ActionUTC;
@@ -37,7 +37,7 @@ namespace VSS.Customer.Data
             {
                 var customerEvent = (UpdateCustomerEvent)evt;
                 var customer = new Models.Customer();
-                customer.CustomerName = customerEvent.CustomerName;
+                customer.Name = customerEvent.CustomerName;
                 customer.CustomerUID = customerEvent.CustomerUID.ToString();
                 customer.LastActionedUTC = customerEvent.ActionUTC;
                 upsertedCount = await UpsertCustomerDetail(customer, "UpdateCustomerEvent");
@@ -88,9 +88,10 @@ namespace VSS.Customer.Data
 
             var existing = Connection.Query<Models.Customer>
               (@"SELECT 
-                  CustomerUID, CustomerName, fk_CustomerTypeID AS CustomerType, LastActionedUTC
-              FROM Customer
-              WHERE CustomerUID = @CustomerUid", new { CustomerUid = customer.CustomerUID }).FirstOrDefault();
+                    CustomerUID, Name, fk_CustomerTypeID AS CustomerType, LastActionedUTC
+                  FROM Customer
+                WHERE CustomerUID = @CustomerUid", 
+              new { CustomerUid = customer.CustomerUID }).FirstOrDefault();
 
             if (eventType == "CreateCustomerEvent")
             {
@@ -122,9 +123,9 @@ namespace VSS.Customer.Data
 
                 const string insert =
                   @"INSERT Customer
-              (CustomerUID, CustomerName, fk_CustomerTypeID, LastActionedUTC)
-              VALUES
-              (@CustomerUID, @CustomerName, @CustomerType, @LastActionedUTC)";
+                        (CustomerUID, Name, fk_CustomerTypeID, LastActionedUTC)
+                      VALUES
+                        (@CustomerUID, @Name, @CustomerType, @LastActionedUTC)";
 
                 return Connection.Execute(insert, customer);
             }
@@ -142,9 +143,9 @@ namespace VSS.Customer.Data
                 {
                     const string update =
                       @"UPDATE Customer                
-                SET CustomerName = @CustomerName,
-                    LastActionedUTC = @LastActionedUTC
-                WHERE CustomerUID = @CustomerUID";
+                          SET Name = @Name,
+                            LastActionedUTC = @LastActionedUTC
+                          WHERE CustomerUID = @CustomerUID";
                     return Connection.Execute(update, customer);
                 }
 
