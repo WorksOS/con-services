@@ -1,0 +1,44 @@
+{
+    "version": "1.0.0-*",
+
+    "testRunner": "mstest",
+
+  "dependencies": {
+    "dotnet-test-mstest": "1.1.1-preview",
+    "MSTest.TestFramework": "1.0.1-preview",
+    "OpenCover": "4.6.519",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Logging": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.Extensions.Logging.Debug": "1.0.0",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+    "log4net.netcore": "3.0.0",
+    "log4netExtensions.netcore": "1.0.1",
+    "KafkaConsumer": "*",
+    "ConfigurationStore": "*",
+    "Repositories": "1.0.0-*",
+    "Moq": "4.6.38-alpha"
+  },
+
+    "frameworks": {
+        "netcoreapp1.0": {
+            "imports": "dnxcore50",
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "type": "platform",
+                    "version": "1.0.0"
+                }
+            },
+            "buildOptions": {               
+                "copyToOutput": [
+                    "appsettings.json",
+                  "log4net.xml",
+                  "log4nettest.xml"
+                ]
+            }
+        }
+    }
+
+}

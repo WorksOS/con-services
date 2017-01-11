@@ -15,38 +15,38 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace MasterDataConsumer
 {
-    public class Program
+  public class Program
+  {
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            //setup our DI
-            var serviceProvider = new ServiceCollection()
-                .AddTransient<IKafka,RdKafkaDriver>()
-                .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
-                .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
-                .AddTransient<IKafkaConsumer<ICustomerEvent>, KafkaConsumer<ICustomerEvent>>()
-                .AddTransient<IMessageTypeResolver, MessageResolver>()
-                .AddTransient<IRepositoryFactory,RepositoryFactory>()
-                .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
-                .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-                .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
-                .AddSingleton<IConfigurationStore, GenericConfiguration>()
-                .BuildServiceProvider();
+      //setup our DI
+      var serviceProvider = new ServiceCollection()
+          .AddTransient<IKafka, RdKafkaDriver>()
+          .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
+          .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
+          .AddTransient<IKafkaConsumer<ICustomerEvent>, KafkaConsumer<ICustomerEvent>>()
+          .AddTransient<IMessageTypeResolver, MessageResolver>()
+          .AddTransient<IRepositoryFactory, RepositoryFactory>()
+          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
+          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+          .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+          .AddSingleton<IConfigurationStore, GenericConfiguration>()
+          .BuildServiceProvider();
 
-            var bar = serviceProvider.GetService<IKafkaConsumer<ISubscriptionEvent>>();
-            bar.SetTopic("VSS.Interfaces.Events.MasterData.ISubscriptionEvent");
-            var t1=bar.StartProcessingAsync(new CancellationTokenSource());
+      var bar1 = serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
+      bar1.SetTopic("VSS.Interfaces.Events.MasterData.ICustomerEvent");
+      var t1 = bar1.StartProcessingAsync(new CancellationTokenSource());
 
-            var bar1 = serviceProvider.GetService<IKafkaConsumer<ISubscriptionEvent>>();
-            bar1.SetTopic("VSS.Interfaces.Events.MasterData.IProjectEvent");
-            var t2=bar1.StartProcessingAsync(new CancellationTokenSource());
+      var bar2 = serviceProvider.GetService<IKafkaConsumer<IProjectEvent>>();
+      bar2.SetTopic("VSS.Interfaces.Events.MasterData.IProjectEvent");
+      var t2 = bar2.StartProcessingAsync(new CancellationTokenSource());
+
+      var bar3 = serviceProvider.GetService<IKafkaConsumer<ISubscriptionEvent>>();
+      bar3.SetTopic("VSS.Interfaces.Events.MasterData.ISubscriptionEvent");
+      var t3 = bar3.StartProcessingAsync(new CancellationTokenSource());
 
 
-            var bar2 = serviceProvider.GetService<IKafkaConsumer<ISubscriptionEvent>>();
-            bar2.SetTopic("VSS.Interfaces.Events.MasterData.ICustomerEvent");
-            var t3=bar2.StartProcessingAsync(new CancellationTokenSource());
-
-            Task.WaitAll(t1,t2,t3);
-        }
+      Task.WaitAll(t1, t2, t3);
     }
+  }
 }
