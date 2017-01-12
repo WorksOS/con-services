@@ -5,13 +5,12 @@ using VSS.Project.Service.Interfaces;
 using VSS.Project.Service.Utils.Kafka;
 using KafkaConsumer;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using MasterDataConsumer;
 using VSS.Project.Service.Repositories;
 using VSS.Project.Data;
 using VSS.Customer.Data;
 using VSS.Project.Service.Utils;
 
-namespace VSS.UnifiedProductivity.Service.Datafeed.Tests
+namespace MasterDataConsumer.Tests
 {
 
   [TestClass]

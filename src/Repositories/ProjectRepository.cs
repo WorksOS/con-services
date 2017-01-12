@@ -196,7 +196,7 @@ namespace VSS.Project.Data
             @"UPDATE Project                
                 SET Name = @Name,
                   LastActionedUTC = @LastActionedUTC,
-                  EndDate = @ProjectEndDate, 
+                  EndDate = @EndDate, 
                   fk_ProjectTypeID = @ProjectType
                 WHERE ProjectUID = @ProjectUID";
           return Connection.Execute(update, project);
@@ -244,19 +244,21 @@ namespace VSS.Project.Data
 
     private int AssociateProjectCustomer(Models.CustomerProject customerProject, Models.CustomerProject existing)
     {
-      if (existing == null)
-      {
-        const string insert =
-          @"INSERT CustomerProject
-                (fk_ProjectUID, fk_CustomerUID, LegacyCustomerID, LastActionedUTC)
-              VALUES
-                (@ProjectUID, @CustomerUID, @LegacyCustomerID, @LastActionedUTC)";
+      const string insert =
+        @"INSERT CustomerProject
+              (fk_ProjectUID, fk_CustomerUID, LegacyCustomerID, LastActionedUTC)
+            VALUES
+              (@ProjectUID, @CustomerUID, @LegacyCustomerID, @LastActionedUTC)
+            ON DUPLICATE KEY UPDATE              
+              LastActionedUTC =
+                IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
+                    VALUES(LastActionedUTC), LastActionedUTC),
+              LegacyCustomerID =
+                IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
+                    VALUES(LegacyCustomerID), LegacyCustomerID)";
+      var rowCount = Connection.Execute(insert, customerProject);
+      return rowCount == 2 ? 1 : rowCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted
 
-        return Connection.Execute(insert, customerProject);
-      }
-
-      //      Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC={0}", customerProject.LastActionedUTC);
-      return 0;
     }
 
     private async Task<int> UpsertProjectGeofenceDetail(Models.ProjectGeofence projectGeofence, string eventType)
@@ -442,7 +444,7 @@ namespace VSS.Project.Data
                 LEFT JOIN Customer c ON c.CustomerUID = cp.fk_CustomerUID
                 LEFT JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE p.ProjectUID = @projectUid AND p.IsDeleted = 0",
+              WHERE p.ProjectUID = @projectUid",
             new { projectUid }
           ).FirstOrDefault();
 

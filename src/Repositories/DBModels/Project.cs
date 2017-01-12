@@ -43,6 +43,7 @@ namespace VSS.Project.Data.Models
       return otherProject.ProjectUID == this.ProjectUID
             && otherProject.LegacyProjectID == this.LegacyProjectID
             && otherProject.Name == this.Name
+            && otherProject.ProjectType == this.ProjectType
             && otherProject.ProjectTimeZone == this.ProjectTimeZone
             && otherProject.LandfillTimeZone == this.LandfillTimeZone
             && otherProject.StartDate == this.StartDate

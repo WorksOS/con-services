@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Project.Data;
 using VSS.Project.Data.Models;
 
-namespace Datafeed.Tests
+namespace MasterDataConsumer.Tests
 {
   [TestClass]
   public class ProjectEventsTests
