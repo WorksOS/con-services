@@ -87,10 +87,13 @@ namespace VSS.Customer.Data
 
       var existing = Connection.Query<Models.Customer>
         (@"SELECT 
-                CustomerUID, Name, fk_CustomerTypeID AS CustomerType, LastActionedUTC
+                CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC
               FROM Customer
               WHERE CustomerUID = @CustomerUid",
         new { CustomerUid = customer.CustomerUID }).FirstOrDefault();
+
+      if (existing != null && existing.IsDeleted == true)
+        return upsertedCount;
 
       if (eventType == "CreateCustomerEvent")
       {
@@ -122,16 +125,26 @@ namespace VSS.Customer.Data
 
         const string insert =
           @"INSERT Customer
-                (CustomerUID, Name, fk_CustomerTypeID, LastActionedUTC)
+                (CustomerUID, Name, fk_CustomerTypeID, IsDeleted, LastActionedUTC)
               VALUES
-                (@CustomerUID, @Name, @CustomerType, @LastActionedUTC)";
+                (@CustomerUID, @Name, @CustomerType, @IsDeleted, @LastActionedUTC)";
 
         return Connection.Execute(insert, customer);
       }
+      else if (existing.LastActionedUTC >= customer.LastActionedUTC)
+      {
+        // must be a later update was applied before the create arrived
+        // leave the more recent actionUTC alone
+        const string update =
+            @"UPDATE Customer                
+                SET fk_CustomerTypeID = @CustomerType
+                WHERE CustomerUID = @CustomerUID";
+        return Connection.Execute(update, customer);
+      }
 
-      //   Log.DebugFormat("CustomerRepository: can't create as already exists newActionedUTC={0}", customer.LastActionedUTC);
+        //   Log.DebugFormat("CustomerRepository: can't create as already exists newActionedUTC={0}", customer.LastActionedUTC);
 
-      return 0;
+        return 0;
     }
 
     private int UpdateCustomer(Models.Customer customer, Models.Customer existing)
@@ -153,9 +166,18 @@ namespace VSS.Customer.Data
       }
       else
       {
-        //         Log.DebugFormat("CustomerRepository: can't update as none existing newActionedUTC={0}",
+        customer.CustomerType = CustomerType.Customer; // need a default
+        const string insert =
+          @"INSERT Customer
+                (CustomerUID, Name, fk_CustomerTypeID, LastActionedUTC)
+              VALUES
+                (@CustomerUID, @Name, @CustomerType, @LastActionedUTC)";
+        return Connection.Execute(insert, customer);
+
+        //         Log.DebugFormat("CustomerRepository: update causes an insert as customer doesn't exist yet actionUTC={0}",
         //                customer.LastActionedUTC);
       }
+   
       return 0;
     }
 
@@ -165,11 +187,12 @@ namespace VSS.Customer.Data
       {
         if (customer.LastActionedUTC >= existing.LastActionedUTC)
         {
-          const string delete =
-            @"DELETE 
-                FROM Customer                
+          const string update =
+            @"UPDATE Customer                
+                SET IsDeleted = 1,
+                  LastActionedUTC = @LastActionedUTC                
                 WHERE CustomerUID = @CustomerUID";
-          return Connection.Execute(delete, customer);
+          return Connection.Execute(update, customer);
         }
 
         //          Log.DebugFormat("CustomerRepository: old delete event ignored currentActionedUTC={0} newActionedUTC={1}",
@@ -177,9 +200,19 @@ namespace VSS.Customer.Data
       }
       else
       {
+        customer.CustomerType = CustomerType.Customer; // need a default
+        customer.Name = "";
+        customer.IsDeleted = true;
+        const string insert =
+          @"INSERT Customer
+                (CustomerUID, Name, fk_CustomerTypeID, IsDeleted, LastActionedUTC)
+              VALUES
+                (@CustomerUID, @Name, @CustomerType, @IsDeleted, @LastActionedUTC)";
+        return Connection.Execute(insert, customer);
+
         //           Log.DebugFormat("CustomerRepository: can't delete as none existing newActionedUT={0}",
-        //                customer.LastActionedUTC);
-      }
+      //                customer.LastActionedUTC);
+    }
       return 0;
     }
 
@@ -188,10 +221,10 @@ namespace VSS.Customer.Data
       await PerhapsOpenConnection();
 
       var customer = Connection.Query<Models.Customer>
-          (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, c.LastActionedUTC 
+          (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, c.LastActionedUTC 
                 FROM Customer c 
-                  JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
-                WHERE cu.UserUID = @userUid",
+                JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
+                WHERE cu.UserUID = @userUid AND c.IsDeleted = 0",
             new { userUid = userUid.ToString() }).FirstOrDefault();
 
       PerhapsCloseConnection();
@@ -204,9 +237,9 @@ namespace VSS.Customer.Data
       await PerhapsOpenConnection();
 
       var customer = Connection.Query<Models.Customer>
-          (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, LastActionedUTC 
+          (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
                 FROM Customer 
-                WHERE CustomerUID = @customerUid",
+                WHERE CustomerUID = @customerUid AND IsDeleted = 0",
              new { customerUid = customerUid.ToString() }).FirstOrDefault();
 
       PerhapsCloseConnection();
@@ -235,7 +268,8 @@ namespace VSS.Customer.Data
         (@"SELECT 
                 UserUID, fk_CustomerUID AS CustomerUID, LastActionedUTC
               FROM CustomerUser
-              WHERE fk_CustomerUID = @customerUID AND UserUID = @userUID", new { customerUID = customerUser.CustomerUID, userUID = customerUser.UserUID }).FirstOrDefault();
+              WHERE fk_CustomerUID = @customerUID AND UserUID = @userUID", 
+          new { customerUID = customerUser.CustomerUID, userUID = customerUser.UserUID }).FirstOrDefault();
 
       if (eventType == "AssociateCustomerUserEvent")
       {
@@ -296,5 +330,34 @@ namespace VSS.Customer.Data
     }
 
 
+    public async Task<Models.Customer> GetCustomer_UnitTest(System.Guid customerUid)
+    {
+      await PerhapsOpenConnection();
+
+      var customer = Connection.Query<Models.Customer>
+          (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
+                FROM Customer 
+                WHERE CustomerUID = @customerUid",
+             new { customerUid = customerUid.ToString() }).FirstOrDefault();
+
+      PerhapsCloseConnection();
+
+      return customer;
+    }
+
+    public async Task<Models.CustomerUser> GetAssociatedCustomerbyUserUid_UnitTest(System.Guid userUid)
+    {
+      await PerhapsOpenConnection();
+
+      var customer = Connection.Query<Models.CustomerUser>
+          (@"SELECT fk_CustomerUID AS CustomerUID, UserUID, LastActionedUTC 
+                FROM CustomerUser
+                WHERE UserUID = @userUid",
+            new { userUid = userUid.ToString() }).FirstOrDefault();
+
+      PerhapsCloseConnection();
+
+      return customer;
+    }
   }
 }
