@@ -12,7 +12,7 @@ using VSS.Customer.Data;
 namespace RepositoryTests
 {
   [TestClass]
-  public class GeofencetRepositoryTests
+  public class GeofenceRepositoryTests
   {
     [TestInitialize]
     public void Init()
@@ -138,10 +138,111 @@ namespace RepositoryTests
       throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Update Geofence - happyPath
+    /// exists, just update whichever fields are allowed.
+    /// </summary>
+    [TestMethod]
+    public void UpdateGeofence_HappyPath()
+    {
+      throw new NotImplementedException();
+    }
 
-
+    /// <summary>
+    /// Create Geofence - invalidGeometry
+    ///   should fail
+    /// </summary>
+    [TestMethod]
+    public void UpdateGeofence_GeofenceDoesntExist()
+    {
+      throw new NotImplementedException();
+    }
 
     #endregion
+
+
+    #region AssociateGeofenceWithProject
+
+    /// <summary>
+    /// Associate Project Geofence - Happy Path
+    ///   project and Geofence added.
+    ///   Project legacyCustomerID updated and ActionUTC is later
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectWithGeofence_HappyPath()
+    {
+      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+      var customerUid = Guid.NewGuid();
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = now
+      };
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        CustomerUID = customerUid,
+        Description = "The Geofence Name",
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceType = "", // todo vss models needs a GeofenceType e.g. Landfill,
+        GeometryWKT = "",
+        //Boundary = ?? todo I think this comes in the CreateProjectEvent????
+        ActionUTC = now
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = customerUid,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 999,
+        RelationType = RelationType.Customer,
+        ActionUTC = now.AddDays(1)
+      };
+
+      var associateProjectGeofenceEvent = new AssociateProjectGeofence()
+      {
+        GeofenceUID = createGeofenceEvent.GeofenceUID,
+        ActionUTC = now.AddDays(1)
+      };
+
+
+      var customerContext = new CustomerRepository(new GenericConfiguration());
+      var projectContext = new ProjectRepository(new GenericConfiguration());
+
+      // todo
+      // var geofenceContext = new GeofenceRepository(new GenericConfiguration());
+
+      throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Associate Project Geofence - already exists
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectWithGeofence_AlreadyExists()
+    {
+      throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Dissociate Project Geofence - not needed?
+    /// </summary>
+    [TestMethod]
+    public void DissociateProjectWithGeofence_NotSupported()
+    {
+      throw new NotImplementedException();
+    }
+    #endregion
+
 
     #region private
     private CreateProjectEvent CopyModel(Project project)

@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS Customer (
   CustomerUID varchar(36) NOT NULL,  
   Name varchar(200) NOT NULL,
   fk_CustomerTypeID int(10) NOT NULL,
+  IsDeleted tinyint(4) DEFAULT 0,
   LastActionedUTC datetime(6) DEFAULT NULL,
   InsertUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   UpdateUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),

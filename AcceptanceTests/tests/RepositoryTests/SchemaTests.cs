@@ -19,7 +19,7 @@ namespace RepositoryTests
       const string tableName = "Customer";
       List<string> columnNames = new List<string>
           {
-            "ID", "CustomerUID", "Name" , "fk_CustomerTypeID" , "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ID", "CustomerUID", "Name", "fk_CustomerTypeID", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -64,7 +64,7 @@ namespace RepositoryTests
       const string tableName = "Subscription";
       List<string> columnNames = new List<string>
           {
-            "ID", "SubscriptionUID", "fk_CustomerUID", "fk_ServiceTypeID", "StartDate", "EndDate", "EffectiveDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ID", "SubscriptionUID", "fk_CustomerUID", "fk_ServiceTypeID", "StartDate", "EndDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -75,7 +75,7 @@ namespace RepositoryTests
       const string tableName = "ProjectSubscription";
       List<string> columnNames = new List<string>
           {
-            "fk_ProjectUID", "fk_SubscriptionUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "fk_ProjectUID", "fk_SubscriptionUID", "EffectiveDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }

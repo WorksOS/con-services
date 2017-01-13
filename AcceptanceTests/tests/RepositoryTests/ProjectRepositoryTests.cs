@@ -206,154 +206,6 @@ namespace RepositoryTests
     }
 
     /// <summary>
-    /// Associate Customer Project - Happy Path
-    ///   customer, CustomerProject and project added.
-    ///   CustomerProject legacyCustomerID updated and ActionUTC is later
-    /// </summary>
-    [TestMethod]
-    public void AssociateProjectWithCustomer_HappyPath()
-    {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
-
-      var createCustomerEvent = new CreateCustomerEvent()
-      {
-        CustomerUID = Guid.NewGuid(),
-        CustomerName = "The Project Name",
-        CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
-      };
-
-      var createProjectEvent = new CreateProjectEvent()
-      {
-        ProjectUID = Guid.NewGuid(),
-        ProjectID = 12343,
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = now
-      };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 1234,
-        RelationType = RelationType.Customer,
-        ActionUTC = now
-      };
-
-      var updateAssociateCustomerProjectEvent = new AssociateProjectCustomer()
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 999,
-        RelationType = RelationType.Customer,
-        ActionUTC = now.AddDays(1)
-      };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
-      g.Wait();
-      Assert.IsNull(g.Result, "Project shouldn't be there yet");
-
-      var s = projectContext.StoreEvent(createProjectEvent);
-      s.Wait();
-      Assert.AreEqual(1, s.Result, "Project event not written");
-
-      s = customerContext.StoreEvent(createCustomerEvent);
-      s.Wait();
-      Assert.AreEqual(1, s.Result, "Customer event not written");
-
-      s = projectContext.StoreEvent(associateCustomerProjectEvent);
-      s.Wait();
-      Assert.AreEqual(1, s.Result, "Project event not written");
-
-      s = projectContext.StoreEvent(updateAssociateCustomerProjectEvent);
-      s.Wait();
-      Assert.AreEqual(1, s.Result, "CustomerProject not updated");
-
-      Project project = CopyModel(createProjectEvent);
-      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
-      project.LegacyCustomerID = updateAssociateCustomerProjectEvent.LegacyCustomerID;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
-      g.Wait();
-      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
-      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
-    }
-
-    /// <summary>
-    /// Associate Customer Project - update not applied as it's late
-    ///   customer, CustomerProject and project added.
-    ///   CustomerProject legacyCustomerID updated but ActionUTC is earlier
-    /// </summary>
-    [TestMethod]
-    public void AssociateProjectWithCustomer_ChangeIsEarlier()
-    {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
-
-      var createCustomerEvent = new CreateCustomerEvent()
-      {
-        CustomerUID = Guid.NewGuid(),
-        CustomerName = "The Project Name",
-        CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
-      };
-
-      var createProjectEvent = new CreateProjectEvent()
-      {
-        ProjectUID = Guid.NewGuid(),
-        ProjectID = 12343,
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = now
-      };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 1234,
-        RelationType = RelationType.Customer,
-        ActionUTC = now
-      };
-
-      var updateAssociateCustomerProjectEvent = new AssociateProjectCustomer()
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 999,
-        RelationType = RelationType.Customer,
-        ActionUTC = now.AddDays(-1)
-      };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-
-      projectContext.StoreEvent(createProjectEvent).Wait();
-      customerContext.StoreEvent(createCustomerEvent).Wait();
-      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
-      projectContext.StoreEvent(updateAssociateCustomerProjectEvent).Wait();
-
-      Project project = CopyModel(createProjectEvent);
-      var g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
-      g.Wait();
-      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
-      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
-    }
-
-
-    /// <summary>
     /// Create Project - Project already exists
     ///   customer and CustomerProject relationship also added
     ///   project exists but is different.
@@ -857,19 +709,26 @@ namespace RepositoryTests
     }
     #endregion
 
-    #region geofence
+    #region AssociateProjectWithCustomer
 
     /// <summary>
-    /// Associate Project Geofence - Happy Path
-    ///   project and Geofence added.
-    ///   Project legacyCustomerID updated and ActionUTC is later
+    /// Associate Customer Project - Happy Path
+    ///   customer, CustomerProject and project added.
+    ///   CustomerProject legacyCustomerID updated and ActionUTC is later
     /// </summary>
     [TestMethod]
-    public void AssociateProjectWithGeofence_HappyPath()
+    public void AssociateProjectWithCustomer_HappyPath()
     {
       DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
-      var customerUid = Guid.NewGuid();
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Project Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = now
+      };
 
       var createProjectEvent = new CreateProjectEvent()
       {
@@ -884,60 +743,123 @@ namespace RepositoryTests
         ActionUTC = now
       };
 
-      var createGeofenceEvent = new CreateGeofenceEvent()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
       {
-        CustomerUID = customerUid,
-        Description = "The Geofence Name",
-        GeofenceUID = Guid.NewGuid(),
-        GeofenceType = "", // todo vss models needs a GeofenceType e.g. Landfill,
-        GeometryWKT = "",
-        //Boundary = ?? todo I think this comes in the CreateProjectEvent????
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
         ActionUTC = now
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var updateAssociateCustomerProjectEvent = new AssociateProjectCustomer()
       {
-        CustomerUID = customerUid,
+        CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 999,
         RelationType = RelationType.Customer,
         ActionUTC = now.AddDays(1)
       };
 
-      var associateProjectGeofenceEvent = new AssociateProjectGeofence()
+      var customerContext = new CustomerRepository(new GenericConfiguration());
+      var projectContext = new ProjectRepository(new GenericConfiguration());
+
+      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Project shouldn't be there yet");
+
+      var s = projectContext.StoreEvent(createProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not written");
+
+      s = customerContext.StoreEvent(createCustomerEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Customer event not written");
+
+      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not written");
+
+      s = projectContext.StoreEvent(updateAssociateCustomerProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "CustomerProject not updated");
+
+      Project project = CopyModel(createProjectEvent);
+      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
+      project.LegacyCustomerID = updateAssociateCustomerProjectEvent.LegacyCustomerID;
+      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
+    }
+
+    /// <summary>
+    /// Associate Customer Project - update not applied as it's late
+    ///   customer, CustomerProject and project added.
+    ///   CustomerProject legacyCustomerID updated but ActionUTC is earlier
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectWithCustomer_ChangeIsEarlier()
+    {
+      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
       {
-        GeofenceUID = createGeofenceEvent.GeofenceUID,
-        ActionUTC = now.AddDays(1)
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Project Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = now
       };
 
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = now
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = now
+      };
+
+      var updateAssociateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 999,
+        RelationType = RelationType.Customer,
+        ActionUTC = now.AddDays(-1)
+      };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
       var projectContext = new ProjectRepository(new GenericConfiguration());
 
-      // todo
-      // var geofenceContext = new GeofenceRepository(new GenericConfiguration());
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+      projectContext.StoreEvent(updateAssociateCustomerProjectEvent).Wait();
 
-      throw new NotImplementedException();
+      Project project = CopyModel(createProjectEvent);
+      var g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
     }
 
-    /// <summary>
-    /// Associate Project Geofence - already exists
-    /// </summary>
-    [TestMethod]
-    public void AssociateProjectWithGeofence_AlreadyExists()
-    {
-      throw new NotImplementedException();
-    }
-
-    /// <summary>
-    /// Dissociate Project Geofence - not needed?
-    /// </summary>
-    [TestMethod]
-    public void DissociateProjectWithGeofence_NotSupported()
-    {
-      throw new NotImplementedException();
-    }
     #endregion
+
 
     #region private
     private CreateProjectEvent CopyModel(Project project)

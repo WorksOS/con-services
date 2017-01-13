@@ -8,6 +8,7 @@ namespace VSS.Customer.Data.Models
     public string Name { get; set; }
     public CustomerType CustomerType { get; set; }
     public string CustomerUID { get; set; }
+    public bool IsDeleted { get; set; }
     public DateTime LastActionedUTC { get; set; }
 
     public override bool Equals(object obj)
@@ -16,7 +17,8 @@ namespace VSS.Customer.Data.Models
       if (otherProject == null) return false;
       return otherProject.CustomerUID == this.CustomerUID           
             && otherProject.Name == this.Name
-            && otherProject.CustomerType == this.CustomerType            
+            && otherProject.CustomerType == this.CustomerType  
+            && otherProject.IsDeleted == this.IsDeleted          
             && otherProject.LastActionedUTC == this.LastActionedUTC
             ;
     }
