@@ -1,7 +1,7 @@
 version: '2'
 services:
   webapi:
-    build: ./Artifacts/WebApi
+    build: ./Artifacts/ProjectWebApi
     env_file:
      - docker-compose-local.env
     volumes:
@@ -10,15 +10,6 @@ services:
      - "3001:80"
     depends_on:
       - schema
-  datafeed:
-    build: ./Artifacts/DatafeedService
-    env_file:
-     - docker-compose-local.env
-    volumes:
-      - ./Artifacts/Logs:/app/logs
-    depends_on:
-      - schema
-      - kafka
   schema:
     build: ./Database
     env_file:
@@ -57,5 +48,4 @@ services:
       - ./AcceptanceTests/deploy/testresults:/app/testresults
     depends_on:
       - webapi
-      - datafeed
       - kafka

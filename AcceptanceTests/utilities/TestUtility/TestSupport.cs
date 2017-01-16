@@ -23,13 +23,14 @@ namespace TestUtility
         public string AssetUid { get; set; }
         public DateTime FirstEventDate { get; set; }
         public DateTime LastEventDate { get; set; }
-       // public AssetConfigData AssetConfig { get; set; }
+    // public AssetConfigData AssetConfig { get; set; }
+    public Guid ProjectUid { get; set; }
+    public CreateProjectEvent CreateProjectEvt { get; set; }
+    #endregion
 
-        #endregion
+    #region Private Properties
 
-        #region Private Properties
-
-        private readonly Random rndNumber = new Random();
+    private readonly Random rndNumber = new Random();
         private readonly object syncLock = new object();
         private const char SEPERATOR = '|';
         private readonly TestConfig appConfig = new TestConfig();
@@ -43,7 +44,8 @@ namespace TestUtility
         {
             SetFirstEventDate();
             SetAssetUid();
-        }
+            SetProjectUid();
+          }
 
         /// <summary>
         /// Set up the first event date for the events to go in
@@ -61,11 +63,18 @@ namespace TestUtility
             AssetUid = Guid.NewGuid().ToString();
         }
 
-        /// <summary>
-        /// Inject all events from the test into kafka
-        /// </summary>
-        /// <param name="eventArray">all of the events</param>
-        public void InjectEventsIntoKafka(string[] eventArray)
+    ///// <summary>
+    ///// Set the project UID to a random GUID
+    ///// </summary>
+    public void SetProjectUid()
+    {
+      ProjectUid = Guid.NewGuid();
+    }
+    /// <summary>
+    /// Inject all events from the test into kafka
+    /// </summary>
+    /// <param name="eventArray">all of the events</param>
+    public void InjectEventsIntoKafka(string[] eventArray)
         {
             msg.DisplayEventsToConsole(eventArray);
             var allEvents = ConvertArrayToList<MachineEvents>(eventArray);
@@ -85,293 +94,322 @@ namespace TestUtility
             WriteAListOfMachineEventsToMySqlDatabase(allEvents, isSameAsset);
         }
 
-        //        /// <summary>
-        //        /// Compare the actual results of cycle details to the expected results. The cycle details are a list of cycle data for a date range.
-        //        /// </summary>
-        //        /// <param name="expectedResultsArray">string array of expected results for cycle details</param>
-        //        /// <param name="dayFrom">number of days offset from the start date</param>
-        //        /// <param name="dayEnd">number of days offset from the end date</param>
-        //        public void CompareActualAssetCycleDetailsWithExpectedResults(string[] expectedResultsArray, int dayFrom = -2, int dayEnd = 2 )
-        //        {            
-        //            var expectedCycles = ConvertArrayToList<Cycle>(expectedResultsArray);                                     //convert array to list of cycle objects
-        //            var baseUri = GetBaseUri();
-        //            var uri = string.Format(baseUri + "{0}/cycles?startDate={1}&endDate={2}", AssetUid, FirstEventDate.Date.AddDays(dayFrom).ToString("yyyy-MM-dd"), LastEventDate.Date.AddDays(dayEnd).ToString("yyyy-MM-dd"));
-        //            var restClient = new RestClientUtil();
-        //            var response = restClient.DoHttpRequest(uri, "GET", "application/json", null, HttpStatusCode.OK);
-        //            var assetCycleDetails = JsonConvert.DeserializeObject<AssetCycleDetails>(response);
-        //            msg.DisplayResults("Expected cycles :" + JsonConvert.SerializeObject(expectedCycles),
-        //                               "Actual from WebApi: " + JsonConvert.SerializeObject( assetCycleDetails));
+    /// <summary>
+    /// Create the project via the web api. 
+    /// </summary>
+    /// <param name="name">project name</param>
+    /// <param name="type">project type</param>
+    /// <param name="startDate">project start date</param>
+    /// <param name="endDate">project end date</param>
+    /// <param name="timezone">project time zone</param>
+    /// <param name="actionUtc">timestamp of the create action</param>
+    public void CreateProjectViaWebApi(string name, ProjectType type, DateTime startDate, DateTime endDate, string timezone, DateTime actionUtc)
+    {
+      CreateProjectEvt = new CreateProjectEvent
+      {
+        ProjectID = 1,
+        ProjectUID = ProjectUid,
+        ProjectName = name,
+        ProjectType = type,
+        ProjectBoundary = null,//not used
+        ProjectStartDate = startDate,
+        ProjectEndDate = endDate,
+        ProjectTimezone = timezone,
+        ActionUTC = actionUtc
+      };
+      var configJson = JsonConvert.SerializeObject(CreateProjectEvt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var restClient = new RestClientUtil();
+      var response = restClient.DoHttpRequest(GetBaseUri(), "POST", "application/json", configJson, HttpStatusCode.OK);
+      Console.WriteLine("Create project response:" + response);
+    }
 
-        //            CollectionAssert.AreEqual(expectedCycles,  assetCycleDetails.cycles);            
-        //        }
+    //        /// <summary>
+    //        /// Compare the actual results of cycle details to the expected results. The cycle details are a list of cycle data for a date range.
+    //        /// </summary>
+    //        /// <param name="expectedResultsArray">string array of expected results for cycle details</param>
+    //        /// <param name="dayFrom">number of days offset from the start date</param>
+    //        /// <param name="dayEnd">number of days offset from the end date</param>
+    //        public void CompareActualAssetCycleDetailsWithExpectedResults(string[] expectedResultsArray, int dayFrom = -2, int dayEnd = 2 )
+    //        {            
+    //            var expectedCycles = ConvertArrayToList<Cycle>(expectedResultsArray);                                     //convert array to list of cycle objects
+    //            var baseUri = GetBaseUri();
+    //            var uri = string.Format(baseUri + "{0}/cycles?startDate={1}&endDate={2}", AssetUid, FirstEventDate.Date.AddDays(dayFrom).ToString("yyyy-MM-dd"), LastEventDate.Date.AddDays(dayEnd).ToString("yyyy-MM-dd"));
+    //            var restClient = new RestClientUtil();
+    //            var response = restClient.DoHttpRequest(uri, "GET", "application/json", null, HttpStatusCode.OK);
+    //            var assetCycleDetails = JsonConvert.DeserializeObject<AssetCycleDetails>(response);
+    //            msg.DisplayResults("Expected cycles :" + JsonConvert.SerializeObject(expectedCycles),
+    //                               "Actual from WebApi: " + JsonConvert.SerializeObject( assetCycleDetails));
 
-        //        /// <summary>
-        //        /// Compare the actual results of cycle details to the expected results. The cycle details are a list of cycle data for a date range.
-        //        /// This test ensures that the summary returned by the endpoint with cycle details is correct.
-        //        /// </summary>
-        //        /// <param name="expectedResultsArray">string array of expected results for asset summary</param>
-        //        /// <param name="dayFrom">number of days offset from the start date</param>
-        //        /// <param name="dayEnd">number of days offset from the end date</param>
-        //        public void CompareActualAssetDetailsFromCyclesEndpointWithExpectedResults(string[] expectedResultsArray, int dayFrom = -2, int dayEnd = 2 )
-        //        {
-        //            var expectedSummary = ConvertArrayToObject<AssetCycleData>(expectedResultsArray);                                     //convert array to list of cycle objects
-        //            var baseUri = GetBaseUri();
-        //            var uri = string.Format(baseUri + "{0}/cycles?startDate={1}&endDate={2}", AssetUid, FirstEventDate.Date.AddDays(dayFrom).ToString("yyyy-MM-dd"), LastEventDate.Date.AddDays(dayEnd).ToString("yyyy-MM-dd"));
-        //            var restClient = new RestClientUtil();
-        //            var response = restClient.DoHttpRequest(uri, "GET", "application/json", null, HttpStatusCode.OK);
-        //            var assetCycleDetails = JsonConvert.DeserializeObject<AssetCycleDetails>(response);
-        //            msg.DisplayResults("Expected cycles :" + JsonConvert.SerializeObject(expectedSummary),
-        //                               "Actual from WebApi: " + JsonConvert.SerializeObject(assetCycleDetails));
+    //            CollectionAssert.AreEqual(expectedCycles,  assetCycleDetails.cycles);            
+    //        }
 
-        //            Assert.AreEqual(expectedSummary, assetCycleDetails.asset);
-        //        }
+    //        /// <summary>
+    //        /// Compare the actual results of cycle details to the expected results. The cycle details are a list of cycle data for a date range.
+    //        /// This test ensures that the summary returned by the endpoint with cycle details is correct.
+    //        /// </summary>
+    //        /// <param name="expectedResultsArray">string array of expected results for asset summary</param>
+    //        /// <param name="dayFrom">number of days offset from the start date</param>
+    //        /// <param name="dayEnd">number of days offset from the end date</param>
+    //        public void CompareActualAssetDetailsFromCyclesEndpointWithExpectedResults(string[] expectedResultsArray, int dayFrom = -2, int dayEnd = 2 )
+    //        {
+    //            var expectedSummary = ConvertArrayToObject<AssetCycleData>(expectedResultsArray);                                     //convert array to list of cycle objects
+    //            var baseUri = GetBaseUri();
+    //            var uri = string.Format(baseUri + "{0}/cycles?startDate={1}&endDate={2}", AssetUid, FirstEventDate.Date.AddDays(dayFrom).ToString("yyyy-MM-dd"), LastEventDate.Date.AddDays(dayEnd).ToString("yyyy-MM-dd"));
+    //            var restClient = new RestClientUtil();
+    //            var response = restClient.DoHttpRequest(uri, "GET", "application/json", null, HttpStatusCode.OK);
+    //            var assetCycleDetails = JsonConvert.DeserializeObject<AssetCycleDetails>(response);
+    //            msg.DisplayResults("Expected cycles :" + JsonConvert.SerializeObject(expectedSummary),
+    //                               "Actual from WebApi: " + JsonConvert.SerializeObject(assetCycleDetails));
 
-        //        /// <summary>
-        //        /// Compare the Asset in the string array to the one in a list of assets. The asset that is being compared is searched for in the list.  
-        //        /// </summary>
-        //        /// <param name="eventAssetCycles">Asset cycle summary </param>
-        //        public void CompareActualAssetCyclesSummaryWithExpected(string[] eventAssetCycles)
-        //        {
-        //            var expectedAssetSummary = ConvertArrayToObject<AssetCycleData>(eventAssetCycles);
-        //            var baseUri = GetBaseUri();
-        //            var uri = string.Format(baseUri + "cycles?startDate={0}&endDate={1}", FirstEventDate.Date.AddDays(-2).ToString("yyyy-MM-dd"),LastEventDate.Date.AddDays(2).ToString("yyyy-MM-dd"));
-        //            var restClient = new RestClientUtil();
-        //            var response = restClient.DoHttpRequest(uri, "GET", "application/json", null, HttpStatusCode.OK);
-        //            var assetCycleSummaryDetails = JsonConvert.DeserializeObject<AssetCycleSummaryResult>(response);
-        //            if (assetCycleSummaryDetails.assetCycles.Any(x => x.assetUid == AssetUid))
-        //            {
-        //                var actualAssetSummary = assetCycleSummaryDetails.assetCycles.First(x => x.assetUid == AssetUid);
-        //                msg.DisplayResults("Expected : " + JsonConvert.SerializeObject(expectedAssetSummary),
-        //                                   "Actual   : " + JsonConvert.SerializeObject( actualAssetSummary));
-        //                Assert.AreEqual(expectedAssetSummary, actualAssetSummary);
-        //            }
-        //        }
+    //            Assert.AreEqual(expectedSummary, assetCycleDetails.asset);
+    //        }
 
-        //        /// <summary>
-        //        /// Verify the asset count for in the web api 
-        //        /// </summary>
-        //        public void VerifyAssetCountInWebApi(string productFamily, int expectedAssetCount)
-        //        {
-        //            var baseUri = GetBaseUri();
-        //            var uri = string.Format(baseUri + "assetcounts?{0}",productFamily);
-        //            var restClient = new RestClientUtil();
-        //            var response = restClient.DoHttpRequest(uri, "GET", "application/json", null, HttpStatusCode.OK);
-        //            var actualAssetCountList = JsonConvert.DeserializeObject<AssetCountResult>(response);
-        //            if (actualAssetCountList.countData.Count == 1)
-        //            {
-        //                msg.DisplayResults(expectedAssetCount + " assets", actualAssetCountList.countData[0].Count + " assets");
-        //                Assert.AreEqual(expectedAssetCount, actualAssetCountList.countData[0].Count, "Expected Product family does not match actual");
-        //                return;
-        //            }
-        //            if (actualAssetCountList.countData.Count > 1)
-        //            {
-        //                var totalCount = actualAssetCountList.countData.Sum(countData => countData.Count);
-        //                msg.DisplayResults(expectedAssetCount + " assets", totalCount + " assets");
-        //                Assert.AreEqual(expectedAssetCount, totalCount, "All expected Product family counts do not match actual count total");
-        //            }
-        //            Assert.Fail("The expected count is " + expectedAssetCount + " and the acutal is " + actualAssetCountList.countData.Count);
-        //        }
+    //        /// <summary>
+    //        /// Compare the Asset in the string array to the one in a list of assets. The asset that is being compared is searched for in the list.  
+    //        /// </summary>
+    //        /// <param name="eventAssetCycles">Asset cycle summary </param>
+    //        public void CompareActualAssetCyclesSummaryWithExpected(string[] eventAssetCycles)
+    //        {
+    //            var expectedAssetSummary = ConvertArrayToObject<AssetCycleData>(eventAssetCycles);
+    //            var baseUri = GetBaseUri();
+    //            var uri = string.Format(baseUri + "cycles?startDate={0}&endDate={1}", FirstEventDate.Date.AddDays(-2).ToString("yyyy-MM-dd"),LastEventDate.Date.AddDays(2).ToString("yyyy-MM-dd"));
+    //            var restClient = new RestClientUtil();
+    //            var response = restClient.DoHttpRequest(uri, "GET", "application/json", null, HttpStatusCode.OK);
+    //            var assetCycleSummaryDetails = JsonConvert.DeserializeObject<AssetCycleSummaryResult>(response);
+    //            if (assetCycleSummaryDetails.assetCycles.Any(x => x.assetUid == AssetUid))
+    //            {
+    //                var actualAssetSummary = assetCycleSummaryDetails.assetCycles.First(x => x.assetUid == AssetUid);
+    //                msg.DisplayResults("Expected : " + JsonConvert.SerializeObject(expectedAssetSummary),
+    //                                   "Actual   : " + JsonConvert.SerializeObject( actualAssetSummary));
+    //                Assert.AreEqual(expectedAssetSummary, actualAssetSummary);
+    //            }
+    //        }
 
-        //        #region Create Asset Config methods
-        //        /// <summary>
-        //        /// Create the asset config via the web api. This always creates the config in the past.
-        //        /// </summary>
-        //        /// <param name="loadSwitch">load switch number</param>
-        //        /// <param name="isLoad">true or false depending on what you want a load to be</param>
-        //        /// <param name="dumpSwitch">dump switch number</param>
-        //        /// <param name="isDump">true or false depending on what you want a dump to be</param>
-        //        /// <param name="assetConfigDate"></param>
-        //        /// <param name="volumePerCycleCubicMeter"></param>
-        //        /// <param name="targetCyclesPerDay"></param>
-        //        public void CreateAssetConfigViaWebApi(int loadSwitch, bool isLoad, int dumpSwitch, bool isDump, DateTime? assetConfigDate = null, int volumePerCycleCubicMeter = 100, int targetCyclesPerDay = 10  )
-        //        {
-        //            if (assetConfigDate == null)
-        //            {
-        //                assetConfigDate = FirstEventDate.AddDays(-5);
-        //            }
-        //            AssetConfig = new AssetConfigData
-        //            {
-        //                assetIdentifier = AssetUid,
-        //                startDate = assetConfigDate,
-        //                loadSwitchNumber = loadSwitch,
-        //                loadSwitchOpen = isLoad,
-        //                dumpSwitchNumber = dumpSwitch,
-        //                dumpSwitchOpen = isDump,
-        //                targetCyclesPerDay = targetCyclesPerDay,
-        //                volumePerCycleCubicMeter = volumePerCycleCubicMeter,
-        //#pragma warning disable 612
-        //                allowPastConfig = true
-        //#pragma warning restore 612
-        //            };
-        //            var configJson = JsonConvert.SerializeObject(AssetConfig, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        //            var baseUri = GetBaseUri();
-        //            var uri = baseUri + string.Format("asset/{0}", AssetUid); 
-        //            var restClient = new RestClientUtil();
-        //            var response = restClient.DoHttpRequest(uri, "POST", "application/json", configJson, HttpStatusCode.OK);
-        //            Console.WriteLine("Create config response:" + response);
-        //       }
+    //        /// <summary>
+    //        /// Verify the asset count for in the web api 
+    //        /// </summary>
+    //        public void VerifyAssetCountInWebApi(string productFamily, int expectedAssetCount)
+    //        {
+    //            var baseUri = GetBaseUri();
+    //            var uri = string.Format(baseUri + "assetcounts?{0}",productFamily);
+    //            var restClient = new RestClientUtil();
+    //            var response = restClient.DoHttpRequest(uri, "GET", "application/json", null, HttpStatusCode.OK);
+    //            var actualAssetCountList = JsonConvert.DeserializeObject<AssetCountResult>(response);
+    //            if (actualAssetCountList.countData.Count == 1)
+    //            {
+    //                msg.DisplayResults(expectedAssetCount + " assets", actualAssetCountList.countData[0].Count + " assets");
+    //                Assert.AreEqual(expectedAssetCount, actualAssetCountList.countData[0].Count, "Expected Product family does not match actual");
+    //                return;
+    //            }
+    //            if (actualAssetCountList.countData.Count > 1)
+    //            {
+    //                var totalCount = actualAssetCountList.countData.Sum(countData => countData.Count);
+    //                msg.DisplayResults(expectedAssetCount + " assets", totalCount + " assets");
+    //                Assert.AreEqual(expectedAssetCount, totalCount, "All expected Product family counts do not match actual count total");
+    //            }
+    //            Assert.Fail("The expected count is " + expectedAssetCount + " and the acutal is " + actualAssetCountList.countData.Count);
+    //        }
 
-        //        /// <summary>
-        //        /// Create the asset config via the web api. This always creates the config in the past.
-        //        /// </summary>
-        //        /// <param name="loadSwitch">load switch number</param>
-        //        /// <param name="isLoad">true or false depending on what you want a load to be</param>
-        //        /// <param name="assetConfigDate"></param>
-        //        /// <param name="volumePerCycleCubicMeter"></param>
-        //        /// <param name="targetCyclesPerDay"></param>         
-        //        public void CreateAssetConfigViaWebApiLoadOnly(int loadSwitch, bool isLoad, DateTime? assetConfigDate = null, int volumePerCycleCubicMeter = 100, int targetCyclesPerDay = 10)
-        //        {
-        //            if (assetConfigDate == null)
-        //            {
-        //                assetConfigDate = FirstEventDate.AddDays(-5);
-        //            }
-        //            AssetConfig = new AssetConfigData
-        //            {
-        //                assetIdentifier = AssetUid,
-        //                startDate = assetConfigDate,
-        //                loadSwitchNumber = loadSwitch,
-        //                loadSwitchOpen = isLoad,
-        //                targetCyclesPerDay = targetCyclesPerDay,
-        //                volumePerCycleCubicMeter = volumePerCycleCubicMeter,
-        //#pragma warning disable 612
-        //                allowPastConfig = true
-        //#pragma warning restore 612
-        //            };
-        //            var configJson = JsonConvert.SerializeObject(AssetConfig, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        //            var baseUri = GetBaseUri();
-        //            var uri = baseUri + string.Format("asset/{0}", AssetUid); 
-        //            var restClient = new RestClientUtil();
-        //            var response = restClient.DoHttpRequest(uri, "POST", "application/json", configJson, HttpStatusCode.OK);
-        //            Console.WriteLine("Create config response:" + response);
-        //        }
+    //        #region Create Asset Config methods
+    //        /// <summary>
+    //        /// Create the asset config via the web api. This always creates the config in the past.
+    //        /// </summary>
+    //        /// <param name="loadSwitch">load switch number</param>
+    //        /// <param name="isLoad">true or false depending on what you want a load to be</param>
+    //        /// <param name="dumpSwitch">dump switch number</param>
+    //        /// <param name="isDump">true or false depending on what you want a dump to be</param>
+    //        /// <param name="assetConfigDate"></param>
+    //        /// <param name="volumePerCycleCubicMeter"></param>
+    //        /// <param name="targetCyclesPerDay"></param>
+    //        public void CreateAssetConfigViaWebApi(int loadSwitch, bool isLoad, int dumpSwitch, bool isDump, DateTime? assetConfigDate = null, int volumePerCycleCubicMeter = 100, int targetCyclesPerDay = 10  )
+    //        {
+    //            if (assetConfigDate == null)
+    //            {
+    //                assetConfigDate = FirstEventDate.AddDays(-5);
+    //            }
+    //            AssetConfig = new AssetConfigData
+    //            {
+    //                assetIdentifier = AssetUid,
+    //                startDate = assetConfigDate,
+    //                loadSwitchNumber = loadSwitch,
+    //                loadSwitchOpen = isLoad,
+    //                dumpSwitchNumber = dumpSwitch,
+    //                dumpSwitchOpen = isDump,
+    //                targetCyclesPerDay = targetCyclesPerDay,
+    //                volumePerCycleCubicMeter = volumePerCycleCubicMeter,
+    //#pragma warning disable 612
+    //                allowPastConfig = true
+    //#pragma warning restore 612
+    //            };
+    //            var configJson = JsonConvert.SerializeObject(AssetConfig, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+    //            var baseUri = GetBaseUri();
+    //            var uri = baseUri + string.Format("asset/{0}", AssetUid); 
+    //            var restClient = new RestClientUtil();
+    //            var response = restClient.DoHttpRequest(uri, "POST", "application/json", configJson, HttpStatusCode.OK);
+    //            Console.WriteLine("Create config response:" + response);
+    //       }
 
-        //        /// <summary>
-        //        /// Create the asset config via the web api. This always creates the config in the past.
-        //        /// </summary>
-        //        /// <param name="dumpSwitch">dump switch number</param>
-        //        /// <param name="isDump">true or false depending on what you want a dump to be</param>
-        //        /// <param name="assetConfigDate"></param>
-        //        /// <param name="volumePerCycleCubicMeter"></param>
-        //        /// <param name="targetCyclesPerDay"></param>          
-        //        public void CreateAssetConfigViaWebApiDumpOnly(int dumpSwitch, bool isDump, DateTime? assetConfigDate = null, int volumePerCycleCubicMeter = 100, int targetCyclesPerDay = 10  )
-        //        {
-        //            if (assetConfigDate == null)
-        //            {
-        //                assetConfigDate = FirstEventDate.AddDays(-5);
-        //            }
-        //            AssetConfig = new AssetConfigData
-        //            {
-        //                assetIdentifier = AssetUid,
-        //                startDate = assetConfigDate,
-        //                dumpSwitchNumber = dumpSwitch,
-        //                dumpSwitchOpen = isDump,
-        //                targetCyclesPerDay = targetCyclesPerDay,
-        //                volumePerCycleCubicMeter = volumePerCycleCubicMeter,
-        //#pragma warning disable 612
-        //                allowPastConfig = true
-        //#pragma warning restore 612
-        //            };
-        //            var configJson = JsonConvert.SerializeObject(AssetConfig, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-        //            var baseUri = GetBaseUri();
-        //            var uri = baseUri + string.Format("asset/{0}", AssetUid); 
-        //            var restClient = new RestClientUtil();
-        //            var response = restClient.DoHttpRequest(uri, "POST", "application/json", configJson, HttpStatusCode.OK);
-        //            Console.WriteLine("Create config response:" + response);
-        //        }
+    //        /// <summary>
+    //        /// Create the asset config via the web api. This always creates the config in the past.
+    //        /// </summary>
+    //        /// <param name="loadSwitch">load switch number</param>
+    //        /// <param name="isLoad">true or false depending on what you want a load to be</param>
+    //        /// <param name="assetConfigDate"></param>
+    //        /// <param name="volumePerCycleCubicMeter"></param>
+    //        /// <param name="targetCyclesPerDay"></param>         
+    //        public void CreateAssetConfigViaWebApiLoadOnly(int loadSwitch, bool isLoad, DateTime? assetConfigDate = null, int volumePerCycleCubicMeter = 100, int targetCyclesPerDay = 10)
+    //        {
+    //            if (assetConfigDate == null)
+    //            {
+    //                assetConfigDate = FirstEventDate.AddDays(-5);
+    //            }
+    //            AssetConfig = new AssetConfigData
+    //            {
+    //                assetIdentifier = AssetUid,
+    //                startDate = assetConfigDate,
+    //                loadSwitchNumber = loadSwitch,
+    //                loadSwitchOpen = isLoad,
+    //                targetCyclesPerDay = targetCyclesPerDay,
+    //                volumePerCycleCubicMeter = volumePerCycleCubicMeter,
+    //#pragma warning disable 612
+    //                allowPastConfig = true
+    //#pragma warning restore 612
+    //            };
+    //            var configJson = JsonConvert.SerializeObject(AssetConfig, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+    //            var baseUri = GetBaseUri();
+    //            var uri = baseUri + string.Format("asset/{0}", AssetUid); 
+    //            var restClient = new RestClientUtil();
+    //            var response = restClient.DoHttpRequest(uri, "POST", "application/json", configJson, HttpStatusCode.OK);
+    //            Console.WriteLine("Create config response:" + response);
+    //        }
 
-        //        /// <summary>
-        //        /// Inject the MockAssetConfig
-        //        /// </summary>
-        //        /// <param name="loadSwitch">Load switch number</param>
-        //        /// <param name="isLoad">True if the switch state on then it is a Load. If set to false and switch state is off then it is a load</param>
-        //        /// <param name="dumpSwitch">Dump switch number</param>
-        //        /// <param name="isDump">True if the switch state on then it is a Dump. If set to false and switch state is off then it is a dump</param>
-        //        public void CreateMockAssetConfig(int loadSwitch, bool isLoad, int dumpSwitch, bool isDump)
-        //        {
-        //            AssetConfig = new AssetConfigData
-        //            {
-        //              assetIdentifier = AssetUid,
-        //              startDate = FirstEventDate,
-        //              loadSwitchNumber = loadSwitch,
-        //              loadSwitchOpen = isLoad,
-        //              dumpSwitchNumber = dumpSwitch,
-        //              dumpSwitchOpen = isDump,
-        //              targetCyclesPerDay = 1000,
-        //              volumePerCycleCubicMeter = 100,
-        //#pragma warning disable 612
-        //              allowPastConfig = true
-        //#pragma warning restore 612
-        //            };
-        //            var startKeyDate = KeyDate(FirstEventDate);
-        //            var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"AssetConfiguration"} 
-        //                        (AssetUID,StartKeyDate,LoadSwitchNumber,LoadSwitchWorkStartState,DumpSwitchNumber,DumpSwitchWorkStartState,TargetCyclesPerDay,VolumePerCycleCubicMeter) VALUES
-        //                        ('{AssetUid}',{startKeyDate},{AssetConfig.loadSwitchNumber},{AssetConfig.loadSwitchOpen},{AssetConfig.dumpSwitchNumber},{AssetConfig.dumpSwitchOpen},{AssetConfig.targetCyclesPerDay},{AssetConfig.volumePerCycleCubicMeter});";
-        //            var mysqlHelper = new MySqlHelper();
-        //            mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);            
-        //        }
+    //        /// <summary>
+    //        /// Create the asset config via the web api. This always creates the config in the past.
+    //        /// </summary>
+    //        /// <param name="dumpSwitch">dump switch number</param>
+    //        /// <param name="isDump">true or false depending on what you want a dump to be</param>
+    //        /// <param name="assetConfigDate"></param>
+    //        /// <param name="volumePerCycleCubicMeter"></param>
+    //        /// <param name="targetCyclesPerDay"></param>          
+    //        public void CreateAssetConfigViaWebApiDumpOnly(int dumpSwitch, bool isDump, DateTime? assetConfigDate = null, int volumePerCycleCubicMeter = 100, int targetCyclesPerDay = 10  )
+    //        {
+    //            if (assetConfigDate == null)
+    //            {
+    //                assetConfigDate = FirstEventDate.AddDays(-5);
+    //            }
+    //            AssetConfig = new AssetConfigData
+    //            {
+    //                assetIdentifier = AssetUid,
+    //                startDate = assetConfigDate,
+    //                dumpSwitchNumber = dumpSwitch,
+    //                dumpSwitchOpen = isDump,
+    //                targetCyclesPerDay = targetCyclesPerDay,
+    //                volumePerCycleCubicMeter = volumePerCycleCubicMeter,
+    //#pragma warning disable 612
+    //                allowPastConfig = true
+    //#pragma warning restore 612
+    //            };
+    //            var configJson = JsonConvert.SerializeObject(AssetConfig, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+    //            var baseUri = GetBaseUri();
+    //            var uri = baseUri + string.Format("asset/{0}", AssetUid); 
+    //            var restClient = new RestClientUtil();
+    //            var response = restClient.DoHttpRequest(uri, "POST", "application/json", configJson, HttpStatusCode.OK);
+    //            Console.WriteLine("Create config response:" + response);
+    //        }
 
-        //        /// <summary>
-        //        /// Inject the MockAssetConfig
-        //        /// </summary>
-        //        /// <param name="loadSwitch">Load switch number</param>
-        //        /// <param name="isLoad">True if the switch state on then it is a Load. If set to false and switch state is off then it is a load</param>
-        //        public void CreateMockAssetConfigLoadOnly(int loadSwitch, bool isLoad)
-        //        {
-        //            AssetConfig = new AssetConfigData
-        //            {
-        //                assetIdentifier = AssetUid,
-        //                startDate = FirstEventDate,
-        //                loadSwitchNumber = loadSwitch,
-        //                loadSwitchOpen = isLoad,
-        //                targetCyclesPerDay = 1000,
-        //                volumePerCycleCubicMeter = 100,
-        //#pragma warning disable 612
-        //                allowPastConfig = true
-        //#pragma warning restore 612
-        //            };
-        //            var startKeyDate = KeyDate(FirstEventDate);
-        //            var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"AssetConfiguration"} 
-        //                        (AssetUID,StartKeyDate,LoadSwitchNumber,LoadSwitchWorkStartState,TargetCyclesPerDay,VolumePerCycleCubicMeter) VALUES
-        //                        ('{AssetUid}',{startKeyDate},{AssetConfig.loadSwitchNumber},{AssetConfig.loadSwitchOpen},{AssetConfig.targetCyclesPerDay},{AssetConfig.volumePerCycleCubicMeter});";
+    //        /// <summary>
+    //        /// Inject the MockAssetConfig
+    //        /// </summary>
+    //        /// <param name="loadSwitch">Load switch number</param>
+    //        /// <param name="isLoad">True if the switch state on then it is a Load. If set to false and switch state is off then it is a load</param>
+    //        /// <param name="dumpSwitch">Dump switch number</param>
+    //        /// <param name="isDump">True if the switch state on then it is a Dump. If set to false and switch state is off then it is a dump</param>
+    //        public void CreateMockAssetConfig(int loadSwitch, bool isLoad, int dumpSwitch, bool isDump)
+    //        {
+    //            AssetConfig = new AssetConfigData
+    //            {
+    //              assetIdentifier = AssetUid,
+    //              startDate = FirstEventDate,
+    //              loadSwitchNumber = loadSwitch,
+    //              loadSwitchOpen = isLoad,
+    //              dumpSwitchNumber = dumpSwitch,
+    //              dumpSwitchOpen = isDump,
+    //              targetCyclesPerDay = 1000,
+    //              volumePerCycleCubicMeter = 100,
+    //#pragma warning disable 612
+    //              allowPastConfig = true
+    //#pragma warning restore 612
+    //            };
+    //            var startKeyDate = KeyDate(FirstEventDate);
+    //            var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"AssetConfiguration"} 
+    //                        (AssetUID,StartKeyDate,LoadSwitchNumber,LoadSwitchWorkStartState,DumpSwitchNumber,DumpSwitchWorkStartState,TargetCyclesPerDay,VolumePerCycleCubicMeter) VALUES
+    //                        ('{AssetUid}',{startKeyDate},{AssetConfig.loadSwitchNumber},{AssetConfig.loadSwitchOpen},{AssetConfig.dumpSwitchNumber},{AssetConfig.dumpSwitchOpen},{AssetConfig.targetCyclesPerDay},{AssetConfig.volumePerCycleCubicMeter});";
+    //            var mysqlHelper = new MySqlHelper();
+    //            mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);            
+    //        }
 
-        //            var mysqlHelper = new MySqlHelper();
-        //            mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);            
-        //        }
+    //        /// <summary>
+    //        /// Inject the MockAssetConfig
+    //        /// </summary>
+    //        /// <param name="loadSwitch">Load switch number</param>
+    //        /// <param name="isLoad">True if the switch state on then it is a Load. If set to false and switch state is off then it is a load</param>
+    //        public void CreateMockAssetConfigLoadOnly(int loadSwitch, bool isLoad)
+    //        {
+    //            AssetConfig = new AssetConfigData
+    //            {
+    //                assetIdentifier = AssetUid,
+    //                startDate = FirstEventDate,
+    //                loadSwitchNumber = loadSwitch,
+    //                loadSwitchOpen = isLoad,
+    //                targetCyclesPerDay = 1000,
+    //                volumePerCycleCubicMeter = 100,
+    //#pragma warning disable 612
+    //                allowPastConfig = true
+    //#pragma warning restore 612
+    //            };
+    //            var startKeyDate = KeyDate(FirstEventDate);
+    //            var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"AssetConfiguration"} 
+    //                        (AssetUID,StartKeyDate,LoadSwitchNumber,LoadSwitchWorkStartState,TargetCyclesPerDay,VolumePerCycleCubicMeter) VALUES
+    //                        ('{AssetUid}',{startKeyDate},{AssetConfig.loadSwitchNumber},{AssetConfig.loadSwitchOpen},{AssetConfig.targetCyclesPerDay},{AssetConfig.volumePerCycleCubicMeter});";
 
-        //        /// <summary>
-        //        /// Inject the MockAssetConfig
-        //        /// </summary>
-        //        /// <param name="dumpSwitch">Dump switch number</param>
-        //        /// <param name="isDump">True if the switch state on then it is a Dump. If set to false and switch state is off then it is a dump</param>
-        //        public void CreateMockAssetConfigDumpOnly(int dumpSwitch, bool isDump)
-        //        {
-        //            AssetConfig = new AssetConfigData
-        //            {
-        //                assetIdentifier = AssetUid,
-        //                startDate = FirstEventDate,
-        //                dumpSwitchNumber = dumpSwitch,
-        //                dumpSwitchOpen = isDump,
-        //                targetCyclesPerDay = 1000,
-        //                volumePerCycleCubicMeter = 100,
-        //#pragma warning disable 612
-        //                allowPastConfig = true
-        //#pragma warning restore 612
-        //            };
-        //            var startKeyDate = KeyDate(FirstEventDate);
-        //            var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"AssetConfiguration"} 
-        //                        (AssetUID,StartKeyDate,DumpSwitchNumber,DumpSwitchWorkStartState,TargetCyclesPerDay,VolumePerCycleCubicMeter) VALUES
-        //                        ('{AssetUid}',{startKeyDate},{AssetConfig.dumpSwitchNumber},{AssetConfig.dumpSwitchOpen},{AssetConfig.targetCyclesPerDay},{AssetConfig.volumePerCycleCubicMeter});";
+    //            var mysqlHelper = new MySqlHelper();
+    //            mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);            
+    //        }
 
-        //            var mysqlHelper = new MySqlHelper();
-        //            mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);            
-        //        }
+    //        /// <summary>
+    //        /// Inject the MockAssetConfig
+    //        /// </summary>
+    //        /// <param name="dumpSwitch">Dump switch number</param>
+    //        /// <param name="isDump">True if the switch state on then it is a Dump. If set to false and switch state is off then it is a dump</param>
+    //        public void CreateMockAssetConfigDumpOnly(int dumpSwitch, bool isDump)
+    //        {
+    //            AssetConfig = new AssetConfigData
+    //            {
+    //                assetIdentifier = AssetUid,
+    //                startDate = FirstEventDate,
+    //                dumpSwitchNumber = dumpSwitch,
+    //                dumpSwitchOpen = isDump,
+    //                targetCyclesPerDay = 1000,
+    //                volumePerCycleCubicMeter = 100,
+    //#pragma warning disable 612
+    //                allowPastConfig = true
+    //#pragma warning restore 612
+    //            };
+    //            var startKeyDate = KeyDate(FirstEventDate);
+    //            var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"AssetConfiguration"} 
+    //                        (AssetUID,StartKeyDate,DumpSwitchNumber,DumpSwitchWorkStartState,TargetCyclesPerDay,VolumePerCycleCubicMeter) VALUES
+    //                        ('{AssetUid}',{startKeyDate},{AssetConfig.dumpSwitchNumber},{AssetConfig.dumpSwitchOpen},{AssetConfig.targetCyclesPerDay},{AssetConfig.volumePerCycleCubicMeter});";
+
+    //            var mysqlHelper = new MySqlHelper();
+    //            mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);            
+    //        }
 
 
-        /// <summary>
-        /// Check if the test is being debugged in VS. Set to different endpoind
-        /// </summary>
-        /// <returns></returns>
-        public string GetBaseUri()
+    /// <summary>
+    /// Check if the test is being debugged in VS. Set to different endpoind
+    /// </summary>
+    /// <returns></returns>
+    public string GetBaseUri()
         {
             var baseUri = appConfig.webApiUri;
             if (Debugger.IsAttached)

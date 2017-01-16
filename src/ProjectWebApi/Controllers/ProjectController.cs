@@ -31,14 +31,15 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
             : base()
         {
             _producer = producer;
+            _producer.InitProducer(store);
             _projectService = projectRepo;
             kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                              store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
         }
 
-        [Route("v1")]
+        [Route("api/v1/project")]
         [HttpGet]
-        public Dictionary<long, ProjectDescriptor> CreateProject()
+        public Dictionary<long, ProjectDescriptor> GetProjects()
         {
             //Secure with project list
             if (!(this.User as ProjectsPrincipal).AvailableProjects.Any())
@@ -57,7 +58,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         /// <remarks>Create new project</remarks>
         /// <response code="200">Ok</response>
         /// <response code="400">Bad request</response>
-        [Route("v1")]
+        [Route("api/v1/project")]
         [HttpPost]
         public void CreateProject([FromBody] CreateProjectEvent project)
         {
@@ -80,7 +81,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         /// <remarks>Updates existing project</remarks>
         /// <response code="200">Ok</response>
         /// <response code="400">Bad request</response>
-        [Route("v1")]
+        [Route("api/v1/project")]
         [HttpPut]
         public void UpdateProject([FromBody] UpdateProjectEvent project)
         {
@@ -107,7 +108,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         /// <response code="200">Ok</response>
         /// <response code="400">Bad request</response>
 
-        [Route("v1")]
+        [Route("api/v1/project")]
         [HttpDelete]
         public void DeleteProject(Guid projectUID, DateTime actionUTC)
         {
@@ -139,7 +140,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         /// <response code="200">Ok</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        [Route("v2/AssociateCustomer")]
+        [Route("api/v1/project/AssociateCustomer")]
         public void AssociateCustomerProject([FromBody] AssociateProjectCustomer customerProject)
         {
             customerProject.ReceivedUTC = DateTime.UtcNow;
@@ -162,7 +163,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         /// <response code="200">Ok</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        [Route("v1/DissociateCustomer")]
+        [Route("api/v1/project/DissociateCustomer")]
         public void DissociateCustomerProject([FromBody] DissociateProjectCustomer customerProject)
         {
             customerProject.ReceivedUTC = DateTime.UtcNow;
@@ -184,7 +185,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         /// <response code="200">Ok</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
-        [Route("v1/AssociateGeofence")]
+        [Route("api/v1/project/AssociateGeofence")]
         public void AssociateGeofenceProject([FromBody] AssociateProjectGeofence geofenceProject)
         {
             geofenceProject.ReceivedUTC = DateTime.UtcNow;
