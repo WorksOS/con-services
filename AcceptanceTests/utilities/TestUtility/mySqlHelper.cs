@@ -83,28 +83,29 @@ namespace TestUtility
             }
         }
 
-        /// <summary>
-        /// Verify the number of expected records in the table is there for the AssetUid
-        /// </summary>
-        /// <param name="table">Database table name</param>
-        /// <param name="expectedEventCount">Number of expected events</param>
-        /// <param name="AssetUid"></param>
-        public void VerifyTestResultDatabaseRecordCount(string table, int expectedEventCount,string AssetUid)
-        {
-            var sqlQuery = @"SELECT COUNT(*) FROM `{0}`.{1} WHERE AssetUID='{2}'";
-            var result = GetDatabaseCountForEvents(string.Format(sqlQuery, appConfig.dbSchema, table, AssetUid),expectedEventCount);
-            msg.DisplayResults(expectedEventCount + " records", result + " records");
-            Assert.AreEqual(expectedEventCount, result," Number of expected events do not match actual events in database");
-        }
+    /// <summary>
+    /// Verify the number of expected records in the table is there for the given uid
+    /// </summary>
+    /// <param name="table">Database table name</param>
+    /// <param name="column">Database column name for the uid</param>
+    /// <param name="expectedEventCount">Number of expected events</param>
+    /// <param name="uid">The uid to use</param>
+    public void VerifyTestResultDatabaseRecordCount(string table, string column, int expectedEventCount, Guid uid)
+    {
+      var sqlQuery = @"SELECT COUNT(*) FROM `{0}`.{1} WHERE {2}='{3}'";
+      var result = GetDatabaseCountForEvents(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid), expectedEventCount);
+      msg.DisplayResults(expectedEventCount + " records", result + " records");
+      Assert.AreEqual(expectedEventCount, result, " Number of expected events do not match actual events in database");
+    }
 
-        /// <summary>
-        /// Verify the number of expected records in the table is there for the AssetUid
-        /// </summary>
-        /// <param name="table">Database table name</param>
-        /// <param name="fields"></param>
-        /// <param name="expectedData"></param>
-        /// <param name="AssetUid"></param>
-        public void VerifyTestResultDatabaseFieldsAreExpected(string table, string fields, string expectedData,string AssetUid)
+    /// <summary>
+    /// Verify the number of expected records in the table is there for the AssetUid
+    /// </summary>
+    /// <param name="table">Database table name</param>
+    /// <param name="fields"></param>
+    /// <param name="expectedData"></param>
+    /// <param name="AssetUid"></param>
+    public void VerifyTestResultDatabaseFieldsAreExpected(string table, string fields, string expectedData,string AssetUid)
         {
             var sqlQuery = @"SELECT {3} FROM `{0}`.{1} WHERE AssetUID='{2}'";
             var allActualData = GetDatabaseFieldsForQeury(string.Format(sqlQuery, appConfig.dbSchema, table, AssetUid, fields), fields);

@@ -10,7 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using VSS.Project.Data;
+using VSS.Project.Service.Interfaces;
 using VSS.Project.Service.Utils;
+using VSS.Project.Service.Utils.Kafka;
 using VSS.Project.Service.WebApiModels.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
@@ -18,6 +20,7 @@ namespace ProjectWebApi
 {
     public class Startup
     {
+        private bool isDevEnv = false;
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -25,7 +28,8 @@ namespace ProjectWebApi
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-            if (env.IsEnvironment("Development"))
+            isDevEnv = env.IsEnvironment("Development");
+            if (isDevEnv)
             {
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
                 builder.AddApplicationInsightsSettings(developerMode: true);
@@ -44,13 +48,14 @@ namespace ProjectWebApi
             services.AddCors(options =>
             {
                 options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
-                  .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization", "X-VisionLink-CustomerUid")
+                  .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization", "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
                   .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
             });
 
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
+            services.AddTransient<IKafka, RdKafkaDriver>();
             services.AddSingleton<IConfigurationStore, GenericConfiguration>();
             services.AddMvc();
             //Configure swagger
@@ -60,14 +65,13 @@ namespace ProjectWebApi
             {
                 options.SingleApiVersion(new Info
                 {
-                    Version = "v1",
-                    Title = "Unified Productivity API",
-                    Description = "API for cycle and payload data",
-                    TermsOfService = "None"
+                  Version = "v1",
+                  Title = "Project Master Data API",
+                  Description = "API for project data",
+                  TermsOfService = "None"
                 });
-                //string path = isDevEnv ? "bin/Debug/netcoreapp1.0/" : string.Empty;
-                string path = string.Empty;
-                options.IncludeXmlComments(path + "WebApi.xml");
+                string path = isDevEnv ? "bin/Debug/netcoreapp1.1/" : string.Empty;
+                options.IncludeXmlComments(path + "ProjectWebApi.xml");
                 options.IgnoreObsoleteProperties();
                 options.DescribeAllEnumsAsStrings();
             });
@@ -82,7 +86,7 @@ namespace ProjectWebApi
 
             app.UseExceptionTrap();
             //Enable TID here
-            app.UseTIDAuthentication();
+            //app.UseTIDAuthentication();
             app.UseCors("VSS");
 
             app.UseApplicationInsightsRequestTelemetry();
@@ -90,6 +94,9 @@ namespace ProjectWebApi
             app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseMvc();
-        }
+
+            app.UseSwagger();
+            app.UseSwaggerUi();
+    }
     }
 }

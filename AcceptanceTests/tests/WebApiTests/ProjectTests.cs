@@ -1,96 +1,140 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests
 {
-    [TestClass]
-    public class ProjectTests
+  [TestClass]
+  public class ProjectTests
+  {
+    [TestMethod]
+    public void Create_Project_All_Ok()
     {
-        //private const string PRODFAM = "&productFamily=";
+      var msg = new Msg();
+      msg.Title("projects 1", "Create a project");
+      var mysql = new MySqlHelper();
 
-
-        //[TestMethod]
-        //public void Asset_Count_More_Than_10_Assets_LoadOnlyConfig()
-        //{
-        //    var msg = new Msg(); 
-        //    msg.Title("Asset count 1","Asset count more than 10 assets. Load only asset config");
-
-        //    var assetType = Guid.NewGuid().ToString();  // Random asset type
-            
-        //    var eventArray = new[] {                                                     
-        //    "| EventType        | DayOffset | Timestamp | AssetName | SerialNumber | Make | Model | IconId | AssetType  |",
-        //    "| CreateAssetEvent | 0         | 03:00:00  | ASSETCNT1 | ASSET1       | CAT  | D1E   | 21     | " + assetType + "|",
-        //    "| CreateAssetEvent | 0         | 03:01:00  | ASSETCNT1 | ASSET2       | CAT  | D2E   | 22     | " + assetType + "|",
-        //    "| CreateAssetEvent | 0         | 03:05:00  | ASSETCNT1 | ASSET3       | CAT  | D3E   | 23     | " + assetType + "|",
-        //    "| CreateAssetEvent | 0         | 03:09:00  | ASSETCNT1 | ASSET4       | CAT  | D4E   | 24     | " + assetType + "|",
-        //    "| CreateAssetEvent | 0         | 03:15:00  | ASSETCNT1 | ASSET5       | CAT  | D5E   | 25     | " + assetType + "|",
-        //    "| CreateAssetEvent | 0         | 03:20:00  | ASSETCNT1 | ASSET6       | CAT  | D6E   | 26     | " + assetType + "|",
-        //    "| CreateAssetEvent | 0         | 03:30:00  | ASSETCNT1 | ASSET7       | CAT  | D7E   | 27     | " + assetType + "|",
-        //    "| CreateAssetEvent | 0         | 03:35:00  | ASSETCNT1 | ASSET8       | CAT  | D8E   | 28     | " + assetType + "|",
-        //    "| CreateAssetEvent | 0         | 03:40:00  | ASSETCNT1 | ASSET9       | CAT  | D9E   | 29     | " + assetType + "|",
-        //    "| CreateAssetEvent | 0         | 03:45:00  | ASSETCNT1 | ASSET10      | CAT  | E1E   | 30     | " + assetType + "|"
-        //    };
-        //    var testSupport = new TestSupport();
-        //    testSupport.InjectEventsIntoMySqlDatabase(eventArray,false);  // Creates a new asset with different asset id for event event.
-        //    var allProductFamilies = PRODFAM + assetType;
-        //    testSupport.VerifyAssetCountInWebApi(allProductFamilies, 10);
-        //}
-
-        //[TestMethod]
-        //public void Asset_Count_For_Three_Product_families_LoadOnlyConfig()
-        //{
-        //    var msg = new Msg(); 
-        //    msg.Title("Asset count 2","Asset count for five product families.");
-
-        //    var assetType1 = Guid.NewGuid().ToString();              
-        //    var eventArray = new[] {                                                     
-        //    "| EventType        | DayOffset | Timestamp | AssetName | SerialNumber | Make | Model | IconId | AssetType  |",
-        //    "| CreateAssetEvent | 0         | 03:00:00  | ASSETCNT2 | ASSET1       | CAT  | D1E   | 21     | " + assetType1 + "|",
-        //    "| CreateAssetEvent | 0         | 03:01:00  | ASSETCNT2 | ASSET2       | CAT  | D2E   | 22     | " + assetType1 + "|"
-        //    };
-        //    var testSupport = new TestSupport();
-        //    testSupport.InjectEventsIntoMySqlDatabase(eventArray,false);  
-
-        //    var assetType2 = Guid.NewGuid().ToString();      
-        //    eventArray = new[] {                                                     
-        //    "| EventType        | DayOffset | Timestamp | AssetName | SerialNumber | Make | Model | IconId | AssetType  |",
-        //    "| CreateAssetEvent | 0         | 03:00:00  | ASSETCNT2 | ASSET3       | CAT  | D1E   | 21     | " + assetType2 + "|",
-        //    "| CreateAssetEvent | 0         | 03:01:00  | ASSETCNT2 | ASSET4       | CAT  | D2E   | 22     | " + assetType2 + "|"
-        //    };
-        //    testSupport.InjectEventsIntoMySqlDatabase(eventArray,false);  
-
-        //    var assetType3 = Guid.NewGuid().ToString();      
-        //    eventArray = new[] {                                                     
-        //    "| EventType        | DayOffset | Timestamp | AssetName | SerialNumber | Make | Model | IconId | AssetType  |",
-        //    "| CreateAssetEvent | 0         | 03:00:00  | ASSETCNT2 | ASSET5       | CAT  | D1E   | 21     | " + assetType3 + "|",
-        //    "| CreateAssetEvent | 0         | 03:01:00  | ASSETCNT2 | ASSET6       | CAT  | D2E   | 22     | " + assetType3 + "|"
-        //    };
-        //    testSupport.InjectEventsIntoMySqlDatabase(eventArray,false);  
-
-        //    var assetType4 = Guid.NewGuid().ToString();      
-        //    eventArray = new[] {                                                     
-        //    "| EventType        | DayOffset | Timestamp | AssetName | SerialNumber | Make | Model | IconId | AssetType  |",
-        //    "| CreateAssetEvent | 0         | 03:00:00  | ASSETCNT2 | ASSET7       | CAT  | D1E   | 21     | " + assetType4 + "|",
-        //    "| CreateAssetEvent | 0         | 03:01:00  | ASSETCNT2 | ASSET8       | CAT  | D2E   | 22     | " + assetType4 + "|"
-        //    };
-        //    testSupport.InjectEventsIntoMySqlDatabase(eventArray,false); 
-
-        //    var assetType5 = Guid.NewGuid().ToString();      
-        //    eventArray = new[] {                                                     
-        //    "| EventType        | DayOffset | Timestamp | AssetName | SerialNumber | Make | Model | IconId | AssetType  |",
-        //    "| CreateAssetEvent | 0         | 03:00:00  | ASSETCNT2 | ASSET9       | CAT  | D1E   | 21     | " + assetType5 + "|",
-        //    "| CreateAssetEvent | 0         | 03:01:00  | ASSETCNT2 | ASSET10      | CAT  | D2E   | 22     | " + assetType5 + "|"
-        //    };
-        //    testSupport.InjectEventsIntoMySqlDatabase(eventArray,false);
-
-        //    var allProductFamilies = PRODFAM + assetType1 + 
-        //                             PRODFAM + assetType2 + 
-        //                             PRODFAM + assetType3 + 
-        //                             PRODFAM + assetType4 + 
-        //                             PRODFAM + assetType5;
-
-        //    testSupport.VerifyAssetCountInWebApi(allProductFamilies, 10);
-        //}
+      var testSupport = new TestSupport();
+      testSupport.CreateProjectViaWebApi("project 1", ProjectType.Standard, testSupport.FirstEventDate, testSupport.FirstEventDate.AddMonths(3), "New Zealand Standard Time", DateTime.UtcNow);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, testSupport.ProjectUid);             // Verify the result in the database      
+      //TODO:
+      //Need a kafka consumer
+      //Add method to TestSupport to consume events similat to WriteAListOfMachineEventsToKafka
+      //Add method to TestSupport like InjectEventsIntoKafka for waiting and consuming
+      //Wrap all this in a method to verify expected events from kafka
+      //UPDATE of TODO: full integration will use project kafka consumer to write to another DB which can then be checked for record
     }
+
+    [TestMethod]
+    public void Create_Project_Twice()
+    {
+
+
+    }
+
+    [TestMethod]
+    public void Create_Project_Bad_Data()
+    {
+
+
+    }
+
+    [TestMethod]
+    public void Update_Project_After_Create()
+    {
+
+    }
+
+    [TestMethod]
+    public void Update_Project_Before_Create()
+    {
+
+    }
+
+
+    [TestMethod]
+    public void Update_Project_Bad_Data()
+    {
+
+    }
+
+    [TestMethod]
+    public void Delete_Project_After_Create()
+    {
+
+    }
+
+    [TestMethod]
+    public void Delete_Project_Before_Create()
+    {
+
+    }
+
+
+    [TestMethod]
+    public void Delete_Project_Bad_Data()
+    {
+
+    }
+
+    [TestMethod]
+    public void Associate_Customer_Project_After_Create()
+    {
+
+    }
+
+    [TestMethod]
+    public void Associate_Customer_Project_Before_Create()
+    {
+
+    }
+
+
+    [TestMethod]
+    public void Associate_Customer_Project_Bad_Data()
+    {
+
+    }
+
+    [TestMethod]
+    public void Dissociate_Customer_Project_After_Associate()
+    {
+
+    }
+
+    [TestMethod]
+    public void Dissociate_Customer_Project_Before_Associate()
+    {
+      //project exists but not associated
+    }
+
+
+    [TestMethod]
+    public void Dissociate_Customer_Project_Bad_Data()
+    {
+      //invalid guids
+      //project doesn't exist
+    }
+
+    [TestMethod]
+    public void Associate_Geofence_Project_After_Create()
+    {
+
+    }
+
+    [TestMethod]
+    public void Associate_Geofence_Project_Before_Create()
+    {
+
+    }
+
+
+    [TestMethod]
+    public void Associate_Geofence_Project_Bad_Data()
+    {
+
+    }
+
+  }
 }
