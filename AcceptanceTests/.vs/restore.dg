@@ -1,6 +1,5 @@
-#:C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\AcceptanceTests\tests\IntegrationTests\IntegrationTests.xproj
-C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\AcceptanceTests\tests\IntegrationTests\IntegrationTests.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\AcceptanceTests\utilities\TestUtility\TestUtility.xproj
-C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\AcceptanceTests\utilities\TestUtility\TestUtility.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\Repositories\Repositories.xproj
+#:C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\AcceptanceTests\tests\RepositoryTests\RepositoryTests.xproj
+C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\AcceptanceTests\tests\RepositoryTests\RepositoryTests.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\Repositories\Repositories.xproj
 C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
 C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj
 C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj

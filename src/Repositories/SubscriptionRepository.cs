@@ -52,9 +52,18 @@ namespace VSS.Project.Service.Repositories
         var subscriptionEvent = (UpdateProjectSubscriptionEvent)evt;
         var subscription = new VSS.Subscription.Data.Models.Subscription();
         subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+
+        // this is dangerous. I suppose if current logic is chnanged to MOVE a servicePlan for rental customers
+        // i.e. from one to the next customer, then this may be possible.
+        //   in that scenario, what should be the relavant StartDate, EndDate and EffectiveDate? (not of concern here)
         subscription.CustomerUID = subscriptionEvent.CustomerUID.HasValue ? subscriptionEvent.CustomerUID.Value.ToString() : null;
-        subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
+
+        // should not be able to change a serviceType!!!
+        // subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
         subscription.StartDate = subscriptionEvent.StartDate ?? DateTime.MinValue;
+        // todo update allows a future endDate but create does not, is this an error?
+        // also, for both create and update for start and end dates these are calendar days
+        //    in the assets timezone, but the create checks for UTC time....
         subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
         subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
         upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateProjectSubscriptionEvent");
@@ -116,7 +125,7 @@ namespace VSS.Project.Service.Repositories
 
       var existing = Connection.Query<VSS.Subscription.Data.Models.Subscription>
         (@"SELECT 
-                SubscriptionUID, CustomerUID, StartDate, EndDate, fk_ServiceTypeID AS ServiceTypeID, LastActionedUTC 
+                SubscriptionUID, fk_CustomerUID AS CustomerUID, StartDate, EndDate, fk_ServiceTypeID AS ServiceTypeID, LastActionedUTC 
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUID",
           new { subscriptionUID = subscription.SubscriptionUID }).FirstOrDefault();
@@ -144,7 +153,7 @@ namespace VSS.Project.Service.Repositories
       {
         const string insert =
           @"INSERT Subscription
-                (SubscriptionUID, CustomerUID, StartDate, EndDate, fk_ServiceTypeID, LastActionedUTC)
+                (SubscriptionUID, fk_CustomerUID, StartDate, EndDate, fk_ServiceTypeID, LastActionedUTC)
               VALUES
                 (@SubscriptionUID, @CustomerUID, @StartDate, @EndDate, @ServiceTypeID, @LastActionedUTC)";
         return Connection.Execute(insert, subscription);
@@ -155,6 +164,7 @@ namespace VSS.Project.Service.Repositories
 
     private async Task<int> UpdateProjectSubscription(VSS.Subscription.Data.Models.Subscription subscription, VSS.Subscription.Data.Models.Subscription existing)
     {
+      // todo this code allows customerUID and serviceType to be updated - is this intentional?
       if (existing != null)
       {
         if (subscription.LastActionedUTC >= existing.LastActionedUTC)
@@ -166,11 +176,13 @@ namespace VSS.Project.Service.Repositories
             subscription.StartDate = existing.StartDate;
           if (subscription.EndDate == DateTime.MinValue)
             subscription.EndDate = existing.EndDate;
+          if (subscription.ServiceTypeID == 0)
+            subscription.ServiceTypeID = existing.ServiceTypeID;
 
           const string update =
             @"UPDATE Subscription                
                   SET SubscriptionUID = @SubscriptionUID,
-                      CustomerUID = @CustomerUID,
+                      fk_CustomerUID = @CustomerUID,
                       StartDate=@StartDate, 
                       EndDate=@EndDate, 
                       fk_ServiceTypeID=@ServiceTypeID,
@@ -260,7 +272,7 @@ namespace VSS.Project.Service.Repositories
 
       var subscription = Connection.Query<VSS.Subscription.Data.Models.Subscription>
         (@"SELECT 
-                SubscriptionUID, CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
+                SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUid"
           , new { subscriptionUid }
@@ -271,19 +283,44 @@ namespace VSS.Project.Service.Repositories
       return subscription;
     }
 
-    public async Task<IEnumerable<Subscription.Data.Models.Subscription>> GetSubscriptions()
+    // todo this must be internal for unit testing?
+    public async Task<IEnumerable<Subscription.Data.Models.Subscription>> GetSubscriptions_UnitTest(string subscriptionUid)
     {
       await PerhapsOpenConnection();
 
       var subscriptions = Connection.Query<VSS.Subscription.Data.Models.Subscription>
         (@"SELECT 
-                SubscriptionUID, CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
-              FROM Subscription"
+                SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
+              FROM Subscription
+              WHERE SubscriptionUID = @subscriptionUid"
+          , new { subscriptionUid }
          );
 
       PerhapsCloseConnection();
 
       return subscriptions;
+    }
+
+    public async Task<IEnumerable<Subscription.Data.Models.ProjectSubscription>> GetProjectSubscriptions_UnitTest(string subscriptionUid)
+    {
+      int upsertedCount = 0;
+
+      await PerhapsOpenConnection();
+
+      //    Log.DebugFormat("SubscriptionRepository: Upserting eventType={0} ProjectUid={1}, SubscriptionUid={2}",
+      //     eventType, projectSubscription.ProjectUID, projectSubscription.SubscriptionUID);
+
+      var projectSubscriptions = Connection.Query<VSS.Subscription.Data.Models.ProjectSubscription>
+          (@"SELECT 
+                fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
+              FROM ProjectSubscription
+              WHERE fk_SubscriptionUID = @subscriptionUID"
+            , new { subscriptionUid }
+          );
+
+      PerhapsCloseConnection();
+
+      return projectSubscriptions;
     }
 
 

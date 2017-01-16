@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.Project.Service.Repositories;
 using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Project.Data;
-using VSS.Project.Data.Models;
 using VSS.Customer.Data;
+using VSS.Geofence.Data;
+using VSS.Geofence.Data.Models;
 
 namespace RepositoryTests
 {
@@ -25,119 +26,81 @@ namespace RepositoryTests
     #region Geofence
    
     /// <summary>
-    /// Create Geofence - Happy path i.e. 
-    ///   customer, project, custProject exists, geofence doesn't exist.
+    /// Create Geofence - Happy path 
+    ///   geofence doesn't exist.
     /// </summary>
     [TestMethod]
     public void CreateGeofence_HappyPath()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
-
-      var createCustomerEvent = new CreateCustomerEvent()
-      {
-        CustomerUID = Guid.NewGuid(),
-        CustomerName = "The Project Name",
-        CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
-      };
-
-      var createProjectEvent = new CreateProjectEvent()
-      {
-        ProjectUID = Guid.NewGuid(),
-        ProjectID = 12343,
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = now
-      };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 1234,
-        RelationType = RelationType.Customer,
-        ActionUTC = now
-      };
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        Description = "The Geofence Name",
         GeofenceUID = Guid.NewGuid(),
-        GeofenceType = "", // todo need VSS.VisionLink.Interfaces.Events.MasterData.Models GeofenceType
-        GeometryWKT = "",
-        //Boundary = ?? todo I think this comes in the CreateProjectEvent????
-        ActionUTC = now
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
+      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
 
-      // todo there isn't yet a geofence repo
-      //var geofenceContext = new GeofenceRepository(new GenericConfiguration());
+      var s = geofenceContext.StoreEvent(createGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Unable to store geofence");
 
-      throw new NotImplementedException();
-    }
-
-    /// <summary>
-    /// Create GeoFence - Happy path but out of order
-    ///   same as happy path but inserted out of order
-    /// </summary>
-    [TestMethod]
-    public void CreateGeofence_HappyPathButOutOfOrder()
-    {
-      throw new NotImplementedException();
-    }
-
-
-    /// <summary>
-    /// Create Geofence - RelationShips not setup i.e. 
-    ///   customer, project and CustomerProject relationship NOT added
-    ///   geofence doesn't exist already.
-    ///   insert Geofence
-    /// </summary>
-    [TestMethod]
-    public void CreateGeofence_HappyPath_NoCustomer()
-    {
-      throw new NotImplementedException();
+      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      g.Wait();
+      var projectGeofences = g.Result.ToList();
+      Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
+      Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
     }
 
     /// <summary>
     /// Create Geofenced - Already exists
     ///   geofence exists already.
-    ///   ignore
     /// </summary>
     [TestMethod]
     public void CreateGeofence_AlreadyExists()
     {
-      throw new NotImplementedException();
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
+
+      geofenceContext.StoreEvent(createGeofenceEvent).Wait();
+      var s = geofenceContext.StoreEvent(createGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Shouldn't store duplicate, but this is how it is implementd");
+
+      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      g.Wait();
+      var projectGeofences = g.Result.ToList();
+      Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
+      Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
     }
 
-    /// <summary>
-    /// Create Geofenced - happyPath good Geometry
-    ///   should insert
-    /// </summary>
-    [TestMethod]
-    public void CreateGeofence_HappyPath_GoodGeometry()
-    {
-      throw new NotImplementedException();
-    }
-
-    /// <summary>
-    /// Create Geofenced - invalidGeometry
-    ///   should fail
-    /// </summary>
-    [TestMethod]
-    public void CreateGeofence_InvalidGeometry()
-    {
-      throw new NotImplementedException();
-    }
-
+    
     /// <summary>
     /// Update Geofence - happyPath
     /// exists, just update whichever fields are allowed.
@@ -145,7 +108,49 @@ namespace RepositoryTests
     [TestMethod]
     public void UpdateGeofence_HappyPath()
     {
-      throw new NotImplementedException();
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var updateGeofenceEvent = new UpdateGeofenceEvent()
+      {
+        GeofenceUID = createGeofenceEvent.GeofenceUID,
+        GeofenceName = createGeofenceEvent.GeofenceName,
+        Description = createGeofenceEvent.Description,
+        GeofenceType = createGeofenceEvent.GeofenceType,
+        FillColor = 56666,
+        IsTransparent = false,
+        GeometryWKT = createGeofenceEvent.GeometryWKT,        
+        ActionUTC = actionUtc
+      };
+
+      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
+
+      geofenceContext.StoreEvent(createGeofenceEvent).Wait();
+      var s = geofenceContext.StoreEvent(updateGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Unable to update geofence");
+
+      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      g.Wait();
+      var projectGeofences = g.Result.ToList();
+      Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
+      Assert.AreEqual(updateGeofenceEvent.FillColor, projectGeofences[0].FillColor, "Wrong fillcolor returned");
+      Assert.AreEqual(updateGeofenceEvent.IsTransparent, projectGeofences[0].IsTransparent, "Wrong IsTransparent returned");
+      Assert.AreEqual(createGeofenceEvent.UserUID.ToString(), projectGeofences[0].UserUID, "Wrong UserUID returned");
     }
 
     /// <summary>
@@ -155,10 +160,139 @@ namespace RepositoryTests
     [TestMethod]
     public void UpdateGeofence_GeofenceDoesntExist()
     {
-      throw new NotImplementedException();
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var updateGeofenceEvent = new UpdateGeofenceEvent()
+      {
+        GeofenceUID = createGeofenceEvent.GeofenceUID,
+        GeofenceName = createGeofenceEvent.GeofenceName,
+        Description = createGeofenceEvent.Description,
+        GeofenceType = createGeofenceEvent.GeofenceType,
+        FillColor = 56666,
+        IsTransparent = false,
+        GeometryWKT = createGeofenceEvent.GeometryWKT,
+        ActionUTC = actionUtc
+      };
+
+      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
+
+      //geofenceContext.StoreEvent(createGeofenceEvent).Wait();
+      var s = geofenceContext.StoreEvent(updateGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "Unable to update geofence");
+    }
+
+    /// <summary>
+    /// Delete Geofence - Happy path 
+    ///   geofence exists.
+    /// </summary>
+    [TestMethod]
+    public void DeleteGeofence_HappyPath()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var deleteGeofenceEvent = new DeleteGeofenceEvent()
+      {
+        GeofenceUID = createGeofenceEvent.GeofenceUID,        
+        UserUID = createGeofenceEvent.UserUID,
+        ActionUTC = actionUtc
+      };
+
+      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
+
+      geofenceContext.StoreEvent(createGeofenceEvent).Wait();
+      var s = geofenceContext.StoreEvent(deleteGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Unable to delete geofence");
+
+      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      g.Wait();
+      Assert.AreEqual(0, g.Result.Count(), "Wrong number of geofences");
+
+      var u = geofenceContext.GetGeofence_UnitTest(createGeofenceEvent.GeofenceUID.ToString());
+      u.Wait();
+      Assert.IsNotNull(u.Result, "Wrong number of geofences");
+      Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), u.Result.GeofenceUID, "Wrong number of geofences");
+    }
+
+    /// <summary>
+    /// Delete Geofence - geofence doesn'tExist
+    /// </summary>
+    [TestMethod]
+    public void DeleteGeofence_DoesntExist()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var deleteGeofenceEvent = new DeleteGeofenceEvent()
+      {
+        GeofenceUID = createGeofenceEvent.GeofenceUID,
+        UserUID = createGeofenceEvent.UserUID,
+        ActionUTC = actionUtc
+      };
+
+      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
+
+      var s = geofenceContext.StoreEvent(deleteGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Unable to delete geofence");
+
+      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      g.Wait();
+      Assert.AreEqual(0, g.Result.Count(), "Wrong number of geofences");
+
+      var u = geofenceContext.GetGeofence_UnitTest(createGeofenceEvent.GeofenceUID.ToString());
+      u.Wait();
+      Assert.IsNotNull(u.Result, "Wrong number of geofences");
+      Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), u.Result.GeofenceUID, "Wrong number of geofences");
     }
 
     #endregion
+
 
 
     #region AssociateGeofenceWithProject
@@ -171,57 +305,46 @@ namespace RepositoryTests
     [TestMethod]
     public void AssociateProjectWithGeofence_HappyPath()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
       var customerUid = Guid.NewGuid();
-
-      var createProjectEvent = new CreateProjectEvent()
-      {
-        ProjectUID = Guid.NewGuid(),
-        ProjectID = 12343,
-        ProjectName = "The Project Name",
-        ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = now
-      };
+      var projectUid = Guid.NewGuid();
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        CustomerUID = customerUid,
-        Description = "The Geofence Name",
         GeofenceUID = Guid.NewGuid(),
-        GeofenceType = "", // todo vss models needs a GeofenceType e.g. Landfill,
-        GeometryWKT = "",
-        //Boundary = ?? todo I think this comes in the CreateProjectEvent????
-        ActionUTC = now
-      };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
-      {
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = customerUid,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 999,
-        RelationType = RelationType.Customer,
-        ActionUTC = now.AddDays(1)
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
       };
 
       var associateProjectGeofenceEvent = new AssociateProjectGeofence()
       {
+        ProjectUID = projectUid,
         GeofenceUID = createGeofenceEvent.GeofenceUID,
-        ActionUTC = now.AddDays(1)
+        ActionUTC = actionUtc.AddDays(1)
       };
 
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
       var projectContext = new ProjectRepository(new GenericConfiguration());
+      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
 
-      // todo
-      // var geofenceContext = new GeofenceRepository(new GenericConfiguration());
+      geofenceContext.StoreEvent(createGeofenceEvent).Wait();
+      var s = projectContext.StoreEvent(associateProjectGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Unable to associate geofence");
 
-      throw new NotImplementedException();
+      var g = geofenceContext.GetProjectGeofencesByProjectUID(projectUid.ToString());
+      g.Wait();
+      var projectGeofences = g.Result.ToList();
+      Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
+      Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
+
     }
 
     /// <summary>
@@ -230,56 +353,50 @@ namespace RepositoryTests
     [TestMethod]
     public void AssociateProjectWithGeofence_AlreadyExists()
     {
-      throw new NotImplementedException();
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var associateProjectGeofenceEvent = new AssociateProjectGeofence()
+      {
+        ProjectUID = projectUid,
+        GeofenceUID = createGeofenceEvent.GeofenceUID,
+        ActionUTC = actionUtc.AddDays(1)
+      };
+
+      var projectContext = new ProjectRepository(new GenericConfiguration());
+      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
+
+      geofenceContext.StoreEvent(createGeofenceEvent).Wait();
+      projectContext.StoreEvent(associateProjectGeofenceEvent).Wait();
+      var s = projectContext.StoreEvent(associateProjectGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "Unable to associate geofence");
+
+      var g = geofenceContext.GetProjectGeofencesByProjectUID(projectUid.ToString());
+      g.Wait();
+      var projectGeofences = g.Result.ToList();
+      Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
+      Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
+
     }
 
-    /// <summary>
-    /// Dissociate Project Geofence - not needed?
-    /// </summary>
-    [TestMethod]
-    public void DissociateProjectWithGeofence_NotSupported()
-    {
-      throw new NotImplementedException();
-    }
     #endregion
 
-
-    #region private
-    private CreateProjectEvent CopyModel(Project project)
-    {
-      return new CreateProjectEvent()
-      {
-        ProjectUID = Guid.Parse(project.ProjectUID),
-        ProjectID = project.LegacyProjectID,
-        ProjectName = project.Name,
-        ProjectType = project.ProjectType,
-        ProjectTimezone = project.ProjectTimeZone,
-
-        ProjectStartDate = project.StartDate,
-        ProjectEndDate = project.EndDate,
-        ActionUTC = project.LastActionedUTC
-      };
-    }
-
-    private Project CopyModel(CreateProjectEvent kafkaProjectEvent)
-    {
-      return new Project()
-      {
-        ProjectUID = kafkaProjectEvent.ProjectUID.ToString(),
-        LegacyProjectID = kafkaProjectEvent.ProjectID,
-        Name = kafkaProjectEvent.ProjectName,
-        ProjectType = kafkaProjectEvent.ProjectType,
-        // IsDeleted =  N/A
-
-        ProjectTimeZone = kafkaProjectEvent.ProjectTimezone,
-        LandfillTimeZone = TimeZone.WindowsToIana(kafkaProjectEvent.ProjectTimezone),
-
-        LastActionedUTC = kafkaProjectEvent.ActionUTC,
-        StartDate = kafkaProjectEvent.ProjectStartDate,
-        EndDate = kafkaProjectEvent.ProjectEndDate
-      };
-    }
-    #endregion
   }
 
 }

@@ -4,12 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Project.Data;
-using VSS.Project.Data.Models;
-using VSS.Customer.Data;
 using VSS.Subscription.Data.Models;
 using VSS.Project.Service.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace RepositoryTests
 {
@@ -24,190 +20,252 @@ namespace RepositoryTests
       new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
     }
 
-    //#region CustomerSubscriptions
+    #region CustomerSubscriptions
 
-    ///// <summary>
-    ///// Create ProjectSubscription - Happy path i.e. 
-    /////   customer, project, CustomerProject relationship exists
-    /////   subscription doesn't exist already.
-    ///// </summary>
-    //[TestMethod]
-    //public void CreateSubscriptionWithProject_HappyPath()
-    //{
-    //  DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
-    //  var projectTimeZone = "New Zealand Standard Time";
-
-    //  var createCustomerEvent = new CreateCustomerEvent()
-    //  { CustomerUID = Guid.NewGuid(), CustomerName = "The Project Name", CustomerType = CustomerType.Customer.ToString(), ActionUTC = now };
-
-    //  var createProjectEvent = new CreateProjectEvent()
-    //  { ProjectUID = Guid.NewGuid(), ProjectID = 12343, ProjectName = "The Project Name", ProjectType = ProjectType.LandFill, ProjectTimezone = projectTimeZone,
-    //    ProjectStartDate = new DateTime(2016, 02, 01), ProjectEndDate = new DateTime(2017, 02, 01),
-    //    ActionUTC = now
-    //  };
-
-    //  var associateCustomerProjectEvent = new AssociateProjectCustomer()
-    //  { CustomerUID = createCustomerEvent.CustomerUID, ProjectUID = createProjectEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = now };
-
-    //  var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
-    //  {
-    //    CustomerUID = createCustomerEvent.CustomerUID,
-    //    SubscriptionUID = Guid.NewGuid(),
-    //    SubscriptionType = "Project Monitoring",
-    //    StartDate = new DateTime(2016, 02, 01),
-    //    EndDate = new DateTime(2017, 02, 01),
-    //    ActionUTC = now
-    //  };
-
-    //  var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
-    //  {
-    //    SubscriptionUID = createProjectSubscriptionEvent.SubscriptionUID,        
-    //    ProjectUID = createProjectEvent.ProjectUID,
-    //    EffectiveDate = new DateTime(2016, 02, 03),
-    //    ActionUTC = now
-    //  };
-
-    //  var customerContext = new CustomerRepository(new GenericConfiguration());
-    //  var projectContext = new ProjectRepository(new GenericConfiguration());
-    //  var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
+    /// <summary>
+    /// Create CustomerSubscription - Happy path i.e. 
+    ///   subscription doesn't exist already and has a customerUID
+    /// </summary>
+    [TestMethod]
+    public void CreateCustomerSubscription_HappyPath()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       
-    //  projectContext.StoreEvent(createProjectEvent).Wait();
-    //  customerContext.StoreEvent(createCustomerEvent).Wait();
-    //  projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
-      
-    //  var s = subscriptionContext.StoreEvent(createProjectSubscriptionEvent);
-    //  s.Wait();
-    //  Assert.AreEqual(1, s.Result, "ProjectSubscription event not written");
+      var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Manual 3D Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
 
-    //  s = subscriptionContext.StoreEvent(associateProjectSubscriptionEvent);
-    //  s.Wait();
-    //  Assert.AreEqual(1, s.Result, "associateProjectSubscription event not written");
+      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
+
+      var s = subscriptionContext.StoreEvent(createCustomerSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "CustomerSubscription event not written");
+
+      Subscription subscription = CopyModel(subscriptionContext, createCustomerSubscriptionEvent);
+      var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
+      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+    }
+
+    /// <summary>
+    /// Create Subscription - Subscription already exists
+    ///   Subscription exists but is different. nonsense - ignore
+    /// </summary>
+    [TestMethod]
+    public void CreateSubscriptionWithProject_SubscriptionExistsButDifferentType()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUID = Guid.NewGuid();
+
+      var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
+      {
+        CustomerUID = customerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Manual 3D Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var createCustomerSubscriptionEvent2 = new CreateCustomerSubscriptionEvent()
+      {
+        CustomerUID = customerUID,
+        SubscriptionUID = createCustomerSubscriptionEvent.SubscriptionUID,
+        SubscriptionType = "Landfill",
+        StartDate = new DateTime(2015, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC.AddHours(1)
+      };
+
+      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
+
+      subscriptionContext.StoreEvent(createCustomerSubscriptionEvent).Wait();
+      var s = subscriptionContext.StoreEvent(createCustomerSubscriptionEvent2);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "newCreate should not be written");
+
+      Subscription subscription = CopyModel(subscriptionContext, createCustomerSubscriptionEvent);
+      var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
+      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+    }
+
+    /// <summary>
+    /// Create Subscription - future enddates are NOT allowed
+    ///    this will result in new endDate
+    /// </summary>
+    [TestMethod]
+    public void CreateSubscription_FutureEndDate()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUID = Guid.NewGuid();
+
+      var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
+      {
+        CustomerUID = customerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Manual 3D Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(2110, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
+
+      subscriptionContext.StoreEvent(createCustomerSubscriptionEvent).Wait();
+
+      Subscription subscription = CopyModel(subscriptionContext, createCustomerSubscriptionEvent);
+      subscription.EndDate = new DateTime(9999, 12, 31);
+      var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
+      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+    }
+
+    /// <summary>
+    /// Update Subscription - Happy path i.e. 
+    ///   For a customersub, there is no CustomerSubscription association object.
+    ///      The CustomerUID is included in a subscription.
+    ///      The sub is terminated/dis-associated by setting the EndDate to e.g. past date
+    /// </summary>
+    [TestMethod]
+    public void UpdateSubscription_HappyPath()
+    {
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUID = Guid.NewGuid();
+
+      var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
+      {
+        CustomerUID = customerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Manual 3D Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = ActionUTC
+      };
+
+      var updateCustomerSubscriptionEvent = new UpdateCustomerSubscriptionEvent()
+      {
+        SubscriptionUID = createCustomerSubscriptionEvent.SubscriptionUID,        
+        StartDate = new DateTime(2015, 02, 01),
+        EndDate = new DateTime(2015, 12, 31),
+        ActionUTC = ActionUTC
+      };
+
+      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
+
+      subscriptionContext.StoreEvent(createCustomerSubscriptionEvent).Wait();
+      var s = subscriptionContext.StoreEvent(updateCustomerSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Update CustomerSubscription event not written");
+
+      Subscription subscription = CopyModel(subscriptionContext, createCustomerSubscriptionEvent);
+      subscription.StartDate = updateCustomerSubscriptionEvent.StartDate.Value;
+      subscription.EndDate = updateCustomerSubscriptionEvent.EndDate.Value;
+      subscription.LastActionedUTC = updateCustomerSubscriptionEvent.ActionUTC;
+      var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
+      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+    }
 
 
-    //  Subscription subscription = CopyModel(subscriptionContext, createProjectSubscriptionEvent);
-    //  var g = subscriptionContext.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
-    //  g.Wait();
-    //  Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-    //  Assert.AreEqual(subscription, g.Result, "subscription details are incorrect from subscriptionRepo");
-    //}
+    /// <summary>
+    /// Update Subscription - earlier ActionUTC 
+    ///   ignore it
+    /// </summary>
+    [TestMethod]
+    public void UpdateSubscription_OldActionUTC()
+    {
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUID = Guid.NewGuid();
 
-    ///// <summary>
-    ///// Create Subscription - Happy path out of order
-    /////  same as above but out of order
-    ///// </summary>
-    //[TestMethod]
-    //public void CreateSubscriptionWithProject_HappyPathButOutOfOrder()
-    //{
-    //  throw new NotImplementedException();
-    //}
+      var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
+      {
+        CustomerUID = customerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Manual 3D Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = ActionUTC
+      };
+
+      var updateCustomerSubscriptionEvent = new UpdateCustomerSubscriptionEvent()
+      {
+        SubscriptionUID = createCustomerSubscriptionEvent.SubscriptionUID,
+        StartDate = new DateTime(2015, 02, 01),
+        EndDate = new DateTime(2016, 12, 31),
+        ActionUTC = ActionUTC.AddMinutes(-10)
+      };
+
+      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
+
+      subscriptionContext.StoreEvent(createCustomerSubscriptionEvent).Wait();
+      var s = subscriptionContext.StoreEvent(updateCustomerSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "Shouldn't update");
+
+      Subscription subscription = CopyModel(subscriptionContext, createCustomerSubscriptionEvent);
+      var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
+      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+    }
+
+    #endregion
 
 
-    ///// <summary>
-    ///// Create Subscription - Happy path RelationShips not setup i.e. 
-    /////   customer and CustomerProject relationship NOT added
-    /////   Subscription doesn't exist already.
-    ///// </summary>
-    //[TestMethod]
-    //public void CreateSubscriptionWithProject_HappyPath_NoProject()
-    //{
-    //  throw new NotImplementedException();
-    //}
+    #region private
+    private CreateCustomerSubscriptionEvent CopyModel(SubscriptionRepository subscriptionRepo, Subscription subscription)
+    {
+      return new CreateCustomerSubscriptionEvent()
+      {
+        SubscriptionUID = Guid.Parse(subscription.SubscriptionUID),
+        CustomerUID = Guid.Parse(subscription.CustomerUID),
+        SubscriptionType = subscription.ServiceTypeID.ToString(),
+        StartDate = subscription.StartDate,
+        EndDate = subscription.EndDate,
+        ActionUTC = subscription.LastActionedUTC
+      };
+    }
 
+    private Subscription CopyModel(SubscriptionRepository subscriptionRepo, CreateCustomerSubscriptionEvent kafkaCustomerSubscriptionEvent)
+    {
+      return new Subscription()
+      {
+        SubscriptionUID = kafkaCustomerSubscriptionEvent.SubscriptionUID.ToString(),
+        CustomerUID = kafkaCustomerSubscriptionEvent.CustomerUID.ToString(),
+        ServiceTypeID = subscriptionRepo._serviceTypes[kafkaCustomerSubscriptionEvent.SubscriptionType].ID,
+        StartDate = kafkaCustomerSubscriptionEvent.StartDate,
+        EndDate = kafkaCustomerSubscriptionEvent.EndDate,
+        LastActionedUTC = kafkaCustomerSubscriptionEvent.ActionUTC,
 
-    ///// <summary>
-    ///// Create Subscription - Subscription already exists
-    /////   customer and CustomerProject relationship also added
-    /////   Subscription exists but is different.
-    ///// </summary>
-    //[TestMethod]
-    //public void CreateSubscriptionWithProject_SubscriptionExists()
-    //{
-    //  throw new NotImplementedException();
-    //}
+      };
+    }
 
-    ///// <summary>
-    ///// Update Subscription - Happy path i.e. 
-    /////   customer and CustomerProject relationship also added
-    /////   Subscription exists and New ActionUTC is later than its LastActionUTC.
-    ///// </summary>
-    //[TestMethod]
-    //public void UpdateSubscription_HappyPath()
-    //{
-    //  throw new NotImplementedException();
-    //}
+    private bool CompareSubs(Subscription original, Subscription result)
+    {
+      if (original.SubscriptionUID == result.SubscriptionUID
+        && original.CustomerUID == result.CustomerUID
+        && original.ServiceTypeID == result.ServiceTypeID
+        && original.StartDate == result.StartDate
+        && original.EndDate == result.EndDate
+        && original.LastActionedUTC == result.LastActionedUTC
+        )
+        return true;
+      else
+        return false;
+    }
 
-    ///// <summary>
-    ///// Update Subscription - earlier ActionUTC 
-    /////   customer and CustomerProject relationship also added
-    /////   Subscription exists and New ActionUTC is earlier than its LastActionUTC.
-    ///// </summary>
-    //[TestMethod]
-    //public void UpdateSubscription_OldUpdate()
-    //{
-    //  throw new NotImplementedException();
-    //}
-
-    ///// <summary>
-    ///// Associate Customer Subscription - not supported?
-    ///// </summary>
-    //[TestMethod]
-    //public void AssociateCustomerSubscription_NotSupported()
-    //{
-    //  throw new NotImplementedException();
-    //}
-    //#endregion
-    
-    //#region AssociateWithProject
-
-    ///// <summary>
-    ///// AssociateProjectSubscriptionEvent - Happy Path
-    /////   project and sub added.
-    ///// </summary>
-    //[TestMethod]
-    //public void AssociateProjectSubscriptionEvent_HappyPath()
-    //{      
-    //  throw new NotImplementedException();
-    //}
-
-    ///// <summary>
-    ///// AssociateProjectSubscriptionEvent - already exists
-    ///// </summary>
-    //[TestMethod]
-    //public void AssociateProjectSubscriptionEvent_AlreadyExists()
-    //{
-    //  throw new NotImplementedException();
-    //}
-
-    //#endregion
-
-    //#region private
-    //private CreateProjectSubscriptionEvent CopyModel(SubscriptionRepository subscriptionRepo, Subscription subscription)
-    //{
-    //  return new CreateProjectSubscriptionEvent()
-    //  {
-    //    SubscriptionUID = Guid.Parse(subscription.SubscriptionUID),
-    //    CustomerUID = Guid.Parse(subscription.CustomerUID),
-    //    // todo SubscriptionType = subscriptionRepo._serviceTypes.ID(subscription.ServiceTypeID),
-    //    StartDate = subscription.StartDate,
-    //    EndDate = subscription.EndDate,
-    //    ActionUTC = subscription.LastActionedUTC
-    //  };
-    //}
-
-    //private Subscription CopyModel(SubscriptionRepository subscriptionRepo, CreateProjectSubscriptionEvent kafkaProjectSubscriptionEvent)
-    //{
-    //  return new Subscription()
-    //  {
-    //    SubscriptionUID = kafkaProjectSubscriptionEvent.SubscriptionUID.ToString(),
-    //    CustomerUID = kafkaProjectSubscriptionEvent.CustomerUID.ToString(),
-    //    ServiceTypeID = subscriptionRepo._serviceTypes[kafkaProjectSubscriptionEvent.SubscriptionType].ID,
-    //    StartDate = kafkaProjectSubscriptionEvent.StartDate,
-    //    EndDate = kafkaProjectSubscriptionEvent.EndDate, 
-    //    LastActionedUTC = kafkaProjectSubscriptionEvent.ActionUTC,
-        
-    //  };
-    //}
-    //#endregion
+    #endregion
 
   }
 }

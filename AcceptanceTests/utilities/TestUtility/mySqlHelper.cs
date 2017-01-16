@@ -121,27 +121,27 @@ namespace TestUtility
         }
 
 
-        /// <summary>
-        /// Create a Asset Utc offset 
-        /// </summary>
-        /// <param name="utcOffSetHours">utc off set in hours</param>
-        public void CreateAssetUtcOffset(double utcOffSetHours, string AssetUid)
-        {
-            var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"AssetUTCOffset"} (AssetUID,EventUTC,UTCOffsetMinutes) VALUES
+    /// <summary>
+    /// Create a Asset Utc offset 
+    /// </summary>
+    /// <param name="utcOffSetHours">utc off set in hours</param>
+    public void CreateAssetUtcOffset(double utcOffSetHours, string AssetUid)
+    {
+      var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"AssetUTCOffset"} (AssetUID,EventUTC,UTCOffsetMinutes) VALUES
                         ('{AssetUid}','2015-01-01 00:00:00.000000',{utcOffSetHours * 60});";
-            var mysqlHelper = new MySqlHelper();
-            mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);            
-        }
+      var mysqlHelper = new MySqlHelper();
+      mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);
+    }
 
 
-        /// <summary>
-        /// Check the database to see if the records injected into kafka have reached there. This
-        /// Will loop for 20 times or until it finds the correct answer.
-        /// </summary>
-        /// <param name="query"></param>
-        /// <param name="eventCount"></param>
-        /// <returns>Count of records</returns>
-        public int GetDatabaseCountForEvents(string query, int eventCount)
+    /// <summary>
+    /// Check the database to see if the records injected into kafka have reached there. This
+    /// Will loop for 20 times or until it finds the correct answer.
+    /// </summary>
+    /// <param name="query"></param>
+    /// <param name="eventCount"></param>
+    /// <returns>Count of records</returns>
+    public int GetDatabaseCountForEvents(string query, int eventCount)
         {
             var retryCount = 0;
             var resultCount = 0;

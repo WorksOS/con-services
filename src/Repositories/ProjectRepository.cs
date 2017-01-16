@@ -39,6 +39,7 @@ namespace VSS.Project.Data
       }
       else if (evt is UpdateProjectEvent)
       {
+        // todo doesn't make sense to be able to update Project type - be careful
         var projectEvent = (UpdateProjectEvent)evt;
         var project = new Models.Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
@@ -136,9 +137,10 @@ namespace VSS.Project.Data
                 (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate)";
         return Connection.Execute(insert, project);
       }
-      else if (string.IsNullOrEmpty(existing.Name))
+      else if (string.IsNullOrEmpty(existing.Name) )
       {
-        //Dummy one was inserted, so update with actual data
+        // this code comes from landfill, however in MD, no dummy is created
+        //   is this obsolete?
         const string update =
             @"UPDATE Project                
                 SET LegacyProjectID = @LegacyProjectID,
@@ -152,7 +154,22 @@ namespace VSS.Project.Data
                   LastActionedUTC = @LastActionedUTC         
                 WHERE ProjectUID = @ProjectUID";
         return Connection.Execute(update, project);
+      }      
+      else if (existing.LastActionedUTC >= project.LastActionedUTC)
+      {
+        // must be a later update was applied before the create arrived
+        // leave the more recent EndDate, Name, ProjectType and actionUTC alone
+
+        const string update =
+            @"UPDATE Project                
+                SET LegacyProjectID = @LegacyProjectID,                  
+                  ProjectTimeZone = @ProjectTimeZone,
+                  LandfillTimeZone = @LandfillTimeZone,
+                  StartDate = @StartDate   
+                WHERE ProjectUID = @ProjectUID";
+        return Connection.Execute(update, project);
       }
+
 
       //            Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC {0}.", project.LastActionedUTC);
 
@@ -340,7 +357,7 @@ namespace VSS.Project.Data
     /// </summary>
     /// <param name="subscriptionUid"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Models.Project>> GetProjectsBySubcription(string subscriptionUid)
+    public async Task<Models.Project> GetProjectBySubcription(string subscriptionUid)
     {
       await PerhapsOpenConnection();
 
@@ -355,8 +372,9 @@ namespace VSS.Project.Data
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
                 JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE ps.fk_SubscriptionUID = @subscriptionUid AND p.IsDeleted = 0"
-          );
+              WHERE ps.fk_SubscriptionUID = @subscriptionUid AND p.IsDeleted = 0",
+              new { subscriptionUid }
+          ).FirstOrDefault(); ;
 
       PerhapsCloseConnection();
       return projects;
@@ -382,9 +400,10 @@ namespace VSS.Project.Data
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
+                JOIN CustomerUser cu on cu.fk_CustomerUID = c.CustomerUID
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0",
+              WHERE cu.UserUID = @userUid and p.IsDeleted = 0",
             new { userUid }
           );
 
@@ -452,11 +471,12 @@ namespace VSS.Project.Data
       return project;
     }
 
+    
     /// <summary>
     ///  this must be a test method
     /// </summary>
     /// <returns></returns>
-    public async Task<IEnumerable<Models.Project>> GetProjects()
+    public async Task<IEnumerable<Models.Project>> GetProjects_UnitTests()
     {
       await PerhapsOpenConnection();
 

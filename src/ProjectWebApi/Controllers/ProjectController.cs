@@ -175,15 +175,16 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
                 });
             _projectService.StoreEvent(customerProject);
         }
+       
 
-        /// <summary>
-        /// Associate geofence and project
-        /// </summary>
-        /// <param name="geofenceProject">Geofence - project</param>
-        /// <remarks>Associate geofence and project</remarks>
-        /// <response code="200">Ok</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpPost]
+    /// <summary>
+    /// Associate geofence and project
+    /// </summary>
+    /// <param name="geofenceProject">Geofence - project</param>
+    /// <remarks>Associate geofence and project</remarks>
+    /// <response code="200">Ok</response>
+    /// <response code="500">Internal Server Error</response>
+    [HttpPost]
         [Route("v1/AssociateGeofence")]
         public void AssociateGeofenceProject([FromBody] AssociateProjectGeofence geofenceProject)
         {

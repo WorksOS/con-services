@@ -9780,6 +9780,7 @@
       "Microsoft.Extensions.Logging.Debug >= 1.0.0",
       "Microsoft.Extensions.Options.ConfigurationExtensions >= 1.0.0",
       "Repositories >= 1.0.0-*",
+      "System.Linq >= 4.3.0",
       "dotnet-test-mstest >= 1.1.1-preview",
       "log4net.netcore >= 3.0.0"
     ],

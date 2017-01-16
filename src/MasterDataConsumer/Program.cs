@@ -12,6 +12,7 @@ using VSS.Project.Service.Repositories;
 using VSS.Project.Service.Utils;
 using VSS.Project.Service.Utils.Kafka;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Geofence.Data;
 
 namespace MasterDataConsumer
 {
@@ -25,11 +26,13 @@ namespace MasterDataConsumer
           .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
           .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
           .AddTransient<IKafkaConsumer<ICustomerEvent>, KafkaConsumer<ICustomerEvent>>()
+          .AddTransient<IKafkaConsumer<IGeofenceEvent>, KafkaConsumer<IGeofenceEvent>>()
           .AddTransient<IMessageTypeResolver, MessageResolver>()
           .AddTransient<IRepositoryFactory, RepositoryFactory>()
           .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
           .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+          .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
           .BuildServiceProvider();
 
@@ -45,8 +48,11 @@ namespace MasterDataConsumer
       bar3.SetTopic("VSS.Interfaces.Events.MasterData.ISubscriptionEvent");
       var t3 = bar3.StartProcessingAsync(new CancellationTokenSource());
 
+      var bar4 = serviceProvider.GetService<IKafkaConsumer<IGeofenceEvent>>();
+      bar4.SetTopic("VSS.Interfaces.Events.MasterData.IGeofenceEvent");
+      var t4 = bar4.StartProcessingAsync(new CancellationTokenSource());
 
-      Task.WaitAll(t1, t2, t3);
+      Task.WaitAll(t1, t2, t3, t4);
     }
   }
 }

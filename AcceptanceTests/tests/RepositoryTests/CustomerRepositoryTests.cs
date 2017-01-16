@@ -21,30 +21,7 @@ namespace RepositoryTests
     }
 
     #region Customers
-    /// <summary>
-    /// Test copying between kafka and repository models
-    /// todo could be a unit test
-    /// </summary>
-    [TestMethod]
-    public void CopyModels()
-    {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
-
-      var customer = new Customer()
-      {
-        CustomerUID = Guid.NewGuid().ToString(),
-        Name = "The Customer Name",
-        CustomerType = CustomerType.Corporate,
-        LastActionedUTC = now
-      };
-
-      var kafkaCustomerEvent = CopyModel(customer);
-      var copiedCustomer = CopyModel(kafkaCustomerEvent);
-
-      Assert.AreEqual(customer, copiedCustomer, "Customer model conversion not completed sucessfully");
-    }
-
-
+    
     /// <summary>
     /// Create Customer - Happy path i.e. 
     ///   customer doesn't exist
@@ -52,14 +29,14 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateCustomer_HappyPath()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -82,14 +59,14 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateCustomer_AlreadyExistsSameActionUTC()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -111,26 +88,26 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateCustomer_AlreadyExistsEarlierActionUTC()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
 
       var s = customerContext.StoreEvent(createCustomerEvent);
-      createCustomerEvent.ActionUTC = now.AddDays(1);
+      createCustomerEvent.ActionUTC = ActionUTC.AddDays(1);
       s = customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(0, s.Result, "Customer event not written");
 
       Customer customer = CopyModel(createCustomerEvent);
-      customer.LastActionedUTC = now;
+      customer.LastActionedUTC = ActionUTC;
       var g = customerContext.GetCustomer(createCustomerEvent.CustomerUID);
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Customer from CustomerRepo");
@@ -146,21 +123,21 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateCustomer_AlreadyExistsLaterActionUTC()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Dealer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var updateCustomerEvent = new UpdateCustomerEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         CustomerName = "The Customer Name Updated",
-        ActionUTC = now.AddHours(1)
+        ActionUTC = ActionUTC.AddHours(1)
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -189,21 +166,21 @@ namespace RepositoryTests
     [TestMethod]
     public void UpdateCustomerEvent_HappyPath()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var updateCustomerEvent = new UpdateCustomerEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         CustomerName = "The Customer Name Updated",
-        ActionUTC = now.AddMinutes(2)
+        ActionUTC = ActionUTC.AddMinutes(2)
       };
       
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -229,27 +206,27 @@ namespace RepositoryTests
     [TestMethod]
     public void UpdateCustomerEvent_CustomerDeleted()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var updateCustomerEvent = new UpdateCustomerEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         CustomerName = "The Customer Name Updated",
-        ActionUTC = now.AddMinutes(2)
+        ActionUTC = ActionUTC.AddMinutes(2)
       };
 
       var deleteCustomerEvent = new DeleteCustomerEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
-        ActionUTC = now.AddHours(1)
+        ActionUTC = ActionUTC.AddHours(1)
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -282,14 +259,14 @@ namespace RepositoryTests
     [TestMethod]
     public void UpdateCustomerEvent_CustomerDoesntExist()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var customerUID = Guid.NewGuid();
 
       var updateCustomerEvent = new UpdateCustomerEvent()
       {
         CustomerUID = customerUID,
         CustomerName = "The Customer Name GotIt!",
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -321,28 +298,28 @@ namespace RepositoryTests
   [TestMethod]
     public void UpdateCustomer_AlreadyExistsLaterActionUTC()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var updateCustomerEvent = new UpdateCustomerEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         CustomerName = "The Customer Name FirstTime",
-        ActionUTC = now.AddMinutes(1)
+        ActionUTC = ActionUTC.AddMinutes(1)
       };
 
       var updateCustomerEvent2 = new UpdateCustomerEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         CustomerName = "The Customer Name SecondsTime",
-        ActionUTC = now.AddMinutes(2)
+        ActionUTC = ActionUTC.AddMinutes(2)
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -370,20 +347,20 @@ namespace RepositoryTests
     [TestMethod]
     public void DeleteCustomerEvent_HappyPath()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var deleteCustomerEvent = new DeleteCustomerEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,       
-        ActionUTC = now.AddHours(1)
+        ActionUTC = ActionUTC.AddHours(1)
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -415,7 +392,7 @@ namespace RepositoryTests
     [TestMethod]
     public void DeleteCustomerEvent_CustomerDoesntExist()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var customerUid = Guid.NewGuid();
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -423,13 +400,13 @@ namespace RepositoryTests
         CustomerUID = customerUid,
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Dealer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var deleteCustomerEvent = new DeleteCustomerEvent()
       {
         CustomerUID = customerUid,
-        ActionUTC = now.AddHours(1)
+        ActionUTC = ActionUTC.AddHours(1)
       };
 
       var partialWrittenCustomerEvent = new CreateCustomerEvent()
@@ -437,7 +414,7 @@ namespace RepositoryTests
         CustomerUID = customerUid,
         CustomerName = "",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -470,20 +447,20 @@ namespace RepositoryTests
     [TestMethod]
     public void DeleteCustomer_AlreadyExistsLaterActionUTC()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var deleteCustomerEvent = new DeleteCustomerEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
-        ActionUTC = now.AddHours(-1)
+        ActionUTC = ActionUTC.AddHours(-1)
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -511,21 +488,21 @@ namespace RepositoryTests
     [TestMethod]
     public void AssociateCustomerUserEvent_HappyPath()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = actionUTC
       };
 
       var associateCustomerUserEvent = new AssociateCustomerUserEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
-        ActionUTC = now
+        ActionUTC = actionUTC
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -549,20 +526,20 @@ namespace RepositoryTests
     [TestMethod]
     public void AssociateCustomerUserEvent_CustomerDoesntExist()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var customerUid = Guid.NewGuid();
 
       var associateCustomerUserEvent = new AssociateCustomerUserEvent()
       {
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
-        ActionUTC = now
+        ActionUTC = actionUTC
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
             
       customerContext.StoreEvent(associateCustomerUserEvent).Wait();
-      associateCustomerUserEvent.ActionUTC = now.AddDays(-1);
+      associateCustomerUserEvent.ActionUTC = actionUTC.AddDays(-1);
       var s = customerContext.StoreEvent(associateCustomerUserEvent);
       s.Wait();
       Assert.AreEqual(0, s.Result, "CustomerUser event not written");
@@ -575,7 +552,7 @@ namespace RepositoryTests
       h.Wait();
       Assert.IsNotNull(h.Result, "Unable to retrieve CustomerUser from CustomerRepo");
       Assert.AreEqual(associateCustomerUserEvent.CustomerUID.ToString(), h.Result.CustomerUID, "CustomerUser UID is incorrect from CustomerRepo");
-      Assert.AreEqual(now, h.Result.LastActionedUTC, "ActionUTC should be for original association");
+      Assert.AreEqual(actionUTC, h.Result.LastActionedUTC, "ActionUTC should be for original association");
     }
 
     /// <summary>
@@ -585,28 +562,28 @@ namespace RepositoryTests
     [TestMethod]
     public void AssociateCustomerUser_AlreadyExists()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Dealer.ToString(),
-        ActionUTC = now
+        ActionUTC = actionUTC
       };
 
       var associateCustomerUserEvent = new AssociateCustomerUserEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
-        ActionUTC = now
+        ActionUTC = actionUTC
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
 
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(associateCustomerUserEvent).Wait();
-      associateCustomerUserEvent.ActionUTC = now.AddDays(1);
+      associateCustomerUserEvent.ActionUTC = actionUTC.AddDays(1);
       var s = customerContext.StoreEvent(associateCustomerUserEvent);
       s.Wait();
       Assert.AreEqual(0, s.Result, "CustomerUser event not written");
@@ -615,7 +592,7 @@ namespace RepositoryTests
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve CustomerUser from CustomerRepo");
       Assert.AreEqual(associateCustomerUserEvent.CustomerUID.ToString(), g.Result.CustomerUID, "CustomerUser UID is incorrect from CustomerRepo");
-      Assert.AreEqual(now, g.Result.LastActionedUTC, "ActionUTC should be for original association");
+      Assert.AreEqual(actionUTC, g.Result.LastActionedUTC, "ActionUTC should be for original association");
     }
 
     /// <summary>
@@ -625,28 +602,28 @@ namespace RepositoryTests
     [TestMethod]
     public void DissociateCustomerUserEvent_HappyPath()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = actionUTC
       };
 
       var associateCustomerUserEvent = new AssociateCustomerUserEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
-        ActionUTC = now.AddMinutes(1)
+        ActionUTC = actionUTC.AddMinutes(1)
       };
 
       var dissociateCustomerUserEvent = new DissociateCustomerUserEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = associateCustomerUserEvent.UserUID,
-        ActionUTC = now.AddMinutes(2)
+        ActionUTC = actionUTC.AddMinutes(2)
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -673,7 +650,7 @@ namespace RepositoryTests
     [TestMethod]
     public void DissociateCustomerUserEvent_CustomerUserDoesntExist()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var userUid = Guid.NewGuid();
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -681,14 +658,14 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var dissociateCustomerUserEvent = new DissociateCustomerUserEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = userUid,
-        ActionUTC = now.AddMinutes(2)
+        ActionUTC = ActionUTC.AddMinutes(2)
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -713,28 +690,28 @@ namespace RepositoryTests
     [TestMethod]
     public void DissociateCustomerUser_AlreadyExistsLaterActionUTC()
     {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = now
+        ActionUTC = ActionUTC
       };
 
       var associateCustomerUserEvent = new AssociateCustomerUserEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
-        ActionUTC = now.AddMinutes(1)
+        ActionUTC = ActionUTC.AddMinutes(1)
       };
 
       var dissociateCustomerUserEvent = new DissociateCustomerUserEvent()
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = associateCustomerUserEvent.UserUID,
-        ActionUTC = now.AddMinutes(3)
+        ActionUTC = ActionUTC.AddMinutes(3)
       };
 
       var customerContext = new CustomerRepository(new GenericConfiguration());
@@ -742,7 +719,7 @@ namespace RepositoryTests
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(associateCustomerUserEvent).Wait();
       customerContext.StoreEvent(dissociateCustomerUserEvent).Wait();
-      dissociateCustomerUserEvent.ActionUTC = now.AddMinutes(2);
+      dissociateCustomerUserEvent.ActionUTC = ActionUTC.AddMinutes(2);
       var s = customerContext.StoreEvent(dissociateCustomerUserEvent);
       s.Wait();
       Assert.AreEqual(0, s.Result, "CustomerUser event not written");

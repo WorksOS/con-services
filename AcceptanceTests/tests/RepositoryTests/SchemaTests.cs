@@ -86,7 +86,7 @@ namespace RepositoryTests
       const string tableName = "Geofence";
       List<string> columnNames = new List<string>
           {
-            "ID", "GeofenceUID", "Name", "fk_GeofenceTypeID", "GeometryWKT", "FillColor", "IsTransparent", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ID", "GeofenceUID", "Name", "fk_GeofenceTypeID", "GeometryWKT", "FillColor", "IsTransparent", "IsDeleted", "LastActionedUTC", "Description", "fk_CustomerUID", "UserUID", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
