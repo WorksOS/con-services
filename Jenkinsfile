@@ -53,7 +53,7 @@ node ('master')
     //publishHTML(target:[allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: reportDir, reportFiles: 'index.htm', //reportName: reportName])
 }
 
-node('W2016_Tester2') {
+node('Jenkins-Win2016-Raptor') {
     //Apply version number
     //We will later use it to tag images
 
