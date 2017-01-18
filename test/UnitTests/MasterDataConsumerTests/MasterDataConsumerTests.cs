@@ -9,6 +9,8 @@ using VSS.Project.Service.Repositories;
 using VSS.Project.Data;
 using VSS.Customer.Data;
 using VSS.Project.Service.Utils;
+using System;
+using VSS.Geofence.Data;
 
 namespace MasterDataConsumer.Tests
 {
@@ -16,13 +18,33 @@ namespace MasterDataConsumer.Tests
   [TestClass]
   public class MasterDataConsumerTests
   {
+    IServiceProvider serviceProvider = null;
+
+    [TestInitialize]
+    public void InitTest()
+    {
+      serviceProvider = new ServiceCollection()
+          .AddTransient<IKafka, RdKafkaDriver>()
+          .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
+          .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
+          .AddTransient<IKafkaConsumer<ICustomerEvent>, KafkaConsumer<ICustomerEvent>>()
+          .AddTransient<IKafkaConsumer<IGeofenceEvent>, KafkaConsumer<IGeofenceEvent>>()
+          .AddTransient<IMessageTypeResolver, MessageResolver>()
+          .AddTransient<IRepositoryFactory, RepositoryFactory>()
+          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
+          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+          .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+          .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
+          .AddSingleton<IConfigurationStore, GenericConfiguration>()
+          .BuildServiceProvider();
+    }
 
     [TestMethod]
     public void CanCreateCustomerEventConsumer()
     {
       CreateCollection();
 
-      var customerConsumer = DependencyInjectionProvider.ServiceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
+      var customerConsumer = serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
       Assert.IsNotNull(customerConsumer);
 
       customerConsumer.SetTopic("VSS.Interfaces.Events.MasterData.ICustomerEvent");
