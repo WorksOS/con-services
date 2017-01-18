@@ -39,7 +39,7 @@ node ('master')
     stage 'Checkout'
     checkout scm
     stage 'Restore packages'
-    //bat "dotnet restore"
+    bat "dotnet restore"
     stage 'Build solution'
     bat "./build.bat"
     stage 'Run tests and get coverage results'
@@ -83,7 +83,7 @@ node('Jenkins-Win2016-Raptor') {
     stage 'Checkout'
     checkout scm
     stage 'Restore packages'
-    //bat "dotnet restore"
+    bat "dotnet restore"
     stage 'Build solution'
     bat "./build.bat"
     stage 'Run unit tests'
