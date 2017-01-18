@@ -207,4 +207,6 @@ Deploy_Production/
 
 artifacts/
 .vs/
+project.lock.json
+project.fragment.lock.json
 

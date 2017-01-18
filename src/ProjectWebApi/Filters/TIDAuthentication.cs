@@ -47,7 +47,7 @@ namespace VSS.Project.Service.WebApiModels.Filters
                 return;
             }
             var jwtToken = new JWTToken();
-            if (!jwtToken.SetToken(token))
+            if (!jwtToken.SetToken(authorization))
             {
                 await SetResult("Invalid authentication", context);
                 return;

@@ -86,7 +86,7 @@ namespace ProjectWebApi
 
             app.UseExceptionTrap();
             //Enable TID here
-            //app.UseTIDAuthentication();
+            app.UseTIDAuthentication();
             app.UseCors("VSS");
 
             app.UseApplicationInsightsRequestTelemetry();

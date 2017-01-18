@@ -382,9 +382,10 @@ namespace VSS.Project.Data
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
+                JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE cu.fk_userUID = @userUid and p.IsDeleted = 0",
+              WHERE cu.UserUID = @userUid and p.IsDeleted = 0",
             new { userUid }
           );
 
@@ -413,9 +414,10 @@ namespace VSS.Project.Data
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
+                JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE cp.fk_CustomerUID = @customerUid and cu.fk_userUID = @userUid and p.IsDeleted = 0",
+              WHERE cp.fk_CustomerUID = @customerUid and cu.UserUID = @userUid and p.IsDeleted = 0",
             new { userUid }
           );
 
