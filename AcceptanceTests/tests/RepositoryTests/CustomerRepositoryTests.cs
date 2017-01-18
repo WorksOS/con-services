@@ -6,18 +6,27 @@ using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Customer.Data;
 using VSS.Customer.Data.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Project.Service.Interfaces;
+using KafkaConsumer;
+using MasterDataConsumer;
 
 namespace RepositoryTests
 {
   [TestClass]
   public class CustomerRepositoryTests
   {
+    IServiceProvider serviceProvider = null;
+    CustomerRepository customerContext = null;
+
     [TestInitialize]
     public void Init()
     {
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug());
-      new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
+      serviceProvider = new ServiceCollection()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        .BuildServiceProvider();
+      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>());
     }
 
     #region Customers
@@ -38,8 +47,6 @@ namespace RepositoryTests
         CustomerType = CustomerType.Customer.ToString(),
         ActionUTC = ActionUTC
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
 
       var s = customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
@@ -69,8 +76,6 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(createCustomerEvent).Wait();
 
@@ -97,9 +102,7 @@ namespace RepositoryTests
         CustomerType = CustomerType.Customer.ToString(),
         ActionUTC = ActionUTC
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
+      
       var s = customerContext.StoreEvent(createCustomerEvent);
       createCustomerEvent.ActionUTC = ActionUTC.AddDays(1);
       s = customerContext.StoreEvent(createCustomerEvent);
@@ -139,9 +142,7 @@ namespace RepositoryTests
         CustomerName = "The Customer Name Updated",
         ActionUTC = ActionUTC.AddHours(1)
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
+      
       var s = customerContext.StoreEvent(updateCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Update Customer event not written");
@@ -183,8 +184,6 @@ namespace RepositoryTests
         ActionUTC = ActionUTC.AddMinutes(2)
       };
       
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
       customerContext.StoreEvent(createCustomerEvent).Wait();
       var s = customerContext.StoreEvent(updateCustomerEvent);
       s.Wait();
@@ -228,9 +227,7 @@ namespace RepositoryTests
         CustomerUID = createCustomerEvent.CustomerUID,
         ActionUTC = ActionUTC.AddHours(1)
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
+      
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(deleteCustomerEvent).Wait();
       var s = customerContext.StoreEvent(updateCustomerEvent);
@@ -268,9 +265,7 @@ namespace RepositoryTests
         CustomerName = "The Customer Name GotIt!",
         ActionUTC = ActionUTC
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
+      
       var s = customerContext.StoreEvent(updateCustomerEvent);
       s = customerContext.StoreEvent(updateCustomerEvent);
       s.Wait();
@@ -322,8 +317,6 @@ namespace RepositoryTests
         ActionUTC = ActionUTC.AddMinutes(2)
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(updateCustomerEvent2).Wait();
       var s = customerContext.StoreEvent(updateCustomerEvent);
@@ -362,8 +355,6 @@ namespace RepositoryTests
         CustomerUID = createCustomerEvent.CustomerUID,       
         ActionUTC = ActionUTC.AddHours(1)
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
 
       customerContext.StoreEvent(createCustomerEvent).Wait();
       var s = customerContext.StoreEvent(deleteCustomerEvent);
@@ -417,8 +408,6 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
       var s = customerContext.StoreEvent(deleteCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
@@ -463,8 +452,6 @@ namespace RepositoryTests
         ActionUTC = ActionUTC.AddHours(-1)
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
       customerContext.StoreEvent(createCustomerEvent).Wait();
       var s = customerContext.StoreEvent(deleteCustomerEvent);
       s.Wait();
@@ -505,8 +492,6 @@ namespace RepositoryTests
         ActionUTC = actionUTC
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
       customerContext.StoreEvent(createCustomerEvent).Wait();
       var s = customerContext.StoreEvent(associateCustomerUserEvent);
       s.Wait();
@@ -535,9 +520,7 @@ namespace RepositoryTests
         UserUID = Guid.NewGuid(),
         ActionUTC = actionUTC
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-            
+                  
       customerContext.StoreEvent(associateCustomerUserEvent).Wait();
       associateCustomerUserEvent.ActionUTC = actionUTC.AddDays(-1);
       var s = customerContext.StoreEvent(associateCustomerUserEvent);
@@ -578,9 +561,7 @@ namespace RepositoryTests
         UserUID = Guid.NewGuid(),
         ActionUTC = actionUTC
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
+      
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(associateCustomerUserEvent).Wait();
       associateCustomerUserEvent.ActionUTC = actionUTC.AddDays(1);
@@ -625,9 +606,7 @@ namespace RepositoryTests
         UserUID = associateCustomerUserEvent.UserUID,
         ActionUTC = actionUTC.AddMinutes(2)
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
+      
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(associateCustomerUserEvent).Wait();
       var g = customerContext.GetAssociatedCustomerbyUserUid(associateCustomerUserEvent.UserUID);
@@ -667,9 +646,7 @@ namespace RepositoryTests
         UserUID = userUid,
         ActionUTC = ActionUTC.AddMinutes(2)
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
+      
       customerContext.StoreEvent(createCustomerEvent).Wait();
       var g = customerContext.GetAssociatedCustomerbyUserUid(dissociateCustomerUserEvent.UserUID);
       g.Wait();
@@ -713,9 +690,7 @@ namespace RepositoryTests
         UserUID = associateCustomerUserEvent.UserUID,
         ActionUTC = ActionUTC.AddMinutes(3)
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-
+      
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(associateCustomerUserEvent).Wait();
       customerContext.StoreEvent(dissociateCustomerUserEvent).Wait();

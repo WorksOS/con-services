@@ -12,12 +12,17 @@ namespace RepositoryTests
   [TestClass]
   public class CustomerSubscriptionRepositoryTests
   {
+    IServiceProvider serviceProvider = null;
+    SubscriptionRepository subscriptionContext = null;
+
     [TestInitialize]
     public void Init()
     {
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug());
-      new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
+      serviceProvider = new ServiceCollection()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        .BuildServiceProvider();
+      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>());
     }
 
     #region CustomerSubscriptions
@@ -30,7 +35,7 @@ namespace RepositoryTests
     public void CreateCustomerSubscription_HappyPath()
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
-      
+
       var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
       {
         CustomerUID = Guid.NewGuid(),
@@ -40,8 +45,6 @@ namespace RepositoryTests
         EndDate = new DateTime(9999, 12, 31),
         ActionUTC = actionUTC
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
 
       var s = subscriptionContext.StoreEvent(createCustomerSubscriptionEvent);
       s.Wait();
@@ -84,8 +87,6 @@ namespace RepositoryTests
         ActionUTC = actionUTC.AddHours(1)
       };
 
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
       subscriptionContext.StoreEvent(createCustomerSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(createCustomerSubscriptionEvent2);
       s.Wait();
@@ -117,8 +118,6 @@ namespace RepositoryTests
         EndDate = new DateTime(2110, 12, 31),
         ActionUTC = actionUTC
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
 
       subscriptionContext.StoreEvent(createCustomerSubscriptionEvent).Wait();
 
@@ -154,13 +153,11 @@ namespace RepositoryTests
 
       var updateCustomerSubscriptionEvent = new UpdateCustomerSubscriptionEvent()
       {
-        SubscriptionUID = createCustomerSubscriptionEvent.SubscriptionUID,        
+        SubscriptionUID = createCustomerSubscriptionEvent.SubscriptionUID,
         StartDate = new DateTime(2015, 02, 01),
         EndDate = new DateTime(2015, 12, 31),
         ActionUTC = ActionUTC
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
 
       subscriptionContext.StoreEvent(createCustomerSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(updateCustomerSubscriptionEvent);
@@ -205,8 +202,6 @@ namespace RepositoryTests
         EndDate = new DateTime(2016, 12, 31),
         ActionUTC = ActionUTC.AddMinutes(-10)
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
 
       subscriptionContext.StoreEvent(createCustomerSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(updateCustomerSubscriptionEvent);

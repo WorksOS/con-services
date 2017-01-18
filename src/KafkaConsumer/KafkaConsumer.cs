@@ -51,6 +51,14 @@ namespace KafkaConsumer
 
     }
 
+    /// <summary>
+    ///  for tests
+    /// </summary>
+    public void StartProcessingSync()
+    {
+       ProcessMessage();
+    }
+
 
     private int batchCounter = 0;
     private void ProcessMessage()
@@ -70,9 +78,13 @@ namespace KafkaConsumer
             Console.WriteLine("Saving");
             dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
           }
-          catch
+          catch (Exception ex)
           {
-
+            Console.WriteLine("  An unexpected error occured in KafkaConsumer: {0}", ex.Message);
+            if (ex.InnerException != null)
+            {
+              Console.WriteLine("  Reason: {0}", ex.InnerException.Message);
+            }
           }
           finally
           {

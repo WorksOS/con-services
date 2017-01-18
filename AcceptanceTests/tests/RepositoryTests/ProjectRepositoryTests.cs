@@ -13,12 +13,19 @@ namespace RepositoryTests
   [TestClass]
   public class ProjectRepositoryTests
   {
+    IServiceProvider serviceProvider = null;
+    CustomerRepository customerContext = null;
+    ProjectRepository projectContext = null;
+
     [TestInitialize]
     public void Init()
     {
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug());
-      new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
+      serviceProvider = new ServiceCollection()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        .BuildServiceProvider();
+      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>());
+      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>());
     }
 
     #region Projects
@@ -63,9 +70,6 @@ namespace RepositoryTests
         RelationType = RelationType.Customer,
         ActionUTC = actionUTC
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
 
       var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
@@ -132,9 +136,6 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-
       var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
@@ -182,8 +183,6 @@ namespace RepositoryTests
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = ActionUTC
       };
-
-      var projectContext = new ProjectRepository(new GenericConfiguration());
 
       var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
@@ -245,9 +244,6 @@ namespace RepositoryTests
         RelationType = RelationType.Customer,
         ActionUTC = ActionUTC
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
 
       var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
@@ -330,9 +326,6 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-
       var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
@@ -412,9 +405,6 @@ namespace RepositoryTests
         ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
         ActionUTC = ActionUTC.AddHours(1)
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
 
       var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
@@ -500,9 +490,6 @@ namespace RepositoryTests
         ActionUTC = ActionUTC.AddHours(-1)
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-
       var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
@@ -576,9 +563,6 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         ActionUTC = ActionUTC.AddHours(1)
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
 
       var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
@@ -663,9 +647,6 @@ namespace RepositoryTests
         ActionUTC = ActionUTC.AddHours(-1)
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-
       var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
@@ -748,9 +729,6 @@ namespace RepositoryTests
         ActionUTC = ActionUTC.AddDays(1)
       };
 
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-
       var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
@@ -829,9 +807,6 @@ namespace RepositoryTests
         RelationType = RelationType.Customer,
         ActionUTC = ActionUTC.AddDays(-1)
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
 
       projectContext.StoreEvent(createProjectEvent).Wait();
       customerContext.StoreEvent(createCustomerEvent).Wait();

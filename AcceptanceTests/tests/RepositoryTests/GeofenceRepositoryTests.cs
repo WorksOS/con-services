@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Project.Data;
-using VSS.Customer.Data;
 using VSS.Geofence.Data;
 using VSS.Geofence.Data.Models;
 
@@ -15,16 +14,23 @@ namespace RepositoryTests
   [TestClass]
   public class GeofenceRepositoryTests
   {
+    IServiceProvider serviceProvider = null;
+    GeofenceRepository geofenceContext = null;
+    ProjectRepository projectContext = null;
+
     [TestInitialize]
     public void Init()
     {
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug());
-      new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
+      serviceProvider = new ServiceCollection()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        .BuildServiceProvider();
+      geofenceContext = new GeofenceRepository(serviceProvider.GetService<IConfigurationStore>());
+      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>());
     }
 
     #region Geofence
-   
+
     /// <summary>
     /// Create Geofence - Happy path 
     ///   geofence doesn't exist.
@@ -48,8 +54,6 @@ namespace RepositoryTests
         UserUID = Guid.NewGuid(),
         ActionUTC = actionUtc
       };
-
-      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
 
       var s = geofenceContext.StoreEvent(createGeofenceEvent);
       s.Wait();
@@ -86,8 +90,6 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
-
       geofenceContext.StoreEvent(createGeofenceEvent).Wait();
       var s = geofenceContext.StoreEvent(createGeofenceEvent);
       s.Wait();
@@ -100,7 +102,7 @@ namespace RepositoryTests
       Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
     }
 
-    
+
     /// <summary>
     /// Update Geofence - happyPath
     /// exists, just update whichever fields are allowed.
@@ -133,11 +135,9 @@ namespace RepositoryTests
         GeofenceType = createGeofenceEvent.GeofenceType,
         FillColor = 56666,
         IsTransparent = false,
-        GeometryWKT = createGeofenceEvent.GeometryWKT,        
+        GeometryWKT = createGeofenceEvent.GeometryWKT,
         ActionUTC = actionUtc
       };
-
-      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
 
       geofenceContext.StoreEvent(createGeofenceEvent).Wait();
       var s = geofenceContext.StoreEvent(updateGeofenceEvent);
@@ -189,9 +189,6 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
-
-      //geofenceContext.StoreEvent(createGeofenceEvent).Wait();
       var s = geofenceContext.StoreEvent(updateGeofenceEvent);
       s.Wait();
       Assert.AreEqual(0, s.Result, "Unable to update geofence");
@@ -223,12 +220,10 @@ namespace RepositoryTests
 
       var deleteGeofenceEvent = new DeleteGeofenceEvent()
       {
-        GeofenceUID = createGeofenceEvent.GeofenceUID,        
+        GeofenceUID = createGeofenceEvent.GeofenceUID,
         UserUID = createGeofenceEvent.UserUID,
         ActionUTC = actionUtc
       };
-
-      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
 
       geofenceContext.StoreEvent(createGeofenceEvent).Wait();
       var s = geofenceContext.StoreEvent(deleteGeofenceEvent);
@@ -274,8 +269,6 @@ namespace RepositoryTests
         UserUID = createGeofenceEvent.UserUID,
         ActionUTC = actionUtc
       };
-
-      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
 
       var s = geofenceContext.StoreEvent(deleteGeofenceEvent);
       s.Wait();
@@ -331,9 +324,6 @@ namespace RepositoryTests
         ActionUTC = actionUtc.AddDays(1)
       };
 
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
-
       geofenceContext.StoreEvent(createGeofenceEvent).Wait();
       var s = projectContext.StoreEvent(associateProjectGeofenceEvent);
       s.Wait();
@@ -377,9 +367,6 @@ namespace RepositoryTests
         GeofenceUID = createGeofenceEvent.GeofenceUID,
         ActionUTC = actionUtc.AddDays(1)
       };
-
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-      var geofenceContext = new GeofenceRepository(new GenericConfiguration());
 
       geofenceContext.StoreEvent(createGeofenceEvent).Wait();
       projectContext.StoreEvent(associateProjectGeofenceEvent).Wait();

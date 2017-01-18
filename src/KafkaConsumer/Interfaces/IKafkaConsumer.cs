@@ -9,5 +9,6 @@ namespace KafkaConsumer
         void SetTopic(string topic);
         Task StartProcessingAsync(CancellationTokenSource token);
         void StopProcessing();
-    }
+        void StartProcessingSync();
+  }
 }

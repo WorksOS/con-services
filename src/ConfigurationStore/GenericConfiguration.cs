@@ -38,34 +38,6 @@ namespace VSS.Project.Service.Utils
       }
     }
 
-    public bool Init()
-    {
-      var log = DependencyInjectionProvider.ServiceProvider.GetService<ILoggerFactory>().CreateLogger<GenericConfiguration>();
-      log.LogInformation("KAFKA_URI: " + GetValueString("KAFKA_URI"));
-      log.LogInformation("KAFKA_PORT: " + GetValueInt("KAFKA_PORT"));
-      log.LogInformation("KAFKA_GROUP_NAME: " + GetValueString("KAFKA_GROUP_NAME"));
-      log.LogInformation("KAFKA_STACKSIZE: " + GetValueInt("KAFKA_STACKSIZE"));
-      log.LogInformation("KAFKA_AUTO_COMMIT: " + GetValueBool("KAFKA_AUTO_COMMIT"));
-      log.LogInformation("KAFKA_OFFSET: " + GetValueString("KAFKA_OFFSET"));
-      log.LogInformation("KAFKA_TOPIC_NAME_SUFFIX: " + GetValueString("KAFKA_TOPIC_NAME_SUFFIX"));
-      log.LogInformation("KAFKA_POLL_PERIOD: " + GetValueInt("KAFKA_POLL_PERIOD"));
-      log.LogInformation("KAFKA_BATCH_SIZE: " + GetValueInt("KAFKA_BATCH_SIZE"));
-
-      if (GetValueString("KAFKA_TOPIC_NAME_SUFFIX") == null
-           || GetValueString("KAFKA_URI") == null
-           || GetValueInt("KAFKA_PORT") == int.MinValue
-           || GetValueString("KAFKA_GROUP_NAME") == null
-           || GetValueInt("KAFKA_STACKSIZE") == int.MinValue
-           || GetValueBool("KAFKA_AUTO_COMMIT") == null
-           || GetValueString("KAFKA_OFFSET") == null
-           || GetValueInt("KAFKA_POLL_PERIOD") == int.MinValue
-           || GetValueInt("KAFKA_BATCH_SIZE") == int.MinValue
-          )
-        return false;
-
-      return true;
-    }
-
     public string GetConnectionString(string connectionType)
     {
       string serverName = null;

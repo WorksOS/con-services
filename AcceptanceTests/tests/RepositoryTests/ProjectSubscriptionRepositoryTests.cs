@@ -16,12 +16,21 @@ namespace RepositoryTests
   [TestClass]
   public class ProjectSubscriptionRepositoryTests
   {
+    IServiceProvider serviceProvider = null;
+    SubscriptionRepository subscriptionContext = null;
+    CustomerRepository customerContext = null;
+    ProjectRepository projectContext = null;
+
     [TestInitialize]
     public void Init()
     {
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug());
-      new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
+      serviceProvider = new ServiceCollection()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        .BuildServiceProvider();
+      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>());
+      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>());
+      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>());
     }
 
     #region ProjectSubscriptions
@@ -45,9 +54,7 @@ namespace RepositoryTests
         EndDate = new DateTime(9999, 12, 31),
         ActionUTC = actionUTC
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       var s = subscriptionContext.StoreEvent(createProjectSubscriptionEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "ProjectSubscription event not written");
@@ -88,9 +95,7 @@ namespace RepositoryTests
         EndDate = new DateTime(9999, 12, 31),
         ActionUTC = actionUTC.AddHours(1)
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(createProjectSubscriptionEvent2);
       s.Wait();
@@ -108,7 +113,7 @@ namespace RepositoryTests
     ///    this will result in new endDate
     /// </summary>
     [TestMethod]
-    public void CreateSubscription_FutureEndDate()
+    public void CreateProjectSubscription_FutureEndDate()
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var customerUID = Guid.NewGuid();
@@ -122,9 +127,7 @@ namespace RepositoryTests
         EndDate = new DateTime(2110, 12, 31),
         ActionUTC = actionUTC
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
 
       Subscription subscription = CopyModel(subscriptionContext, createProjectSubscriptionEvent);
@@ -164,9 +167,7 @@ namespace RepositoryTests
         EndDate = new DateTime(2016, 12, 31),
         ActionUTC = ActionUTC
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(updateProjectSubscriptionEvent);
       s.Wait();
@@ -211,9 +212,7 @@ namespace RepositoryTests
         EndDate = new DateTime(2016, 12, 31),
         ActionUTC = ActionUTC.AddMinutes(-10)
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(updateProjectSubscriptionEvent);
       s.Wait();
@@ -256,9 +255,7 @@ namespace RepositoryTests
         EndDate = null,
         ActionUTC = ActionUTC.AddMinutes(10)
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(updateProjectSubscriptionEvent);
       s.Wait();
@@ -299,9 +296,7 @@ namespace RepositoryTests
         EndDate = new DateTime(2110, 12, 31),
         ActionUTC = ActionUTC.AddHours(1)
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(updateProjectSubscriptionEvent);
       s.Wait();
@@ -338,9 +333,7 @@ namespace RepositoryTests
         EffectiveDate = new DateTime(2016, 02, 03),
         ActionUTC = actionUtc
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       var s = subscriptionContext.StoreEvent(associateProjectSubscriptionEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "associateProjectSubscription event not written");
@@ -370,9 +363,7 @@ namespace RepositoryTests
         EffectiveDate = new DateTime(2016, 02, 03),
         ActionUTC = actionUtc
       };
-
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       subscriptionContext.StoreEvent(associateProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(associateProjectSubscriptionEvent);
       s.Wait();
@@ -432,11 +423,7 @@ namespace RepositoryTests
         EffectiveDate = new DateTime(2016, 02, 03),
         ActionUTC = actionUtc
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       projectContext.StoreEvent(createProjectEvent).Wait();
       customerContext.StoreEvent(createCustomerEvent).Wait();
       projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
@@ -528,11 +515,7 @@ namespace RepositoryTests
         EffectiveDate = new DateTime(2016, 02, 03),
         ActionUTC = actionUtc.AddMinutes(22)
       };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-      var subscriptionContext = new SubscriptionRepository(new GenericConfiguration());
-
+      
       projectContext.StoreEvent(createProjectEvent).Wait();
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(associateCustomerUser).Wait();
@@ -606,10 +589,7 @@ namespace RepositoryTests
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
       { CustomerUID = createCustomerEvent.CustomerUID, ProjectUID = createProjectEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = actionUtc };
-
-      var customerContext = new CustomerRepository(new GenericConfiguration());
-      var projectContext = new ProjectRepository(new GenericConfiguration());
-
+      
       projectContext.StoreEvent(createProjectEvent).Wait();
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(associateCustomerUser).Wait();
