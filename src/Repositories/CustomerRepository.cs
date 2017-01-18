@@ -85,29 +85,30 @@ namespace VSS.Customer.Data
 
       await PerhapsOpenConnection();
 
-      var existing = Connection.Query<Models.Customer>
+      var existing = (await Connection.QueryAsync<Models.Customer>
         (@"SELECT 
                 CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC
               FROM Customer
               WHERE CustomerUID = @CustomerUid",
-        new { CustomerUid = customer.CustomerUID }).FirstOrDefault();
+        new { CustomerUid = customer.CustomerUID }
+        )).FirstOrDefault();
 
       if (existing != null && existing.IsDeleted == true)
         return upsertedCount;
 
       if (eventType == "CreateCustomerEvent")
       {
-        upsertedCount = CreateCustomer(customer, existing);
+        upsertedCount = await CreateCustomer(customer, existing);
       }
 
       if (eventType == "UpdateCustomerEvent")
       {
-        upsertedCount = UpdateCustomer(customer, existing);
+        upsertedCount = await UpdateCustomer(customer, existing);
       }
 
       if (eventType == "DeleteCustomerEvent")
       {
-        upsertedCount = DeleteCustomer(customer, existing);
+        upsertedCount = await DeleteCustomer(customer, existing);
       }
 
       //  Log.DebugFormat("CustomerRepository: upserted {0} rows", upsertedCount);
@@ -117,8 +118,9 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private int CreateCustomer(Models.Customer customer, Models.Customer existing)
+    private async Task<int> CreateCustomer(Models.Customer customer, Models.Customer existing)
     {
+      var upsertedCount = 0;
       if (existing == null)
       {
         // Log.DebugFormat("CustomerRepository: going to create customer={0}", JsonConvert.SerializeObject(customer));
@@ -129,7 +131,12 @@ namespace VSS.Customer.Data
               VALUES
                 (@CustomerUID, @Name, @CustomerType, @IsDeleted, @LastActionedUTC)";
 
-        return Connection.Execute(insert, customer);
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, customer);
+          // log.LogDebug("CreateCustomer (Create/insert): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
       }
       else if (existing.LastActionedUTC >= customer.LastActionedUTC)
       {
@@ -139,16 +146,23 @@ namespace VSS.Customer.Data
             @"UPDATE Customer                
                 SET fk_CustomerTypeID = @CustomerType
                 WHERE CustomerUID = @CustomerUID";
-        return Connection.Execute(update, customer);
+
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(update, customer);
+          // log.LogDebug("CreateCustomer (Create/update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
       }
 
-        //   Log.DebugFormat("CustomerRepository: can't create as already exists newActionedUTC={0}", customer.LastActionedUTC);
+      //   Log.DebugFormat("CustomerRepository: can't create as already exists newActionedUTC={0}", customer.LastActionedUTC);
 
-        return 0;
+      return upsertedCount;
     }
 
-    private int UpdateCustomer(Models.Customer customer, Models.Customer existing)
+    private async Task<int> UpdateCustomer(Models.Customer customer, Models.Customer existing)
     {
+      var upsertedCount = 0;
       if (existing != null)
       {
         if (customer.LastActionedUTC >= existing.LastActionedUTC)
@@ -158,7 +172,12 @@ namespace VSS.Customer.Data
                 SET Name = @Name,
                   LastActionedUTC = @LastActionedUTC
                 WHERE CustomerUID = @CustomerUID";
-          return Connection.Execute(update, customer);
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(update, customer);
+            // log.LogDebug("UpdateCustomer (update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          });
         }
 
         //     Log.DebugFormat("CustomerRepository: old update event ignored currentActionedUTC={0} newActionedUTC={1}",
@@ -172,17 +191,23 @@ namespace VSS.Customer.Data
                 (CustomerUID, Name, fk_CustomerTypeID, LastActionedUTC)
               VALUES
                 (@CustomerUID, @Name, @CustomerType, @LastActionedUTC)";
-        return Connection.Execute(insert, customer);
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, customer);
+          // log.LogDebug("UpdateCustomer (insert): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
 
         //         Log.DebugFormat("CustomerRepository: update causes an insert as customer doesn't exist yet actionUTC={0}",
         //                customer.LastActionedUTC);
       }
-   
-      return 0;
+
+      return upsertedCount;
     }
 
-    private int DeleteCustomer(Models.Customer customer, Models.Customer existing)
+    private async Task<int> DeleteCustomer(Models.Customer customer, Models.Customer existing)
     {
+      var upsertedCount = 0;
       if (existing != null)
       {
         if (customer.LastActionedUTC >= existing.LastActionedUTC)
@@ -192,7 +217,12 @@ namespace VSS.Customer.Data
                 SET IsDeleted = 1,
                   LastActionedUTC = @LastActionedUTC                
                 WHERE CustomerUID = @CustomerUID";
-          return Connection.Execute(update, customer);
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(update, customer);
+            // log.LogDebug("DeleteCustomer (update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          });
         }
 
         //          Log.DebugFormat("CustomerRepository: old delete event ignored currentActionedUTC={0} newActionedUTC={1}",
@@ -208,24 +238,30 @@ namespace VSS.Customer.Data
                 (CustomerUID, Name, fk_CustomerTypeID, IsDeleted, LastActionedUTC)
               VALUES
                 (@CustomerUID, @Name, @CustomerType, @IsDeleted, @LastActionedUTC)";
-        return Connection.Execute(insert, customer);
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, customer);
+          // log.LogDebug("DeleteCustomer (insert): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
 
         //           Log.DebugFormat("CustomerRepository: can't delete as none existing newActionedUT={0}",
-      //                customer.LastActionedUTC);
-    }
-      return 0;
+        //                customer.LastActionedUTC);
+      }
+      return upsertedCount;
     }
 
     public async Task<Models.Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
     {
       await PerhapsOpenConnection();
 
-      var customer = Connection.Query<Models.Customer>
+      var customer = (await Connection.QueryAsync<Models.Customer>
           (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, c.LastActionedUTC 
                 FROM Customer c 
                 JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
                 WHERE cu.UserUID = @userUid AND c.IsDeleted = 0",
-            new { userUid = userUid.ToString() }).FirstOrDefault();
+            new { userUid = userUid.ToString() }
+            )).FirstOrDefault();
 
       PerhapsCloseConnection();
 
@@ -236,11 +272,12 @@ namespace VSS.Customer.Data
     {
       await PerhapsOpenConnection();
 
-      var customer = Connection.Query<Models.Customer>
+      var customer = (await Connection.QueryAsync<Models.Customer>
           (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
                 FROM Customer 
                 WHERE CustomerUID = @customerUid AND IsDeleted = 0",
-             new { customerUid = customerUid.ToString() }).FirstOrDefault();
+             new { customerUid = customerUid.ToString() }
+             )).FirstOrDefault();
 
       PerhapsCloseConnection();
 
@@ -264,21 +301,22 @@ namespace VSS.Customer.Data
       //     Log.DebugFormat("CustomerRepository: Upserting eventType={0} CustomerUid={1}, UserUid={2}",
       //   eventType, customerUser.CustomerUID, customerUser.UserUID);
 
-      var existing = Connection.Query<Models.CustomerUser>
+      var existing = (await Connection.QueryAsync<Models.CustomerUser>
         (@"SELECT 
                 UserUID, fk_CustomerUID AS CustomerUID, LastActionedUTC
               FROM CustomerUser
-              WHERE fk_CustomerUID = @customerUID AND UserUID = @userUID", 
-          new { customerUID = customerUser.CustomerUID, userUID = customerUser.UserUID }).FirstOrDefault();
+              WHERE fk_CustomerUID = @customerUID AND UserUID = @userUID",
+          new { customerUID = customerUser.CustomerUID, userUID = customerUser.UserUID }
+          )).FirstOrDefault();
 
       if (eventType == "AssociateCustomerUserEvent")
       {
-        upsertedCount = AssociateCustomerUser(customerUser, existing);
+        upsertedCount = await AssociateCustomerUser(customerUser, existing);
       }
 
       if (eventType == "DissociateCustomerUserEvent")
       {
-        upsertedCount = DissociateCustomerUser(customerUser, existing);
+        upsertedCount = await DissociateCustomerUser(customerUser, existing);
       }
 
       //   Log.DebugFormat("CustomerRepository: upserted {0} rows", upsertedCount);
@@ -288,8 +326,9 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private int AssociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
+    private async Task<int> AssociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
     {
+      var upsertedCount = 0;
       if (existing == null)
       {
         const string insert =
@@ -298,15 +337,21 @@ namespace VSS.Customer.Data
             VALUES
               (@UserUID, @CustomerUID, @LastActionedUTC)";
 
-        return Connection.Execute(insert, customerUser);
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, customerUser);
+          // log.LogDebug("AssociateCustomerUser: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
       }
 
       //      Log.DebugFormat("CustomerRepository: can't create as already exists newActionedUTC={0}", customerUser.LastActionedUTC);
-      return 0;
+      return upsertedCount;
     }
 
-    private int DissociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
+    private async Task<int> DissociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
     {
+      var upsertedCount = 0;
       if (existing != null)
       {
         if (customerUser.LastActionedUTC >= existing.LastActionedUTC)
@@ -315,7 +360,12 @@ namespace VSS.Customer.Data
             @"DELETE 
                 FROM CustomerUser               
                 WHERE fk_CustomerUID = @CustomerUID AND UserUID = @UserUID";
-          return Connection.Execute(delete, customerUser);
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(delete, customerUser);
+            // log.LogDebug("DissociateCustomerUser: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          });
         }
 
         //      Log.DebugFormat("CustomerRepository: old delete event ignored currentActionedUTC{0} newActionedUTC{1}",
@@ -326,7 +376,7 @@ namespace VSS.Customer.Data
         //           Log.DebugFormat("CustomerRepository: can't delete as none existing newActionedUTC {0}",
         //                customerUser.LastActionedUTC);
       }
-      return 0;
+      return upsertedCount;
     }
 
 
@@ -334,11 +384,12 @@ namespace VSS.Customer.Data
     {
       await PerhapsOpenConnection();
 
-      var customer = Connection.Query<Models.Customer>
+      var customer = (await Connection.QueryAsync<Models.Customer>
           (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
                 FROM Customer 
                 WHERE CustomerUID = @customerUid",
-             new { customerUid = customerUid.ToString() }).FirstOrDefault();
+             new { customerUid = customerUid.ToString() }
+             )).FirstOrDefault();
 
       PerhapsCloseConnection();
 
@@ -349,11 +400,12 @@ namespace VSS.Customer.Data
     {
       await PerhapsOpenConnection();
 
-      var customer = Connection.Query<Models.CustomerUser>
+      var customer = (await Connection.QueryAsync<Models.CustomerUser>
           (@"SELECT fk_CustomerUID AS CustomerUID, UserUID, LastActionedUTC 
                 FROM CustomerUser
                 WHERE UserUID = @userUid",
-            new { userUid = userUid.ToString() }).FirstOrDefault();
+            new { userUid = userUid.ToString() }
+            )).FirstOrDefault();
 
       PerhapsCloseConnection();
 

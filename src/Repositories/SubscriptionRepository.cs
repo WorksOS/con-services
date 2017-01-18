@@ -4,9 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using KafkaConsumer;
-using Newtonsoft.Json;
-
-using Microsoft.Extensions.Logging;
 using VSS.Subscription.Data.Models;
 using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -123,12 +120,13 @@ namespace VSS.Project.Service.Repositories
 
       //       Log.DebugFormat("SubscriptionRepository: Upserting eventType={0} SubscriptionUID={1}", eventType, subscription.SubscriptionUID);
 
-      var existing = Connection.Query<VSS.Subscription.Data.Models.Subscription>
+      var existing = (await Connection.QueryAsync<Subscription.Data.Models.Subscription>
         (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, StartDate, EndDate, fk_ServiceTypeID AS ServiceTypeID, LastActionedUTC 
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUID",
-          new { subscriptionUID = subscription.SubscriptionUID }).FirstOrDefault();
+          new { subscriptionUID = subscription.SubscriptionUID }
+          )).FirstOrDefault();
 
       if (eventType == "CreateProjectSubscriptionEvent" || eventType == "CreateCustomerSubscriptionEvent")
       {
@@ -147,8 +145,9 @@ namespace VSS.Project.Service.Repositories
       return upsertedCount;
     }
 
-    private async Task<int> CreateProjectSubscription(VSS.Subscription.Data.Models.Subscription subscription, VSS.Subscription.Data.Models.Subscription existing)
+    private async Task<int> CreateProjectSubscription(Subscription.Data.Models.Subscription subscription, VSS.Subscription.Data.Models.Subscription existing)
     {
+      var upsertedCount = 0;
       if (existing == null)
       {
         const string insert =
@@ -156,15 +155,22 @@ namespace VSS.Project.Service.Repositories
                 (SubscriptionUID, fk_CustomerUID, StartDate, EndDate, fk_ServiceTypeID, LastActionedUTC)
               VALUES
                 (@SubscriptionUID, @CustomerUID, @StartDate, @EndDate, @ServiceTypeID, @LastActionedUTC)";
-        return Connection.Execute(insert, subscription);
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, subscription);
+          // log.LogDebug("CreateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
       }
       //     Log.DebugFormat("SubscriptionRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", subscription.LastActionedUTC);
-      return 0;
+      return upsertedCount;
     }
 
     private async Task<int> UpdateProjectSubscription(VSS.Subscription.Data.Models.Subscription subscription, VSS.Subscription.Data.Models.Subscription existing)
     {
       // todo this code allows customerUID and serviceType to be updated - is this intentional?
+
+      var upsertedCount = 0;
       if (existing != null)
       {
         if (subscription.LastActionedUTC >= existing.LastActionedUTC)
@@ -188,7 +194,12 @@ namespace VSS.Project.Service.Repositories
                       fk_ServiceTypeID=@ServiceTypeID,
                       LastActionedUTC=@LastActionedUTC
                 WHERE SubscriptionUID = @SubscriptionUID";
-          return Connection.Execute(update, subscription);
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(update, subscription);
+            // log.LogDebug("UpdateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          });
         }
 
         //          Log.DebugFormat("SubscriptionRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
@@ -199,10 +210,10 @@ namespace VSS.Project.Service.Repositories
         //        Log.DebugFormat("SubscriptionRepository: can't update as none existing newActionedUTC {0}",
         //          subscription.LastActionedUTC);
       }
-      return 0;
+      return upsertedCount;
     }
 
-    private async Task<int> UpsertProjectSubscriptionDetail(VSS.Subscription.Data.Models.ProjectSubscription projectSubscription, string eventType)
+    private async Task<int> UpsertProjectSubscriptionDetail(ProjectSubscription projectSubscription, string eventType)
     {
       int upsertedCount = 0;
 
@@ -211,12 +222,13 @@ namespace VSS.Project.Service.Repositories
       //    Log.DebugFormat("SubscriptionRepository: Upserting eventType={0} ProjectUid={1}, SubscriptionUid={2}",
       //     eventType, projectSubscription.ProjectUID, projectSubscription.SubscriptionUID);
 
-      var existing = Connection.Query<VSS.Subscription.Data.Models.ProjectSubscription>
+      var existing = (await Connection.QueryAsync<ProjectSubscription>
           (@"SELECT 
                 fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
               FROM ProjectSubscription
               WHERE fk_ProjectUID = @projectUID AND fk_SubscriptionUID = @subscriptionUID",
-          new { projectUID = projectSubscription.ProjectUID, subscriptionUID = projectSubscription.SubscriptionUID }).FirstOrDefault();
+          new { projectUID = projectSubscription.ProjectUID, subscriptionUID = projectSubscription.SubscriptionUID }
+          )).FirstOrDefault();
 
       if (eventType == "AssociateProjectSubscriptionEvent")
       {
@@ -230,9 +242,11 @@ namespace VSS.Project.Service.Repositories
       return upsertedCount;
     }
 
-    private async Task<int> AssociateProjectSubscription(VSS.Subscription.Data.Models.ProjectSubscription projectSubscription, VSS.Subscription.Data.Models.ProjectSubscription existing)
+    private async Task<int> AssociateProjectSubscription(ProjectSubscription projectSubscription, ProjectSubscription existing)
     {
+      var upsertedCount = 0;
       await PerhapsOpenConnection();
+
       if (existing == null)
       {
         const string insert =
@@ -242,11 +256,16 @@ namespace VSS.Project.Service.Repositories
                 (@SubscriptionUID, @ProjectUID, @EffectiveDate, @LastActionedUTC)";
 
         PerhapsCloseConnection();
-        return Connection.Execute(insert, projectSubscription);
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, projectSubscription);
+          // log.LogDebug("AssociateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
       }
       PerhapsCloseConnection();
       //        Log.DebugFormat("SubscriptionRepository: can't create as already exists newActionedUTC={0}", projectSubscription.LastActionedUTC);
-      return 0;
+      return upsertedCount;
     }
 
     private async Task<IEnumerable<ServiceType>> GetServiceTypes()
@@ -255,11 +274,11 @@ namespace VSS.Project.Service.Repositories
 
       //     Log.Debug("SubscriptionRepository: Getting service types");
 
-      var serviceTypes = Connection.Query<VSS.Subscription.Data.Models.ServiceType>
+      var serviceTypes = (await Connection.QueryAsync<ServiceType>
           (@"SELECT 
                 s.ID, s.Description AS Name, sf.ID AS ServiceTypeFamilyID, sf.Description AS ServiceTypeFamilyName
               FROM ServiceTypeEnum s JOIN ServiceTypeFamilyEnum sf on s.fk_ServiceTypeFamilyID = sf.ID"
-          );
+          ));
 
       PerhapsCloseConnection();
 
@@ -270,60 +289,54 @@ namespace VSS.Project.Service.Repositories
     {
       await PerhapsOpenConnection();
 
-      var subscription = Connection.Query<VSS.Subscription.Data.Models.Subscription>
+      var subscription = (await Connection.QueryAsync<Subscription.Data.Models.Subscription>
         (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUid"
           , new { subscriptionUid }
-        ).FirstOrDefault();
+        )).FirstOrDefault();
 
       PerhapsCloseConnection();
 
       return subscription;
     }
 
-    // todo this must be internal for unit testing?
     public async Task<IEnumerable<Subscription.Data.Models.Subscription>> GetSubscriptions_UnitTest(string subscriptionUid)
     {
       await PerhapsOpenConnection();
 
-      var subscriptions = Connection.Query<VSS.Subscription.Data.Models.Subscription>
+      var subscriptions = (await Connection.QueryAsync<Subscription.Data.Models.Subscription>
         (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUid"
           , new { subscriptionUid }
-         );
+         ));
 
       PerhapsCloseConnection();
 
       return subscriptions;
     }
 
-    public async Task<IEnumerable<Subscription.Data.Models.ProjectSubscription>> GetProjectSubscriptions_UnitTest(string subscriptionUid)
+    public async Task<IEnumerable<ProjectSubscription>> GetProjectSubscriptions_UnitTest(string subscriptionUid)
     {
-      int upsertedCount = 0;
-
       await PerhapsOpenConnection();
 
       //    Log.DebugFormat("SubscriptionRepository: Upserting eventType={0} ProjectUid={1}, SubscriptionUid={2}",
       //     eventType, projectSubscription.ProjectUID, projectSubscription.SubscriptionUID);
 
-      var projectSubscriptions = Connection.Query<VSS.Subscription.Data.Models.ProjectSubscription>
+      var projectSubscriptions = (await Connection.QueryAsync<ProjectSubscription>
           (@"SELECT 
                 fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
               FROM ProjectSubscription
               WHERE fk_SubscriptionUID = @subscriptionUID"
             , new { subscriptionUid }
-          );
+          ));
 
       PerhapsCloseConnection();
 
       return projectSubscriptions;
     }
-
-
   }
-
 }

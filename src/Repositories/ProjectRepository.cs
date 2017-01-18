@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Dapper;
 using KafkaConsumer;
@@ -96,27 +95,28 @@ namespace VSS.Project.Data
 
       //Log.DebugFormat("ProjectRepository: Upserting eventType={0} projectUid={1}", eventType, project.ProjectUID);
 
-      var existing = Connection.Query<Models.Project>
+      var existing = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
                 ProjectTimeZone, LandfillTimeZone, 
                 LastActionedUTC, StartDate, EndDate
               FROM Project
-              WHERE ProjectUID = @projectUid", new { projectUid = project.ProjectUID }).FirstOrDefault();
+              WHERE ProjectUID = @projectUid", new { projectUid = project.ProjectUID }
+           )).FirstOrDefault();
 
       if (eventType == "CreateProjectEvent")
       {
-        upsertedCount = CreateProject(project, existing);
+        upsertedCount = await CreateProject(project, existing);
       }
 
       if (eventType == "UpdateProjectEvent")
       {
-        upsertedCount = UpdateProject(project, existing);
+        upsertedCount = await UpdateProject(project, existing);
       }
 
       if (eventType == "DeleteProjectEvent")
       {
-        upsertedCount = DeleteProject(project, existing);
+        upsertedCount = await DeleteProject(project, existing);
       }
 
       //Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
@@ -126,8 +126,9 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private int CreateProject(Models.Project project, Models.Project existing)
+    private async Task<int> CreateProject(Models.Project project, Models.Project existing)
     {
+      var upsertedCount = 0;
       if (existing == null)
       {
         const string insert =
@@ -135,9 +136,14 @@ namespace VSS.Project.Data
                 (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate )
               VALUES
                 (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate)";
-        return Connection.Execute(insert, project);
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, project);
+          // log.LogDebug("CreateProject (insert): upserted {0} rows (1=insert, 2=update) for: assetUid:{1}", upsertedCount, project.ProjectUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
       }
-      else if (string.IsNullOrEmpty(existing.Name) )
+      else if (string.IsNullOrEmpty(existing.Name))
       {
         // this code comes from landfill, however in MD, no dummy is created
         //   is this obsolete?
@@ -153,8 +159,13 @@ namespace VSS.Project.Data
                   EndDate = @EndDate,
                   LastActionedUTC = @LastActionedUTC         
                 WHERE ProjectUID = @ProjectUID";
-        return Connection.Execute(update, project);
-      }      
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(update, project);
+          // log.LogDebug("CreateProject (update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1}", upsertedCount, project.ProjectUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
+      }
       else if (existing.LastActionedUTC >= project.LastActionedUTC)
       {
         // must be a later update was applied before the create arrived
@@ -167,17 +178,23 @@ namespace VSS.Project.Data
                   LandfillTimeZone = @LandfillTimeZone,
                   StartDate = @StartDate   
                 WHERE ProjectUID = @ProjectUID";
-        return Connection.Execute(update, project);
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(update, project);
+          // log.LogDebug("CreateProject (updateExisting): upserted {0} rows (1=insert, 2=update) for: assetUid:{1}", upsertedCount, project.ProjectUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
       }
 
 
       //            Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC {0}.", project.LastActionedUTC);
 
-      return 0;
+      return upsertedCount;
     }
 
-    private int DeleteProject(Models.Project project, Models.Project existing)
+    private async Task<int> DeleteProject(Models.Project project, Models.Project existing)
     {
+      var upsertedCount = 0;
       if (existing != null)
       {
         if (project.LastActionedUTC >= existing.LastActionedUTC)
@@ -187,7 +204,12 @@ namespace VSS.Project.Data
                 SET IsDeleted = 1,
                   LastActionedUTC = @LastActionedUTC
                 WHERE ProjectUID = @ProjectUID";
-          return Connection.Execute(update, project);
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(update, project);
+            // log.LogDebug("DeleteProject: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          });
         }
         else
         {
@@ -200,11 +222,12 @@ namespace VSS.Project.Data
         //     Log.DebugFormat("ProjectRepository: can't delete as none existing newActionedUTC={0}",
         //         project.LastActionedUTC);
       }
-      return 0;
+      return upsertedCount;
     }
 
-    private int UpdateProject(Models.Project project, Models.Project existing)
+    private async Task<int> UpdateProject(Models.Project project, Models.Project existing)
     {
+      var upsertedCount = 0;
       if (existing != null)
       {
         if (project.LastActionedUTC >= existing.LastActionedUTC)
@@ -216,7 +239,12 @@ namespace VSS.Project.Data
                   EndDate = @EndDate, 
                   fk_ProjectTypeID = @ProjectType
                 WHERE ProjectUID = @ProjectUID";
-          return Connection.Execute(update, project);
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(update, project);
+            // log.LogDebug("UpdateProject: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          });
         }
         else
         {
@@ -229,7 +257,7 @@ namespace VSS.Project.Data
         //        Log.DebugFormat("ProjectRepository: can't update as none existing newActionedUTC={0}",
         //           project.LastActionedUTC);
       }
-      return 0;
+      return upsertedCount;
     }
 
     private async Task<int> UpsertCustomerProjectDetail(Models.CustomerProject customerProject, string eventType)
@@ -241,16 +269,17 @@ namespace VSS.Project.Data
       //    Log.DebugFormat("ProjectRepository: Upserting eventType={0} CustomerUid={1}, ProjectUid={2}",
       //         eventType, customerProject.CustomerUID, customerProject.ProjectUID);
 
-      var existing = Connection.Query<Models.CustomerProject>
+      var existing = (await Connection.QueryAsync<Models.CustomerProject>
           (@"SELECT 
                 fk_CustomerUID AS CustomerUID, LegacyCustomerID, fk_ProjectUID AS ProjectUID, LastActionedUTC
               FROM CustomerProject
               WHERE fk_CustomerUID = @customerUID AND fk_ProjectUID = @projectUID",
-          new { customerUID = customerProject.CustomerUID, projectUID = customerProject.ProjectUID }).FirstOrDefault();
+          new { customerUID = customerProject.CustomerUID, projectUID = customerProject.ProjectUID }
+          )).FirstOrDefault();
 
       if (eventType == "AssociateProjectCustomerEvent")
       {
-        upsertedCount = AssociateProjectCustomer(customerProject, existing);
+        upsertedCount = await AssociateProjectCustomer(customerProject, existing);
       }
 
       //      Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
@@ -259,8 +288,9 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private int AssociateProjectCustomer(Models.CustomerProject customerProject, Models.CustomerProject existing)
+    private async Task<int> AssociateProjectCustomer(Models.CustomerProject customerProject, Models.CustomerProject existing)
     {
+      var upsertedCount = 0;
       const string insert =
         @"INSERT CustomerProject
               (fk_ProjectUID, fk_CustomerUID, LegacyCustomerID, LastActionedUTC)
@@ -273,8 +303,12 @@ namespace VSS.Project.Data
               LegacyCustomerID =
                 IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
                     VALUES(LegacyCustomerID), LegacyCustomerID)";
-      var rowCount = Connection.Execute(insert, customerProject);
-      return rowCount == 2 ? 1 : rowCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted
+      return await dbAsyncPolicy.ExecuteAsync(async () =>
+      {
+        upsertedCount = await Connection.ExecuteAsync(insert, customerProject);
+        // log.LogDebug("AssociateProjectCustomer: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+        return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+      });
 
     }
 
@@ -287,16 +321,17 @@ namespace VSS.Project.Data
       //    Log.DebugFormat("ProjectRepository: Upserting eventType={0} ProjectUid={1}, GeofenceUid={2}",
       //        eventType, projectGeofence.ProjectUID, projectGeofence.GeofenceUID);
 
-      var existing = Connection.Query<Models.ProjectGeofence>
+      var existing = (await Connection.QueryAsync<Models.ProjectGeofence>
         (@"SELECT 
               fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
             FROM ProjectGeofence
             WHERE fk_ProjectUID = @projectUID AND fk_GeofenceUID = @geofenceUID",
-         new { projectUID = projectGeofence.ProjectUID, geofenceUID = projectGeofence.GeofenceUID }).FirstOrDefault();
+         new { projectUID = projectGeofence.ProjectUID, geofenceUID = projectGeofence.GeofenceUID }
+         )).FirstOrDefault();
 
       if (eventType == "AssociateProjectGeofenceEvent")
       {
-        upsertedCount = AssociateProjectGeofence(projectGeofence, existing);
+        upsertedCount = await AssociateProjectGeofence(projectGeofence, existing);
       }
 
       //    Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
@@ -305,8 +340,9 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private int AssociateProjectGeofence(Models.ProjectGeofence projectGeofence, Models.ProjectGeofence existing)
+    private async Task<int> AssociateProjectGeofence(Models.ProjectGeofence projectGeofence, Models.ProjectGeofence existing)
     {
+      var upsertedCount = 0;
       if (existing == null)
       {
         const string insert =
@@ -315,11 +351,16 @@ namespace VSS.Project.Data
               VALUES
                 (@GeofenceUID, @ProjectUID, @LastActionedUTC)";
 
-        return Connection.Execute(insert, projectGeofence);
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, projectGeofence);
+          // log.LogDebug("AssociateProjectGeofence: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
       }
 
       //      Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC={0}", projectGeofence.LastActionedUTC);
-      return 0;
+      return upsertedCount;
     }
 
     /// <summary>
@@ -333,7 +374,7 @@ namespace VSS.Project.Data
     {
       await PerhapsOpenConnection();
 
-      var project = Connection.Query<Models.Project>
+      var project = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
@@ -346,7 +387,7 @@ namespace VSS.Project.Data
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE p.ProjectUID = @projectUid AND p.IsDeleted = 0",
             new { projectUid }
-          ).FirstOrDefault();
+          )).FirstOrDefault();
 
       PerhapsCloseConnection();
       return project;
@@ -361,7 +402,7 @@ namespace VSS.Project.Data
     {
       await PerhapsOpenConnection();
 
-      var projects = Connection.Query<Models.Project>
+      var projects = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
@@ -374,7 +415,7 @@ namespace VSS.Project.Data
                 JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE ps.fk_SubscriptionUID = @subscriptionUid AND p.IsDeleted = 0",
               new { subscriptionUid }
-          ).FirstOrDefault(); ;
+          )).FirstOrDefault(); ;
 
       PerhapsCloseConnection();
       return projects;
@@ -391,7 +432,7 @@ namespace VSS.Project.Data
     public async Task<IEnumerable<Models.Project>> GetProjectsForUser(string userUid)
     {
       await PerhapsOpenConnection();
-      var projects = Connection.Query<Models.Project>
+      var projects = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
@@ -405,7 +446,7 @@ namespace VSS.Project.Data
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE cu.UserUID = @userUid and p.IsDeleted = 0",
             new { userUid }
-          );
+          ));
 
       PerhapsCloseConnection();
       return projects;
@@ -423,7 +464,7 @@ namespace VSS.Project.Data
     {
       await PerhapsOpenConnection();
 
-      var projects = Connection.Query<Models.Project>
+      var projects = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
@@ -436,7 +477,7 @@ namespace VSS.Project.Data
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE cp.fk_CustomerUID = @customerUid and cu.fk_userUID = @userUid and p.IsDeleted = 0",
             new { userUid }
-          );
+          ));
 
       PerhapsCloseConnection();
       return projects;
@@ -452,7 +493,7 @@ namespace VSS.Project.Data
     {
       await PerhapsOpenConnection();
 
-      var project = Connection.Query<Models.Project>
+      var project = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                   p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                   p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
@@ -465,13 +506,13 @@ namespace VSS.Project.Data
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE p.ProjectUID = @projectUid",
             new { projectUid }
-          ).FirstOrDefault();
+          )).FirstOrDefault();
 
       PerhapsCloseConnection();
       return project;
     }
 
-    
+
     /// <summary>
     ///  this must be a test method
     /// </summary>
@@ -480,7 +521,7 @@ namespace VSS.Project.Data
     {
       await PerhapsOpenConnection();
 
-      var projects = Connection.Query<Models.Project>
+      var projects = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
@@ -491,7 +532,8 @@ namespace VSS.Project.Data
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
                 JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE p.IsDeleted = 0");
+              WHERE p.IsDeleted = 0"
+          ));
 
       PerhapsCloseConnection();
       return projects;

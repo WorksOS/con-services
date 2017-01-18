@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Dapper;
 using KafkaConsumer;
@@ -24,8 +23,8 @@ namespace VSS.Geofence.Data
     public async Task<int> StoreEvent(IGeofenceEvent evt)
     {
       var upsertedCount = 0;
-      
-      
+
+
       // since this is a masterDataService (not landfill specific but will be used for compaction and potentially other apps), 
       //  lets just store all geofence types
       GeofenceType geofenceType = GetGeofenceType(evt);
@@ -36,7 +35,7 @@ namespace VSS.Geofence.Data
         string eventType = "Unknown";
         if (evt is CreateGeofenceEvent)
         {
-          var geofenceEvent = (CreateGeofenceEvent) evt;          
+          var geofenceEvent = (CreateGeofenceEvent)evt;
           geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
           geofence.Name = geofenceEvent.GeofenceName;
           geofence.GeofenceType = geofenceType;
@@ -52,7 +51,7 @@ namespace VSS.Geofence.Data
         }
         else if (evt is UpdateGeofenceEvent)
         {
-          var geofenceEvent = (UpdateGeofenceEvent) evt;
+          var geofenceEvent = (UpdateGeofenceEvent)evt;
           geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();//Select existing with this
           geofence.Name = geofenceEvent.GeofenceName;
           //cannot update GeofenceType/GeometryWKT in update event,
@@ -70,7 +69,7 @@ namespace VSS.Geofence.Data
         }
         else if (evt is DeleteGeofenceEvent)
         {
-          var geofenceEvent = (DeleteGeofenceEvent) evt;
+          var geofenceEvent = (DeleteGeofenceEvent)evt;
           geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
           geofence.LastActionedUTC = geofenceEvent.ActionUTC;
           eventType = "DeleteGeofenceEvent";
@@ -92,7 +91,7 @@ namespace VSS.Geofence.Data
       {
         geofenceType = (evt as UpdateGeofenceEvent).GeofenceType;
       }
-      return string.IsNullOrEmpty(geofenceType) ? 
+      return string.IsNullOrEmpty(geofenceType) ?
         GeofenceType.Generic : (GeofenceType)Enum.Parse(typeof(GeofenceType), geofenceType, true);
     }
 
@@ -112,28 +111,29 @@ namespace VSS.Geofence.Data
 
       // Log.DebugFormat("GeofenceRepository: Upserting eventType={0} geofenceUid={1}", eventType, geofence.GeofenceUID);
 
-      var existing = Connection.Query<Models.Geofence>
+      var existing = (await Connection.QueryAsync<Models.Geofence>
         (@"SELECT 
                 GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
                 LastActionedUTC   
               FROM Geofence
-              WHERE GeofenceUID = @geofenceUid", 
-            new { geofenceUid = geofence.GeofenceUID }).FirstOrDefault();
+              WHERE GeofenceUID = @geofenceUid",
+            new { geofenceUid = geofence.GeofenceUID }
+            )).FirstOrDefault();
 
       if (eventType == "CreateGeofenceEvent")
       {
-        upsertedCount = CreateGeofence(geofence, existing);
+        upsertedCount = await CreateGeofence(geofence, existing);
       }
 
       if (eventType == "UpdateGeofenceEvent")
       {
-        upsertedCount = UpdateGeofence(geofence, existing);
+        upsertedCount = await UpdateGeofence(geofence, existing);
       }
 
       if (eventType == "DeleteGeofenceEvent")
       {
-        upsertedCount = DeleteGeofence(geofence, existing);
+        upsertedCount = await DeleteGeofence(geofence, existing);
       }
 
       //Log.DebugFormat("GeofenceRepository: upserted {0} rows", upsertedCount);
@@ -143,8 +143,9 @@ namespace VSS.Geofence.Data
       return upsertedCount;
     }
 
-    private int CreateGeofence(Models.Geofence geofence, Models.Geofence existing)
+    private async Task<int> CreateGeofence(Models.Geofence geofence, Models.Geofence existing)
     {
+      var upsertedCount = 0;
       if (existing == null)
       {
         const string insert =
@@ -152,16 +153,22 @@ namespace VSS.Geofence.Data
                 (GeofenceUID, Name, Description, GeometryWKT, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID)
             VALUES
                 (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType)";
-        return Connection.Execute(insert, geofence);
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, geofence);
+          // log.LogDebug("CreateGeofence: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
       }
 
       // Log.DebugFormat("GeofenceRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", geofence.LastActionedUTC);
 
-      return UpdateGeofence(geofence, existing);
+      return await UpdateGeofence(geofence, existing);
     }
 
-    private int DeleteGeofence(Models.Geofence geofence, Models.Geofence existing)
+    private async Task<int> DeleteGeofence(Models.Geofence geofence, Models.Geofence existing)
     {
+      var upsertedCount = 0;
       if (existing != null)
       {
         if (geofence.LastActionedUTC >= existing.LastActionedUTC)
@@ -171,7 +178,12 @@ namespace VSS.Geofence.Data
                 SET IsDeleted = 1,
                   LastActionedUTC = @LastActionedUTC
                 WHERE GeofenceUID = @GeofenceUID";
-          return Connection.Execute(update, geofence);
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(update, geofence);
+            // log.LogDebug("DeleteGeofence (update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, geofence.GeofenceUID);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          });
         }
         //else
         //{
@@ -197,15 +209,20 @@ namespace VSS.Geofence.Data
                 (GeofenceUID, Name, Description, GeometryWKT, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID)
             VALUES
                 (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType)";
-        return Connection.Execute(insert, geofence);
-        //  Log.DebugFormat("GeofenceRepository: can't delete as none existing newActionedUTC={0}",
-        //    geofence.LastActionedUTC);
+
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, geofence);
+          // log.LogDebug("DeleteGeofence (insert): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, geofence.GeofenceUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
       }
-      return 0;
+      return upsertedCount;
     }
 
-    private int UpdateGeofence(Models.Geofence geofence, Models.Geofence existing)
+    private async Task<int> UpdateGeofence(Models.Geofence geofence, Models.Geofence existing)
     {
+      var upsertedCount = 0;
       if (existing != null)
       {
         if (!geofence.IsTransparent.HasValue)
@@ -221,20 +238,25 @@ namespace VSS.Geofence.Data
             @"UPDATE Geofence                
                 SET Name = @Name, FillColor = @FillColor, IsTransparent = @IsTransparent, LastActionedUTC = @LastActionedUTC                  
               WHERE GeofenceUID = @GeofenceUID";
-          return Connection.Execute(update, geofence);
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(update, geofence);
+            // log.LogDebug("UpdateGeofence (update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, geofence.GeofenceUID);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          });
         }
         //else
         //{
-          //Log.DebugFormat("GeofenceRepository: old update event ignored currentActionedUTC={0} newActionedUTC={1}",
-          //  existing.LastActionedUTC, geofence.LastActionedUTC);
+        //Log.DebugFormat("GeofenceRepository: old update event ignored currentActionedUTC={0} newActionedUTC={1}",
+        //  existing.LastActionedUTC, geofence.LastActionedUTC);
         //}
       }
       //else
       //{
-        //Log.DebugFormat("GeofenceRepository: update received before Create. Add what we canng newActionedUTC={0}",
-        //  geofence.LastActionedUTC);
+      //Log.DebugFormat("GeofenceRepository: update received before Create. Add what we canng newActionedUTC={0}",
+      //  geofence.LastActionedUTC);
       //}
-      return 0;
+      return upsertedCount;
     }
 
     /// <summary>
@@ -246,7 +268,7 @@ namespace VSS.Geofence.Data
     {
       await PerhapsOpenConnection();
 
-      var projectGeofences = Connection.Query<Models.Geofence>
+      var projectGeofences = (await Connection.QueryAsync<Models.Geofence>
          (@"SELECT 
                 GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
@@ -254,7 +276,7 @@ namespace VSS.Geofence.Data
               FROM Geofence 
               WHERE fk_CustomerUID = @customerUid AND IsDeleted = 0",
           new { customerUid }
-         );
+         ));
 
       PerhapsCloseConnection();
 
@@ -272,7 +294,7 @@ namespace VSS.Geofence.Data
     {
       await PerhapsOpenConnection();
 
-      var projectGeofences = Connection.Query<Models.Geofence>
+      var projectGeofences = (await Connection.QueryAsync<Models.Geofence>
          (@"SELECT 
                 GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
@@ -280,8 +302,8 @@ namespace VSS.Geofence.Data
               FROM Geofence g
                 JOIN ProjectGeofence pg ON pg.fk_GeofenceUID = g.GeofenceUID 
               WHERE fk_ProjectUID = @projectUid AND IsDeleted = 0",
-          new {projectUid }
-         );
+          new { projectUid }
+         ));
 
       PerhapsCloseConnection();
 
@@ -293,8 +315,8 @@ namespace VSS.Geofence.Data
     public async Task<Models.Geofence> GetGeofence_UnitTest(string geofenceUid)
     {
       await PerhapsOpenConnection();
-      
-      var geofence = Connection.Query<Models.Geofence>
+
+      var geofence = (await Connection.QueryAsync<Models.Geofence>
           (@"SELECT 
                GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
@@ -302,7 +324,7 @@ namespace VSS.Geofence.Data
               FROM Geofence
               WHERE GeofenceUID = @geofenceUid"
           , new { geofenceUid }
-        ).FirstOrDefault(); 
+        )).FirstOrDefault();
 
       PerhapsCloseConnection();
 
