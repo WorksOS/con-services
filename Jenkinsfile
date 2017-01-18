@@ -113,7 +113,7 @@ node('Jenkins-Win2016-Raptor') {
  
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'
-       bat '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
+       bat "$(aws ecr get-login --region us-west-2 --profile vss-grant)"
        bat "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}"
        bat "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi"
 
