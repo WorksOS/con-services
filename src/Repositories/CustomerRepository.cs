@@ -7,15 +7,18 @@ using VSS.Project.Service.Repositories;
 using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace VSS.Customer.Data
 {
   public class CustomerRepository : RepositoryBase, IRepository<ICustomerEvent>
   {
-    //    private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    private readonly ILogger log;
 
-    public CustomerRepository(IConfigurationStore _connectionString) : base(_connectionString)
+    public CustomerRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString)
     {
+      log = logger.CreateLogger<CustomerRepository>();
     }
 
     public async Task<int> StoreEvent(ICustomerEvent evt)
@@ -94,7 +97,10 @@ namespace VSS.Customer.Data
         )).FirstOrDefault();
 
       if (existing != null && existing.IsDeleted == true)
+      {
+        log.LogDebug("CustomerRepository/UpsertCustomerDetail No update as the Deleted Customer exists: customerUid:{0}", customer.CustomerUID);
         return upsertedCount;
+      }
 
       if (eventType == "CreateCustomerEvent")
       {
@@ -111,10 +117,7 @@ namespace VSS.Customer.Data
         upsertedCount = await DeleteCustomer(customer, existing);
       }
 
-      //  Log.DebugFormat("CustomerRepository: upserted {0} rows", upsertedCount);
-
       PerhapsCloseConnection();
-
       return upsertedCount;
     }
 
@@ -123,7 +126,7 @@ namespace VSS.Customer.Data
       var upsertedCount = 0;
       if (existing == null)
       {
-        // Log.DebugFormat("CustomerRepository: going to create customer={0}", JsonConvert.SerializeObject(customer));
+        log.LogDebug("CustomerRepository/CreateCustomer: going to create customer={0}", JsonConvert.SerializeObject(customer));
 
         const string insert =
           @"INSERT Customer
@@ -134,7 +137,7 @@ namespace VSS.Customer.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, customer);
-          // log.LogDebug("CreateCustomer (Create/insert): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+          log.LogDebug("CustomerRepository/CreateCustomer (Create/insert): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
@@ -142,6 +145,8 @@ namespace VSS.Customer.Data
       {
         // must be a later update was applied before the create arrived
         // leave the more recent actionUTC alone
+
+        log.LogDebug("CustomerRepository/CreateCustomer: going to update customer={0}", JsonConvert.SerializeObject(customer));
         const string update =
             @"UPDATE Customer                
                 SET fk_CustomerTypeID = @CustomerType
@@ -150,13 +155,12 @@ namespace VSS.Customer.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(update, customer);
-          // log.LogDebug("CreateCustomer (Create/update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+          log.LogDebug("CustomerRepository/CreateCustomer: (Create/update): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
 
-      //   Log.DebugFormat("CustomerRepository: can't create as already exists newActionedUTC={0}", customer.LastActionedUTC);
-
+      log.LogDebug("CustomerRepository/CreateCustomer: can't create as already exists customer={0}", JsonConvert.SerializeObject(customer));
       return upsertedCount;
     }
 
@@ -167,6 +171,7 @@ namespace VSS.Customer.Data
       {
         if (customer.LastActionedUTC >= existing.LastActionedUTC)
         {
+          log.LogDebug("CustomerRepository/UpdateCustomer: going to update customer={0}", JsonConvert.SerializeObject(customer));
           const string update =
             @"UPDATE Customer                
                 SET Name = @Name,
@@ -175,16 +180,18 @@ namespace VSS.Customer.Data
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
             upsertedCount = await Connection.ExecuteAsync(update, customer);
-            // log.LogDebug("UpdateCustomer (update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+            log.LogDebug("CustomerRepository/UpdateCustomer: (update): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           });
         }
-
-        //     Log.DebugFormat("CustomerRepository: old update event ignored currentActionedUTC={0} newActionedUTC={1}",
-        //          existing.LastActionedUTC, customer.LastActionedUTC);
+        else
+        {
+          log.LogDebug("CustomerRepository/UpdateCustomer: old ActionedUtc so ignored customer={0}", JsonConvert.SerializeObject(customer));
+        }
       }
       else
       {
+        log.LogDebug("CustomerRepository/UpdateCustomer: doesn't exist,going to add dummy customer={0}", JsonConvert.SerializeObject(customer));
         customer.CustomerType = CustomerType.Customer; // need a default
         const string insert =
           @"INSERT Customer
@@ -194,12 +201,9 @@ namespace VSS.Customer.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, customer);
-          // log.LogDebug("UpdateCustomer (insert): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+          log.LogDebug("CustomerRepository/UpdateCustomer (insert): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
-
-        //         Log.DebugFormat("CustomerRepository: update causes an insert as customer doesn't exist yet actionUTC={0}",
-        //                customer.LastActionedUTC);
       }
 
       return upsertedCount;
@@ -208,10 +212,31 @@ namespace VSS.Customer.Data
     private async Task<int> DeleteCustomer(Models.Customer customer, Models.Customer existing)
     {
       var upsertedCount = 0;
-      if (existing != null)
+      if (existing == null)
       {
-        if (customer.LastActionedUTC >= existing.LastActionedUTC)
+          log.LogDebug("CustomerRepository/DeleteCustomer: inserting a deleted customer={0}", JsonConvert.SerializeObject(customer));
+
+          customer.CustomerType = CustomerType.Customer; // need a default
+          customer.Name = "";
+          customer.IsDeleted = true;
+          const string insert =
+            @"INSERT Customer
+                (CustomerUID, Name, fk_CustomerTypeID, IsDeleted, LastActionedUTC)
+              VALUES
+                (@CustomerUID, @Name, @CustomerType, @IsDeleted, @LastActionedUTC)";
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(insert, customer);
+            log.LogDebug("CustomerRepository/DeleteCustomer: (insert): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
+      }
+      else
+      {
+        if (customer.LastActionedUTC >= existing.LastActionedUTC )
         {
+          log.LogDebug("CustomerRepository/DeleteCustomer: updating to deleted customer={0}", JsonConvert.SerializeObject(customer));
+
           const string update =
             @"UPDATE Customer                
                 SET IsDeleted = 1,
@@ -220,35 +245,17 @@ namespace VSS.Customer.Data
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
             upsertedCount = await Connection.ExecuteAsync(update, customer);
-            // log.LogDebug("DeleteCustomer (update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
+            log.LogDebug("CustomerRepository/DeleteCustomer: (update): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           });
         }
-
-        //          Log.DebugFormat("CustomerRepository: old delete event ignored currentActionedUTC={0} newActionedUTC={1}",
-        //               existing.LastActionedUTC, customer.LastActionedUTC);
-      }
-      else
-      {
-        customer.CustomerType = CustomerType.Customer; // need a default
-        customer.Name = "";
-        customer.IsDeleted = true;
-        const string insert =
-          @"INSERT Customer
-                (CustomerUID, Name, fk_CustomerTypeID, IsDeleted, LastActionedUTC)
-              VALUES
-                (@CustomerUID, @Name, @CustomerType, @IsDeleted, @LastActionedUTC)";
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        else
         {
-          upsertedCount = await Connection.ExecuteAsync(insert, customer);
-          // log.LogDebug("DeleteCustomer (insert): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customer.CustomerUID);
-          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
-
-        //           Log.DebugFormat("CustomerRepository: can't delete as none existing newActionedUT={0}",
-        //                customer.LastActionedUTC);
-      }
-      return upsertedCount;
+          log.LogDebug("CustomerRepository/DeleteCustomer: old delete event, ignore customer={0}", JsonConvert.SerializeObject(customer));
+          return upsertedCount;
+        }
+      }            
+      
     }
 
     public async Task<Models.Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
@@ -298,9 +305,6 @@ namespace VSS.Customer.Data
 
       await PerhapsOpenConnection();
 
-      //     Log.DebugFormat("CustomerRepository: Upserting eventType={0} CustomerUid={1}, UserUid={2}",
-      //   eventType, customerUser.CustomerUID, customerUser.UserUID);
-
       var existing = (await Connection.QueryAsync<Models.CustomerUser>
         (@"SELECT 
                 UserUID, fk_CustomerUID AS CustomerUID, LastActionedUTC
@@ -319,10 +323,7 @@ namespace VSS.Customer.Data
         upsertedCount = await DissociateCustomerUser(customerUser, existing);
       }
 
-      //   Log.DebugFormat("CustomerRepository: upserted {0} rows", upsertedCount);
-
       PerhapsCloseConnection();
-
       return upsertedCount;
     }
 
@@ -331,6 +332,7 @@ namespace VSS.Customer.Data
       var upsertedCount = 0;
       if (existing == null)
       {
+        log.LogDebug("CustomerRepository/AssociateCustomerUser: inserting a customerUser={0}", JsonConvert.SerializeObject(customerUser));
         const string insert =
           @"INSERT CustomerUser
               (UserUID, fk_CustomerUID, LastActionedUTC)
@@ -340,7 +342,7 @@ namespace VSS.Customer.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, customerUser);
-          // log.LogDebug("AssociateCustomerUser: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+           log.LogDebug("CustomerRepository/AssociateCustomerUser: upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customerUser.CustomerUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
@@ -356,6 +358,7 @@ namespace VSS.Customer.Data
       {
         if (customerUser.LastActionedUTC >= existing.LastActionedUTC)
         {
+          log.LogDebug("CustomerRepository/DissociateCustomerUser: deleting a customerUser={0}", JsonConvert.SerializeObject(customerUser));
           const string delete =
             @"DELETE 
                 FROM CustomerUser               
@@ -363,18 +366,17 @@ namespace VSS.Customer.Data
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
             upsertedCount = await Connection.ExecuteAsync(delete, customerUser);
-            // log.LogDebug("DissociateCustomerUser: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+            log.LogDebug("CustomerRepository/DissociateCustomerUser: upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customerUser.CustomerUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           });
         }
 
-        //      Log.DebugFormat("CustomerRepository: old delete event ignored currentActionedUTC{0} newActionedUTC{1}",
-        //            existing.LastActionedUTC, customerUser.LastActionedUTC);
+        // may have been associated again since, so don't delete
+        log.LogDebug("CustomerRepository/DissociateCustomerUser: old delete event ignored customerUser={0}", JsonConvert.SerializeObject(customerUser));
       }
       else
       {
-        //           Log.DebugFormat("CustomerRepository: can't delete as none existing newActionedUTC {0}",
-        //                customerUser.LastActionedUTC);
+        log.LogDebug("CustomerRepository/DissociateCustomerUser: can't delete as none existing customerUser={0}", JsonConvert.SerializeObject(customerUser));        
       }
       return upsertedCount;
     }

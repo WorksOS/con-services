@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using VSS.Project.Service.Interfaces;
 using VSS.Project.Service.Utils;
+using Microsoft.Extensions.Logging;
 
 namespace KafkaConsumer
 {
   public class KafkaConsumer<T> : IKafkaConsumer<T>
   {
+    private readonly ILogger log;
     private readonly IKafka kafkaDriver;
     private readonly IConfigurationStore configurationStore;
     private readonly IRepositoryFactory dbRepositoryFactory;
@@ -20,13 +22,14 @@ namespace KafkaConsumer
     private CancellationTokenSource stopToken;
     private int batchSize = 100;
 
-    public KafkaConsumer(IConfigurationStore config, IKafka driver, IRepositoryFactory repositoryFactory, IMessageTypeResolver resolver)
+    public KafkaConsumer(IConfigurationStore config, IKafka driver, IRepositoryFactory repositoryFactory, IMessageTypeResolver resolver, ILoggerFactory logger)
     {
       kafkaDriver = driver;
       configurationStore = config;
       dbRepositoryFactory = repositoryFactory;
       messageResolver = resolver;
       batchSize = configurationStore.GetValueInt("KAFKA_BATCH_SIZE");
+      log = logger.CreateLogger<KafkaConsumer<T>>();
     }
 
 
@@ -63,7 +66,7 @@ namespace KafkaConsumer
     private int batchCounter = 0;
     private void ProcessMessage()
     {
-      Console.WriteLine("Consuming");
+      log.LogDebug("Kafka Consuming");
       var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(100));
       if (messages.message == Error.NO_ERROR)
         foreach (var message in messages.payload)
@@ -72,23 +75,23 @@ namespace KafkaConsumer
           {
             string bytesAsString = Encoding.UTF8.GetString(message, 0, message.Length);
             //Debugging only
-            Console.WriteLine(typeof(T) + " : " + bytesAsString);
+            log.LogDebug("KafkaConsumer: " + typeof(T) + " : " + bytesAsString);
             var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString,
                 messageResolver.GetConverter<T>());
-            Console.WriteLine("Saving");
+            log.LogDebug("KafkaConsumer: Saving");
             dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
           }
           catch (Exception ex)
           {
-            Console.WriteLine("  An unexpected error occured in KafkaConsumer: {0}", ex.Message);
+            log.LogDebug("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}", ex.Message);
             if (ex.InnerException != null)
             {
-              Console.WriteLine("  Reason: {0}", ex.InnerException.Message);
+              log.LogDebug("KafkaConsumer: Reason: {0}", ex.InnerException.Message);
             }
           }
           finally
           {
-            Console.WriteLine("Commiting");
+            log.LogDebug("Kafka Commiting");
             if (batchCounter > batchSize)
             {
               kafkaDriver.Commit();

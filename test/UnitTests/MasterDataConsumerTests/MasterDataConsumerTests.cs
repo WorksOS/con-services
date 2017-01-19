@@ -11,6 +11,9 @@ using VSS.Customer.Data;
 using VSS.Project.Service.Utils;
 using System;
 using VSS.Geofence.Data;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using log4netExtensions;
 
 namespace MasterDataConsumer.Tests
 {
@@ -23,6 +26,20 @@ namespace MasterDataConsumer.Tests
     [TestInitialize]
     public void InitTest()
     {
+      // setup Ilogger
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = System.IO.Directory.GetCurrentDirectory();
+      var builder = new ConfigurationBuilder()
+                .SetBasePath(logPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      var Configuration = builder.Build();
+
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
+
       serviceProvider = new ServiceCollection()
           .AddTransient<IKafka, RdKafkaDriver>()
           .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
@@ -36,45 +53,19 @@ namespace MasterDataConsumer.Tests
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
+          .AddSingleton<ILoggerFactory>(loggerFactory)
           .BuildServiceProvider();
     }
 
     [TestMethod]
     public void CanCreateCustomerEventConsumer()
     {
-      CreateCollection();
-
       var customerConsumer = serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
       Assert.IsNotNull(customerConsumer);
 
       customerConsumer.SetTopic("VSS.Interfaces.Events.MasterData.ICustomerEvent");
-      var customerReturn = customerConsumer.StartProcessingAsync(new CancellationTokenSource());      
+      var customerReturn = customerConsumer.StartProcessingAsync(new CancellationTokenSource());
       Assert.IsNotNull(customerReturn);
-
-      CleanCollection();
-    }
-        
-
-    private void CreateCollection()
-    {
-      var serviceProvider = new ServiceCollection()
-          .AddTransient<IKafka, RdKafkaDriver>()
-          .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
-          .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
-          .AddTransient<IKafkaConsumer<ICustomerEvent>, KafkaConsumer<ICustomerEvent>>()
-          .AddTransient<IMessageTypeResolver, MessageResolver>()
-          .AddTransient<IRepositoryFactory, RepositoryFactory>()
-          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
-          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-          .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
-          .AddSingleton<IConfigurationStore, GenericConfiguration>()
-          .BuildServiceProvider();
-      new DependencyInjectionProvider(serviceProvider);
-    }
-
-    private void CleanCollection()
-    {
-      DependencyInjectionProvider.CleanDependencyInjection();
     }
 
   }

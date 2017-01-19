@@ -1,15 +1,13 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Customer.Data;
 using VSS.Customer.Data.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Project.Service.Interfaces;
-using KafkaConsumer;
-using MasterDataConsumer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using log4netExtensions;
 
 namespace RepositoryTests
 {
@@ -22,11 +20,29 @@ namespace RepositoryTests
     [TestInitialize]
     public void Init()
     {
+      // setup Ilogger
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = System.IO.Directory.GetCurrentDirectory();
+      var builder = new ConfigurationBuilder()
+                .SetBasePath(logPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
+      var Configuration = builder.Build();
+
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
+
       serviceProvider = new ServiceCollection()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        //.AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        .AddSingleton<ILoggerFactory>(loggerFactory)
         .BuildServiceProvider();
-      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>());
+
+      var retrievedloggerFactory = serviceProvider.GetService<ILoggerFactory>();
+      Assert.IsNotNull(retrievedloggerFactory);
+      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
     }
 
     #region Customers

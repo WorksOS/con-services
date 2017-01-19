@@ -14,15 +14,14 @@ namespace VSS.Project.Service.Utils
 {
   public class GenericConfiguration : IConfigurationStore
   {
-
-
+    //private static readonly ILogger log = serviceProvider.GetService<ILoggerFactory>().CreateLogger<ConfigSettings>();
     private IConfigurationBuilder configBuilder = null;
     private IConfigurationRoot configuration = null;
+    private readonly ILogger log;
 
-
-
-    public GenericConfiguration()
+    public GenericConfiguration(ILoggerFactory logger)
     {
+      log = logger.CreateLogger<GenericConfiguration>();
       var builder = configBuilder = new ConfigurationBuilder()
           .AddEnvironmentVariables();
       try
@@ -34,10 +33,10 @@ namespace VSS.Project.Service.Utils
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex);
+        log.LogCritical("GenericConfiguration exception: {0}, {1}, {2}", ex.Message, ex.Source, ex.StackTrace);
       }
     }
-
+    
     public string GetConnectionString(string connectionType)
     {
       string serverName = null;
@@ -51,18 +50,18 @@ namespace VSS.Project.Service.Utils
       var serverUserName = GetValueString("MYSQL_USERNAME");
       var serverPassword = GetValueString("MYSQL_ROOT_PASSWORD");
 
-      /*  log.LogInformation("MYSQL_SERVER_NAME_VSPDB" + serverName);
-        log.LogInformation("MYSQL_PORT" + serverPort);
-        log.LogInformation("MYSQL_DATABASE_NAME" + serverDatabaseName);
-        log.LogInformation("MYSQL_USERNAME" + serverUserName);
-        log.LogInformation("MYSQL_ROOT_PASSWORD" + serverPassword);*/
+      //log.LogInformation("MYSQL_SERVER_NAME_VSPDB" + serverName);
+      //log.LogInformation("MYSQL_PORT" + serverPort);
+      //log.LogInformation("MYSQL_DATABASE_NAME" + serverDatabaseName);
+      //log.LogInformation("MYSQL_USERNAME" + serverUserName);
+      //log.LogInformation("MYSQL_ROOT_PASSWORD" + serverPassword);
 
       if (serverName == null || serverPort == null || serverDatabaseName == null || serverUserName == null || serverPassword == null)
       {
         var errorString = string.Format(
               "Your application is attempting to use the {0} connectionType but is missing an environment variable. serverName {1} serverPort {2} serverDatabaseName {3} serverUserName {4} serverPassword {5}",
               connectionType, serverName, serverPort, serverDatabaseName, serverUserName, serverPassword);
-        //log.LogError(errorString);
+        log.LogError(errorString);
         throw new InvalidOperationException(errorString);
       }
 

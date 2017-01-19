@@ -7,15 +7,18 @@ using VSS.Project.Service.Repositories;
 using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace VSS.Project.Data
 {
   public class ProjectRepository : RepositoryBase, IRepository<IProjectEvent>
   {
-    //  private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    private readonly ILogger log;
 
-    public ProjectRepository(IConfigurationStore _connectionString) : base(_connectionString)
+    public ProjectRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString)
     {
+      log = logger.CreateLogger<ProjectRepository>();
     }
 
     public async Task<int> StoreEvent(IProjectEvent evt)
@@ -93,8 +96,6 @@ namespace VSS.Project.Data
 
       await PerhapsOpenConnection();
 
-      //Log.DebugFormat("ProjectRepository: Upserting eventType={0} projectUid={1}", eventType, project.ProjectUID);
-
       var existing = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
@@ -118,11 +119,8 @@ namespace VSS.Project.Data
       {
         upsertedCount = await DeleteProject(project, existing);
       }
-
-      //Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
-
+      
       PerhapsCloseConnection();
-
       return upsertedCount;
     }
 
@@ -131,6 +129,8 @@ namespace VSS.Project.Data
       var upsertedCount = 0;
       if (existing == null)
       {
+        log.LogDebug("ProjectRepository/CreateProject: going to create project={0}", JsonConvert.SerializeObject(project));
+
         const string insert =
           @"INSERT Project
                 (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate )
@@ -139,12 +139,14 @@ namespace VSS.Project.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, project);
-          // log.LogDebug("CreateProject (insert): upserted {0} rows (1=insert, 2=update) for: assetUid:{1}", upsertedCount, project.ProjectUID);
+          log.LogDebug("ProjectRepository/CreateProject: (insert): upserted {0} rows (1=insert, 2=update) for: projectUid:{1}", upsertedCount, project.ProjectUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
       else if (string.IsNullOrEmpty(existing.Name))
       {
+        log.LogDebug("ProjectRepository/CreateProject: going to update a dummy project={0}", JsonConvert.SerializeObject(project));
+        
         // this code comes from landfill, however in MD, no dummy is created
         //   is this obsolete?
         const string update =
@@ -162,12 +164,14 @@ namespace VSS.Project.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(update, project);
-          // log.LogDebug("CreateProject (update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1}", upsertedCount, project.ProjectUID);
+          log.LogDebug("ProjectRepository/CreateProject: (update): upserted {0} rows (1=insert, 2=update) for: projectUid:{1}", upsertedCount, project.ProjectUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
       else if (existing.LastActionedUTC >= project.LastActionedUTC)
       {
+        log.LogDebug("ProjectRepository/CreateProject: create arrived after an update so inserting project={0}", JsonConvert.SerializeObject(project));
+
         // must be a later update was applied before the create arrived
         // leave the more recent EndDate, Name, ProjectType and actionUTC alone
 
@@ -181,14 +185,12 @@ namespace VSS.Project.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(update, project);
-          // log.LogDebug("CreateProject (updateExisting): upserted {0} rows (1=insert, 2=update) for: assetUid:{1}", upsertedCount, project.ProjectUID);
+          log.LogDebug("ProjectRepository/CreateProject: (updateExisting): upserted {0} rows (1=insert, 2=update) for: projectUid:{1}", upsertedCount, project.ProjectUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
 
-
-      //            Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC {0}.", project.LastActionedUTC);
-
+      log.LogDebug("ProjectRepository/CreateProject: can't create as already exists project {0}.", JsonConvert.SerializeObject(project));
       return upsertedCount;
     }
 
@@ -199,6 +201,8 @@ namespace VSS.Project.Data
       {
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
+          log.LogDebug("ProjectRepository/DeleteProject: updating project={0}", JsonConvert.SerializeObject(project));
+
           const string update =
             @"UPDATE Project                
                 SET IsDeleted = 1,
@@ -207,20 +211,18 @@ namespace VSS.Project.Data
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
             upsertedCount = await Connection.ExecuteAsync(update, project);
-            // log.LogDebug("DeleteProject: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+            log.LogDebug("ProjectRepository/DeleteProject: upserted {0} rows (1=insert, 2=update) for: projectUid:{1}", upsertedCount, project.ProjectUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           });
         }
         else
         {
-          //                Log.DebugFormat("ProjectRepository: old delete event ignored currentActionedUTC={0} newActionedUTC={1}",
-          //                    existing.LastActionedUTC, project.LastActionedUTC);
+          log.LogDebug("ProjectRepository/DeleteProject: old delete event ignored project={0}", JsonConvert.SerializeObject(project));
         }
       }
       else
       {
-        //     Log.DebugFormat("ProjectRepository: can't delete as none existing newActionedUTC={0}",
-        //         project.LastActionedUTC);
+        log.LogDebug("ProjectRepository/DeleteProject: can't delete as none existing ignored project={0}", JsonConvert.SerializeObject(project));
       }
       return upsertedCount;
     }
@@ -232,6 +234,8 @@ namespace VSS.Project.Data
       {
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
+          log.LogDebug("ProjectRepository/UpdateProject: updating project={0}", JsonConvert.SerializeObject(project));
+
           const string update =
             @"UPDATE Project                
                 SET Name = @Name,
@@ -242,20 +246,18 @@ namespace VSS.Project.Data
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
             upsertedCount = await Connection.ExecuteAsync(update, project);
-            // log.LogDebug("UpdateProject: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+            log.LogDebug("ProjectRepository/UpdateProject: upserted {0} rows (1=insert, 2=update) for: projectUid:{1}", upsertedCount, project.ProjectUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           });
         }
         else
         {
-          //           Log.DebugFormat("ProjectRepository: old update event ignored currentActionedUTC={0} newActionedUTC={1}",
-          //             existing.LastActionedUTC, project.LastActionedUTC);
+          log.LogDebug("ProjectRepository/UpdateProject: old update event ignored project={0}", JsonConvert.SerializeObject(project));
         }
       }
       else
       {
-        //        Log.DebugFormat("ProjectRepository: can't update as none existing newActionedUTC={0}",
-        //           project.LastActionedUTC);
+        log.LogDebug("ProjectRepository/UpdateProject: can't update as none existing project={0}", JsonConvert.SerializeObject(project));
       }
       return upsertedCount;
     }
@@ -265,9 +267,6 @@ namespace VSS.Project.Data
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
-
-      //    Log.DebugFormat("ProjectRepository: Upserting eventType={0} CustomerUid={1}, ProjectUid={2}",
-      //         eventType, customerProject.CustomerUID, customerProject.ProjectUID);
 
       var existing = (await Connection.QueryAsync<Models.CustomerProject>
           (@"SELECT 
@@ -282,8 +281,6 @@ namespace VSS.Project.Data
         upsertedCount = await AssociateProjectCustomer(customerProject, existing);
       }
 
-      //      Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
-
       PerhapsCloseConnection();
       return upsertedCount;
     }
@@ -291,6 +288,8 @@ namespace VSS.Project.Data
     private async Task<int> AssociateProjectCustomer(Models.CustomerProject customerProject, Models.CustomerProject existing)
     {
       var upsertedCount = 0;
+
+      log.LogDebug("ProjectRepository/AssociateProjectCustomer: can't update as none existing customerProject={0}", JsonConvert.SerializeObject(customerProject));
       const string insert =
         @"INSERT CustomerProject
               (fk_ProjectUID, fk_CustomerUID, LegacyCustomerID, LastActionedUTC)
@@ -306,7 +305,7 @@ namespace VSS.Project.Data
       return await dbAsyncPolicy.ExecuteAsync(async () =>
       {
         upsertedCount = await Connection.ExecuteAsync(insert, customerProject);
-        // log.LogDebug("AssociateProjectCustomer: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+        log.LogDebug("ProjectRepository/AssociateProjectCustomer: upserted {0} rows (1=insert, 2=update) for: customerProjectUid:{1}", upsertedCount, customerProject.CustomerUID);
         return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
       });
 
@@ -333,9 +332,7 @@ namespace VSS.Project.Data
       {
         upsertedCount = await AssociateProjectGeofence(projectGeofence, existing);
       }
-
-      //    Log.DebugFormat("ProjectRepository: upserted {0} rows", upsertedCount);
-
+      
       PerhapsCloseConnection();
       return upsertedCount;
     }
@@ -345,6 +342,8 @@ namespace VSS.Project.Data
       var upsertedCount = 0;
       if (existing == null)
       {
+        log.LogDebug("ProjectRepository/AssociateProjectGeofence: can't update as none existing projectGeofence={0}", JsonConvert.SerializeObject(projectGeofence));
+
         const string insert =
           @"INSERT ProjectGeofence
                 (fk_GeofenceUID, fk_ProjectUID, LastActionedUTC)
@@ -354,12 +353,12 @@ namespace VSS.Project.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, projectGeofence);
-          // log.LogDebug("AssociateProjectGeofence: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+          log.LogDebug("ProjectRepository/AssociateProjectGeofence: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} geofenceUid:{2}", upsertedCount, projectGeofence.ProjectUID, projectGeofence.GeofenceUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
 
-      //      Log.DebugFormat("ProjectRepository: can't create as already exists newActionedUTC={0}", projectGeofence.LastActionedUTC);
+      log.LogDebug("ProjectRepository/AssociateProjectGeofence: can't create as already exists projectGeofence={0}", JsonConvert.SerializeObject(projectGeofence));
       return upsertedCount;
     }
 
@@ -477,7 +476,7 @@ namespace VSS.Project.Data
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE cp.fk_CustomerUID = @customerUid and cu.UserUID = @userUid and p.IsDeleted = 0",
-            new { userUid }
+            new { customerUid, userUid }
           ));
 
       PerhapsCloseConnection();
@@ -513,11 +512,6 @@ namespace VSS.Project.Data
       return project;
     }
 
-
-    /// <summary>
-    ///  this must be a test method
-    /// </summary>
-    /// <returns></returns>
     public async Task<IEnumerable<Models.Project>> GetProjects_UnitTests()
     {
       await PerhapsOpenConnection();

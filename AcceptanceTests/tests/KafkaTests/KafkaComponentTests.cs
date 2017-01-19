@@ -21,6 +21,9 @@ using VSS.Project.Data.Models;
 using VSS.Subscription.Data.Models;
 using System.Linq;
 using VSS.Geofence.Data.Models;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using log4netExtensions;
 
 namespace KafkaTests
 {
@@ -32,6 +35,20 @@ namespace KafkaTests
     [TestInitialize]
     public void InitTest()
     {
+      // setup Ilogger
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = System.IO.Directory.GetCurrentDirectory();
+      var builder = new ConfigurationBuilder()
+                .SetBasePath(logPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
+      var Configuration = builder.Build();
+
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
+
       serviceProvider = new ServiceCollection()
           .AddTransient<IKafka, RdKafkaDriver>()
           .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
@@ -45,6 +62,7 @@ namespace KafkaTests
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
+          .AddSingleton<ILoggerFactory>(loggerFactory)
           .BuildServiceProvider();
     }
 
@@ -90,7 +108,7 @@ namespace KafkaTests
       // don't appear to need to wait for writing to the kafka q
       //Thread.Sleep(1000);
 
-      var customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>());
+      var customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
       Task<Customer> dbReturn = null;
       for (int i = 0; i < 10; i++)
       {
@@ -148,7 +166,7 @@ namespace KafkaTests
       // don't appear to need to wait for writing to the kafka q
       //Thread.Sleep(1000);
 
-      var projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>());
+      var projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
       Task<Project> dbReturn = null;
       for (int i = 0; i < 10; i++)
       {
@@ -204,7 +222,7 @@ namespace KafkaTests
       // don't appear to need to wait for writing to the kafka q
       //Thread.Sleep(1000);
 
-      var subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>());
+      var subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
       Task<IEnumerable<Subscription>> dbReturn = null;
       for (int i = 0; i < 10; i++)
       {
@@ -265,7 +283,7 @@ namespace KafkaTests
       // don't appear to need to wait for writing to the kafka q
       //Thread.Sleep(1000);
 
-      var geofenceContext = new GeofenceRepository(serviceProvider.GetService<IConfigurationStore>());
+      var geofenceContext = new GeofenceRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
       Task<Geofence> dbReturn = null;
       for (int i = 0; i < 10; i++)
       {

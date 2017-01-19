@@ -9,15 +9,18 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Geofence.Data.Models;
 using System;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace VSS.Geofence.Data
 {
   public class GeofenceRepository : RepositoryBase, IRepository<IGeofenceEvent>
   {
-    // private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    private readonly ILogger log;
 
-    public GeofenceRepository(IConfigurationStore _connectionString) : base(_connectionString)
+    public GeofenceRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString)
     {
+      log = logger.CreateLogger<GeofenceRepository>();
     }
 
     public async Task<int> StoreEvent(IGeofenceEvent evt)
@@ -29,54 +32,51 @@ namespace VSS.Geofence.Data
       //  lets just store all geofence types
       GeofenceType geofenceType = GetGeofenceType(evt);
 
-      //if (geofenceType == GeofenceType.Project || geofenceType == GeofenceType.Landfill || evt is DeleteGeofenceEvent)
+      var geofence = new Models.Geofence();
+      string eventType = "Unknown";
+      if (evt is CreateGeofenceEvent)
       {
-        var geofence = new Models.Geofence();
-        string eventType = "Unknown";
-        if (evt is CreateGeofenceEvent)
-        {
-          var geofenceEvent = (CreateGeofenceEvent)evt;
-          geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
-          geofence.Name = geofenceEvent.GeofenceName;
-          geofence.GeofenceType = geofenceType;
-          geofence.GeometryWKT = geofenceEvent.GeometryWKT;
-          geofence.FillColor = geofenceEvent.FillColor;
-          geofence.IsTransparent = geofenceEvent.IsTransparent;
-          geofence.IsDeleted = false;
-          geofence.Description = geofenceEvent.Description;
-          geofence.CustomerUID = geofenceEvent.CustomerUID.ToString();
-          geofence.UserUID = geofenceEvent.UserUID.ToString();
-          geofence.LastActionedUTC = geofenceEvent.ActionUTC;
-          eventType = "CreateGeofenceEvent";
-        }
-        else if (evt is UpdateGeofenceEvent)
-        {
-          var geofenceEvent = (UpdateGeofenceEvent)evt;
-          geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();//Select existing with this
-          geofence.Name = geofenceEvent.GeofenceName;
-          //cannot update GeofenceType/GeometryWKT in update event,
-          //  use them to initialise the table 
-          //  as we update is received before the create
-          geofence.GeofenceType = geofenceType;
-          geofence.GeometryWKT = geofenceEvent.GeometryWKT;
-
-          geofence.FillColor = geofenceEvent.FillColor;
-          geofence.IsTransparent = geofenceEvent.IsTransparent;
-          geofence.Description = geofenceEvent.Description;
-          geofence.UserUID = geofenceEvent.UserUID.ToString();
-          geofence.LastActionedUTC = geofenceEvent.ActionUTC;
-          eventType = "UpdateGeofenceEvent";
-        }
-        else if (evt is DeleteGeofenceEvent)
-        {
-          var geofenceEvent = (DeleteGeofenceEvent)evt;
-          geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
-          geofence.LastActionedUTC = geofenceEvent.ActionUTC;
-          eventType = "DeleteGeofenceEvent";
-        }
-
-        upsertedCount = await UpsertGeofenceDetail(geofence, eventType);
+        var geofenceEvent = (CreateGeofenceEvent)evt;
+        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
+        geofence.Name = geofenceEvent.GeofenceName;
+        geofence.GeofenceType = geofenceType;
+        geofence.GeometryWKT = geofenceEvent.GeometryWKT;
+        geofence.FillColor = geofenceEvent.FillColor;
+        geofence.IsTransparent = geofenceEvent.IsTransparent;
+        geofence.IsDeleted = false;
+        geofence.Description = geofenceEvent.Description;
+        geofence.CustomerUID = geofenceEvent.CustomerUID.ToString();
+        geofence.UserUID = geofenceEvent.UserUID.ToString();
+        geofence.LastActionedUTC = geofenceEvent.ActionUTC;
+        eventType = "CreateGeofenceEvent";
       }
+      else if (evt is UpdateGeofenceEvent)
+      {
+        var geofenceEvent = (UpdateGeofenceEvent)evt;
+        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();//Select existing with this
+        geofence.Name = geofenceEvent.GeofenceName;
+        //cannot update GeofenceType/GeometryWKT in update event,
+        //  use them to initialise the table 
+        //  as we update is received before the create
+        geofence.GeofenceType = geofenceType;
+        geofence.GeometryWKT = geofenceEvent.GeometryWKT;
+
+        geofence.FillColor = geofenceEvent.FillColor;
+        geofence.IsTransparent = geofenceEvent.IsTransparent;
+        geofence.Description = geofenceEvent.Description;
+        geofence.UserUID = geofenceEvent.UserUID.ToString();
+        geofence.LastActionedUTC = geofenceEvent.ActionUTC;
+        eventType = "UpdateGeofenceEvent";
+      }
+      else if (evt is DeleteGeofenceEvent)
+      {
+        var geofenceEvent = (DeleteGeofenceEvent)evt;
+        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
+        geofence.LastActionedUTC = geofenceEvent.ActionUTC;
+        eventType = "DeleteGeofenceEvent";
+      }
+
+      upsertedCount = await UpsertGeofenceDetail(geofence, eventType);
       return upsertedCount;
     }
 
@@ -95,6 +95,7 @@ namespace VSS.Geofence.Data
         GeofenceType.Generic : (GeofenceType)Enum.Parse(typeof(GeofenceType), geofenceType, true);
     }
 
+
     /// <summary>
     /// All detail-related columns can be inserted, 
     ///    but only certain columns can be updated.
@@ -108,8 +109,6 @@ namespace VSS.Geofence.Data
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
-
-      // Log.DebugFormat("GeofenceRepository: Upserting eventType={0} geofenceUid={1}", eventType, geofence.GeofenceUID);
 
       var existing = (await Connection.QueryAsync<Models.Geofence>
         (@"SELECT 
@@ -135,11 +134,8 @@ namespace VSS.Geofence.Data
       {
         upsertedCount = await DeleteGeofence(geofence, existing);
       }
-
-      //Log.DebugFormat("GeofenceRepository: upserted {0} rows", upsertedCount);
-
+      
       PerhapsCloseConnection();
-
       return upsertedCount;
     }
 
@@ -148,6 +144,8 @@ namespace VSS.Geofence.Data
       var upsertedCount = 0;
       if (existing == null)
       {
+        log.LogDebug("GeofenceRepository/CreateGeofence: going to create geofence={0}", JsonConvert.SerializeObject(geofence));
+
         const string insert =
           @"INSERT Geofence
                 (GeofenceUID, Name, Description, GeometryWKT, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID)
@@ -156,13 +154,12 @@ namespace VSS.Geofence.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, geofence);
-          // log.LogDebug("CreateGeofence: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+          log.LogDebug("GeofenceRepository/CreateGeofence upserted {0} rows (1=insert, 2=update) for: geofenceUid:{1}", upsertedCount, geofence.GeofenceUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
 
-      // Log.DebugFormat("GeofenceRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", geofence.LastActionedUTC);
-
+      log.LogDebug("GeofenceRepository/CreateGeofence: can't create as already exists geofence={0}", JsonConvert.SerializeObject(geofence));
       return await UpdateGeofence(geofence, existing);
     }
 
@@ -173,6 +170,8 @@ namespace VSS.Geofence.Data
       {
         if (geofence.LastActionedUTC >= existing.LastActionedUTC)
         {
+          log.LogDebug("GeofenceRepository/DeleteGeofence: going to update geofence={0}", JsonConvert.SerializeObject(geofence));
+
           const string update =
             @"UPDATE Geofence                
                 SET IsDeleted = 1,
@@ -181,15 +180,14 @@ namespace VSS.Geofence.Data
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
             upsertedCount = await Connection.ExecuteAsync(update, geofence);
-            // log.LogDebug("DeleteGeofence (update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, geofence.GeofenceUID);
+            log.LogDebug("GeofenceRepository/DeleteGeofence: (update): upserted {0} rows (1=insert, 2=update) for: geofenceUid:{1}", upsertedCount, geofence.GeofenceUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           });
         }
-        //else
-        //{
-        //  Log.DebugFormat("GeofenceRepository: old delete event ignored currentActionedUTC={0} newActionedUTC={1}",
-        //    existing.LastActionedUTC, geofence.LastActionedUTC);
-        //}
+        else
+        {
+          log.LogDebug("GeofenceRepository/DeleteGeofence: old delete event ignored geofence={0}", JsonConvert.SerializeObject(geofence));
+        }
       }
       else
       {
@@ -204,6 +202,8 @@ namespace VSS.Geofence.Data
         geofence.CustomerUID = "";
         geofence.UserUID = "";
 
+        log.LogDebug("GeofenceRepository/DeleteGeofence: going to insert a deleted dummy geofence={0}", JsonConvert.SerializeObject(geofence));
+
         const string insert =
             @"INSERT Geofence
                 (GeofenceUID, Name, Description, GeometryWKT, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID)
@@ -213,7 +213,7 @@ namespace VSS.Geofence.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, geofence);
-          // log.LogDebug("DeleteGeofence (insert): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, geofence.GeofenceUID);
+          log.LogDebug("DeleteGeofence (insert): upserted {0} rows (1=insert, 2=update) for: geofenceUid:{1}", upsertedCount, geofence.GeofenceUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
@@ -234,6 +234,8 @@ namespace VSS.Geofence.Data
 
         if (geofence.LastActionedUTC >= existing.LastActionedUTC)
         {
+          log.LogDebug("GeofenceRepository/UpdateGeofence: going to insert geofence={0}", JsonConvert.SerializeObject(geofence));
+
           const string update =
             @"UPDATE Geofence                
                 SET Name = @Name, FillColor = @FillColor, IsTransparent = @IsTransparent, LastActionedUTC = @LastActionedUTC                  
@@ -241,21 +243,20 @@ namespace VSS.Geofence.Data
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
             upsertedCount = await Connection.ExecuteAsync(update, geofence);
-            // log.LogDebug("UpdateGeofence (update): upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, geofence.GeofenceUID);
+            log.LogDebug("UpdateGeofence (update): upserted {0} rows (1=insert, 2=update) for: geofenceUid:{1}", upsertedCount, geofence.GeofenceUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           });
         }
-        //else
-        //{
-        //Log.DebugFormat("GeofenceRepository: old update event ignored currentActionedUTC={0} newActionedUTC={1}",
-        //  existing.LastActionedUTC, geofence.LastActionedUTC);
-        //}
+        else
+        {
+          log.LogDebug("GeofenceRepository/UpdateGeofence: old update event ignored geofence={0}", JsonConvert.SerializeObject(geofence));          
+        }
       }
-      //else
-      //{
-      //Log.DebugFormat("GeofenceRepository: update received before Create. Add what we canng newActionedUTC={0}",
-      //  geofence.LastActionedUTC);
-      //}
+      else
+      {
+        log.LogDebug("GeofenceRepository/UpdateGeofence: update received before Create ignored geofence={0}", JsonConvert.SerializeObject(geofence));
+      }
+      
       return upsertedCount;
     }
 
@@ -279,9 +280,6 @@ namespace VSS.Geofence.Data
          ));
 
       PerhapsCloseConnection();
-
-      //Log.DebugFormat("GeofenceRepository: Found {0} Project geofences for customer {1}", projectGeofences.Count(), customerUid);
-
       return projectGeofences;
     }
 
@@ -305,10 +303,7 @@ namespace VSS.Geofence.Data
           new { projectUid }
          ));
 
-      PerhapsCloseConnection();
-
-      //Log.DebugFormat("GeofenceRepository: Found {0} Project geofences for customer {1}", projectGeofences.Count(), customerUid);
-
+      PerhapsCloseConnection();      
       return projectGeofences;
     }
 

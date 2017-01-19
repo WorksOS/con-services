@@ -6,6 +6,8 @@ using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Subscription.Data.Models;
 using VSS.Project.Service.Repositories;
+using Microsoft.Extensions.Configuration;
+using log4netExtensions;
 
 namespace RepositoryTests
 {
@@ -18,11 +20,25 @@ namespace RepositoryTests
     [TestInitialize]
     public void Init()
     {
+      // setup Ilogger
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = System.IO.Directory.GetCurrentDirectory();
+      var builder = new ConfigurationBuilder()
+                .SetBasePath(logPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
+      var Configuration = builder.Build();
+
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
+
       serviceProvider = new ServiceCollection()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        .AddSingleton<ILoggerFactory>(loggerFactory)
         .BuildServiceProvider();
-      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>());
+      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
     }
 
     #region CustomerSubscriptions

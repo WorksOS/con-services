@@ -15,8 +15,8 @@ namespace VSS.Project.Service.Repositories
 {
   public class RepositoryBase 
   {
-//    protected static readonly ILogger log = DependencyInjectionProvider.ServiceProvider.GetService<ILoggerFactory>().CreateLogger<RepositoryBase>();
     private readonly string connectionString=string.Empty;
+    //private readonly ILogger log;
 
     protected MySqlConnection Connection=null;
     private bool isInTransaction;
@@ -30,7 +30,7 @@ namespace VSS.Project.Service.Repositories
           sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(dbSyncMsDelay), 
           onRetry: (exception, calculatedWaitDuration) =>
           {
- //           log.LogInformation("Repository: Failed attempt to open db. Exception: {0}. Retries: {1}. RetryCountSoFar: {2}", exception.Message, dbSyncRetryCount, dbSyncRetryCountSoFar + 1);
+            //log.LogInformation("Repository: Failed attempt to open db. Exception: {0}. Retries: {1}. RetryCountSoFar: {2}", exception.Message, dbSyncRetryCount, dbSyncRetryCountSoFar + 1);
             dbSyncRetryCountSoFar++;
           });
 
@@ -50,7 +50,8 @@ namespace VSS.Project.Service.Repositories
 
     protected RepositoryBase(IConfigurationStore _connectionString)
     {
-      this.connectionString = _connectionString.GetConnectionString("VSPDB"); ;
+      this.connectionString = _connectionString.GetConnectionString("VSPDB");
+      //log = logger.CreateLogger <RepositoryBase>();
     }
 
 
@@ -65,12 +66,12 @@ namespace VSS.Project.Service.Repositories
           dbSyncPolicy.Execute(() =>
           {
             connection.Open();
-   //         log.LogDebug("Repository: db open (with connection reuse) was successfully after {0} retries", dbSyncRetryCountSoFar);
+            //log.LogDebug("Repository: db open (with connection reuse) was successfully after {0} retries", dbSyncRetryCountSoFar);
           });
         }
         catch (Exception e)
         {
-//          log.LogInformation("Repository: db open (with connection reuse). Retries so far {0}.", dbSyncRetryCountSoFar);
+          //log.LogInformation("Repository: db open (with connection reuse). Retries so far {0}.", dbSyncRetryCountSoFar);
         }
         Connection = connection;
         var res = body(connection);

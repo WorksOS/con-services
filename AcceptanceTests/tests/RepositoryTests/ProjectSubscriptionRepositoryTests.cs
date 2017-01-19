@@ -10,6 +10,8 @@ using VSS.Customer.Data;
 using VSS.Subscription.Data.Models;
 using VSS.Project.Service.Repositories;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
+using log4netExtensions;
 
 namespace RepositoryTests
 {
@@ -24,13 +26,29 @@ namespace RepositoryTests
     [TestInitialize]
     public void Init()
     {
+
+      // setup Ilogger
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = System.IO.Directory.GetCurrentDirectory();
+      var builder = new ConfigurationBuilder()
+                .SetBasePath(logPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
+      var Configuration = builder.Build();
+
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
+
       serviceProvider = new ServiceCollection()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        //.AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        .AddSingleton<ILoggerFactory>(loggerFactory)
         .BuildServiceProvider();
-      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>());
-      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>());
-      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>());
+      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
     }
 
     #region ProjectSubscriptions
@@ -529,7 +547,13 @@ namespace RepositoryTests
 
       var g = projectContext.GetProjectsForUser(associateCustomerUser.UserUID.ToString());
       g.Wait();
-      var projects = g.Result.ToList(); //  as IList<VSS.Project.Data.Models.Project>;
+      var projects = g.Result.ToList(); 
+      Assert.IsNotNull(projects, "Unable to retrieve 1 project/sub from projectRepo");
+      Assert.AreEqual(2, projects.Count, "should be 1 project/sub from projectRepo");
+
+      g = projectContext.GetProjectsForCustomerUser(associateCustomerUser.CustomerUID.ToString(), associateCustomerUser.UserUID.ToString());
+      g.Wait();
+      projects = g.Result.ToList(); 
       Assert.IsNotNull(projects, "Unable to retrieve 1 project/sub from projectRepo");
       Assert.AreEqual(2, projects.Count, "should be 1 project/sub from projectRepo");
 

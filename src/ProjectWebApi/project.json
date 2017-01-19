@@ -20,7 +20,9 @@
     "ConfigurationStore": "1.0.0-*",
     "Repositories": "1.0.0-*",
     "Swashbuckle.SwaggerGen": "6.0.0-beta902",
-    "Swashbuckle.SwaggerUi": "6.0.0-beta902"
+    "Swashbuckle.SwaggerUi": "6.0.0-beta902",
+    "log4net.netcore": "3.0.0",
+    "log4netExtensions.netcore": "1.0.1"
   },
 
   "frameworks": {
@@ -51,7 +53,8 @@
       "**/*.cshtml",
       "appsettings.json",
       "web.config",
-      "Dockerfile"
+      "Dockerfile",
+      "log4net.xml"
     ]
   }
 

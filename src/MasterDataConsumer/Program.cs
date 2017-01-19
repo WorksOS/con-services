@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using KafkaConsumer;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +10,9 @@ using VSS.Project.Service.Utils;
 using VSS.Project.Service.Utils.Kafka;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Geofence.Data;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using log4netExtensions;
 
 namespace MasterDataConsumer
 {
@@ -20,6 +20,20 @@ namespace MasterDataConsumer
   {
     public static void Main(string[] args)
     {
+      // setup Ilogger
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = System.IO.Directory.GetCurrentDirectory();
+      var builder = new ConfigurationBuilder()
+                .SetBasePath(logPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
+      var Configuration = builder.Build();
+
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
+      
       //setup our DI
       var serviceProvider = new ServiceCollection()
           .AddTransient<IKafka, RdKafkaDriver>()
@@ -34,6 +48,7 @@ namespace MasterDataConsumer
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
+          .AddSingleton<ILoggerFactory>(loggerFactory)
           .BuildServiceProvider();
 
       var bar1 = serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
