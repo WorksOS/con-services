@@ -113,14 +113,11 @@ node('Jenkins-Win2016-Raptor') {
  
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'
-	   def prs = "aws ecr get-login --region us-west-2 --profile vss-grant".execute()
-	   prs.waitFor()
-	   //def logintext = prs.text
-       //bat "aws ecr get-login --region us-west-2 --profile vss-grant"
-       bat "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}"
-       bat "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi"
-
-       bat "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}"
-       bat "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest"
+	   bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1"
+	   //sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
+       //bat "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}"
+       //bat "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi"
+       //bat "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}"
+       //bat "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest"
     }
 }
