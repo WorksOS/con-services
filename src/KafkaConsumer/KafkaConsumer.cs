@@ -43,6 +43,7 @@ namespace KafkaConsumer
 
     public Task StartProcessingAsync(CancellationTokenSource token)
     {
+      log.LogDebug("KafkaConsumer: StartProcessingAsync");
       stopToken = token;
       return Task.Factory.StartNew(() =>
       {
@@ -51,6 +52,8 @@ namespace KafkaConsumer
           ProcessMessage();
         }
       }, TaskCreationOptions.LongRunning);
+
+      log.LogDebug("KafkaConsumer: StartProcessingAsync has been cancelled");
 
     }
 
@@ -66,7 +69,7 @@ namespace KafkaConsumer
     private int batchCounter = 0;
     private void ProcessMessage()
     {
-      log.LogDebug("Kafka Consuming");
+      //log.LogDebug("Kafka Consuming");
       var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(100));
       if (messages.message == Error.NO_ERROR)
         foreach (var message in messages.payload)

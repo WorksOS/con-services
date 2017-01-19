@@ -12,7 +12,6 @@
           "type": "platform",
           "version": "1.1.0"
         },
-        "Microsoft.Extensions.DependencyInjection": "1.0.0",
         "KafkaConsumer": "*",
         "ConfigurationStore": "*",
         "log4net.netcore": "3.0.0",
@@ -31,6 +30,7 @@
   },
 
   "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "Repositories": "1.0.0-*"

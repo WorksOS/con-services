@@ -20,22 +20,16 @@ namespace MasterDataConsumer
   {
     public static void Main(string[] args)
     {
-      // setup Ilogger
-      string loggerRepoName = "UnitTestLogTest";
+      string loggerRepoName = "MasterDataConsumer";
       var logPath = System.IO.Directory.GetCurrentDirectory();
-      var builder = new ConfigurationBuilder()
-                .SetBasePath(logPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
-      var Configuration = builder.Build();
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);      
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      ILoggerFactory loggerFactory = new LoggerFactory();      
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
       
       //setup our DI
-      var serviceProvider = new ServiceCollection()
+      var serviceProvider = new ServiceCollection()          
           .AddTransient<IKafka, RdKafkaDriver>()
           .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
           .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
@@ -48,6 +42,7 @@ namespace MasterDataConsumer
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
+          .AddLogging()
           .AddSingleton<ILoggerFactory>(loggerFactory)
           .BuildServiceProvider();
 

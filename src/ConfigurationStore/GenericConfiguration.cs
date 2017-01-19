@@ -22,6 +22,7 @@ namespace VSS.Project.Service.Utils
     public GenericConfiguration(ILoggerFactory logger)
     {
       log = logger.CreateLogger<GenericConfiguration>();
+      log.LogDebug("GenericConfig constructing");
       var builder = configBuilder = new ConfigurationBuilder()
           .AddEnvironmentVariables();
       try

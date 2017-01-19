@@ -20,23 +20,17 @@ namespace RepositoryTests
     [TestInitialize]
     public void Init()
     {
-      // setup Ilogger
       string loggerRepoName = "UnitTestLogTest";
       var logPath = System.IO.Directory.GetCurrentDirectory();
-      var builder = new ConfigurationBuilder()
-                .SetBasePath(logPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
-      var Configuration = builder.Build();
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
       ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceProvider = new ServiceCollection()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        //.AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        .AddLogging()
         .AddSingleton<ILoggerFactory>(loggerFactory)
         .BuildServiceProvider();
 

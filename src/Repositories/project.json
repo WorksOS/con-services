@@ -8,12 +8,12 @@
     "Dapper": "1.50.2",
     "ITask.netcore": "1.0.1",
     "Newtonsoft.Json": "9.0.1",
-    "Polly": "4.5.0-beta-netstandar-0001",
     "VSS.Interfaces.netcore": "1.0.0",
     "ConfigurationStore": "1.0.0-*",
     "KafkaConsumer": "1.0.0-*",
     "System.Linq": "4.3.0",
-    "NodaTime": "2.0.0-alpha20160729"
+    "NodaTime": "2.0.0-alpha20160729",
+    "Polly": "5.0.3"
   },
 
   "frameworks": {

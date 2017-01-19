@@ -40,15 +40,8 @@ namespace MasterDataConsumer.Tests
         File.WriteAllText(logFileFullPath, string.Empty);
       }
 
-      // setup Ilogger
-      var builder = new ConfigurationBuilder()
-                .SetBasePath(logPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-      var Configuration = builder.Build();
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+      ILoggerFactory loggerFactory = new LoggerFactory();     
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
      
@@ -108,17 +101,11 @@ namespace MasterDataConsumer.Tests
 
     private void CreateCollection(bool withLogging)
     {
-      // setup Ilogger
       string loggerRepoName = "UnitTestLogTest";
       var logPath = System.IO.Directory.GetCurrentDirectory();
-      var builder = new ConfigurationBuilder()
-                .SetBasePath(logPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-      var Configuration = builder.Build();
 
       ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
@@ -138,6 +125,7 @@ namespace MasterDataConsumer.Tests
 
       if (withLogging)
         serviceCollection
+            .AddLogging()
             .AddSingleton<ILoggerFactory>(loggerFactory);
 
       serviceProvider = serviceCollection

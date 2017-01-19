@@ -337,12 +337,12 @@
           "lib/netstandard1.3/Microsoft.Extensions.FileSystemGlobbing.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging/1.0.0": {
+      "Microsoft.Extensions.Logging/1.1.0": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-          "System.Threading": "4.0.11"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
+          "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
+          "NETStandard.Library": "1.6.1"
         },
         "compile": {
           "lib/netstandard1.1/Microsoft.Extensions.Logging.dll": {}
@@ -351,18 +351,10 @@
           "lib/netstandard1.1/Microsoft.Extensions.Logging.dll": {}
         }
       },
-      "Microsoft.Extensions.Logging.Abstractions/1.0.0": {
+      "Microsoft.Extensions.Logging.Abstractions/1.1.0": {
         "type": "package",
         "dependencies": {
-          "System.Collections": "4.0.11",
-          "System.Collections.Concurrent": "4.0.12",
-          "System.Diagnostics.Debug": "4.0.11",
-          "System.Globalization": "4.0.11",
-          "System.Linq": "4.1.0",
-          "System.Reflection": "4.1.0",
-          "System.Resources.ResourceManager": "4.0.1",
-          "System.Runtime.Extensions": "4.1.0",
-          "System.Runtime.InteropServices": "4.1.0"
+          "NETStandard.Library": "1.6.1"
         },
         "compile": {
           "lib/netstandard1.1/Microsoft.Extensions.Logging.Abstractions.dll": {}
@@ -692,13 +684,10 @@
           "lib/netstandard1.1/NodaTime.dll": {}
         }
       },
-      "Polly/4.5.0-beta-netstandar-0001": {
+      "Polly/5.0.3": {
         "type": "package",
         "dependencies": {
-          "System.Diagnostics.Debug": "4.0.11",
-          "System.Linq": "4.1.0",
-          "System.Resources.ResourceManager": "4.0.1",
-          "System.Threading": "4.0.11"
+          "NETStandard.Library": "1.6.0"
         },
         "compile": {
           "lib/netstandard1.0/Polly.dll": {}
@@ -2631,7 +2620,7 @@
           "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
           "Microsoft.Extensions.Configuration.Json": "1.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "Microsoft.Extensions.Logging": "1.0.0",
+          "Microsoft.Extensions.Logging": "1.1.0",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
           "NETStandard.Library": "1.6.0"
         },
@@ -2969,23 +2958,23 @@
         "lib/netstandard1.3/Microsoft.Extensions.FileSystemGlobbing.xml"
       ]
     },
-    "Microsoft.Extensions.Logging/1.0.0": {
-      "sha512": "0mDuASVrd/nMeBYIJSK+9lT3TSmWxUXP/ipVB1pF1ApMN5fqGCckPTNwmOfT4Z9wPkXGnhbwFTGrxZvbzTWxOg==",
+    "Microsoft.Extensions.Logging/1.1.0": {
+      "sha512": "IbNogJJE3NRtc5/DAtKEkhXaUQK9N7I6A5G2+ZfyBzWMvAgLKSimESpNMp+gnzUYsW3YbHkeT8jLk9m/3vGY5A==",
       "type": "package",
-      "path": "Microsoft.Extensions.Logging/1.0.0",
+      "path": "Microsoft.Extensions.Logging/1.1.0",
       "files": [
-        "Microsoft.Extensions.Logging.1.0.0.nupkg.sha512",
+        "Microsoft.Extensions.Logging.1.1.0.nupkg.sha512",
         "Microsoft.Extensions.Logging.nuspec",
         "lib/netstandard1.1/Microsoft.Extensions.Logging.dll",
         "lib/netstandard1.1/Microsoft.Extensions.Logging.xml"
       ]
     },
-    "Microsoft.Extensions.Logging.Abstractions/1.0.0": {
-      "sha512": "wHT6oY50q36mAXBRKtFaB7u07WxKC5u2M8fi3PqHOOnHyUo9gD0u1TlCNR8UObHQxKMYwqlgI8TLcErpt29n8A==",
+    "Microsoft.Extensions.Logging.Abstractions/1.1.0": {
+      "sha512": "5zDtM0Dal+pwDIj49PPq9Y8SYu6z70v55VDx70rOuquLTlaCIdv9uItkcp9c1FH/ASNdfANVnh1cTwd85dyE+Q==",
       "type": "package",
-      "path": "Microsoft.Extensions.Logging.Abstractions/1.0.0",
+      "path": "Microsoft.Extensions.Logging.Abstractions/1.1.0",
       "files": [
-        "Microsoft.Extensions.Logging.Abstractions.1.0.0.nupkg.sha512",
+        "Microsoft.Extensions.Logging.Abstractions.1.1.0.nupkg.sha512",
         "Microsoft.Extensions.Logging.Abstractions.nuspec",
         "lib/netstandard1.1/Microsoft.Extensions.Logging.Abstractions.dll",
         "lib/netstandard1.1/Microsoft.Extensions.Logging.Abstractions.xml"
@@ -3246,28 +3235,19 @@
         "lib/netstandard1.1/NodaTime.xml"
       ]
     },
-    "Polly/4.5.0-beta-netstandar-0001": {
-      "sha512": "tiKPJK0oN6iupgOxcJ89f1Hslm6jl8IKnNA744MRqohxlJmv94mYC4Ah6PhLzB4QSarVQAATVJ0REJ2OtXkrCg==",
+    "Polly/5.0.3": {
+      "sha512": "Kg3lxFgH8f51OrYTx2DVxSxCCXgqHq+Yc6nGSrfkejZADpChAy/CFo8MiN53Se5QshOrAjylP74qIPjtGz8bag==",
       "type": "package",
-      "path": "Polly/4.5.0-beta-netstandar-0001",
+      "path": "Polly/5.0.3",
       "files": [
-        "Polly.4.5.0-beta-netstandar-0001.nupkg.sha512",
+        "Polly.5.0.3.nupkg.sha512",
         "Polly.nuspec",
-        "lib/net35/Polly.XML",
-        "lib/net35/Polly.dll",
-        "lib/net35/Polly.pdb",
-        "lib/net40/Polly.XML",
-        "lib/net40/Polly.dll",
-        "lib/net40/Polly.pdb",
         "lib/net45/Polly.XML",
         "lib/net45/Polly.dll",
         "lib/net45/Polly.pdb",
         "lib/netstandard1.0/Polly.XML",
         "lib/netstandard1.0/Polly.dll",
-        "lib/netstandard1.0/Polly.pdb",
-        "lib/portable-net45+netcore45+wpa81+wp8/Polly.XML",
-        "lib/portable-net45+netcore45+wpa81+wp8/Polly.dll",
-        "lib/portable-net45+netcore45+wpa81+wp8/Polly.pdb"
+        "lib/netstandard1.0/Polly.pdb"
       ]
     },
     "RdKafka/0.9.2-ci-170": {
@@ -7885,7 +7865,7 @@
       "Newtonsoft.Json >= 9.0.1",
       "Nito.AsyncEx.Coordination >= 1.0.2",
       "NodaTime >= 2.0.0-alpha20160729",
-      "Polly >= 4.5.0-beta-netstandar-0001",
+      "Polly >= 5.0.3",
       "System.Linq >= 4.3.0",
       "VSS.Interfaces.netcore >= 1.0.0"
     ],
