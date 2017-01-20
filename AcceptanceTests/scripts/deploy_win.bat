@@ -17,6 +17,7 @@ dotnet publish KafkaTests -o ..\deploy\KafkaTests -f netcoreapp1.0
 dotnet publish RepositoryTests -o ..\deploy\RepositoryTests -f netcoreapp1.0
 
 copy KafkaTests\appsettings.json ..\deploy\KafkaTests\
+copy RepositoryTests\appsettings.json ..\deploy\RepositoryTests\
 
 cd..
 cd utilities

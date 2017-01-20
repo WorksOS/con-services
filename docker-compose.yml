@@ -1,15 +1,15 @@
 version: '2'
 services:
   webapi:
-    build: ./Artifacts/WebApi
+    build: ./Artifacts/ProjectWebApi
     env_file:
      - docker-compose.env
     volumes:
       - ./Artifacts/Logs:/app/logs
     depends_on:
       - schema
-  datafeed:
-    build: ./Artifacts/DatafeedService
+  masterdataconsumer:
+    build: ./Artifacts/MasterDataConsumer
     env_file:
      - docker-compose.env
     volumes:
@@ -46,5 +46,5 @@ services:
       - ./AcceptanceTests/deploy/testresults:/app/testresults
     depends_on:
       - webapi
-      - datafeed
+      - masterdataconsumer
       - kafka
