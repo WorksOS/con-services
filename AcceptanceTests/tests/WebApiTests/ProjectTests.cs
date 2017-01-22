@@ -136,5 +136,29 @@ namespace WebApiTests
 
     }
 
+    [TestMethod]
+    public void Get_Projects_With_CustomerUid()
+    {
+      
+    }
+
+    [TestMethod]
+    public void Get_Projects_No_CustomerUid()
+    {
+
+    }
+
+    [TestMethod]
+    public void Get_Projects_For_One_Of_Multiple_Customers()
+    {
+
+    }
+
+    [TestMethod]
+    public void Get_Projects_For_Customer_With_Deleted_Projects()
+    {
+
+    }
+
   }
 }

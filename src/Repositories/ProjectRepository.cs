@@ -486,6 +486,46 @@ namespace VSS.Project.Data
 
 
     /// <summary>
+    /// Checks if a project with the specified projectUid exists.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns>true if project exists or false otherwise</returns>
+    public async Task<bool> ProjectExists(string projectUid)
+    {
+      await PerhapsOpenConnection();
+
+      var uid = (await Connection.QueryAsync<string>
+          (@"SELECT p.ProjectUID             
+              FROM Project p 
+              WHERE p.ProjectUID = @projectUid",
+            new { projectUid }
+          )).FirstOrDefault();
+
+      PerhapsCloseConnection();
+      return !string.IsNullOrEmpty(uid);
+    }
+
+    /// <summary>
+    /// Checks if a project with the specified projectUid is associated with a customer.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns>true if project is associated with a customer or false otherwise</returns>
+    public async Task<bool> CustomerProjectExists(string projectUid)
+    {
+      await PerhapsOpenConnection();
+
+      var uid = (await Connection.QueryAsync<string>
+          (@"SELECT cp.fk_ProjectUID             
+              FROM CustomerProject cp 
+              WHERE cp.fk_ProjectUID = @projectUid",
+            new { projectUid }
+          )).FirstOrDefault();
+
+      PerhapsCloseConnection();
+      return !string.IsNullOrEmpty(uid);
+    }
+
+    /// <summary>
     /// for unit tests - so we don't have to create everything (associations) for a test
     /// </summary>
     /// <param name="projectUid"></param>

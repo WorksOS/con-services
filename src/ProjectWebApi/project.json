@@ -20,7 +20,8 @@
     "ConfigurationStore": "1.0.0-*",
     "Repositories": "1.0.0-*",
     "Swashbuckle.SwaggerGen": "6.0.0-beta902",
-    "Swashbuckle.SwaggerUi": "6.0.0-beta902"
+    "Swashbuckle.SwaggerUi": "6.0.0-beta902",
+    "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1"
   },
 
   "frameworks": {
