@@ -1,6 +1,7 @@
 param (
   [Parameter(Mandatory=$true)][string]$fullVersion
 )
+& echo $env:AWS_CONFIG_FILE
 $command = '$(aws ecr get-login --region us-west-2 --profile vss-grant)'
 Invoke-Expression $command
 & docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}
