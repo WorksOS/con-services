@@ -1,7 +1,7 @@
-#:C:\VSO\VSS.VisionLink.Project\src\ProjectWebApi\ProjectWebApi.xproj
-C:\VSO\VSS.VisionLink.Project\src\ProjectWebApi\ProjectWebApi.xproj|C:\VSO\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
-C:\VSO\VSS.VisionLink.Project\src\ProjectWebApi\ProjectWebApi.xproj|C:\VSO\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj
-C:\VSO\VSS.VisionLink.Project\src\ProjectWebApi\ProjectWebApi.xproj|C:\VSO\VSS.VisionLink.Project\src\Repositories\Repositories.xproj
-C:\VSO\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj|C:\VSO\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
-C:\VSO\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\VSO\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
-C:\VSO\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\VSO\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj
+#:C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\MasterDataConsumer\MasterDataConsumer.xproj
+C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\MasterDataConsumer\MasterDataConsumer.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
+C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\MasterDataConsumer\MasterDataConsumer.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj
+C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\MasterDataConsumer\MasterDataConsumer.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\Repositories\Repositories.xproj
+C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
+C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\ConfigurationStore\ConfigurationStore.xproj
+C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\Repositories\Repositories.xproj|C:\Nighthawk2\NextGenCode\VSS.VisionLink.Project\src\KafkaConsumer\KafkaConsumer.xproj

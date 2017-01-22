@@ -8,16 +8,18 @@ using VSS.Subscription.Data.Models;
 using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace VSS.Project.Service.Repositories
 {
 
   public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>
   {
-    public SubscriptionRepository(IConfigurationStore connectionString)
-        : base(connectionString)
+    private readonly ILogger log;
+    public SubscriptionRepository(IConfigurationStore connectionString, ILoggerFactory logger)  : base(connectionString)
     {
-
+      log = logger.CreateLogger<SubscriptionRepository>();
     }
 
     public Dictionary<string, VSS.Subscription.Data.Models.ServiceType> _serviceTypes = null;
@@ -118,8 +120,6 @@ namespace VSS.Project.Service.Repositories
 
       await PerhapsOpenConnection();
 
-      //       Log.DebugFormat("SubscriptionRepository: Upserting eventType={0} SubscriptionUID={1}", eventType, subscription.SubscriptionUID);
-
       var existing = (await Connection.QueryAsync<Subscription.Data.Models.Subscription>
         (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, StartDate, EndDate, fk_ServiceTypeID AS ServiceTypeID, LastActionedUTC 
@@ -137,9 +137,7 @@ namespace VSS.Project.Service.Repositories
       {
         upsertedCount = await UpdateProjectSubscription(subscription, existing);
       }
-
-      //    Log.DebugFormat("SubscriptionRepository: upserted {0} rows", upsertedCount);
-
+      
       PerhapsCloseConnection();
 
       return upsertedCount;
@@ -150,6 +148,8 @@ namespace VSS.Project.Service.Repositories
       var upsertedCount = 0;
       if (existing == null)
       {
+        log.LogDebug("SubscriptionRepository/CreateProjectSubscription: going to create subscription={0}", JsonConvert.SerializeObject(subscription));
+
         const string insert =
           @"INSERT Subscription
                 (SubscriptionUID, fk_CustomerUID, StartDate, EndDate, fk_ServiceTypeID, LastActionedUTC)
@@ -158,11 +158,12 @@ namespace VSS.Project.Service.Repositories
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, subscription);
-          // log.LogDebug("CreateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+          log.LogDebug("SubscriptionRepository/CreateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}", upsertedCount, subscription.SubscriptionUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
-      //     Log.DebugFormat("SubscriptionRepository: can't create as already exists newActionedUTC {0}. So, the existing entry should be updated.", subscription.LastActionedUTC);
+
+      log.LogDebug("SubscriptionRepository/CreateProjectSubscription: can't create as already exists subscription={0}", JsonConvert.SerializeObject(subscription));
       return upsertedCount;
     }
 
@@ -175,6 +176,8 @@ namespace VSS.Project.Service.Repositories
       {
         if (subscription.LastActionedUTC >= existing.LastActionedUTC)
         {
+          log.LogDebug("SubscriptionRepository/UpdateProjectSubscription: going to create subscription={0}", JsonConvert.SerializeObject(subscription));
+
           //subscription only has values for columns to be updated
           if (string.IsNullOrEmpty(subscription.CustomerUID))
             subscription.CustomerUID = existing.CustomerUID;
@@ -197,18 +200,16 @@ namespace VSS.Project.Service.Repositories
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
             upsertedCount = await Connection.ExecuteAsync(update, subscription);
-            // log.LogDebug("UpdateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+            log.LogDebug("SubscriptionRepository/UpdateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}", upsertedCount, subscription.SubscriptionUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           });
         }
 
-        //          Log.DebugFormat("SubscriptionRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
-        //             existing.LastActionedUTC, subscription.LastActionedUTC);
+        log.LogDebug("SubscriptionRepository/UpdateProjectSubscription: old update event ignored subscription={0}", JsonConvert.SerializeObject(subscription));        
       }
       else
       {
-        //        Log.DebugFormat("SubscriptionRepository: can't update as none existing newActionedUTC {0}",
-        //          subscription.LastActionedUTC);
+        log.LogDebug("SubscriptionRepository/UpdateProjectSubscription: can't update as none existing subscription={0}", JsonConvert.SerializeObject(subscription));
       }
       return upsertedCount;
     }
@@ -218,10 +219,7 @@ namespace VSS.Project.Service.Repositories
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
-
-      //    Log.DebugFormat("SubscriptionRepository: Upserting eventType={0} ProjectUid={1}, SubscriptionUid={2}",
-      //     eventType, projectSubscription.ProjectUID, projectSubscription.SubscriptionUID);
-
+      
       var existing = (await Connection.QueryAsync<ProjectSubscription>
           (@"SELECT 
                 fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
@@ -234,11 +232,8 @@ namespace VSS.Project.Service.Repositories
       {
         upsertedCount = await AssociateProjectSubscription(projectSubscription, existing);
       }
-
-      //     Log.DebugFormat("SubscriptionRepository: upserted {0} rows", upsertedCount);
-
+      
       PerhapsCloseConnection();
-
       return upsertedCount;
     }
 
@@ -249,6 +244,8 @@ namespace VSS.Project.Service.Repositories
 
       if (existing == null)
       {
+        log.LogDebug("SubscriptionRepository/AssociateProjectSubscription: going to create projectSubscription={0}", JsonConvert.SerializeObject(projectSubscription));
+
         const string insert =
           @"INSERT ProjectSubscription
                 (fk_SubscriptionUID, fk_ProjectUID, EffectiveDate, LastActionedUTC)
@@ -259,29 +256,26 @@ namespace VSS.Project.Service.Repositories
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, projectSubscription);
-          // log.LogDebug("AssociateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: assetUid:{1} eventUtc:{2}", upsertedCount, customerUser.CustomerUID);
+          log.LogDebug("SubscriptionRepository/AssociateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: SubscriptionUid:{1}", upsertedCount, projectSubscription.SubscriptionUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
-      PerhapsCloseConnection();
-      //        Log.DebugFormat("SubscriptionRepository: can't create as already exists newActionedUTC={0}", projectSubscription.LastActionedUTC);
+
+      log.LogDebug("SubscriptionRepository/AssociateProjectSubscription: can't create as already exists projectSubscription={0}", JsonConvert.SerializeObject(projectSubscription));
+      PerhapsCloseConnection();     
       return upsertedCount;
     }
 
     private async Task<IEnumerable<ServiceType>> GetServiceTypes()
     {
       await PerhapsOpenConnection();
-
-      //     Log.Debug("SubscriptionRepository: Getting service types");
-
+      
       var serviceTypes = (await Connection.QueryAsync<ServiceType>
           (@"SELECT 
                 s.ID, s.Description AS Name, sf.ID AS ServiceTypeFamilyID, sf.Description AS ServiceTypeFamilyName
               FROM ServiceTypeEnum s JOIN ServiceTypeFamilyEnum sf on s.fk_ServiceTypeFamilyID = sf.ID"
           ));
-
       PerhapsCloseConnection();
-
       return serviceTypes;
     }
 
@@ -298,7 +292,6 @@ namespace VSS.Project.Service.Repositories
         )).FirstOrDefault();
 
       PerhapsCloseConnection();
-
       return subscription;
     }
 
@@ -315,17 +308,13 @@ namespace VSS.Project.Service.Repositories
          ));
 
       PerhapsCloseConnection();
-
       return subscriptions;
     }
 
     public async Task<IEnumerable<ProjectSubscription>> GetProjectSubscriptions_UnitTest(string subscriptionUid)
     {
       await PerhapsOpenConnection();
-
-      //    Log.DebugFormat("SubscriptionRepository: Upserting eventType={0} ProjectUid={1}, SubscriptionUid={2}",
-      //     eventType, projectSubscription.ProjectUID, projectSubscription.SubscriptionUID);
-
+      
       var projectSubscriptions = (await Connection.QueryAsync<ProjectSubscription>
           (@"SELECT 
                 fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
@@ -335,7 +324,6 @@ namespace VSS.Project.Service.Repositories
           ));
 
       PerhapsCloseConnection();
-
       return projectSubscriptions;
     }
   }

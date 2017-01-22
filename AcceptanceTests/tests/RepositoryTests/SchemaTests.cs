@@ -5,13 +5,40 @@ using Dapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using VSS.Project.Service.Utils;
+using Microsoft.Extensions.Configuration;
+using log4netExtensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace RepositoryTests
 {
   [TestClass]
   public class SchemaTests
   {
-    GenericConfiguration gc = new GenericConfiguration();
+
+    IServiceProvider serviceProvider = null;
+    IConfigurationStore gc;
+
+    [TestInitialize]
+    public void Init()
+    {
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = System.IO.Directory.GetCurrentDirectory();
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
+
+      serviceProvider = new ServiceCollection()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddLogging()
+        .AddSingleton<ILoggerFactory>(loggerFactory)
+        .BuildServiceProvider();
+
+      gc = serviceProvider.GetService<IConfigurationStore>();
+    }
+
 
     [TestMethod]
     public void CustomerSchemaExists()

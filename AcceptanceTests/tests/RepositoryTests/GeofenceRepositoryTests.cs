@@ -8,6 +8,8 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Project.Data;
 using VSS.Geofence.Data;
 using VSS.Geofence.Data.Models;
+using Microsoft.Extensions.Configuration;
+using log4netExtensions;
 
 namespace RepositoryTests
 {
@@ -21,12 +23,21 @@ namespace RepositoryTests
     [TestInitialize]
     public void Init()
     {
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = System.IO.Directory.GetCurrentDirectory();
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+
+      ILoggerFactory loggerFactory = new LoggerFactory();
+      loggerFactory.AddDebug();
+      loggerFactory.AddLog4Net(loggerRepoName);
+
       serviceProvider = new ServiceCollection()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddSingleton<ILoggerFactory>((new LoggerFactory()).AddDebug())
+        .AddLogging()
+        .AddSingleton<ILoggerFactory>(loggerFactory)
         .BuildServiceProvider();
-      geofenceContext = new GeofenceRepository(serviceProvider.GetService<IConfigurationStore>());
-      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>());
+      geofenceContext = new GeofenceRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
     }
 
     #region Geofence
