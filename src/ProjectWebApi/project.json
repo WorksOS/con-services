@@ -18,6 +18,7 @@
     "Repositories": "1.0.0-*",
     "Swashbuckle.SwaggerGen": "6.0.0-beta902",
     "Swashbuckle.SwaggerUi": "6.0.0-beta902",
+    "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1",
     "log4net.netcore": "3.0.0",
     "log4netExtensions.netcore": "1.0.1",
     "Microsoft.Extensions.Logging": "1.1.0",

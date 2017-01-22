@@ -28,12 +28,14 @@ namespace VSS.Project.Service.WebApiModels.Filters
 
         public async Task Invoke(HttpContext context)
         {
+            bool requiresCustomerUid = context.Request.Method.ToUpper() == "GET";
+
             string token = null;
             string authorization = context.Request.Headers["X-Jwt-Assertion"];
             string customerUID = context.Request.Headers["X-VisionLink-CustomerUid"];
 
             // If no authorization header found, nothing to process further
-            if (string.IsNullOrEmpty(authorization) || string.IsNullOrEmpty(customerUID))
+            if (string.IsNullOrEmpty(authorization) || (requiresCustomerUid && string.IsNullOrEmpty(customerUID)))
             {
                 await SetResult("No account selected", context);
                 return;

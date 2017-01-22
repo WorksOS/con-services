@@ -8,6 +8,7 @@ using KafkaConsumer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
+using ProjectWebApi.Models;
 using VSS.Project.Service.Interfaces;
 using VSS.Project.Service.Utils;
 using VSS.Project.Service.WebApiModels.Filters;
@@ -62,6 +63,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         [HttpPost]
         public void CreateProject([FromBody] CreateProjectEvent project)
         {
+            ProjectDataValidator.Validate(project, _projectService);
             project.ReceivedUTC = DateTime.UtcNow;
 
             var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
@@ -85,6 +87,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         [HttpPut]
         public void UpdateProject([FromBody] UpdateProjectEvent project)
         {
+            ProjectDataValidator.Validate(project, _projectService);
             project.ReceivedUTC = DateTime.UtcNow;
 
             var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
@@ -115,10 +118,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
             var project = new DeleteProjectEvent();
             project.ProjectUID = projectUID;
             project.ActionUTC = actionUTC;
-
+            ProjectDataValidator.Validate(project, _projectService);
             project.ReceivedUTC = DateTime.UtcNow;
-
-
 
             var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
             _producer.Send(kafkaTopicName,
@@ -127,8 +128,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
                     new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
                 });
             _projectService.StoreEvent(project);
-
-
         }
 
         /// <summary>
@@ -143,6 +142,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         [Route("api/v1/project/AssociateCustomer")]
         public void AssociateCustomerProject([FromBody] AssociateProjectCustomer customerProject)
         {
+            ProjectDataValidator.Validate(customerProject, _projectService);
             customerProject.ReceivedUTC = DateTime.UtcNow;
 
             var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
@@ -166,6 +166,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         [Route("api/v1/project/DissociateCustomer")]
         public void DissociateCustomerProject([FromBody] DissociateProjectCustomer customerProject)
         {
+            ProjectDataValidator.Validate(customerProject, _projectService);
             customerProject.ReceivedUTC = DateTime.UtcNow;
 
             var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectCustomer = customerProject});
@@ -189,6 +190,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         [Route("api/v1/project/AssociateGeofence")]
         public void AssociateGeofenceProject([FromBody] AssociateProjectGeofence geofenceProject)
         {
+            ProjectDataValidator.Validate(geofenceProject, _projectService);
             geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
             var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
