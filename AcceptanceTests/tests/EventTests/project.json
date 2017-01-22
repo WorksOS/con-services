@@ -1,8 +1,6 @@
 {
-    "version": "1.0.0-*",
-    "testRunner": "mstest",
+  "version": "1.0.0-*",
   "dependencies": {
-    "dotnet-test-mstest": "1.1.1-preview",
     "MSTest.TestFramework": "1.0.1-preview",
     "System.Data.Common": "4.1.0",
     "RdKafka.Internal.librdkafka": "0.9.1",
@@ -12,18 +10,18 @@
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0"
   },
-    "frameworks": {
-        "netcoreapp1.1": {
-            "imports": [
-                "dnxcore50",
-                "portable-net45+win8"
-            ],
-            "dependencies": {
-                "Microsoft.NETCore.App": {
-                    "type": "platform",
-                    "version": "1.1.0"
-                }
-            }
+  "frameworks": {
+    "netcoreapp1.1": {
+      "imports": [
+        "dnxcore50",
+        "portable-net45+win8"
+      ],
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.1.0"
         }
+      }
     }
+  }
 }
