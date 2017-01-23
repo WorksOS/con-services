@@ -12,9 +12,9 @@ public class CustomerEventConverter : JsonCreationConverter<ICustomerEvent>
         {
             return jObject["CreateCustomerEvent"].ToObject<CreateCustomerEvent>();
         }
-        if (jObject["CreateCustomerEvent"] != null)
+        if (jObject["UpdateCustomerEvent"] != null)
         {
-            return jObject["CreateCustomerEvent"].ToObject<CreateCustomerEvent>();
+            return jObject["UpdateCustomerEvent"].ToObject<UpdateCustomerEvent>();
         }
         if (jObject["DeleteCustomerEvent"] != null)
         {
