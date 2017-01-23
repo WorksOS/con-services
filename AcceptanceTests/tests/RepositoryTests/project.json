@@ -1,6 +1,5 @@
 {
   "version": "1.0.0-*",
-
   "dependencies": {
     "Repositories": "1.0.0-*",
     "MSTest.TestFramework": "1.0.1-preview",

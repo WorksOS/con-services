@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility.Model.TestEvents;
-//using VSS.Project.Service.WebApiModels.Models;
 using TestUtility.Model.WebApi;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Text.RegularExpressions;
@@ -28,9 +27,9 @@ namespace TestUtility
     public CreateProjectEvent CreateProjectEvt { get; set; }
     #endregion
 
-    #region Private Properties
+        #region Private Properties
 
-    private readonly Random rndNumber = new Random();
+        private readonly Random rndNumber = new Random();
         private readonly object syncLock = new object();
         private const char SEPERATOR = '|';
         private readonly TestConfig appConfig = new TestConfig();
@@ -410,14 +409,14 @@ namespace TestUtility
     /// </summary>
     /// <returns></returns>
     public string GetBaseUri()
+    {
+        var baseUri = appConfig.webApiUri;
+        if (Debugger.IsAttached)
         {
-            var baseUri = appConfig.webApiUri;
-            if (Debugger.IsAttached)
-            {
-                baseUri = appConfig.debugWebApiUri;
-            }
-            return baseUri;
+            baseUri = appConfig.debugWebApiUri;
         }
+        return baseUri;
+    }
 
         #endregion
 
@@ -433,9 +432,9 @@ namespace TestUtility
             {
                 var dayOffSet = Convert.ToInt32(singleEvent.DayOffset);
                 var eventDate = FirstEventDate.AddDays(dayOffSet) + DateTime.ParseExact(singleEvent.Timestamp, "HH:mm:ss", CultureInfo.InvariantCulture).TimeOfDay;
-                var eventUtc = eventDate; // eventUtc is eventdate without offset applied
+                var eventUtc = eventDate;    // eventUtc is eventdate without offset applied
                 var deviceTime = singleEvent.UtcOffsetHours == "nullOffset" ? null : DateTimeExtensions.ToIso8601DateTime(eventUtc, Convert.ToDouble(singleEvent.UtcOffsetHours));
-                LastEventDate = eventDate; // Always set the event date to be the last one. Assume the go in sequential order. 
+                LastEventDate = eventDate;   // Always set the event date to be the last one. Assume the go in sequential order. 
                 var jsonSettings = new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified};
                 var topicName = appConfig.masterDataTopic + singleEvent.EventType + appConfig.kafkaTopicSuffix;
 
