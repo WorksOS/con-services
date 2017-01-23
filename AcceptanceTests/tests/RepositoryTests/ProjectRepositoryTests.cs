@@ -181,7 +181,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
-
+     
       var createProjectEvent = new CreateProjectEvent()
       {
         ProjectUID = Guid.NewGuid(),
@@ -208,6 +208,7 @@ namespace RepositoryTests
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
+      Assert.AreEqual("Pacific/Auckland", g.Result.LandfillTimeZone, "Project landfill timeZone is incorrect from ProjectRepo");
 
       // should fail as there is no Customer or CustProject
       g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());

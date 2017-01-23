@@ -4,10 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
-///  Settings come from 2 sources:
-//    environment variables and 'internal' (appsettings.json)
-//   Appsettings will override any environment setting
-//   if neither present then we'll use some defaults
+/// Settings come from 2 sources:
+/// environment variables and 'internal' (appsettings.json)
+/// Appsettings will override any environment setting
+/// if neither present then we'll use some defaults
 /// </summary>
 
 namespace VSS.Project.Service.Utils
@@ -27,8 +27,9 @@ namespace VSS.Project.Service.Utils
           .AddEnvironmentVariables();
       try
       {
-
-        builder.SetBasePath(System.AppContext.BaseDirectory) // for appsettings.json location
+        Console.WriteLine("Base:" + System.AppContext.BaseDirectory);
+        Console.WriteLine("Current:" + System.IO.Directory.GetCurrentDirectory());
+        builder.SetBasePath(System.IO.Directory.GetCurrentDirectory()) // for appsettings.json location
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
         configuration = configBuilder.Build();
       }
