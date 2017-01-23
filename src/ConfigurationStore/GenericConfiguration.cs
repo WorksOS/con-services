@@ -28,7 +28,8 @@ namespace VSS.Project.Service.Utils
       try
       {
         Console.WriteLine("Base:" + System.AppContext.BaseDirectory);
-        Console.WriteLine("Current:" + System.IO.Directory.GetCurrentDirectory());
+        var dirToAppsettings = System.IO.Directory.GetCurrentDirectory();
+        Console.WriteLine("Current:" + dirToAppsettings);
         builder.SetBasePath(System.IO.Directory.GetCurrentDirectory()) // for appsettings.json location
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
         configuration = configBuilder.Build();

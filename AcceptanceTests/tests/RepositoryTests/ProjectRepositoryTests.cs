@@ -39,6 +39,7 @@ namespace RepositoryTests
       projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
     }
 
+
     #region Projects
 
     /// <summary>
@@ -689,6 +690,7 @@ namespace RepositoryTests
     }
     #endregion
 
+
     #region AssociateProjectWithCustomer
 
     /// <summary>
@@ -832,6 +834,41 @@ namespace RepositoryTests
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
     }
 
+    #endregion
+
+
+    #region timezones
+    /// <summary>
+    /// These Timezone conversions need to be done as acceptance tests so they are run on linux - the target platform.
+    /// They should behave ok on windows (this will occur if you run a/ts against local containers).
+    /// </summary>
+    [TestMethod]
+    public void ConvertTimezone_WindowsToIana()
+    {
+      var projectTimeZone = "New Zealand Standard Time";
+      Assert.AreEqual("Pacific/Auckland", TimeZone.WindowsToIana(projectTimeZone), "Unable to convert WindowsToIana");
+    }
+
+    [TestMethod]
+    public void ConvertTimezone_WindowsToIana_Invalid()
+    {
+      var projectTimeZone = "New Zealand Standard Time222";
+      Assert.AreEqual("", TimeZone.WindowsToIana(projectTimeZone), "Should not be able to convert WindowsToIana");
+    }
+
+    [TestMethod]
+    public void ConvertTimezone_WindowsToIana_alreadyIana()
+    {
+      var projectTimeZone = "Pacific/Auckland";
+      Assert.AreEqual("", TimeZone.WindowsToIana(projectTimeZone), "Should not be able to convert WindowsToIana");
+    }
+
+    [TestMethod]
+    public void ConvertTimezone_WindowsToIana_UTC()
+    {
+      var projectTimeZone = "UTC";
+      Assert.AreEqual("Etc/UTC", TimeZone.WindowsToIana(projectTimeZone), "Unable to convert WindowsToIana");
+    }
     #endregion
 
 
