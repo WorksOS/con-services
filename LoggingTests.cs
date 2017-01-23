@@ -42,6 +42,7 @@ namespace MasterDataConsumer.Tests
       Assert.IsTrue(File.Exists(logFileFullPath));
 
       IServiceProvider serviceProvider = new ServiceCollection()
+        .AddLogging()
         .AddSingleton<ILoggerFactory>(loggerFactory)
         .BuildServiceProvider();
 
