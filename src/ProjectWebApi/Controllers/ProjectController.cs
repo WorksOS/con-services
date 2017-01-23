@@ -104,20 +104,14 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         /// <summary>
         /// Delete Project
         /// </summary>
-        /// <param name="projectUID">DeleteProjectEvent model</param>
-        /// <param name="userUID">DeleteProjectEvent model</param>
-        /// <param name="actionUTC">DeleteProjectEvent model</param>
-        /// <remarks>Deletes project with projectUID</remarks>
+        /// <param name="project">DeleteProjectEvent model</param>
+        /// <remarks>Deletes existing project</remarks>
         /// <response code="200">Ok</response>
         /// <response code="400">Bad request</response>
-
         [Route("api/v1/project")]
         [HttpDelete]
-        public void DeleteProject(Guid projectUID, DateTime actionUTC)
+        public void DeleteProject([FromBody] DeleteProjectEvent project)
         {
-            var project = new DeleteProjectEvent();
-            project.ProjectUID = projectUID;
-            project.ActionUTC = actionUTC;
             ProjectDataValidator.Validate(project, _projectService);
             project.ReceivedUTC = DateTime.UtcNow;
 

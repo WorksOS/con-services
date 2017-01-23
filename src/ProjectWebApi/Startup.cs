@@ -19,6 +19,7 @@ namespace ProjectWebApi
   {
     private readonly string loggerRepoName = "WebApi";
     private bool isDevEnv = false;
+    IServiceCollection serviceCollection;
 
     public Startup(IHostingEnvironment env)
     {
@@ -77,12 +78,16 @@ namespace ProjectWebApi
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
-
+      serviceCollection = services;
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
+      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      //new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
+      serviceCollection.BuildServiceProvider();
+
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 

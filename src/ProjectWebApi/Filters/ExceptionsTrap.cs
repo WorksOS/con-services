@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using ProjectWebApi.Models;
 
 namespace VSS.Project.Service.WebApiModels.Filters
 {
@@ -16,7 +17,7 @@ namespace VSS.Project.Service.WebApiModels.Filters
     public ExceptionsTrap(RequestDelegate next, ILogger<ExceptionsTrap> logger)
     {
       _next = next;
-      log = logger;
+      log = logger.CreateLogger<ExceptionsTrap>();
     }
 
     public async Task Invoke(HttpContext context)
@@ -28,6 +29,11 @@ namespace VSS.Project.Service.WebApiModels.Filters
       catch (AuthenticationException ex)
       {
         context.Response.StatusCode = 401;
+      }
+      catch (ServiceException ex)
+      {
+        context.Response.StatusCode = (int)ex.Response.StatusCode;
+        await context.Response.WriteAsync(ex.Message);
       }
       catch (Exception ex)
       {

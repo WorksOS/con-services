@@ -99,27 +99,28 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Verify the number of expected records in the table is there for the AssetUid
+    /// Verify the number of expected records in the table is there for the given uid
     /// </summary>
     /// <param name="table">Database table name</param>
+    /// <param name="column">Database column name for the uid</param>
     /// <param name="fields"></param>
     /// <param name="expectedData"></param>
-    /// <param name="AssetUid"></param>
-    public void VerifyTestResultDatabaseFieldsAreExpected(string table, string fields, string expectedData,string AssetUid)
+    /// <param name="uid">The uid to use</param>
+    public void VerifyTestResultDatabaseFieldsAreExpected(string table, string column, string fields, string expectedData, Guid uid)
+    {
+        var sqlQuery = @"SELECT {4} FROM `{0}`.{1} WHERE {2}='{3}'";
+        var allActualData = GetDatabaseFieldsForQuery(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid, fields), fields);
+        var fldArray = fields.Split(',');
+        var actualDataArray = allActualData.Split(',');
+        var expectedDataArray = expectedData.Split(',');
+        var idx = 0;
+        msg.DisplayResults(expectedData + " records", allActualData + " records");
+        foreach (var col in fldArray)
         {
-            var sqlQuery = @"SELECT {3} FROM `{0}`.{1} WHERE AssetUID='{2}'";
-            var allActualData = GetDatabaseFieldsForQeury(string.Format(sqlQuery, appConfig.dbSchema, table, AssetUid, fields), fields);
-            var fldArray = fields.Split(',');
-            var actualDataArray = allActualData.Split(',');
-            var expectedDataArray = expectedData.Split(',');
-            var idx = 0;
-            msg.DisplayResults(expectedData + " records", allActualData + " records");
-            foreach (var col in fldArray)
-            {
-                Assert.AreEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(),"Expected results for " + col + " do not match actual");
-                idx++;
-            }
+            Assert.AreEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(),"Expected results for " + col + " do not match actual");
+            idx++;
         }
+    }
 
 
     /// <summary>
@@ -268,7 +269,7 @@ namespace TestUtility
         /// <param name="query"></param>
         /// <param name="fields"></param>
         /// <returns></returns>
-        private string GetDatabaseFieldsForQeury(string query, string fields)
+        private string GetDatabaseFieldsForQuery(string query, string fields)
         {
             var mysqlHelper = new MySqlHelper();
             return mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.dbConnectionString, query, fields);
