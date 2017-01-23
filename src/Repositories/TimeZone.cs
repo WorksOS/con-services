@@ -42,10 +42,10 @@ namespace VSS.Project.Data
       var tzdbSource = NodaTime.TimeZones.TzdbDateTimeZoneSource.Default;
 
       /* temp display stuff */
-      var OSZones = string.Format("systems tzones {0}", JsonConvert.SerializeObject(TimeZoneInfo.GetSystemTimeZones().Select(t => t)));
-      Console.WriteLine("WindowsToIana: windowsZoneId {0} the OSystems tzones {1}", windowsZoneId, OSZones);
-      var nodaMappings = string.Format("systems tzones {0}", JsonConvert.SerializeObject(TimeZoneInfo.GetSystemTimeZones().Select(t => t)));
-      Console.WriteLine("the Noda tzones {0}", nodaMappings);
+      //var OSZones = string.Format("systems tzones {0}", JsonConvert.SerializeObject(TimeZoneInfo.GetSystemTimeZones().Select(t => t)));
+      //Console.WriteLine("WindowsToIana: windowsZoneId {0} the OSystems tzones {1}", windowsZoneId, OSZones);
+      //var nodaMappings = string.Format("systems tzones {0}", JsonConvert.SerializeObject(TimeZoneInfo.GetSystemTimeZones().Select(t => t)));
+      //Console.WriteLine("the Noda tzones {0}", nodaMappings);
 
       // map the windows id to an iana one - regardless of platform
       var mappings = tzdbSource.WindowsMapping.MapZones;
