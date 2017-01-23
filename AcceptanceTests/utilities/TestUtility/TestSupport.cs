@@ -13,6 +13,7 @@ using TestUtility.Model.TestEvents;
 using TestUtility.Model.WebApi;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Text.RegularExpressions;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace TestUtility
 {
@@ -23,16 +24,24 @@ namespace TestUtility
         public string AssetUid { get; set; }
         public DateTime FirstEventDate { get; set; }
         public DateTime LastEventDate { get; set; }
-    // public AssetConfigData AssetConfig { get; set; }
-    public Guid ProjectUid { get; set; }
-    public CreateProjectEvent CreateProjectEvt { get; set; }
+        // public AssetConfigData AssetConfig { get; set; }
+        public Guid ProjectUid { get; set; }
+        public Guid CustomerUid { get; set; }
+        public Guid GeofenceUid { get; set; }
+
+        public CreateProjectEvent CreateProjectEvt { get; set; }
+        public UpdateProjectEvent UpdateProjectEvt { get; set; }
+        public DeleteProjectEvent DeleteProjectEvt { get; set; }
+        public AssociateProjectCustomer AssociateCustomerProjectEvt { get; set; }
+        public DissociateProjectCustomer DissociateCustomerProjectEvt { get; set; }
+        public AssociateProjectGeofence AssociateProjectGeofenceEvt { get; set; }
     #endregion
 
     #region Private Properties
 
     private readonly Random rndNumber = new Random();
         private readonly object syncLock = new object();
-        private const char SEPERATOR = '|';
+        private const char SEPARATOR = '|';
         private readonly TestConfig appConfig = new TestConfig();
         private readonly Msg msg = new Msg();
 
@@ -45,31 +54,50 @@ namespace TestUtility
             SetFirstEventDate();
             SetAssetUid();
             SetProjectUid();
-          }
+            SetCustomerUid();
+            SetGeofenceUid();
+        }
 
-        /// <summary>
-        /// Set up the first event date for the events to go in
-        /// </summary>
-        public void SetFirstEventDate()
+    /// <summary>
+    /// Set up the first event date for the events to go in
+    /// </summary>
+    public void SetFirstEventDate()
         {
             FirstEventDate = DateTime.Today.AddDays(-RandomNumber(10, 360));
         }
 
-        ///// <summary>
-        ///// Set the asset UID to a random GUID
-        ///// </summary>
+        /// <summary>
+        /// Set the asset UID to a random GUID
+        /// </summary>
         public void SetAssetUid()
         {
             AssetUid = Guid.NewGuid().ToString();
         }
 
-    ///// <summary>
-    ///// Set the project UID to a random GUID
-    ///// </summary>
+    /// <summary>
+    /// Set the project UID to a random GUID
+    /// </summary>
     public void SetProjectUid()
     {
       ProjectUid = Guid.NewGuid();
     }
+
+    /// <summary>
+    /// Set the customer UID to a random GUID
+    /// </summary>
+    public void SetCustomerUid()
+    {
+      CustomerUid = Guid.NewGuid();
+    }
+
+    /// <summary>
+    /// Set the geofence UID to a random GUID
+    /// </summary>
+    public void SetGeofenceUid()
+    {
+      GeofenceUid = Guid.NewGuid();
+    }
+
     /// <summary>
     /// Inject all events from the test into kafka
     /// </summary>
@@ -97,30 +125,141 @@ namespace TestUtility
     /// <summary>
     /// Create the project via the web api. 
     /// </summary>
+    /// <param name="projectUid">project UID</param>
+    /// <param name="projectId">legacy project id</param>
     /// <param name="name">project name</param>
-    /// <param name="type">project type</param>
     /// <param name="startDate">project start date</param>
     /// <param name="endDate">project end date</param>
     /// <param name="timezone">project time zone</param>
-    /// <param name="actionUtc">timestamp of the create action</param>
-    public void CreateProjectViaWebApi(string name, ProjectType type, DateTime startDate, DateTime endDate, string timezone, DateTime actionUtc)
+    /// <param name="actionUtc">timestamp of the event</param>
+    /// <param name="statusCode">expected status code from web api call</param>
+    public void CreateProjectViaWebApi(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, 
+      string timezone, DateTime actionUtc, HttpStatusCode statusCode)
     {
       CreateProjectEvt = new CreateProjectEvent
       {
-        ProjectID = 1,
-        ProjectUID = ProjectUid,
+        ProjectID = projectId,
+        ProjectUID = projectUid,
         ProjectName = name,
-        ProjectType = type,
+        ProjectType = ProjectType.Standard,
         ProjectBoundary = null,//not used
         ProjectStartDate = startDate,
         ProjectEndDate = endDate,
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      var configJson = JsonConvert.SerializeObject(CreateProjectEvt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      CallProjectWebApi(CreateProjectEvt, string.Empty, statusCode, "Create");
+    }
+
+    /// <summary>
+    /// Update the project via the web api. 
+    /// </summary>
+    /// <param name="projectUid">project UID</param>
+    /// <param name="name">project name</param>
+    /// <param name="endDate">project end date</param>
+    /// <param name="timezone">project time zone</param>
+    /// <param name="actionUtc">timestamp of the event</param>
+    /// <param name="statusCode">expected status code from web api call</param>
+    public void UpdateProjectViaWebApi(Guid projectUid, string name, DateTime endDate, string timezone, DateTime actionUtc, HttpStatusCode statusCode)
+    {
+      UpdateProjectEvt = new UpdateProjectEvent
+      {
+        ProjectUID = projectUid,
+        ProjectName = name,
+        ProjectType = ProjectType.Standard,
+        ProjectEndDate = endDate,
+        ProjectTimezone = timezone,
+        ActionUTC = actionUtc
+      };
+      CallProjectWebApi(UpdateProjectEvt, string.Empty, statusCode, "Update", "PUT");
+    }
+
+    /// <summary>
+    /// Delete the project via the web api. 
+    /// </summary>
+    /// <param name="projectUid">project UID</param>
+    /// <param name="actionUtc">timestamp of the event</param>
+    /// <param name="statusCode">expected status code from web api call</param>
+    public void DeleteProjectViaWebApi(Guid projectUid, DateTime actionUtc, HttpStatusCode statusCode)
+    {
+      DeleteProjectEvt = new DeleteProjectEvent
+      {
+        ProjectUID = projectUid,
+        ActionUTC = actionUtc
+      };
+      CallProjectWebApi(DeleteProjectEvt, string.Empty, statusCode, "Delete", "DELETE");
+    }
+
+    /// <summary>
+    /// Associate a customer and project via the web api. 
+    /// </summary>
+    /// <param name="projectUid">project UID</param>
+    /// <param name="customerUid">customer UID</param>
+    /// <param name="customerId">legacy customer ID</param>
+    /// <param name="actionUtc">timestamp of the event</param>
+    /// <param name="statusCode">expected status code from web api call</param>
+    public void AssociateCustomerProjectViaWebApi(Guid projectUid, Guid customerUid, int customerId, DateTime actionUtc, HttpStatusCode statusCode)
+    {
+      AssociateCustomerProjectEvt = new AssociateProjectCustomer
+      {
+        ProjectUID = projectUid,
+        CustomerUID = customerUid,
+        LegacyCustomerID = customerId,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUtc
+      };
+      CallProjectWebApi(AssociateCustomerProjectEvt, "/AssociateCustomer", statusCode, "Associate customer");
+    }
+
+    /// <summary>
+    /// Dissociate a customer and project via the web api. 
+    /// </summary>
+    /// <param name="projectUid">project UID</param>
+    /// <param name="customerUid">customer UID</param>
+    /// <param name="actionUtc">timestamp of the event</param>
+    /// <param name="statusCode">expected status code from web api call</param>
+    public void DissociateProjectViaWebApi(Guid projectUid, Guid customerUid, DateTime actionUtc, HttpStatusCode statusCode)
+    {
+      DissociateCustomerProjectEvt = new DissociateProjectCustomer
+      {
+        ProjectUID = projectUid,
+        CustomerUID = customerUid,
+        ActionUTC = actionUtc
+      };
+      CallProjectWebApi(DissociateCustomerProjectEvt, "/DissociateCustomer", statusCode, "Dissociate customer");
+    }
+
+    /// <summary>
+    /// Associate a geofence and project via the web api. 
+    /// </summary>
+    /// <param name="projectUid">project UID</param>
+    /// <param name="geofenceUid">geofence UID</param>
+    /// <param name="actionUtc">timestamp of the event</param>
+    /// <param name="statusCode">expected status code from web api call</param>
+    public void AssociateGeofenceProjectViaWebApi(Guid projectUid, Guid geofenceUid, DateTime actionUtc, HttpStatusCode statusCode)
+    {
+      AssociateProjectGeofenceEvt = new AssociateProjectGeofence
+      {
+        ProjectUID = projectUid,
+        GeofenceUID = geofenceUid,
+        ActionUTC = actionUtc
+      };
+      CallProjectWebApi(AssociateProjectGeofenceEvt, "/AssociateGeofence", statusCode, "Associate geofence");
+    }
+    /// <summary>
+    /// Call the project web api
+    /// </summary>
+    /// <param name="evt">THe project event containing the data</param>
+    /// <param name="routeSuffix">suffix to add to base uri if required</param>
+    /// <param name="statusCode">expected return code of the web api call</param>
+    /// <param name="what">name of the api being called for logging</param>
+    /// <param name="method">http method</param>
+    private void CallProjectWebApi(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method="POST")
+    {
+      var configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(GetBaseUri(), "POST", "application/json", configJson, HttpStatusCode.OK);
-      Console.WriteLine("Create project response:" + response);
+      var response = restClient.DoHttpRequest(GetBaseUri() + routeSuffix, method, "application/json", configJson, statusCode);
+      Console.WriteLine(what + " project response:" + response);
     }
 
     //        /// <summary>
@@ -673,7 +812,7 @@ namespace TestUtility
             foreach (var row in objectDetailsArray)
             {
                 rowCnt++;
-                var rowValues = row.Split(SEPERATOR);
+                var rowValues = row.Split(SEPARATOR);
                 if (rowCnt == 1)
                 {
                     allColumnNames = row;
@@ -698,7 +837,7 @@ namespace TestUtility
 
             if (objectDetailsArray.Count() == 2)
             {
-                SetObjectPropertyValues(obj, objectDetailsArray.ElementAt(1).Split(SEPERATOR), objectDetailsArray.ElementAt(0));
+                SetObjectPropertyValues(obj, objectDetailsArray.ElementAt(1).Split(SEPARATOR), objectDetailsArray.ElementAt(0));
             }
 
             return obj;
@@ -784,7 +923,7 @@ namespace TestUtility
         /// <returns>index in the string array this is</returns>
         private int GetColumnIndex(string header, string columnName)
         {
-            string[] headerValues = header.Replace(" ", "").Split(SEPERATOR);
+            string[] headerValues = header.Replace(" ", "").Split(SEPARATOR);
             var idx = Array.FindIndex(headerValues, s => s.Equals(columnName));
             return idx;
         }

@@ -483,6 +483,27 @@ namespace VSS.Project.Data
       return projects;
     }
 
+    /// <summary>
+    /// Gets the specified project without linked data like customer and subscription.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns>The project</returns>
+    public async Task<Models.Project> GetProjectOnly(string projectUid)
+    {
+      await PerhapsOpenConnection();
+
+      var project = (await Connection.QueryAsync<Models.Project>
+          (@"SELECT              
+                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType                
+              FROM Project p 
+              WHERE p.ProjectUID = @projectUid",
+            new { projectUid }
+          )).FirstOrDefault();
+
+      PerhapsCloseConnection();
+      return project;
+    }
 
     /// <summary>
     /// Checks if a project with the specified projectUid exists.
