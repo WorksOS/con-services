@@ -49,33 +49,75 @@ namespace ProjectWebApi.Models
           if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-                "Missing ProjectTimezone");
+              "Missing ProjectTimezone");
           }
           if (string.IsNullOrEmpty(createEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-                "Missing ProjectName");
+              "Missing ProjectName");
+          }
+          if (createEvent.ProjectStartDate == DateTime.MinValue)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              "Missing ProjectStartDate");
+          }
+          if (createEvent.ProjectEndDate == DateTime.MinValue)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              "Missing ProjectEndDate");
           }
           if (createEvent.ProjectEndDate < DateTime.UtcNow)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-                "ProjectEndDate must be in the future");
+              "ProjectEndDate must be in the future");
           }
           if (createEvent.ProjectStartDate > createEvent.ProjectEndDate)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-                "Start date must be earlier than end date");
+              "Start date must be earlier than end date");
           }
           if (createEvent.ProjectID <= 0)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-                "Missing legacy ProjectID");
+              "Missing legacy ProjectID");
           }
         }
-        //Nothing else to check for UpdateProjectEvent and DeleteProjectEvent
+        else if (evt is UpdateProjectEvent)
+        {
+          var updateEvent = evt as UpdateProjectEvent;
+          if (string.IsNullOrEmpty(updateEvent.ProjectName))
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+                "ProjectName cannot be empty");
+          }
+          if (updateEvent.ProjectEndDate == DateTime.MinValue)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+                "ProjectEndDate cannot be empty");
+          }
+          var project = projectRepo.GetProjectOnly(evt.ProjectUID.ToString()).Result;
+          if (project.StartDate > updateEvent.ProjectEndDate)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+                "ProjectEndDate must be later than start date");
+          }
+          //Note: time zone name is not updated in the repo so no need to validate it
+        }
+        //Nothing else to check for DeleteProjectEvent
       }
       else if (evt is AssociateProjectCustomer)
       {
+        var associateEvent = evt as AssociateProjectCustomer;
+        if (associateEvent.CustomerUID == Guid.Empty)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+              "Missing CustomerUID");
+        }
+        if (associateEvent.LegacyCustomerID <= 0)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+             "Missing legacy CustomerID");
+        }
         if (projectRepo.CustomerProjectExists(evt.ProjectUID.ToString()).Result)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
@@ -84,13 +126,27 @@ namespace ProjectWebApi.Models
       }
       else if (evt is DissociateProjectCustomer)
       {
+        var dissociateEvent = evt as DissociateProjectCustomer;
+        if (dissociateEvent.CustomerUID == Guid.Empty)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+              "Missing CustomerUID");
+        }
         if (!projectRepo.CustomerProjectExists(evt.ProjectUID.ToString()).Result)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               "Project not associated with a customer");
         }
       }
-      //Nothing else to check for AssociateGeofence
+      else if (evt is AssociateProjectGeofence)
+      {
+        var associateEvent = evt as AssociateProjectGeofence;
+        if (associateEvent.GeofenceUID == Guid.Empty)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+              "Missing GeofenceUID");
+        }
+      }
     }
   }
 }
