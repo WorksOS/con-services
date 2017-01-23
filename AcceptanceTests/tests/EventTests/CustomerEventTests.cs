@@ -20,7 +20,7 @@ namespace EventTests
             msg.Title("Create Customer test 1", "Create one customer");
             var eventArray = new[] {
             " | EventType           | DayOffset | Timestamp | CustomerName | CustomerType | CustomerUID   |",
-            $"| CreateCustomerEvent | 0         | 09:00:00  | CustName     | CustType     | {customerUid} |"
+            $"| CreateCustomerEvent | 0         | 09:00:00  | CustName     | Customer     | {customerUid} |"
             };
 
             testSupport.InjectEventsIntoKafka(eventArray);                                           // Inject events into kafka             

@@ -581,6 +581,7 @@ namespace TestUtility
                 {
                     #region "Customer Events"
                     case "CreateCustomerEvent":
+                        topicName = appConfig.masterDataTopic + "ICustomerEvent" + appConfig.kafkaTopicSuffix;
                         var createCustomerEvent = new CreateCustomerEvent()
                         {
                             ActionUTC = eventUtc,
@@ -592,6 +593,7 @@ namespace TestUtility
                         kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(createCustomerEvent,jsonSettings));
                         break;
                     case "UpdateCustomerEvent":
+                        topicName = appConfig.masterDataTopic + "ICustomerEvent" + appConfig.kafkaTopicSuffix;
                         var updateCustomerEvent = new UpdateCustomerEvent()
                         {
                             ActionUTC = eventUtc,
@@ -602,6 +604,7 @@ namespace TestUtility
                         kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(updateCustomerEvent,jsonSettings));
                         break;
                     case "DeleteCustomerEvent":
+                        topicName = appConfig.masterDataTopic + "ICustomerEvent" + appConfig.kafkaTopicSuffix;
                         var deleteCustomerEvent = new DeleteCustomerEvent()
                         {
                             ActionUTC = eventUtc,
