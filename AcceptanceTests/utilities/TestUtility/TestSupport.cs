@@ -733,6 +733,48 @@ namespace TestUtility
                         break;
                     #endregion
 
+                    #region Subscription events
+                    case "CreateProjectSubscriptionEvent":
+                        topicName = appConfig.masterDataTopic + "ISubscriptionEvent" + appConfig.kafkaTopicSuffix;
+                        var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
+                        {
+                            ActionUTC = eventUtc,                           
+                            ReceivedUTC = eventUtc,
+                            //StartDate = singleEvent.StartDate,
+                            //EndDate = singleEvent.EndDate,
+                            SubscriptionType = singleEvent.SubscriptionType,
+                            SubscriptionUID = new Guid(singleEvent.SubscriptionUID)                  
+                        };
+                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { CreateProjectSubscriptionEvent = createProjectSubscriptionEvent },jsonSettings));
+                        break;
+                    case "UpdateProjectSubscriptionEvent":
+                        topicName = appConfig.masterDataTopic + "ISubscriptionEvent" + appConfig.kafkaTopicSuffix;
+                        var updateProjectSubscriptionEvent = new UpdateProjectSubscriptionEvent()
+                        {
+                            ActionUTC = eventUtc,                           
+                            ReceivedUTC = eventUtc,
+                            //StartDate = singleEvent.StartDate,
+                            //EndDate = singleEvent.EndDate,
+                            SubscriptionType = singleEvent.SubscriptionType,
+                            SubscriptionUID = new Guid(singleEvent.SubscriptionUID)                  
+                        };
+                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = updateProjectSubscriptionEvent },jsonSettings));
+                        break;
+                    case "AssociateProjectSubscriptionEvent":
+                        topicName = appConfig.masterDataTopic + "ISubscriptionEvent" + appConfig.kafkaTopicSuffix;
+                        var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
+                        {
+                            ActionUTC = eventUtc,                           
+                            ReceivedUTC = eventUtc,
+                            //EffectiveDate = singleEvent.EffectiveDate,
+                            ProjectUID = new Guid(singleEvent.ProjectUID),
+                            SubscriptionUID = new Guid(singleEvent.SubscriptionUID)                  
+                        };
+                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { AssociateProjectSubscriptionEvent = associateProjectSubscriptionEvent },jsonSettings));
+                        break;
+                    #endregion
+
+
                     case "CreateProjectEvent":
                         topicName = appConfig.masterDataTopic + "IProjectEvent" + appConfig.kafkaTopicSuffix;
                         var createProjectEvent = new CreateProjectEvent()
