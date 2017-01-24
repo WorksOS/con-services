@@ -120,7 +120,7 @@ namespace TestUtility
     public void InjectEventsIntoKafka(string[] eventArray)
         {
             msg.DisplayEventsToConsole(eventArray);
-            var allEvents = ConvertArrayToList<MachineEvents>(eventArray);
+            var allEvents = ConvertArrayToList<EventTable>(eventArray);
             WriteAListOfMachineEventsToKafka(allEvents);
             WaitForTimeBasedOnNumberOfRecords(allEvents.Count);
         }
@@ -133,7 +133,7 @@ namespace TestUtility
         public void InjectEventsIntoMySqlDatabase(string[] eventArray, bool isSameAsset = true)
         {
             msg.DisplayEventsForDbInjectToConsole(eventArray);
-            var allEvents = ConvertArrayToList<MachineEvents>(eventArray);
+            var allEvents = ConvertArrayToList<EventTable>(eventArray);
             WriteAListOfMachineEventsToMySqlDatabase(allEvents, isSameAsset);
         }
 
@@ -660,7 +660,7 @@ namespace TestUtility
         /// Publish event to kafka
         /// </summary>
         /// <param name="allEvents">List of events in a inputEvent class format</param>
-        private void WriteAListOfMachineEventsToKafka(List<MachineEvents> allEvents)
+        private void WriteAListOfMachineEventsToKafka(List<EventTable> allEvents)
         {
             var kafkaDriver = new RdKafkaDriver();
             foreach (var singleEvent in allEvents)
@@ -710,6 +710,7 @@ namespace TestUtility
                         kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { DeleteCustomerEvent = deleteCustomerEvent},jsonSettings));
                         break;
                     case "AssociateCustomerUserEvent":
+                        topicName = appConfig.masterDataTopic + "ICustomerEvent" + appConfig.kafkaTopicSuffix;
                         var associateCustomerUserEvent = new AssociateCustomerUserEvent()
                         {
                             ActionUTC = eventUtc,
@@ -720,6 +721,7 @@ namespace TestUtility
                         kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { AssociateCustomerUserEvent =  associateCustomerUserEvent},jsonSettings));
                         break;
                     case "DissociateCustomerUserEvent":
+                        topicName = appConfig.masterDataTopic + "ICustomerEvent" + appConfig.kafkaTopicSuffix;
                         var dissociateCustomerUserEvent = new DissociateCustomerUserEvent()
                         {                            
                             ActionUTC = eventUtc,
@@ -816,7 +818,7 @@ namespace TestUtility
         /// </summary>
         /// <param name="allEvents">List of all the events</param>
         /// <param name="isSameAsset">Is all the same asset</param>
-        private void WriteAListOfMachineEventsToMySqlDatabase(List<MachineEvents> allEvents, bool isSameAsset = true)
+        private void WriteAListOfMachineEventsToMySqlDatabase(List<EventTable> allEvents, bool isSameAsset = true)
         {
             foreach (var singleEvent in allEvents)
             {
