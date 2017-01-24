@@ -17,7 +17,8 @@ How to build local docker containers for database and kafka, to enable you to de
     You can then view the 3 containers: 
      	docker ps 
     Or view the log for a container (using the name from above list): 
-        docker logs vup_kafka_1 -f
+        docker logs vssvisionlinkproject_kafka_1 -f
+		docker logs vssvisionlinkproject_schema_1 -f etc
 
 3. e.g. to debug the webAPI locally :
 	Select WebApi as startup project and WebApi configuration from toolbar next to green arrow.
