@@ -10,7 +10,7 @@ namespace EventTests
     [TestClass]
     public class CustomerEventTests
     {
-        [TestMethod] [Ignore]
+        [TestMethod] 
         public void CreateCustomerEvent()
         {
             var msg = new Msg();
@@ -80,7 +80,7 @@ namespace EventTests
             testSupport.InjectEventsIntoKafka(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);     
             mysql.VerifyTestResultDatabaseRecordCount("CustomerUser", "UserUID", 1, userUid);                                                 
-            mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "DeleteCustName,1,1", customerUid);
+            mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "AssociateCust,1,0", customerUid);
             mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerUser","UserUID", "fk_CustomerUID,UserUID",$"{customerUid}, {userUid}", userUid);
         }
 
@@ -103,7 +103,7 @@ namespace EventTests
             testSupport.InjectEventsIntoKafka(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);     
             mysql.VerifyTestResultDatabaseRecordCount("CustomerUser", "UserUID", 0, userUid);                                                 
-            mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "DeleteCustName,1,1", customerUid);
+            mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "AssociateCust,1,0", customerUid);
         }
     }
 }
