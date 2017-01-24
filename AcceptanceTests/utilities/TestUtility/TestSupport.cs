@@ -584,13 +584,13 @@ namespace TestUtility
                         topicName = appConfig.masterDataTopic + "ICustomerEvent" + appConfig.kafkaTopicSuffix;
                         var createCustomerEvent = new CreateCustomerEvent()
                         {
-                            ActionUTC = eventUtc,
+                            ActionUTC = eventUtc,                           
                             ReceivedUTC = eventUtc,
                             CustomerName = singleEvent.CustomerName,
                             CustomerType = singleEvent.CustomerType,
                             CustomerUID = new Guid(singleEvent.CustomerUID)                            
                         };
-                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(createCustomerEvent,jsonSettings));
+                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { CreateCustomerEvent = createCustomerEvent },jsonSettings));
                         break;
                     case "UpdateCustomerEvent":
                         topicName = appConfig.masterDataTopic + "ICustomerEvent" + appConfig.kafkaTopicSuffix;
@@ -601,7 +601,7 @@ namespace TestUtility
                             CustomerName = singleEvent.CustomerName,
                             CustomerUID = new Guid(singleEvent.CustomerUID)                            
                         };
-                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(updateCustomerEvent,jsonSettings));
+                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { UpdateCustomerEvent = updateCustomerEvent},jsonSettings));
                         break;
                     case "DeleteCustomerEvent":
                         topicName = appConfig.masterDataTopic + "ICustomerEvent" + appConfig.kafkaTopicSuffix;
@@ -611,7 +611,7 @@ namespace TestUtility
                             ReceivedUTC = eventUtc,
                             CustomerUID = new Guid(singleEvent.CustomerUID)                            
                         };
-                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(deleteCustomerEvent,jsonSettings));
+                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { DeleteCustomerEvent = deleteCustomerEvent},jsonSettings));
                         break;
                     case "AssociateCustomerUserEvent":
                         var associateCustomerUserEvent = new AssociateCustomerUserEvent()
@@ -621,7 +621,17 @@ namespace TestUtility
                             CustomerUID = new Guid(singleEvent.CustomerUID),
                             UserUID = new Guid(singleEvent.UserUID)                                                      
                         };
-                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(associateCustomerUserEvent,jsonSettings));
+                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { AssociateCustomerUserEvent =  associateCustomerUserEvent},jsonSettings));
+                        break;
+                    case "DissociateCustomerUserEvent":
+                        var dissociateCustomerUserEvent = new DissociateCustomerUserEvent()
+                        {                            
+                            ActionUTC = eventUtc,
+                            ReceivedUTC = eventUtc,
+                            CustomerUID = new Guid(singleEvent.CustomerUID),
+                            UserUID = new Guid(singleEvent.UserUID)                                                      
+                        };
+                        kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { DissociateCustomerUserEvent =  dissociateCustomerUserEvent},jsonSettings));
                         break;
                     #endregion
 
