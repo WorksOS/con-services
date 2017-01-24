@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using VSS.Project.Service.Utils.JsonConverters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -33,6 +30,7 @@ namespace KafkaConsumer.JsonConverters
       {
         return jObject["UpdateCustomerSubscriptionEvent"]?.ToObject<UpdateCustomerSubscriptionEvent>();
       }
+
       return null;
     }
   }

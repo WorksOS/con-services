@@ -28,6 +28,7 @@ public class ProjectEventConverter : JsonCreationConverter<IProjectEvent>
     {
       return jObject["AssociateProjectGeofence"].ToObject<AssociateProjectGeofence>();
     }
+
     //if (jObject["DissociateProjectCustomer"] != null)
     //{
     //  return jObject["DissociateProjectCustomer"].ToObject<DissociateProjectCustomer>();

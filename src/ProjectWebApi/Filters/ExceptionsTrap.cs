@@ -17,7 +17,7 @@ namespace VSS.Project.Service.WebApiModels.Filters
     public ExceptionsTrap(RequestDelegate next, ILogger<ExceptionsTrap> logger)
     {
       _next = next;
-      log = logger.CreateLogger<ExceptionsTrap>();
+      log = logger; // .CreateLogger<ExceptionsTrap>();
     }
 
     public async Task Invoke(HttpContext context)

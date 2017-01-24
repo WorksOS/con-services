@@ -34,6 +34,7 @@ namespace VSS.Project.Data.Models
     //These 2 properties used for authentication stuff
 
     public DateTime SubscriptionEndDate { get; set; }
+    public string GeometryWKT { get; set; }
 
 
     public override bool Equals(object obj)
@@ -49,6 +50,7 @@ namespace VSS.Project.Data.Models
             && otherProject.StartDate == this.StartDate
             && otherProject.EndDate == this.EndDate
             && otherProject.LastActionedUTC == this.LastActionedUTC
+            && otherProject.GeometryWKT == this.GeometryWKT
             ;
     }
     public override int GetHashCode() { return 0; }
