@@ -3,7 +3,7 @@
     /// <summary>
     /// This class to to cater for the incoming events
     /// </summary>
-    public class MachineEvents
+    public class EventTable
     {
         public string EventType { get; set; }
         public string DayOffset { get; set; }
@@ -51,7 +51,7 @@
         public string Model { get; set; }
         public string IconId { get; set; }
 
-        public MachineEvents()
+        public EventTable()
         {
             UtcOffsetHours = "0";
         }

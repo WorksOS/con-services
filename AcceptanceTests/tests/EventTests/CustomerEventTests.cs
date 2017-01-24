@@ -10,7 +10,7 @@ namespace EventTests
     [TestClass]
     public class CustomerEventTests
     {
-        [TestMethod]
+        [TestMethod] [Ignore]
         public void CreateCustomerEvent()
         {
             var msg = new Msg();
