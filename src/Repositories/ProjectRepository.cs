@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -449,6 +450,13 @@ namespace VSS.Project.Data
 
       PerhapsCloseConnection();
       return projects;
+    }
+
+    //temp placeholder
+    public async Task<IEnumerable<Models.Project>> GetProjectsForCustomer(string customerUid)
+    {
+      var result = new List<Models.Project>();
+      return result;
     }
 
     /// <summary>

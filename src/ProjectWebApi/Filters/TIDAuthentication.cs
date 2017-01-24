@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
+﻿using System.Security.Principal;
 using System.Threading.Tasks;
 using KafkaConsumer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using VSS.Project.Data;
 using VSS.Project.Service.WebApi.Authentication;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Project.WebApi.Configuration.Principal.Models;
 
 namespace VSS.Project.Service.WebApiModels.Filters
 {
@@ -30,7 +23,6 @@ namespace VSS.Project.Service.WebApiModels.Filters
         {
             bool requiresCustomerUid = context.Request.Method.ToUpper() == "GET";
 
-            string token = null;
             string authorization = context.Request.Headers["X-Jwt-Assertion"];
             string customerUID = context.Request.Headers["X-VisionLink-CustomerUid"];
 
@@ -41,7 +33,7 @@ namespace VSS.Project.Service.WebApiModels.Filters
                 return;
             }
 
-            token = authorization.Substring("Bearer ".Length).Trim();
+            string token = authorization.Substring("Bearer ".Length).Trim();
             // If no token found, no further work possible
             if (string.IsNullOrEmpty(token))
             {
@@ -54,26 +46,7 @@ namespace VSS.Project.Service.WebApiModels.Filters
                 await SetResult("Invalid authentication", context);
                 return;
             }
-
-            var projects = await (projectRepo as ProjectRepository).GetProjectsForUser(jwtToken.UserUID);
-
-            var projectList = new Dictionary<long, ProjectDescriptor>();
-            foreach (var userProject in projects)
-            {
-                projectList.Add(userProject.LegacyProjectID,
-                  new ProjectDescriptor
-                  {
-                      ProjectType = userProject.ProjectType,
-                      Name = userProject.Name,
-                      ProjectTimeZone = userProject.ProjectTimeZone,
-                      isArchived = userProject.IsDeleted || userProject.SubscriptionEndDate < DateTime.UtcNow,
-                      StartDate = userProject.StartDate.ToString("O"),
-                      EndDate = userProject.StartDate.ToString("O"),
-                      ProjectUid = userProject.ProjectUID
-                  });
-            }
-
-            context.User = new ProjectsPrincipal(new GenericIdentity(jwtToken.UserUID, customerUID), new string[] {}, projectList);
+            context.User = new GenericPrincipal(new GenericIdentity(jwtToken.UserUID, customerUID), new string[] { });
             await _next.Invoke(context);
         }
 

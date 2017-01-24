@@ -9,10 +9,10 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility.Model.TestEvents;
-//using VSS.Project.Service.WebApiModels.Models;
-using TestUtility.Model.WebApi;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Text.RegularExpressions;
+using VSS.Customer.Data.Models;
+using VSS.Subscription.Data.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace TestUtility
@@ -25,9 +25,13 @@ namespace TestUtility
         public DateTime FirstEventDate { get; set; }
         public DateTime LastEventDate { get; set; }
         // public AssetConfigData AssetConfig { get; set; }
+        public Customer MockCustomer { get; set; }
+        public Subscription MockSubscription { get; set; }
+        public ProjectSubscription MockProjectSubscription { get; set; }
         public Guid ProjectUid { get; set; }
         public Guid CustomerUid { get; set; }
         public Guid GeofenceUid { get; set; }
+        public Guid SubscriptionUid { get; set; }
 
         public CreateProjectEvent CreateProjectEvt { get; set; }
         public UpdateProjectEvent UpdateProjectEvt { get; set; }
@@ -56,6 +60,7 @@ namespace TestUtility
             SetProjectUid();
             SetCustomerUid();
             SetGeofenceUid();
+          SetSubscriptionUid();
         }
 
     /// <summary>
@@ -99,6 +104,14 @@ namespace TestUtility
     }
 
     /// <summary>
+    /// Set the subscription UID to a random GUID
+    /// </summary>
+    public void SetSubscriptionUid()
+    {
+      CustomerUid = Guid.NewGuid();
+    }
+
+    /// <summary>
     /// Inject all events from the test into kafka
     /// </summary>
     /// <param name="eventArray">all of the events</param>
@@ -130,18 +143,19 @@ namespace TestUtility
     /// <param name="name">project name</param>
     /// <param name="startDate">project start date</param>
     /// <param name="endDate">project end date</param>
+    /// <param name="projectType">project type</param>
     /// <param name="timezone">project time zone</param>
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="statusCode">expected status code from web api call</param>
     public void CreateProjectViaWebApi(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, 
-      string timezone, DateTime actionUtc, HttpStatusCode statusCode)
+      string timezone, ProjectType projectType, DateTime actionUtc, HttpStatusCode statusCode)
     {
       CreateProjectEvt = new CreateProjectEvent
       {
         ProjectID = projectId,
         ProjectUID = projectUid,
         ProjectName = name,
-        ProjectType = ProjectType.Standard,
+        ProjectType = projectType,
         ProjectBoundary = null,//not used
         ProjectStartDate = startDate,
         ProjectEndDate = endDate,
@@ -246,6 +260,20 @@ namespace TestUtility
       };
       CallProjectWebApi(AssociateProjectGeofenceEvt, "/AssociateGeofence", statusCode, "Associate geofence");
     }
+
+    public void GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode statusCode, string customerUid, string[] expectedResultsArray)
+    {
+      var response = CallProjectWebApi(null, null, statusCode, "Get", "GET", customerUid);
+      if (statusCode == HttpStatusCode.OK)
+      {
+        var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response);
+        var expectedProjects = ConvertArrayToList<ProjectDescriptor>(expectedResultsArray);
+        msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),
+          "Actual from WebApi: " + response);
+        CollectionAssert.AreEqual(expectedProjects, actualProjects);
+      }
+    }
+
     /// <summary>
     /// Call the project web api
     /// </summary>
@@ -254,12 +282,77 @@ namespace TestUtility
     /// <param name="statusCode">expected return code of the web api call</param>
     /// <param name="what">name of the api being called for logging</param>
     /// <param name="method">http method</param>
-    private void CallProjectWebApi(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method="POST")
+    /// <param name="customerUid">Customer UID to add to http headers</param>
+    /// <returns>The web api response</returns>
+    private string CallProjectWebApi(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method="POST", string customerUid = RestClientUtil.CUSTOMER_UID)
     {
       var configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(GetBaseUri() + routeSuffix, method, "application/json", configJson, statusCode);
+      var response = restClient.DoHttpRequest(GetBaseUri() + routeSuffix, method, "application/json", configJson, statusCode, customerUid);
       Console.WriteLine(what + " project response:" + response);
+      return response;
+    }
+
+    /// <summary>
+    /// Inject the MockCustomer
+    /// </summary>
+    /// <param name="customerUid">Customer UID</param>
+    /// <param name="name">Customer name</param>
+    /// <param name="type">Customer type</param>
+    public void CreateMockCustomer(string customerUid, string name, CustomerType type)
+    {
+      MockCustomer = new Customer
+      {
+        CustomerUID = customerUid,
+        Name = name,
+        CustomerType = type,
+        IsDeleted = false,
+        LastActionedUTC = DateTime.UtcNow
+      };
+      var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"Customer"} 
+                            (CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
+                            ('{MockCustomer.CustomerUID}',{MockCustomer.Name},{MockCustomer.CustomerType},{MockCustomer.IsDeleted},{MockCustomer.LastActionedUTC});";
+      var mysqlHelper = new MySqlHelper();
+      mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);
+    }
+
+    /// <summary>
+    /// Inject the MockSubscription and MockProjectSubscription
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="subscriptionUid">Subscription UID</param>
+    /// <param name="customerUid">Customer UID</param>
+    /// <param name="startDate">Start date of the subscription</param>
+    /// <param name="endDate">End date of the subscription</param>
+    /// <param name="effectiveDate">Date at which the subscripton takes effect for the project</param>
+    public void CreateMockProjectSubscription(string projectUid, string subscriptionUid, string customerUid, DateTime startDate, DateTime endDate, DateTime effectiveDate)
+    {
+      MockSubscription = new Subscription
+      {
+        SubscriptionUID = subscriptionUid,
+        CustomerUID = customerUid,
+        ServiceTypeID = 20,//19=Landfill, 20=Project Monitoring
+        StartDate = startDate,
+        EndDate = endDate,
+        LastActionedUTC = DateTime.UtcNow
+      };
+      var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"Subscription"} 
+                            (SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
+                            ('{MockSubscription.SubscriptionUID}',{MockSubscription.CustomerUID},{MockSubscription.ServiceTypeID},{MockSubscription.StartDate},{MockSubscription.EndDate},{MockSubscription.LastActionedUTC});";
+      var mysqlHelper = new MySqlHelper();
+      mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);
+
+      MockProjectSubscription = new ProjectSubscription
+      {
+        SubscriptionUID = subscriptionUid,
+        ProjectUID = projectUid,
+        EffectiveDate = effectiveDate,
+        LastActionedUTC = DateTime.UtcNow
+      };
+      query = $@"INSERT INTO `{appConfig.dbSchema}`.{"ProjectSubscription"} 
+                            (fk_SubscriptionUID,fk_ProjectUID,EffectiveDate,LastActionedUTC) VALUES
+                            ('{MockProjectSubscription.SubscriptionUID}',{MockProjectSubscription.ProjectUID},{MockProjectSubscription.EffectiveDate},{MockProjectSubscription.LastActionedUTC});";
+      mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);
     }
 
     //        /// <summary>

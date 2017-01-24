@@ -35,6 +35,8 @@ namespace VSS.Project.Data.Models
 
     public DateTime SubscriptionEndDate { get; set; }
 
+    public string GeometryWKT { get; set; }
+
 
     public override bool Equals(object obj)
     {

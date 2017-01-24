@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Security.Authentication;
+using System.Security.Principal;
 using KafkaConsumer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using ProjectWebApi.Models;
+using VSS.Project.Data;
 using VSS.Project.Service.Interfaces;
 using VSS.Project.Service.Utils;
-using VSS.Project.Service.WebApiModels.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Project.WebApi.Configuration.Principal.Models;
 
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V1
@@ -22,11 +17,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
     public class ProjectV1Controller : Controller
     {
 
-
         private readonly IKafka _producer;
         private readonly IRepository<IProjectEvent> _projectService;
         private readonly string kafkaTopicName;
-
 
         public ProjectV1Controller(IKafka producer, IRepository<IProjectEvent> projectRepo, IConfigurationStore store)
             : base()
@@ -40,15 +33,29 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
 
         [Route("api/v1/project")]
         [HttpGet]
-        public Dictionary<long, ProjectDescriptor> GetProjects()
+        public List<ProjectDescriptor> GetProjects()
         {
-            //Secure with project list
-            if (!(this.User as ProjectsPrincipal).AvailableProjects.Any())
-            {
-                throw new AuthenticationException();
-            }
+          var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+          var projects = (_projectService as ProjectRepository).GetProjectsForCustomer(customerUid).Result;
 
-            return (this.User as ProjectsPrincipal).AvailableProjects;
+          var projectList = new List<ProjectDescriptor>();
+          foreach (var project in projects)
+          {
+            projectList.Add(
+              new ProjectDescriptor
+              {
+                ProjectType = project.ProjectType,
+                Name = project.Name,
+                ProjectTimeZone = project.ProjectTimeZone,
+                IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
+                StartDate = project.StartDate.ToString("O"),
+                EndDate = project.StartDate.ToString("O"),
+                ProjectUid = project.ProjectUID,
+                LegacyProjectId = project.LegacyProjectID,
+                ProjectGeofenceWKT = project.GeometryWKT
+              });
+          }
+          return projectList;
         }
 
         // POST: api/project
