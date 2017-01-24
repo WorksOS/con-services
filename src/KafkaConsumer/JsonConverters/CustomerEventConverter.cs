@@ -10,22 +10,20 @@ public class CustomerEventConverter : JsonCreationConverter<ICustomerEvent>
   {
     if (jObject["CreateCustomerEvent"] != null)
     {
-        if (jObject["CreateCustomerEvent"] != null)
-        {
-            return jObject["CreateCustomerEvent"].ToObject<CreateCustomerEvent>();
-        }
-        if (jObject["UpdateCustomerEvent"] != null)
-        {
-            return jObject["UpdateCustomerEvent"].ToObject<UpdateCustomerEvent>();
-        }
-        if (jObject["DeleteCustomerEvent"] != null)
-        {
-            return jObject["DeleteCustomerEvent"].ToObject<DeleteCustomerEvent>();
-        }
-        if (jObject["AssociateCustomerUserEvent"] != null)
-        {
-            return jObject["AssociateCustomerUserEvent"].ToObject<AssociateCustomerUserEvent>();
-        }
-        return jObject["DissociateCustomerUserEvent"].ToObject<DissociateCustomerUserEvent>();
+        return jObject["CreateCustomerEvent"].ToObject<CreateCustomerEvent>();
     }
+    if (jObject["UpdateCustomerEvent"] != null)
+    {
+        return jObject["UpdateCustomerEvent"].ToObject<UpdateCustomerEvent>();
+    }
+    if (jObject["DeleteCustomerEvent"] != null)
+    {
+        return jObject["DeleteCustomerEvent"].ToObject<DeleteCustomerEvent>();
+    }
+    if (jObject["AssociateCustomerUserEvent"] != null)
+    {
+        return jObject["AssociateCustomerUserEvent"].ToObject<AssociateCustomerUserEvent>();
+    }
+    return jObject["DissociateCustomerUserEvent"].ToObject<DissociateCustomerUserEvent>();
+  }
 }
