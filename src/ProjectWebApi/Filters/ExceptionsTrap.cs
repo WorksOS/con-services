@@ -14,10 +14,10 @@ namespace VSS.Project.Service.WebApiModels.Filters
     private readonly ILogger log;
     private readonly RequestDelegate _next;
 
-    public ExceptionsTrap(RequestDelegate next, ILoggerFactory logger)
+    public ExceptionsTrap(RequestDelegate next, ILogger<ExceptionsTrap> logger)
     {
       _next = next;
-      log = logger.CreateLogger<ExceptionsTrap>();
+      log = logger; // .CreateLogger<ExceptionsTrap>();
     }
 
     public async Task Invoke(HttpContext context)

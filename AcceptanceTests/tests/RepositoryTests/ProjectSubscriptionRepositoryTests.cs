@@ -10,8 +10,9 @@ using VSS.Customer.Data;
 using VSS.Subscription.Data.Models;
 using VSS.Project.Service.Repositories;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 using log4netExtensions;
+using VSS.Geofence.Data.Models;
+using VSS.Geofence.Data;
 
 namespace RepositoryTests
 {
@@ -22,6 +23,7 @@ namespace RepositoryTests
     SubscriptionRepository subscriptionContext = null;
     CustomerRepository customerContext = null;
     ProjectRepository projectContext = null;
+    GeofenceRepository geofenceContext = null;
 
     [TestInitialize]
     public void Init()
@@ -42,6 +44,7 @@ namespace RepositoryTests
       subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
       customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
       projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      geofenceContext = new GeofenceRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
     }
 
     #region ProjectSubscriptions
@@ -65,7 +68,7 @@ namespace RepositoryTests
         EndDate = new DateTime(9999, 12, 31),
         ActionUTC = actionUTC
       };
-      
+
       var s = subscriptionContext.StoreEvent(createProjectSubscriptionEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "ProjectSubscription event not written");
@@ -106,7 +109,7 @@ namespace RepositoryTests
         EndDate = new DateTime(9999, 12, 31),
         ActionUTC = actionUTC.AddHours(1)
       };
-      
+
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(createProjectSubscriptionEvent2);
       s.Wait();
@@ -138,7 +141,7 @@ namespace RepositoryTests
         EndDate = new DateTime(2110, 12, 31),
         ActionUTC = actionUTC
       };
-      
+
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
 
       Subscription subscription = CopyModel(subscriptionContext, createProjectSubscriptionEvent);
@@ -178,7 +181,7 @@ namespace RepositoryTests
         EndDate = new DateTime(2016, 12, 31),
         ActionUTC = ActionUTC
       };
-      
+
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(updateProjectSubscriptionEvent);
       s.Wait();
@@ -223,7 +226,7 @@ namespace RepositoryTests
         EndDate = new DateTime(2016, 12, 31),
         ActionUTC = ActionUTC.AddMinutes(-10)
       };
-      
+
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(updateProjectSubscriptionEvent);
       s.Wait();
@@ -266,7 +269,7 @@ namespace RepositoryTests
         EndDate = null,
         ActionUTC = ActionUTC.AddMinutes(10)
       };
-      
+
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(updateProjectSubscriptionEvent);
       s.Wait();
@@ -307,7 +310,7 @@ namespace RepositoryTests
         EndDate = new DateTime(2110, 12, 31),
         ActionUTC = ActionUTC.AddHours(1)
       };
-      
+
       subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(updateProjectSubscriptionEvent);
       s.Wait();
@@ -344,7 +347,7 @@ namespace RepositoryTests
         EffectiveDate = new DateTime(2016, 02, 03),
         ActionUTC = actionUtc
       };
-      
+
       var s = subscriptionContext.StoreEvent(associateProjectSubscriptionEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "associateProjectSubscription event not written");
@@ -374,7 +377,7 @@ namespace RepositoryTests
         EffectiveDate = new DateTime(2016, 02, 03),
         ActionUTC = actionUtc
       };
-      
+
       subscriptionContext.StoreEvent(associateProjectSubscriptionEvent).Wait();
       var s = subscriptionContext.StoreEvent(associateProjectSubscriptionEvent);
       s.Wait();
@@ -434,7 +437,7 @@ namespace RepositoryTests
         EffectiveDate = new DateTime(2016, 02, 03),
         ActionUTC = actionUtc
       };
-      
+
       projectContext.StoreEvent(createProjectEvent).Wait();
       customerContext.StoreEvent(createCustomerEvent).Wait();
       projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
@@ -455,7 +458,6 @@ namespace RepositoryTests
       Assert.AreEqual(createProjectSubscriptionEvent.SubscriptionUID.ToString(), g.Result.SubscriptionUID, "project details are incorrect from subscriptionRepo");
       Assert.AreEqual(project, g.Result, "project details are incorrect from subscriptionRepo");
     }
-
 
     /// <summary>
     /// AssociateProjectSubscriptionEvent - HappyPath multipleSubs
@@ -526,7 +528,7 @@ namespace RepositoryTests
         EffectiveDate = new DateTime(2016, 02, 03),
         ActionUTC = actionUtc.AddMinutes(22)
       };
-      
+
       projectContext.StoreEvent(createProjectEvent).Wait();
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(associateCustomerUser).Wait();
@@ -540,13 +542,13 @@ namespace RepositoryTests
 
       var g = projectContext.GetProjectsForUser(associateCustomerUser.UserUID.ToString());
       g.Wait();
-      var projects = g.Result.ToList(); 
+      var projects = g.Result.ToList();
       Assert.IsNotNull(projects, "Unable to retrieve 1 project/sub from projectRepo");
       Assert.AreEqual(2, projects.Count, "should be 1 project/sub from projectRepo");
 
       g = projectContext.GetProjectsForCustomerUser(associateCustomerUser.CustomerUID.ToString(), associateCustomerUser.UserUID.ToString());
       g.Wait();
-      projects = g.Result.ToList(); 
+      projects = g.Result.ToList();
       Assert.IsNotNull(projects, "Unable to retrieve 1 project/sub from projectRepo");
       Assert.AreEqual(2, projects.Count, "should be 1 project/sub from projectRepo");
 
@@ -573,6 +575,202 @@ namespace RepositoryTests
         Assert.AreEqual(project2, projects[0], "project details 2 are incorrect from Project-sub Repo");
       else
         Assert.AreEqual(project2, projects[1], "project details 2 are incorrect from Project-sub Repo");
+    }
+
+    /// <summary>
+    /// AssociateProjectSubscriptionEvent - HappyPath multipleSubs and multiProjects
+    ///   ProjectA has sub 1) dates 1-3 b) dates 2-5
+    ///   ProjectB has no subs
+    ///   ... should return ProjectA with SubB AND ProjectB with no sub
+    ///   also to return GeometryWKT
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectSubscriptionEvent_HappyPath_ByCustomerMultipleProjectsAndSubs()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+      var projectUidA = Guid.NewGuid();
+      var projectUidB = Guid.NewGuid();
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      { CustomerUID = Guid.NewGuid(), CustomerName = "The Customer Name", CustomerType = CustomerType.Customer.ToString(), ActionUTC = actionUtc };
+
+      var createProjectAEvent = new CreateProjectEvent()
+      {
+        ProjectUID = projectUidA,
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUtc
+      };
+
+      var associateCustomerProjectAEvent = new AssociateProjectCustomer()
+      { CustomerUID = createCustomerEvent.CustomerUID, ProjectUID = createProjectAEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = actionUtc };
+
+      var createProjectASubscriptionEvent1 = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(2016, 11, 30),
+        ActionUTC = actionUtc
+      };
+
+      var associateProjectASubscriptionEvent1 = new AssociateProjectSubscriptionEvent()
+      {
+        SubscriptionUID = createProjectASubscriptionEvent1.SubscriptionUID,
+        ProjectUID = createProjectAEvent.ProjectUID,
+        EffectiveDate = new DateTime(2016, 02, 03),
+        ActionUTC = actionUtc
+      };
+
+      var createProjectASubscriptionEvent2 = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Landfill",
+        StartDate = new DateTime(2016, 10, 01),
+        EndDate = new DateTime(2016, 12, 31),
+        ActionUTC = actionUtc.AddMinutes(20)
+      };
+
+      var associateProjectASubscriptionEvent2 = new AssociateProjectSubscriptionEvent()
+      {
+        SubscriptionUID = createProjectASubscriptionEvent2.SubscriptionUID,
+        ProjectUID = createProjectAEvent.ProjectUID,
+        EffectiveDate = new DateTime(2016, 02, 03),
+        ActionUTC = actionUtc.AddMinutes(22)
+      };
+
+      var createProjectAGeofenceProjectTypeEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Project.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = createCustomerEvent.CustomerUID,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var associateProjectAGeofenceProjectTypeEvent = new AssociateProjectGeofence()
+      {
+        ProjectUID = createProjectAEvent.ProjectUID,
+        GeofenceUID = createProjectAGeofenceProjectTypeEvent.GeofenceUID,
+        ActionUTC = actionUtc.AddDays(1)
+      };
+
+      var createProjectAGeofenceNonProjectTypeEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((100 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = createCustomerEvent.CustomerUID,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var associateProjectAGeofenceNonProjectTypeEvent = new AssociateProjectGeofence()
+      {
+        ProjectUID = createProjectAEvent.ProjectUID,
+        GeofenceUID = createProjectAGeofenceNonProjectTypeEvent.GeofenceUID,
+        ActionUTC = actionUtc.AddDays(1)
+      };
+
+
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+
+      projectContext.StoreEvent(createProjectAEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectAEvent).Wait();
+
+      subscriptionContext.StoreEvent(createProjectASubscriptionEvent1).Wait();
+      subscriptionContext.StoreEvent(associateProjectASubscriptionEvent1).Wait();
+
+      subscriptionContext.StoreEvent(createProjectASubscriptionEvent2).Wait();
+      subscriptionContext.StoreEvent(associateProjectASubscriptionEvent2).Wait();
+
+      geofenceContext.StoreEvent(createProjectAGeofenceProjectTypeEvent).Wait();
+      projectContext.StoreEvent(associateProjectAGeofenceProjectTypeEvent).Wait();
+      geofenceContext.StoreEvent(createProjectAGeofenceNonProjectTypeEvent).Wait();
+      projectContext.StoreEvent(associateProjectAGeofenceNonProjectTypeEvent).Wait();
+
+      var createProjectBEvent = new CreateProjectEvent()
+      {
+        ProjectUID = projectUidB,
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUtc
+      };
+
+      var associateCustomerProjectBEvent = new AssociateProjectCustomer()
+      { CustomerUID = createCustomerEvent.CustomerUID, ProjectUID = createProjectBEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = actionUtc };
+
+      var createProjectBGeofenceProjectTypeEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = "Testing 123",
+        GeofenceType = GeofenceType.Project.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((45.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = createCustomerEvent.CustomerUID,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var associateProjectBGeofenceProjectTypeEvent = new AssociateProjectGeofence()
+      {
+        ProjectUID = createProjectBEvent.ProjectUID,
+        GeofenceUID = createProjectBGeofenceProjectTypeEvent.GeofenceUID,
+        ActionUTC = actionUtc.AddDays(1)
+      };
+
+      projectContext.StoreEvent(createProjectBEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectBEvent).Wait();
+
+      geofenceContext.StoreEvent(createProjectBGeofenceProjectTypeEvent).Wait();
+      projectContext.StoreEvent(associateProjectBGeofenceProjectTypeEvent).Wait();
+
+      var g = projectContext.GetProjectsForCustomer(createCustomerEvent.CustomerUID.ToString());
+      g.Wait();
+      var projects = g.Result.ToList();
+      Assert.IsNotNull(projects, "Unable to retrieve projects from projectRepo");
+      Assert.AreEqual(2, projects.Count, "should be 2 projects from projectRepo");
+
+      // can't gaurantee any order as none provided
+      if (projectUidA.ToString() == projects[0].ProjectUID)
+      {
+        CompareProjects(projects[0], createProjectASubscriptionEvent2, createProjectAGeofenceProjectTypeEvent);
+      }
+      else
+      {
+        CompareProjects(projects[1], createProjectASubscriptionEvent2, createProjectAGeofenceProjectTypeEvent);
+      }
+
+      if (projectUidB.ToString() == projects[0].ProjectUID)
+      {
+        CompareProjects(projects[0], null, createProjectBGeofenceProjectTypeEvent);
+      }
+      else
+      {
+        CompareProjects(projects[1], null, createProjectBGeofenceProjectTypeEvent);
+      }
     }
 
     /// <summary>
@@ -606,7 +804,7 @@ namespace RepositoryTests
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
       { CustomerUID = createCustomerEvent.CustomerUID, ProjectUID = createProjectEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = actionUtc };
-      
+
       projectContext.StoreEvent(createProjectEvent).Wait();
       customerContext.StoreEvent(createCustomerEvent).Wait();
       customerContext.StoreEvent(associateCustomerUser).Wait();
@@ -699,6 +897,22 @@ namespace RepositoryTests
         StartDate = kafkaProjectEvent.ProjectStartDate,
         EndDate = kafkaProjectEvent.ProjectEndDate
       };
+    }
+
+    private void CompareProjects(Project returnedProject, CreateProjectSubscriptionEvent createProjectSubscriptionEvent, CreateGeofenceEvent createGeofenceEvent)
+    {
+      if (createProjectSubscriptionEvent == null)
+      {
+        Assert.IsNull(returnedProject.SubscriptionUID, "Incorrect subscriptionUID");
+        Assert.AreEqual(DateTime.MinValue, returnedProject.SubscriptionEndDate, "Incorrect endDate");
+      }
+      else
+      {
+        Assert.AreEqual(createProjectSubscriptionEvent.SubscriptionUID.ToString(), returnedProject.SubscriptionUID, "Incorrect subscriptionUID");
+        Assert.AreEqual(createProjectSubscriptionEvent.EndDate, returnedProject.SubscriptionEndDate, "Incorrect endDate");
+      }
+
+      Assert.AreEqual(createGeofenceEvent.GeometryWKT, returnedProject.GeometryWKT, "Incorrect geometry");
     }
     #endregion
 

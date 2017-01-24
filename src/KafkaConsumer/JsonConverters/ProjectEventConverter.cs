@@ -24,18 +24,19 @@ public class ProjectEventConverter : JsonCreationConverter<IProjectEvent>
     {
       return jObject["AssociateProjectCustomer"].ToObject<AssociateProjectCustomer>();
     }
-    if (jObject["DissociateProjectCustomer"] != null)
-    {
-      return jObject["DissociateProjectCustomer"].ToObject<DissociateProjectCustomer>();
-    }
-    if (jObject["RestoreProjectEvent"] != null)
-    {
-      return jObject["RestoreProjectEvent"].ToObject<RestoreProjectEvent>();
-    }
     if (jObject["AssociateProjectGeofence"] != null)
     {
       return jObject["AssociateProjectGeofence"].ToObject<AssociateProjectGeofence>();
     }
+
+    //if (jObject["DissociateProjectCustomer"] != null)
+    //{
+    //  return jObject["DissociateProjectCustomer"].ToObject<DissociateProjectCustomer>();
+    //}
+    //if (jObject["RestoreProjectEvent"] != null)
+    //{
+    //  return jObject["RestoreProjectEvent"].ToObject<RestoreProjectEvent>();
+    //}
     return null;
   }
 }

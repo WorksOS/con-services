@@ -452,13 +452,6 @@ namespace VSS.Project.Data
       return projects;
     }
 
-    //temp placeholder
-    public async Task<IEnumerable<Models.Project>> GetProjectsForCustomer(string customerUid)
-    {
-      var result = new List<Models.Project>();
-      return result;
-    }
-
     /// <summary>
     /// There may be 0 or n subscriptions for each project. None/many may be current. 
     /// This method just gets ANY one of these or no subs (SubscriptionUID == null)
@@ -489,6 +482,47 @@ namespace VSS.Project.Data
 
       PerhapsCloseConnection();
       return projects;
+    }
+
+    /// <summary>
+    /// There may be 0 or n subscriptions for each project. None/many may be current. 
+    /// This method gets the latest EndDate so at most 1 sub per project
+    /// Also returns the GeofenceWRK
+    /// </summary>
+    /// <param name="customerUid"></param>
+    /// <param name="userUid"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Models.Project>> GetProjectsForCustomer(string customerUid)
+    {
+      await PerhapsOpenConnection();
+      // mysql doesn't have any nice mssql features like rowNumber/paritionBy, so quicker to do in c#
+      var projects = (await Connection.QueryAsync<Models.Project>
+          (@"SELECT 
+                c.CustomerUID, cp.LegacyCustomerID, 
+                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,                
+                ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate,
+                g.GeometryWKT
+              FROM Customer c  
+                JOIN CustomerProject cp ON cp.fk_CustomerUID = c.CustomerUID 
+                JOIN Project p on p.ProjectUID = cp.fk_ProjectUID           
+                LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
+                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
+                LEFT OUTER JOIN ProjectGeofence pg on pg.fk_ProjectUID = p.ProjectUID
+                LEFT OUTER JOIN Geofence g on g.GeofenceUID = pg.fk_GeofenceUID 
+              WHERE c.CustomerUID = @customerUid 
+                AND p.IsDeleted = 0                
+                AND (g.fk_GeofenceTypeID IS NULL 
+                      OR (g.IsDeleted = 0 AND g.fk_GeofenceTypeID = 1)
+                    )",
+            new { customerUid }
+          ));
+
+      PerhapsCloseConnection();
+      
+      // need to get the row with the later SubscriptionEndDate if there are duplicates
+      // Also if there are >1 projectGeofences.. hmm.. it will just return either
+      return projects.OrderByDescending(proj => proj.SubscriptionEndDate).GroupBy(d => d.ProjectUID).Select(g => g.First()).ToList();      
     }
 
     /// <summary>

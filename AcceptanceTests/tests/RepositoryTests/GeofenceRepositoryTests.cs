@@ -310,7 +310,6 @@ namespace RepositoryTests
     public void AssociateProjectWithGeofence_HappyPath()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
       var customerUid = Guid.NewGuid();
       var projectUid = Guid.NewGuid();
 

@@ -45,6 +45,8 @@ namespace ProjectWebApi
     // This method gets called by the runtime. Use this method to add services to the container
     public void ConfigureServices(IServiceCollection services)
     {
+      services.AddLogging();
+
       //Configure CORS
       services.AddCors(options =>
       {
@@ -89,14 +91,14 @@ namespace ProjectWebApi
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
-            app.UseExceptionTrap();
-            //Enable TID here
-            //app.UseTIDAuthentication();
-            app.UseCors("VSS");
-            app.UseExceptionTrap();
-            //Enable TID here
-            app.UseTIDAuthentication();
-            app.UseCors("VSS");
+      app.UseExceptionTrap();
+      //Enable TID here
+      //app.UseTIDAuthentication();
+      app.UseCors("VSS");
+      app.UseExceptionTrap();
+      //Enable TID here
+      app.UseTIDAuthentication();
+      app.UseCors("VSS");
       app.UseExceptionTrap();
       //Enable TID here
       //app.UseTIDAuthentication();
