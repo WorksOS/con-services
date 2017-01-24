@@ -449,7 +449,7 @@ namespace WebApiTests
         testSupport.FirstEventDate, testSupport.FirstEventDate.AddYears(1), testSupport.FirstEventDate);
       var subscriptionUid2 = testSupport.SubscriptionUid;
       testSupport.CreateMockProjectSubscription(testSupport.ProjectUid.ToString(), subscriptionUid2.ToString(), testSupport.CustomerUid.ToString(),
-        testSupport.FirstEventDate.AddYears(1).AddDays(1), testSupport.FirstEventDate.AddYears(2), testSupport.FirstEventDate.AddYears(1).AddDays(1));
+        testSupport.FirstEventDate.AddYears(1).AddDays(1), new DateTime(9999, 12, 31), testSupport.FirstEventDate.AddYears(1).AddDays(1));
       var startDate = testSupport.FirstEventDate.ToString("O");
       var endDate = testSupport.FirstEventDate.AddYears(2).ToString("O");
       var expectedProjects = new[] {
