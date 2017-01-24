@@ -13,23 +13,26 @@ using VSS.Geofence.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using log4netExtensions;
+using System;
+using System.Collections.Generic;
 
 namespace MasterDataConsumer
 {
   public class Program
   {
+
     public static void Main(string[] args)
     {
       string loggerRepoName = "MasterDataConsumer";
       var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);      
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
 
-      ILoggerFactory loggerFactory = new LoggerFactory();      
+      ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
-      
+
       //setup our DI
-      var serviceProvider = new ServiceCollection()          
+      var serviceProvider = new ServiceCollection()
           .AddTransient<IKafka, RdKafkaDriver>()
           .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
           .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
@@ -46,23 +49,49 @@ namespace MasterDataConsumer
           .AddSingleton<ILoggerFactory>(loggerFactory)
           .BuildServiceProvider();
 
-      var bar1 = serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
-      bar1.SetTopic("VSS.Interfaces.Events.MasterData.ICustomerEvent");
-      var t1 = bar1.StartProcessingAsync(new CancellationTokenSource());
+      var log = loggerFactory.CreateLogger("MasterDataConsumer");
 
-      var bar2 = serviceProvider.GetService<IKafkaConsumer<IProjectEvent>>();
-      bar2.SetTopic("VSS.Interfaces.Events.MasterData.IProjectEvent");
-      var t2 = bar2.StartProcessingAsync(new CancellationTokenSource());
+      var kafkaTopics = serviceProvider.GetService<IConfigurationStore>().GetValueString("KAFKA_TOPICS").Split(new[] { "," }, StringSplitOptions.None);
+      var tasks = new List<Task>();
 
-      var bar3 = serviceProvider.GetService<IKafkaConsumer<ISubscriptionEvent>>();
-      bar3.SetTopic("VSS.Interfaces.Events.MasterData.ISubscriptionEvent");
-      var t3 = bar3.StartProcessingAsync(new CancellationTokenSource());
+      foreach (var kafkaTopic in kafkaTopics)
+      {
+        if (kafkaTopic.Contains("ICustomerEvent"))
+        {
+          var consumer = serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
+          consumer.SetTopic(kafkaTopic);
+          tasks.Add(consumer.StartProcessingAsync(new CancellationTokenSource()));
+        }
+        else if (kafkaTopic.Contains("IProjectEvent"))
+        {
+          var consumer = serviceProvider.GetService<IKafkaConsumer<IProjectEvent>>();
+          consumer.SetTopic("VSS.Interfaces.Events.MasterData.IProjectEvent");
+          tasks.Add(consumer.StartProcessingAsync(new CancellationTokenSource()));
+        }
+        else if(kafkaTopic.Contains("ISubscriptionEvent"))
+        {
+          var consumer = serviceProvider.GetService<IKafkaConsumer<ISubscriptionEvent>>();
+          consumer.SetTopic("VSS.Interfaces.Events.MasterData.ISubscriptionEvent");
+          tasks.Add(consumer.StartProcessingAsync(new CancellationTokenSource()));
+        }
+        else if (kafkaTopic.Contains("IGeofenceEvent"))
+        {
+          var consumer = serviceProvider.GetService<IKafkaConsumer<IGeofenceEvent>>();
+          consumer.SetTopic("VSS.Interfaces.Events.MasterData.IGeofenceEvent");
+          tasks.Add(consumer.StartProcessingAsync(new CancellationTokenSource()));
+        }
+        else
+        {
+          log.LogDebug("MasterDataConsumer: Kafka topic consumer not recognized: {0}", kafkaTopic);
+          continue;
+        }
+        log.LogDebug("MasterDataConsumer: Kafka topic consumer to be started: {0}", kafkaTopic);
+      }
 
-      var bar4 = serviceProvider.GetService<IKafkaConsumer<IGeofenceEvent>>();
-      bar4.SetTopic("VSS.Interfaces.Events.MasterData.IGeofenceEvent");
-      var t4 = bar4.StartProcessingAsync(new CancellationTokenSource());
-
-      Task.WaitAll(t1, t2, t3, t4);
+      if (tasks.Count > 0)
+        Task.WaitAll(tasks.ToArray());
+      else
+        log.LogCritical("MasterDataConsumer: No consumers started. Kafka topics: {0} do not exist", kafkaTopics);
     }
   }
 }
