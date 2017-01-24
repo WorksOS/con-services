@@ -17,11 +17,11 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      var customerUid = Guid.NewGuid();
+      var projectGuid = Guid.NewGuid();
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
-             "| EventType          | ProjectID | ActionUTC   | ProjectName | ProjectTimezone | ProjectBoundary | ProjectStartDate | ProjectEndDate",
-            $"| CreateProjectEvent | 0         | 09:00:00    | CustName     | Customer     | {customerUid} |"};
+             "| EventType          | EventDate   | ProjectID | ProjectGUID     | ProjectName   | ProjectType       | ProjectTimezone           | ProjectStartDate | ProjectEndDate |" ,
+            $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject1  | ProjectMonitoring | New Zealand Standard Time | -1d+12:00:00     | 2d+01:00:00    |"};
 
       testSupport.InjectEventsIntoKafka(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);

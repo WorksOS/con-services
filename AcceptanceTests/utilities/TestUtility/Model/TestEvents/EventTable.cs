@@ -19,7 +19,6 @@
     public string GeofenceUID { get; set; }
 
     // Project
-    public string ProjectBoundary { get; set; }
     public string ProjectEndDate { get; set; }
     public string ProjectStartDate { get; set; }
     public string ProjectName { get; set; }
