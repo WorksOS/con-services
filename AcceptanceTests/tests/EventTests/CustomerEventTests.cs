@@ -19,8 +19,8 @@ namespace EventTests
             var customerUid = Guid.NewGuid();
             msg.Title("Customer test 1", "Create one customer");
             var eventArray = new[] {
-             "| EventType           | DayOffset | Timestamp | CustomerName | CustomerType | CustomerUID   |",
-            $"| CreateCustomerEvent | 0         | 09:00:00  | CustName     | Customer     | {customerUid} |"};
+             "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
+            $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerUid} |"};
 
             testSupport.InjectEventsIntoKafka(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);                                       
@@ -36,9 +36,9 @@ namespace EventTests
             var customerUid = Guid.NewGuid();
             msg.Title("Customer test 2", "Update one customer");
             var eventArray = new[] {
-             "| EventType           | DayOffset | Timestamp | CustomerName | CustomerType | CustomerUID   |",
-            $"| CreateCustomerEvent | 0         | 09:00:00  | CustName     | Customer     | {customerUid} |",
-            $"| UpdateCustomerEvent | 0         | 09:00:00  | UpdatedName  | Customer     | {customerUid} |"};
+             "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
+            $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerUid} |",
+            $"| UpdateCustomerEvent | 0d+10:00:00 | UpdatedName  | Customer     | {customerUid} |"};
 
             testSupport.InjectEventsIntoKafka(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);                                       
@@ -54,9 +54,9 @@ namespace EventTests
             var customerUid = Guid.NewGuid();
             msg.Title("Customer test 3", "Delete a customer");
             var eventArray = new[] {
-             "| EventType           | DayOffset | Timestamp | CustomerName   | CustomerType | CustomerUID   |",
-            $"| CreateCustomerEvent | 0         | 09:00:00  | DeleteCustName | Customer     | {customerUid} |",
-            $"| DeleteCustomerEvent | 0         | 09:00:00  | DeleteCustName | Customer     | {customerUid} |"};
+             "| EventType           | EventDate   | CustomerName   | CustomerType | CustomerUID   |",
+            $"| CreateCustomerEvent | 0d+09:00:00 | DeleteCustName | Customer     | {customerUid} |",
+            $"| DeleteCustomerEvent | 0d+10:00:00 | DeleteCustName | Customer     | {customerUid} |"};
 
             testSupport.InjectEventsIntoKafka(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);                                       
@@ -73,9 +73,9 @@ namespace EventTests
             var userUid = Guid.NewGuid();
             msg.Title("Customer test 4", "Associate Customer To User");
             var eventArray = new[] {
-             "| EventType                  | DayOffset | Timestamp | CustomerName   | CustomerType | CustomerUID   | UserUID   |",
-            $"| CreateCustomerEvent        | 0         | 09:00:00  | AssociateCust  | Customer     | {customerUid} |           |",
-            $"| AssociateCustomerUserEvent | 1         | 09:00:00  |                |              | {customerUid} | {userUid} |"};
+             "| EventType                  | EventDate   | CustomerName   | CustomerType | CustomerUID   | UserUID   |",
+            $"| CreateCustomerEvent        | 0d+09:00:00 | AssociateCust  | Customer     | {customerUid} |           |",
+            $"| AssociateCustomerUserEvent | 0d+10:00:00 |                |              | {customerUid} | {userUid} |"};
 
             testSupport.InjectEventsIntoKafka(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);     
@@ -94,10 +94,10 @@ namespace EventTests
             var userUid = Guid.NewGuid();
             msg.Title("Customer test 5", "Disassociate Customer To User");
             var eventArray = new[] {
-             "| EventType                   | DayOffset | Timestamp | CustomerName   | CustomerType | CustomerUID   | UserUID   |",
-            $"| CreateCustomerEvent         | 0         | 09:00:00  | AssociateCust  | Customer     | {customerUid} |           |",
-            $"| AssociateCustomerUserEvent  | 1         | 09:00:00  |                |              | {customerUid} | {userUid} |",
-            $"| DissociateCustomerUserEvent | 2         | 09:00:00  |                |              | {customerUid} | {userUid} |",
+             "| EventType                   | EventDate   | CustomerName   | CustomerType | CustomerUID   | UserUID   |",
+            $"| CreateCustomerEvent         | 0d+09:00:00 | AssociateCust  | Customer     | {customerUid} |           |",
+            $"| AssociateCustomerUserEvent  | 1d+09:00:00 |                |              | {customerUid} | {userUid} |",
+            $"| DissociateCustomerUserEvent | 2d+09:00:00 |                |              | {customerUid} | {userUid} |",
             };
 
             testSupport.InjectEventsIntoKafka(eventArray);                                                   
