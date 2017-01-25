@@ -10,8 +10,8 @@ namespace VSS.Subscription.Data.Models
 
     // start, end and Effective are actually only date with no time component. However C# has no date-only.
     public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-   
+    public DateTime EndDate { get; set; } = DateTime.MaxValue.Date;
+
     public DateTime LastActionedUTC { get; set; }
   }
 

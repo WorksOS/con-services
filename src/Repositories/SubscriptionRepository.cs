@@ -39,10 +39,10 @@ namespace VSS.Project.Service.Repositories
         subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
         subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
         subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
-        subscription.StartDate = subscriptionEvent.StartDate;
+        subscription.StartDate = subscriptionEvent.StartDate.Date;
         //This is to handle CG subscriptions where we set the EndDate annually.
         //In NG the end date is the maximum unless it is cancelled/terminated.
-        subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow ? new DateTime(9999, 12, 31) : subscriptionEvent.EndDate;
+        subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow ? new DateTime(9999, 12, 31) : subscriptionEvent.EndDate.Date;
         subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
         upsertedCount = await UpsertSubscriptionDetail(subscription, "CreateProjectSubscriptionEvent");
       }
@@ -59,11 +59,11 @@ namespace VSS.Project.Service.Repositories
 
         // should not be able to change a serviceType!!!
         // subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
-        subscription.StartDate = subscriptionEvent.StartDate ?? DateTime.MinValue;
+        subscription.StartDate = subscriptionEvent.StartDate == null ? DateTime.MinValue.Date : subscriptionEvent.StartDate.Value.Date;
         // todo update allows a future endDate but create does not, is this an error?
         // also, for both create and update for start and end dates these are calendar days
         //    in the assets timezone, but the create checks for UTC time....
-        subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
+        subscription.EndDate = subscriptionEvent.EndDate == null ? DateTime.MaxValue.Date : subscriptionEvent.EndDate.Value.Date;
         subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
         upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateProjectSubscriptionEvent");
       }

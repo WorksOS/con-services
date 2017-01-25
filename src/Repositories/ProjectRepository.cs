@@ -10,6 +10,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 
 namespace VSS.Project.Data
 {
@@ -34,9 +35,9 @@ namespace VSS.Project.Data
         project.ProjectTimeZone = projectEvent.ProjectTimezone;
         project.LandfillTimeZone = TimeZone.WindowsToIana(projectEvent.ProjectTimezone);
         project.ProjectUID = projectEvent.ProjectUID.ToString();
-        project.EndDate = projectEvent.ProjectEndDate;
+        project.EndDate = projectEvent.ProjectEndDate.Date;
         project.LastActionedUTC = projectEvent.ActionUTC;
-        project.StartDate = projectEvent.ProjectStartDate;
+        project.StartDate = projectEvent.ProjectStartDate.Date;
         project.ProjectType = projectEvent.ProjectType;
         upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
       }
@@ -47,7 +48,7 @@ namespace VSS.Project.Data
         var project = new Models.Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.Name = projectEvent.ProjectName;
-        project.EndDate = projectEvent.ProjectEndDate;
+        project.EndDate = projectEvent.ProjectEndDate.Date;
         project.LastActionedUTC = projectEvent.ActionUTC;
         project.ProjectType = projectEvent.ProjectType;
         upsertedCount = await UpsertProjectDetail(project, "UpdateProjectEvent");

@@ -798,7 +798,7 @@ namespace RepositoryTests
         ProjectType = ProjectType.LandFill,
         ProjectTimezone = projectTimeZone,
         ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
+        ProjectEndDate = DateTime.MaxValue,
         ActionUTC = actionUtc
       };
 
@@ -817,7 +817,10 @@ namespace RepositoryTests
       Assert.AreEqual(1, projects.Count, "should be 1 project/sub");
 
       Assert.IsNull(projects[0].SubscriptionUID, "sub should be null");
-      Assert.AreEqual(DateTime.MinValue, projects[0].SubscriptionEndDate, "sub endDate should be null");
+      Assert.IsNull(projects[0].SubscriptionEndDate, "sub endDate should be null");
+      Assert.AreEqual(new DateTime(DateTime.MaxValue.Year, DateTime.MaxValue.Month, DateTime.MaxValue.Day), projects[0].EndDate, "project endDate should be maxValue");
+      Assert.IsNull(projects[0].SubscriptionUID, "project endDate should be null");
+      Assert.IsNull(projects[0].GeometryWKT, "geofence boundar should be null");
     }
 
     #endregion
@@ -904,7 +907,7 @@ namespace RepositoryTests
       if (createProjectSubscriptionEvent == null)
       {
         Assert.IsNull(returnedProject.SubscriptionUID, "Incorrect subscriptionUID");
-        Assert.AreEqual(DateTime.MinValue, returnedProject.SubscriptionEndDate, "Incorrect endDate");
+        Assert.IsNull(returnedProject.SubscriptionEndDate, "Incorrect endDate");
       }
       else
       {

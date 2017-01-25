@@ -22,9 +22,9 @@ namespace VSS.Project.Data.Models
 
     // start and end are actually only date with no time component. However C# has no date-only.
     public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+    public DateTime EndDate { get; set; } = DateTime.MaxValue.Date;
 
-   
+
     //These properties are associations from link tables
     public string CustomerUID { get; set; }
 
@@ -33,7 +33,7 @@ namespace VSS.Project.Data.Models
     public string SubscriptionUID { get; set; }
     //These 2 properties used for authentication stuff
 
-    public DateTime SubscriptionEndDate { get; set; }
+    public DateTime? SubscriptionEndDate { get; set; }
     public string GeometryWKT { get; set; }
 
     public override bool Equals(object obj)
