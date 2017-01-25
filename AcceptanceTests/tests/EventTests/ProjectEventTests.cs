@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TestUtility;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace EventTests
 {
@@ -25,7 +26,10 @@ namespace EventTests
 
       testSupport.InjectEventsIntoKafka(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer", "CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "CustName,1,0", projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", 
+        "Name, fk_ProjectTypeID, StartDate, EndDate", 
+        $"testProject1, , {ProjectType.ProjectMonitoring}, {testSupport.ConvertVSSDateString("-1d + 12:00:00")},{testSupport.ConvertVSSDateString("2d+01:00:00")}", 
+        projectGuid);
     }
 
   }
