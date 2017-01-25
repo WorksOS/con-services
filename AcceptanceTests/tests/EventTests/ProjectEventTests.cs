@@ -24,8 +24,8 @@ namespace EventTests
             $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject1  | ProjectMonitoring | New Zealand Standard Time | -1d+12:00:00     | 2d+01:00:00    |"};
 
       testSupport.InjectEventsIntoKafka(eventArray);
-      mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer", "CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "CustName,1,0", customerUid);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer", "CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "CustName,1,0", projectGuid);
     }
 
   }

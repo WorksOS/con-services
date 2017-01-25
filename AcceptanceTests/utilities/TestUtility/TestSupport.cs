@@ -1098,7 +1098,7 @@ namespace TestUtility
     /// </summary>
     /// <param name="vssDateString"></param>
     /// <returns></returns>
-    public DateTime ConvertVSSDateString(string vssDateString)
+    private DateTime ConvertVSSDateString(string vssDateString)
     {
       String[] components = Regex.Split(vssDateString, @"d+\+");
       var offset = Double.Parse(components[0].Trim());
