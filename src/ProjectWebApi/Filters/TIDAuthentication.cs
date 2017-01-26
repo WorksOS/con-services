@@ -46,7 +46,10 @@ namespace VSS.Project.Service.WebApiModels.Filters
                 await SetResult("Invalid authentication", context);
                 return;
             }
-            context.User = new GenericPrincipal(new GenericIdentity(jwtToken.UserUID, customerUID), new string[] { });
+          var identity = string.IsNullOrEmpty(customerUID)
+            ? new GenericIdentity(jwtToken.UserUID)
+            : new GenericIdentity(jwtToken.UserUID, customerUID);
+            context.User = new GenericPrincipal(identity, new string[] { });
             await _next.Invoke(context);
         }
 

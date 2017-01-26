@@ -25,7 +25,7 @@ namespace TestUtility
     /// <param name="httpResponseCode">This is the HTTP STATUS CODE: 200, 201, etc.</param>
     /// <param name="customerUid">This is the customer UID for the header</param>
     /// <returns></returns>
-    public string DoHttpRequest(string resourceUri, string httpMethod,string mediaType, string payloadData, HttpStatusCode httpResponseCode, string customerUid=CUSTOMER_UID)
+    public string DoHttpRequest(string resourceUri, string httpMethod,string mediaType, string payloadData, HttpStatusCode httpResponseCode, string customerUid=null)
         {
            // Stream writeStream = null;
             string responseString = null;
@@ -122,6 +122,6 @@ namespace TestUtility
             return request;
         }
 
-      public const string CUSTOMER_UID = "d7cafa93-634e-e311-b5a0-90e2ba076184";
+      //public const string CUSTOMER_UID = "d7cafa93-634e-e311-b5a0-90e2ba076184";
     }
 }

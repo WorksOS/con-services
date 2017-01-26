@@ -49,7 +49,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
                 ProjectTimeZone = project.ProjectTimeZone,
                 IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
                 StartDate = project.StartDate.ToString("O"),
-                EndDate = project.StartDate.ToString("O"),
+                EndDate = project.EndDate.ToString("O"),
                 ProjectUid = project.ProjectUID,
                 LegacyProjectId = project.LegacyProjectID,
                 ProjectGeofenceWKT = project.GeometryWKT

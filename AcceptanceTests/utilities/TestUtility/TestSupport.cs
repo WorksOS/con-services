@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility.Model.TestEvents;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using ProjectWebApi.Models;
 using VSS.Customer.Data.Models;
 using VSS.Subscription.Data.Models;
@@ -58,6 +59,7 @@ namespace TestUtility
     public TestSupport()
     {
       SetFirstEventDate();
+      SetLastEventDate();
       SetAssetUid();
       SetProjectUid();
       SetCustomerUid();
@@ -66,11 +68,19 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Set up the first event date for the events to go in
+    /// Set up the first event date for the events to go in. Also used as project start date for project tests.
     /// </summary>
     public void SetFirstEventDate()
     {
-      FirstEventDate = DateTime.Today.AddDays(-RandomNumber(10, 360));
+      FirstEventDate = DateTime.SpecifyKind(DateTime.Today.AddDays(-RandomNumber(10, 360)), DateTimeKind.Unspecified);
+    }
+
+    /// <summary>
+    /// Set up the last event date for the events to go in. Also used as project end date for project tests.
+    /// </summary>
+    public void SetLastEventDate()
+    {
+      LastEventDate = FirstEventDate.AddYears(2);
     }
 
     /// <summary>
@@ -110,7 +120,7 @@ namespace TestUtility
     /// </summary>
     public void SetSubscriptionUid()
     {
-      CustomerUid = Guid.NewGuid();
+      SubscriptionUid = Guid.NewGuid();
     }
 
     /// <summary>
@@ -263,13 +273,14 @@ namespace TestUtility
       CallProjectWebApi(AssociateProjectGeofenceEvt, "/AssociateGeofence", statusCode, "Associate geofence");
     }
 
-    public void GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode statusCode, string customerUid, string[] expectedResultsArray)
+    public void GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
     {
-      var response = CallProjectWebApi(null, null, statusCode, "Get", "GET", customerUid);
+      var response = CallProjectWebApi(null, null, statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
-        var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response);
-        var expectedProjects = ConvertArrayToList<ProjectDescriptor>(expectedResultsArray);
+        var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
+        var expectedProjects =
+          ConvertArrayToList<ProjectDescriptor>(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
         msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),
           "Actual from WebApi: " + response);
         CollectionAssert.AreEqual(expectedProjects, actualProjects);
@@ -286,9 +297,9 @@ namespace TestUtility
     /// <param name="method">http method</param>
     /// <param name="customerUid">Customer UID to add to http headers</param>
     /// <returns>The web api response</returns>
-    private string CallProjectWebApi(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = RestClientUtil.CUSTOMER_UID)
+    private string CallProjectWebApi(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
     {
-      var configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var configJson = evt == null ? null : JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(GetBaseUri() + routeSuffix, method, "application/json", configJson, statusCode, customerUid);
       Console.WriteLine(what + " project response:" + response);
@@ -301,19 +312,21 @@ namespace TestUtility
     /// <param name="customerUid">Customer UID</param>
     /// <param name="name">Customer name</param>
     /// <param name="type">Customer type</param>
-    public void CreateMockCustomer(string customerUid, string name, CustomerType type)
+    public void CreateMockCustomer(Guid customerUid, string name, CustomerType type)
     {
       MockCustomer = new Customer
       {
-        CustomerUID = customerUid,
+        CustomerUID = customerUid.ToString(),
         Name = name,
         CustomerType = type,
         IsDeleted = false,
         LastActionedUTC = DateTime.UtcNow
       };
+      var customerTypeId = (int) MockCustomer.CustomerType;
+      var deleted = MockCustomer.IsDeleted ? 1 : 0;
       var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"Customer"} 
                             (CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
-                            ('{MockCustomer.CustomerUID}',{MockCustomer.Name},{MockCustomer.CustomerType},{MockCustomer.IsDeleted},{MockCustomer.LastActionedUTC});";
+                            ('{MockCustomer.CustomerUID}','{MockCustomer.Name}',{customerTypeId},{deleted},'{MockCustomer.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
       var mysqlHelper = new MySqlHelper();
       mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);
     }
@@ -340,7 +353,7 @@ namespace TestUtility
       };
       var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"Subscription"} 
                             (SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
-                            ('{MockSubscription.SubscriptionUID}',{MockSubscription.CustomerUID},{MockSubscription.ServiceTypeID},{MockSubscription.StartDate},{MockSubscription.EndDate},{MockSubscription.LastActionedUTC});";
+                            ('{MockSubscription.SubscriptionUID}','{MockSubscription.CustomerUID}',{MockSubscription.ServiceTypeID},'{MockSubscription.StartDate:yyyy-MM-dd HH}','{MockSubscription.EndDate:yyyy-MM-dd}','{MockSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
       var mysqlHelper = new MySqlHelper();
       mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);
 
@@ -353,7 +366,7 @@ namespace TestUtility
       };
       query = $@"INSERT INTO `{appConfig.dbSchema}`.{"ProjectSubscription"} 
                             (fk_SubscriptionUID,fk_ProjectUID,EffectiveDate,LastActionedUTC) VALUES
-                            ('{MockProjectSubscription.SubscriptionUID}',{MockProjectSubscription.ProjectUID},{MockProjectSubscription.EffectiveDate},{MockProjectSubscription.LastActionedUTC});";
+                            ('{MockProjectSubscription.SubscriptionUID}','{MockProjectSubscription.ProjectUID}','{MockProjectSubscription.EffectiveDate:yyyy-MM-dd}','{MockProjectSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
       mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);
     }
 
@@ -682,6 +695,11 @@ namespace TestUtility
         var offset = Double.Parse(components[0].Trim());
         DateTime dateTime = DateTime.Parse(FirstEventDate.AddDays(offset).ToString("yyyy-MM-dd") + " " + components[1].Trim());
         property.SetValue(obj, dateTime.ToString(CultureInfo.InvariantCulture));
+      }
+      else if (property.PropertyType.GetTypeInfo().IsEnum)
+      {
+        var val = Enum.Parse(property.PropertyType, dataRow[idx].Trim());
+        property.SetValue(obj, val);
       }
       else //Work out the type and set the value.
       {
