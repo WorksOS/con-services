@@ -488,7 +488,7 @@ namespace VSS.Project.Data
     /// <summary>
     /// There may be 0 or n subscriptions for each project. None/many may be current. 
     /// This method gets the latest EndDate so at most 1 sub per project
-    /// Also returns the GeofenceWRK
+    /// Also returns the GeofenceWRK. List returned includes archived projects.
     /// </summary>
     /// <param name="customerUid"></param>
     /// <param name="userUid"></param>
@@ -512,7 +512,6 @@ namespace VSS.Project.Data
                 LEFT OUTER JOIN ProjectGeofence pg on pg.fk_ProjectUID = p.ProjectUID
                 LEFT OUTER JOIN Geofence g on g.GeofenceUID = pg.fk_GeofenceUID 
               WHERE c.CustomerUID = @customerUid 
-                AND p.IsDeleted = 0                
                 AND (g.fk_GeofenceTypeID IS NULL 
                       OR (g.IsDeleted = 0 AND g.fk_GeofenceTypeID = 1)
                     )",
