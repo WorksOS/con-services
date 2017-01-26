@@ -59,6 +59,7 @@ namespace TestUtility
     public TestSupport()
     {
       SetFirstEventDate();
+      SetLastEventDate();
       SetAssetUid();
       SetProjectUid();
       SetCustomerUid();
@@ -67,11 +68,19 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Set up the first event date for the events to go in
+    /// Set up the first event date for the events to go in. Also used as project start date for project tests.
     /// </summary>
     public void SetFirstEventDate()
     {
       FirstEventDate = DateTime.SpecifyKind(DateTime.Today.AddDays(-RandomNumber(10, 360)), DateTimeKind.Unspecified);
+    }
+
+    /// <summary>
+    /// Set up the last event date for the events to go in. Also used as project end date for project tests.
+    /// </summary>
+    public void SetLastEventDate()
+    {
+      LastEventDate = FirstEventDate.AddYears(2);
     }
 
     /// <summary>
