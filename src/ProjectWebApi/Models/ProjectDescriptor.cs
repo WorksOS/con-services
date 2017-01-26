@@ -72,5 +72,21 @@ namespace ProjectWebApi.Models
     /// The legacy project ID.
     /// </value>
     public int LegacyProjectId { get; set; }
+
+    public override bool Equals(object obj)
+    {
+      var otherProject = obj as ProjectDescriptor;
+      if (otherProject == null) return false;
+      return otherProject.ProjectUid == this.ProjectUid
+            && otherProject.Name == this.Name
+            && otherProject.LegacyProjectId == this.LegacyProjectId
+            && otherProject.StartDate == this.StartDate
+            && otherProject.EndDate == this.EndDate
+            && otherProject.ProjectGeofenceWKT == this.ProjectGeofenceWKT
+            && otherProject.ProjectTimeZone == this.ProjectTimeZone
+            && otherProject.ProjectType == this.ProjectType
+            && otherProject.IsArchived == this.IsArchived
+            ;
+    }
   }
 }
