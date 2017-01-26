@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
 
@@ -10,39 +7,41 @@ namespace EventTests
     [TestClass]
     public class SubscriptionEventTests
     {
-        [TestMethod] [Ignore]
+        [TestMethod] 
         public void CreateProjectSubscriptionEvent()
         {
             var msg = new Msg();
             var testSupport = new TestSupport();
             var mysql = new MySqlHelper();
             var subscriptionUid = Guid.NewGuid();
-            msg.Title("Customer test 1", "Create one customer");
+            msg.Title("Subscription test 1", "Create Project Subscription");
+            // 'Project Monitoring'   'Landfill'  'Manual 3D Project Monitoring'
             var eventArray = new[] {
-             "| EventType                      | EventDate   | StartDate  | EndDate  | SubscriptionType | SubscriptionUID   |",
-            $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 99991231 |                  | {subscriptionUid} |"};
+             "| EventType                      | EventDate   | StartDate  | EndDate    | SubscriptionType   | SubscriptionUID   |",
+            $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Project Monitoring | {subscriptionUid} |"};
 
             testSupport.InjectEventsIntoKafka(eventArray);                                                   
-            mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, subscriptionUid);                                       
-            mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "CustName,1,0", subscriptionUid);
+            mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);                                       
+            mysql.VerifyTestResultDatabaseFieldsAreExpected("Subscription","SubscriptionUID", "fk_ServiceTypeID", "20", subscriptionUid);
         }
 
-        [TestMethod] [Ignore]
-        public void UpdateCustomerEvent()
+        [TestMethod] 
+        public void UpdateProjectSubscriptionEvent()
         {
             var msg = new Msg();
             var testSupport = new TestSupport();
             var mysql = new MySqlHelper();
-            var customerUid = Guid.NewGuid();
-            msg.Title("Customer test 2", "Update one customer");
+            var subscriptionUid = Guid.NewGuid();
+            msg.Title("Subscription test 2", "Update Project Subscription");
+            // 'Project Monitoring'   'Landfill'  'Manual 3D Project Monitoring'
             var eventArray = new[] {
-             "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
-            $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerUid} |",
-            $"| UpdateCustomerEvent | 0d+10:00:00 | UpdatedName  | Customer     | {customerUid} |"};
+             "| EventType                      | EventDate   | StartDate  | EndDate    | SubscriptionType   | SubscriptionUID   |",
+            $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Project Monitoring | {subscriptionUid} |",
+            $"| UpdateProjectSubscriptionEvent | 1d+12:00:00 | 2014-12-12 | 9999-12-31 | Landfill           | {subscriptionUid} |"};
 
             testSupport.InjectEventsIntoKafka(eventArray);                                                   
-            mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);                                       
-            mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "UpdatedName,1,0", customerUid);
+            mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);                                       
+            mysql.VerifyTestResultDatabaseFieldsAreExpected("Subscription","SubscriptionUID", "fk_ServiceTypeID", "19", subscriptionUid);
         }
     }
 }
