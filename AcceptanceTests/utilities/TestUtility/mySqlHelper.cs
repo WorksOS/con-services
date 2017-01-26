@@ -272,6 +272,7 @@ namespace TestUtility
         private string GetDatabaseFieldsForQuery(string query, string fields)
         {
             var mysqlHelper = new MySqlHelper();
+            msg.DisplayMySqlQuery(query);
             return mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.dbConnectionString, query, fields);
         }
     }
