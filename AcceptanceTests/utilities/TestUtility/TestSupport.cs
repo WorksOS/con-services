@@ -500,15 +500,15 @@ namespace TestUtility
             {
               ActionUTC = eventUtc,
               ReceivedUTC = eventUtc,
-              ProjectEndDate = ConvertVSSDateString(singleEvent.ProjectEndDate),
+              ProjectEndDate = DateTime.Parse(singleEvent.ProjectEndDate),
               ProjectID = Int32.Parse(singleEvent.ProjectID),
               ProjectName = singleEvent.ProjectName,
-              ProjectStartDate = ConvertVSSDateString(singleEvent.ProjectStartDate),
+              ProjectStartDate = DateTime.Parse(singleEvent.ProjectStartDate),
               ProjectTimezone = singleEvent.ProjectTimezone,
               ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), singleEvent.ProjectType),
               ProjectUID = new Guid(singleEvent.ProjectUID)
             };
-            kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(createProjectEvent, jsonSettings));
+            kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent }, jsonSettings));
             break;
         }
       }

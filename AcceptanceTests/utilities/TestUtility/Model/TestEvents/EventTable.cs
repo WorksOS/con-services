@@ -1,4 +1,6 @@
-﻿namespace TestUtility.Model.TestEvents
+﻿using System;
+
+namespace TestUtility.Model.TestEvents
 {
   /// <summary>
   /// This class to to cater for the incoming events
