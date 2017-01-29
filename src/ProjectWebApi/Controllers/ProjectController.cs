@@ -31,6 +31,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
                              store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
         }
 
+        /// <summary>
+        /// Gets a list of projects for a customer. The list includes projects of all project types
+        /// and both active and archived projects.
+        /// </summary>
+        /// <returns>A list of projects</returns>
         [Route("api/v1/project")]
         [HttpGet]
         public List<ProjectDescriptor> GetProjects()

@@ -10,8 +10,16 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ProjectWebApi.Models
 {
+  /// <summary>
+  /// Validates all project event data sent to the Web API
+  /// </summary>
   public class ProjectDataValidator
   {
+    /// <summary>
+    /// Validates the data of a specific project event
+    /// </summary>
+    /// <param name="evt">The event containing the data to be validated</param>
+    /// <param name="repo">Project repository to use in validation</param>
     public static void Validate(IProjectEvent evt, IRepository<IProjectEvent> repo)
     {
       var projectRepo = repo as ProjectRepository;
