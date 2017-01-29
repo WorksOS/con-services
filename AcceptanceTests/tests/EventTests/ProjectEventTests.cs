@@ -71,7 +71,7 @@ namespace EventTests
         $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject3  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      |",
         $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject4  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
 
-    testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.InjectEventsIntoKafka(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
@@ -79,7 +79,7 @@ namespace EventTests
         projectGuid);
     }
 
-        [TestMethod]
+    [TestMethod]
     public void CreateStandardProjectWithProjectType()
     {
       var msg = new Msg();
@@ -93,7 +93,7 @@ namespace EventTests
         "| EventType          | EventDate   | ProjectID | ProjectUID     | ProjectName     | ProjectType       | ProjectTimezone            | ProjectStartDate | ProjectEndDate |" ,
         $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject5  | {ProjectType.Standard} | New Zealand Standard Time | {startDate}      | {endDate}      |"  };
 
-    testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.InjectEventsIntoKafka(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
@@ -101,38 +101,6 @@ namespace EventTests
         projectGuid);
     }
 
-    /// <summary>
-    /// This test calls update with a new Porject Guid, as the new one does not exist it should be
-    /// created.
-    /// </summary>
-    [TestMethod]
-    public void Update_project_Guid() 
-    {
-      var msg = new Msg();
-      var testSupport = new TestSupport();
-      var mysql = new MySqlHelper();
-      var projectGuid = Guid.NewGuid();
-      var newGuid = Guid.NewGuid();
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
-      msg.Title("Create Project test 1", "Create one project");
-      var eventArray = new[] {
-        "| EventType          | EventDate    | ProjectID | ProjectUID       | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate |" ,
-       $"| CreateProjectEvent | 1d+09:00:00  | 1         | { projectGuid }  | testProject6  | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |" ,
-       $"| UpdateProjectEvent | 0d+09:00:00  | 1         | { newGuid }      | testProject7  | {ProjectType.Standard} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
-
-      testSupport.InjectEventsIntoKafka(eventArray);
-      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
-        "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
-        $"testProject6, 1, {(int)ProjectType.LandFill}, {startDate}, {endDate}", //Expected
-        projectGuid);
-      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, newGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
-        "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
-        $"testProject7, 1, {(int)ProjectType.LandFill}, {startDate}, {endDate}", //Expected
-        newGuid);
-    }
 
 
     [TestMethod]
@@ -236,7 +204,7 @@ namespace EventTests
 
 
     [TestMethod]
-    public void Create_Then_Delete_Project ()
+    public void Create_Then_Delete_Project()
     {
       var msg = new Msg();
       var testSupport = new TestSupport();
@@ -258,6 +226,91 @@ namespace EventTests
         $"{projectName}, 1, {(int)ProjectType.LandFill}, 1, {startDate}, {endDate}", //Expected
         projectGuid);
     }
+
+
+    [TestMethod]
+    public void Associate_Customer_With_Project()
+    {
+      var msg = new Msg();
+      var testSupport = new TestSupport();
+      var mysql = new MySqlHelper();
+      var projectGuid = Guid.NewGuid();
+      var customerGuid = Guid.NewGuid();
+      string projectName = $"Test Project 14";
+      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
+      DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
+
+
+      var customerEventArray = new[] {
+             "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
+            $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerGuid} |"};
+
+      testSupport.InjectEventsIntoKafka(customerEventArray); //Create customer to associate project with
+
+      msg.Title("Create Project test 14", "Create one project");
+      var projectEventArray = new[] {
+        "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate |" ,
+       $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
+
+      testSupport.InjectEventsIntoKafka(projectEventArray);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
+
+
+      var associateEventArray = new[] {
+        "| EventType          | EventDate   | ProjectUID    | CustomerUID    | ",
+       $"| CreateProjectEvent | 0d+09:00:00 | {projectGuid} | {customerGuid} | "};
+
+
+      testSupport.InjectEventsIntoKafka(associateEventArray);
+      //Verify project has been associated
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID",
+        "fk_CustomerUID, fk_ProjectUID,", //Fields
+        $"{customerGuid}, {projectGuid}", //Expected
+        projectGuid);
+    }
+
+
+    [TestMethod]
+    public void Associate_Geofence_With_Project()
+    {
+      var msg = new Msg();
+      var testSupport = new TestSupport();
+      var mysql = new MySqlHelper();
+      var projectGuid = Guid.NewGuid();
+      var geofenceGuid = Guid.NewGuid();
+      string projectName = $"Test Project 15";
+      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
+      DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
+
+
+      var customerEventArray = new[] {
+         "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID    |",
+        $"| CreateGeofenceEvent | 0d+09:00:00 | CustName     | Customer     | {geofenceGuid} |"};
+
+      testSupport.InjectEventsIntoKafka(customerEventArray); //Create customer to associate project with
+
+      msg.Title("Create Project test 15", "Create one project");
+      var projectEventArray = new[] {
+        "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate |" ,
+       $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
+
+      testSupport.InjectEventsIntoKafka(projectEventArray);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
+
+
+      var associateEventArray = new[] {
+        "| EventType                | EventDate   | ProjectUID    | CustomerUID    | ",
+       $"| AssociateProjectGeofence | 0d+09:00:00 | {projectGuid} | {geofenceGuid} | "};
+
+
+      testSupport.InjectEventsIntoKafka(associateEventArray);
+      //Verify project has been associated
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID",
+        "fk_GeofenceUID, fk_ProjectUID,", //Fields
+        $"{geofenceGuid}, {projectGuid}", //Expected
+        projectGuid);
+    }
+
 
   }
 }

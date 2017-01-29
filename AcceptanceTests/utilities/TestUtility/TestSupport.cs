@@ -322,7 +322,7 @@ namespace TestUtility
         IsDeleted = false,
         LastActionedUTC = DateTime.UtcNow
       };
-      var customerTypeId = (int) MockCustomer.CustomerType;
+      var customerTypeId = (int)MockCustomer.CustomerType;
       var deleted = MockCustomer.IsDeleted ? 1 : 0;
       var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"Customer"} 
                             (CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
@@ -396,9 +396,9 @@ namespace TestUtility
       var kafkaDriver = new RdKafkaDriver();
       foreach (var singleEvent in allEvents)
       {
-       // var dayOffSet = Convert.ToInt32(singleEvent.DayOffset);
+        // var dayOffSet = Convert.ToInt32(singleEvent.DayOffset);
         //var eventDate = FirstEventDate.AddDays(dayOffSet) + DateTime.ParseExact(singleEvent.Timestamp, "HH:mm:ss", CultureInfo.InvariantCulture).TimeOfDay;
-        var eventDate = DateTime.Parse(singleEvent.EventDate,CultureInfo.InvariantCulture);
+        var eventDate = DateTime.Parse(singleEvent.EventDate, CultureInfo.InvariantCulture);
         var eventUtc = eventDate;    // eventUtc is eventdate without offset applied
         var deviceTime = singleEvent.UtcOffsetHours == "nullOffset" ? null : DateTimeExtensions.ToIso8601DateTime(eventUtc, Convert.ToDouble(singleEvent.UtcOffsetHours));
         LastEventDate = eventDate;   // Always set the event date to be the last one. Assume the go in sequential order. 
@@ -467,46 +467,46 @@ namespace TestUtility
 
           #region Subscription events
           case "CreateProjectSubscriptionEvent":
-              topicName = appConfig.masterDataTopic + "ISubscriptionEvent" + appConfig.kafkaTopicSuffix;
-              var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
-              {
-                  ActionUTC = eventUtc,                           
-                  ReceivedUTC = eventUtc,
-                  StartDate = DateTime.Parse(singleEvent.StartDate,CultureInfo.InvariantCulture),
-                  EndDate = DateTime.Parse(singleEvent.EndDate,CultureInfo.InvariantCulture),
-                  SubscriptionType = singleEvent.SubscriptionType,
-                  SubscriptionUID = new Guid(singleEvent.SubscriptionUID)                  
-              };
-              kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { CreateProjectSubscriptionEvent = createProjectSubscriptionEvent },jsonSettings));
-              break;
+            topicName = appConfig.masterDataTopic + "ISubscriptionEvent" + appConfig.kafkaTopicSuffix;
+            var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
+            {
+              ActionUTC = eventUtc,
+              ReceivedUTC = eventUtc,
+              StartDate = DateTime.Parse(singleEvent.StartDate, CultureInfo.InvariantCulture),
+              EndDate = DateTime.Parse(singleEvent.EndDate, CultureInfo.InvariantCulture),
+              SubscriptionType = singleEvent.SubscriptionType,
+              SubscriptionUID = new Guid(singleEvent.SubscriptionUID)
+            };
+            kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { CreateProjectSubscriptionEvent = createProjectSubscriptionEvent }, jsonSettings));
+            break;
           case "UpdateProjectSubscriptionEvent":
-              topicName = appConfig.masterDataTopic + "ISubscriptionEvent" + appConfig.kafkaTopicSuffix;
-              var updateProjectSubscriptionEvent = new UpdateProjectSubscriptionEvent()
-              {
-                  ActionUTC = eventUtc,                           
-                  ReceivedUTC = eventUtc,
-                  StartDate = DateTime.Parse(singleEvent.StartDate,CultureInfo.InvariantCulture),
-                  EndDate = DateTime.Parse(singleEvent.EndDate,CultureInfo.InvariantCulture),
-                  SubscriptionType = singleEvent.SubscriptionType,
-                  SubscriptionUID = new Guid(singleEvent.SubscriptionUID)                  
-              };
-              kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = updateProjectSubscriptionEvent },jsonSettings));
-              break;
+            topicName = appConfig.masterDataTopic + "ISubscriptionEvent" + appConfig.kafkaTopicSuffix;
+            var updateProjectSubscriptionEvent = new UpdateProjectSubscriptionEvent()
+            {
+              ActionUTC = eventUtc,
+              ReceivedUTC = eventUtc,
+              StartDate = DateTime.Parse(singleEvent.StartDate, CultureInfo.InvariantCulture),
+              EndDate = DateTime.Parse(singleEvent.EndDate, CultureInfo.InvariantCulture),
+              SubscriptionType = singleEvent.SubscriptionType,
+              SubscriptionUID = new Guid(singleEvent.SubscriptionUID)
+            };
+            kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = updateProjectSubscriptionEvent }, jsonSettings));
+            break;
           case "AssociateProjectSubscriptionEvent":
-              topicName = appConfig.masterDataTopic + "ISubscriptionEvent" + appConfig.kafkaTopicSuffix;
-              var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
-              {
-                  ActionUTC = eventUtc,                           
-                  ReceivedUTC = eventUtc,
-                  EffectiveDate = DateTime.Parse(singleEvent.EffectiveDate,CultureInfo.InvariantCulture),
-                  ProjectUID = new Guid(singleEvent.ProjectUID),
-                  SubscriptionUID = new Guid(singleEvent.SubscriptionUID)                  
-              };
-              kafkaDriver.SendKafkaMessage(topicName,JsonConvert.SerializeObject(new { AssociateProjectSubscriptionEvent = associateProjectSubscriptionEvent },jsonSettings));
-              break;
+            topicName = appConfig.masterDataTopic + "ISubscriptionEvent" + appConfig.kafkaTopicSuffix;
+            var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
+            {
+              ActionUTC = eventUtc,
+              ReceivedUTC = eventUtc,
+              EffectiveDate = DateTime.Parse(singleEvent.EffectiveDate, CultureInfo.InvariantCulture),
+              ProjectUID = new Guid(singleEvent.ProjectUID),
+              SubscriptionUID = new Guid(singleEvent.SubscriptionUID)
+            };
+            kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { AssociateProjectSubscriptionEvent = associateProjectSubscriptionEvent }, jsonSettings));
+            break;
           #endregion
 
-
+          #region Project events
           case "CreateProjectEvent":
             topicName = appConfig.masterDataTopic + "IProjectEvent" + appConfig.kafkaTopicSuffix;
             var createProjectEvent = new CreateProjectEvent()
@@ -518,7 +518,7 @@ namespace TestUtility
               ProjectName = singleEvent.ProjectName,
               ProjectStartDate = DateTime.Parse(singleEvent.ProjectStartDate),
               ProjectTimezone = singleEvent.ProjectTimezone,
-              ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), singleEvent.ProjectType),
+              ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), singleEvent.ProjectType),
               ProjectUID = new Guid(singleEvent.ProjectUID)
             };
             kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent }, jsonSettings));
@@ -550,6 +550,54 @@ namespace TestUtility
             kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { DeleteProjectEvent = deleteProjectEvent }, jsonSettings));
             break;
 
+          case "AssociateProjectCustomer":
+            topicName = appConfig.masterDataTopic + "IProjectEvent" + appConfig.kafkaTopicSuffix;
+            var associateCustomerProject = new AssociateProjectCustomer()
+            {
+              ActionUTC = eventUtc,
+              ReceivedUTC = eventUtc,
+              ProjectUID = new Guid(singleEvent.ProjectUID),
+              CustomerUID = new Guid(singleEvent.CustomerUID)
+            };
+            kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { AssociateProjectCustomer = associateCustomerProject }, jsonSettings));
+            break;
+
+          case "AssociateProjectGeofence":
+            topicName = appConfig.masterDataTopic + "IProjectEvent" + appConfig.kafkaTopicSuffix;
+            var associateProjectGeofence = new AssociateProjectGeofence()
+            {
+              ActionUTC = eventUtc,
+              ReceivedUTC = eventUtc,
+              ProjectUID = new Guid(singleEvent.ProjectUID),
+              GeofenceUID = new Guid(singleEvent.GeofenceUID)
+            };
+            kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { AssociateProjectGeofence = associateProjectGeofence }, jsonSettings));
+            break;
+          #endregion
+
+          #region Geofence Events
+
+          case "CreateProjectGeofence":
+            topicName = appConfig.masterDataTopic + "IGeofenceEvent" + appConfig.kafkaTopicSuffix;
+            var createGeofenceEvent = new CreateGeofenceEvent()
+            {
+              ActionUTC = eventUtc,
+              ReceivedUTC = eventUtc,
+              GeofenceUID = new Guid(singleEvent.GeofenceUID),
+              CustomerUID = new Guid(singleEvent.CustomerUID),
+              Description = singleEvent.Description,
+              FillColor = Int32.Parse(singleEvent.FillColor),
+              GeofenceName = singleEvent.GeofenceName,
+              GeofenceType = singleEvent.GeofenceType,
+              GeometryWKT = singleEvent.GeometryWKT,
+              IsTransparent = Boolean.Parse(singleEvent.IsTransparent)
+            };
+            kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { CreateGeofenceEvent = createGeofenceEvent }, jsonSettings));
+            break;
+
+
+
+            #endregion
         }
       }
     }
