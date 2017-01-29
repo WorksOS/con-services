@@ -523,6 +523,33 @@ namespace TestUtility
             };
             kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent }, jsonSettings));
             break;
+
+          case "UpdateProjectEvent":
+            topicName = appConfig.masterDataTopic + "IProjectEvent" + appConfig.kafkaTopicSuffix;
+            var updateProjectEvent = new UpdateProjectEvent()
+            {
+              ActionUTC = eventUtc,
+              ReceivedUTC = eventUtc,
+              ProjectEndDate = DateTime.Parse(singleEvent.ProjectEndDate),
+              ProjectName = singleEvent.ProjectName,
+              ProjectTimezone = singleEvent.ProjectTimezone,
+              ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), singleEvent.ProjectType),
+              ProjectUID = new Guid(singleEvent.ProjectUID)
+            };
+            kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent }, jsonSettings));
+            break;
+
+          case "DeleteProjectEvent":
+            topicName = appConfig.masterDataTopic + "IProjectEvent" + appConfig.kafkaTopicSuffix;
+            var deleteProjectEvent = new DeleteProjectEvent()
+            {
+              ActionUTC = eventUtc,
+              ReceivedUTC = eventUtc,
+              ProjectUID = new Guid(singleEvent.ProjectUID)
+            };
+            kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { DeleteProjectEvent = deleteProjectEvent }, jsonSettings));
+            break;
+
         }
       }
     }
