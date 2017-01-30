@@ -257,14 +257,14 @@ namespace EventTests
 
 
       var associateEventArray = new[] {
-        "| EventType          | EventDate   | ProjectUID    | CustomerUID    | ",
-       $"| CreateProjectEvent | 0d+09:00:00 | {projectGuid} | {customerGuid} | "};
+        "| EventType                | EventDate   | ProjectUID    | CustomerUID    | ",
+       $"| AssociateProjectCustomer | 0d+09:00:00 | {projectGuid} | {customerGuid} | "};
 
 
       testSupport.InjectEventsIntoKafka(associateEventArray);
       //Verify project has been associated
       mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID",
-        "fk_CustomerUID, fk_ProjectUID,", //Fields
+        "fk_CustomerUID, fk_ProjectUID", //Fields
         $"{customerGuid}, {projectGuid}", //Expected
         projectGuid);
     }
@@ -276,39 +276,41 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      var customerGuid = Guid.NewGuid();
       var projectGuid = Guid.NewGuid();
       var geofenceGuid = Guid.NewGuid();
+      var userGuid = Guid.NewGuid();
       string projectName = $"Test Project 15";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
 
 
-      var customerEventArray = new[] {
-         "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID    |",
-        $"| CreateGeofenceEvent | 0d+09:00:00 | CustName     | Customer     | {geofenceGuid} |"};
+      var geofenceEventArray = new[] {
+         "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName | GeofenceType | GeofenceUID    | GeometryWKT | IsTransparent | UserUID    | ",
+        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | SuperFence   | 0            | {geofenceGuid} | 1,2,3,4,5,6 | {false}       | {userGuid} |"};
 
-      testSupport.InjectEventsIntoKafka(customerEventArray); //Create customer to associate project with
+      testSupport.InjectEventsIntoKafka(geofenceEventArray); //Create customer to associate project with
+      mysql.VerifyTestResultDatabaseRecordCount("Geofence", "GeofenceUID", 1, geofenceGuid);
 
       msg.Title("Create Project test 15", "Create one project");
       var projectEventArray = new[] {
-        "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate |" ,
-       $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
+        "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate |" ,
+       $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
 
       testSupport.InjectEventsIntoKafka(projectEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
 
-
       var associateEventArray = new[] {
-        "| EventType                | EventDate   | ProjectUID    | CustomerUID    | ",
+        "| EventType                | EventDate   | ProjectUID    | GeofenceUID    | ",
        $"| AssociateProjectGeofence | 0d+09:00:00 | {projectGuid} | {geofenceGuid} | "};
 
 
       testSupport.InjectEventsIntoKafka(associateEventArray);
       //Verify project has been associated
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID",
-        "fk_GeofenceUID, fk_ProjectUID,", //Fields
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
+        "fk_GeofenceUID, fk_ProjectUID", //Fields
         $"{geofenceGuid}, {projectGuid}", //Expected
-        projectGuid);
+        geofenceGuid);
     }
 
 

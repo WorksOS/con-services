@@ -577,7 +577,7 @@ namespace TestUtility
 
           #region Geofence Events
 
-          case "CreateProjectGeofence":
+          case "CreateGeofenceEvent":
             topicName = appConfig.masterDataTopic + "IGeofenceEvent" + appConfig.kafkaTopicSuffix;
             var createGeofenceEvent = new CreateGeofenceEvent()
             {
@@ -590,7 +590,8 @@ namespace TestUtility
               GeofenceName = singleEvent.GeofenceName,
               GeofenceType = singleEvent.GeofenceType,
               GeometryWKT = singleEvent.GeometryWKT,
-              IsTransparent = Boolean.Parse(singleEvent.IsTransparent)
+              IsTransparent = Boolean.Parse(singleEvent.IsTransparent),
+              UserUID = new Guid(singleEvent.UserUID)
             };
             kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { CreateGeofenceEvent = createGeofenceEvent }, jsonSettings));
             break;
