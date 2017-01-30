@@ -115,11 +115,11 @@ node('Ubuntu_Slave') {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Build Images'
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion} ./artifacts/WebApi"
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:${fullVersion} ./artifacts/MasterDataConsumer"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion} ./Artifacts/WebApi"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:${fullVersion} ./Artifacts/MasterDataConsumer"
  
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest ./artifacts/WebApi"
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest ./artifacts/MasterDataConsumer"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest ./Artifacts/WebApi"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest ./Artifacts/MasterDataConsumer"
  
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'

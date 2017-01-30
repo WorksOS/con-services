@@ -19,7 +19,6 @@ services:
       - ./Artifacts/Logs:/app/logs
     depends_on:
       - schema
-      - kafka
   masterdataconsumergeofence:
     build: ./Artifacts/MasterDataConsumer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
@@ -31,7 +30,6 @@ services:
       - ./Artifacts/Logs:/app/logs
     depends_on:
       - schema
-      - kafka     
   masterdataconsumersubscription:
     build: ./Artifacts/MasterDataConsumer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
@@ -43,7 +41,6 @@ services:
       - ./Artifacts/Logs:/app/logs
     depends_on:
       - schema
-      - kafka
   schema:
     build: ./Database
     env_file:

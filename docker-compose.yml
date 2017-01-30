@@ -8,10 +8,49 @@ services:
       - ./Artifacts/Logs:/app/logs
     depends_on:
       - schema
-  masterdataconsumer:
+  masterdataconsumercustomer:
     build: ./Artifacts/MasterDataConsumer
+    image: masterdataconsumercustomer
     env_file:
      - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
+    volumes:
+      - ./Artifacts/Logs:/app/logs
+    depends_on:
+      - schema
+      - kafka
+  masterdataconsumerproject:
+    build: ./Artifacts/MasterDataConsumer
+    image: masterdataconsumerproject
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
+    volumes:
+      - ./Artifacts/Logs:/app/logs
+    depends_on:
+      - schema
+      - kafka
+  masterdataconsumergeofence:
+    build: ./Artifacts/MasterDataConsumer
+    image: masterdataconsumergeofence
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
+    volumes:
+      - ./Artifacts/Logs:/app/logs
+    depends_on:
+      - schema
+      - kafka
+  masterdataconsumersubscription:
+    build: ./Artifacts/MasterDataConsumer
+    image: masterdataconsumersubscription
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
     volumes:
       - ./Artifacts/Logs:/app/logs
     depends_on:
