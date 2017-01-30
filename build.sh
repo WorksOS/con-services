@@ -1,11 +1,11 @@
 #!/bin/bash
 
-rm -rf artifacts
+rm -rf Artifacts
 
-dotnet publish ./src/MasterDataConsumer -o artifacts/MasterDataConsumer -f netcoreapp1.0 -c Docker
-dotnet publish ./src/ProjectWebApi -o artifacts/ProjectWebApi -f netcoreapp1.0 -c Docker
+dotnet publish ./src/MasterDataConsumer -o Artifacts/MasterDataConsumer -f netcoreapp1.1 -c Docker
+dotnet publish ./src/ProjectWebApi -o Artifacts/ProjectWebApi -f netcoreapp1.1 -c Docker
 
-cp src/MasterDataConsumer/appsettings.json artifacts/MasterDataConsumer/
-cp src/ProjectWebApi/appsettings.json artifacts/ProjectWebApi/
+cp src/MasterDataConsumer/appsettings.json Artifacts/MasterDataConsumer/
+cp src/ProjectWebApi/appsettings.json Artifacts/ProjectWebApi/
 
-mkdir artifacts/Logs
+mkdir Artifacts/Logs
