@@ -97,4 +97,7 @@ services:
     depends_on:
       - webapi
       - masterdataconsumercustomer
+      - masterdataconsumerproject
+      - masterdataconsumergeofence
+      - masterdataconsumersubscription
       - kafka

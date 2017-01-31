@@ -85,5 +85,8 @@ services:
       - ./AcceptanceTests/deploy/testresults:/app/testresults
     depends_on:
       - webapi
-      - masterdataconsumer
+      - masterdataconsumercustomer
+      - masterdataconsumerproject
+      - masterdataconsumergeofence
+      - masterdataconsumersubscription
       - kafka
