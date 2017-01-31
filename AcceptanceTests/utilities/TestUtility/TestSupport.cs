@@ -131,7 +131,7 @@ namespace TestUtility
     {
       msg.DisplayEventsToConsole(eventArray);
       var allEvents = ConvertArrayToList<EventTable>(eventArray);
-      WriteAListOfMachineEventsToKafka(allEvents);
+      WriteAListOfProjectEventsToKafka(allEvents);
       WaitForTimeBasedOnNumberOfRecords(allEvents.Count);
     }
 
@@ -234,7 +234,7 @@ namespace TestUtility
         RelationType = RelationType.Customer,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(AssociateCustomerProjectEvt, "/AssociateCustomer", statusCode, "Associate customer");
+      CallProjectWebApi(AssociateCustomerProjectEvt, "AssociateCustomer", statusCode, "Associate customer");
     }
 
     /// <summary>
@@ -391,7 +391,7 @@ namespace TestUtility
     /// Publish event to kafka
     /// </summary>
     /// <param name="allEvents">List of events in a inputEvent class format</param>
-    private void WriteAListOfMachineEventsToKafka(List<EventTable> allEvents)
+    private void WriteAListOfProjectEventsToKafka(List<EventTable> allEvents)
     {
       var kafkaDriver = new RdKafkaDriver();
       foreach (var singleEvent in allEvents)
