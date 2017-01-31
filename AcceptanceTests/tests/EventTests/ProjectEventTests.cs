@@ -11,6 +11,7 @@ namespace EventTests
   [TestClass]
   public class ProjectEventTests
   {
+    private readonly string projectDBSchemaName = "ProjectConsumers-VSS-MasterData-Project";
 
     [TestMethod]
     public void CreateProjectEvent()
@@ -18,13 +19,14 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      mysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       DateTime startDate = testSupport.ConvertVSSDateString("-1d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("2d+00:00:00");
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
-             "| EventType          | EventDate   | ProjectID | ProjectUID     | ProjectName   | ProjectType       | ProjectTimezone            | ProjectStartDate | ProjectEndDate |" ,
-            $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
+             "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType       | ProjectTimezone            | ProjectStartDate | ProjectEndDate |" ,
+            $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
 
       testSupport.InjectEventsIntoKafka(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
@@ -40,6 +42,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      mysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("-2d+00:00:00");
@@ -62,6 +65,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      mysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("900d+00:00:00");
@@ -85,6 +89,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      mysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
@@ -109,6 +114,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      mysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       string projectName = "testProject8";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
@@ -134,6 +140,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      mysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       string projectName = "testProject10";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
@@ -158,6 +165,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      mysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       string projectName = "testProject11";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
@@ -184,15 +192,16 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      mysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       string projectName = $"Test Project 12";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
-        "| EventType           | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate |" ,
-        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject11  | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}     | {endDate}      |",
-        $"| UpdateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName}  | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}     | {endDate}      |"};
+        "| EventType           | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate |" ,
+        $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | testProject11 | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |",
+        $"| UpdateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
 
       testSupport.InjectEventsIntoKafka(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
@@ -209,6 +218,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      mysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       string projectName = $"Test Project 13";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
@@ -234,6 +244,8 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      var projectMysql = new MySqlHelper();
+      projectMysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Test Project 14";
@@ -253,7 +265,7 @@ namespace EventTests
        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
 
       testSupport.InjectEventsIntoKafka(projectEventArray);
-      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
+      projectMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
 
 
       var associateEventArray = new[] {
@@ -263,7 +275,7 @@ namespace EventTests
 
       testSupport.InjectEventsIntoKafka(associateEventArray);
       //Verify project has been associated
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID",
+      projectMysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID",
         "fk_CustomerUID, fk_ProjectUID", //Fields
         $"{customerGuid}, {projectGuid}", //Expected
         projectGuid);
@@ -276,6 +288,8 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      var projectMysql = new MySqlHelper();
+      projectMysql.updateDBSchemaName(projectDBSchemaName);
       var customerGuid = Guid.NewGuid();
       var projectGuid = Guid.NewGuid();
       var geofenceGuid = Guid.NewGuid();
@@ -307,7 +321,7 @@ namespace EventTests
 
       testSupport.InjectEventsIntoKafka(associateEventArray);
       //Verify project has been associated
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
+      projectMysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
         "fk_GeofenceUID, fk_ProjectUID", //Fields
         $"{geofenceGuid}, {projectGuid}", //Expected
         geofenceGuid);
