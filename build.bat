@@ -6,4 +6,4 @@ dotnet build ./test/UnitTests/\MasterDataConsumerTests
 copy src\MasterDataConsumer\appsettings.json artifacts\MasterDataConsumer\
 copy src\ProjectWebApi\appsettings.json artifacts\ProjectWebApi\
 
-mkdir artifacts\Logs
+mkdir artifacts\logs

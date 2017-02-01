@@ -5,7 +5,7 @@ services:
     env_file:
      - docker-compose-testing.env
     volumes:
-      - ./artifacts/Logs:/app/logs 
+      - ./artifacts/logs:/app/logs 
     ports:
      - "3001:80"
     depends_on:
@@ -18,7 +18,7 @@ services:
     environment:
     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka     
@@ -31,7 +31,7 @@ services:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
      - MYSQL_DATABASE_NAME=ProjectConsumers-VSS-MasterData-Project
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka     
@@ -43,7 +43,7 @@ services:
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka     
@@ -55,7 +55,7 @@ services:
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
     depends_on:
       - test_schema
       - kafka

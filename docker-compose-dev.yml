@@ -14,7 +14,7 @@ services:
     environment:
     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
   masterdataconsumergeofence:
     build: ./artifacts/MasterDataConsumer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
@@ -23,7 +23,7 @@ services:
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
   masterdataconsumersubscription:
     build: ./artifacts/MasterDataConsumer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
@@ -32,4 +32,4 @@ services:
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs

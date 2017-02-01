@@ -5,7 +5,7 @@ services:
     env_file:
      - docker-compose.env
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
   masterdataconsumercustomer:
@@ -16,7 +16,7 @@ services:
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka
@@ -28,7 +28,7 @@ services:
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka
@@ -40,7 +40,7 @@ services:
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka
@@ -52,7 +52,7 @@ services:
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
     volumes:
-      - ./artifacts/Logs:/app/logs
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka
