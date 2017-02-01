@@ -45,12 +45,12 @@ node ('master')
     stage 'Run tests and get coverage results'
     bat "del /q ${workspacePath}\\*.xml"
 /* *** TEMP *** - comment out until can fix
-//    bat "cd ${workspacePath}\\test\\UnitTests\\MasterDataConsumerTests\\bin\\Debug\\netcoreapp1.0 & \"${openCoverLocation}\" \"-register:user\" -target:\"dotnet-test-mstest.exe\" -targetargs:\"MasterDataConsumerTests.dll\" -output:\"${workspacePath}\\coverageDF.xml\" ${openCoverfilters}"
-//    bat "cd \"${workspacePath}\" & \"${reportGeneratorLocation}\" \"-reports:${workspacePath}\\*.xml\" \"-reporttypes:Html\" \"-targetdir:${workspacePath}\\Coverage\" "
+    bat "cd ${workspacePath}\\test\\UnitTests\\MasterDataConsumerTests\\bin\\Debug\\netcoreapp1.0 & \"${openCoverLocation}\" \"-register:user\" -target:\"dotnet-test-mstest.exe\" -targetargs:\"MasterDataConsumerTests.dll\" -output:\"${workspacePath}\\coverageDF.xml\" ${openCoverfilters}"
+    bat "cd \"${workspacePath}\" & \"${reportGeneratorLocation}\" \"-reports:${workspacePath}\\*.xml\" \"-reporttypes:Html\" \"-targetdir:${workspacePath}\\Coverage\" "
 
-//    def reportDir = "${workspacePath}\\Coverage"
-//    def reportName = "OpenCover Results"
-//   publishHTML(target:[allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: reportDir, reportFiles: 'index.htm', reportName: reportName])
+    def reportDir = "${workspacePath}\\Coverage"
+    def reportName = "OpenCover Results"
+    publishHTML(target:[allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: reportDir, reportFiles: 'index.htm', reportName: reportName])
 	*** END TEMP *** */
 }
 
