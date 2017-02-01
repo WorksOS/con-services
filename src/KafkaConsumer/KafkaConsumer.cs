@@ -36,6 +36,7 @@ namespace KafkaConsumer
     public void SetTopic(string topic)
     {
       topicName = topic;
+      log.LogDebug("KafkaConsumer: b4 Init=" + topic); 
       kafkaDriver.InitConsumer(configurationStore);
       log.LogDebug("KafkaConsumer: " + topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX"));
       kafkaDriver.Subscribe(new List<string>() { topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX") });
