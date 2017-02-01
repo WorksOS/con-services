@@ -1,60 +1,60 @@
 version: '2'
 services:
   webapi:
-    build: ./Artifacts/ProjectWebApi
+    build: ./artifacts/ProjectWebApi
     env_file:
      - docker-compose-local.env
     volumes:
-      - ./Artifacts/Logs:/app/logs 
+      - ./artifacts/Logs:/app/logs 
     ports:
      - "3001:80"
     depends_on:
       - schema
   masterdataconsumercustomer:
-    build: ./Artifacts/MasterDataConsumer
+    build: ./artifacts/MasterDataConsumer
     image: masterdataconsumercustomer
     env_file:
      - docker-compose-local.env
     environment:
     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
     volumes:
-      - ./Artifacts/Logs:/app/logs
+      - ./artifacts/Logs:/app/logs
     depends_on:
       - schema
       - kafka     
   masterdataconsumerproject:
-    build: ./Artifacts/MasterDataConsumer
+    build: ./artifacts/MasterDataConsumer
     image: masterdataconsumerproject
     env_file:
      - docker-compose-local.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
     volumes:
-      - ./Artifacts/Logs:/app/logs
+      - ./artifacts/Logs:/app/logs
     depends_on:
       - schema
       - kafka     
   masterdataconsumergeofence:
-    build: ./Artifacts/MasterDataConsumer
+    build: ./artifacts/MasterDataConsumer
     image: masterdataconsumergeofence
     env_file:
      - docker-compose-local.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
     volumes:
-      - ./Artifacts/Logs:/app/logs
+      - ./artifacts/Logs:/app/logs
     depends_on:
       - schema
       - kafka     
   masterdataconsumersubscription:
-    build: ./Artifacts/MasterDataConsumer
+    build: ./artifacts/MasterDataConsumer
     image: masterdataconsumersubscription
     env_file:
      - docker-compose-local.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
     volumes:
-      - ./Artifacts/Logs:/app/logs
+      - ./artifacts/Logs:/app/logs
     depends_on:
       - schema
       - kafka

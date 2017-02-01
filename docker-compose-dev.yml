@@ -7,29 +7,29 @@ services:
     ports:
      - "3001:80"
   masterdataconsumercustomer:
-    build: ./Artifacts/MasterDataConsumer
+    build: ./artifacts/MasterDataConsumer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
     volumes:
-      - ./Artifacts/Logs:/app/logs
+      - ./artifacts/Logs:/app/logs
   masterdataconsumergeofence:
-    build: ./Artifacts/MasterDataConsumer
+    build: ./artifacts/MasterDataConsumer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
     volumes:
-      - ./Artifacts/Logs:/app/logs
+      - ./artifacts/Logs:/app/logs
   masterdataconsumersubscription:
-    build: ./Artifacts/MasterDataConsumer
+    build: ./artifacts/MasterDataConsumer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
     volumes:
-      - ./Artifacts/Logs:/app/logs
+      - ./artifacts/Logs:/app/logs
