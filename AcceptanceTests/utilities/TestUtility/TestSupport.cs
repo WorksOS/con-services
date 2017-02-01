@@ -186,13 +186,13 @@ namespace TestUtility
     /// <param name="timezone">project time zone</param>
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public void UpdateProjectViaWebApi(Guid projectUid, string name, DateTime endDate, string timezone, DateTime actionUtc, HttpStatusCode statusCode)
+    public void UpdateProjectViaWebApi(Guid projectUid, string name, DateTime endDate, string timezone, DateTime actionUtc, HttpStatusCode statusCode, ProjectType projectType = ProjectType.Standard)
     {
       UpdateProjectEvt = new UpdateProjectEvent
       {
         ProjectUID = projectUid,
         ProjectName = name,
-        ProjectType = ProjectType.Standard,
+        ProjectType = projectType,
         ProjectEndDate = endDate,
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
@@ -252,7 +252,7 @@ namespace TestUtility
         CustomerUID = customerUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(DissociateCustomerProjectEvt, "/DissociateCustomer", statusCode, "Dissociate customer");
+      CallProjectWebApi(DissociateCustomerProjectEvt, "DissociateCustomer", statusCode, "Dissociate customer");
     }
 
     /// <summary>
@@ -270,7 +270,7 @@ namespace TestUtility
         GeofenceUID = geofenceUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(AssociateProjectGeofenceEvt, "/AssociateGeofence", statusCode, "Associate geofence");
+      CallProjectWebApi(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence");
     }
 
     public void GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
