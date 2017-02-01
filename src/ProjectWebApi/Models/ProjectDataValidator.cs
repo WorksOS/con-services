@@ -134,17 +134,8 @@ namespace ProjectWebApi.Models
       }
       else if (evt is DissociateProjectCustomer)
       {
-        var dissociateEvent = evt as DissociateProjectCustomer;
-        if (dissociateEvent.CustomerUID == Guid.Empty)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-              "Missing CustomerUID");
-        }
-        if (!projectRepo.CustomerProjectExists(evt.ProjectUID.ToString()).Result)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-              "Project not associated with a customer");
-        }
+        throw new ServiceException(HttpStatusCode.NotImplemented,
+          "Dissociating projects from customers is not supported");
       }
       else if (evt is AssociateProjectGeofence)
       {

@@ -268,7 +268,7 @@ namespace IntegrationTests
         $"{projectGuid}", //Expected
         geofenceGuid);
 
-      testSupport.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid2, DateTime.Now, HttpStatusCode.OK);
+      testSupport.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid2, DateTime.Now, HttpStatusCode.BadRequest);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid2);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
         "fk_ProjectUID", //Fields
@@ -307,7 +307,7 @@ namespace IntegrationTests
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
 
-      testSupport.DissociateProjectViaWebApi(projectGuid, customerGuid, DateTime.Now, HttpStatusCode.OK);
+      testSupport.DissociateProjectViaWebApi(projectGuid, customerGuid, DateTime.Now, HttpStatusCode.NotImplemented);
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
 
@@ -503,7 +503,7 @@ namespace IntegrationTests
       mysql.VerifyTestResultDatabaseRecordCount("Geofence", "GeofenceUID", 1, geofenceGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID",
         "fk_CustomerUID, Name", //Fields
-        $"{customerGuid}, Berlin Wall", //Expected
+        $"{customerGuid}, Great Wall of China", //Expected
         geofenceGuid);
 
       testSupport.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid, DateTime.Now, HttpStatusCode.OK);
