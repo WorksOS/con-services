@@ -246,9 +246,9 @@ namespace IntegrationTests
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
 
       var geofenceEventArray = new[] {
-         "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName | GeofenceType | GeofenceUID     | GeometryWKT | IsTransparent | UserUID    | ",
-        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Trump        | 1            | {geofenceGuid}  | 1,2,3       | {false}       | {userGuid} |" ,
-        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Trump        | 1            | {geofenceGuid2} | 4,5,6       | {false}       | {userGuid} |"};
+         "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName   | GeofenceType | GeofenceUID     | GeometryWKT | IsTransparent | UserUID    | ",
+        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Trump          | 1            | {geofenceGuid}  | 1,2,3       | {false}       | {userGuid} |" ,
+        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Hadrian's Wall | 1            | {geofenceGuid2} | 4,5,6       | {false}       | {userGuid} |"};
 
       testSupport.InjectEventsIntoKafka(geofenceEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Geofence", "UserUID", 2, userGuid);
@@ -496,8 +496,8 @@ namespace IntegrationTests
       
       //Create and associate geofence
       var geofenceEventArray = new[] {
-         "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName | GeofenceType | GeofenceUID    | GeometryWKT   | IsTransparent | UserUID          | ",
-        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Berlin Wall  | 1            | {geofenceGuid} | 1,2,3         | {false}       | {Guid.NewGuid()} |"};
+         "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName         | GeofenceType | GeofenceUID    | GeometryWKT   | IsTransparent | UserUID          | ",
+        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Great Wall of China  | 1            | {geofenceGuid} | 1,2,3         | {false}       | {Guid.NewGuid()} |"};
 
       testSupport.InjectEventsIntoKafka(geofenceEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Geofence", "GeofenceUID", 1, geofenceGuid);
