@@ -11,24 +11,24 @@ sleep 10s
 # Run the component tests
 echo "Run the component tests"
 echo "KafkaTests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/KafkaTestsResults project=KafkaTests messages=false
+dotnet TestRun/TestRun.dll results=/testresults/KafkaTestsResults project=KafkaTests
 echo "KafkaTests finished"
 
 echo "RepositoryTests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestsResults project=RepositoryTests messages=false
+dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestsResults project=RepositoryTests
 echo "RepositoryTests finished"
 
 echo "Run the component/acceptance tests"
 echo "EventTests event tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/EventTestsResults project=EventTests messages=false
+dotnet TestRun/TestRun.dll results=/testresults/EventTestsResults project=EventTests
 echo "EventTests event tests finished"
 
 echo "WebApiTests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/WebApiTestsResults project=WebApiTests messages=false
+dotnet TestRun/TestRun.dll results=/testresults/WebApiTestsResults project=WebApiTests
 echo "WebApiTests finished"
 
 echo "Run Integration tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/IntegrationTestResults project=IntegrationTests messages=false
+dotnet TestRun/TestRun.dll results=/testresults/IntegrationTestResults project=IntegrationTests
 echo "Integration tests finished"
 echo " "
 echo " "
