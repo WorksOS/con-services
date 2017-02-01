@@ -105,12 +105,6 @@ node('Ubuntu_Slave') {
     step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
     publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])
  
-//    mail body: 'Project MDM ${branch} ${fullVersion} build successful',
-//         from: 'david_glassenbury@trimble.com',
-//         replyTo: 'david_glassenbury@trimble.com',
-//         subject: 'Project MDM ${branch} ${fullVersion} build successful',
-//         to: 'david_glassenbury@trimble.com'
- 
     if (branch == "Dev") {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Build Images'

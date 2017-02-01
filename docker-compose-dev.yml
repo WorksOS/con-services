@@ -1,6 +1,7 @@
 version: '2'
 services:
   webapi:
+    build: ./Artifacts/ProjectWebApi  
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest
     env_file:
      - docker-compose-dev.env
@@ -42,6 +43,6 @@ services:
     depends_on:
       - schema
   schema:
-    build: ./Database
+    build: ./database
     env_file:
      - docker-compose-dev.env
