@@ -1,14 +1,11 @@
 version: '2'
 services:
   webapi:
-    build: ./Artifacts/ProjectWebApi  
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest
     env_file:
      - docker-compose-dev.env
     ports:
      - "3001:80"
-    depends_on:
-      - schema
   masterdataconsumercustomer:
     build: ./Artifacts/MasterDataConsumer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
@@ -18,8 +15,6 @@ services:
     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
     volumes:
       - ./Artifacts/Logs:/app/logs
-    depends_on:
-      - schema
   masterdataconsumergeofence:
     build: ./Artifacts/MasterDataConsumer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
@@ -29,8 +24,6 @@ services:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
     volumes:
       - ./Artifacts/Logs:/app/logs
-    depends_on:
-      - schema
   masterdataconsumersubscription:
     build: ./Artifacts/MasterDataConsumer
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
@@ -40,9 +33,3 @@ services:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
     volumes:
       - ./Artifacts/Logs:/app/logs
-    depends_on:
-      - schema
-  schema:
-    build: ./database
-    env_file:
-     - docker-compose-dev.env
