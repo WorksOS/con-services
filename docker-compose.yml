@@ -57,7 +57,7 @@ services:
       - schema
       - kafka
   schema:
-    build: ./Database
+    build: ./database
     env_file:
      - docker-compose.env
     depends_on:
