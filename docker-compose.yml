@@ -27,6 +27,7 @@ services:
      - docker-compose.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
+     - MYSQL_DATABASE_NAME=ProjectConsumers-VSS-MasterData-Project
     volumes:
       - ./artifacts/logs:/app/logs
     depends_on:
@@ -60,6 +61,14 @@ services:
     build: ./database
     env_file:
      - docker-compose.env
+    depends_on:
+      - db
+  test_schema:
+    build: ./database
+    env_file:
+     - docker-compose.env
+    environment:
+     - MYSQL_DATABASE_NAME=ProjectConsumers-VSS-MasterData-Project
     depends_on:
       - db
   db:
