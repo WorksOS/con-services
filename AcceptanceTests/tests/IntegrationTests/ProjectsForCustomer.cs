@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Net;
+using VSS.Geofence.Data.Models;
 
 namespace IntegrationTests
 {
@@ -98,19 +99,19 @@ namespace IntegrationTests
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
 
-      Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
+      Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1, "Central Standard Time");
 
-      testSupport.UpdateProjectViaWebApi(projectGuid, projectName, endDate.AddDays(10), "New Zealand Standard Time", DateTime.Now, HttpStatusCode.OK);
+      testSupport.UpdateProjectViaWebApi(projectGuid, projectName, endDate.AddDays(10), "Central Standard Time", DateTime.Now, HttpStatusCode.OK);
       var expectedProjects = new string[] {
             "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                             | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.AddDays(10).ToString("O")} | {projectGuid} | 100             |" };
+           $"| false      | {projectName} | Central Standard Time     | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.AddDays(10).ToString("O")} | {projectGuid} | 100             |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
 
     }
 
 
     [TestMethod]
-    public void Create_Then_Update_Project_TimeZone()
+    public void Create_Then_Try_Update_Project_TimeZone()
     {
       var msg = new Msg();
       var testSupport = new TestSupport();
@@ -125,10 +126,10 @@ namespace IntegrationTests
 
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
 
-      testSupport.UpdateProjectViaWebApi(projectGuid, projectName, endDate, "Central Standard Time", DateTime.Now, HttpStatusCode.OK);
+      testSupport.UpdateProjectViaWebApi(projectGuid, projectName, endDate, "Central Standard Time", DateTime.Now, HttpStatusCode.Forbidden);
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone       | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | Central Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
+           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
 
@@ -227,13 +228,19 @@ namespace IntegrationTests
     }
 
 
-
+    /// <summary>
+    /// TODO!!!!
+    /// Currently it is possible to associate multiple GeofenceType.Project to a project, this should not be 
+    /// allowed but they way project boundaries are defined is most likely to change making this a valid operation.
+    /// </summary>
     [TestMethod]
-    public void Create_Then_Associate_Multiple_Geofences_with_Project()
+    public void Create_Then_Associate_Multiple_Project_Type_Geofences_with_Project()
     {
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
+      var projectConsumerMysql = new MySqlHelper();
+      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var geofenceGuid = Guid.NewGuid();
@@ -246,19 +253,19 @@ namespace IntegrationTests
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
 
       var geofenceEventArray = new[] {
-         "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName   | GeofenceType | GeofenceUID     | GeometryWKT | IsTransparent | UserUID    | ",
-        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Trump          | 1            | {geofenceGuid}  | 1,2,3       | {false}       | {userGuid} |" ,
-        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Hadrian's Wall | 1            | {geofenceGuid2} | 4,5,6       | {false}       | {userGuid} |"};
+         "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName   | GeofenceType           | GeofenceUID     | GeometryWKT | IsTransparent | UserUID    | ",
+        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Walls of Ston  | {GeofenceType.Project} | {geofenceGuid}  | 1,2,3       | {false}       | {userGuid} |" ,
+        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Hadrian's Wall | {GeofenceType.Project} | {geofenceGuid2} | 4,5,6       | {false}       | {userGuid} |"};
 
       testSupport.InjectEventsIntoKafka(geofenceEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Geofence", "UserUID", 2, userGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID",
         "fk_CustomerUID, Name", //Fields
-        $"{customerGuid}, Trump", //Expected
+        $"{customerGuid}, Walls of Ston", //Expected
         geofenceGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID",
         "fk_CustomerUID, Name", //Fields
-        $"{customerGuid}, Trump", //Expected
+        $"{customerGuid}, Hadrian's Wall", //Expected
         geofenceGuid2);
 
       testSupport.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid, DateTime.Now, HttpStatusCode.OK);
@@ -268,18 +275,96 @@ namespace IntegrationTests
         $"{projectGuid}", //Expected
         geofenceGuid);
 
-      testSupport.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid2, DateTime.Now, HttpStatusCode.BadRequest);
+      projectConsumerMysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
+      projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
+        "fk_ProjectUID", //Fields
+        $"{projectGuid}", //Expected
+        geofenceGuid);
+
+      testSupport.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid2, DateTime.Now, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid2);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
+        "fk_ProjectUID", //Fields
+        $"{projectGuid}", //Expected
+        geofenceGuid);
+
+      projectConsumerMysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid2);
+      projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
+        "fk_ProjectUID", //Fields
+        $"{projectGuid}", //Expected
+        geofenceGuid);
+
+
+      var expectedProjects = new string[] {
+            "| IsArchived  | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT | ",
+           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | 1,2,3              |" };
+      testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
+    }
+
+    [TestMethod]
+    public void Create_Then_Associate_Multiple_NonProject_Type_Geofences_with_Project()
+    {
+      var msg = new Msg();
+      var testSupport = new TestSupport();
+      var mysql = new MySqlHelper();
+      var projectGuid = Guid.NewGuid();
+      var customerGuid = Guid.NewGuid();
+      var geofenceGuid = Guid.NewGuid();
+      var geofenceGuid2 = Guid.NewGuid();
+      var geofenceGuid3 = Guid.NewGuid();
+      var userGuid = Guid.NewGuid();
+      string projectName = $"Integration Test Project 8";
+      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
+      DateTime endDate = testSupport.ConvertVSSDateString("1000d+00:00:00");
+
+      Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
+
+      var geofenceEventArray = new[] {
+         "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName   | GeofenceType            | GeofenceUID     | GeometryWKT | IsTransparent | UserUID    | ",
+        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Sacsayhuamán   | {GeofenceType.Project}  | {geofenceGuid}  | 1,2,3       | {false}       | {userGuid} |" ,
+        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Walls of Troy  | {GeofenceType.Generic}  | {geofenceGuid2} | 4,5,6       | {false}       | {userGuid} |" ,
+        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Wailing Wall   | {GeofenceType.Landfill} | {geofenceGuid3} | 42,69,88    | {false}       | {userGuid} |"};
+
+      testSupport.InjectEventsIntoKafka(geofenceEventArray);
+      mysql.VerifyTestResultDatabaseRecordCount("Geofence", "UserUID", 3, userGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID",
+        "fk_CustomerUID, Name", //Fields
+        $"{customerGuid}, Sacsayhuamán", //Expected
+        geofenceGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID",
+        "fk_CustomerUID, Name", //Fields
+        $"{customerGuid}, Walls of Troy", //Expected
+        geofenceGuid2);
+
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Geofence", "GeofenceUID",
+        "fk_CustomerUID, Name", //Fields
+        $"{customerGuid}, Wailing Wall", //Expected
+        geofenceGuid3);
+
+      testSupport.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid, DateTime.Now, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
+        "fk_ProjectUID", //Fields
+        $"{projectGuid}", //Expected
+        geofenceGuid);
+
+      testSupport.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid2, DateTime.Now, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid2);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
         "fk_ProjectUID", //Fields
         $"{projectGuid}", //Expected
         geofenceGuid2);
 
+      testSupport.AssociateGeofenceProjectViaWebApi(projectGuid, geofenceGuid3, DateTime.Now, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid3);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
+        "fk_ProjectUID", //Fields
+        $"{projectGuid}", //Expected
+        geofenceGuid3);
 
       var expectedProjects = new string[] {
             "| IsArchived  | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT | ",
-           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | 1,2,3              |" ,
-           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | 4,5,6              |"};
+           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | 1,2,3              |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
 
@@ -369,7 +454,10 @@ namespace IntegrationTests
       testSupport.AssociateCustomerProjectViaWebApi(projectGuid, Guid.NewGuid(), 102, DateTime.Now, HttpStatusCode.BadRequest);
     }
 
-
+    /// <summary>
+    /// TODO
+    /// Currently this is allowed, although this may be revisited in the future
+    /// </summary>
     [TestMethod]
     public void Try_To_Associate_Geofence_With_Multiple_Projects()
     {
@@ -410,7 +498,7 @@ namespace IntegrationTests
         geofenceGuid);
 
       testSupport.AssociateGeofenceProjectViaWebApi(projectGuid2, geofenceGuid, DateTime.Now, HttpStatusCode.BadRequest);
-      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_ProjectUID", 0, projectGuid2);
+      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_ProjectUID", 1, projectGuid2);
 
 
       var expectedProjects = new string[] {
@@ -550,7 +638,7 @@ namespace IntegrationTests
 
 
 
-    private void Create_Customer_Then_Project_And_Subscriptions(TestSupport testSupport, Guid customerGuid, Guid projectGuid, string projectName,  DateTime startDate, DateTime endDate, int numProjectsForCustomer)
+    private void Create_Customer_Then_Project_And_Subscriptions(TestSupport testSupport, Guid customerGuid, Guid projectGuid, string projectName,  DateTime startDate, DateTime endDate, int numProjectsForCustomer, string timeZone = "New Zealand Standard Time")
     {
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
@@ -567,12 +655,12 @@ namespace IntegrationTests
         $"E2ECust1", //Expected
         customerGuid);
 
-      Create_And_Subscribe_AdditionalProjects_for_existing_Customer(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, numProjectsForCustomer);
+      Create_And_Subscribe_AdditionalProjects_for_existing_Customer(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, numProjectsForCustomer, ProjectType.Standard, timeZone);
 
       
     }
 
-    private void Create_And_Subscribe_AdditionalProjects_for_existing_Customer(TestSupport testSupport, Guid customerGuid, Guid projectGuid, string projectName, DateTime startDate, DateTime endDate, int numProjectsForCustomer, ProjectType projectType = ProjectType.Standard)
+    private void Create_And_Subscribe_AdditionalProjects_for_existing_Customer(TestSupport testSupport, Guid customerGuid, Guid projectGuid, string projectName, DateTime startDate, DateTime endDate, int numProjectsForCustomer, ProjectType projectType = ProjectType.Standard, string timeZone = "New Zealand Standard Time")
     {
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
@@ -580,7 +668,7 @@ namespace IntegrationTests
       testSupport.CreateMockProjectSubscription(projectGuid.ToString(), Guid.NewGuid().ToString(), customerGuid.ToString(), startDate, endDate, startDate);
 
       testSupport.CreateProjectViaWebApi(projectGuid, 100, projectName, startDate,
-      endDate, "New Zealand Standard Time", projectType , DateTime.UtcNow, HttpStatusCode.OK);
+      endDate, timeZone, projectType , DateTime.UtcNow, HttpStatusCode.OK);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); //check that project is in webapi db
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); //check that project is in consumer db
