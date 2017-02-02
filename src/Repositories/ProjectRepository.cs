@@ -45,6 +45,7 @@ namespace VSS.Project.Data
       {
         // todo doesn't make sense to be able to update Project type - be careful
         var projectEvent = (UpdateProjectEvent)evt;
+
         var project = new Models.Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.Name = projectEvent.ProjectName;
@@ -132,7 +133,13 @@ namespace VSS.Project.Data
     private async Task<int> CreateProject(Models.Project project, Models.Project existing)
     {
       var upsertedCount = 0;
-      if (existing == null)
+      if (project.StartDate > project.EndDate)
+      {
+        log.LogDebug("Project " + project.ProjectUID + "Will not be created, startDate > endDate");
+        return upsertedCount;
+      }
+
+      else if (existing == null)
       {
         log.LogDebug("ProjectRepository/CreateProject: going to create project={0}", JsonConvert.SerializeObject(project));
 
@@ -235,7 +242,12 @@ namespace VSS.Project.Data
     private async Task<int> UpdateProject(Models.Project project, Models.Project existing)
     {
       var upsertedCount = 0;
-      if (existing != null)
+      if (project.EndDate < existing.StartDate)
+      {
+        log.LogDebug("ProjectRepository/UpdateProject: failed to update project={0} EndDate < StartDate", JsonConvert.SerializeObject(project));
+        return upsertedCount;
+      }
+      else if (existing != null)
       {
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
