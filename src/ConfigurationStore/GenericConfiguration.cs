@@ -53,11 +53,11 @@ namespace VSS.Project.Service.Utils
       var serverUserName = GetValueString("MYSQL_USERNAME");
       var serverPassword = GetValueString("MYSQL_ROOT_PASSWORD");
 
-      //log.LogInformation("MYSQL_SERVER_NAME_VSPDB" + serverName);
-      //log.LogInformation("MYSQL_PORT" + serverPort);
-      //log.LogInformation("MYSQL_DATABASE_NAME" + serverDatabaseName);
-      //log.LogInformation("MYSQL_USERNAME" + serverUserName);
-      //log.LogInformation("MYSQL_ROOT_PASSWORD" + serverPassword);
+      log.LogInformation("MYSQL_SERVER_NAME_VSPDB=" + serverName);
+      log.LogInformation("MYSQL_PORT=" + serverPort);
+      log.LogInformation("MYSQL_DATABASE_NAME=" + serverDatabaseName);
+      log.LogInformation("MYSQL_USERNAME=" + serverUserName);
+      log.LogInformation("MYSQL_ROOT_PASSWORD=" + serverPassword);
 
       if (serverName == null || serverPort == null || serverDatabaseName == null || serverUserName == null || serverPassword == null)
       {

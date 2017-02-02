@@ -7,6 +7,6 @@ echo ">>> Making sure Kafka is up"
 /bin/bash wait-for-it.sh kafka:9092 -t 0
 echo "<<< Done checking on Kafka"
 
-sleep 20s
+sleep 60s
 
 dotnet MasterDataConsumer.dll

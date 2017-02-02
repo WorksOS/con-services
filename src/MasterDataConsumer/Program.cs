@@ -54,6 +54,8 @@ namespace MasterDataConsumer
       var kafkaTopics = serviceProvider.GetService<IConfigurationStore>().GetValueString("KAFKA_TOPICS").Split(new[] { "," }, StringSplitOptions.None);
       var tasks = new List<Task>();
 
+      log.LogDebug("MasterDataConsumer is starting....");
+
       foreach (var kafkaTopic in kafkaTopics)
       {
         if (kafkaTopic.Contains("ICustomerEvent"))
