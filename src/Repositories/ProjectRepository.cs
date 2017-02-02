@@ -80,7 +80,10 @@ namespace VSS.Project.Data
         projectGeofence.LastActionedUTC = projectEvent.ActionUTC;
         upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "AssociateProjectGeofenceEvent");
       }
-      //Ignore DissociateProjectCustomer (not used) 
+      else if (evt is DissociateProjectCustomer)
+      {
+        throw new NotImplementedException("Dissociating projects from customers is not supported");
+      }
       return upsertedCount;
     }
 

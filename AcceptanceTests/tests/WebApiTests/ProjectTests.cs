@@ -235,7 +235,7 @@ namespace WebApiTests
       var testSupport = new TestSupport();
       testSupport.AssociateCustomerProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, testSupport.ProjectUid);
-      testSupport.DissociateProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, DateTime.UtcNow, HttpStatusCode.OK);
+      testSupport.DissociateProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, DateTime.UtcNow, HttpStatusCode.NotImplemented);
       //At the moment, dissociate is not stored in the web api database so don't check database
     }
 
@@ -246,7 +246,7 @@ namespace WebApiTests
       msg.Title("projects 15", "Dissociate a customer from a project before associate");
 
       var testSupport = new TestSupport();
-      testSupport.DissociateProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      testSupport.DissociateProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, DateTime.UtcNow, HttpStatusCode.NotImplemented);
     }
 
     [TestMethod]
@@ -261,7 +261,7 @@ namespace WebApiTests
       //No project UID
       testSupport.DissociateProjectViaWebApi(Guid.Empty, testSupport.CustomerUid, DateTime.UtcNow, HttpStatusCode.BadRequest);
       //No customer UID
-      testSupport.DissociateProjectViaWebApi(testSupport.ProjectUid, Guid.Empty, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      testSupport.DissociateProjectViaWebApi(testSupport.ProjectUid, Guid.Empty, DateTime.UtcNow, HttpStatusCode.NotImplemented);
     }
 
     [TestMethod]
