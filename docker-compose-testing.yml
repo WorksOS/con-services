@@ -57,7 +57,7 @@ services:
     volumes:
       - ./artifacts/logs:/app/logs
     depends_on:
-      - test_schema
+      - schema
       - kafka
   schema:
     build: ./Database
@@ -65,7 +65,7 @@ services:
      - docker-compose-testing.env
     depends_on:
       - db
-  test_schema:
+  projectschema:
     build: ./Database
     env_file:
      - docker-compose-testing.env
