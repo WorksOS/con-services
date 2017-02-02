@@ -469,6 +469,7 @@ namespace IntegrationTests
       var projectGuid = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
+      var customerGuid2 = Guid.NewGuid();
       var geofenceGuid = Guid.NewGuid();
       var userGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 12";
@@ -502,8 +503,9 @@ namespace IntegrationTests
 
 
       var expectedProjects = new string[] {
-            "| IsArchived  | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT | ",
-           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | 1,2,3              |" };
+            "| IsArchived  | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid     | LegacyProjectId | ProjectGeofenceWKT | ",
+           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid}  | 100             | 1,2,3              |",
+           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid2} | 100             | 1,2,3              |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
 

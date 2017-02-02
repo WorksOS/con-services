@@ -21,8 +21,10 @@ namespace WebApiTests
       var testSupport = new TestSupport();
       CreateProject(testSupport, mysql, 123456789, "project 1", ProjectType.Standard);
       var dateRange = FormatProjectDateRangeDatabase(testSupport);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimeZone,StartDate,EndDate", 
-        "123456789,project 1,New Zealand Standard Time," + dateRange, testSupport.ProjectUid);  
+      //mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimeZone,StartDate,EndDate", 
+      //  "123456789,project 1,New Zealand Standard Time," + dateRange, testSupport.ProjectUid);  
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimeZone,StartDate,EndDate",
+        $"123456789,project 1,New Zealand Standard Time, {testSupport.FirstEventDate}, {testSupport.LastEventDate}", testSupport.ProjectUid);
     }
 
     [TestMethod]
@@ -87,7 +89,7 @@ namespace WebApiTests
       testSupport.UpdateProjectViaWebApi(testSupport.ProjectUid, "project 4 updated",
         updatedEndDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "Name,EndDate",
-        "project 4 updated," + FormatProjectDateDatabase(updatedEndDate), testSupport.ProjectUid);
+        "project 4 updated," + updatedEndDate, testSupport.ProjectUid);
     }
 
     [TestMethod]
@@ -127,6 +129,9 @@ namespace WebApiTests
       //Bad end date (before start)
       testSupport.UpdateProjectViaWebApi(testSupport.ProjectUid, "project 6",
         testSupport.FirstEventDate.AddMonths(-1), "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
+      //Trying to change timezone (before start)
+      testSupport.UpdateProjectViaWebApi(testSupport.ProjectUid, "project 6",
+        testSupport.LastEventDate, "Mountain Standard Time", DateTime.UtcNow, HttpStatusCode.Forbidden);
     }
 
     [TestMethod]
