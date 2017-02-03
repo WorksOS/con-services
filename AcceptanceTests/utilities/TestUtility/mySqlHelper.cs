@@ -114,7 +114,7 @@ namespace TestUtility
       var actualDataArray = allActualData.Split(',');
       var expectedDataArray = expectedData.Split(',');
       var idx = 0;
-      msg.DisplayResults(expectedData + " records", allActualData + " records");
+      msg.DisplayResults(expectedData, allActualData );
       foreach (var col in fldArray)
       {
         Assert.AreEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(), "Expected results for " + col + " do not match actual");
@@ -149,7 +149,7 @@ namespace TestUtility
       var resultCount = 0;
 
       msg.DisplayMySqlQuery(query);
-      while (retryCount < 20)
+      while (retryCount < 30)
       {
         var mysqlHelper = new MySqlHelper();
         resultCount = Convert.ToInt32(mysqlHelper.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.dbConnectionString, query));
