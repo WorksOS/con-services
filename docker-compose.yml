@@ -6,6 +6,8 @@ services:
      - docker-compose.env
     volumes:
       - ./artifacts/logs:/app/logs
+    ports:
+     - "3001:80"
     depends_on:
       - schema
   masterdataconsumercustomer:
