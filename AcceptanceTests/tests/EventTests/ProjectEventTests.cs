@@ -244,8 +244,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      var projectMysql = new MySqlHelper();
-      projectMysql.updateDBSchemaName(projectDBSchemaName);
+      mysql.updateDBSchemaName(projectDBSchemaName);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Test Project 14";
@@ -265,7 +264,7 @@ namespace EventTests
        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
 
       testSupport.InjectEventsIntoKafka(projectEventArray);
-      projectMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
 
 
       var associateEventArray = new[] {
@@ -275,7 +274,7 @@ namespace EventTests
 
       testSupport.InjectEventsIntoKafka(associateEventArray);
       //Verify project has been associated
-      projectMysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID",
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID",
         "fk_CustomerUID, fk_ProjectUID", //Fields
         $"{customerGuid}, {projectGuid}", //Expected
         projectGuid);
@@ -312,15 +311,15 @@ namespace EventTests
        $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |"};
 
       testSupport.InjectEventsIntoKafka(projectEventArray);
-      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
+      projectMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
 
       var associateEventArray = new[] {
         "| EventType                | EventDate   | ProjectUID    | GeofenceUID    | ",
        $"| AssociateProjectGeofence | 0d+09:00:00 | {projectGuid} | {geofenceGuid} | "};
-
-
+      
       testSupport.InjectEventsIntoKafka(associateEventArray);
-      //Verify project has been associated
+
+      projectMysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
       projectMysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",
         "fk_GeofenceUID, fk_ProjectUID", //Fields
         $"{geofenceGuid}, {projectGuid}", //Expected

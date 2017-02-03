@@ -232,6 +232,8 @@ namespace IntegrationTests
     /// TODO!!!!
     /// Currently it is possible to associate multiple GeofenceType.Project to a project, this should not be 
     /// allowed but they way project boundaries are defined is most likely to change making this a valid operation.
+    /// This test currently checks the database to ensure that the associations exist but when/if getProjectGeofences is created
+    /// the this should test that method.
     /// </summary>
     [TestMethod]
     public void Create_Then_Associate_Multiple_Project_Type_Geofences_with_Project()
@@ -294,11 +296,6 @@ namespace IntegrationTests
         $"{projectGuid}", //Expected
         geofenceGuid);
 
-
-      var expectedProjects = new string[] {
-            "| IsArchived  | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT | ",
-           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | 1,2,3              |" };
-      testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
 
     [TestMethod]
@@ -469,6 +466,7 @@ namespace IntegrationTests
       var projectGuid = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
+      var customerGuid2 = Guid.NewGuid();
       var geofenceGuid = Guid.NewGuid();
       var userGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 12";
@@ -502,8 +500,9 @@ namespace IntegrationTests
 
 
       var expectedProjects = new string[] {
-            "| IsArchived  | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT | ",
-           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | 1,2,3              |" };
+            "| IsArchived  | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid     | LegacyProjectId | ProjectGeofenceWKT | ",
+           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid}  | 100             | 1,2,3              |",
+           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid2} | 100             | 1,2,3              |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
 
