@@ -17,6 +17,8 @@ services:
      - docker-compose-testing.env
     environment:
     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
+    - KAFKA_OFFSET=latest
+    - KAFKA_TOPIC_NAME_SUFFIX=-Project
     volumes:
       - ./artifacts/logs:/app/logs
     depends_on:
@@ -30,6 +32,8 @@ services:
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
      - MYSQL_DATABASE_NAME=ProjectConsumers-VSS-MasterData-Project
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
     volumes:
       - ./artifacts/logs:/app/logs
     depends_on:
@@ -42,6 +46,8 @@ services:
      - docker-compose-testing.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
     volumes:
       - ./artifacts/logs:/app/logs
     depends_on:
@@ -54,6 +60,8 @@ services:
      - docker-compose-testing.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
     volumes:
       - ./artifacts/logs:/app/logs
     depends_on:
