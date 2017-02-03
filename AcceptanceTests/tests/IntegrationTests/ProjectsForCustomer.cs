@@ -520,7 +520,7 @@ namespace IntegrationTests
       var customerGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 13";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("300d+00:00:00");
+      DateTime endDate = testSupport.ConvertVSSDateString("400d+00:00:00");
 
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
       testSupport.CreateProjectViaWebApi(projectGuid2, 100, projectName, startDate.AddYears(-5),
