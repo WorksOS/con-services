@@ -1,12 +1,6 @@
-sleep 20s
-echo ">>> Making sure MySQL is up"
-/bin/bash wait-for-it.sh db:3306 -t 0
-echo "<<< Done checking on MySQL"
 
-echo ">>> Making sure Kafka is up"
-/bin/bash wait-for-it.sh kafka:9092 -t 0
-echo "<<< Done checking on Kafka"
-
+echo "Master data kafka consumer starting in 60 seconds....."
 sleep 60s
 
+echo "Master data kafka consumer starting Now "
 dotnet MasterDataConsumer.dll
