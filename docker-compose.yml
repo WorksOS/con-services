@@ -4,8 +4,6 @@ services:
     build: ./artifacts/ProjectWebApi
     env_file:
      - docker-compose.env
-    volumes:
-      - ./artifacts/logs:/app/logs
     ports:
      - "3001:80"
     depends_on:
@@ -19,8 +17,6 @@ services:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
      - KAFKA_OFFSET=latest
      - KAFKA_TOPIC_NAME_SUFFIX=-Project
-    volumes:
-      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka
@@ -34,8 +30,6 @@ services:
      - MYSQL_DATABASE_NAME=ProjectConsumers-VSS-MasterData-Project
      - KAFKA_OFFSET=latest
      - KAFKA_TOPIC_NAME_SUFFIX=-Project
-    volumes:
-      - ./artifacts/logs:/app/logs
     depends_on:
       - projectschema
       - kafka
@@ -48,8 +42,6 @@ services:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
      - KAFKA_OFFSET=latest
      - KAFKA_TOPIC_NAME_SUFFIX=-Project
-    volumes:
-      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka
@@ -62,8 +54,6 @@ services:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
      - KAFKA_OFFSET=latest
      - KAFKA_TOPIC_NAME_SUFFIX=-Project
-    volumes:
-      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka
