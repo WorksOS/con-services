@@ -25,6 +25,7 @@ namespace MasterDataConsumer
     {
       string loggerRepoName = "MasterDataConsumer";
       var logPath = System.IO.Directory.GetCurrentDirectory();
+      Console.WriteLine("Log path:" + logPath);
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4net.xml", loggerRepoName);
 
       ILoggerFactory loggerFactory = new LoggerFactory();
@@ -58,6 +59,7 @@ namespace MasterDataConsumer
 
       foreach (var kafkaTopic in kafkaTopics)
       {
+        Console.WriteLine("MasterDataConsumer topic: " + kafkaTopic);
         if (kafkaTopic.Contains("ICustomerEvent"))
         {
           var consumer = serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();

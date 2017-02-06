@@ -58,6 +58,12 @@ namespace VSS.Project.Service.Utils.Kafka
             Uri = configurationStore.GetValueString("KAFKA_URI");
             Port = configurationStore.GetValueInt("KAFKA_PORT");
 
+            Console.WriteLine("KAFKA_GROUP_NAME:" + ConsumerGroup);
+            Console.WriteLine("KAFKA_AUTO_COMMIT:" + EnableAutoCommit);
+            Console.WriteLine("KAFKA_OFFSET:" + OffsetReset);
+            Console.WriteLine("KAFKA_URI:" + Uri);
+            Console.WriteLine("KAFKA_PORT:" + Port);
+
             var topicConfig = new TopicConfig();
             topicConfig["auto.offset.reset"] = OffsetReset;
 

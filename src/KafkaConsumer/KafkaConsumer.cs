@@ -29,6 +29,7 @@ namespace KafkaConsumer
       dbRepositoryFactory = repositoryFactory;
       messageResolver = resolver;
       batchSize = configurationStore.GetValueInt("KAFKA_BATCH_SIZE");
+      Console.WriteLine("KafkaConsumer:KAFKA_BATCH_SIZE " + batchSize);
       log = logger.CreateLogger<KafkaConsumer<T>>();
     }
 
