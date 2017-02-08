@@ -1,7 +1,6 @@
-call build.bat
-cd AcceptanceTests\scripts
-call deploy_win.bat
+set DOCKER_TLS_VERIFY=1
+set DOCKER_HOST=tcp://10.97.96.103:2376
+set DOCKER_CERT_PATH=Merino-ProjectMDM
+set DOCKER_MACHINE_NAME="Merino-ProjectMDM"
 
-cd ..
-docker-compose rm -f
-docker-compose -f docker-compose-local.yml up --build > c:\temp\outputlog.log
+docker-compose -f docker-compose-dev.yml up --build 

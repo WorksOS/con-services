@@ -10,7 +10,7 @@ namespace IntegrationTests
   [TestClass]
   public class ProjectsForCustomer
   {
-    private readonly string projectDBSchemaName = "ProjectConsumers-VSS-MasterData-Project";
+    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project-Only";
 
     [TestMethod]
     public void Create_Project_Then_Retrieve()
@@ -19,7 +19,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 1";
@@ -43,7 +43,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid1 = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -92,7 +92,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 4";
@@ -117,7 +117,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 5";
@@ -140,7 +140,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 5";
@@ -164,7 +164,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 6";
@@ -174,7 +174,7 @@ namespace IntegrationTests
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
       var expectedProjects = new string[] {
             "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
 
       testSupport.DeleteProjectViaWebApi(projectGuid, DateTime.Now, HttpStatusCode.OK);
@@ -242,7 +242,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var geofenceGuid = Guid.NewGuid();
@@ -374,7 +374,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 9";
@@ -403,7 +403,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
 
@@ -434,7 +434,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 11";
@@ -462,7 +462,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -514,7 +514,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -541,7 +541,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -569,7 +569,7 @@ namespace IntegrationTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -641,7 +641,7 @@ namespace IntegrationTests
     {
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var customerEventArray = new[] {
              "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID    |",
             $"| CreateCustomerEvent | 0d+09:00:00 | E2ECust1     | Customer     | {customerGuid} |"};
@@ -663,8 +663,15 @@ namespace IntegrationTests
     {
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(projectDBSchemaName);
-      testSupport.CreateMockProjectSubscription(projectGuid.ToString(), Guid.NewGuid().ToString(), customerGuid.ToString(), startDate, endDate, startDate);
+      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      var subscriptionUid = Guid.NewGuid();
+      var eventArray = new[] {
+       "| EventType                         | EventDate   | StartDate  | EndDate    | SubscriptionType   | SubscriptionUID   | EffectiveDate | ProjectUID    |",
+      $"| CreateProjectSubscriptionEvent    | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Project Monitoring | {subscriptionUid} |               |               |",
+      $"| AssociateProjectSubscriptionEvent | 0d+09:00:00 |            |            |                    | {subscriptionUid} | 2012-01-01    | {projectGuid} |"}; 
+
+      testSupport.InjectEventsIntoKafka(eventArray);
+    //  testSupport.CreateMockProjectSubscription(projectGuid.ToString(), Guid.NewGuid().ToString(), customerGuid.ToString(), startDate, endDate, startDate);
 
       testSupport.CreateProjectViaWebApi(projectGuid, 100, projectName, startDate,
       endDate, timeZone, projectType , DateTime.UtcNow, HttpStatusCode.OK);

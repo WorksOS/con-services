@@ -407,7 +407,7 @@ namespace TestUtility
 
         switch (singleEvent.EventType)
         {
-          #region "Customer Events"
+          #region Customer Events
           case "CreateCustomerEvent":
             topicName = appConfig.masterDataTopic + "ICustomerEvent" + appConfig.kafkaTopicSuffix;
             var createCustomerEvent = new CreateCustomerEvent()
@@ -472,8 +472,8 @@ namespace TestUtility
             {
               ActionUTC = eventUtc,
               ReceivedUTC = eventUtc,
-              StartDate = DateTime.Parse(singleEvent.StartDate, CultureInfo.InvariantCulture),
-              EndDate = DateTime.Parse(singleEvent.EndDate, CultureInfo.InvariantCulture),
+              StartDate = DateTime.Parse(singleEvent.StartDate), //, CultureInfo.InvariantCulture),
+              EndDate = DateTime.Parse(singleEvent.EndDate), //CultureInfo.InvariantCulture),
               SubscriptionType = singleEvent.SubscriptionType,
               SubscriptionUID = new Guid(singleEvent.SubscriptionUID)
             };
@@ -485,8 +485,8 @@ namespace TestUtility
             {
               ActionUTC = eventUtc,
               ReceivedUTC = eventUtc,
-              StartDate = DateTime.Parse(singleEvent.StartDate, CultureInfo.InvariantCulture),
-              EndDate = DateTime.Parse(singleEvent.EndDate, CultureInfo.InvariantCulture),
+              StartDate = DateTime.Parse(singleEvent.StartDate), // CultureInfo.InvariantCulture),
+              EndDate = DateTime.Parse(singleEvent.EndDate), //CultureInfo.InvariantCulture),
               SubscriptionType = singleEvent.SubscriptionType,
               SubscriptionUID = new Guid(singleEvent.SubscriptionUID)
             };

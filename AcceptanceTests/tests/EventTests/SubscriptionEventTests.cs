@@ -33,7 +33,7 @@ namespace EventTests
       var mysql = new MySqlHelper();
       var subscriptionUid = Guid.NewGuid();
       msg.Title("Subscription test 2", "Update Project Subscription dates");
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
+      DateTime startDate = testSupport.FirstEventDate;
       DateTime endDate = new DateTime(9999, 12, 31);
       // 'Project Monitoring'   'Landfill'  'Manual 3D Project Monitoring'
       var eventArray = new[] {
