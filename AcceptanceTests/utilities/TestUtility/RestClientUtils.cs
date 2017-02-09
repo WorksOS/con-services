@@ -65,12 +65,17 @@ namespace TestUtility
                     using (var response = exception.Response)
                     {
                         HttpWebResponse httpResponse = (HttpWebResponse) response;
+                      if (httpResponse != null)
+                      {
                         Assert.AreEqual(httpResponseCode, httpResponse.StatusCode,
-                            "Expected this response code, " + httpResponseCode +
-                            ", but the actual response code was this instead, " + httpResponse.StatusCode);
-
-
+                          "Expected this response code, " + httpResponseCode +
+                          ", but the actual response code was this instead, " + httpResponse.StatusCode);
                         responseString = GetStringFromResponseStream(httpResponse);
+                      }
+                      else
+                      {
+                        responseString = e.Message;
+                      }
                     }
                 }
             }

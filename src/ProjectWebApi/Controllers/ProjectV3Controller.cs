@@ -40,12 +40,15 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
         [HttpGet]
         public List<ProjectDescriptor> GetProjectsV3()
         {
+          Console.WriteLine("GetProjectsV3");
           var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+          Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
           var projects = (_projectService as ProjectRepository).GetProjectsForCustomer(customerUid).Result;
 
           var projectList = new List<ProjectDescriptor>();
           foreach (var project in projects)
           {
+            Console.WriteLine("Build list ProjectName=" + project.Name);
             projectList.Add(
               new ProjectDescriptor
               {
@@ -72,6 +75,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     [HttpGet]
     public Dictionary<long, ProjectDescriptor> GetProjectsV1()
     {
+      Console.WriteLine("GetProjectsV1 ");
       return GetProjectsV3().ToDictionary(k => (long)k.LegacyProjectId, v => v);
     }
 
@@ -87,6 +91,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     [HttpPost]
     public void CreateProjectV3([FromBody] CreateProjectEvent project)
     {
+        Console.WriteLine("POST CreateProjectV3 - ");
         ProjectDataValidator.Validate(project, _projectService);
         project.ReceivedUTC = DateTime.UtcNow;
 
