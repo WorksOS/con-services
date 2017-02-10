@@ -1,6 +1,9 @@
 #!/bin/bash 
 docker stop $(docker ps -a -q)
 docker rm $(docker ps -a -q)
+docker rmi $(docker images -q)
+docker rm $(docker ps -a -q)
+docker rmi $(docker images -q)
 
 sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
 docker pull 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest
