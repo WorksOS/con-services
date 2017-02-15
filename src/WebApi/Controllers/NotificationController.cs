@@ -34,20 +34,20 @@ namespace VSS.TagFileAuth.Service.Controllers
     }
 
 
-    /// <summary>
-    /// Raises an application alarm. 
-    /// </summary>
-    /// <param name="request">Details of the alarm including the level, message and exception</param>
-    /// <returns>
-    /// True for success and false for failure.
-    /// </returns>
-    /// <executor>AppAlarmExecutor</executor>
-    [Route("api/v1/notification/appAlarm")]
-    public AppAlarmResult PostAppAlarm([FromBody]AppAlarmRequest request)
-    {
-      request.Validate();
-      return RequestExecutorContainer.Build<AppAlarmExecutor>(factory).Process(request) as AppAlarmResult;
-    }
+    ///// <summary>
+    ///// Raises an application alarm. Obsolete
+    ///// </summary>
+    ///// <param name="request">Details of the alarm including the level, message and exception</param>
+    ///// <returns>
+    ///// True for success and false for failure.
+    ///// </returns>
+    ///// <executor>AppAlarmExecutor</executor>
+    //[Route("api/v1/notification/appAlarm")]
+    //public AppAlarmResult PostAppAlarm([FromBody]AppAlarmRequest request)
+    //{
+    //  request.Validate();
+    //  return RequestExecutorContainer.Build<AppAlarmExecutor>(factory).Process(request) as AppAlarmResult;
+    //}
 
     /// <summary>
     /// Sends an alert if required for the given tag file processing error. 

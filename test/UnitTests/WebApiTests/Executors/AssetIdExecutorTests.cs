@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.TagFileAuth.Service.WebApi.Models;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
@@ -43,7 +42,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     [TestMethod]
     public void CanCallAssetIDExecutorWithRadioSerialWithRadioSerial()
     {
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest( -1, 3, "3k45LK" );
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 3, "3k45LK");
 
       GetAssetIdResult assetIdResult = new GetAssetIdResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
@@ -81,6 +80,6 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect AssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
-    
+
   }
 }

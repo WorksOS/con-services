@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using VSS.TagFileAuth.Service.Repositories.Interfaces;
+using VSS.TagFileAuth.Service.WebApi.Enums;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Models;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;

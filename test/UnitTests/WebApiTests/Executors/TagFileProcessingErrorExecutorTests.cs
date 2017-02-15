@@ -6,6 +6,7 @@ using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.ResultHandling;
 using VSS.TagFileAuth.Service.Executors;
 using System;
+using VSS.TagFileAuth.Service.WebApi.Enums;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -22,7 +23,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory).Process(TagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(-1, result.result, "executor returned incorrect legacy TagFileProcessingError");
+      Assert.IsTrue(result.result, "executor didn't process TagFileProcessingError");
     }
 
     [TestMethod]
@@ -30,7 +31,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     {
       long legacyAssetID = 46534636436;
       string tagFileName = "Whatever";
-      TagFileErrorsEnum error = null; 
+      TagFileErrorsEnum error = TagFileErrorsEnum.None;
       var eventkeyDate = DateTime.UtcNow;
       TagFileProcessingErrorRequest TagFileProcessingErrorRequest = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(legacyAssetID, tagFileName, error);
 
@@ -39,9 +40,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory).Process(TagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(-1, result.result, "executor returned incorrect legacy TagFileProcessingError");
+      Assert.IsTrue(result.result, "executor didn't process TagFileProcessingError");
     }
-
-    
   }
 }

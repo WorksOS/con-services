@@ -28,7 +28,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     [TestMethod]
     public void CanCallGetPProjectIdExecutorWithLegacyAssetId()
     {
-      long legacyAssetID = 46534636436;      
+      long legacyAssetID = 46534636436;
       double latitude = 80;
       double longitude = 170;
       double height = 0;
@@ -42,7 +42,5 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(-1, result.projectId, "executor returned incorrect legacy ProjectId");
     }
-
-    
   }
 }

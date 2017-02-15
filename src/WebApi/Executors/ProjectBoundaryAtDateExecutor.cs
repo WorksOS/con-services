@@ -27,18 +27,16 @@ namespace VSS.TagFileAuth.Service.Executors
       //i.e. tagFileUTC is between project start and end dates
       //and get its boundary points
 
-      //Dummy data for testing
-      result = true;
-      TWGS84FenceContainer fenceContainer = new TWGS84FenceContainer
-      {
-        FencePoints = new TWGS84Point[]
-        {
-          new TWGS84Point{Lat=0.631986074660308, Lon=-2.00757760231466},
-          new TWGS84Point{Lat=0.631907507374149, Lon=-2.00758733949739},
-          new TWGS84Point{Lat=0.631904485465203, Lon=-2.00744352879854},
-          new TWGS84Point{Lat=0.631987283352491, Lon=-2.00743753668608}
-        }
-      };
+      TWGS84FenceContainer fenceContainer = new TWGS84FenceContainer();
+      ////Dummy data for testing
+      //result = true;      
+      //fenceContainer.FencePoints = new TWGS84Point[]
+      //{
+      //    new TWGS84Point{Lat=0.631986074660308, Lon=-2.00757760231466},
+      //    new TWGS84Point{Lat=0.631907507374149, Lon=-2.00758733949739},
+      //    new TWGS84Point{Lat=0.631904485465203, Lon=-2.00744352879854},
+      //    new TWGS84Point{Lat=0.631987283352491, Lon=-2.00743753668608}
+      //};
 
 
       if (true)//determine here if successful

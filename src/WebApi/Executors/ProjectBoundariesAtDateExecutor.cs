@@ -31,23 +31,23 @@ namespace VSS.TagFileAuth.Service.Executors
       //i.e. tagFileUTC is between project start and end dates
       //and which belong to the asset owner and get their boundary points
 
-      //Dummy data for testing
-      result = true;
-      ProjectBoundaryPackage[] boundaries = new ProjectBoundaryPackage[]
-      {
-        new ProjectBoundaryPackage{
-          Boundary = new TWGS84FenceContainer
-          {
-            FencePoints = new TWGS84Point[]
-            {
-              new TWGS84Point{Lat=0.631986074660308, Lon=-2.00757760231466},
-              new TWGS84Point{Lat=0.631907507374149, Lon=-2.00758733949739},
-              new TWGS84Point{Lat=0.631904485465203, Lon=-2.00744352879854},
-              new TWGS84Point{Lat=0.631987283352491, Lon=-2.00743753668608}
-            }
-          },
-          ProjectID = 726
-        }};
+      ////Dummy data for testing
+      //result = true;
+      ProjectBoundaryPackage[] boundaries = new ProjectBoundaryPackage[0];
+      //{
+      //  new ProjectBoundaryPackage{
+      //    Boundary = new TWGS84FenceContainer
+      //    {
+      //      FencePoints = new TWGS84Point[]
+      //      {
+      //        new TWGS84Point{Lat=0.631986074660308, Lon=-2.00757760231466},
+      //        new TWGS84Point{Lat=0.631907507374149, Lon=-2.00758733949739},
+      //        new TWGS84Point{Lat=0.631904485465203, Lon=-2.00744352879854},
+      //        new TWGS84Point{Lat=0.631987283352491, Lon=-2.00743753668608}
+      //      }
+      //    },
+      //    ProjectID = 726
+      //  }};
 
       if (true)//determine here if successful
       {
