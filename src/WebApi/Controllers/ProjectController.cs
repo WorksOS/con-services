@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.TagFileAuth.Service.Executors;
-using VSS.TagFileAuth.Service.Interfaces;
 using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.Repositories;
+using VSS.TagFileAuth.Service.Repositories.Interfaces;
 using VSS.TagFileAuth.Service.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
 
 namespace VVSS.TagFileAuth.Service.Controllers
-  {
-    public class ProjectController : Controller
+{
+  public class ProjectController : Controller
   {
 
     /// <summary>
@@ -42,6 +43,7 @@ namespace VVSS.TagFileAuth.Service.Controllers
     /// </returns>
     /// <executor>ProjectIdExecutor</executor>
     [Route("api/v1/project/getId")]
+    [HttpPost]
       public GetProjectIdResult PostProjectId([FromBody]GetProjectIdRequest request)
       {
         request.Validate();
@@ -57,6 +59,7 @@ namespace VVSS.TagFileAuth.Service.Controllers
       /// </returns>
       /// <executor>ProjectBoundaryAtDateExecutor</executor>
       [Route("api/v1/project/getBoundary")]
+      [HttpPost]
       public GetProjectBoundaryAtDateResult PostProjectBoundary([FromBody]GetProjectBoundaryAtDateRequest request)
       {
         request.Validate();
@@ -72,6 +75,7 @@ namespace VVSS.TagFileAuth.Service.Controllers
       /// </returns>
       /// <executor>ProjectBoundariesAtDateExecutor</executor>
       [Route("api/v1/project/getBoundaries")]
+      [HttpPost]
       public GetProjectBoundariesAtDateResult PostProjectBoundaries([FromBody]GetProjectBoundariesAtDateRequest request)
       {
         request.Validate();

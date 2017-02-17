@@ -20,7 +20,7 @@
   }
 
   // todo check if these are the same in NG
-  public enum DeviceTypeEnumCG
+  public enum DeviceTypeEnum
   {
     MANUALDEVICE = 0,
     PL121 = 1,

@@ -4,10 +4,12 @@
   {
     public string AssetUid { get; set; }
     public long LegacyAssetId { get; set; }
-    public string OwnerCustomerUid { get; set; }
+    public string OwningCustomerUid { get; set; }
     public string DeviceUid { get; set; }
-    public string RadioSerial { get; set; }
     public string DeviceType { get; set; }
+    public string RadioSerial { get; set; }
+
+
 
     public override bool Equals(object obj)
     {
@@ -15,10 +17,10 @@
       if (otherAsset == null) return false;
       return otherAsset.AssetUid == AssetUid
         && otherAsset.LegacyAssetId == LegacyAssetId
-        && otherAsset.OwnerCustomerUid == OwnerCustomerUid
+        && otherAsset.OwningCustomerUid == OwningCustomerUid
         && otherAsset.DeviceUid == DeviceUid
-        && otherAsset.RadioSerial == RadioSerial
-        && otherAsset.DeviceType == DeviceType;
+        && otherAsset.DeviceType == DeviceType
+        && otherAsset.RadioSerial == RadioSerial;
     }
     public override int GetHashCode() { return 0; }
   }

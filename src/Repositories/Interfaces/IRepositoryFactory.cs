@@ -1,7 +1,7 @@
-namespace VSS.TagFileAuth.Service.Interfaces
+namespace VSS.TagFileAuth.Service.Repositories.Interfaces
 {
     public interface IRepositoryFactory
     {
-        IRepository<T> GetRepository<T>();
+      IAssetRepository GetAssetRepository();
     }
 }

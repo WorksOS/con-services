@@ -1,21 +1,41 @@
 ﻿using System;
 
-namespace VSS.Subscription.Data.Models
+namespace VSS.TagFileAuth.Service.Repositories.DBModels
 {
+
+  // map CG/NG/CG serviceTypes if need be. Probably not as only strings passed?
+  //   Family  CG                                   NG
+  //   Asset   16  3D Project Monitoring            13
+  //   Cust    18  Manual 3D Project Monitoring     15 
+  //   Proj    23  Landfill                         19
+  //   Proj    24  Project Monitoring               20
+
   public class Subscription
   {
-    public string SubscriptionUID { get; set; }
-    public string CustomerUID { get; set; }
-    public int ServiceTypeID { get; set; }
+    public string ServiceFamilyType { get; set; }
+    public string ServiceType { get; set; }
+    public string CustomerUid { get; set; }
+    public string ProjectUid { get; set; }
+    public string AssetUid { get; set; }
+    public DateTime StartKeyDate { get; set; }
+    public DateTime EndKeyDate { get; set; }
 
-    // start, end and Effective are actually only date with no time component. However C# has no date-only.
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; } = DateTime.MaxValue.Date;
 
-    public DateTime LastActionedUTC { get; set; }
+    public override bool Equals(object obj)
+    {
+      var otherAsset = obj as Subscription;
+      if (otherAsset == null) return false;
+      return otherAsset.ServiceFamilyType == ServiceFamilyType
+        && otherAsset.ServiceType == ServiceType
+        && otherAsset.CustomerUid == CustomerUid
+        && otherAsset.ProjectUid == ProjectUid
+        && otherAsset.AssetUid == AssetUid;
+    }
+    public override int GetHashCode() { return 0; }
   }
 
-  public class ServiceType
+
+public class ServiceType
   {
     public int ID { get; set; }
     public string Name { get; set; }

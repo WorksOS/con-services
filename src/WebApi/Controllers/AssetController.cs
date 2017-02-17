@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.TagFileAuth.Service.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Models;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Executors;
+using VSS.TagFileAuth.Service.Repositories.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApi.Controllers
 {
@@ -42,6 +42,7 @@ namespace VSS.TagFileAuth.Service.WebApi.Controllers
     /// <returns>AssetUid</returns>
     /// <executor>AssetCountExecutor</executor>
     [Route("api/v1/asset/getId")]
+    [HttpPost]
     public GetAssetIdResult Post([FromBody]GetAssetIdRequest request)
     {
       logger.LogInformation("GetAssetID: {0}", Request.QueryString);
@@ -51,7 +52,7 @@ namespace VSS.TagFileAuth.Service.WebApi.Controllers
         //getAssetIdResult.getAssetIdDescriptor = new GetAssetIdDescriptor()
         //{ LegacyAssetId = -1, MachineLevel = "Unknown" }; // NG has no 'unknown' serviceType
 
-      return RequestExecutorContainer.Build<AssetIdExecutor>(this.factory).Process(request) as GetAssetIdResult;
+      return RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(request) as GetAssetIdResult;
     }
   }
 }

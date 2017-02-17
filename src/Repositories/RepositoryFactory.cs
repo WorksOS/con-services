@@ -1,34 +1,27 @@
-using VSS.TagFileAuth.Service.Interfaces;
+using VSS.TagFileAuth.Service.Repositories.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace MasterDataConsumer
+namespace VSS.TagFileAuth.Service.Repositories
 {
   public class RepositoryFactory : IRepositoryFactory
   {
-    private readonly IRepository<ICustomerEvent> customerRepository;
-    private readonly IRepository<IProjectEvent> projectRepository;
-    private readonly IRepository<ISubscriptionEvent> subscriptionRepository;
-    private readonly IRepository<IGeofenceEvent> geofenceRepository;
+    private readonly AssetRepository assetRepository;    
 
-    public RepositoryFactory(IRepository<ICustomerEvent> custRepository, IRepository<IProjectEvent> projRepository, IRepository<ISubscriptionEvent> subsRepository, IRepository<IGeofenceEvent> geoRepository)
+    public RepositoryFactory(AssetRepository assetRepository)
     {
-      customerRepository = custRepository;
-      projectRepository = projRepository;
-      subscriptionRepository = subsRepository;    
-      geofenceRepository = geoRepository;
+      this.assetRepository = assetRepository;
     }
 
-    public IRepository<T> GetRepository<T>()
+    public IAssetRepository GetAssetRepository()
     {
-      if (typeof(T) == typeof(ICustomerEvent))
-        return customerRepository as IRepository<T>;
-      if (typeof(T) == typeof(IProjectEvent))
-        return projectRepository as IRepository<T>;
-      if (typeof(T) == typeof(ISubscriptionEvent))
-        return subscriptionRepository as IRepository<T>;
-      if (typeof(T) == typeof(IGeofenceEvent))
-        return geofenceRepository as IRepository<T>;
-      return null;
+      return assetRepository;
     }
+
+    //public IRepository<T> GetRepository<T>()
+    //{
+    //  if (typeof(T) == typeof(IAssetEvent))
+    //    return assetRepository as IRepository<T>;
+    //  return null;
+    //}
   }
 }

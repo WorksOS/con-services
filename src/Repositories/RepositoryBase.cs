@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-
 using MySql.Data.MySqlClient;
 using Polly;
 using System.Threading.Tasks;
@@ -49,7 +48,10 @@ namespace VSS.TagFileAuth.Service.Repositories
       //log = logger.CreateLogger <RepositoryBase>();
     }
 
-
+    public RepositoryBase(string connectionString)
+    {
+      this.connectionString = connectionString;
+    }
 
     private T WithConnection<T>(Func<MySqlConnection, T> body)
     {

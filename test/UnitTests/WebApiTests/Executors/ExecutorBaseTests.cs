@@ -3,8 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MockClasses;
 using System;
-using VSS.TagFileAuth.Service.Interfaces;
 using log4netExtensions;
+using VSS.TagFileAuth.Service.Repositories.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {

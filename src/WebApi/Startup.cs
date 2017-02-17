@@ -5,11 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using log4netExtensions;
 using Swashbuckle.Swagger.Model;
-using VSS.TagFileAuth.Service.Interfaces;
-using VSS.TagFileAuthentication.Data;
 using VSS.TagFileAuth.Service.Utils;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Filters;
+using VSS.TagFileAuth.Service.Repositories;
+using VSS.TagFileAuth.Service.Repositories.Interfaces;
 
 namespace WebApi
 {
@@ -54,7 +53,7 @@ namespace WebApi
 
       // Add framework services.
       services.AddApplicationInsightsTelemetry(Configuration);
-      services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
+      services.AddTransient<IRepositoryFactory, RepositoryFactory>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddMvc();
       //Configure swagger

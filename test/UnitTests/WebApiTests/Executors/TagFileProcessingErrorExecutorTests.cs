@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
-using VSS.TagFileAuth.Service.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.ResultHandling;
 using VSS.TagFileAuth.Service.Executors;
 using System;
 using VSS.TagFileAuth.Service.WebApi.Enums;
+using VSS.TagFileAuth.Service.Repositories.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {

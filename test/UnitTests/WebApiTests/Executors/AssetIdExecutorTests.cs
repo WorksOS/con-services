@@ -3,9 +3,12 @@ using VSS.TagFileAuth.Service.WebApi.Models;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Executors;
-using VSS.TagFileAuth.Service.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.TagFileAuth.Service.Repositories;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using System;
+using VSS.TagFileAuth.Service.Repositories.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -40,7 +43,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     }
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithRadioSerialWithRadioSerial()
+    public void CanCallAssetIDExecutorWithRadioSerialNoAssetExists()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 3, "3k45LK");
 
@@ -68,18 +71,31 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     }
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithRadioSerialWithProjectId()
+    public void CanCallAssetIDExecutorWithRadioSerial()
     {
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(345345345345, -1, null);
+      long legacyAssetID = 898989;
+      long legacyProjectID = -1;
+      int deviceType = 3;
+      string radioSerial = "3k45LK";
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectID, deviceType, radioSerial);
+      var asset = new CreateAssetEvent
+      {
+        AssetUID = Guid.NewGuid(),
+        LegacyAssetId = legacyAssetID        
+      };
+      var ttt = serviceProvider.GetRequiredService<IRepositoryFactory>().GetAssetRepository();
+      var storeResult = ttt.StoreAsset(asset);
+      Assert.IsNotNull(storeResult, "store mock Asset failed");
+      Assert.AreEqual(1, storeResult.Result, "unable to store Asset");
 
       GetAssetIdResult assetIdResult = new GetAssetIdResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(-1, result.assetId, "executor returned incorrect AssetId");
+      Assert.AreEqual(legacyAssetID, result.assetId, "executor returned incorrect AssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
-
+    
   }
 }

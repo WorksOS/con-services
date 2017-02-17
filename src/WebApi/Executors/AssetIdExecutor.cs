@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using VSS.TagFileAuth.Service.Repositories;
 using VSS.TagFileAuth.Service.WebApi.Enums;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Models;
@@ -8,6 +9,7 @@ namespace VSS.TagFileAuth.Service.WebApi.Executors
 {
   public class AssetIdExecutor : RequestExecutorContainer
   {
+
     /// <summary>
     /// Processes the get asset request and finds the id of the asset corresponding to the given tagfile radio serial number.
     /// </summary>
@@ -26,37 +28,38 @@ namespace VSS.TagFileAuth.Service.WebApi.Executors
       //ProjectID is -1 for auto processing of tag files and non-zero for manual processing.
       //Radio serial may not be present in the tag file. The logic below replaces the 'john doe' handling in Raptor for these tag files.
 
-      if (string.IsNullOrEmpty(request.radioSerial) || request.deviceType == (int)DeviceTypeEnumCG.MANUALDEVICE)
+      if (string.IsNullOrEmpty(request.radioSerial) || request.deviceType == (int)DeviceTypeEnum.MANUALDEVICE)
       {
         //Check for manual 3D subscription for customer, Only allowed to process tag file if project Id is > 0.
         //If ok then set asset Id to -1 so Raptor knows it's a John Doe machine and set machineLevel to 18 
+        //CheckForManual3D(projectID, out assetID, out machineLevel);
       }
       else
       {
-        ////Radio serial in tag file. Use it to map to asset in VL.
-        //AssetIDCache.Init();
-        //legacyAssetId = AssetIDCache.GetAssetID(request.radioSerial, (DeviceTypeEnumCG)request.deviceType) ?? -1;
+        //Radio serial in tag file. Use it to map to asset in VL.
+        // AssetIDCache.Init();
+        var assetDevice = factory.GetAssetRepository().GetAssetDevice(request.radioSerial, ""); //  (DeviceTypeEnum)request.deviceType);
 
+        if (assetDevice.Result.LegacyAssetId > 0)
+        {
+          legacyAssetId = assetDevice.Result.LegacyAssetId;
+          //  LoadServiceViewCache(assetID);
 
-        //if (assetId != -1)
-        //{
-        //  //TODO assign machineLevel i.e. asset subscription here
-        //  machineLevel = 16;//Dummy data for testing
-        //}
-        //else
-        //{
-        //  //Check for manual 3D subscription, Only allowed to process tag file if project Id is > 0.
-        //  //If ok then set asset Id to -1 so Raptor knows it;'s a John Doe machine and set machineLevel to 18 
-        //}
-      }
+          //  machineLevel = (int)GetProjectServiceType(assetID, projectID);
+        }
+          //else
+          //{
+          //  CheckForManual3D(projectID, out assetID, out machineLevel);
+          //}
+        }
 
       result = !((legacyAssetId == -1) && (serviceType == 0));
 
-      if (true)//determine here if successful
+      if (true)
       {
         return GetAssetIdResult.CreateGetAssetIdResult(result, legacyAssetId, serviceType);
       }
-      else
+      else // todo determine if exception e.g. bad parameters?
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to get legacy asset id"));

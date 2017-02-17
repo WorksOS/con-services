@@ -1,5 +1,6 @@
-﻿using VSS.TagFileAuth.Service.Interfaces;
-using System;
+﻿using VSS.TagFileAuth.Service.MockClasses;
+using VSS.TagFileAuth.Service.Repositories;
+using VSS.TagFileAuth.Service.Repositories.Interfaces;
 
 namespace MockClasses
 {
@@ -9,26 +10,26 @@ namespace MockClasses
 
     //private static readonly ILogger log = DependencyInjectionProvider.ServiceProvider.GetService<ILoggerFactory>().CreateLogger<MockFactory>();
 
-    //private readonly MockAssetRepository assetRepo;   
+    private readonly MockAssetRepository assetRepo;
 
     public MockFactory()
     {
       //log.LogDebug("Repo: Building repository factory");
-      //assetRepo = new MockAssetRepository();      
+      assetRepo = new MockAssetRepository();      
     }
 
-    public IRepository<T> GetRepository<T>()
+    public IAssetRepository GetAssetRepository()
     {
-      throw new NotImplementedException();
+      return assetRepo;
     }
 
 
     #region Master Data Repos
 
-    //private MockAssetRepository _AssetRepository
-    //{
-    //  get { return assetRepo; }
-    //}
+    private MockAssetRepository _AssetRepository
+    {
+      get { return assetRepo; }
+    }
 
 
     #region Read Getters

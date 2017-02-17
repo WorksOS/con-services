@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.TagFileAuth.Service.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Authentication;
+using VSS.TagFileAuth.Service.Repositories;
 
 namespace VSS.TagFileAuth.Service.WebApi.Filters
 {
