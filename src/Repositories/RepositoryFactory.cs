@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using KafkaConsumer;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
@@ -5,30 +8,25 @@ namespace MasterDataConsumer
 {
   public class RepositoryFactory : IRepositoryFactory
   {
-    private readonly IRepository<ICustomerEvent> customerRepository;
-    private readonly IRepository<IProjectEvent> projectRepository;
-    private readonly IRepository<ISubscriptionEvent> subscriptionRepository;
-    private readonly IRepository<IGeofenceEvent> geofenceRepository;
+    private static readonly Dictionary<Type, object> container = new Dictionary<Type, object>();
 
-    public RepositoryFactory(IRepository<ICustomerEvent> custRepository, IRepository<IProjectEvent> projRepository, IRepository<ISubscriptionEvent> subsRepository, IRepository<IGeofenceEvent> geoRepository)
-    {
-      customerRepository = custRepository;
-      projectRepository = projRepository;
-      subscriptionRepository = subsRepository;    
-      geofenceRepository = geoRepository;
-    }
+      public RepositoryFactory(IRepository<ICustomerEvent> custRepository, IRepository<IProjectEvent> projRepository,
+          IRepository<ISubscriptionEvent> subsRepository, IRepository<IGeofenceEvent> geoRepository)
+      {
+          if (container.Any()) return;
+          container.Add(typeof(IRepository<ICustomerEvent>), custRepository);
+          container.Add(typeof(IRepository<IProjectEvent>), projRepository);
+          container.Add(typeof(IRepository<ISubscriptionEvent>), subsRepository);
+          container.Add(typeof(IRepository<IGeofenceEvent>), geoRepository);
+      }
 
-    public IRepository<T> GetRepository<T>()
-    {
-      if (typeof(T) == typeof(ICustomerEvent))
-        return customerRepository as IRepository<T>;
-      if (typeof(T) == typeof(IProjectEvent))
-        return projectRepository as IRepository<T>;
-      if (typeof(T) == typeof(ISubscriptionEvent))
-        return subscriptionRepository as IRepository<T>;
-      if (typeof(T) == typeof(IGeofenceEvent))
-        return geofenceRepository as IRepository<T>;
-      return null;
-    }
+      public IRepository<T> GetRepository<T>()
+      {
+          object result;
+          if (container.TryGetValue(typeof(T), out result))
+              return result as IRepository<T>;
+          else
+              return null;
+      }
   }
 }
