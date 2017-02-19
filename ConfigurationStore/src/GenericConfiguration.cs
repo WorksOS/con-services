@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 /// if neither present then we'll use some defaults
 /// </summary>
 
-namespace VSS.Project.Service.Utils
+namespace VSS.GenericConfiguration
 {
   public class GenericConfiguration : IConfigurationStore
   {

@@ -1,4 +1,4 @@
-﻿namespace VSS.Project.Service.Utils
+﻿namespace VSS.GenericConfiguration
 {
     public interface IConfigurationStore
     {
