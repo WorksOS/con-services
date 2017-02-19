@@ -21,35 +21,39 @@ namespace VSS.Project.Service.WebApiModels.Filters
 
         public async Task Invoke(HttpContext context)
         {
-            bool requiresCustomerUid = context.Request.Method.ToUpper() == "GET";
-
-            string authorization = context.Request.Headers["X-Jwt-Assertion"];
-            string customerUID = context.Request.Headers["X-VisionLink-CustomerUid"];
-
-            // If no authorization header found, nothing to process further
-            if (string.IsNullOrEmpty(authorization) || (requiresCustomerUid && string.IsNullOrEmpty(customerUID)))
+            if (!context.Request.Path.Value.Contains("swagger"))
             {
-                await SetResult("No account selected", context);
-                return;
-            }
 
-            string token = authorization.Substring("Bearer ".Length).Trim();
-            // If no token found, no further work possible
-            if (string.IsNullOrEmpty(token))
-            {
-                await SetResult("No authentication token", context);
-                return;
+                bool requiresCustomerUid = context.Request.Method.ToUpper() == "GET";
+
+                string authorization = context.Request.Headers["X-Jwt-Assertion"];
+                string customerUID = context.Request.Headers["X-VisionLink-CustomerUid"];
+
+                // If no authorization header found, nothing to process further
+                if (string.IsNullOrEmpty(authorization) || (requiresCustomerUid && string.IsNullOrEmpty(customerUID)))
+                {
+                    await SetResult("No account selected", context);
+                    return;
+                }
+
+                string token = authorization.Substring("Bearer ".Length).Trim();
+                // If no token found, no further work possible
+                if (string.IsNullOrEmpty(token))
+                {
+                    await SetResult("No authentication token", context);
+                    return;
+                }
+                var jwtToken = new JWTToken();
+                if (!jwtToken.SetToken(authorization))
+                {
+                    await SetResult("Invalid authentication", context);
+                    return;
+                }
+                var identity = string.IsNullOrEmpty(customerUID)
+                    ? new GenericIdentity(jwtToken.UserUID)
+                    : new GenericIdentity(jwtToken.UserUID, customerUID);
+                context.User = new GenericPrincipal(identity, new string[] {});
             }
-            var jwtToken = new JWTToken();
-            if (!jwtToken.SetToken(authorization))
-            {
-                await SetResult("Invalid authentication", context);
-                return;
-            }
-          var identity = string.IsNullOrEmpty(customerUID)
-            ? new GenericIdentity(jwtToken.UserUID)
-            : new GenericIdentity(jwtToken.UserUID, customerUID);
-            context.User = new GenericPrincipal(identity, new string[] { });
             await _next.Invoke(context);
         }
 
