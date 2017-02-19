@@ -54,6 +54,11 @@ namespace ProjectWebApi.Models
         {
           var createEvent = evt as CreateProjectEvent;
           //Note: ProjectBoundary is NOT USED. Boundary is obtained from project geofence associated with project.
+          if (string.IsNullOrEmpty(createEvent.ProjectBoundary))
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              "Missing ProjectBoundary");
+          }
           if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,

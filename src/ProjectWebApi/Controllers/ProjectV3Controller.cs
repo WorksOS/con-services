@@ -91,17 +91,26 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     [HttpPost]
     public void CreateProjectV3([FromBody] CreateProjectEvent project)
     {
-        Console.WriteLine("POST CreateProjectV3 - ");
-        ProjectDataValidator.Validate(project, _projectService);
-        project.ReceivedUTC = DateTime.UtcNow;
+      const string polygonStr = "POLYGON";
 
-        var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
-        _producer.Send(kafkaTopicName,
-            new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-            });
-        _projectService.StoreEvent(project);
+      Console.WriteLine("POST CreateProjectV3 - ");
+
+      ProjectDataValidator.Validate(project, _projectService);
+      project.ReceivedUTC = DateTime.UtcNow;
+
+      // Check whether the ProjectBoundary is in WKT format. Convert to the old format if it is. 
+      if (project.ProjectBoundary.Contains(polygonStr))
+        project.ProjectBoundary = project.ProjectBoundary.Replace(polygonStr + "((", "").Replace("))", "").Replace(',', ';').Replace(' ', ',') + ';';
+
+      ProjectBoundaryValidator.Validate(project.ProjectBoundary);
+
+      var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
+      _producer.Send(kafkaTopicName,
+          new List<KeyValuePair<string, string>>()
+          {
+              new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+          });
+      _projectService.StoreEvent(project);
     }
 
     /// <summary>
@@ -132,7 +141,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     {
         ProjectDataValidator.Validate(project, _projectService);
         project.ReceivedUTC = DateTime.UtcNow;
-
+        
         var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
         _producer.Send(kafkaTopicName,
             new List<KeyValuePair<string, string>>()

@@ -25,6 +25,7 @@ namespace VSS.Project.Data
 
     public async Task<int> StoreEvent(IProjectEvent evt)
     {
+      const string polygonStr = "POLYGON";
       var upsertedCount = 0;
       if (evt is CreateProjectEvent)
       {
@@ -39,6 +40,15 @@ namespace VSS.Project.Data
         project.LastActionedUTC = projectEvent.ActionUTC;
         project.StartDate = projectEvent.ProjectStartDate.Date;
         project.ProjectType = projectEvent.ProjectType;
+
+        // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
+        if (!projectEvent.ProjectBoundary.Contains(polygonStr))
+        {
+          projectEvent.ProjectBoundary = projectEvent.ProjectBoundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');          
+          projectEvent.ProjectBoundary = String.Concat(polygonStr + "((", projectEvent.ProjectBoundary, "))");
+        }
+
+        project.GeometryWKT = projectEvent.ProjectBoundary;
         upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
       }
       else if (evt is UpdateProjectEvent)
@@ -106,7 +116,7 @@ namespace VSS.Project.Data
           (@"SELECT 
                 ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
                 ProjectTimeZone, LandfillTimeZone, 
-                LastActionedUTC, StartDate, EndDate
+                LastActionedUTC, StartDate, EndDate, GeometryWKT
               FROM Project
               WHERE ProjectUID = @projectUid", new { projectUid = project.ProjectUID }
            )).FirstOrDefault();
@@ -147,7 +157,7 @@ namespace VSS.Project.Data
           @"INSERT Project
                 (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate )
               VALUES
-                (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate)";
+                (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT)";
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, project);
@@ -171,7 +181,8 @@ namespace VSS.Project.Data
                   LandfillTimeZone = @LandfillTimeZone,
                   StartDate = @StartDate,
                   EndDate = @EndDate,
-                  LastActionedUTC = @LastActionedUTC         
+                  LastActionedUTC = @LastActionedUTC,
+                  GeometryWKT = @GeometryWKT
                 WHERE ProjectUID = @ProjectUID";
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
@@ -192,7 +203,8 @@ namespace VSS.Project.Data
                 SET LegacyProjectID = @LegacyProjectID,                  
                   ProjectTimeZone = @ProjectTimeZone,
                   LandfillTimeZone = @LandfillTimeZone,
-                  StartDate = @StartDate   
+                  StartDate = @StartDate,
+                  GeometryWKT = @GeometryWKT
                 WHERE ProjectUID = @ProjectUID";
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
@@ -393,7 +405,7 @@ namespace VSS.Project.Data
       var project = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate
               FROM Project p 
@@ -421,7 +433,7 @@ namespace VSS.Project.Data
       var projects = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate
               FROM Project p 
@@ -451,7 +463,7 @@ namespace VSS.Project.Data
       var projects = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate
               FROM Project p 
@@ -483,7 +495,7 @@ namespace VSS.Project.Data
       var projects = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate
               FROM Project p 
@@ -516,7 +528,7 @@ namespace VSS.Project.Data
           (@"SELECT 
                 c.CustomerUID, cp.LegacyCustomerID, 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,                
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate,
                 g.GeometryWKT
               FROM Customer c  
@@ -552,7 +564,7 @@ namespace VSS.Project.Data
       var project = (await Connection.QueryAsync<Models.Project>
           (@"SELECT              
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType                
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT                
               FROM Project p 
               WHERE p.ProjectUID = @projectUid",
             new { projectUid }
@@ -614,7 +626,7 @@ namespace VSS.Project.Data
       var project = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                   p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
-                  p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
+                  p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                   cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                   ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate              
               FROM Project p 
@@ -637,7 +649,7 @@ namespace VSS.Project.Data
       var projects = (await Connection.QueryAsync<Models.Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType,
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate
               FROM Project p 

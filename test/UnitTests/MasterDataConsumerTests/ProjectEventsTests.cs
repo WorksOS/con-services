@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ProjectWebApi.Models;
 using VSS.Project.Data;
 using VSS.Project.Data.Models;
 
@@ -9,13 +10,17 @@ namespace MasterDataConsumer.Tests
   [TestClass]
   public class ProjectEventsTests
   {
-    [TestMethod]
-    public void ProjectEventsCopyModels()
-    {
-      DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
+    DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
+    string projectTimeZone = "New Zealand Standard Time";
+    string boundaryWKT = "POLYGON((172.582309 -43.545285,172.582309 43.545239,172.582443 43.545239,172.582443 -43.545285))";
+    Project project = null;
 
-      var project = new Project()
+    const string polygonStr = "POLYGON";
+
+    [TestInitialize]   
+    public void TestInitialize()
+    {
+      project = new Project()
       {
         ProjectUID = Guid.NewGuid().ToString(),
         LegacyProjectID = 12343,
@@ -28,17 +33,36 @@ namespace MasterDataConsumer.Tests
 
         LastActionedUTC = now,
         StartDate = new DateTime(2016, 02, 01),
-        EndDate = new DateTime(2017, 02, 01)
+        EndDate = new DateTime(2017, 02, 01),
+        GeometryWKT = boundaryWKT
       };
+    }
 
+    [TestMethod]
+    public void ProjectEventsCopyModels()
+    {
       var kafkaProjectEvent = CopyModel(project);
       var copiedProject = CopyModel(kafkaProjectEvent);
 
-      Assert.AreEqual(project, copiedProject, "Project model conversion not completed sucessfully");
+      Assert.AreEqual(copiedProject.GeometryWKT, boundaryWKT, "Project's boundary conversion not completed sucessfully");
+      Assert.AreNotEqual(project, copiedProject, "Project model conversion not completed sucessfully");
+    }
+
+    [TestMethod]
+    public void ValidateProjectBoundary()
+    {
+      boundaryWKT = project.GeometryWKT.Replace(polygonStr + "((", "").Replace("))", "").Replace(',', ';').Replace(' ', ',') + ';';
+      ProjectBoundaryValidator.Validate(boundaryWKT);
+
+      Assert.IsTrue(true, "Invalid project's boundary");
     }
 
     private CreateProjectEvent CopyModel(Project project)
     {
+      // Check whether the GeometryWKT is in WKT format. Convert to the old format if it is. 
+      if (project.GeometryWKT.Contains(polygonStr))
+        project.GeometryWKT = project.GeometryWKT.Replace(polygonStr + "((", "").Replace("))", "").Replace(',', ';').Replace(' ', ',') + ';';
+
       return new CreateProjectEvent()
       {
         ProjectUID = Guid.Parse(project.ProjectUID),
@@ -49,12 +73,19 @@ namespace MasterDataConsumer.Tests
 
         ProjectStartDate = project.StartDate,
         ProjectEndDate = project.EndDate,
+        ProjectBoundary = project.GeometryWKT,
         ActionUTC = project.LastActionedUTC
       };
     }
 
     private Project CopyModel(CreateProjectEvent kafkaProjectEvent)
     {
+      // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
+      if (!kafkaProjectEvent.ProjectBoundary.Contains(polygonStr)) {
+        kafkaProjectEvent.ProjectBoundary = kafkaProjectEvent.ProjectBoundary.Replace(',', ' ').Replace(';', ',').TrimEnd(',');        
+        kafkaProjectEvent.ProjectBoundary = String.Concat(polygonStr + "((", kafkaProjectEvent.ProjectBoundary, "))");
+      }
+
       return new Project()
       {
         ProjectUID = kafkaProjectEvent.ProjectUID.ToString(),
@@ -68,6 +99,7 @@ namespace MasterDataConsumer.Tests
 
         LastActionedUTC = kafkaProjectEvent.ActionUTC,
         StartDate = kafkaProjectEvent.ProjectStartDate,
+        GeometryWKT = kafkaProjectEvent.ProjectBoundary,
         EndDate = kafkaProjectEvent.ProjectEndDate
       };
     }

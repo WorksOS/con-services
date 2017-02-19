@@ -19,7 +19,8 @@
     "ConfigurationStore": "*",
     "Repositories": "1.0.0-*",
     "Moq": "4.6.38-alpha",
-    "Microsoft.Extensions.Logging.Debug": "1.1.0"
+    "Microsoft.Extensions.Logging.Debug": "1.1.0",
+    "ProjectWebApi": "1.0.0-*"
   },
 
     "frameworks": {
