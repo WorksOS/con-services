@@ -4,7 +4,7 @@
   "title": "ConfigurationStore component to work with configs in .net core apps",
   "description": "Shared across Merino apps, source code is availble under MerinoSandbox repo",
 
-  "version": "1.0.0",
+  "version": "1.0.1",
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
@@ -21,6 +21,15 @@
   "frameworks": {
     "netstandard1.6": {
       "imports": "dnxcore50"
+    },
+    "net46": {
+      "buildOptions": {
+        "define": [ "TRACE", "STRONG", "NET", "NET_2_0", "NET_4_0", "NET_4_6" ]
+      },
+      "frameworkAssemblies": {
+        "System.Xml": "4.0.0.0",
+        "System": "4.0.0.0"
+      }
     }
   }
 }
