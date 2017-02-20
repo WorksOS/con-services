@@ -5,10 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using log4netExtensions;
 using Swashbuckle.Swagger.Model;
-using VSS.TagFileAuth.Service.Utils;
 using VSS.TagFileAuth.Service.WebApi.Filters;
-using VSS.TagFileAuth.Service.Repositories;
-using VSS.TagFileAuth.Service.Repositories.Interfaces;
+using VSS.GenericConfiguration;
+using VSS.Masterdata;
+using MasterDataConsumer;
 
 namespace WebApi
 {
@@ -92,7 +92,7 @@ namespace WebApi
       app.UseCors("VSS");
       app.UseExceptionTrap();
       //Enable TID here
-      app.UseTIDAuthentication();
+      //app.UseTIDAuthentication();
       app.UseCors("VSS");
       app.UseExceptionTrap();
       //Enable TID here

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using VSS.TagFileAuth.Service.Models;
 using VSS.TagFileAuth.Service.Repositories;
-using VSS.TagFileAuth.Service.WebApi.Enums;
 using VSS.TagFileAuth.Service.WebApi.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -43,21 +41,21 @@ namespace VSS.TagFileAuth.Service.MockClasses
       return Task.FromResult(0);
     }
 
-    public Task<AssetDevice> GetAssetDevice(string radioSerial, string deviceType)
-    {
-      AssetDevice assetDevice = new AssetDevice();
+    //public Task<AssetDevice> GetAssetDevice(string radioSerial, string deviceType)
+    //{
+    //  AssetDevice assetDevice = new AssetDevice();
 
-      if (assets.Count > 0)
-      {  
-        assetDevice.AssetUid = assets[0].AssetUid;
-        assetDevice.LegacyAssetId = assets[0].LegacyAssetID;
-        assetDevice.OwningCustomerUid = assets[0].OwningCustomerUID;
-        assetDevice.DeviceUid = Guid.NewGuid().ToString();
-        assetDevice.DeviceType = DeviceTypeEnum.Series522.ToString();
-        assetDevice.RadioSerial = "wetwet44"; // todo
-      };
-      return Task.FromResult(assetDevice);
+    //  if (assets.Count > 0)
+    //  {  
+    //    assetDevice.AssetUid = assets[0].AssetUid;
+    //    assetDevice.LegacyAssetId = assets[0].LegacyAssetID;
+    //    assetDevice.OwningCustomerUid = assets[0].OwningCustomerUID;
+    //    assetDevice.DeviceUid = Guid.NewGuid().ToString();
+    //    assetDevice.DeviceType = DeviceTypeEnum.Series522.ToString();
+    //    assetDevice.RadioSerial = "wetwet44"; // todo
+    //  };
+    //  return Task.FromResult(assetDevice);
       
-    }
+    //}
   }
 }

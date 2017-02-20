@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using VSS.TagFileAuth.Service.Repositories.Interfaces;
+using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.WebApi.Interfaces

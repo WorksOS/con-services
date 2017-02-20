@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using VSS.TagFileAuth.Service.Repositories;
 using VSS.TagFileAuth.Service.WebApi.Enums;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Models;
@@ -38,15 +37,15 @@ namespace VSS.TagFileAuth.Service.WebApi.Executors
       {
         //Radio serial in tag file. Use it to map to asset in VL.
         // AssetIDCache.Init();
-        var assetDevice = factory.GetAssetRepository().GetAssetDevice(request.radioSerial, ""); //  (DeviceTypeEnum)request.deviceType);
+        // todo var assetDevice = factory.GetAssetRepository().GetAssetDevice(request.radioSerial, ""); //  (DeviceTypeEnum)request.deviceType);
 
-        if (assetDevice.Result.LegacyAssetId > 0)
-        {
-          legacyAssetId = assetDevice.Result.LegacyAssetId;
-          //  LoadServiceViewCache(assetID);
+        //if (assetDevice.Result.LegacyAssetId > 0)
+        //{
+        //  legacyAssetId = assetDevice.Result.LegacyAssetId;
+        //  //  LoadServiceViewCache(assetID);
 
-          //  machineLevel = (int)GetProjectServiceType(assetID, projectID);
-        }
+        //  //  machineLevel = (int)GetProjectServiceType(assetID, projectID);
+        //}
           //else
           //{
           //  CheckForManual3D(projectID, out assetID, out machineLevel);

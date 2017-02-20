@@ -4,7 +4,7 @@ using VSS.TagFileAuth.Service.WebApi.Models;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Executors;
-using VSS.TagFileAuth.Service.Repositories.Interfaces;
+using VSS.Masterdata;
 
 namespace VSS.TagFileAuth.Service.WebApi.Controllers
 {

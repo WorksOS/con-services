@@ -1,0 +1,29 @@
+{
+    "version": "1.0.0-*",
+    "testRunner": "mstest",
+  "dependencies": {
+    "MSTest.TestFramework": "1.0.7-preview",
+    "TestUtility": "1.0.0-*",
+    "dotnet-test-mstest": "1.1.2-preview",
+    "Newtonsoft.Json": "9.0.2-beta1",
+    "Microsoft.Extensions.Logging": "1.1.0",
+    "Microsoft.Extensions.Logging.Console": "1.1.0",
+    "Microsoft.Extensions.Logging.Debug": "1.1.0",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
+    "MySql.Data": "7.0.6-IR31"
+  },
+    "frameworks": {
+        "netcoreapp1.1": {
+            "imports": [
+                "dnxcore50",
+                "portable-net45+win8"
+            ],
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "type": "platform",
+                    "version": "1.1.0"
+                }
+            }
+        }
+    }
+}

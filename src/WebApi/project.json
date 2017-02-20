@@ -1,4 +1,4 @@
-﻿{
+{
     "dependencies": {
         "Microsoft.NETCore.App": {
             "version": "1.0.0",
@@ -11,17 +11,17 @@
         "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
         "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
         "Microsoft.Extensions.Configuration.Json": "1.0.0",
-        "Microsoft.Extensions.Logging": "1.0.0",
+        "Microsoft.Extensions.Logging": "1.1.0",
         "Microsoft.Extensions.Logging.Console": "1.0.0",
         "Microsoft.Extensions.Logging.Debug": "1.0.0",
         "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-        "ConfigurationStore": "1.0.0-*",
-        "Repositories": "1.0.0-*",
         "Swashbuckle.SwaggerGen": "6.0.0-beta902",
         "Swashbuckle.SwaggerUi": "6.0.0-beta902",
         "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1",
         "log4net.netcore": "3.0.0",
-        "log4netExtensions.netcore": "1.0.1"
+        "log4netExtensions.netcore": "1.0.1",
+        "Repositories": "1.0.0-*",
+        "MasterDataRepos.netcore": "1.0.2"
     },
 
   "tools": {
@@ -29,7 +29,7 @@
   },
 
   "frameworks": {
-    "netcoreapp1.0": {
+    "netcoreapp1.1": {
       "imports": [
         "dotnet5.6",
         "portable-net45+win8"

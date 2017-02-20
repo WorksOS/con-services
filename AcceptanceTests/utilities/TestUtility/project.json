@@ -1,0 +1,30 @@
+{
+    "version": "1.0.0-*",
+  "dependencies": {
+    "GlobalModels": "1.0.0-*",
+    "Models": "1.0.0-*",
+    "dotnet-test-mstest": "1.1.2-preview",
+    "Microsoft.Extensions.Logging": "1.1.0",
+    "Microsoft.Extensions.Logging.Console": "1.1.0",
+    "Microsoft.Extensions.Logging.Debug": "1.1.0",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
+    "MSTest.TestFramework": "1.0.7-preview",
+    "MySql.Data.EntityFrameworkCore": "7.0.6-IR31",
+    "RdKafka": "0.9.2-ci-174",
+    "MySql.Data": "7.0.6-IR31"
+  },
+    "frameworks": {
+        "netcoreapp1.1": {
+            "imports": [
+                "dnxcore50",
+                "portable-net45+win8"
+            ],
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "type": "platform",
+                    "version": "1.1.0" 
+                }
+            }
+        }
+    }
+}

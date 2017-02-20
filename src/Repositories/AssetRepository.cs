@@ -14,14 +14,14 @@ namespace VSS.TagFileAuth.Service.Repositories
   public class AssetRepository : RepositoryBase, IAssetRepository
   {
     private readonly ILogger log;
-    public AssetRepository(string connectionString, ILogger<AssetRepository> logger)
+    public AssetRepository(string connectionString, ILoggerFactory logger)
         : base(connectionString)
     {
-      log = logger;
+      log = logger.CreateLogger<AssetRepository>();
     }
 
     // needed for TFAS
-    public async Task<AssetDevice> GetAssetDevice(string radioSerial, string deviceType)
+    public async Task<AssetDevice> GetAssociatedAsset(string radioSerial, string deviceType)
     {
       try
       {

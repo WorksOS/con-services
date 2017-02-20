@@ -1,14 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using System;
 using VSS.TagFileAuth.Service.WebApi.Models;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Executors;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.TagFileAuth.Service.Repositories;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System;
-using VSS.TagFileAuth.Service.Repositories.Interfaces;
+using VSS.Masterdata;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -28,6 +28,34 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       Assert.IsNotNull(loggerFactory, "Unable to retrieve loggerFactory from DI");
     }
+    /****** todo
+     *  // needed for TFAS
+    public async Task<AssetDevice> GetAssociatedAsset(string radioSerial, string deviceType)
+    {
+      try
+      {
+        await PerhapsOpenConnection();
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          return (await Connection.QueryAsync<AssetDevice>
+                  (@"SELECT 
+                        AssetUID, LegacyAssetID, OwningCustomerUID, DeviceUid, DeviceType, DeviceSerialNumber AS RadioSerial
+                      FROM Device d
+                        INNER JOIN AssetDevice ad ON ad.fk_DeviceUID = d.DeviceUID
+                        INNER JOIN Asset a ON a.AssetUID = ad.fk_AssetUID
+                      WHERE d.DeviceSerialNumber = @radioSerial
+                        AND a.IsDeleted = 0
+                        AND d.DeviceType LIKE @deviceType"
+                      , new { radioSerial, deviceType }
+                  )).FirstOrDefault();
+        });
+      }
+      finally
+      {
+        PerhapsCloseConnection();
+      }
+    }
+    *****/
 
     [TestMethod]
     public void CanCallAssetIDExecutorNoValidInput()
@@ -83,8 +111,8 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
         AssetUID = Guid.NewGuid(),
         LegacyAssetId = legacyAssetID        
       };
-      var ttt = serviceProvider.GetRequiredService<IRepositoryFactory>().GetAssetRepository();
-      var storeResult = ttt.StoreAsset(asset);
+      var ttt = serviceProvider.GetRequiredService<IRepositoryFactory>().GetRepository<IAssetEvent>();
+      var storeResult = ttt.StoreEvent(asset);
       Assert.IsNotNull(storeResult, "store mock Asset failed");
       Assert.AreEqual(1, storeResult.Result, "unable to store Asset");
 
@@ -96,6 +124,33 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       Assert.AreEqual(legacyAssetID, result.assetId, "executor returned incorrect AssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
-    
+
+    [TestMethod]
+    public void CanCallAssetIDExecutorWithProjectId()
+    {
+      long legacyAssetID = -1;
+      long legacyProjectID = 4564546456;
+      int deviceType = 0;
+      string radioSerial = null;
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectID, deviceType, radioSerial);
+      var asset = new CreateAssetEvent
+      {
+        AssetUID = Guid.NewGuid(),
+        LegacyAssetId = legacyAssetID
+      };
+      var ttt = serviceProvider.GetRequiredService<IRepositoryFactory>().GetRepository<IAssetEvent>();
+      var storeResult = ttt.StoreEvent(asset);
+      Assert.IsNotNull(storeResult, "store mock Asset failed");
+      Assert.AreEqual(1, storeResult.Result, "unable to store Asset");
+
+      GetAssetIdResult assetIdResult = new GetAssetIdResult();
+      var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
+      Assert.IsNotNull(result, "executor returned nothing");
+      Assert.AreEqual(legacyAssetID, result.assetId, "executor returned incorrect AssetId");
+      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
+    }
+
   }
 }

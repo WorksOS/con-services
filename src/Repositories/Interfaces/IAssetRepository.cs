@@ -6,7 +6,7 @@ namespace VSS.TagFileAuth.Service.Repositories
 {
   public interface IAssetRepository
   {
-    Task<AssetDevice> GetAssetDevice(string radioSerial, string deviceType);
+   // todo  Task<AssetDevice> GetAssetDevice(string radioSerial, string deviceType);
 
     Task<int> StoreAsset(IAssetEvent evt);
   }
