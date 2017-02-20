@@ -21,7 +21,6 @@ services:
      - docker-compose-local.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
-     - MYSQL_DATABASE_NAME=VSS-MasterData-Project-Only
      - KAFKA_OFFSET=latest
      - KAFKA_TOPIC_NAME_SUFFIX=-Project
     volumes:
@@ -63,14 +62,6 @@ services:
      - docker-compose-local.env
     depends_on:
       - db
-  projectschema:
-    build: ./Database
-    env_file:
-     - docker-compose-local.env
-    environment:
-     - MYSQL_DATABASE_NAME=VSS-MasterData-Project-Only
-    depends_on:
-      - db      
   db:
     image: mysql/mysql-server:5.7.15 
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
