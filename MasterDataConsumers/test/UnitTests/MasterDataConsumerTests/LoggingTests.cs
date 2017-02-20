@@ -97,7 +97,7 @@ namespace MasterDataConsumer.Tests
       CreateCollection(false);
 
       var ex = Assert.ThrowsException<System.InvalidOperationException>(() => serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>());
-      Assert.AreEqual(ex.Message, "Unable to resolve service for type 'Microsoft.Extensions.Logging.ILoggerFactory' while attempting to activate 'VSS.Project.Service.Utils.GenericConfiguration'.");
+      Assert.AreEqual(ex.Message, "Unable to resolve service for type 'Microsoft.Extensions.Logging.ILoggerFactory' while attempting to activate 'VSS.GenericConfiguration.GenericConfiguration'.");
     }
 
 
