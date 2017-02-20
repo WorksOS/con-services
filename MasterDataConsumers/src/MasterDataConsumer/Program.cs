@@ -67,11 +67,10 @@ namespace MasterDataConsumer
 
             var log = loggerFactory.CreateLogger("MasterDataConsumer");
 
-            /*var kafkaTopics =
+            var kafkaTopics =
                 serviceProvider.GetService<IConfigurationStore>()
                     .GetValueString("KAFKA_TOPICS")
-                    .Split(new[] {","}, StringSplitOptions.None);*/
-            var kafkaTopics = new List<string>(){ "VSS.Interfaces.Events.MasterData.ICustomerEvent" };
+                    .Split(new[] {","}, StringSplitOptions.None);
             var tasks = new List<Task>();
 
             log.LogDebug("MasterDataConsumer is starting....");
