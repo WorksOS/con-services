@@ -1,10 +1,12 @@
 FROM microsoft/dotnet:1.1-runtime
 
+# Copy the app
+COPY . /app
+
 # Set the Working Directory
 WORKDIR /app
 
-# Copy the app
-COPY . /app
+RUN chmod 775 wait-for-it.sh
 
 # Create the mount point to hold volume from host for logs
 VOLUME logs
