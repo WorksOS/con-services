@@ -12,12 +12,6 @@ dotnet restore
 cd tests
 dotnet publish IntegrationTests -o ../deploy/IntegrationTests -f netcoreapp1.1
 dotnet publish WebApiTests -o ../deploy/WebApiTests -f netcoreapp1.1
-dotnet publish EventTests -o ../deploy/EventTests -f netcoreapp1.1
-dotnet publish KafkaTests -o ../deploy/KafkaTests -f netcoreapp1.1
-dotnet publish RepositoryTests -o ../deploy/RepositoryTests -f netcoreapp1.1
-
-cp KafkaTests/appsettings.json ../deploy/KafkaTests/
-cp RepositoryTests/appsettings.json ../deploy/RepositoryTests/
 
 cd ..
 cd utilities
