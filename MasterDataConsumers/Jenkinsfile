@@ -1,9 +1,10 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
 
-dir("MasterDataConsumers")
-{
 node ('master')
 {
+dir("MasterDataConsumers")
+{
+
     def branch = env.BRANCH_NAME
     def buildNumber = env.BUILD_NUMBER
     def versionPrefix = ""
@@ -55,8 +56,11 @@ node ('master')
     publishHTML(target:[allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: reportDir, reportFiles: 'index.htm', reportName: reportName])
 	*** END TEMP *** */
 }
+}
 
 node('Ubuntu_Slave') {
+dir("MasterDataConsumers")
+{
     //Apply version number
     //We will later use it to tag images
 
