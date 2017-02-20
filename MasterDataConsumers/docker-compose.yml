@@ -19,7 +19,6 @@ services:
      - docker-compose.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
-     - MYSQL_DATABASE_NAME=VSS-MasterData-Project-Only
      - KAFKA_OFFSET=latest
      - KAFKA_TOPIC_NAME_SUFFIX=-Project
     depends_on:

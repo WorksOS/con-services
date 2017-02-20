@@ -4,10 +4,17 @@ echo "Wait for 60 seconds"
 sleep 60s
 echo "Check the database and kafka to see if port is available"
 # Polling the database and kafka status before test
-/bin/bash wait-for-it.sh db:3306 -t 0
-/bin/bash wait-for-it.sh kafka:9092 -t 0
-echo "Wait for 120 seconds"
-sleep 120s
+echo ">>> Making sure MySQL is up"
+eval ./wait-for-it.sh "$MYSQL_SERVER_NAME_VSPDB:$MYSQL_PORT" -t 0
+echo "<<< Done checking on MySQL"
+
+echo ">>> Making sure Kafka is up"
+eval ./wait-for-it.sh "$KAFKA_URI:$KAFKA_PORT" -t 0
+echo "<<< Done checking on Kafka"
+
+echo "Wait for 10 seconds"
+sleep 10s
+
 # Run the component tests
 echo "Run the component tests"
 echo "KafkaTests starting...."
