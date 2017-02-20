@@ -9,8 +9,7 @@ services:
     depends_on:
       - schema
   masterdataconsumercustomer:
-    build: ./artifacts/MasterDataConsumer
-    image: masterdataconsumercustomer
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -21,8 +20,7 @@ services:
       - schema
       - kafka
   masterdataconsumerproject:
-    build: ./artifacts/MasterDataConsumer
-    image: masterdataconsumerproject
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -34,8 +32,7 @@ services:
       - projectschema
       - kafka
   masterdataconsumergeofence:
-    build: ./artifacts/MasterDataConsumer
-    image: masterdataconsumergeofence
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -46,8 +43,7 @@ services:
       - schema
       - kafka
   masterdataconsumersubscription:
-    build: ./artifacts/MasterDataConsumer
-    image: masterdataconsumersubscription
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
