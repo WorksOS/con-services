@@ -1,5 +1,5 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
-
+/*
 node ('master')
 {
     stage 'Checkout'
@@ -54,7 +54,7 @@ dir ("MasterDataConsumers")
     publishHTML(target:[allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: reportDir, reportFiles: 'index.htm', reportName: reportName])
 }
 }
-
+*/
 node('Ubuntu_Slave') {
 
     stage 'Checkout'
