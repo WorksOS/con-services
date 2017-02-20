@@ -67,10 +67,11 @@ namespace MasterDataConsumer
 
             var log = loggerFactory.CreateLogger("MasterDataConsumer");
 
-            var kafkaTopics =
+            /*var kafkaTopics =
                 serviceProvider.GetService<IConfigurationStore>()
                     .GetValueString("KAFKA_TOPICS")
-                    .Split(new[] {","}, StringSplitOptions.None);
+                    .Split(new[] {","}, StringSplitOptions.None);*/
+            var kafkaTopics = new List<string>(){ "VSS.Interfaces.Events.MasterData.ICustomerEvent" };
             var tasks = new List<Task>();
 
             log.LogDebug("MasterDataConsumer is starting....");
@@ -78,10 +79,10 @@ namespace MasterDataConsumer
             foreach (var kafkaTopic in kafkaTopics)
             {
                 Console.WriteLine("MasterDataConsumer topic: " + kafkaTopic);
-                if (serviceConverter.Any(s => s.Key.Contains(kafkaTopic)))
+                if (serviceConverter.Any(s => kafkaTopic.Contains(s.Key)))
                 {
                     var consumer =
-                        serviceProvider.GetService(serviceConverter.First(s => s.Key.Contains(kafkaTopic)).Value) as
+                        serviceProvider.GetService(serviceConverter.First(s => kafkaTopic.Contains(s.Key)).Value) as
                             IAbstractKafkaConsumer;
                     consumer.SetTopic(kafkaTopic);
                     tasks.Add(consumer.StartProcessingAsync(new CancellationTokenSource()));
