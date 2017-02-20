@@ -1,5 +1,5 @@
 node ('master')
 {
 checkout scm
-load 'Jenkinsfile'
+load './MasterDataConsumers/Jenkinsfile'
 }
