@@ -1,5 +1,5 @@
 node ('master')
 {
-def pipeline = load './MasterDataConsumer/Jenkinsfile'
+def pipeline = load './MasterDataConsumers/Jenkinsfile'
 pipeline.body()
 }
