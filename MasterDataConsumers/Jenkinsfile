@@ -1,6 +1,5 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
-def body() 
-{
+
 node ('master')
 {
     def branch = env.BRANCH_NAME
@@ -124,5 +123,4 @@ node('Ubuntu_Slave') {
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:${fullVersion}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest"
     }
-}
 }
