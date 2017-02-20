@@ -41,7 +41,7 @@ node ('master')
     stage 'Restore packages'
     bat "dotnet restore"
     stage 'Build solution'
-    bat "./build.bat"
+    bat "build.bat"
     stage 'Run tests and get coverage results'
     bat "del /q ${workspacePath}\\*.xml"
 /* *** TEMP *** - comment out until can fix
