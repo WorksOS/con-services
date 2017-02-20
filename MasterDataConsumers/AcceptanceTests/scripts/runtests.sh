@@ -1,7 +1,5 @@
 #!/bin/bash
 echo "Accept tests are starting .... "
-echo "Wait for 60 seconds"
-sleep 60s
 echo "Check the database and kafka to see if port is available"
 # Polling the database and kafka status before test
 echo ">>> Making sure MySQL is up"
@@ -12,8 +10,8 @@ echo ">>> Making sure Kafka is up"
 eval ./wait-for-it.sh "$KAFKA_URI:$KAFKA_PORT" -t 0
 echo "<<< Done checking on Kafka"
 
-echo "Wait for 10 seconds"
-sleep 10s
+echo "Wait for 60 seconds"
+sleep 60s
 
 # Run the component tests
 echo "Run the component tests"

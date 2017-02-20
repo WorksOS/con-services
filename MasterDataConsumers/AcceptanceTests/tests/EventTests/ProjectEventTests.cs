@@ -11,7 +11,7 @@ namespace EventTests
   [TestClass]
   public class ProjectEventTests
   {
-    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project-Only";
+//    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project-Only";
 
     [TestMethod]
     public void CreateProjectEvent()
@@ -19,7 +19,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+  //    mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       DateTime startDate = testSupport.ConvertVSSDateString("-1d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("2d+00:00:00");
@@ -42,7 +42,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+//      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("-2d+00:00:00");
@@ -65,7 +65,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+//      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("900d+00:00:00");
@@ -89,7 +89,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+//      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
@@ -114,7 +114,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+//      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       string projectName = "testProject8";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
@@ -140,7 +140,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+  //    mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       string projectName = "testProject10";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
@@ -165,7 +165,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+//      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       string projectName = "testProject11";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
@@ -192,7 +192,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+  //    mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       string projectName = $"Test Project 12";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
@@ -218,7 +218,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+//      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       string projectName = $"Test Project 13";
       DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
@@ -244,7 +244,7 @@ namespace EventTests
       var msg = new Msg();
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
-      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+  //    mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Test Project 14";
@@ -288,7 +288,7 @@ namespace EventTests
       var testSupport = new TestSupport();
       var mysql = new MySqlHelper();
       var projectMysql = new MySqlHelper();
-      projectMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+//      projectMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var customerGuid = Guid.NewGuid();
       var projectGuid = Guid.NewGuid();
       var geofenceGuid = Guid.NewGuid();

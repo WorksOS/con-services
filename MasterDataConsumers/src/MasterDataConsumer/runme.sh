@@ -8,8 +8,8 @@ eval ./wait-for-it.sh "$KAFKA_URI:$KAFKA_PORT" -t 0
 echo "<<< Done checking on Kafka"
 
 
-echo "Master data kafka consumer starting in 10 seconds....."
-sleep 10s
+echo "Master data kafka consumer starting in 60 seconds....."
+sleep 60s
 
 echo "Master data kafka consumer starting Now "
 dotnet MasterDataConsumer.dll
