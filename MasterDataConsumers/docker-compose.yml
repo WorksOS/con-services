@@ -23,7 +23,6 @@ services:
      - KAFKA_OFFSET=latest
      - KAFKA_TOPIC_NAME_SUFFIX=-Project
     depends_on:
-      - projectschema
       - kafka
   masterdataconsumergeofence:
     build: ./artifacts/MasterDataConsumer
@@ -53,14 +52,6 @@ services:
     build: ./database
     env_file:
      - docker-compose.env
-    depends_on:
-      - db
-  projectschema:
-    build: ./database
-    env_file:
-     - docker-compose.env
-    environment:
-     - MYSQL_DATABASE_NAME=VSS-MasterData-Project-Only
     depends_on:
       - db
   db:
