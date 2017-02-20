@@ -89,10 +89,10 @@ namespace KafkaConsumer
           }
           catch (Exception ex)
           {
-            log.LogDebug("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}", ex.Message, ex.StackTrace);
+            log.LogDebug("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}", ex.Message, ex.StackTrace);
             if (ex.InnerException != null)
             {
-              log.LogDebug("KafkaConsumer: Reason: {0}", ex.InnerException.Message, ex.InnerException.StackTrace);
+              log.LogDebug("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message, ex.InnerException.StackTrace);
             }
           }
           finally
