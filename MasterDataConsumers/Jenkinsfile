@@ -2,6 +2,10 @@ properties([disableConcurrentBuilds(), pipelineTriggers([])])
 
 node ('master')
 {
+    stage 'Checkout'
+    checkout scm 
+dir ("MasterDataConsumers")
+{
     def branch = env.BRANCH_NAME
     def buildNumber = env.BUILD_NUMBER
     def versionPrefix = ""
@@ -36,10 +40,6 @@ node ('master')
     reportGeneratorLocation = pwd()
     reportGeneratorLocation = reportGeneratorLocation + "\\tools\\ReportGenerator.exe"
 
-    stage 'Checkout'
-    checkout scm 
-dir ("MasterDataConsumers")
-{
     stage 'Restore packages'
     bat "dotnet restore"
     stage 'Build solution'
@@ -58,6 +58,11 @@ dir ("MasterDataConsumers")
 }
 
 node('Ubuntu_Slave') {
+
+    stage 'Checkout'
+    checkout scm 
+dir ("MasterDataConsumers")
+{
     //Apply version number
     //We will later use it to tag images
 
@@ -84,10 +89,6 @@ node('Ubuntu_Slave') {
     def workspacePath =""
     currentBuild.displayName = versionNumber + suffix
 
-    stage 'Checkout'
-    checkout scm 
-dir ("MasterDataConsumers")
-{
     stage 'Restore packages'
     sh "dotnet restore"
     stage 'Build solution'
