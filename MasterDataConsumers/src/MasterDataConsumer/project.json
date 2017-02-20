@@ -12,7 +12,7 @@
           "type": "platform",
           "version": "1.1.0"
         },
-        "KafkaConsumer": "*",
+        "KafkaConsumer.netcore": "*",
         "log4net.netcore": "3.0.0",
         "log4netExtensions.netcore": "1.0.1"
       }

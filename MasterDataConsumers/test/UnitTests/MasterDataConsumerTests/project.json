@@ -15,7 +15,7 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "log4net.netcore": "3.0.0",
     "log4netExtensions.netcore": "1.0.1",
-    "KafkaConsumer": "*",
+    "KafkaConsumer.netcore": "*",
     "Moq": "4.6.38-alpha",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "ConfigurationStore.netcore": "1.0.4",
