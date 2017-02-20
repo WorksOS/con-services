@@ -6,12 +6,13 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using VSS.Project.Data;
 using VSS.Project.Service.Interfaces;
-using VSS.Project.Service.Utils;
 using VSS.Project.Service.Utils.Kafka;
 using VSS.Project.Service.WebApiModels.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using log4netExtensions;
 using KafkaConsumer;
+using VSS.GenericConfiguration;
+using VSS.Masterdata;
 
 namespace ProjectWebApi
 {

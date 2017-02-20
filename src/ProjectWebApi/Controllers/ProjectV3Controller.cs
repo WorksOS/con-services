@@ -6,9 +6,10 @@ using KafkaConsumer;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApi.Models;
+using VSS.GenericConfiguration;
+using VSS.Masterdata;
 using VSS.Project.Data;
 using VSS.Project.Service.Interfaces;
-using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

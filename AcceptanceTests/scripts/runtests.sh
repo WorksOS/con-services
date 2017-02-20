@@ -10,18 +10,6 @@ echo "Wait for 120 seconds"
 sleep 120s
 # Run the component tests
 echo "Run the component tests"
-echo "KafkaTests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/KafkaTestsResults project=KafkaTests
-echo "KafkaTests finished"
-
-echo "RepositoryTests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestsResults project=RepositoryTests
-echo "RepositoryTests finished"
-
-echo "Run the component/acceptance tests"
-echo "EventTests event tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/EventTestsResults project=EventTests
-echo "EventTests event tests finished"
 
 echo "WebApiTests starting...."
 dotnet TestRun/TestRun.dll results=/testresults/WebApiTestsResults project=WebApiTests

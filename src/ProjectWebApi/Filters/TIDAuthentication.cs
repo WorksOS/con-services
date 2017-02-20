@@ -1,8 +1,8 @@
 ﻿using System.Security.Principal;
 using System.Threading.Tasks;
-using KafkaConsumer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using VSS.Masterdata;
 using VSS.Project.Service.WebApi.Authentication;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
