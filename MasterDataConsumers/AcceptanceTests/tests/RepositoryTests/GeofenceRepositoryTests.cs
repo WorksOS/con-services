@@ -3,13 +3,13 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Project.Data;
 using VSS.Geofence.Data;
 using VSS.Geofence.Data.Models;
 using Microsoft.Extensions.Configuration;
 using log4netExtensions;
+using VSS.GenericConfiguration;
 
 namespace RepositoryTests
 {

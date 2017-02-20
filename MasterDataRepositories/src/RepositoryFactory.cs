@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using KafkaConsumer;
+using VSS.Masterdata;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace MasterDataConsumer

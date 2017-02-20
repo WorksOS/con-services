@@ -3,17 +3,19 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Project.Service.Interfaces;
 using VSS.Project.Service.Utils.Kafka;
-using KafkaConsumer;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Project.Service.Repositories;
 using VSS.Project.Data;
 using VSS.Customer.Data;
 using VSS.Project.Service.Utils;
 using System;
+using KafkaConsumer;
 using VSS.Geofence.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using log4netExtensions;
+using VSS.GenericConfiguration;
+using VSS.Masterdata;
 
 namespace MasterDataConsumer.Tests
 {

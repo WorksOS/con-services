@@ -19,6 +19,8 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.DotNet.InternalAbstractions;
 using Microsoft.Extensions.DependencyModel;
+using VSS.GenericConfiguration;
+using VSS.Masterdata;
 
 namespace MasterDataConsumer
 {

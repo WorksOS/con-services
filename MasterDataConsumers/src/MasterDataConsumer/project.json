@@ -13,7 +13,6 @@
           "version": "1.1.0"
         },
         "KafkaConsumer": "*",
-        "ConfigurationStore.netcore": "*",
         "log4net.netcore": "3.0.0",
         "log4netExtensions.netcore": "1.0.1"
       }
@@ -35,6 +34,7 @@
     "Microsoft.Extensions.DependencyModel": "1.0.1-beta-003206",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
-    "Repositories": "1.0.0-*"
+    "ConfigurationStore.netcore": "1.0.4",
+    "MasterDataRepos.netcore": "1.0.2"
   }
 }

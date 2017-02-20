@@ -5,17 +5,19 @@ using System.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using KafkaConsumer;
 using VSS.Project.Service.Utils;
 using Microsoft.Extensions.Configuration;
 
 using Microsoft.Extensions.Logging;
 using log4netExtensions;
-using KafkaConsumer;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Project.Service.Repositories;
 using VSS.Project.Data;
 using VSS.Customer.Data;
+using VSS.GenericConfiguration;
 using VSS.Geofence.Data;
+using VSS.Masterdata;
 using VSS.Project.Service.Utils.Kafka;
 using VSS.Project.Service.Interfaces;
 

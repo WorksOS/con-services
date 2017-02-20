@@ -4,10 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.Project.Service.Interfaces;
-using VSS.Project.Service.Utils.Kafka;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using KafkaConsumer;
 using MasterDataConsumer;
 using VSS.Project.Service.Repositories;
 using VSS.Project.Data;
@@ -20,10 +17,15 @@ using VSS.Customer.Data.Models;
 using VSS.Project.Data.Models;
 using VSS.Subscription.Data.Models;
 using System.Linq;
+using KafkaConsumer;
 using VSS.Geofence.Data.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using log4netExtensions;
+using VSS.GenericConfiguration;
+using VSS.Masterdata;
+using VSS.Project.Service.Interfaces;
+using VSS.Project.Service.Utils.Kafka;
 
 namespace KafkaTests
 {

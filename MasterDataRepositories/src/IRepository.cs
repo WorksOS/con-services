@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace KafkaConsumer
+namespace VSS.Masterdata
 {
     public interface IRepository<in T>
     {

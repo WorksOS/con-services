@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using KafkaConsumer;
-using VSS.Project.Service.Repositories;
-using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.GenericConfiguration;
+using VSS.Masterdata;
+using VSS.Masterdata.Service.Repositories;
 
 namespace VSS.Customer.Data
 {

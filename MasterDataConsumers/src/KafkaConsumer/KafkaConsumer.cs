@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using VSS.Project.Service.Interfaces;
 using VSS.Project.Service.Utils;
 using Microsoft.Extensions.Logging;
+using VSS.GenericConfiguration;
+using VSS.Masterdata;
 
 namespace KafkaConsumer
 {

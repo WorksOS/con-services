@@ -1,4 +1,4 @@
-namespace KafkaConsumer
+namespace VSS.Masterdata
 {
     public interface IRepositoryFactory
     {

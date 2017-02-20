@@ -4,11 +4,11 @@ using System.Linq;
 using Dapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
-using VSS.Project.Service.Utils;
 using Microsoft.Extensions.Configuration;
 using log4netExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using VSS.GenericConfiguration;
 
 namespace RepositoryTests
 {
