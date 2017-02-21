@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using VSS.VisionLink.Interfaces.Events.Telematics.Context;
+//using VSS.VisionLink.Interfaces.Events.Telematics.Context;
 
 namespace TestUtility
 {
@@ -101,10 +101,10 @@ namespace TestUtility
             return (int)DateTimeOffset.Parse(iso8601EventDeviceTime).Offset.TotalMinutes;
         }
 
-        public static DateTime GetEventDeviceTime(TimestampDetail timestamp)
-        {
-            return ParseEventDeviceTime(timestamp.Iso8601EventDeviceTime);
-        }
+        //public static DateTime GetEventDeviceTime(TimestampDetail timestamp)
+        //{
+        //    return ParseEventDeviceTime(timestamp.Iso8601EventDeviceTime);
+        //}
 
         public static string ToIso8601DateTime(DateTime dateTime, double hoursOffset)
         {

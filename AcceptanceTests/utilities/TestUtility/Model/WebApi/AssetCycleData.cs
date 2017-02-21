@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace TestUtility.Model.WebApi
 {
@@ -13,10 +16,8 @@ namespace TestUtility.Model.WebApi
         public string model { get; set; }
         public string lastReportedTime { get; set; }
         public int? cycleCount { get; set; }
-        public int? targetCycleCount { get; set; }
         public double? distanceTravelledKm { get; set; }
         public double? volumeCubicMeter { get; set; }
-        public double? cyclesPerHr { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -34,25 +35,11 @@ namespace TestUtility.Model.WebApi
                     return false;
             }
 
-
-            if (cyclesPerHr != null)
-            { 
-                if (Math.Round((double)cyclesPerHr, 6) != Math.Round((double)actual.cyclesPerHr, 6))
-                    return false;
-            }
-
             if (cycleCount != null)
             { 
                 if (cycleCount != actual.cycleCount)
                     return false;
             }
-
-            if (targetCycleCount != null)
-            { 
-                if (targetCycleCount != actual.targetCycleCount)
-                    return false;
-            }
-
 
             if (lastReportedTime != null)
             {

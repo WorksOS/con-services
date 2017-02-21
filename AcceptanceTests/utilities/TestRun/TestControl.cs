@@ -13,11 +13,10 @@ using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
-using VSS.UnifiedProductivity.Service.Models;
 
 namespace TestRun
 {
-    public class TestControl
+  public class TestControl
     {
         private string currentClassName = string.Empty;
         private string currentPath = string.Empty;
@@ -183,7 +182,7 @@ namespace TestRun
             Regex regex = new Regex("aaa!");
             WebRequest wr = WebRequest.Create("http://www.google.com");
             BooleanConverter bc = new BooleanConverter();
-            TimeStampedEvent ts = new TimeStampedEvent();
+            //CustomerProject cs = new CustomerProject();
         }
 
         /// <summary>

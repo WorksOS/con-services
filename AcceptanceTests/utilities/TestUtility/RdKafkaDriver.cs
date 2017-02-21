@@ -28,6 +28,7 @@ namespace TestUtility
                 using (var topic = kafkaProducer.Topic(topicName))
                 {
                     Log.Info($"Publish: {topicName} Message: {message} ", Log.ContentType.KafkaSend);
+                    Console.WriteLine($"Publish: {topicName} Message: {message} ");
                     var data = Encoding.UTF8.GetBytes(message);
                     var deliveryReport = topic.Produce(data);                
                     var unused = deliveryReport.ContinueWith(task =>
