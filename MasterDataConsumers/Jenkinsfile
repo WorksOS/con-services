@@ -113,19 +113,24 @@ dir ("MasterDataConsumers")
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Build Images'
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:${fullVersion} ./artifacts/MasterDataConsumer"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:${fullVersion} ./artifacts/MasterDataConsumer"
  
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest ./artifacts/MasterDataConsumer"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest ./artifacts/MasterDataConsumer"
  
+
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:${fullVersion} ./artifacts/databaser"
+ 
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest ./artifacts/database"
+
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'
        sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:${fullVersion}"
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:${fullVersion}"
 
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer"
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db"
 
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:${fullVersion}"
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:${fullVersion}"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest"
     }
 }
 }
