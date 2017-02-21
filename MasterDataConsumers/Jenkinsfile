@@ -118,9 +118,9 @@ dir ("MasterDataConsumers")
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest ./artifacts/MasterDataConsumer"
  
 
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:${fullVersion} ./artifacts/database"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:${fullVersion} ./database"
  
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest ./artifacts/database"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest ./database"
 
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'
