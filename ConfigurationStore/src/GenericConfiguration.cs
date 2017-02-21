@@ -19,34 +19,35 @@ namespace VSS.GenericConfiguration
     private IConfigurationRoot configuration = null;
     private readonly ILogger log;
 
-    public GenericConfiguration(ILoggerFactory logger)
-    {
-      log = logger.CreateLogger<GenericConfiguration>();
-      log.LogDebug("GenericConfig constructing");
-      var builder = configBuilder = new ConfigurationBuilder()
-          .AddEnvironmentVariables();
-      try
+      public GenericConfiguration(ILoggerFactory logger)
       {
-        Console.WriteLine("Base:" + System.AppContext.BaseDirectory);
-        var dirToAppsettings = System.IO.Directory.GetCurrentDirectory();
-        Console.WriteLine("Current:" + dirToAppsettings);
-        builder.SetBasePath(System.IO.Directory.GetCurrentDirectory()) // for appsettings.json location
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-        configuration = configBuilder.Build();
+          log = logger.CreateLogger<GenericConfiguration>();
+          log.LogDebug("GenericConfig constructing");
+          var builder = configBuilder = new ConfigurationBuilder()
+              .AddEnvironmentVariables();
+          try
+          {
+              Console.WriteLine("Base:" + System.AppContext.BaseDirectory);
+              var dirToAppsettings = System.IO.Directory.GetCurrentDirectory();
+              Console.WriteLine("Current:" + dirToAppsettings);
+              builder.SetBasePath(System.IO.Directory.GetCurrentDirectory()) // for appsettings.json location
+                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+              configuration = configBuilder.Build();
+          }
+          catch (Exception ex)
+          {
+              Console.WriteLine("GenericConfiguration exception: {0}, {1}, {2}", ex.Message, ex.Source, ex.StackTrace);
+              log.LogCritical("GenericConfiguration exception: {0}, {1}, {2}", ex.Message, ex.Source, ex.StackTrace);
+          }
       }
-      catch (Exception ex)
-      {
-        log.LogCritical("GenericConfiguration exception: {0}, {1}, {2}", ex.Message, ex.Source, ex.StackTrace);
-      }
-    }
-    
-    public string GetConnectionString(string connectionType)
+
+      public string GetConnectionString(string connectionType)
     {
       string serverName = null;
       if (connectionType == "VSPDB")
-        serverName = GetValueString("MYSQL_SERVER_NAME_VSPDB");
+         serverName = GetValueString("MYSQL_SERVER_NAME_VSPDB");
       else if (connectionType == "ReadVSPDB")
-        serverName = GetValueString("MYSQL_SERVER_NAME_ReadVSPDB");
+         serverName = GetValueString("MYSQL_SERVER_NAME_ReadVSPDB");
 
       var serverPort = GetValueString("MYSQL_PORT");
       var serverDatabaseName = GetValueString("MYSQL_DATABASE_NAME");

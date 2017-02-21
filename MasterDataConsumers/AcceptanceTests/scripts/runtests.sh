@@ -11,7 +11,7 @@ eval ./wait-for-it.sh "$KAFKA_URI:$KAFKA_PORT" -t 0
 echo "<<< Done checking on Kafka"
 
 echo "Wait for 60 seconds"
-sleep 60s
+sleep 90s
 
 # Run the component tests
 echo "Run the component tests"

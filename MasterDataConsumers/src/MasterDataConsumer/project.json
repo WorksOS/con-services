@@ -34,7 +34,7 @@
     "Microsoft.Extensions.DependencyModel": "1.0.1-beta-003206",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
-    "ConfigurationStore.netcore": "1.0.4",
+    "ConfigurationStore.netcore": "*",
     "MasterDataRepos.netcore": "*"
   }
 }

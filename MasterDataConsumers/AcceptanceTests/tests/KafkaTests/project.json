@@ -2,7 +2,6 @@
     "version": "1.0.0-*",
     "testRunner": "mstest",
   "dependencies": {
-    "ConfigurationStore.netcore": "1.0.4",
     "KafkaConsumer.netcore": "*",
     "dotnet-test-mstest": "1.1.2-preview",
     "MSTest.TestFramework": "1.0.8-rc2",

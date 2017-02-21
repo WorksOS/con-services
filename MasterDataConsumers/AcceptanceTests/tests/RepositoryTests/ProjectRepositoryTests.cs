@@ -31,10 +31,11 @@ namespace RepositoryTests
       loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceProvider = new ServiceCollection()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddLogging()
         .AddSingleton<ILoggerFactory>(loggerFactory)
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .BuildServiceProvider();
+
       customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
       projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
     }
