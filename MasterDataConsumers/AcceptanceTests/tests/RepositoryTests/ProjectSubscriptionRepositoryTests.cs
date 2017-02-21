@@ -717,7 +717,8 @@ namespace RepositoryTests
         ProjectTimezone = projectTimeZone,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUtc
+          ProjectBoundary = "POLYGON((100 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+          ActionUTC = actionUtc
       };
 
       var associateCustomerProjectBEvent = new AssociateProjectCustomer()
@@ -824,7 +825,7 @@ namespace RepositoryTests
       Assert.IsNull(projects[0].SubscriptionEndDate, "sub endDate should be null");
       Assert.AreEqual(new DateTime(DateTime.MaxValue.Year, DateTime.MaxValue.Month, DateTime.MaxValue.Day), projects[0].EndDate, "project endDate should be maxValue");
       Assert.IsNull(projects[0].SubscriptionUID, "project endDate should be null");
-      Assert.IsNull(projects[0].GeometryWKT, "geofence boundar should be null");
+      Assert.IsNotNull(projects[0].GeometryWKT, "geofence boundar should not be null");
     }
 
     #endregion
@@ -900,7 +901,7 @@ namespace RepositoryTests
 
         ProjectTimeZone = kafkaProjectEvent.ProjectTimezone,
         LandfillTimeZone = TimeZone.WindowsToIana(kafkaProjectEvent.ProjectTimezone),
-
+        GeometryWKT = kafkaProjectEvent.ProjectBoundary,
         LastActionedUTC = kafkaProjectEvent.ActionUTC,
         StartDate = kafkaProjectEvent.ProjectStartDate,
         EndDate = kafkaProjectEvent.ProjectEndDate
