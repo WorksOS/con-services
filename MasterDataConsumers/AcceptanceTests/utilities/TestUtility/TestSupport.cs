@@ -359,7 +359,8 @@ namespace TestUtility
               ProjectStartDate = DateTime.Parse(singleEvent.ProjectStartDate),
               ProjectTimezone = singleEvent.ProjectTimezone,
               ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), singleEvent.ProjectType),
-              ProjectUID = new Guid(singleEvent.ProjectUID)
+              ProjectUID = new Guid(singleEvent.ProjectUID),
+              ProjectBoundary = singleEvent.ProjectBoundary
             };
             kafkaDriver.SendKafkaMessage(topicName, JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent }, jsonSettings));
             break;
