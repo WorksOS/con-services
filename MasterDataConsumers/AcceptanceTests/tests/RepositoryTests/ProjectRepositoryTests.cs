@@ -72,7 +72,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUTC
+        ActionUTC = actionUTC,
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -905,7 +906,8 @@ namespace RepositoryTests
 
         LastActionedUTC = kafkaProjectEvent.ActionUTC,
         StartDate = kafkaProjectEvent.ProjectStartDate,
-        EndDate = kafkaProjectEvent.ProjectEndDate
+        EndDate = kafkaProjectEvent.ProjectEndDate,
+        GeometryWKT = kafkaProjectEvent.ProjectBoundary
       };
     }
     #endregion

@@ -41,15 +41,20 @@ namespace VSS.Project.Data
         project.StartDate = projectEvent.ProjectStartDate.Date;
         project.ProjectType = projectEvent.ProjectType;
 
-        // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
-        if (!projectEvent.ProjectBoundary.Contains(polygonStr))
-        {
-          projectEvent.ProjectBoundary = projectEvent.ProjectBoundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');          
-          projectEvent.ProjectBoundary = String.Concat(polygonStr + "((", projectEvent.ProjectBoundary, "))");
-        }
+        //Don't write if there is no boundary defined
+          if (!String.IsNullOrEmpty(projectEvent.ProjectBoundary))
+          {
+              // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
+              if (!projectEvent.ProjectBoundary.Contains(polygonStr))
+              {
+                  projectEvent.ProjectBoundary =
+                      projectEvent.ProjectBoundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');
+                  projectEvent.ProjectBoundary = String.Concat(polygonStr + "((", projectEvent.ProjectBoundary, "))");
+              }
 
-        project.GeometryWKT = projectEvent.ProjectBoundary;
-        upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
+              project.GeometryWKT = projectEvent.ProjectBoundary;
+              upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
+          }
       }
       else if (evt is UpdateProjectEvent)
       {
@@ -155,7 +160,7 @@ namespace VSS.Project.Data
 
         const string insert =
           @"INSERT Project
-                (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate )
+                (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT )
               VALUES
                 (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT)";
         return await dbAsyncPolicy.ExecuteAsync(async () =>
