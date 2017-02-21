@@ -1,15 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using log4netExtensions;
-using Swashbuckle.SwaggerGen.Annotations;
+using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.Utilities;
-using VSS.Raptor.Service.WebApiModels.Filters;
+using VSS.Raptor.Service.Common.Filters;
+using VSS.Raptor.Service.Common.Filters.Authentication;
+using VSS.Raptor.Service.Common.Filters.Validation;
 
 namespace VSS.Raptor.Service.WebApi
 {
@@ -53,8 +55,12 @@ namespace VSS.Raptor.Service.WebApi
       });
       // Add framework services.
       services.AddApplicationInsightsTelemetry(Configuration);
-
-      services.AddMvc();
+      services.AddMemoryCache();
+      services.AddMvc(
+        config =>
+        {
+          config.Filters.Add(typeof(ValidationFilterAttribute));
+        });
 
       //Configure swagger
       services.AddSwaggerGen();
@@ -68,7 +74,7 @@ namespace VSS.Raptor.Service.WebApi
           Description = "API for 3D compaction and volume data",
           TermsOfService = "None"
         });
-        string path = isDevEnv ? "bin/Debug/net451/" : string.Empty;
+        string path = isDevEnv ? "bin/Debug/net46/" : string.Empty;
         options.IncludeXmlComments(path + "WebApi.xml");
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
@@ -76,9 +82,10 @@ namespace VSS.Raptor.Service.WebApi
       //Swagger documentation can be viewed with http://localhost:5000/swagger/ui/index.html   
 
       //Configure application services
-      services.AddScoped<IASNodeClient, ASNodeClient>();
-      services.AddScoped<ITAGProcessor, TAGProcessor>();
-      services.AddSingleton<IConfigurationRoot>(Configuration);
+      services.AddScoped<IASNodeClient, Common.Proxies.ASNodeClient>();
+      services.AddScoped<ITagProcessor, TAGProcessor>();
+      services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
+      services.AddSingleton<IProjectProxy, ProjectProxy>();
       serviceCollection = services;
     }
 
@@ -92,10 +99,10 @@ namespace VSS.Raptor.Service.WebApi
       loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
+      serviceCollection.BuildServiceProvider();
       app.UseExceptionTrap();
       //Enable TID here
-      //app.UseTIDAuthentication();
+      app.UseTIDAuthentication();
       app.UseCors("VSS");
 
       //For now don't use application insights as it clogs the log with lots of stuff.

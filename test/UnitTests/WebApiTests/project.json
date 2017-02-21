@@ -1,4 +1,4 @@
-﻿{
+{
     "version": "1.0.0-*",
 
     "testRunner": "mstest",
@@ -11,23 +11,23 @@
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "Microsoft.Extensions.Logging": "1.0.0",
-    "Microsoft.Extensions.Logging.Console": "1.0.0",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0",
+    "Microsoft.Extensions.Logging": "1.1.0",
+    "Microsoft.Extensions.Logging.Console": "1.1.0",
+    "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-    "WebApiModels": "1.0.0-*"
+    "WebApiModels": "1.0.0-*",
+    "WebApi": "1.0.0-*",
+    "Common": "1.0.0-*",
+    "Moq": "4.6.39-alpha"
   },
 
    "frameworks": {
-    "net451": {
+    "net46": {
         "buildOptions": {
             "define": [ "TRACE", "STRONG", "NET", "NET_2_0", "NET_4_0", "NET_4_5" ],
             "copyToOutput": [
                 "appsettings.json"
             ]
-        },
-        "frameworkAssemblies": {
-            "System.ComponentModel.DataAnnotations": "4.0.0.0"
         },
       "dependencies": {
         "Microsoft.AspNet.WebApi.Core": "5.2.3"

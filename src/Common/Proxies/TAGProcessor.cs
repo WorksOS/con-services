@@ -2,9 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Utilities;
 using VSS.Velociraptor.PDSInterface.Client.TAGProcessor;
 
 namespace VSS.Raptor.Service.Common.Proxies
@@ -12,10 +10,14 @@ namespace VSS.Raptor.Service.Common.Proxies
   /// <summary>
   /// Production Data Server client implementation
   /// </summary>
-  public class TAGProcessor : ITAGProcessor
+  public class TAGProcessor : ITagProcessor
   {
-    private static readonly ILogger log = DependencyInjectionProvider.ServiceProvider.GetService<ILoggerFactory>().CreateLogger<TAGProcessor>();
+    private readonly ILogger log;
 
+    public TAGProcessor(ILoggerFactory logger)
+    {
+      log = logger.CreateLogger<TAGProcessor>();
+    }
     /// <summary>
     /// PDSClient implementation
     /// </summary>

@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Raptor.Service.Common.Models;
+using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Raptor.Service.WebApiModels.Report.Models;
+
+namespace VSS.Raptor.Service.WebApiTests.Report.Models
+{
+  [TestClass()]
+  public class PassCountsTests
+  {
+    [TestMethod()]
+    public void CanCreatePassCountsTest()
+    {
+      var validator = new DataAnnotationsValidator();
+      PassCounts passCounts = PassCounts.CreatePassCountsRequest(projectId, callId, passCountSettings, liftSettings, null, 0, null, null, null);
+      ICollection<ValidationResult> results;
+      Assert.IsTrue(validator.TryValidate(passCounts, out results));
+
+      //missing project id
+      passCounts = PassCounts.CreatePassCountsRequest(0, callId, passCountSettings, liftSettings, null, 0, null, null, null);
+      Assert.IsFalse(validator.TryValidate(passCounts, out results));
+    }
+
+    [TestMethod()]
+    public void ValidateSuccessTest()
+    {
+      PassCounts passCounts = PassCounts.CreatePassCountsRequest(projectId, callId, passCountSettings, liftSettings, null, 0, null, null, null);
+      passCounts.Validate();
+    }
+
+
+    [TestMethod()]
+    [ExpectedException(typeof(ServiceException))]
+    public void ValidateFailInvalidOverrideDatesTest()
+    {
+      //override startUTC > override end UTC
+      PassCounts passCounts = PassCounts.CreatePassCountsRequest(projectId, callId, passCountSettings, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null);
+      passCounts.Validate();
+    }
+
+    [TestMethod()]
+    [ExpectedException(typeof(ServiceException))]
+    public void ValidateFailMissingOverrideDatesTest()
+    {
+      //missing override end UTC
+      PassCounts passCounts = PassCounts.CreatePassCountsRequest(projectId, callId, passCountSettings, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null);
+      passCounts.Validate();
+    }
+
+    private long projectId = 1234;
+    private Guid callId = new Guid();
+    private PassCountSettings passCountSettings = PassCountSettings.CreatePassCountSettings(new int[] { 1, 3, 5, 10 });
+    private LiftBuildSettings liftSettings = LiftBuildSettings.CreateLiftBuildSettings(
+      CCVRangePercentage.CreateCcvRangePercentage(80, 110), false, 1.0, 2.0, 0.2f, LiftDetectionType.Automatic, LiftThicknessType.Compacted,
+      MDPRangePercentage.CreateMdpRangePercentage(70, 120), false, null, null, null, null, null, null, LiftThicknessTarget.HelpSample, null);
+  }
+}

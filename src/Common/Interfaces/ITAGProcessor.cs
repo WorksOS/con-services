@@ -3,9 +3,9 @@
 namespace VSS.Raptor.Service.Common.Interfaces
 {
   /// <summary>
-  /// Interface for ITAGProcessor
+  /// Interface for ITagProcessor
   /// </summary>
-  public interface ITAGProcessor
+  public interface ITagProcessor
   {
     /// <summary>
     /// Tag processing Client

@@ -1,0 +1,58 @@
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Raptor.Service.Common.Models;
+using VSS.Raptor.Service.Common.ResultHandling;
+
+namespace VSS.Raptor.Service.WebApiTests.Common.Models
+{
+  [TestClass()]
+  public class FileDescriptorTests
+  {
+    [TestMethod()]
+    public void CanCreateFileDescriptorTest()
+    {
+      string bigString = new string('A', 10000);
+
+      var validator = new DataAnnotationsValidator();
+      FileDescriptor file = FileDescriptor.CreateFileDescriptor("u72003136-d859-4be8-86de-c559c841bf10",
+          "BC Data/Sites/Integration10/Designs", "Cycleway.ttm");
+      ICollection<ValidationResult> results;
+      Assert.IsTrue(validator.TryValidate(file, out results));
+
+      //Note: file name is string.Empty due to the ValidFilename attribute otherwise get a null reference exception
+      file = FileDescriptor.CreateFileDescriptor(null, null, string.Empty);
+      Assert.IsFalse(validator.TryValidate(file, out results), "empty file descriptor failed");
+
+      //too big path
+      file = FileDescriptor.CreateFileDescriptor("u72003136-d859-4be8-86de-c559c841bf10",
+                bigString, "Cycleway.ttm");
+      Assert.IsFalse(validator.TryValidate(file, out results), " too big path failed");
+
+      //too big file name
+      file = FileDescriptor.CreateFileDescriptor("u72003136-d859-4be8-86de-c559c841bf10",
+          "BC Data/Sites/Integration10/Designs", bigString);
+      Assert.IsFalse(validator.TryValidate(file, out results), "too big file name failed");
+    }
+
+    [TestMethod()]
+    public void ValidateSuccessTest()
+    {
+      FileDescriptor file = FileDescriptor.CreateFileDescriptor("u72003136-d859-4be8-86de-c559c841bf10",
+          "BC Data/Sites/Integration10/Designs", "Cycleway.ttm"); 
+      file.Validate();
+    }
+
+    [TestMethod()]
+    [ExpectedException(typeof(ServiceException))]
+    public void ValidateFailEmptyTest()
+    {
+      //empty file descriptor
+      FileDescriptor file = FileDescriptor.CreateFileDescriptor(
+          string.Empty, string.Empty, string.Empty);
+      file.Validate();
+    }
+
+
+  }
+}

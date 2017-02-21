@@ -1,0 +1,98 @@
+﻿using System;
+using Newtonsoft.Json;
+using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Raptor.Service.Common.Models;
+using VSS.Raptor.Service.Common.Utilities;
+
+namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+{
+  /// <summary>
+  /// The two end points of a stright line used for a profile calculation, defined in WGS84 latitude longitude coordinates.
+  /// </summary>
+  /// 
+  public class ProfileLLPoints : IValidatable
+  {
+    /// <summary>
+    /// Latitude ordinate of the first profile end point. Values are expressed in radians.
+    /// </summary>
+    /// 
+    [DecimalIsWithinRange(-Math.PI/2, Math.PI/2)]
+    [JsonProperty(PropertyName = "lat1", Required = Required.Always)]
+    public double lat1 { get; private set; }
+
+    /// <summary>
+    /// Longitude ordinate of the first profile end point. Values are expressed in radians.
+    /// </summary>
+    /// 
+    [DecimalIsWithinRange(-Math.PI, Math.PI)]
+    [JsonProperty(PropertyName = "lon1", Required = Required.Always)]
+    public double lon1 { get; private set; }
+
+    /// <summary>
+    /// Latitude ordinate of the second profile end point. Values are expressed in radians.
+    /// </summary>
+    /// 
+    [DecimalIsWithinRange(-Math.PI/2, Math.PI/2)]
+    [JsonProperty(PropertyName = "lat2", Required = Required.Always)]
+    public double lat2 { get; private set; }
+
+    /// <summary>
+    /// Longitude ordinate of the second profile end point. Values are expressed in radians.
+    /// </summary>
+    /// 
+    [DecimalIsWithinRange(-Math.PI, Math.PI)]
+    [JsonProperty(PropertyName = "lon2", Required = Required.Always)]
+    public double lon2 { get; private set; }
+
+    /// <summary>
+    /// Private constructor.
+    /// </summary>
+    /// 
+    public ProfileLLPoints()
+    {
+      // ...
+    }
+
+    /// <summary>
+    /// Creates an instance of the ProfileLLPoints class.
+    /// </summary>
+    /// <param name="lat1">The first latitude value.</param>
+    /// <param name="lon1">The first longitude value.</param>
+    /// <param name="lat2">The second latitude value.</param>
+    /// <param name="lon2">The second longitude value.</param>
+    /// <returns>The created instance.</returns>
+    /// 
+    public static ProfileLLPoints CreateProfileLLPoints(double lat1, double lon1, double lat2, double lon2)
+    {
+      return new ProfileLLPoints { lat1 = lat1, lon1 = lon1, lat2 = lat2, lon2 = lon2 };
+    }
+
+    /// <summary>
+    /// Creates a sample instance of ProfileLLPoints to be displayed in Help documentation.
+    /// </summary>
+    /// 
+    public static ProfileLLPoints HelpSample
+    {
+      get
+      {
+        return new ProfileLLPoints()
+        {
+          lat1 = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
+          lon1 = -106.6040765 * ConversionConstants.DEGREES_TO_RADIANS,
+          lat2 = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
+          lon2 = -104.28745 * ConversionConstants.DEGREES_TO_RADIANS
+        };
+      }
+    }
+
+    /// <summary>
+    /// Validates all properties
+    /// </summary>
+    public void Validate()
+    {
+      // Nothing else to validate...
+    }
+
+  }
+
+}

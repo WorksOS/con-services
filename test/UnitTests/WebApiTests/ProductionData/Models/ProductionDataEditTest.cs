@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
+using VSS.Raptor.Service.Common.ResultHandling;
+
+namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
+{
+  [TestClass()]
+  public class ProductionDataEditTest
+  {
+    [TestMethod()]
+    public void CanCreateEditDataRequestTest()
+    {
+      var validator = new DataAnnotationsValidator();
+      ProductionDataEdit dataEdit = ProductionDataEdit.CreateProductionDataEdit(
+             10538563, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-2), "Acme Dozer", 3);
+      ICollection<ValidationResult> results;
+      Assert.IsTrue(validator.TryValidate(dataEdit, out results));
+
+      //missing machine details
+      dataEdit = ProductionDataEdit.CreateProductionDataEdit(
+             -1, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-2), "Acme Dozer", null);
+      Assert.IsFalse(validator.TryValidate(dataEdit, out results));
+    }
+
+    [TestMethod()]
+    public void ValidateSuccessTest()
+    {
+      ProductionDataEdit dataEdit = ProductionDataEdit.CreateProductionDataEdit(
+         10538563, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-2), "Acme Dozer", 3);
+      dataEdit.Validate();
+    }
+
+    [TestMethod()]
+    [ExpectedException(typeof(ServiceException))]
+    public void ValidateFailMissingDataEditTest()
+    {
+      //missing edit data
+      ProductionDataEdit dataEdit = ProductionDataEdit.CreateProductionDataEdit(
+         10538563, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-2), null, null);
+      dataEdit.Validate();
+    }
+
+    [TestMethod()]
+    [ExpectedException(typeof(ServiceException))]
+    public void ValidateFailInvalidDateRangeTest()
+    {
+      //startUTC > endUTC
+      ProductionDataEdit dataEdit = ProductionDataEdit.CreateProductionDataEdit(
+         10538563, DateTime.UtcNow.AddDays(-2), DateTime.UtcNow.AddDays(-5), "Acme Dozer", null);
+      dataEdit.Validate();
+    }
+  }
+}
