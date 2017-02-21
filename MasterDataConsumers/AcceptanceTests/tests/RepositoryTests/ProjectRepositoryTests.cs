@@ -138,6 +138,7 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = ActionUTC
       };
 
@@ -195,6 +196,7 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = ActionUTC
       };
 
@@ -248,7 +250,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = ActionUTC
+          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+          ActionUTC = ActionUTC
       };          
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -316,7 +319,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = ActionUTC
+          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+          ActionUTC = ActionUTC
       };
 
       var createProjectEventEarlier = new CreateProjectEvent()
@@ -329,7 +333,8 @@ namespace RepositoryTests
 
         ProjectStartDate = createProjectEvent.ProjectStartDate,
         ProjectEndDate = createProjectEvent.ProjectEndDate,
-        ActionUTC = createProjectEvent.ActionUTC.AddDays(-1)
+          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+          ActionUTC = createProjectEvent.ActionUTC.AddDays(-1)
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -398,7 +403,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = ActionUTC
+          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+          ActionUTC = ActionUTC
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -482,7 +488,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = ActionUTC
+          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+          ActionUTC = ActionUTC
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -561,7 +568,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = ActionUTC
+          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+          ActionUTC = ActionUTC
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -644,7 +652,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = ActionUTC
+          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+          ActionUTC = ActionUTC
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -887,7 +896,8 @@ namespace RepositoryTests
 
         ProjectStartDate = project.StartDate,
         ProjectEndDate = project.EndDate,
-        ActionUTC = project.LastActionedUTC
+        ActionUTC = project.LastActionedUTC,
+        ProjectBoundary = project.GeometryWKT
       };
     }
 
