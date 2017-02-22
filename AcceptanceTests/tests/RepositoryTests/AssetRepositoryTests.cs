@@ -7,13 +7,18 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.GenericConfiguration;
 using VSS.Masterdata;
 using MasterDataConsumer;
+using VSS.Device.Data;
+using VSS.Asset.Data;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace RepositoryTests
 {
   [TestClass]
   public class AssetRepositoryTests
   {
-    public IServiceProvider serviceProvider = null;
+    IServiceProvider serviceProvider = null;
+    DeviceRepository deviceContext = null;
+    AssetRepository assetContext = null;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -33,81 +38,38 @@ namespace RepositoryTests
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddSingleton<IRepositoryFactory, RepositoryFactory>();
       serviceProvider = serviceCollection.BuildServiceProvider();
+
+      deviceContext = new DeviceRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      assetContext = new AssetRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
     }
 
     /// <summary>
-    /// Happy path asset, device and assetDevice exist
+    /// This is used in GetAssetId, taking a radioSerial + deviceType and returning an AssetDeviceId class    ///   
     /// </summary>
     [TestMethod]
-    public void GetAssetCurrentlyAssociatedWithDevice_HappyPath()
+    public void CanAssociateAnAssetWithDevice()
     {
-      DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEvent = new CreateAssetEvent()
-      {
-        AssetUID = Guid.NewGuid(),
-        AssetName = "AnAssetName",
-        LegacyAssetId = 33334444,
-        SerialNumber = "S6T00561",
-        MakeCode = "J82", // looks like we only get the code, not the full desc 'JLG INDUSTRIES, INC'
-        OwningCustomerUID = Guid.NewGuid(),
-        ActionUTC = firstCreatedUTC
-      };
-
-      var deviceEvent = new CreateDeviceEvent()
-      {
-        DeviceUID = Guid.NewGuid(),
-        DeviceSerialNumber = "R89agR1",
-        DeviceType = "SNM940"
-      };
-
-      var deviceAssetEvent = new AssociateDeviceAssetEvent()
-      {
-        DeviceUID = deviceEvent.DeviceUID,
-        AssetUID = assetEvent.AssetUID
-      };
-
-      //var expectedAssetDevice = new AssetDevice
-      //{
-      //  AssetUid = assetEvent.AssetUID.ToString(),
-      //  LegacyAssetId = assetEvent.LegacyAssetId,
-      //  OwningCustomerUid = assetEvent.OwningCustomerUID.ToString(),
-      //  DeviceUid = deviceEvent.DeviceUID.ToString(),
-      //  DeviceType = deviceEvent.DeviceType,
-      //  RadioSerial = deviceEvent.DeviceSerialNumber
-      //};
-
-      //var assetContext = new AssetRepository(serviceProvider.GetService<IConfigurationStore>().GetConnectionString("VSPDB"), serviceProvider.GetService<ILoggerFactory>());
-      //var deviceContext = new DeviceRepository(serviceProvider.GetService<IConfigurationStore>().GetConnectionString("VSPDB"), serviceProvider.GetService<ILoggerFactory>());
-
-      //var a = assetContext.StoreAsset(assetEvent);
-      //a.Wait();
-      //Assert.AreEqual(1, a.Result, "Asset event not written");
-
-      //var g = deviceContext.GetAssociatedAsset(deviceEvent.DeviceSerialNumber, deviceEvent.DeviceType);
-      //g.Wait();
-      //Assert.IsNull(g.Result, "Device shouldn't be there yet");
-
-      //var d = deviceContext.StoreDevice(deviceEvent);
-      //d.Wait();
-      //Assert.AreEqual(1, d.Result, "Device event not written");
-
-      //g = deviceContext.GetAssociatedAsset(deviceEvent.DeviceSerialNumber, deviceEvent.DeviceType);
-      //g.Wait();
-      //Assert.IsNull(g.Result, "Device shouldn't be there yet");
-
-      //d = deviceContext.StoreDevice(deviceAssetEvent);
-      //d.Wait();
-      //Assert.AreEqual(1, d.Result, "DeviceAssetAssociation event not written");
-
-      //g = deviceContext.GetAssociatedAsset(deviceEvent.DeviceSerialNumber, deviceEvent.DeviceType);
-      //g.Wait();
-      //Assert.IsNotNull(g.Result, "DeviceAssetAssociation should be there");
-      //Assert.AreEqual(expectedAssetDevice, g.Result, "DeviceAsset retrieved not as expected");
+      Guid assetUID = Guid.NewGuid();
+      long legacyAssetId = 34457644576;
+      Guid owningCustomerUID = Guid.NewGuid();
+      Guid deviceUID = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      string deviceType = "woteva";
+      var result = CreateAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType);
+      var g = deviceContext.GetAssociatedAsset(deviceSerialNumber, deviceType); g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve AssetDevicePlus from CustomerRepo");
+      Assert.AreEqual(assetUID.ToString(), g.Result.AssetUID, "AssetUID is incorrect from DeviceRepo");
+      Assert.AreEqual(deviceType, g.Result.DeviceType, "DeviceType is incorrect from DeviceRepo");
+      Assert.AreEqual(deviceUID.ToString(), g.Result.DeviceUID, "DeviceUID is incorrect from DeviceRepo");
+      Assert.AreEqual(legacyAssetId, g.Result.LegacyAssetID, "LegacyAssetID is incorrect from DeviceRepo");
+      Assert.AreEqual(owningCustomerUID.ToString(), g.Result.OwningCustomerUID, "OwningCustomerUID is incorrect from DeviceRepo");
+      Assert.AreEqual(deviceSerialNumber, g.Result.RadioSerial, "DeviceSerialNumber is incorrect from DeviceRepo");
     }
 
 
+
     //[TestMethod]
-    //public void CanCallAssetIDExecutorWithProjectId()
+    //public void CanCallAssetIDExecutorWithRadioSerial()
     //{
     //  long legacyAssetID = -1;
     //  long legacyProjectID = 4564546456;
@@ -119,8 +81,8 @@ namespace RepositoryTests
     //    AssetUID = Guid.NewGuid(),
     //    LegacyAssetId = legacyAssetID
     //  };
-    //  var ttt = serviceProvider.GetRequiredService<IRepositoryFactory>().GetAssetRepository();
-    //  var storeResult = ttt.StoreAsset(asset);
+    //  // var ttt = serviceProvider.GetRequiredService<IRepositoryFactory>().GetRepository(IAssetEvent);
+    //  var storeResult = assetContext.StoreAsset(asset);
     //  Assert.IsNotNull(storeResult, "store mock Asset failed");
     //  Assert.AreEqual(1, storeResult.Result, "unable to store Asset");
 
@@ -133,6 +95,43 @@ namespace RepositoryTests
     //  Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     //}
 
+    private bool CreateAssociation(Guid assetUID, long legacyAssetId, Guid owningCustomerUID, Guid deviceUID, string deviceSerialNumber, string deviceType)
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createAssetEvent = new CreateAssetEvent()
+      {
+        AssetUID = assetUID,
+        AssetName = "The asset Name",
+        AssetType = "unknown",
+        SerialNumber = "3453gg",
+        LegacyAssetId = legacyAssetId,
+        OwningCustomerUID = owningCustomerUID,
+        ActionUTC = actionUTC
+      };
+
+      var createDeviceEvent = new CreateDeviceEvent()
+      {
+        DeviceUID = deviceUID,
+        DeviceSerialNumber = deviceSerialNumber,
+        DeviceType = deviceType,
+        DeviceState = "active",
+        ActionUTC = actionUTC
+      };
+
+      var associateDeviceAssetEvent = new AssociateDeviceAssetEvent()
+      {
+        AssetUID = createAssetEvent.AssetUID,
+        DeviceUID = createDeviceEvent.DeviceUID,
+        ActionUTC = actionUTC
+      };
+
+      assetContext.StoreEvent(createAssetEvent).Wait();
+      deviceContext.StoreEvent(createDeviceEvent).Wait();
+      deviceContext.StoreEvent(associateDeviceAssetEvent).Wait();
+      var g = deviceContext.GetAssociatedAsset(createDeviceEvent.DeviceSerialNumber, createDeviceEvent.DeviceType); g.Wait();
+      return (g.Result != null ? true : false);
+    }
   }
 
 }
