@@ -20,8 +20,8 @@
         "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1",
         "log4net.netcore": "3.0.0",
         "log4netExtensions.netcore": "1.0.1",
-        "Repositories": "1.0.0-*",
-        "MasterDataRepos.netcore": "1.0.2"
+        "MasterDataRepos.netcore": "1.0.24",
+        "ConfigurationStore.netcore": "1.0.10"
     },
 
   "tools": {

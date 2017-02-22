@@ -33,7 +33,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       double longitude = 170;
       double height = 0;
       var eventkeyDate = DateTime.UtcNow;
-      GetProjectIdRequest ProjectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetID, latitude, longitude, height, eventkeyDate);
+      GetProjectIdRequest ProjectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetID, latitude, longitude, height, eventkeyDate, "");
 
       GetProjectIdResult ProjectIdResult = new GetProjectIdResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();

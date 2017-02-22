@@ -61,7 +61,8 @@ namespace VSS.TagFileAuth.Service.Models.RaptorServicesCommon
       double latitude,
       double longitude,
       double height,
-      DateTime timeOfPosition
+      DateTime timeOfPosition,
+      string TCCOrgUID
       )
     {
       return new GetProjectIdRequest
@@ -81,7 +82,7 @@ namespace VSS.TagFileAuth.Service.Models.RaptorServicesCommon
     {
       get
       {
-        return CreateGetProjectIdRequest(1892337661625085, -43.544566584363544, 172.59246826171878, 1.2, DateTime.UtcNow.AddMinutes(-1));
+        return CreateGetProjectIdRequest(1892337661625085, -43.544566584363544, 172.59246826171878, 1.2, DateTime.UtcNow.AddMinutes(-1), "");
       }
     }
 

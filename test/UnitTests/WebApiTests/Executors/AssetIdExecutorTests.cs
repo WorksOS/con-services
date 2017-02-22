@@ -99,6 +99,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     }
 
     [TestMethod]
+    [Ignore]
     public void CanCallAssetIDExecutorWithRadioSerial()
     {
       long legacyAssetID = 898989;
@@ -126,6 +127,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     }
 
     [TestMethod]
+    [Ignore]
     public void CanCallAssetIDExecutorWithProjectId()
     {
       long legacyAssetID = -1;

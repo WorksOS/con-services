@@ -4,7 +4,8 @@ using Microsoft.Extensions.Logging;
 using MockClasses;
 using System;
 using log4netExtensions;
-using VSS.TagFileAuth.Service.Repositories.Interfaces;
+using VSS.GenericConfiguration;
+using VSS.Masterdata;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -18,14 +19,21 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     {
       var serviceCollection = new ServiceCollection();
 
+      string loggerRepoName = "UnitTestLogTest";
+      var logPath = System.IO.Directory.GetCurrentDirectory();
+      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net("UnitTestLogTest");
+      loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       serviceCollection.AddSingleton<IRepositoryFactory, MockFactory>();
+      serviceCollection.AddSingleton<IConfigurationStore, VSS.GenericConfiguration.GenericConfiguration>();
       serviceProvider = serviceCollection.BuildServiceProvider();
+
+      IRepositoryFactory f = serviceProvider.GetRequiredService<IRepositoryFactory>();
     }
   }
 }

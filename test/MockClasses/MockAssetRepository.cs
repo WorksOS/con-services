@@ -1,29 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.TagFileAuth.Service.Models;
-using VSS.TagFileAuth.Service.Repositories;
-using VSS.TagFileAuth.Service.WebApi.Models;
+using Microsoft.Extensions.Logging;
+using VSS.Asset.Data;
+using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TagFileAuth.Service.MockClasses
 {
-  public class MockAssetRepository : IAssetRepository
+  public class MockAssetRepository : AssetRepository
   {
-    private List<Asset> assets = new List<Asset>();
+    private List<Asset.Data.Models.Asset> assets = new List<Asset.Data.Models.Asset>();
+
+    public MockAssetRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString, logger)
+    {
+    }
 
     public Task<int> StoreAsset(IAssetEvent evt)
     {
       if (evt is CreateAssetEvent)
       {
-        var existingAsset = assets.Find(a => a.AssetUid == evt.AssetUID.ToString());
+        var existingAsset = assets.Find(a => a.AssetUID == evt.AssetUID.ToString());
         if (existingAsset == null)
         {
           var ae = (CreateAssetEvent)evt;
-          var newAsset = new Asset
+          var newAsset = new Asset.Data.Models.Asset
           {
-            AssetUid = ae.AssetUID.ToString(),
+            AssetUID = ae.AssetUID.ToString(),
             LegacyAssetID = ae.LegacyAssetId,
             OwningCustomerUID = ae.OwningCustomerUID.HasValue ? ae.OwningCustomerUID.ToString() : "", 
             Name = ae.AssetName,
