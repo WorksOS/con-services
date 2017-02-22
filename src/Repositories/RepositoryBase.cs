@@ -3,7 +3,7 @@ using System.Data;
 using MySql.Data.MySqlClient;
 using Polly;
 using System.Threading.Tasks;
-using VSS.Project.Service.Utils;
+using VSS.GenericConfiguration;
 
 namespace VSS.TagFileAuth.Service.Repositories
 {
