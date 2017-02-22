@@ -26,6 +26,10 @@ using VSS.GenericConfiguration;
 using VSS.Masterdata;
 using VSS.Project.Service.Interfaces;
 using VSS.Project.Service.Utils.Kafka;
+using VSS.Asset.Data;
+using VSS.Device.Data;
+using VSS.Asset.Data.Models;
+using VSS.Device.Data.Models;
 
 namespace KafkaTests
 {
@@ -52,17 +56,22 @@ namespace KafkaTests
       loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceProvider = new ServiceCollection()
-          .AddTransient<IKafka, RdKafkaDriver>()
-          .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
-          .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
+          .AddTransient<IKafka, RdKafkaDriver>()          
+          .AddTransient<IKafkaConsumer<IAssetEvent>, KafkaConsumer<IAssetEvent>>()
           .AddTransient<IKafkaConsumer<ICustomerEvent>, KafkaConsumer<ICustomerEvent>>()
+          .AddTransient<IKafkaConsumer<IDeviceEvent>, KafkaConsumer<IDeviceEvent>>()
           .AddTransient<IKafkaConsumer<IGeofenceEvent>, KafkaConsumer<IGeofenceEvent>>()
+          .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
+          .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
           .AddTransient<IMessageTypeResolver, MessageResolver>()
           .AddTransient<IRepositoryFactory, RepositoryFactory>()
-          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
-          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+          
+          .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+          .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
+          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
           .AddSingleton<IConfigurationStore, GenericConfiguration>()
           .AddLogging()
           .AddSingleton<ILoggerFactory>(loggerFactory)
@@ -78,6 +87,58 @@ namespace KafkaTests
     ///    so we may need to wait to do it using Daves pattern in end-end tests 
     ///    i.e. creating a Consumer container; polling DB waiting for the object to appear
     /// </summary>
+    [TestMethod]
+    public void AssetConsumerWritesToDB()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createAssetEvent = new CreateAssetEvent
+      {
+        AssetUID = Guid.NewGuid(),
+        AssetName = "The Asset Name",
+        AssetType ="whatever",
+        ActionUTC = actionUtc
+      };
+
+      var configurationStore = serviceProvider.GetService<IConfigurationStore>();
+      var baseTopic = "VSS.Interfaces.Events.MasterData.IAssetEvent" + Guid.NewGuid().ToString();
+      var suffix = configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      var topicName = baseTopic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+
+      string messagePayload = JsonConvert.SerializeObject(new { CreateAssetEvent = createAssetEvent });
+
+      var _producer = serviceProvider.GetService<IKafka>();
+      _producer.InitProducer(serviceProvider.GetService<IConfigurationStore>());
+      _producer.Send(topicName,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>(createAssetEvent.AssetUID.ToString(), messagePayload)
+                });
+
+      var bar1 = serviceProvider.GetService<IKafkaConsumer<IAssetEvent>>();
+      bar1.SetTopic(baseTopic);
+
+      // don't appear to need to wait for writing to the kafka q
+      //Thread.Sleep(1000);
+
+      var assetContext = new AssetRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      Task<Asset> dbReturn = null;
+      for (int i = 0; i < 10; i++)
+      {
+        bar1.StartProcessingSync();
+
+        // wait for consumer, and anything to be written to the db;
+        Thread.Sleep(5000);
+
+        dbReturn = assetContext.GetAsset(createAssetEvent.AssetUID.ToString());
+        dbReturn.Wait();
+        if (dbReturn.Result != null)
+          break;
+      }
+
+      Assert.IsNotNull(dbReturn.Result, "Unable to retrieve Asset from AssetRepo");
+      Assert.AreEqual(createAssetEvent.AssetUID.ToString(), dbReturn.Result.AssetUID, "Asset details are incorrect from AssetRepo");
+    }
+
     [TestMethod]
     public void CustomerConsumerWritesToDB()
     {
@@ -128,6 +189,58 @@ namespace KafkaTests
 
       Assert.IsNotNull(dbReturn.Result, "Unable to retrieve Customer from CustomerRepo");
       Assert.AreEqual(createCustomerEvent.CustomerUID.ToString(), dbReturn.Result.CustomerUID, "Customer details are incorrect from CustomerRepo");
+    }
+
+    [TestMethod]
+    public void DeviceConsumerWritesToDB()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createDeviceEvent = new CreateDeviceEvent
+      {
+        DeviceUID = Guid.NewGuid(),
+        DeviceSerialNumber = "The radio serial",
+        DeviceType = "SNM940",
+        ActionUTC = actionUtc
+      };
+
+      var configurationStore = serviceProvider.GetService<IConfigurationStore>();
+      var baseTopic = "VSS.Interfaces.Events.MasterData.IDeviceEvent" + Guid.NewGuid().ToString();
+      var suffix = configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      var topicName = baseTopic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+
+      string messagePayload = JsonConvert.SerializeObject(new { CreateDeviceEvent = createDeviceEvent });
+
+      var _producer = serviceProvider.GetService<IKafka>();
+      _producer.InitProducer(serviceProvider.GetService<IConfigurationStore>());
+      _producer.Send(topicName,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>(createDeviceEvent.DeviceUID.ToString(), messagePayload)
+                });
+
+      var bar1 = serviceProvider.GetService<IKafkaConsumer<IDeviceEvent>>();
+      bar1.SetTopic(baseTopic);
+
+      // don't appear to need to wait for writing to the kafka q
+      //Thread.Sleep(1000);
+
+      var deviceContext = new DeviceRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      Task<Device> dbReturn = null;
+      for (int i = 0; i < 10; i++)
+      {
+        bar1.StartProcessingSync();
+
+        // wait for consumer, and anything to be written to the db;
+        Thread.Sleep(5000);
+
+        dbReturn = deviceContext.GetDevice(createDeviceEvent.DeviceUID.ToString());
+        dbReturn.Wait();
+        if (dbReturn.Result != null)
+          break;
+      }
+
+      Assert.IsNotNull(dbReturn.Result, "Unable to retrieve Device from DeviceRepo");
+      Assert.AreEqual(createDeviceEvent.DeviceUID.ToString(), dbReturn.Result.DeviceUID, "Device details are incorrect from DeviceRepo");
     }
 
     [TestMethod]

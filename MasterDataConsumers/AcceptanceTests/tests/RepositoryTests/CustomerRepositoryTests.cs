@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.Customer.Data;
 using VSS.Customer.Data.Models;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using log4netExtensions;
 using VSS.GenericConfiguration;

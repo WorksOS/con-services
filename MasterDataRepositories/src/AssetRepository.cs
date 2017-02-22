@@ -48,7 +48,7 @@ namespace VSS.Asset.Data
         var assetEvent = (UpdateAssetEvent)evt;
         asset.AssetUID = assetEvent.AssetUID.ToString();
         asset.Name = assetEvent.AssetName;
-        asset.LegacyAssetID = assetEvent.LegacyAssetId ?? assetEvent.LegacyAssetId.Value;
+        asset.LegacyAssetID = assetEvent.LegacyAssetId.HasValue ? assetEvent.LegacyAssetId.Value : -1;
         asset.Model = assetEvent.Model;
         asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? "Unassigned" : assetEvent.AssetType;
         asset.IconKey = assetEvent.IconKey;
@@ -245,6 +245,9 @@ namespace VSS.Asset.Data
         {
           if (asset.LastActionedUtc >= existing.LastActionedUtc)
           {
+            if (asset.LegacyAssetID == -1)
+              asset.LegacyAssetID = existing.LegacyAssetID;
+
             const string update =
                 @"UPDATE Asset                
                     SET Name = @Name,

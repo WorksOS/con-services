@@ -20,6 +20,8 @@ using VSS.Geofence.Data;
 using VSS.Masterdata;
 using VSS.Project.Service.Utils.Kafka;
 using VSS.Project.Service.Interfaces;
+using VSS.Asset.Data;
+using VSS.Device.Data;
 
 namespace MasterDataConsumer.Tests
 {
@@ -87,9 +89,26 @@ namespace MasterDataConsumer.Tests
     {
       CreateCollection(true);
 
+      var assetConsumer = serviceProvider.GetService<IKafkaConsumer<IAssetEvent>>();
+      Assert.IsNotNull(assetConsumer);
+
       var customerConsumer = serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
-      Assert.IsNotNull(customerConsumer);      
+      Assert.IsNotNull(customerConsumer);
+
+      var deviceConsumer = serviceProvider.GetService<IKafkaConsumer<IDeviceEvent>>();
+      Assert.IsNotNull(deviceConsumer);
+
+      var geofenceConsumer = serviceProvider.GetService<IKafkaConsumer<IGeofenceEvent>>();
+      Assert.IsNotNull(geofenceConsumer);
+
+      var projectConsumer = serviceProvider.GetService<IKafkaConsumer<IProjectEvent>>();
+      Assert.IsNotNull(projectConsumer);
+
+      var subscriptionConsumer = serviceProvider.GetService<IKafkaConsumer<ISubscriptionEvent>>();
+      Assert.IsNotNull(subscriptionConsumer);
     }
+
+    
 
     [TestMethod]
     public void CannotConstructFromDI()
@@ -100,6 +119,15 @@ namespace MasterDataConsumer.Tests
       Assert.AreEqual(ex.Message, "Unable to resolve service for type 'Microsoft.Extensions.Logging.ILoggerFactory' while attempting to activate 'VSS.GenericConfiguration.GenericConfiguration'.");
     }
 
+    [TestMethod]
+    public void ConstructLoggerNameFromKafkaTopic()
+    {
+      string[] kafkaTopic = new string[] { "VSS.Interfaces.Events.MasterData.ICustomerEvent", "VSS.Interfaces.Events.MasterData.IAssetEvent" };
+
+      string eventType = kafkaTopic[0].Split('.').Last();
+      string loggerRepoName = "MDC " + eventType;
+      Assert.AreEqual("MDC ICustomerEvent", loggerRepoName, "loggerName incorrect");
+    }
 
     private void CreateCollection(bool withLogging)
     {
@@ -113,16 +141,22 @@ namespace MasterDataConsumer.Tests
 
       IServiceCollection serviceCollection = new ServiceCollection()
           .AddTransient<IKafka, RdKafkaDriver>()
-          .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
-          .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
+
+          .AddTransient<IKafkaConsumer<IAssetEvent>, KafkaConsumer<IAssetEvent>>()
           .AddTransient<IKafkaConsumer<ICustomerEvent>, KafkaConsumer<ICustomerEvent>>()
+          .AddTransient<IKafkaConsumer<IDeviceEvent>, KafkaConsumer<IDeviceEvent>>()
           .AddTransient<IKafkaConsumer<IGeofenceEvent>, KafkaConsumer<IGeofenceEvent>>()
+          .AddTransient<IKafkaConsumer<IProjectEvent>, KafkaConsumer<IProjectEvent>>()
+          .AddTransient<IKafkaConsumer<ISubscriptionEvent>, KafkaConsumer<ISubscriptionEvent>>()
           .AddTransient<IMessageTypeResolver, MessageResolver>()
-          .AddTransient<IRepositoryFactory, RepositoryFactory>()
-          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
-          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+          .AddTransient<IRepositoryFactory, RepositoryFactory>()          
+          
+          .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
           .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+          .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
+          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
           .AddSingleton<IConfigurationStore, GenericConfiguration>();
 
       if (withLogging)

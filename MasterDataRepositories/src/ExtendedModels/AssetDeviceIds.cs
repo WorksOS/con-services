@@ -1,6 +1,6 @@
-﻿namespace VSS.AssetDevicePlus.Data.Models
+﻿namespace VSS.AssetDeviceIds.Data.ExtendedModels
 {
-  public class AssetDevicePlus
+  public class AssetDeviceIds
   {
     // this is returned from the Device.GetDevicesAsset()
     //   and provides additional values from Asset and Device tables 
@@ -14,10 +14,9 @@
     public string RadioSerial { get; set; }
 
 
-
     public override bool Equals(object obj)
     {
-      var otherAsset = obj as AssetDevicePlus;
+      var otherAsset = obj as AssetDeviceIds;
       if (otherAsset == null) return false;
       return otherAsset.DeviceUID == DeviceUID
         && otherAsset.AssetUID == AssetUID

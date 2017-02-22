@@ -1,8 +1,6 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Project.Data;
-using VSS.Project.Data.Models;
 using VSS.Customer.Data.Models;
 
 namespace MasterDataConsumer.Tests
