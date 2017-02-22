@@ -27,8 +27,9 @@ namespace TestUtility.Model.TestEvents
     public string ProjectTimezone { get; set; }
     public string ProjectType { get; set; }
     public string ProjectID { get; set; }
+    public string ProjectBoundary { get; set; }
 
-    //Customer
+        //Customer
     public string CustomerName { get; set; }
     public string CustomerType { get; set; }
 
