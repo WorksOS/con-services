@@ -64,7 +64,7 @@ namespace VSS.TagFileAuth.Service.WebApi.Models
     /// <summary>
     /// Example for Help
     /// </summary>
-    public static GetAssetIdRequest HelpSample
+    public static new GetAssetIdRequest HelpSample
     {
       get
       {

@@ -188,7 +188,7 @@ namespace VSS.TagFileAuth.Service.WebApi.Authentication
           // Convert the encoded Claim Data Jwt object
           jwt = JsonConvert.DeserializeObject<Jwt>(encodedClaimData);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
           // decodedClaimJson will be null in case of exceptions   
           return false;
