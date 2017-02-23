@@ -59,7 +59,7 @@ services:
      - docker-compose.env
     depends_on:
       - db
- projectschema:
+  projectschema:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest    
     env_file:
      - docker-compose-local.env
