@@ -110,23 +110,17 @@ node('Ubuntu_Slave') {
        stage 'Build Images'
 	   
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion} ./artifacts/ProjectWebApi"
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:${fullVersion} ./artifacts/MasterDataConsumer"
  
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest ./artifacts/ProjectWebApi"
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest ./artifacts/MasterDataConsumer"
  
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'
        sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}"
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:${fullVersion}"
 
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi"
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer"
 
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:${fullVersion}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}"
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest"
     }
 }

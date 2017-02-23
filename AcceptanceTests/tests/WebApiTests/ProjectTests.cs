@@ -37,7 +37,7 @@ namespace WebApiTests
       var testSupport = new TestSupport();
       CreateProject(testSupport, mysql, 123456789, "project 2", ProjectType.Standard);
       testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, 123456789, "project 2", testSupport.FirstEventDate, 
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
     }
 
     [TestMethod]
@@ -49,31 +49,31 @@ namespace WebApiTests
       var testSupport = new TestSupport();
       //No action UTC
       testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, 123456789, "project 3", testSupport.FirstEventDate,
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.MinValue, HttpStatusCode.BadRequest);
+        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.MinValue, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
       //No project UID
       testSupport.CreateProjectViaWebApi(Guid.Empty, 123456789, "project 3", testSupport.FirstEventDate,
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
       //No time zone
       testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, 123456789, "project 3", testSupport.FirstEventDate, 
-        testSupport.LastEventDate, null, ProjectType.Standard, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        testSupport.LastEventDate, null, ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
       //No project name
       testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, 123456789, null, testSupport.FirstEventDate, 
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
       //No start date
       testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, 123456789, "project 3", DateTime.MinValue, 
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
       //No end date
       testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, 123456789, "project 3", testSupport.FirstEventDate,
-        DateTime.MinValue, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        DateTime.MinValue, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
       //Bad end date
       testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, 123456789, "project 3", testSupport.FirstEventDate,
-        testSupport.FirstEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        testSupport.FirstEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
       //Bad date range
       testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, 123456789, "project 3", testSupport.LastEventDate,
-        testSupport.FirstEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        testSupport.FirstEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
       //No legacy project ID
       testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, 0, "project 3", testSupport.FirstEventDate,
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
     }
 
     [TestMethod]
@@ -331,10 +331,10 @@ namespace WebApiTests
       CreateMockCustomer(testSupport);
 
       var dateRange = FormatProjectDateRangeWebApi(testSupport);
-      var expectedProjects = new[] {                                                            
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid          | LegacyProjectId | ",
-            "| false      | project 20-1 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid1 + " | 123456789       | ",
-            "| false      | project 20-2 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid2 + " | 987654321       | "
+      var expectedProjects = new[] {
+            "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid          | LegacyProjectId | ProjectGeofenceWKT | ",
+            "| false      | project 20-1 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid1 + " | 123456789       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
+            "| false      | project 20-2 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid2 + " | 987654321       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
             };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
@@ -374,9 +374,9 @@ namespace WebApiTests
       testSupport.CreateMockCustomer(testSupport.CustomerUid, "customer 2", CustomerType.Customer);
 
       var dateRange = FormatProjectDateRangeWebApi(testSupport);
-      var expectedProjects = new[] {                                                            
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid                     | LegacyProjectId | ",
-            "| false      | project 22-2 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + testSupport.ProjectUid + " | 987654321       | "
+      var expectedProjects = new[] {
+            "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid                     | LegacyProjectId | ProjectGeofenceWKT |",
+            "| false      | project 22-2 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + testSupport.ProjectUid + " | 987654321       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
             };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
@@ -403,10 +403,10 @@ namespace WebApiTests
       CreateMockCustomer(testSupport);
 
       var dateRange = FormatProjectDateRangeWebApi(testSupport);
-      var expectedProjects = new[] {                                                           
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid          | LegacyProjectId | ",
-            "| true       | project 23-1 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid1 + " | 123456789       | ",
-            "| false      | project 23-2 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid2 + " | 987654321       | "
+      var expectedProjects = new[] {
+            "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid          | LegacyProjectId | ProjectGeofenceWKT |",
+            "| true       | project 23-1 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid1 + " | 123456789       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
+            "| false      | project 23-2 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid2 + " | 987654321       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
             };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
@@ -427,8 +427,8 @@ namespace WebApiTests
 
       var dateRange = FormatProjectDateRangeWebApi(testSupport);
       var expectedProjects = new[] {
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid                     | LegacyProjectId | ",
-            "| false      | project 24   | New Zealand Standard Time | ProjectMonitoring | " + dateRange + "   | " + testSupport.ProjectUid + " | 123459876       | "
+            "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid                     | LegacyProjectId | ProjectGeofenceWKT |",
+            "| false      | project 24   | New Zealand Standard Time | ProjectMonitoring | " + dateRange + "   | " + testSupport.ProjectUid + " | 123459876       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
             };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
@@ -459,10 +459,10 @@ namespace WebApiTests
 
       var dateRange = FormatProjectDateRangeWebApi(testSupport);
       var expectedProjects = new[] {
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid          | LegacyProjectId | ",
-            "| false      | project 25-1 | New Zealand Standard Time | Standard          | " + dateRange + "   | " + projectUid1 + " | 123456789       | ",
-            "| false      | project 25-2 | New Zealand Standard Time | ProjectMonitoring | " + dateRange + "   | " + projectUid2 + " | 987654321       | ",
-            "| false      | project 25-3 | New Zealand Standard Time | LandFill          | " + dateRange + "   | " + projectUid3 + " | 123459876       | "
+            "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid          | LegacyProjectId | ProjectGeofenceWKT |",
+            "| false      | project 25-1 | New Zealand Standard Time | Standard          | " + dateRange + "   | " + projectUid1 + " | 123456789       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
+            "| false      | project 25-2 | New Zealand Standard Time | ProjectMonitoring | " + dateRange + "   | " + projectUid2 + " | 987654321       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
+            "| false      | project 25-3 | New Zealand Standard Time | LandFill          | " + dateRange + "   | " + projectUid3 + " | 123459876       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
             };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
@@ -481,8 +481,8 @@ namespace WebApiTests
 
       var dateRange = FormatProjectDateRangeWebApi(testSupport);
       var expectedProjects = new[] {
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid                     | LegacyProjectId | ",
-            "| true       | project 26   | New Zealand Standard Time | ProjectMonitoring | " + dateRange + "   | " + testSupport.ProjectUid + " | 555555555       | "
+            "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid                     | LegacyProjectId | ProjectGeofenceWKT |",
+            "| true       | project 26   | New Zealand Standard Time | ProjectMonitoring | " + dateRange + "   | " + testSupport.ProjectUid + " | 555555555       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
             };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
@@ -498,7 +498,7 @@ namespace WebApiTests
     private void CreateProject(TestSupport testSupport, MySqlHelper mysql, int projectId, string projectName, ProjectType projectType)
     {
       testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, projectName, testSupport.FirstEventDate,
-        testSupport.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, HttpStatusCode.OK);
+        testSupport.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, testSupport.ProjectUid);
     }
 

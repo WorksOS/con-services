@@ -93,18 +93,11 @@ namespace ProjectWebApi
       loggerFactory.AddLog4Net(loggerRepoName);
 
       app.UseExceptionTrap();
-      app.UseCors("VSS");
-      app.UseExceptionTrap();
       //Enable TID here
       app.UseTIDAuthentication();
       app.UseCors("VSS");
-      app.UseExceptionTrap();
-      //Enable TID here
-      //app.UseTIDAuthentication();
-      app.UseCors("VSS");
 
       app.UseApplicationInsightsRequestTelemetry();
-
       app.UseApplicationInsightsExceptionTelemetry();
 
       app.UseMvc();

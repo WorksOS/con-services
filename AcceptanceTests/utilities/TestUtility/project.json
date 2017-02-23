@@ -10,7 +10,7 @@
     "MySql.Data.EntityFrameworkCore": "7.0.5-IR21",
     "ProjectWebApi": "1.0.0-*",
     "RdKafka": "0.9.2-ci-170",
-    "MasterDataRepos.netcore": "1.0.2",
+    "MasterDataRepos.netcore": "*",
     "System.Net.Requests": "4.3.0",
     "System.Threading.Thread": "4.3.0"
   },

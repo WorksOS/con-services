@@ -9,7 +9,7 @@ services:
     depends_on:
       - schema
   masterdataconsumercustomer:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -20,7 +20,7 @@ services:
       - schema
       - kafka
   masterdataconsumerproject:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -32,7 +32,7 @@ services:
       - projectschema
       - kafka
   masterdataconsumergeofence:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -43,7 +43,7 @@ services:
       - schema
       - kafka
   masterdataconsumersubscription:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -54,19 +54,19 @@ services:
       - schema
       - kafka
   schema:
-    build: ./database
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest    
     env_file:
      - docker-compose.env
     depends_on:
       - db
-  projectschema:
-    build: ./database
+ projectschema:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest    
     env_file:
-     - docker-compose.env
+     - docker-compose-local.env
     environment:
      - MYSQL_DATABASE_NAME=VSS-MasterData-Project-Only
     depends_on:
-      - db
+      - db      
   db:
     image: mysql/mysql-server:5.7.15 
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 

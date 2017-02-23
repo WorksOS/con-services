@@ -160,7 +160,7 @@ namespace TestUtility
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="statusCode">expected status code from web api call</param>
     public void CreateProjectViaWebApi(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate,
-      string timezone, ProjectType projectType, DateTime actionUtc, HttpStatusCode statusCode)
+      string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
     {
       CreateProjectEvt = new CreateProjectEvent
       {
@@ -168,7 +168,7 @@ namespace TestUtility
         ProjectUID = projectUid,
         ProjectName = name,
         ProjectType = projectType,
-        ProjectBoundary = null,//not used
+        ProjectBoundary = boundary,
         ProjectStartDate = startDate,
         ProjectEndDate = endDate,
         ProjectTimezone = timezone,

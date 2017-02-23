@@ -29,8 +29,8 @@ namespace IntegrationTests
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
 
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
@@ -55,9 +55,9 @@ namespace IntegrationTests
       Create_And_Subscribe_AdditionalProjects_for_existing_Customer(testSupport, customerGuid, projectGuid2, projectName, startDate, endDate, 2);
 
       var expectedProjects = new string[] {
-      "   | IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid     | LegacyProjectId |",
-        $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid1} | 100             |",
-        $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid2} | 100             |" };
+      "   | IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid     | LegacyProjectId | ProjectGeofenceWKT |",
+        $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid1} | 100             |POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
+        $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid2} | 100             |POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
@@ -78,8 +78,8 @@ namespace IntegrationTests
       testSupport.UpdateProjectViaWebApi(projectGuid, "New Name", endDate, "New Zealand Standard Time", DateTime.Now, HttpStatusCode.OK);
 
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false      | New Name      | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| false      | New Name      | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
 
     }
@@ -103,8 +103,8 @@ namespace IntegrationTests
 
       testSupport.UpdateProjectViaWebApi(projectGuid, projectName, endDate.AddDays(10), "Central Standard Time", DateTime.Now, HttpStatusCode.OK);
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                             | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | Central Standard Time     | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.AddDays(10).ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                             | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| false      | {projectName} | Central Standard Time     | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.AddDays(10).ToString("O")} | {projectGuid} | 100             |POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
 
     }
@@ -128,8 +128,8 @@ namespace IntegrationTests
 
       testSupport.UpdateProjectViaWebApi(projectGuid, projectName, endDate, "Central Standard Time", DateTime.Now, HttpStatusCode.Forbidden);
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
 
@@ -151,8 +151,8 @@ namespace IntegrationTests
 
       testSupport.UpdateProjectViaWebApi(projectGuid, projectName, endDate, "New Zealand Standard Time", DateTime.Now, HttpStatusCode.OK, ProjectType.ProjectMonitoring);
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType                     | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.ProjectMonitoring} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType                     | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.ProjectMonitoring} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
 
@@ -173,15 +173,15 @@ namespace IntegrationTests
 
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
 
       testSupport.DeleteProjectViaWebApi(projectGuid, DateTime.Now, HttpStatusCode.OK);
 
       expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| true       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| true       | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
 
@@ -204,7 +204,7 @@ namespace IntegrationTests
       
       var geofenceEventArray = new[] {
          "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName | GeofenceType | GeofenceUID    | GeometryWKT | IsTransparent | UserUID    | ",
-        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Trump        | 1            | {geofenceGuid} | 1,2,3,4,5,6 | {false}       | {userGuid} |"};
+        $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | Trump        | 1            | {geofenceGuid} | 1,2,3,4,5,6 | {false}       | {userGuid} | "};
 
       testSupport.InjectEventsIntoKafka(geofenceEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Geofence", "GeofenceUID", 1, geofenceGuid);
@@ -384,8 +384,8 @@ namespace IntegrationTests
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
 
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
 
@@ -414,7 +414,7 @@ namespace IntegrationTests
       testSupport.CreateMockProjectSubscription(projectGuid.ToString(), Guid.NewGuid().ToString(), customerGuid.ToString(), startDate, endDate, startDate);
 
       testSupport.CreateProjectViaWebApi(projectGuid, 100, projectName, startDate,
-      endDate, "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, HttpStatusCode.OK);
+      endDate, "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); //check that project is in webapi db
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); //check that project is in consumer db
@@ -444,8 +444,8 @@ namespace IntegrationTests
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
 
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
       testSupport.AssociateCustomerProjectViaWebApi(projectGuid, Guid.NewGuid(), 102, DateTime.Now, HttpStatusCode.BadRequest);
@@ -524,11 +524,11 @@ namespace IntegrationTests
 
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
       testSupport.CreateProjectViaWebApi(projectGuid2, 100, projectName, startDate.AddYears(-5),
-        endDate.AddYears(-5), "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        endDate.AddYears(-5), "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
 
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
@@ -552,12 +552,12 @@ namespace IntegrationTests
       Create_Customer_Then_Project_And_Subscriptions(testSupport, customerGuid, projectGuid, projectName, startDate, endDate, 1);
 
       testSupport.CreateProjectViaWebApi(projectGuid2, 100, projectName, endDate,
-        startDate, "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, HttpStatusCode.BadRequest);
+        startDate, "New Zealand Standard Time", ProjectType.ProjectMonitoring, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
 
 
       var expectedProjects = new string[] {
-            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ",
-           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             |" };
+            "| IsArchived | Name          | ProjectTimeZone           | ProjectType            | StartDate                 | EndDate                 | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+           $"| false      | {projectName} | New Zealand Standard Time | {ProjectType.Standard} | {startDate.ToString("O")} | {endDate.ToString("O")} | {projectGuid} | 100             | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
       testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerGuid, expectedProjects);
     }
@@ -603,7 +603,7 @@ namespace IntegrationTests
 
       //create project
       testSupport.CreateProjectViaWebApi(projectGuid, 100, projectName, startDate,
-      endDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, HttpStatusCode.OK);
+      endDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); //check that project is in webapi db
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); //check that project is in consumer db
@@ -674,7 +674,7 @@ namespace IntegrationTests
     //  testSupport.CreateMockProjectSubscription(projectGuid.ToString(), Guid.NewGuid().ToString(), customerGuid.ToString(), startDate, endDate, startDate);
 
       testSupport.CreateProjectViaWebApi(projectGuid, 100, projectName, startDate,
-      endDate, timeZone, projectType , DateTime.UtcNow, HttpStatusCode.OK);
+      endDate, timeZone, projectType , DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))", HttpStatusCode.OK);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); //check that project is in webapi db
       projectConsumerMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid); //check that project is in consumer db

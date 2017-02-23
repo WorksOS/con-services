@@ -7,7 +7,7 @@ copy scripts\wait-for-it.sh deploy\
 copy scripts\rm_cr.sh deploy\
 mkdir deploy\testresults
 
-dotnet restore
+dotnet restore --no-cache
 
 cd tests
 dotnet publish IntegrationTests -o ..\deploy\IntegrationTests -f netcoreapp1.1

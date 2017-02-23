@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using KafkaConsumer;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -81,40 +83,46 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     }
 
     // POST: api/project
-    /// <summary>
-    /// Create Project
-    /// </summary>
-    /// <param name="project">CreateProjectEvent model</param>
-    /// <remarks>Create new project</remarks>
-    /// <response code="200">Ok</response>
-    /// <response code="400">Bad request</response>
-    [Route("api/v3/project")]
-    [HttpPost]
-    public void CreateProjectV3([FromBody] CreateProjectEvent project)
-    {
-      const string polygonStr = "POLYGON";
+        /// <summary>
+        /// Create Project
+        /// </summary>
+        /// <param name="project">CreateProjectEvent model</param>
+        /// <remarks>Create new project</remarks>
+        /// <response code="200">Ok</response>
+        /// <response code="400">Bad request</response>
+        [Route("api/v3/project")]
+        [HttpPost]
+        public async Task CreateProjectV3([FromBody] CreateProjectEvent project)
+        {
+            const string polygonStr = "POLYGON";
 
-      Console.WriteLine("POST CreateProjectV3 - ");
+            Console.WriteLine("POST CreateProjectV3 - ");
 
-      ProjectDataValidator.Validate(project, _projectService);
-      project.ReceivedUTC = DateTime.UtcNow;
+            ProjectDataValidator.Validate(project, _projectService);
+            project.ReceivedUTC = DateTime.UtcNow;
 
-      // Check whether the ProjectBoundary is in WKT format. Convert to the old format if it is. 
-      if (project.ProjectBoundary.Contains(polygonStr))
-        project.ProjectBoundary = project.ProjectBoundary.Replace(polygonStr + "((", "").Replace("))", "").Replace(',', ';').Replace(' ', ',') + ';';
+            //TODO this should return valid error reponses if the request is not valid!
 
-      ProjectBoundaryValidator.Validate(project.ProjectBoundary);
+            // Check whether the ProjectBoundary is in WKT format. Convert to the old format if it is. 
+            if (project.ProjectBoundary.Contains(polygonStr))
+                project.ProjectBoundary =
+                    project.ProjectBoundary.Replace(polygonStr + "((", "")
+                        .Replace("))", "")
+                        .Replace(',', ';')
+                        .Replace(' ', ',') + ';';
 
-      var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
-      _producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
-          {
-              new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-          });
-      _projectService.StoreEvent(project);
-    }
+            ProjectBoundaryValidator.Validate(project.ProjectBoundary);
 
-    /// <summary>
+            var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
+            _producer.Send(kafkaTopicName,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+                });
+            await _projectService.StoreEvent(project).ConfigureAwait(false);
+        }
+
+        /// <summary>
     /// Create Project
     /// </summary>
     /// <param name="project">CreateProjectEvent model</param>
@@ -123,7 +131,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="400">Bad request</response>
     [Route("v1")]
     [HttpPost]
-    public void CreateProjectV1([FromBody] CreateProjectEvent project)
+    public async Task CreateProjectV1([FromBody] CreateProjectEvent project)
     {
       CreateProjectV3(project);
     }
@@ -138,7 +146,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="400">Bad request</response>
     [Route("api/v3/project")]
     [HttpPut]
-    public void UpdateProjectV3([FromBody] UpdateProjectEvent project)
+    public async Task UpdateProjectV3([FromBody] UpdateProjectEvent project)
     {
         ProjectDataValidator.Validate(project, _projectService);
         project.ReceivedUTC = DateTime.UtcNow;
@@ -149,7 +157,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             {
                 new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
             });
-        _projectService.StoreEvent(project);
+        await _projectService.StoreEvent(project).ConfigureAwait(false);
 
     }
 
@@ -162,9 +170,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="400">Bad request</response>
     [Route("v1")]
     [HttpPut]
-    public void UpdateProjectV1([FromBody] UpdateProjectEvent project)
+    public async Task UpdateProjectV1([FromBody] UpdateProjectEvent project)
     {
-    UpdateProjectV3(project);
+    await UpdateProjectV3(project);
     }
 
     // DELETE: api/Project/
@@ -177,7 +185,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="400">Bad request</response>
     [Route("api/v3/project")]
     [HttpDelete]
-    public void DeleteProjectV3([FromBody] DeleteProjectEvent project)
+    public async Task DeleteProjectV3([FromBody] DeleteProjectEvent project)
     {
         ProjectDataValidator.Validate(project, _projectService);
         project.ReceivedUTC = DateTime.UtcNow;
@@ -188,7 +196,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             {
                 new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
             });
-        _projectService.StoreEvent(project);
+        await _projectService.StoreEvent(project).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -201,12 +209,12 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="400">Bad request</response>
     [Route("v1")]
     [HttpDelete]
-    public void DeleteProjectV1(Guid projectUID, DateTime actionUTC)
+    public async Task DeleteProjectV1(Guid projectUID, DateTime actionUTC)
     {
       var project = new DeleteProjectEvent();
       project.ProjectUID = projectUID;
       project.ActionUTC = actionUTC;
-      DeleteProjectV3(project);
+      await DeleteProjectV3(project);
     }
 
     // POST: api/project
@@ -244,7 +252,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="500">Internal Server Error</response>
     [Route("api/v3/project/AssociateCustomer")]
     [HttpPost]
-    public void AssociateCustomerProjectV3([FromBody] AssociateProjectCustomer customerProject)
+    public async Task AssociateCustomerProjectV3([FromBody] AssociateProjectCustomer customerProject)
     {
         ProjectDataValidator.Validate(customerProject, _projectService);
         customerProject.ReceivedUTC = DateTime.UtcNow;
@@ -255,7 +263,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             {
                 new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
             });
-        _projectService.StoreEvent(customerProject);
+        await _projectService.StoreEvent(customerProject).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -267,9 +275,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="500">Internal Server Error</response>
     [Route("v2/AssociateCustomer")]
     [HttpPost]
-    public void AssociateCustomerProjectV2([FromBody] AssociateProjectCustomer customerProject)
+    public async Task AssociateCustomerProjectV2([FromBody] AssociateProjectCustomer customerProject)
     {
-        AssociateCustomerProjectV3(customerProject);
+        await AssociateCustomerProjectV3(customerProject);
     }
 
     /// <summary>
@@ -281,7 +289,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="500">Internal Server Error</response>
     [Route("api/v3/project/DissociateCustomer")]
     [HttpPost]
-    public void DissociateCustomerProjectV3([FromBody] DissociateProjectCustomer customerProject)
+    public async Task DissociateCustomerProjectV3([FromBody] DissociateProjectCustomer customerProject)
     {
         ProjectDataValidator.Validate(customerProject, _projectService);
         customerProject.ReceivedUTC = DateTime.UtcNow;
@@ -292,7 +300,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             {
                 new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
             });
-        _projectService.StoreEvent(customerProject);
+        await _projectService.StoreEvent(customerProject).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -304,9 +312,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="500">Internal Server Error</response>
     [Route("v1/DissociateCustomer")]
     [HttpPost]
-    public void DissociateCustomerProjectV1([FromBody] DissociateProjectCustomer customerProject)
+    public async Task DissociateCustomerProjectV1([FromBody] DissociateProjectCustomer customerProject)
     {
-      DissociateCustomerProjectV3(customerProject);
+      await DissociateCustomerProjectV3(customerProject);
     }
 
 
@@ -319,7 +327,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="500">Internal Server Error</response>
     [Route("api/v3/project/AssociateGeofence")]
     [HttpPost]
-    public void AssociateGeofenceProjectV3([FromBody] AssociateProjectGeofence geofenceProject)
+    public async Task AssociateGeofenceProjectV3([FromBody] AssociateProjectGeofence geofenceProject)
     {
         ProjectDataValidator.Validate(geofenceProject, _projectService);
         geofenceProject.ReceivedUTC = DateTime.UtcNow;
@@ -330,7 +338,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             {
                 new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
             });
-        _projectService.StoreEvent(geofenceProject);
+        await _projectService.StoreEvent(geofenceProject).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -342,9 +350,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     /// <response code="500">Internal Server Error</response>
     [Route("v1/AssociateGeofence")]
     [HttpPost]
-    public void AssociateGeofenceProjectV1([FromBody] AssociateProjectGeofence geofenceProject)
+    public async Task AssociateGeofenceProjectV1([FromBody] AssociateProjectGeofence geofenceProject)
     {
-      AssociateGeofenceProjectV3(geofenceProject);
+      await AssociateGeofenceProjectV3(geofenceProject);
     }
 
     }
