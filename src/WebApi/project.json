@@ -1,11 +1,11 @@
 {
     "dependencies": {
         "Microsoft.NETCore.App": {
-            "version": "1.0.0",
+            "version": "1.1.0",
             "type": "platform"
         },
         "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
-        "Microsoft.AspNetCore.Mvc": "1.0.0",
+        "Microsoft.AspNetCore.Mvc": "1.0.1",
         "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
         "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
         "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
@@ -39,7 +39,9 @@
 
   "buildOptions": {
     "emitEntryPoint": true,
-    "preserveCompilationContext": true
+    "preserveCompilationContext": true,
+    "copyToOutput": [ "appsettings.json" ],
+    "xmlDoc": true
   },
 
   "runtimeOptions": {
@@ -54,7 +56,9 @@
       "Views",
       "Areas/**/Views",
       "appsettings.json",
-      "web.config"
+      "web.config",
+      "Dockerfile",
+      "log4net.xml"  
     ]
   },
 

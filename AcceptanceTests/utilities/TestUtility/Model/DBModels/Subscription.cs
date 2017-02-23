@@ -14,12 +14,4 @@ namespace TestUtility.Model.DBModels
 
     public DateTime LastActionedUTC { get; set; }
   }
-
-  public class ServiceType
-  {
-    public int ID { get; set; }
-    public string Name { get; set; }
-    public int ServiceTypeFamilyID { get; set; }
-    public string ServiceTypeFamilyName { get; set; }
-  }
 }

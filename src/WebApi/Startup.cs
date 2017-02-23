@@ -64,12 +64,12 @@ namespace WebApi
         options.SingleApiVersion(new Info
         {
           Version = "v1",
-          Title = "Project Master Data API",
-          Description = "API for project data",
+          Title = "Tagfile authorization service API",
+          Description = "API for Tagfile authorization service",
           TermsOfService = "None"
         });
         string path = isDevEnv ? "bin/Debug/netcoreapp1.1/" : string.Empty;
-        options.IncludeXmlComments(path + "ProjectWebApi.xml");
+        options.IncludeXmlComments(path + "WebApi.xml");
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });

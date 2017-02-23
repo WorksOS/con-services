@@ -1,6 +1,6 @@
 ﻿
 
-namespace TestUtility.Model.DBModels
+namespace TestUtility.Model.Enums
 {
   public enum GeofenceType
   {
