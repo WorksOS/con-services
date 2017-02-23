@@ -29,6 +29,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// The thematic mode to be rendered; elevation, compaction, temperature etc
     /// </summary>
     [JsonProperty(PropertyName = "mode", Required = Required.Always)]
+    [Required]
     public DisplayMode mode { get; private set; }
 
     /// <summary>
@@ -123,6 +124,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     [Range(MIN_PIXELS, MAX_PIXELS)]
     [JsonProperty(PropertyName = "width", Required = Required.Always)]
+    [Required]
     public ushort width { get; private set; }
 
     /// <summary>
@@ -130,6 +132,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     [Range(MIN_PIXELS, MAX_PIXELS)]
     [JsonProperty(PropertyName = "height", Required = Required.Always)]
+    [Required]
     public ushort height { get; private set; }
 
 
@@ -238,9 +241,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
         //Volumes
         //mode == DisplayMode.VolumeCoverage
         //computeVolNoChangeTolerance and computeVolType must be provided but since not nullable types they always will have a value anyway
-        if (designDescriptor != null)
-          RaptorValidator.ValidateDesign(designDescriptor, mode, computeVolType);
- 
+        RaptorValidator.ValidateDesign(designDescriptor, mode, computeVolType);
 
         if (mode == DisplayMode.VolumeCoverage)
         {

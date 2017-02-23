@@ -51,68 +51,59 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
 
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailInvalidPaletteNumberTest()
     {
       //wrong number of palettes for display mode
       PatchRequest request = PatchRequest.CreatePatchRequest(
                 projectId, callId, DisplayMode.CCVPercent, palettes, liftSettings, false, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, 5, 50);
-      request.Validate();
-
+     
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailInvalidPaletteOrderTest()
     {
       //palettes out of order
       PatchRequest request = PatchRequest.CreatePatchRequest(
                 projectId, callId, DisplayMode.Height, invalidPalettes, liftSettings, false, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, 5, 50);
-      request.Validate();
-
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailMissingDesignTest()
     {
       //missing design (for volumes display mode)
       PatchRequest request = PatchRequest.CreatePatchRequest(
                 projectId, callId, DisplayMode.CutFill, palettes, liftSettings, false, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, 5, 50);
-      request.Validate();
-
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailMissingFilterTest()
     {
       //missing filter (for volumes display mode)
       PatchRequest request = PatchRequest.CreatePatchRequest(
                 projectId, callId, DisplayMode.VolumeCoverage, palettes, liftSettings, false, RaptorConverters.VolumesType.Between2Filters, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, 5, 50);
-      request.Validate();
-
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailInvalidVolumeTypeTest()
     {
       //Unsupported volume type (for volumes display mode)
       PatchRequest request = PatchRequest.CreatePatchRequest(
                 projectId, callId, DisplayMode.VolumeCoverage, palettes, liftSettings, false, RaptorConverters.VolumesType.AboveLevel, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, 5, 50);
-      request.Validate();
-
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
-  
+
 
     private long projectId = 1234;
     private Guid callId = new Guid();

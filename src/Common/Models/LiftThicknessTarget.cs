@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -19,6 +20,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// The target lift thickness.
     /// </value>
     [JsonProperty(PropertyName = "TargetLiftThickness", Required = Required.Always)]
+    [Required]
     public float TargetLiftThickness { get; set; }
 
     /// <summary>
@@ -28,6 +30,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// The above tolerance lift thickness.
     /// </value>
     [JsonProperty(PropertyName = "AboveToleranceLiftThickness", Required = Required.Always)]
+    [Required]
     public float AboveToleranceLiftThickness { get; set; }
 
     /// <summary>
@@ -37,6 +40,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// The below tolerance lift thickness.
     /// </value>
     [JsonProperty(PropertyName = "BelowToleranceLiftThickness", Required = Required.Always)]
+    [Required]
     public float BelowToleranceLiftThickness { get; set; }
 
     public static LiftThicknessTarget HelpSample {

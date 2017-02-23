@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Interfaces;
@@ -67,6 +68,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     //TODO Move this to a new ENUM
     [JsonProperty(PropertyName = "gridDataType", Required = Required.Always)]
+    [Required]
     public int gridDataType { get; private set; }
 
     /// <summary>

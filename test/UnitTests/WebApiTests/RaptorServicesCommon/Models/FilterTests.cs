@@ -96,80 +96,76 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
 
  
 
-        [TestMethod()]
-        [ExpectedException(typeof(ServiceException))]
-        public void ValidateFailInvalidDateRangeTest()
-        {
-          //start UTC > end UTC
-          Filter filter = Filter.CreateFilter(null, null, null, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null, 
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null);
-          filter.Validate();
-        }
+    [TestMethod()]
+    public void ValidateFailInvalidDateRangeTest()
+    {
+      //start UTC > end UTC
+      Filter filter = Filter.CreateFilter(null, null, null, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null, 
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null);
+      Assert.ThrowsException<ServiceException>(() => filter.Validate());
+    }
 
-        [TestMethod()]
-        [ExpectedException(typeof(ServiceException))]
-        public void ValidateFailInvalidAlignmentFilterTest()
-        {
-          //missing alignment filter fields
-          Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
-            null, 100.0, 500.0, 2.0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-          filter.Validate();
-        }
+    [TestMethod()]
+    public void ValidateFailInvalidAlignmentFilterTest()
+    {
+      //missing alignment filter fields
+      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null,
+        null, 100.0, 500.0, 2.0, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+      Assert.ThrowsException<ServiceException>(() => filter.Validate());
+    }
 
-        [TestMethod()]
-        [ExpectedException(typeof(ServiceException))]
-        public void ValidateFailInvalidLayerFilterTest()
-        {
-          //Invalid layer filter
-          Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, 
-            null, null, null, null, null, null, FilterLayerMethod.OffsetFromBench, null, null, null, null, null, null, null,
-            null, null, null, null, null);
-          filter.Validate();
-        }
+    [TestMethod()]
+    public void ValidateFailInvalidLayerFilterTest()
+    {
+      //Invalid layer filter
+      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, null, null, 
+        null, null, null, null, null, null, FilterLayerMethod.OffsetFromBench, null, null, null, null, null, null, null,
+        null, null, null, null, null);
+      Assert.ThrowsException<ServiceException>(() => filter.Validate());
+    }
 
-        [TestMethod()]
-        [ExpectedException(typeof(ServiceException))]
-        public void ValidateFailInvalidLatLngPointsTest()
-        {
-          //too few points
-          Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, new List<WGSPoint>(),
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-          filter.Validate();
-        }
+    [TestMethod()]
+    public void ValidateFailInvalidLatLngPointsTest()
+    {
+      //too few points
+      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, new List<WGSPoint>(),
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+      Assert.ThrowsException<ServiceException>(() => filter.Validate());
+    }
 
-        [TestMethod()]
-        [ExpectedException(typeof(ServiceException))]
-        public void ValidateFailInvalidGridPointsTest()
-        {
-          //too few points
-          Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, new List<Point>(),
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-          filter.Validate();
-        }
+    [TestMethod()]
+    public void ValidateFailInvalidGridPointsTest()
+    {
+      //too few points
+      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, null, new List<Point>(),
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+      Assert.ThrowsException<ServiceException>(() => filter.Validate());
 
-        [TestMethod()]
-        [ExpectedException(typeof(ServiceException))]
-        public void ValidateFailInvalidBoundaryFilterTest()
-        {
-          //both LL and grid points specified
-          List<WGSPoint> latLngs = new List<WGSPoint>
-                                {
-                                    WGSPoint.CreatePoint(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
-                                    WGSPoint.CreatePoint(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
-                                    WGSPoint.CreatePoint(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
-                                };
-          List<Point> gridPoints = new List<Point>
-                                {
-                                    Point.CreatePoint(12.4, 126.5),
-                                    Point.CreatePoint(25.6, 99.2),
-                                    Point.CreatePoint(15.2, 45.2),
-                                    Point.CreatePoint(21.5, 89.3)
-                                };
-          Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, latLngs, gridPoints,
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-          filter.Validate();
-        }
+    }
+
+    [TestMethod()]
+    public void ValidateFailInvalidBoundaryFilterTest()
+    {
+      //both LL and grid points specified
+      List<WGSPoint> latLngs = new List<WGSPoint>
+                            {
+                                WGSPoint.CreatePoint(35.13*ConversionConstants.DEGREES_TO_RADIANS, 179.2*ConversionConstants.DEGREES_TO_RADIANS),
+                                WGSPoint.CreatePoint(34.25*ConversionConstants.DEGREES_TO_RADIANS, 178.1*ConversionConstants.DEGREES_TO_RADIANS),
+                                WGSPoint.CreatePoint(36.4*ConversionConstants.DEGREES_TO_RADIANS, 177.34*ConversionConstants.DEGREES_TO_RADIANS)
+                            };
+      List<Point> gridPoints = new List<Point>
+                            {
+                                Point.CreatePoint(12.4, 126.5),
+                                Point.CreatePoint(25.6, 99.2),
+                                Point.CreatePoint(15.2, 45.2),
+                                Point.CreatePoint(21.5, 89.3)
+                            };
+      Filter filter = Filter.CreateFilter(null, null, null, null, null, null, null, null, null, null, latLngs, gridPoints,
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+      Assert.ThrowsException<ServiceException>(() => filter.Validate());
+
+    }
 
 
   }

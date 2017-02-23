@@ -33,7 +33,7 @@ namespace VSS.Raptor.Service.WebApiTests.TagfileProcessing.Controllers
     }
 
     [TestMethod]
-    public void TagP_PostTagFileFullIntergration()
+    public void TagP_PostTagFileFullIntegration()
     {
 
       // Accepting override ProjectID for file 1551J025SW--ACOM--121030234410.tag (MachineID = ACOM, AssetID = 1244020666025812)
@@ -97,7 +97,6 @@ namespace VSS.Raptor.Service.WebApiTests.TagfileProcessing.Controllers
     }
 
     [TestMethod]
-    [ExpectedExceptionAttribute(typeof(ServiceException))]
     public void TagP_TagFileSubmitterException()
     {
       byte[] tagData = new byte[] { 0x1, 0x2, 0x3 };
@@ -124,8 +123,7 @@ namespace VSS.Raptor.Service.WebApiTests.TagfileProcessing.Controllers
       // create submitter
       TagFileExecutor submitter = new TagFileExecutor(mockLogger.Object, mockRaptorClient.Object, mockTagProcessor.Object);
 
-      ContractExecutionResult result = submitter.Process(request);
-      //Assert.IsTrue(result.Message != "success");
+      Assert.ThrowsException<ServiceException>(() => submitter.Process(request));
     }
 
 

@@ -52,6 +52,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     /// Override the target CMV recorded from the machine with the value of cmvTarget
     /// </summary>
     [JsonProperty(PropertyName = "overrideTargetCMV", Required = Required.Always)]
+    [Required]
     public bool overrideTargetCMV { get; private set; }
 
    /// <summary>

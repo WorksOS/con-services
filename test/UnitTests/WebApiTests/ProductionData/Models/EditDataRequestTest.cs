@@ -33,16 +33,14 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
      }
 
      [TestMethod()]
-     [ExpectedException(typeof(ServiceException))]
      public void ValidateFailMissingDataEditTest()
      {
        //missing dataEdit
        EditDataRequest request = EditDataRequest.CreateEditDataRequest(projectId, false, null);
-       request.Validate();
-
+       Assert.ThrowsException<ServiceException>(() => request.Validate());
      }
 
-     private long projectId = 1234;
+    private long projectId = 1234;
      private ProductionDataEdit dataEdit = ProductionDataEdit.CreateProductionDataEdit(
        10538563, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-2), "Acme Dozer", null);
 

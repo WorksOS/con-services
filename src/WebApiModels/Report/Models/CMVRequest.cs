@@ -6,6 +6,7 @@ using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
+using System.ComponentModel.DataAnnotations;
 
 namespace VSS.Raptor.Service.WebApiModels.Report.Models
 {
@@ -24,6 +25,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     /// The various summary and target values to use in preparation of the result
     /// </summary>
     [JsonProperty(PropertyName = "cmvSettings", Required = Required.Always)]
+    [Required]
     public CMVSettings cmvSettings { get; private set; }
 
     /// <summary>

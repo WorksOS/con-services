@@ -17,6 +17,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     [Range(MIN_PERCENT, MAX_PERCENT)]
     [JsonProperty(PropertyName = "min", Required = Required.Always)]
+    [Required]
     public double min { get; private set; }
 
     /// <summary>
@@ -24,6 +25,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     [Range(MIN_PERCENT, MAX_PERCENT)]
     [JsonProperty(PropertyName = "max", Required = Required.Always)]
+    [Required]
     public double max { get; private set; }
 
     

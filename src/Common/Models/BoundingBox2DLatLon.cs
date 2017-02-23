@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -17,6 +18,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// The bottom left corner of the bounding box, expressed in radians
     /// </summary>
     [JsonProperty(PropertyName = "bottomLeftLon", Required = Required.Always)]
+    [Required]
     [DecimalIsWithinRange(-Math.PI, Math.PI)]
     public double bottomLeftLon { get; private set; }
 
@@ -24,6 +26,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// The bottom left corner of the bounding box, expressed in radians
     /// </summary>
     [JsonProperty(PropertyName = "bottomLeftLat", Required = Required.Always)]
+    [Required]
     [DecimalIsWithinRange(-Math.PI/2, Math.PI/2)]
     public double bottomLeftLat { get; private set; }
 
@@ -31,6 +34,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// The top right corner of the bounding box, expressed in radians
     /// </summary>
     [JsonProperty(PropertyName = "topRightLon", Required = Required.Always)]
+    [Required]
     [DecimalIsWithinRange(-Math.PI, Math.PI)]
     public double topRightLon { get; private set; }
 
@@ -38,6 +42,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// The top right corner of the bounding box, expressed in radians
     /// </summary>
     [JsonProperty(PropertyName = "topRightLat", Required = Required.Always)]
+    [Required]
     [DecimalIsWithinRange(-Math.PI/2, Math.PI/2)]
     public double topRightLat { get; private set; }
 

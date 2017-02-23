@@ -36,7 +36,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
       var mockLogger = new Mock<ILoggerFactory>();
       TileController controller = new TileController(mockRaptorClient.Object, mockLogger.Object);
 
-      BinaryImageResponseContainer result = controller.PostRaw(request);
+      byte[] result = controller.PostRaw(request);
 
       // Assert
       Assert.IsNotNull(result);

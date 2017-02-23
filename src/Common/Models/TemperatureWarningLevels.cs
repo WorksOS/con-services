@@ -17,6 +17,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     [Range(MIN_TEMPERATURE, MAX_TEMPERATURE)]
     [JsonProperty(PropertyName = "min", Required = Required.Always)]
+    [Required]
     public ushort min { get; private set; }
 
     /// <summary>
@@ -24,6 +25,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     [Range(MIN_TEMPERATURE, MAX_TEMPERATURE)]
     [JsonProperty(PropertyName = "max", Required = Required.Always)]
+    [Required]
     public ushort max { get; private set; }
 
 

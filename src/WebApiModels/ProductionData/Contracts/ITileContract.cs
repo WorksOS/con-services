@@ -1,6 +1,7 @@
 ﻿
 using System.Web.Http;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
+using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
 {
@@ -15,7 +16,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
     /// </summary>
     /// <param name="request">A representation of the tile rendering request.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-      dynamic Post([FromBody] TileRequest request);
+      TileResult Post([FromBody] TileRequest request);
 
   }
 }

@@ -119,7 +119,6 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
     /// </summary>
     /// 
     [TestMethod]
-    [ExpectedExceptionAttribute(typeof(ServiceException))]
     public void PD_PostProfileProductionDataFailed()
     {
       ProfileProductionDataRequest request = CreateRequest();
@@ -155,11 +154,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
       // Create an executor...
       ProfileProductionDataExecutor executor = new ProfileProductionDataExecutor(mockLogger.Object, mockRaptorClient.Object);
 
-      ContractExecutionResult result = executor.Process(request);
-
-      // Assert
-      //Assert.IsNotNull(result);
-      //Assert.IsTrue(result.Message == "success", result.Message);
+      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }
 
 

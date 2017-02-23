@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace VSS.Raptor.Service.Common.Models
@@ -12,36 +13,42 @@ namespace VSS.Raptor.Service.Common.Models
     /// Maximum X value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "maxX", Required = Required.Always)]
+    [Required]
     public double maxX { get; set; }
 
     /// <summary>
     /// Maximum Y value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "maxY", Required = Required.Always)]
+    [Required]
     public double maxY { get; set; }
 
     /// <summary>
     /// Maximum Z value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "maxZ", Required = Required.Always)]
+    [Required]
     public double maxZ { get; set; }
 
     /// <summary>
     /// Minimum X value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "minX", Required = Required.Always)]
+    [Required]
     public double minX { get; set; }
 
     /// <summary>
     /// Minimum Y value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "minY", Required = Required.Always)]
+    [Required]
     public double minY { get; set; }
 
     /// <summary>
     /// Minimum Z value, in the cartesian grid coordinate system, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "minZ", Required = Required.Always)]
+    [Required]
     public double minZ { get; set; }
 
     /// <summary>

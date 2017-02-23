@@ -1,4 +1,5 @@
 
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
@@ -16,6 +17,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "DesignFilename", Required = Required.Always)]
+    [Required]
     public string DesignFilename { get; private set; }
     
     public override void Validate()

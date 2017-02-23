@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -16,21 +17,25 @@ namespace VSS.Raptor.Service.Common.Models
         /// The bottom left corner of the bounding box, expressed in meters
         /// </summary>
         [JsonProperty(PropertyName = "bottomLeftX", Required = Required.Always)]
+        [Required]
         public double bottomLeftX { get; set; }
         /// <summary>
         /// The bottom left corner of the bounding box, expressed in meters
         /// </summary>
         [JsonProperty(PropertyName = "bottomleftY", Required = Required.Always)]
+        [Required]
         public double bottomleftY { get; set; }
         /// <summary>
         /// The top right corner of the bounding box, expressed in meters
         /// </summary>
         [JsonProperty(PropertyName = "topRightX", Required = Required.Always)]
+        [Required]
         public double topRightX { get; set; }
         /// <summary>
         /// The top right corner of the bounding box, expressed in meters
         /// </summary>
         [JsonProperty(PropertyName = "topRightY", Required = Required.Always)]
+        [Required]
         public double topRightY { get; set; }
 
      /// <summary>

@@ -57,82 +57,69 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
 
  
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailInvalidPaletteNumberTest()
     {
       //wrong number of palettes for display mode
       TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.CCVPercent, palettes, liftSettings, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, null, 256, 256);
-      request.Validate();
-
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailInvalidPaletteOrderTest()
     {
       //palettes out of order
       TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, invalidPalettes, liftSettings, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, null, 256, 256);
-      request.Validate();
-
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailMissingDesignTest()
     {
-      //missing design (for volumes display mode)
-      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.CutFill, null, liftSettings, RaptorConverters.VolumesType.BetweenDesignAndFilter, 0.0, null, null, 0, null, 0,
-                FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, null, 256, 256);
-      request.Validate();
-
+      //missing design (for cutfill display mode)
+      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.CutFill, null, liftSettings, 
+        RaptorConverters.VolumesType.BetweenDesignAndFilter, 0.0, null, null, 0, null, 0,
+        FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, null, 256, 256);
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailMissingFilterTest()
     {
       //missing filter (for volumes display mode)
       TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.VolumeCoverage, null, liftSettings, RaptorConverters.VolumesType.Between2Filters, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, null, 256, 256);
-      request.Validate();
-
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailInvalidVolumeTypeTest()
     {
       //Unsupported volume type (for volumes display mode)
       TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.VolumeCoverage, null, liftSettings, RaptorConverters.VolumesType.AboveLevel, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, null, 256, 256);
-      request.Validate();
-
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailMissingBoundingBoxTest()
     {
       //missing bounding box
       TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, null, null, 256, 256);
-      request.Validate();
-
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailTwoBoundingBoxesTest()
     {
       //Two bounding boxes
       TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, BoundingBox2DGrid.HelpSample, 256, 256);
-      request.Validate();
-
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
     private long projectId = 1234;

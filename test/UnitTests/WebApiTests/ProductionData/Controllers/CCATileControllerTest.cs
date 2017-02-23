@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Raptor.Service.WebApi.ProductionData.Controllers;
 using VSS.Raptor.Service.Common.Filters;
+using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.WebApi.Coord.Controllers;
 
@@ -20,13 +21,13 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
     {
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
-      var mockProjectProxy = new Mock<IProjectProxy>();
       var mockGeofenceProxy = new Mock<IGeofenceProxy>();
-      CCATileController controller = new CCATileController(mockProjectProxy.Object, mockGeofenceProxy.Object, mockLogger.Object, mockRaptorClient.Object);
+      var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
+      CCATileController controller = new CCATileController(mockGeofenceProxy.Object, mockLogger.Object, mockRaptorClient.Object, mockAuthStore.Object);
 
       double[] bbox = new double[] { -91.73583984375, 29.916852233070173, -91.73309326171875, 29.91923280484215 };
 
-      BinaryImageResponseContainer result = controller.Get
+      byte[] result = controller.Get
       (
           123,
           1,

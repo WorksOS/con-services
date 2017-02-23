@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
-
+using ActionFilterAttribute = System.Web.Http.Filters.ActionFilterAttribute;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace VSS.Raptor.Service.Common.Filters.Authentication
 {
@@ -20,13 +19,10 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
     ///   Occurs before the action method is invoked. Used for the request logging.
     /// </summary>
     /// <param name="actionContext">The action context.</param>
-    public override void OnActionExecuting(HttpActionContext actionContext)
+    public void OnActionExecuting(ActionExecutingContext actionContext)
     {
       const string propertyName = "projectUid";
-
-      var principal = actionContext.RequestContext.Principal as IRaptorPrincipal;
-      if (principal == null)
-        return;
+ 
       object projectUidValue = null;
       if (actionContext.ActionArguments.ContainsKey("request"))
       {
@@ -45,7 +41,10 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
       if (!(projectUidValue is string))
         return;
 
-      var found = principal.Projects.Any(project => project.Value.projectUid == (string) projectUidValue);
+      var authProjectsStore = actionContext.HttpContext.RequestServices.GetService<IAuthenticatedProjectsStore>();
+      if (authProjectsStore == null)
+        return;
+      var found = authProjectsStore.ProjectsByUid.ContainsKey((string) projectUidValue);
 
       Guid outputGuid;
 

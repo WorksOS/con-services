@@ -36,11 +36,5 @@ namespace VSS.Raptor.Service.WebApiTests.TagfileProcessing.Models
             Assert.IsFalse(validator.TryValidate(tagfile, out results));
         }
 
-        [Ignore]
-        [TestMethod()]
-        public void ValidateTest()
-        {
-            Assert.Fail();
-        }
     }
 }

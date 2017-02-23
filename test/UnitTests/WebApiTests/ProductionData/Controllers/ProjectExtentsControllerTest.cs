@@ -27,7 +27,6 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
       long[] excludedSsIds = new long[1]; // excluded surveyed surfaces
       excludedSsIds[0] = 1;
       // return results
-      BoundingExtents.T3DBoundingWorldExtent extents = new T3DBoundingWorldExtent();
 
       // make request parameters
       ExtentRequest request = ExtentRequest.CreateExtentRequest(544, excludedSsIds);
@@ -75,7 +74,6 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
     }
 
     [TestMethod]
-    [ExpectedExceptionAttribute(typeof(ServiceException))]
     public void PD_PostProjectExtentsFail()
     {
 
@@ -99,11 +97,8 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
 
       // Act
       // Call controller
-      ContractExecutionResult result = submitter.Process(request);
+      Assert.ThrowsException<ServiceException>(() => submitter.Process(request));
 
-      //// Assert
-      //Assert.IsNotNull(result);
-      //Assert.IsTrue(result.Message == "Failed to get project extents", result.Message);
     }
 
 

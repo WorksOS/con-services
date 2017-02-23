@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
@@ -18,6 +19,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// 
     [DecimalIsWithinRange(-Math.PI/2, Math.PI/2)]
     [JsonProperty(PropertyName = "lat1", Required = Required.Always)]
+    [Required]
     public double lat1 { get; private set; }
 
     /// <summary>
@@ -26,6 +28,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// 
     [DecimalIsWithinRange(-Math.PI, Math.PI)]
     [JsonProperty(PropertyName = "lon1", Required = Required.Always)]
+    [Required]
     public double lon1 { get; private set; }
 
     /// <summary>
@@ -34,6 +37,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// 
     [DecimalIsWithinRange(-Math.PI/2, Math.PI/2)]
     [JsonProperty(PropertyName = "lat2", Required = Required.Always)]
+    [Required]
     public double lat2 { get; private set; }
 
     /// <summary>
@@ -42,6 +46,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// 
     [DecimalIsWithinRange(-Math.PI, Math.PI)]
     [JsonProperty(PropertyName = "lon2", Required = Required.Always)]
+    [Required]
     public double lon2 { get; private set; }
 
     /// <summary>

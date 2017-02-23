@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -17,18 +18,21 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     [ValidAssetID]
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
+    [Required]
     public long assetId { get; private set; }
 
     /// <summary>
     /// Start of the period with overridden data. Required.
     /// </summary>
     [JsonProperty(PropertyName = "startUTC", Required = Required.Always)]
+    [Required]
     public DateTime startUTC { get; private set; }
 
     /// <summary>
     /// End of the period with overridden data. Required.
     /// </summary>
     [JsonProperty(PropertyName = "endUTC", Required = Required.Always)]
+    [Required]
     public DateTime endUTC { get; private set; }
 
   

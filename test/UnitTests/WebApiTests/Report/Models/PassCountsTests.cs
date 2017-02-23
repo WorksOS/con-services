@@ -33,21 +33,19 @@ namespace VSS.Raptor.Service.WebApiTests.Report.Models
 
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailInvalidOverrideDatesTest()
     {
       //override startUTC > override end UTC
       PassCounts passCounts = PassCounts.CreatePassCountsRequest(projectId, callId, passCountSettings, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null);
-      passCounts.Validate();
+      Assert.ThrowsException<ServiceException>(() => passCounts.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailMissingOverrideDatesTest()
     {
       //missing override end UTC
       PassCounts passCounts = PassCounts.CreatePassCountsRequest(projectId, callId, passCountSettings, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null);
-      passCounts.Validate();
+      Assert.ThrowsException<ServiceException>(() => passCounts.Validate());
     }
 
     private long projectId = 1234;

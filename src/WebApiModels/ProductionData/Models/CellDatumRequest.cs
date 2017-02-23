@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
@@ -17,6 +18,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
         /// Required.
         /// </summary>
       [JsonProperty(PropertyName = "displayMode", Required = Required.Always)]
+      [Required]
       public DisplayMode displayMode { get; private set; }
 
         /// <summary>

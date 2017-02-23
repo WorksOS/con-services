@@ -53,12 +53,12 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ServiceException))]
     public void CPR_CellPassesRequestValidateTest()
     {
       // test that all three cell address types are not set
       CellPassesRequest cpRequest = CellPassesRequest.CreateCellPassRequest(544, null, null, null, null, 0, 0,null);
-      cpRequest.Validate(); // validation exception should be thrown
+      Assert.ThrowsException<ServiceException>(() => cpRequest.Validate());
+
     }
 
 

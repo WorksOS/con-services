@@ -28,42 +28,38 @@ namespace VSS.Raptor.Service.WebApiTests.Report.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailLengthTest()
     {
       //empty array
       PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] {});
-      settings.Validate();
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailFirstTest()
     {
       //doesn't start at 0
       PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] { 0, 5, 10 });
-      settings.Validate();
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailOrderTest()
     {
       //pass counts out of order
       PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] { 1, 10, 5, 12, 3 });
-      settings.Validate();
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
-    
+
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailRangeTest()
     {
       //pass count value > max
       PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] { 1, 2, int.MaxValue });
-      settings.Validate();
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
-     
+
 
   }
 }

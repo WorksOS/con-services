@@ -24,5 +24,9 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication.Models
     /// Gets or sets a unique project identifier's value.
     /// </summary>
     public string projectUid { get; set; }
+    /// <summary>
+    /// Gets or sets a unique project identifier's value from legacy VisionLink.
+    /// </summary>
+    public long projectId { get; set; }
   }
 }

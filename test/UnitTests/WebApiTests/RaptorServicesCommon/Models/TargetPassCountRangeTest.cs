@@ -30,12 +30,11 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailTest()
     {
       //min > max
       TargetPassCountRange range = TargetPassCountRange.CreateTargetPassCountRange(100, 2);
-      range.Validate();
+      Assert.ThrowsException<ServiceException>(() => range.Validate());
     }
   }
 }

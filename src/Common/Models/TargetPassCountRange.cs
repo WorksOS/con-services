@@ -18,6 +18,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     [Range(MIN_TARGET_PASS_COUNT, MAX_TARGET_PASS_COUNT)]
     [JsonProperty(PropertyName = "min", Required = Required.Always)]
+    [Required]
     public ushort min { get; private set; }
 
     /// <summary>
@@ -25,6 +26,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     [Range(MIN_TARGET_PASS_COUNT, MAX_TARGET_PASS_COUNT)]
     [JsonProperty(PropertyName = "max", Required = Required.Always)]
+    [Required]
     public ushort max { get; private set; }
 
     

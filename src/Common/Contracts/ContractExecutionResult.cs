@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.ResultHandling;
 
@@ -51,6 +52,7 @@ namespace VSS.Raptor.Service.Common.Contracts
     ///   Result code.
     /// </value>
     [JsonProperty(PropertyName = "Code", Required = Required.Always)]
+    [Required]
     public int Code { get; protected set; }
 
     /// <summary>
@@ -60,6 +62,7 @@ namespace VSS.Raptor.Service.Common.Contracts
     ///   The message string.
     /// </value>
     [JsonProperty(PropertyName = "Message", Required = Required.Always)]
+    [Required]
     public string Message { get; protected set; }
   }
 

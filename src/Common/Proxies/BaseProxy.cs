@@ -14,13 +14,12 @@ namespace VSS.Raptor.Service.Common.Proxies
   /// <typeparam name="T"></typeparam>
   public class BaseProxy<T> where T : IData
   {
-    protected readonly ILogger log;
+    private readonly ILogger log;
     private readonly ILoggerFactory logger;
-    private IConfigurationStore configurationStore;
-    private IMemoryCache cache;
+    private readonly IConfigurationStore configurationStore;
+    private readonly IMemoryCache cache;
 
-
-    public BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache)
+    protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache)
     {
       log = logger.CreateLogger<BaseProxy<T>>();
       this.logger = logger;
@@ -32,9 +31,9 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// Gets a list of the specified items from the specified service.
     /// </summary>
     /// <param name="urlKey">The configuration store key for the URL</param>
-    /// <param name="customHeaders">The custom headers for the request (authorization, userUId and customerUId)</param>
-    /// <returns></returns>
-    protected List<T> GetList(string urlKey, IDictionary<string, string> customHeaders)
+    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <returns>List of items</returns>
+    private List<T> GetList(string urlKey, IDictionary<string, string> customHeaders)
     {
       string url = configurationStore.GetValueString(urlKey);
       log.LogInformation(string.Format("{0}: {1}", urlKey, url));
@@ -74,8 +73,8 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// <param name="uid">The UID of the item to retrieve</param>
     /// <param name="cacheLife">How long to cache items</param>
     /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
-    /// <param name="customHeaders">Custom headers for the request (authorization, userUId and customerUId)</param>
-    /// <returns></returns>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <returns>Master data item</returns>
     protected T GetItem(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders)
     {
       T cacheData;
@@ -93,6 +92,29 @@ namespace VSS.Raptor.Service.Common.Proxies
           cache.Set(data.CacheKey, item, opts);
         }
         cache.TryGetValue(uid, out cacheData);
+      }
+      return cacheData;
+    }
+    /// <summary>
+    /// Gets a list of master data items for a customer. 
+    /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
+    /// </summary>
+    /// <param name="customerUid">The customer UID for the list to retrieve</param>
+    /// <param name="cacheLife">How long to cache the list</param>
+    /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <returns>Master data item</returns>
+    protected List<T> GetList(string customerUid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders)
+    {
+      List<T> cacheData;
+      if (!cache.TryGetValue(customerUid, out cacheData))
+      {
+        var opts = new MemoryCacheEntryOptions()
+        {
+          SlidingExpiration = cacheLife
+        };
+        cacheData = GetList(urlKey, customHeaders); 
+        cache.Set(customerUid, cacheData, opts);
       }
       return cacheData;
     }

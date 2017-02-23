@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication;
+using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Contracts;
@@ -34,17 +35,23 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
+    /// <summary>
+    /// Used to get list of projects for customer
+    /// </summary>
+    private readonly IAuthenticatedProjectsStore authProjectsStore;
 
     /// <summary>
     /// Constructor with injected raptor client and logger
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
+    /// <param name="authProjectsStore">Authenticated projects store</param>
     /// <param name="logger">Logger</param>
-    public SurveyedSurfaceController(IASNodeClient raptorClient, ILoggerFactory logger)
+    public SurveyedSurfaceController(IASNodeClient raptorClient, ILoggerFactory logger, IAuthenticatedProjectsStore authProjectsStore)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<SurveyedSurfaceController>();
+      this.authProjectsStore = authProjectsStore;
     }
 
 
@@ -110,7 +117,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [System.Web.Http.Route("api/v2/projects/{projectUid}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
     public ContractExecutionResult GetDel([FromUri] Guid projectUid, [FromUri] long surveyedSurfaceId)
     {
-      ProjectID projId = ProjectID.CreateProjectID(0, projectUid);
+      ProjectID projId = ProjectID.CreateProjectID(ProjectID.GetProjectId(projectUid, authProjectsStore), projectUid);
       projId.Validate();
 
       DataID ssId = DataID.CreateDataID(surveyedSurfaceId);
@@ -151,7 +158,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [System.Web.Http.Route("api/v2/projects/{projectUid}/surveyedsurfaces")]
     public SurveyedSurfaceResult Get([FromUri] Guid projectUid)
     {
-      ProjectID request = ProjectID.CreateProjectID(0, projectUid);
+      ProjectID request = ProjectID.CreateProjectID(ProjectID.GetProjectId(projectUid, authProjectsStore), projectUid);
 
       request.Validate();
       return RequestExecutorContainer.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient, null).Process(request) as SurveyedSurfaceResult;

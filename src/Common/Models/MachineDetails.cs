@@ -15,6 +15,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// The ID of the machine/asset. This is the unique identifier, used by Raptor.
     /// </summary>
     [JsonProperty(PropertyName = "assetID", Required = Required.Always)]
+    [Required]
     public long assetID { get; protected set; }
 
     /// <summary>
@@ -22,12 +23,14 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     [MaxLength(MAX_MACHINE_NAME)] 
     [JsonProperty(PropertyName = "machineName", Required = Required.Always)]
+    [Required]
     public string machineName { get; protected set; }
 
     /// <summary>
     /// Is the machine not represented by a telematics device (PLxxx, SNMxxx etc)
     /// </summary>
     [JsonProperty(PropertyName = "isJohnDoe", Required = Required.Always)]
+    [Required]
     public bool isJohnDoe { get; protected set; }
 
     /// <summary>

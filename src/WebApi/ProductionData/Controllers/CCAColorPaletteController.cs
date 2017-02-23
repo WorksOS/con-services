@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Net;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication;
+using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
+using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.Common.Utilities;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Contracts;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
@@ -34,23 +38,23 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
-
     /// <summary>
-    /// Proxy for getting projects from master data. Used to convert project UID into project ID for Raptor.
+    /// Used to get list of projects for customer
     /// </summary>
-    private readonly IProjectProxy projectProxy;
+    private readonly IAuthenticatedProjectsStore authProjectsStore;
+
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    /// <param name="projectProxy">Proxy client to use for getting projects</param>
     /// <param name="logger">Logger</param>
     /// <param name="raptorClient">Raptor client</param>
-    public CCAColorPaletteController(IProjectProxy projectProxy, ILoggerFactory logger, IASNodeClient raptorClient)
+    /// <param name="authProjectsStore">Authenticated projects store</param>
+    public CCAColorPaletteController(ILoggerFactory logger, IASNodeClient raptorClient, IAuthenticatedProjectsStore authProjectsStore)
     {
-      this.projectProxy = projectProxy;
       this.logger = logger;
       this.log = logger.CreateLogger<CCAColorPaletteController>();
       this.raptorClient = raptorClient;
+      this.authProjectsStore = authProjectsStore;
     }
 
     /// <summary>
@@ -102,13 +106,9 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     {
       log.LogInformation("Get: " + Request.QueryString);
 
-      long projectId = 0;
-
-      
-      ProjectID.CheckProjectId(projectUid, ref projectId, projectProxy, RequestUtils.GetCustomHeaders(Request.Headers));
+      long projectId = ProjectID.GetProjectId(projectUid, authProjectsStore);
 
       var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId);
-
       request.Validate();
 
       return RequestExecutorContainer.Build<CCAColorPaletteExecutor>(logger, raptorClient, null).Process(request) as CCAColorPaletteResult;

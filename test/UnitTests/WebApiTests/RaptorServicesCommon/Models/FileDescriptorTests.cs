@@ -44,13 +44,12 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailEmptyTest()
     {
       //empty file descriptor
       FileDescriptor file = FileDescriptor.CreateFileDescriptor(
           string.Empty, string.Empty, string.Empty);
-      file.Validate();
+      Assert.ThrowsException<ServiceException>(() => file.Validate());
     }
 
 

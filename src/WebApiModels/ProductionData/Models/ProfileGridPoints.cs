@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Interfaces;
 
@@ -15,6 +16,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "x1", Required = Required.Always)]
+    [Required]
     public double x1 { get; private set; }
 
     /// <summary>
@@ -22,6 +24,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "y1", Required = Required.Always)]
+    [Required]
     public double y1 { get; private set; }
 
     /// <summary>
@@ -29,6 +32,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "x2", Required = Required.Always)]
+    [Required]
     public double x2 { get; private set; }
 
     /// <summary>
@@ -36,6 +40,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "y2", Required = Required.Always)]
+    [Required]
     public double y2 { get; private set; }
 
     /// <summary>

@@ -28,6 +28,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
         /// The thematic mode to be rendered; elevation, compaction, temperature etc
         /// </summary>
       [JsonProperty(PropertyName = "mode", Required = Required.Always)]
+      [Required]
       public DisplayMode mode { get; private set; }
 
         /// <summary>
@@ -46,6 +47,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
         /// Render the thematic data into colours using the supplied color palettes.
         /// </summary>
       [JsonProperty(PropertyName = "renderColorValues", Required = Required.Always)]
+      [Required]
       public bool renderColorValues { get; private set; }
 
         /// <summary>
@@ -103,6 +105,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
         /// </summary>
         [Range(MIN_PATCH_NUM, MAX_PATCH_NUM)]
         [JsonProperty(PropertyName = "patchNumber", Required = Required.Always)]
+        [Required]
         public int patchNumber { get; private set; }
 
         /// <summary>
@@ -110,6 +113,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
         /// </summary>
         [Range(MIN_PATCH_SIZE, MAX_PATCH_SIZE)]
         [JsonProperty(PropertyName = "patchSize", Required = Required.Always)]
+        [Required]
         public int patchSize { get; private set; }
 
              /// <summary>

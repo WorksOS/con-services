@@ -1,10 +1,12 @@
 using System.Net;
 using System.Reflection;
 using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
+using ActionFilterAttribute = System.Web.Http.Filters.ActionFilterAttribute;
 
 
 namespace VSS.Raptor.Service.Common.Filters.Authentication
@@ -18,11 +20,8 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
     /// Occurs before the action method is invoked.
     /// </summary>
     /// <param name="actionContext">The action context.</param>
-    public override void OnActionExecuting(HttpActionContext actionContext)
+    public void OnActionExecuting(ActionExecutingContext actionContext)
     {
-      var principal = actionContext.RequestContext.Principal as IRaptorPrincipal;
-      if (principal == null)
-        return;
       object projectUidValue = null;
       if (actionContext.ActionArguments.ContainsKey("request"))
       {
@@ -41,9 +40,13 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
       if (!(projectUidValue is long))
         return;
 
-      if (!principal.Projects.ContainsKey((long) projectUidValue)) return;
+      var authProjectsStore = actionContext.HttpContext.RequestServices.GetService<IAuthenticatedProjectsStore>();
+      if (authProjectsStore == null)
+        return;
 
-      if (principal.Projects[(long) projectUidValue].isArchived)
+      if (!authProjectsStore.ProjectsById.ContainsKey((long) projectUidValue)) return;
+
+      if (authProjectsStore.ProjectsById[(long) projectUidValue].isArchived)
         throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
             "Don't have write access to the selected project."

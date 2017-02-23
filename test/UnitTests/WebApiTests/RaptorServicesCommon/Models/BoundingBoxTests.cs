@@ -27,12 +27,11 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateBoundingBox2DGridFailTest()
     {
       //not bl and tr
       BoundingBox2DGrid bbox = BoundingBox2DGrid.CreateBoundingBox2DGrid(380712.19834, 812634.205106, 380646.982394, 812788.92875);
-      bbox.Validate();
+      Assert.ThrowsException<ServiceException>(() => bbox.Validate());
     }
 
     [TestMethod()]
@@ -58,12 +57,11 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateBoundingBox2DLatLonFailTest()
     {
       //not bl and tr
       BoundingBox2DLatLon bbox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(-0.741023, 3.010479, -0.758809, 3.0567);
-      bbox.Validate();
+      Assert.ThrowsException<ServiceException>(() => bbox.Validate());
     }
   }
 }

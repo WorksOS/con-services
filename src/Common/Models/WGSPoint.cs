@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Utilities;
+using System.ComponentModel.DataAnnotations;
 
 namespace VSS.Raptor.Service.Common.Models
 {
@@ -18,14 +19,16 @@ namespace VSS.Raptor.Service.Common.Models
         ///     WGS84 latitude, expressed in radians
         /// </summary>
         [DecimalIsWithinRange(-Math.PI/2, Math.PI/2)]
-        [JsonProperty(PropertyName = "Lat", Required = Required.Always)]      
+        [JsonProperty(PropertyName = "Lat", Required = Required.Always)]
+        [Required]
         public double Lat { get; private set; }
 
         /// <summary>
         ///     WSG84 longitude, expressed in radians
         /// </summary>
         [DecimalIsWithinRange(-Math.PI, Math.PI)]
-        [JsonProperty(PropertyName = "Lon", Required = Required.Always)]      
+        [JsonProperty(PropertyName = "Lon", Required = Required.Always)]
+        [Required]
         public double Lon { get; private set; }
 
         /// <summary>

@@ -36,21 +36,19 @@ namespace VSS.Raptor.Service.WebApiTests.Report.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailInvalidOverrideDatesTest()
     {
       //override startUTC > override end UTC
       CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, new DateTime(2014, 1, 31), new DateTime(2014, 1, 1), null);
-      request.Validate();
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailMissingOverrideDatesTest()
     {
       //missing override end UTC
       CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, new DateTime(2014, 1, 1), null, null);
-      request.Validate();
+      Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
     private long projectId = 1234;

@@ -35,12 +35,11 @@ namespace VSS.Raptor.Service.WebApiTests.Report.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailRangeTest()
     {
       //min > max
       CMVSettings settings = CMVSettings.CreateCMVSettings(800, 700, 110.0, 1200, 85.0, false);
-      settings.Validate();
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
   }
 }

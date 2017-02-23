@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Interfaces;
 
@@ -15,12 +16,14 @@ namespace VSS.Raptor.Service.Common.Models
     /// The color related to the datum value
     /// </summary>
     [JsonProperty(PropertyName = "color", Required = Required.Always)]
+    [Required]
     public uint color { get; private set; }
 
     /// <summary>
     /// The datum value at which the color defined in color should be used.
     /// </summary>
     [JsonProperty(PropertyName = "value", Required = Required.Always)]
+    [Required]
     public double value { get; private set; }
 
        /// <summary>

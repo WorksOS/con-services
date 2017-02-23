@@ -11,6 +11,7 @@ using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.Filters;
 using VSS.Raptor.Service.Common.Filters.Authentication;
+using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Filters.Validation;
 
 namespace VSS.Raptor.Service.WebApi
@@ -83,9 +84,11 @@ namespace VSS.Raptor.Service.WebApi
 
       //Configure application services
       services.AddScoped<IASNodeClient, Common.Proxies.ASNodeClient>();
-      services.AddScoped<ITagProcessor, TAGProcessor>();
+      services.AddScoped<ITagProcessor, TagProcessor>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
-      services.AddSingleton<IProjectProxy, ProjectProxy>();
+      services.AddSingleton<IProjectListProxy, ProjectListProxy>();
+      services.AddScoped<IAuthenticatedProjectsStore, AuthenticatedProjectStore>();
+
       serviceCollection = services;
     }
 

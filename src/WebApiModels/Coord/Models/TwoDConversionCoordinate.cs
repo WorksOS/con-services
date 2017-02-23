@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Interfaces;
 
@@ -14,12 +15,14 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Models
     /// Either the Easting or WGS84 Longitude of the position expressed in meters or in radians respectively.
     /// </summary>
     [JsonProperty(PropertyName = "x", Required = Required.Always)]
+    [Required]
     public double x { get; private set; }
 
     /// <summary>
     /// Either the Northing or WGS84 Latitude of the position expressed in meters or in radians respectively.
     /// </summary>
     [JsonProperty(PropertyName = "y", Required = Required.Always)]
+    [Required]
     public double y { get; private set; }
 
     

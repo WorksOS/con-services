@@ -22,6 +22,7 @@ namespace VSS.Raptor.Service.WebApiModels.TagfileProcessing.Models
         /// </summary>
         /// <value>Required. Shall contain only ASCII characters. Maximum length is 256 characters.</value>
         [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
+        [Required]
         [ValidFilename(256)]
         [MaxLength(256)]
         public string fileName { get; private set; }
@@ -30,6 +31,7 @@ namespace VSS.Raptor.Service.WebApiModels.TagfileProcessing.Models
         /// The content of the TAG file as an array of bytes.
         /// </summary>
         [JsonProperty(PropertyName = "data", Required = Required.Always)]
+        [Required]
         public byte[] data { get; private set; }
 /*
         /// <summary>
@@ -61,6 +63,7 @@ namespace VSS.Raptor.Service.WebApiModels.TagfileProcessing.Models
         /// May be null.
         /// </summary>
         [JsonProperty(PropertyName = "boundary", Required = Required.Always)]
+        [Required]
         public WGS84Fence boundary { get; private set; }
 
         /// <summary>

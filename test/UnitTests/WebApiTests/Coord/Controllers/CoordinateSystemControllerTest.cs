@@ -11,6 +11,7 @@ using VSS.Raptor.Service.WebApiModels.Coord.Models;
 using VSS.Raptor.Service.WebApi.Coord.Controllers;
 using VSS.Raptor.Service.WebApiModels.Coord.ResultHandling;
 using VSS.Raptor.Service.Common.Contracts;
+using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
@@ -48,7 +49,8 @@ namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
             CoordinateSystemFile request = CoordinateSystemFile.CreateCoordinateSystemFile(PD_MODEL_ID, csFileContent, csFileName);
             var mockRaptorClient = new Mock<IASNodeClient>();
             var mockLogger = new Mock<ILoggerFactory>();
-            CoordinateSystemController controller = new CoordinateSystemController(mockRaptorClient.Object, mockLogger.Object);
+            var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
+            CoordinateSystemController controller = new CoordinateSystemController(mockRaptorClient.Object, mockLogger.Object, mockAuthStore.Object);
             result = controller.Post(request);
 
             Assert.IsNotNull(result);
@@ -130,7 +132,9 @@ namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
         {
             var mockRaptorClient = new Mock<IASNodeClient>();
             var mockLogger = new Mock<ILoggerFactory>();
-            CoordinateSystemController controller = new CoordinateSystemController(mockRaptorClient.Object, mockLogger.Object);
+            var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
+
+            CoordinateSystemController controller = new CoordinateSystemController(mockRaptorClient.Object, mockLogger.Object, mockAuthStore.Object);
             ContractExecutionResult result = controller.Get(PD_MODEL_ID);
 
             Assert.IsNotNull(result);
@@ -203,7 +207,8 @@ namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
         {
           var mockRaptorClient = new Mock<IASNodeClient>();
           var mockLogger = new Mock<ILoggerFactory>();
-          CoordinateSystemController controller = new CoordinateSystemController(mockRaptorClient.Object, mockLogger.Object);
+          var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
+          CoordinateSystemController controller = new CoordinateSystemController(mockRaptorClient.Object, mockLogger.Object, mockAuthStore.Object);
           CoordinateConversionRequest request = CoordinateConversionRequest.HelpSample;
           // NE to LL conversion...
           CoordinateConversionResult result = controller.Post(request);

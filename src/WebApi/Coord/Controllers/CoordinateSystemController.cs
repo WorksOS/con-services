@@ -8,6 +8,7 @@ using VSS.Raptor.Service.WebApiModels.Coord.Models;
 using VSS.Raptor.Service.WebApiModels.Coord.ResultHandling;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Filters.Authentication;
+using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Models;
 
 namespace VSS.Raptor.Service.WebApi.Coord.Controllers
@@ -34,15 +35,22 @@ namespace VSS.Raptor.Service.WebApi.Coord.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
+    /// Used to get list of projects for customer
+    /// </summary>
+    private readonly IAuthenticatedProjectsStore authProjectsStore;
+
+    /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    public CoordinateSystemController(IASNodeClient raptorClient, ILoggerFactory logger)
+    /// <param name="authProjectsStore">Authenticated projects store</param>
+    public CoordinateSystemController(IASNodeClient raptorClient, ILoggerFactory logger, IAuthenticatedProjectsStore authProjectsStore)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CoordinateSystemController>();
+      this.authProjectsStore = authProjectsStore;
     }
 
     /// <summary>
@@ -109,7 +117,7 @@ namespace VSS.Raptor.Service.WebApi.Coord.Controllers
     [System.Web.Http.HttpGet]
     public CoordinateSystemSettings Get([FromUri] Guid projectUid)
     {
-      ProjectID request = ProjectID.CreateProjectID(0, projectUid);
+      ProjectID request = ProjectID.CreateProjectID(ProjectID.GetProjectId(projectUid, authProjectsStore), projectUid);
 
       request.Validate();
       return RequestExecutorContainer.Build<CoordinateSystemExecutorGet>(logger, raptorClient, null).Process(request) as CoordinateSystemSettings;

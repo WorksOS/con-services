@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -46,6 +47,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     /// Sets the CMV change summary values to compare against.
     /// </summary>
     [JsonProperty(PropertyName = "CMVChangeSummaryValues", Required = Required.Always)]
+    [Required]
     public double[] CMVChangeSummaryValues { get; private set; }
 
     public override void Validate()

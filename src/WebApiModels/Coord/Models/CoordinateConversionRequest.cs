@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -21,6 +22,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "conversionType", Required = Required.Always)]
+    [Required]
     public TwoDCoordinateConversionType conversionType { get; private set; }
 
     /// <summary>
@@ -28,6 +30,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "conversionCoordinates", Required = Required.Always)]
+    [Required]
     public TwoDConversionCoordinate[] conversionCoordinates { get; private set; }
 
     /// <summary>

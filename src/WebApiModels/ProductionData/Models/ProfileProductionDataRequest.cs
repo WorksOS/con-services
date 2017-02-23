@@ -29,6 +29,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "profileType", Required = Required.Always)]
+    [Required]
     public ProductionDataType profileType { get; private set; }
 
     /// <summary>
@@ -99,6 +100,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "returnAllPassesAndLayers", Required = Required.Always)]
+    [Required]
     public bool returnAllPassesAndLayers { get; private set; }
 
     /// <summary>

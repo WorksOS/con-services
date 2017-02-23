@@ -1,9 +1,12 @@
 ﻿
+using System.Net;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using VLPDDecls;
+using VSS.Raptor.Service.Common.Contracts;
+using VSS.Raptor.Service.Common.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApiModels.Coord.Executors
 {
@@ -36,7 +39,6 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Executors
             TCoordinateSystemSettings tempCoordSystemSettings;
 
             ProjectID request = item as ProjectID;
-
             TASNodeErrorStatus code = raptorClient.RequestCoordinateSystemDetails(request.projectId ?? -1, out tempCoordSystemSettings);
 
             if (code == TASNodeErrorStatus.asneOK)

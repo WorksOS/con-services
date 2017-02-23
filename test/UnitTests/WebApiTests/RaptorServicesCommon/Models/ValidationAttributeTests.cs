@@ -24,13 +24,6 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Modelss
             Assert.IsFalse(attribute.IsValid(20));
         }
 
-        [Ignore]
-        [TestMethod()]
-        public void DateGreaterThanAttributeTest()
-        {
-            Assert.Fail();
-        }
-
         [TestMethod()]
         public void MoreThanTwoPointsAttributeTest()
         {

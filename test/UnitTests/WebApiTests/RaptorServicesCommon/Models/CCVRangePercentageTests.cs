@@ -30,12 +30,11 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailTest()
     {
       //min > max
       CCVRangePercentage range = CCVRangePercentage.CreateCcvRangePercentage(85.0, 40.0);
-      range.Validate();
+      Assert.ThrowsException<ServiceException>(() => range.Validate());
     }
   }
 }

@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Interfaces;
 
@@ -13,12 +14,14 @@ namespace VSS.Raptor.Service.Common.Models
     /// The X-ordinate of the position, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "x", Required = Required.Always)]
+    [Required]
     public double x { get; private set; }
 
     /// <summary>
     /// The Y-ordinate of the position, expressed in meters
     /// </summary>
     [JsonProperty(PropertyName = "y", Required = Required.Always)]
+    [Required]
     public double y { get; private set; }
 
     

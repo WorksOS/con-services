@@ -17,6 +17,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// The id of the filespace in TCC where the file is located.
     /// </summary>
     [JsonProperty(PropertyName = "filespaceId", Required = Required.Always)]
+    [Required]
     public string filespaceId { get; private set; }
 
     /// <summary>
@@ -24,6 +25,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     [MaxLength(MAX_PATH)]
     [JsonProperty(PropertyName = "path", Required = Required.Always)]
+    [Required]
     public string path { get; private set; }
 
     /// <summary>
@@ -32,6 +34,7 @@ namespace VSS.Raptor.Service.Common.Models
     [ValidFilename(MAX_FILE_NAME)] 
     [MaxLength(MAX_FILE_NAME)]
     [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
+    [Required]
     public string fileName { get; private set; }
 
    /// <summary>

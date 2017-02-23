@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -19,6 +20,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// Flag which determines if the edit is applied or undone. Required.
     /// </summary>
     [JsonProperty(PropertyName = "undo", Required = Required.Always)]
+    [Required]
     public bool undo { get; private set; }
 
     /// <summary>

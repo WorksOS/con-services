@@ -1,9 +1,10 @@
 ﻿using System.Net;
 using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.ResultHandling;
+using ActionFilterAttribute = System.Web.Http.Filters.ActionFilterAttribute;
 
 namespace VSS.Raptor.Service.Common.Filters.Validation
 {
@@ -18,7 +19,7 @@ namespace VSS.Raptor.Service.Common.Filters.Validation
         /// <param name="actionContext">The http action context.</param>
         /// <exception cref="ServiceException">Thrown when validation is not successfull.</exception>
         /// <exception cref="ContractExecutionResult">Built when exception is thrown.</exception>
-        public override void OnActionExecuting(HttpActionContext actionContext)
+        public void OnActionExecuting(ActionExecutingContext actionContext)
         {
             if (!actionContext.ModelState.IsValid)
             {

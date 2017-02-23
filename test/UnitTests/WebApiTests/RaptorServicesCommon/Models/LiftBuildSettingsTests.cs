@@ -95,7 +95,6 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailTest()
     {
       //min temp > max temp
@@ -103,11 +102,10 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
               CCVRangePercentage.CreateCcvRangePercentage(30.0, 70.0), false, 0.0, 0.0, 0.2f, LiftDetectionType.Automatic,
               LiftThicknessType.Compacted, MDPRangePercentage.CreateMdpRangePercentage(35.0, 75.0), false, 0.0f, 0, 0, null,
               TemperatureWarningLevels.CreateTemperatureWarningLevels(700, 500), false, LiftThicknessTarget.HelpSample, null);
-      settings.Validate();
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidatePassCountTargetRangeFailTest()
     {
       //min pass count target > max pass count target
@@ -115,7 +113,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
               CCVRangePercentage.CreateCcvRangePercentage(30.0, 70.0), false, 0.0, 0.0, 0.2f, LiftDetectionType.Automatic,
               LiftThicknessType.Compacted, MDPRangePercentage.CreateMdpRangePercentage(35.0, 75.0), false, 0.0f, 0, 0,
               TargetPassCountRange.CreateTargetPassCountRange(10, 1), TemperatureWarningLevels.CreateTemperatureWarningLevels(500, 700), false, LiftThicknessTarget.HelpSample, null);
-      settings.Validate();
+      Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
   }

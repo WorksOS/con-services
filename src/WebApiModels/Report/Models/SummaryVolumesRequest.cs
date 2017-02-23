@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Proxies;
@@ -14,6 +15,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
         /// The type of volume computation to be performed as a summary volumes request
         /// </summary>
         [JsonProperty(PropertyName = "volumeCalcType", Required = Required.Always)]
+        [Required]
         public RaptorConverters.VolumesType volumeCalcType { get; private set; }
 
         /// <summary>

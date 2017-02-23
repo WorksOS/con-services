@@ -23,6 +23,7 @@ namespace VSS.Raptor.Service.Common.Models
         /// </summary>
         /// 
         [JsonProperty(PropertyName = "dataId", Required = Required.Always)]
+        [Required]
         [ValidFilterID]
         public long dataId { get; private set; }
 

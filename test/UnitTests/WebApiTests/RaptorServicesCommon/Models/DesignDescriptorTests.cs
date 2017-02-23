@@ -33,12 +33,11 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailEmptyTest()
     {
       //empty design descriptor
       DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(0, null, 0);
-      design.Validate();
+      Assert.ThrowsException<ServiceException>(() => design.Validate());
     }
 
 

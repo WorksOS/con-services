@@ -34,23 +34,22 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailMissingDataEditTest()
     {
       //missing edit data
       ProductionDataEdit dataEdit = ProductionDataEdit.CreateProductionDataEdit(
          10538563, DateTime.UtcNow.AddDays(-5), DateTime.UtcNow.AddDays(-2), null, null);
-      dataEdit.Validate();
+      Assert.ThrowsException<ServiceException>(() => dataEdit.Validate());
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailInvalidDateRangeTest()
     {
       //startUTC > endUTC
       ProductionDataEdit dataEdit = ProductionDataEdit.CreateProductionDataEdit(
          10538563, DateTime.UtcNow.AddDays(-2), DateTime.UtcNow.AddDays(-5), "Acme Dozer", null);
-      dataEdit.Validate();
+      
+      Assert.ThrowsException<ServiceException>(() => dataEdit.Validate());
     }
   }
 }

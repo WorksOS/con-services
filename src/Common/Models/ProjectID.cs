@@ -5,8 +5,10 @@ using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
+using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Filters.Validation;
 using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Raptor.Service.Common.JsonConverters;
 using VSS.Raptor.Service.Common.ResultHandling;
 
 
@@ -16,7 +18,7 @@ namespace VSS.Raptor.Service.Common.Models
   /// <summary>
   /// Raptor data model/project identifier.
   /// </summary>
-  ///
+  [JsonConverter(typeof(ProjectIDConverter))]
   public class ProjectID : IValidatable
   {
     /// <summary>
@@ -55,13 +57,11 @@ namespace VSS.Raptor.Service.Common.Models
     /// <summary>
     /// Creates an instance of the ProjectID class.
     /// </summary>
-    /// <param name="projectId">The datamodel/project identifier.</param>
+    /// <param name="projectId">The Raptor datamodel & legacy project identifier.</param>
+    /// <param name="projectUid">The project UID.</param>
     /// <returns></returns>
-    /// 
-    public static ProjectID CreateProjectID(long projectId, Guid? projectUid = null, IProjectProxy projectProxy = null, IDictionary<string, string> customHeaders = null)
+    public static ProjectID CreateProjectID(long projectId, Guid? projectUid = null)
     {
-      CheckProjectId(projectUid, ref projectId, projectProxy, customHeaders);
-
       return new ProjectID()
       {
         projectId = projectId,
@@ -93,18 +93,30 @@ namespace VSS.Raptor.Service.Common.Models
 
     }
 
-    public static void CheckProjectId(Guid? projectUid, ref long projectId, IProjectProxy projectProxy = null, IDictionary<string, string> customHeaders = null)
+    public static long GetProjectId(Guid? projectUid, IAuthenticatedProjectsStore authProjectsStore)
     {
-      if (projectUid.HasValue)
+      if (!projectUid.HasValue)
       {
-        if (projectProxy == null)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-             "Missing project proxy to get legacy project ID for project UID"));
-        }
-        projectId = projectProxy.GetProjectId(projectUid.ToString(), customHeaders);
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
       }
+      if (authProjectsStore == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing authenticated projects store"));
+      }
+      if (!authProjectsStore.ProjectsByUid.ContainsKey(projectUid.ToString()))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing Project"));
+      }
+      long projectId = authProjectsStore.ProjectsByUid[projectUid.ToString()].projectId;
+      if (projectId <= 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project ID"));
+      }
+      return projectId;
     }
   }
 }

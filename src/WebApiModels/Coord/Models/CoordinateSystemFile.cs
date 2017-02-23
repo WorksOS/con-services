@@ -20,6 +20,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Models
         /// </summary>
         /// 
         [JsonProperty(PropertyName = "csFileContent", Required = Required.Always)]
+        [Required]
         public byte[] csFileContent { get; private set; }
 
         /// <summary>
@@ -27,6 +28,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Models
         /// </summary>
         /// 
         [JsonProperty(PropertyName = "csFileName", Required = Required.Always)]
+        [Required]
         [ValidFilename(MAX_FILE_NAME_LENGTH)]
         [MaxLength(MAX_FILE_NAME_LENGTH)]
         public string csFileName { get; private set; }

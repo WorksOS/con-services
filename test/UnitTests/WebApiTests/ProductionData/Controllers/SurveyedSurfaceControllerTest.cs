@@ -5,6 +5,7 @@ using Moq;
 using VSS.Raptor.Service.WebApi.ProductionData.Controllers;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
 using VSS.Raptor.Service.Common.Contracts;
+using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 
@@ -40,7 +41,9 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
       SurveyedSurfaceRequest request = CreateRequest();
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
-      SurveyedSurfaceController controller = new SurveyedSurfaceController(mockRaptorClient.Object, mockLogger.Object);
+      var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
+
+      SurveyedSurfaceController controller = new SurveyedSurfaceController(mockRaptorClient.Object, mockLogger.Object, mockAuthStore.Object);
 
       ContractExecutionResult result = controller.Get(request.projectId.Value);
 
@@ -60,8 +63,9 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
       SurveyedSurfaceRequest request = CreateRequest();
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
+      var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
 
-      SurveyedSurfaceController controller = new SurveyedSurfaceController(mockRaptorClient.Object, mockLogger.Object);
+      SurveyedSurfaceController controller = new SurveyedSurfaceController(mockRaptorClient.Object, mockLogger.Object, mockAuthStore.Object);
 
       ContractExecutionResult result = controller.Post(request);
 
@@ -81,8 +85,9 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
       SurveyedSurfaceRequest request = CreateRequest();
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
+      var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
 
-      SurveyedSurfaceController controller = new SurveyedSurfaceController(mockRaptorClient.Object, mockLogger.Object);
+      SurveyedSurfaceController controller = new SurveyedSurfaceController(mockRaptorClient.Object, mockLogger.Object, mockAuthStore.Object);
 
       ContractExecutionResult result = controller.GetDel(request.projectId.Value, request.SurveyedSurface.id);
 
@@ -102,7 +107,8 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
       SurveyedSurfaceRequest request = CreateRequest();
       var mockRaptorClient = new Mock<IASNodeClient>();
       var mockLogger = new Mock<ILoggerFactory>();
-      SurveyedSurfaceController controller = new SurveyedSurfaceController(mockRaptorClient.Object, mockLogger.Object);
+      var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
+      SurveyedSurfaceController controller = new SurveyedSurfaceController(mockRaptorClient.Object, mockLogger.Object, mockAuthStore.Object);
       ContractExecutionResult result = controller.PostPut(request);
 
       // Assert

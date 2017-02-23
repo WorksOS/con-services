@@ -33,11 +33,10 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
     }
 
     [TestMethod()]
-    [ExpectedException(typeof(ServiceException))]
     public void ValidateFailTest()
     {
       TemperatureWarningLevels range = TemperatureWarningLevels.CreateTemperatureWarningLevels(700, 300);
-      range.Validate();
+      Assert.ThrowsException<ServiceException>(() => range.Validate());
     }
   }
 }

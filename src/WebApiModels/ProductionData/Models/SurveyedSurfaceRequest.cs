@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
@@ -16,6 +17,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "SurveyedSurface", Required = Required.Always)]
+    [Required]
     public DesignDescriptor SurveyedSurface { get; private set; }
 
     /// <summary>
@@ -23,6 +25,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "SurveyedUtc", Required = Required.Always)]
+    [Required]
     public DateTime SurveyedUtc { get; private set; }
 
     /// <summary>

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters;
 using VSS.Raptor.Service.Common.Filters.Authentication;
+using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Proxies;
@@ -40,27 +41,27 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// </summary>
     private readonly ILoggerFactory logger;
     /// <summary>
-    /// Proxy for getting projects from master data. Used to convert project UID into project ID for Raptor.
-    /// </summary>
-    private readonly IProjectProxy projectProxy;
-    /// <summary>
     /// Proxy for getting geofences from master data. Used to get boundary for Raptor using given geofenceUid.
     /// </summary>
     private readonly IGeofenceProxy geofenceProxy;
     /// <summary>
+    /// Used to get list of projects for customer
+    /// </summary>
+    private readonly IAuthenticatedProjectsStore authProjectsStore;
+    /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    /// <param name="projectProxy">Proxy client for getting projects for converting from project UID to project ID</param>
     /// <param name="geofenceProxy">Proxy client for getting geofences for boundaries</param>
     /// <param name="logger">Logger</param>
     /// <param name="raptorClient">Raptor client</param>
-    public CCATileController(IProjectProxy projectProxy, IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient)
+    /// <param name="authProjectsStore">Authenticated projects store</param>
+    public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient, IAuthenticatedProjectsStore authProjectsStore)
     {
-      this.projectProxy = projectProxy;
       this.geofenceProxy = geofenceProxy;
       this.logger = logger;
       this.log = logger.CreateLogger<CCATileController>();
       this.raptorClient = raptorClient;
+      this.authProjectsStore = authProjectsStore;
     }
     /// <summary>
     /// Supplies tiles of rendered CCA data overlays.
@@ -81,7 +82,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [NotLandFillProjectVerifier]
     [System.Web.Http.Route("api/v1/ccatiles/png")]
     [System.Web.Http.HttpGet]
-    public BinaryImageResponseContainer Get
+    public byte[] Get
     (
       [FromUri] long projectId,
       [FromUri] long assetId,
@@ -104,11 +105,11 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
       if (tileResult != null)
       {
-        return new BinaryImageResponseContainer()
+        if (tileResult != null)
         {
-          payload = tileResult.TileData,
-          code = tileResult.TileOutsideProjectExtents.ToString()
-        };
+          Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+          return tileResult.TileData;
+        }
       }
 
       return null;
@@ -134,7 +135,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [NotLandFillProjectWithUIDVerifier]
     [System.Web.Http.Route("api/v2/ccatiles/png")]
     [System.Web.Http.HttpGet]
-    public BinaryImageResponseContainer Get
+    public byte[] Get
     (
       [FromUri] Guid? projectUid,
       [FromUri] long assetId,
@@ -151,23 +152,16 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     {
       log.LogInformation("Get: " + Request.QueryString);
 
-      long projectId = 0;
-
-      ProjectID.CheckProjectId(projectUid, ref projectId, projectProxy, RequestUtils.GetCustomHeaders(Request.Headers));
+      long projectId = ProjectID.GetProjectId(projectUid, authProjectsStore);
 
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
 
       var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
-
       if (tileResult != null)
       {
-        return new BinaryImageResponseContainer()
-        {
-          payload = tileResult.TileData,
-          code = tileResult.TileOutsideProjectExtents.ToString()
-        };
+        Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+        return tileResult.TileData;
       }
-
       return null;
     }
 

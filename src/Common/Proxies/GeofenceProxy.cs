@@ -23,7 +23,7 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// Gets the geofence boundary in WKT format for a given UID.
     /// </summary>
     /// <param name="geofenceUid">The geofence UID</param>
-    /// <param name="customHeaders">The custom headers for the request (authorization, userUId and customerUId)</param>
+    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
     /// <returns></returns>
     public string GetGeofenceBoundary(string geofenceUid, IDictionary<string, string> customHeaders = null)
     {

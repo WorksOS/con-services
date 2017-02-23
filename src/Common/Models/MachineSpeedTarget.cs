@@ -20,6 +20,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </value>
     [Range(0, 65535)]
     [JsonProperty(PropertyName = "MinTargetMachineSpeed", Required = Required.Always)]
+    [Required]
     public ushort MinTargetMachineSpeed { get; private set; }
 
     /// <summary>
@@ -30,6 +31,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </value>
     [Range(0, 65535)]
     [JsonProperty(PropertyName = "MaxTargetMachineSpeed", Required = Required.Always)]
+    [Required]
     public ushort MaxTargetMachineSpeed { get; private set; }
 
 

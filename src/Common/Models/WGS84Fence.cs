@@ -1,5 +1,6 @@
 ﻿
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace VSS.Raptor.Service.Common.Models
 {
@@ -17,7 +18,8 @@ namespace VSS.Raptor.Service.Common.Models
         ///     required to be the same).
         /// </summary>
         [MoreThanTwoPointsAttribute]
-        [JsonProperty(PropertyName = "points", Required = Required.Always)]      
+        [JsonProperty(PropertyName = "points", Required = Required.Always)]
+        [Required]
         public WGSPoint[] points { get; private set; }
 
         /// <summary>

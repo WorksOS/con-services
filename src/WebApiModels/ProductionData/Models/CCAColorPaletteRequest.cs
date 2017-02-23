@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -17,6 +18,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
+    [Required]
     public long assetId { get; private set; }
 
     /// <summary>

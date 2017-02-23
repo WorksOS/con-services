@@ -10,13 +10,13 @@ namespace VSS.Raptor.Service.Common.Proxies
   /// <summary>
   /// Production Data Server client implementation
   /// </summary>
-  public class TAGProcessor : ITagProcessor
+  public class TagProcessor : ITagProcessor
   {
     private readonly ILogger log;
 
-    public TAGProcessor(ILoggerFactory logger)
+    public TagProcessor(ILoggerFactory logger)
     {
-      log = logger.CreateLogger<TAGProcessor>();
+      log = logger.CreateLogger<TagProcessor>();
     }
     /// <summary>
     /// PDSClient implementation
