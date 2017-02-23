@@ -13,10 +13,9 @@
         "Microsoft.Extensions.Logging.Debug": "1.0.0",
         "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
         "Microsoft.Extensions.DependencyInjection": "1.1.0",
-        "ConfigurationStore.netcore": "1.0.4",
-        "VSS.Interfaces.netcore": "1.0.0",
-        "Repositories": "1.0.0-*",
-        "MasterDataRepos.netcore": "1.0.2"
+        "MasterDataRepos.netcore": "1.0.24",
+        "ConfigurationStore.netcore": "1.0.10",
+        "VSS.Interfaces.netcore": "1.0.1"
     },
 
     "frameworks": {

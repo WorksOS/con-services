@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using VSS.TagFileAuth.Service.WebApi.Enums;
 using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
@@ -42,15 +43,15 @@ namespace VSS.TagFileAuth.Service.Executors
           5	InvalidOnGroundFlag	  NoValidCellPassesInTagfile
           6	InvalidPosition	      NoValidCellPassesInTagfile
          */
+
+         result = request.error == TagFileErrorsEnum.None;
       }
 
-      result = true;
-
-      if (true)//determine here if successful
+      try
       {
         return TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(result);
       }
-      else
+      catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to create an alert for tag file processing error"));

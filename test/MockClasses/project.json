@@ -9,8 +9,8 @@
         "log4net.netcore": "3.0.0",
         "Microsoft.Extensions.Logging": "1.1.0",
         "WebApi": "1.0.0-*",
-        "Repositories": "1.0.0-*",
-        "MasterDataRepos.netcore": "1.0.2"
+        "MasterDataRepos.netcore": "1.0.24",
+        "ConfigurationStore.netcore": "1.0.10"
     },
 
     "frameworks": {

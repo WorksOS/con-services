@@ -27,7 +27,7 @@ namespace VSS.TagFileAuth.Service.WebApi.Filters
       {
         await _next.Invoke(context);
       }
-      catch (AuthenticationException ex)
+      catch (AuthenticationException)
       {
         context.Response.StatusCode = 401;
       }

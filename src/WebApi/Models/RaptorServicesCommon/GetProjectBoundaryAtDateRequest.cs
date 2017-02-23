@@ -52,7 +52,7 @@ namespace VSS.TagFileAuth.Service.Models.RaptorServicesCommon
     /// <summary>
     /// Example for Help
     /// </summary>
-    public static GetProjectBoundaryAtDateRequest HelpSample
+    public static new GetProjectBoundaryAtDateRequest HelpSample
     {
       get
       {
