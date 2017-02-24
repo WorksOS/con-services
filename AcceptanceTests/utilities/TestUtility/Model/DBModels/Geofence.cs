@@ -1,4 +1,5 @@
 ﻿using System;
+using TestUtility.Model.Enums;
 
 namespace TestUtility.Model.DBModels
 {

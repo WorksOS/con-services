@@ -4,6 +4,6 @@ namespace TestUtility.Model.WebApi
 {
     public class AssetCountResult
     {
-        public List<CategoryCount> countData { get; set; }
+       public List<CategoryCount> countData { get; set; }
     }
 }

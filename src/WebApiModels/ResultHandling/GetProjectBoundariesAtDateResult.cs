@@ -1,4 +1,11 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 ﻿using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
+﻿using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
 {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Web.Http;
 using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
 using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
@@ -9,7 +8,7 @@ using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.Controllers
 {
-  public class NotificationController : ApiController
+  public class NotificationController : Controller
   {
     /// <summary>
     /// Repository factory for use by executor
@@ -61,8 +60,23 @@ namespace VSS.TagFileAuth.Service.Controllers
     [HttpPost]
     public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody]TagFileProcessingErrorRequest request)
     {
+      logger.LogInformation("PostTagFileProcessingError: {0}", Request.QueryString);
+      
       request.Validate();
-      return RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory).Process(request) as TagFileProcessingErrorResult;
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory).Process(request) as TagFileProcessingErrorResult;
+      
+      if (result.result) 
+      {
+        var infoMessage = string.Format("TAG file was processed successfully. File name: {0}, asset ID: {1}", request.tagFileName, request.assetId);
+        logger.LogInformation(infoMessage);
+      }
+      else
+      {
+        var errorMessage = string.Format("TAG file failed to be processed. File name: {0}, asset ID: {1}, error: {2}", request.tagFileName, request.assetId, request.error);
+        logger.LogError(errorMessage);
+      }
+      
+      return result;
     }
   }
 }

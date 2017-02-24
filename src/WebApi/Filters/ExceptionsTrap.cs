@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using VSS.TagFileAuth.Service.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.WebApi.Filters
 {
@@ -26,7 +26,7 @@ namespace VSS.TagFileAuth.Service.WebApi.Filters
       {
         await _next.Invoke(context);
       }
-      catch (AuthenticationException ex)
+      catch (AuthenticationException)
       {
         context.Response.StatusCode = 401;
       }

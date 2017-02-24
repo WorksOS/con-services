@@ -1,26 +1,26 @@
 #!/bin/bash
 echo "Accept tests are starting .... "
-echo "Wait for 60 seconds"
-sleep 60s
-echo "Check the database and kafka to see if port is available"
+echo "Wait for 30 seconds"
+sleep 30s
+echo "Check the database to see if port is available"
 # Polling the database and kafka status before test
 /bin/bash wait-for-it.sh db:3306 -t 0
-/bin/bash wait-for-it.sh kafka:9092 -t 0
-echo "Wait for 120 seconds"
-sleep 120s
+#/bin/bash wait-for-it.sh kafka:9092 -t 0
+echo "Wait for 20 seconds"
+sleep 20s
 # Run the component tests
 echo "Run the component tests"
 echo "KafkaTests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/KafkaTestsResults project=KafkaTests
+#dotnet TestRun/TestRun.dll results=/testresults/KafkaTestsResults project=KafkaTests
 echo "KafkaTests finished"
 
 echo "RepositoryTests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestsResults project=RepositoryTests
+#dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestsResults project=RepositoryTests
 echo "RepositoryTests finished"
 
 echo "Run the component/acceptance tests"
 echo "EventTests event tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/EventTestsResults project=EventTests
+#dotnet TestRun/TestRun.dll results=/testresults/EventTestsResults project=EventTests
 echo "EventTests event tests finished"
 
 echo "WebApiTests starting...."
@@ -28,7 +28,7 @@ dotnet TestRun/TestRun.dll results=/testresults/WebApiTestsResults project=WebAp
 echo "WebApiTests finished"
 
 echo "Run Integration tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/IntegrationTestResults project=IntegrationTests
+#dotnet TestRun/TestRun.dll results=/testresults/IntegrationTestResults project=IntegrationTests
 echo "Integration tests finished"
 echo " "
 echo " "

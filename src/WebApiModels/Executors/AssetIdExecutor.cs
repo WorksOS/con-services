@@ -76,11 +76,11 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 
       result = !((legacyAssetId == -1) && (serviceType == 0));
 
-      if (true)
+      try
       {
         return GetAssetIdResult.CreateGetAssetIdResult(result, legacyAssetId, serviceType);
       }
-      else // todo determine if exception e.g. bad parameters?
+      catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to get legacy asset id"));

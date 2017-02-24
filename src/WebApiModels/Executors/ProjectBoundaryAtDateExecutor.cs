@@ -1,7 +1,14 @@
 ﻿using System.Net;
+using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.ResultHandling;
+using VSS.TagFileAuth.Service.WebApi.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
 using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.ResultHandling;
+using VSS.TagFileAuth.Service.WebApi.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 {
@@ -38,11 +45,11 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       //};
 
 
-      if (true)//determine here if successful
+      try
       {
         return GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(result, fenceContainer);
       }
-      else
+      catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to get project boundary"));

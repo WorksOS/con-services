@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;

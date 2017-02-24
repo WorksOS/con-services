@@ -23,7 +23,31 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsTrue(result.result, "executor didn't process TagFileProcessingError");
+      Assert.IsFalse(result.result, "executor processed TagFileProcessingError");
+    }
+
+    [TestMethod]
+    public void CanCallTagFileProcessingErrorExecutorValidInputWithError()
+    {
+      TagFileProcessingErrorRequest TagFileProcessingErrorRequest = TagFileProcessingErrorRequest.HelpSample;
+      TagFileProcessingErrorResult TagFileProcessingErrorResult = new TagFileProcessingErrorResult();
+      var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory).Process(TagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
+      Assert.IsNotNull(result, "executor returned nothing");
+      Assert.IsFalse(result.result, "executor didn't process TagFileProcessingError without error");
+    }
+
+    [TestMethod]
+    public void CanCallTagFileProcessingErrorExecutorValidInputWithoutError()
+    {
+      TagFileProcessingErrorRequest TagFileProcessingErrorRequest = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(123, "Who Cares.tag", TagFileErrorsEnum.None);
+      TagFileProcessingErrorResult TagFileProcessingErrorResult = new TagFileProcessingErrorResult();
+      var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory).Process(TagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
+      Assert.IsNotNull(result, "executor returned nothing");
+      Assert.IsTrue(result.result, "executor didn't process TagFileProcessingError with error");
     }
 
     [TestMethod]

@@ -46,23 +46,49 @@ namespace VVSS.TagFileAuth.Service.Controllers
       public GetProjectIdResult PostProjectId([FromBody]GetProjectIdRequest request)
       {
         request.Validate();
-        return RequestExecutorContainer.Build<ProjectIdExecutor>(factory).Process(request) as GetProjectIdResult;
-      }
+        var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory).Process(request) as GetProjectIdResult;
 
-      /// <summary>
-      /// Gets the project boundary for the specified project if it is active at the specified date time. 
-      /// </summary>
-      /// <param name="request">Details of the project and date time</param>
-      /// <returns>
-      /// The project boundary as a list of WGS84 lat/lng points in radians.
-      /// </returns>
-      /// <executor>ProjectBoundaryAtDateExecutor</executor>
-      [Route("api/v1/project/getBoundary")]
+        if (result.result)
+        {
+          var infoMessage = string.Format("Valid Project ID was received successfully. Asset ID: {0}", request.assetId);
+          logger.LogInformation(infoMessage);
+        }
+        else
+        {
+          var errorMessage = string.Format("Valid Project ID failed to be received. Asset ID: {0}", request.assetId);
+          logger.LogError(errorMessage);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Gets the project boundary for the specified project if it is active at the specified date time. 
+    /// </summary>
+    /// <param name="request">Details of the project and date time</param>
+    /// <returns>
+    /// The project boundary as a list of WGS84 lat/lng points in radians.
+    /// </returns>
+    /// <executor>ProjectBoundaryAtDateExecutor</executor>
+    [Route("api/v1/project/getBoundary")]
       [HttpPost]
       public GetProjectBoundaryAtDateResult PostProjectBoundary([FromBody]GetProjectBoundaryAtDateRequest request)
       {
         request.Validate();
-        return RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory).Process(request) as GetProjectBoundaryAtDateResult;
+        var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory).Process(request) as GetProjectBoundaryAtDateResult;
+
+        if (result.result)
+        {
+          var infoMessage = string.Format("Project boundary was received successfully. Tag file data/time: {0}", request.tagFileUTC);
+          logger.LogInformation(infoMessage);
+        }
+        else
+        {
+          var errorMessage = string.Format("No Project boundary was received. Tag file data/time: {0}", request.tagFileUTC);
+          logger.LogError(errorMessage);
+        }
+
+        return result;
       }
 
       /// <summary>
@@ -78,7 +104,20 @@ namespace VVSS.TagFileAuth.Service.Controllers
       public GetProjectBoundariesAtDateResult PostProjectBoundaries([FromBody]GetProjectBoundariesAtDateRequest request)
       {
         request.Validate();
-        return RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory).Process(request) as GetProjectBoundariesAtDateResult;
+        var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory).Process(request) as GetProjectBoundariesAtDateResult;
+
+      if (result.result)
+        {
+          var infoMessage = string.Format("Project boundaries were received successfully. Asset ID: {0}, tag file data/time: {1}", request.tagFileUTC);
+          logger.LogInformation(infoMessage);
+        }
+        else
+        {
+          var errorMessage = string.Format("No Project boundaries was received. Asset ID: {0}, tag file data/time: {1}", request.tagFileUTC);
+          logger.LogError(errorMessage);
+        }
+
+      return result;
       }
     }
   }

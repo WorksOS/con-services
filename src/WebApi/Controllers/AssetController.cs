@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using VSS.TagFileAuth.Service.WebApi.Interfaces;
+using VSS.TagFileAuth.Service.WebApi.Executors;
 using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.Models;
 using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
@@ -39,8 +41,8 @@ namespace VSS.TagFileAuth.Service.WebApi.Controllers
     ///      Radio serial may not be present in the tag file. The logic below replaces the 'john doe' handling in Raptor for these tag files.
     ///      Special case: Allow manual import of tag file if user has manual 3D subscription.
     /// </summary>
-    /// <returns>AssetUid</returns>
-    /// <executor>AssetCountExecutor</executor>
+    /// <returns>AssetUid and True for success, False for failure</returns>
+    /// <executor>AssetIdExecutor</executor>
     [Route("api/v1/asset/getId")]
     [HttpPost]
     public GetAssetIdResult Post([FromBody]GetAssetIdRequest request)
