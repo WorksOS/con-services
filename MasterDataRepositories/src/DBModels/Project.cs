@@ -36,6 +36,9 @@ namespace VSS.Project.Data.Models
     public DateTime? SubscriptionEndDate { get; set; }
     public string GeometryWKT { get; set; }
 
+    public int ServiceTypeID { get; set; } = 0;
+    public DateTime? SubscriptionStartDate { get; set; }
+
     public override bool Equals(object obj)
     {
       var otherProject = obj as Project;

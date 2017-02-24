@@ -23,6 +23,7 @@ namespace VSS.Project.Data
       log = logger.CreateLogger<ProjectRepository>();
     }
 
+    #region store
     public async Task<int> StoreEvent(IProjectEvent evt)
     {
       const string polygonStr = "POLYGON";
@@ -319,6 +320,10 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
+    #endregion store
+
+
+    #region associate
     private async Task<int> AssociateProjectCustomer(Models.CustomerProject customerProject, Models.CustomerProject existing)
     {
       var upsertedCount = 0;
@@ -395,6 +400,10 @@ namespace VSS.Project.Data
       log.LogDebug("ProjectRepository/AssociateProjectGeofence: can't create as already exists projectGeofence={0}", JsonConvert.SerializeObject(projectGeofence));
       return upsertedCount;
     }
+    #endregion associate
+
+
+    #region getters
 
     /// <summary>
     /// There may be 0 or n subscriptions for this project. None/many may be current. 
@@ -426,6 +435,37 @@ namespace VSS.Project.Data
       return project;
     }
 
+    /// <summary>
+    /// There may be 0 or n subscriptions for this project. None/many may be current. 
+    /// This method just gets ANY one of these or no subs (SubscriptionUID == null)
+    /// We don't care, up to the calling code to decipher.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Models.Project>> GetProjectAndSubscriptions(long legacyProjectID, DateTime validAtDate)
+    {
+      await PerhapsOpenConnection();
+
+      var projectSubList = (await Connection.QueryAsync<Models.Project>
+          (@"SELECT 
+                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
+                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
+              FROM Project p 
+                JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
+                JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
+                LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
+                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
+              WHERE p.LegacyProjectID = @legacyProjectID 
+                AND p.IsDeleted = 0
+                AND @validAtDate BETWEEN s.StartDate AND s.EndDate",
+            new { legacyProjectID, validAtDate }
+          ));
+
+      PerhapsCloseConnection();
+      return projectSubList;
+    }
     /// <summary>
     /// gets only 1 row for a particular sub. only 1 projectUID and be associated with a sub
     /// </summary>
@@ -668,6 +708,8 @@ namespace VSS.Project.Data
       PerhapsCloseConnection();
       return projects;
     }
+    #endregion getters
+
 
   }
 }

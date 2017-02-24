@@ -22,7 +22,7 @@
         "System.Data.Common": "4.3.0",
         "TestUtility": "1.0.0-*",
         "KafkaConsumer.netcore": "*",
-        "MasterDataRepos.netcore": "1.0.24"
+        "MasterDataRepos.netcore": "1.0.29"
     },
   "frameworks": {
     "netcoreapp1.1": {

@@ -35,6 +35,6 @@
         "Microsoft.Extensions.Logging.Console": "1.1.0",
         "Microsoft.Extensions.Logging.Debug": "1.1.0",
         "ConfigurationStore.netcore": "*",
-        "MasterDataRepos.netcore": "1.0.24"
+        "MasterDataRepos.netcore": "1.0.29"
     }
 }
