@@ -1,26 +1,21 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using VSS.TagFileAuth.Service.WebApi.Models.RaptorServicesCommon;
 
 namespace VSS.TagFileAuth.Service.Models.RaptorServicesCommon
 {
   /// <summary>
   /// The request representation used to request the boundary of a project that is active at a specified date time.
   /// </summary>
-  public class GetProjectBoundaryAtDateRequest : ProjectID //, IValidatable//, IServiceDomainObject, IHelpSample
+  public class GetProjectBoundaryAtDateRequest //: ProjectID //, IValidatable//, IServiceDomainObject, IHelpSample
   {
-    /*
-        /// <summary>
-        /// The id of the project to get the boundary of. 
-        /// </summary>
-        [Required]
-        [JsonProperty(PropertyName = "projectId", Required = Required.Always)]
-        public long projectId { get; private set; }
-    */
+    /// <summary>
+    /// The id of the project to get the boundary of. 
+    /// </summary>
+    [Required]
+    [JsonProperty(PropertyName = "projectId", Required = Required.Always)]
+    public long projectId { get; private set; }
+
     /// <summary>
     /// The date time from the tag file which must be within the active project date range. 
     /// </summary>

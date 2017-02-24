@@ -81,6 +81,7 @@ namespace VSS.TagFileAuth.Service.Models.RaptorServicesCommon
     /// </summary>
     public void Validate()
     {
+      // ...
     }
   }
 }

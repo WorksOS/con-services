@@ -2,8 +2,6 @@
 using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
-using VSS.TagFileAuth.Service.WebApi.Models;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.Executors
 {
@@ -23,8 +21,6 @@ namespace VSS.TagFileAuth.Service.Executors
       GetProjectIdRequest request = item as GetProjectIdRequest;
 
       long projectId = -1;
-      bool result = false;
-
 
       if (request.assetId > 0)
       {
@@ -33,6 +29,8 @@ namespace VSS.TagFileAuth.Service.Executors
         //for asset with id request.assetId at time request.timeOfPosition 
         //and the customer owns the asset. (In VL multiple customers can have subscriptions
         //for an asset but only the owner gets the tag file data).
+
+        //projectId = 123;        
       }
       //VL merges this with a query for landfill projects here which can be ignored for BNA
 
@@ -43,11 +41,13 @@ namespace VSS.TagFileAuth.Service.Executors
       //result = true;
       //projectId = 645;  //Dummy data for testing
 
-      if (true)//determine here if successful
+      var result = projectId > 1;
+
+      try
       {
         return GetProjectIdResult.CreateGetProjectIdResult(result, projectId);
       }
-      else
+      catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to get project id"));

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.TagFileAuth.Service.WebApi.Models.RaptorServicesCommon;
 
 namespace VSS.TagFileAuth.Service.WebApi.Models
 {
@@ -10,18 +9,17 @@ namespace VSS.TagFileAuth.Service.WebApi.Models
   /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project  is known 
   /// which is when a tagfile is being manually imported by a user.
   /// </summary>
-  public class GetAssetIdRequest : ProjectID // , IValidatable//, IServiceDomainObject, IHelpSample
+  public class GetAssetIdRequest //: ProjectID // , IValidatable//, IServiceDomainObject, IHelpSample
   {
-    /*
-        /// <summary>
-        /// The id of the project into which the tagfile data should be processed. A value of -1 indicates 'unknown' 
-        /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project 
-        /// is known which is when a tagfile is being manually imported by a user.
-        /// </summary>
-        [Required]
-        [JsonProperty(PropertyName = "projectId", Required = Required.Always)]
-        public long projectId { get; private set; }
-    */
+    /// <summary>
+    /// The id of the project into which the tagfile data should be processed. A value of -1 indicates 'unknown' 
+    /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project 
+    /// is known which is when a tagfile is being manually imported by a user.
+    /// </summary>
+    [Required]
+    [JsonProperty(PropertyName = "projectId", Required = Required.Always)]
+    public long projectId { get; private set; }
+    
     /// <summary>
     /// The device type of the machine. Valid values are 0=Manual Device (John Doe machines) and 6=SNM940 (torch machines).
     /// </summary>
@@ -80,7 +78,7 @@ namespace VSS.TagFileAuth.Service.WebApi.Models
       if ((!string.IsNullOrEmpty(radioSerial)) ) // todo && ValidateDeviceType(deviceType) == true */)
         return true;
 
-      if (projectId.HasValue && projectId > 0)
+      if (projectId > 0)
         return true;
       return false;
     }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Web.Http;
 using VSS.Masterdata;
 using VSS.TagFileAuth.Service.Executors;
 using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
@@ -9,7 +8,7 @@ using VSS.TagFileAuth.Service.WebApi.Interfaces;
 
 namespace VSS.TagFileAuth.Service.Controllers
 {
-  public class NotificationController : ApiController
+  public class NotificationController : Controller
   {
     /// <summary>
     /// Repository factory for use by executor
@@ -61,6 +60,8 @@ namespace VSS.TagFileAuth.Service.Controllers
     [HttpPost]
     public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody]TagFileProcessingErrorRequest request)
     {
+      logger.LogInformation("PostTagFileProcessingError: {0}", Request.QueryString);
+      
       request.Validate();
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory).Process(request) as TagFileProcessingErrorResult;
       

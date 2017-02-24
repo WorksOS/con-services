@@ -1,5 +1,4 @@
-﻿using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-
+﻿
 namespace VSS.TagFileAuth.Service.ResultHandling
 {
   /// <summary>

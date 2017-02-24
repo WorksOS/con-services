@@ -2,7 +2,6 @@
 using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.Executors
 {
@@ -49,11 +48,11 @@ namespace VSS.TagFileAuth.Service.Executors
       //    ProjectID = 726
       //  }};
 
-      if (true)//determine here if successful
+      try
       {
         return GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(result, boundaries);
       }
-      else
+      catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to get project boundaries"));

@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
+namespace VSS.TagFileAuth.Service.ResultHandling
 {
   /// <summary>
   ///   This is an expected exception and should be ignored by unit test failure methods.

@@ -5,7 +5,6 @@ using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.ResultHandling;
 using VSS.TagFileAuth.Service.Executors;
 using System;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.Masterdata;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors

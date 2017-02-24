@@ -1,10 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System;
+using VSS.TagFileAuth.Service.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Models;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApi.Interfaces;
 using VSS.TagFileAuth.Service.WebApi.Executors;
 using VSS.Masterdata;
@@ -15,19 +14,6 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
   [TestClass]
   public class AssetIdExecutorTests : ExecutorBaseTests
   {
-    [TestMethod]
-    public void GetFactory()
-    {
-      IRepositoryFactory factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
-      Assert.IsNotNull(factory, "Unable to retrieve factory from DI");
-    }
-
-    [TestMethod]
-    public void GetLogger()
-    {
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-      Assert.IsNotNull(loggerFactory, "Unable to retrieve loggerFactory from DI");
-    }
     /****** todo
      *  // needed for TFAS
     public async Task<AssetDevice> GetAssociatedAsset(string radioSerial, string deviceType)
