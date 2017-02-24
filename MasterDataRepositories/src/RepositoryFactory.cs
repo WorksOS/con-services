@@ -12,17 +12,18 @@ namespace MasterDataConsumer
     private readonly ILogger log;
     private static readonly Dictionary<Type, object> container = new Dictionary<Type, object>();
 
-    public RepositoryFactory(IRepository<ICustomerEvent> custRepository, IRepository<IProjectEvent> projRepository,
-        IRepository<ISubscriptionEvent> subsRepository, IRepository<IGeofenceEvent> geoRepository, ILoggerFactory logger)
+    public RepositoryFactory(IRepository<IAssetEvent> assetRepository, IRepository<ICustomerEvent> custRepository, IRepository<IDeviceEvent> deviceRepository, 
+      IRepository<IGeofenceEvent> geoRepository, IRepository<IProjectEvent> projRepository, IRepository<ISubscriptionEvent> subsRepository, 
+      ILoggerFactory logger)
     {
       log = logger.CreateLogger<RepositoryFactory>();
       if (container.Any()) return;
 
       log.LogTrace("Registering repositories");
 
-      container.Add(typeof(IAssetEvent), custRepository);
+      container.Add(typeof(IAssetEvent), assetRepository);
       container.Add(typeof(ICustomerEvent), custRepository);
-      container.Add(typeof(IDeviceEvent), custRepository);
+      container.Add(typeof(IDeviceEvent), deviceRepository);
       container.Add(typeof(IGeofenceEvent), geoRepository);
       container.Add(typeof(IProjectEvent), projRepository);
       container.Add(typeof(ISubscriptionEvent), subsRepository);

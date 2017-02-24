@@ -9,6 +9,14 @@ using VSS.Asset.Data;
 using VSS.Asset.Data.Models;
 using System.Linq;
 using System.Collections.Generic;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Masterdata;
+using MasterDataConsumer;
+using VSS.Project.Data;
+using VSS.Customer.Data;
+using VSS.Device.Data;
+using VSS.Geofence.Data;
+using VSS.Project.Service.Repositories;
 
 namespace RepositoryTests
 {
@@ -34,11 +42,20 @@ namespace RepositoryTests
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddLogging()
         .AddSingleton<ILoggerFactory>(loggerFactory)
+        .AddSingleton<IRepositoryFactory, RepositoryFactory>()
+        .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
+        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
+        .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
+        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()          
+        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
         .BuildServiceProvider();
 
       var retrievedloggerFactory = serviceProvider.GetService<ILoggerFactory>();
       Assert.IsNotNull(retrievedloggerFactory);
-      assetContext = new AssetRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+
+      // assetContext = new AssetRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      assetContext = serviceProvider.GetRequiredService<IRepositoryFactory>().GetRepository<IAssetEvent>() as AssetRepository;
     }
 
     /// <summary>

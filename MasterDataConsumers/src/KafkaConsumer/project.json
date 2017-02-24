@@ -13,7 +13,7 @@
         "System.Reflection.TypeExtensions": "4.3.0",
         "ConfigurationStore.netcore": "*",
         "VSS.Interfaces.netcore": "1.0.1",
-        "MasterDataRepos.netcore": "1.0.29"
+        "MasterDataRepos.netcore": "1.0.30"
     },
 
   "frameworks": {
