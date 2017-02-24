@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using VSS.TagFileAuth.Service.WebApi.Interfaces;
-using VSS.TagFileAuth.Service.WebApi.Executors;
 using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.Models;
 using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.WebApi.Controllers
 {

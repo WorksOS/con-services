@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.TagFileAuth.Service.WebApi.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Models
 {

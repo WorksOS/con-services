@@ -41,7 +41,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         // todo use repo factory properly once interface available
         // todo in validate check that if !radioSerial and manual device type that there IS a projectID
         var projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
-        var p = projectRepo.GetProjectAndSubscriptions(request.projectId.Value, DateTime.UtcNow.Date);
+        var p = projectRepo.GetProjectAndSubscriptions(request.projectId, DateTime.UtcNow.Date);
         var projectSubs = p.Result.ToList();
         if (projectSubs.Count() > 0)
         {
