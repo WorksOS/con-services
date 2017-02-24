@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Logging;
 using System.Web.Http;
 using VSS.Masterdata;
-using VSS.TagFileAuth.Service.Executors;
-using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.ResultHandling;
-using VSS.TagFileAuth.Service.WebApi.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.Executors;
+using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.Controllers
 {

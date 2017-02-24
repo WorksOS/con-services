@@ -4,8 +4,8 @@ using Microsoft.Extensions.Logging;
 using MockClasses;
 using System;
 using log4netExtensions;
-using VSS.GenericConfiguration;
 using VSS.Masterdata;
+using VSS.GenericConfiguration;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -33,7 +33,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       serviceCollection.AddSingleton<IConfigurationStore, VSS.GenericConfiguration.GenericConfiguration>();
       serviceProvider = serviceCollection.BuildServiceProvider();
 
-      IRepositoryFactory f = serviceProvider.GetRequiredService<IRepositoryFactory>();
+     // var f = serviceProvider.GetRequiredService<IRepositoryFactory>();
     }
   }
 }

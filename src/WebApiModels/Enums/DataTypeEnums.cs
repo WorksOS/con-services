@@ -1,4 +1,4 @@
-﻿namespace VSS.TagFileAuth.Service.WebApi.Enums
+﻿namespace VSS.TagFileAuth.Service.WebApiModels.Enums
 {
   // todo put in table?
   public enum ServiceTypeEnumCG

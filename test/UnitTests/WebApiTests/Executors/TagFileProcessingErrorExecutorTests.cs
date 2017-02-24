@@ -1,12 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.TagFileAuth.Service.WebApi.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.ResultHandling;
-using VSS.TagFileAuth.Service.Executors;
 using System;
-using VSS.TagFileAuth.Service.WebApi.Enums;
 using VSS.Masterdata;
+using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.Executors;
+using VSS.TagFileAuth.Service.WebApiModels.Enums;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -17,11 +17,11 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     [TestMethod]
     public void CanCallTagFileProcessingErrorExecutorNoValidInput()
     {
-      TagFileProcessingErrorRequest TagFileProcessingErrorRequest = new TagFileProcessingErrorRequest();
-      TagFileProcessingErrorResult TagFileProcessingErrorResult = new TagFileProcessingErrorResult();
+      TagFileProcessingErrorRequest tagFileProcessingErrorRequest = new TagFileProcessingErrorRequest();
+      TagFileProcessingErrorResult tagFileProcessingErrorResult = new TagFileProcessingErrorResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory).Process(TagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.IsTrue(result.result, "executor didn't process TagFileProcessingError");
     }

@@ -1,12 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using VSS.TagFileAuth.Service.WebApi.Enums;
+using VSS.TagFileAuth.Service.WebApiModels.Enums;
 
-namespace VSS.TagFileAuth.Service.Models.RaptorServicesCommon
+namespace VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon
 {
   /// <summary>
   /// The request representation used to raise an alert for a tag file processing error if required.

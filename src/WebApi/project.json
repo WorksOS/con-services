@@ -1,7 +1,7 @@
 {
     "dependencies": {
         "Microsoft.NETCore.App": {
-            "version": "1.0.0",
+            "version": "1.1.0",
             "type": "platform"
         },
         "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
@@ -20,8 +20,10 @@
         "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1",
         "log4net.netcore": "3.0.0",
         "log4netExtensions.netcore": "1.0.1",
-        "MasterDataRepos.netcore": "1.0.24",
-        "ConfigurationStore.netcore": "1.0.10"
+        "ConfigurationStore.netcore": "*",
+        "VSS.Interfaces.netcore": "*",
+        "WebApiModels": "1.0.0-*",
+        "MasterDataRepos.netcore": "1.0.30"
     },
 
   "tools": {

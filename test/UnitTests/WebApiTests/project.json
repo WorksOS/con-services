@@ -17,8 +17,8 @@
         "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
         "MockClasses": "1.0.0-*",
         "WebApi": "1.0.0-*",
-        "MasterDataRepos.netcore": "1.0.24",
-        "ConfigurationStore.netcore": "1.0.10"
+        "ConfigurationStore.netcore": "1.0.10",
+        "MasterDataRepos.netcore": "1.0.29"
     },
 
    "frameworks": {

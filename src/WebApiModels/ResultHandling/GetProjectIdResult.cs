@@ -1,6 +1,6 @@
 ﻿using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.ResultHandling
+namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
 {
   /// <summary>
   /// The result representation of a get project id request.

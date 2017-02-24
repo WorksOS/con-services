@@ -53,6 +53,17 @@ namespace RepositoryTests
     }
 
     [TestMethod]
+    public void CustomerSchemaExists()
+    {
+      const string tableName = "Customer";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "CustomerUID", "Name", "fk_CustomerTypeID", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
     public void DeviceSchemaExists()
     {
       const string tableName = "Device";
@@ -73,6 +84,52 @@ namespace RepositoryTests
           };
       CheckSchema(tableName, columnNames);
     }
+
+    [TestMethod]
+    public void ProjectSchemaExists()
+    {
+      const string tableName = "Project";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "ProjectUID", "LegacyProjectID", "Name", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void CustomerProjectSchemaExists()
+    {
+      const string tableName = "CustomerProject";
+      List<string> columnNames = new List<string>
+          {
+            "fk_CustomerUID", "fk_ProjectUID", "LegacyCustomerID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void SubscriptionSchemaExists()
+    {
+      const string tableName = "Subscription";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "SubscriptionUID", "fk_CustomerUID", "fk_ServiceTypeID", "StartDate", "EndDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void ProjectSubscriptionSchemaExists()
+    {
+      const string tableName = "ProjectSubscription";
+      List<string> columnNames = new List<string>
+          {
+            "fk_ProjectUID", "fk_SubscriptionUID", "EffectiveDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+
 
     private void CheckSchema(string tableName, List<string> columnNames)
     {

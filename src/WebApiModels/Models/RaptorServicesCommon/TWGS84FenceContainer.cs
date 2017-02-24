@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace VSS.TagFileAuth.Service.Models.RaptorServicesCommon
+namespace VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon
 {
   public class TWGS84FenceContainer
   {

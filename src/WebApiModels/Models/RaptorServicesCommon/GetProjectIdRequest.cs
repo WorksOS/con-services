@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace VSS.TagFileAuth.Service.Models.RaptorServicesCommon
+namespace VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon
 {
   /// <summary>
   /// The request representation used to request the project Id that a specified asset is inside at a given location and date time.

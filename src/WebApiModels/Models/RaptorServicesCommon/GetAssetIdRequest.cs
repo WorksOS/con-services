@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.TagFileAuth.Service.WebApi.Models.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
 
-namespace VSS.TagFileAuth.Service.WebApi.Models
+namespace VSS.TagFileAuth.Service.WebApiModels.Models
 {
   /// <summary>
   /// The request representation used to request the asset Id and project monitoring subscription for a given machine whose tagfiles

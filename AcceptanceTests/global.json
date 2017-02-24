@@ -1,5 +1,5 @@
 {
-    "projects": [ "src", "test", "rdkafka-dotnet/src", "utilities", "../src" ],
+    "projects": [ "src", "test", "rdkafka-dotnet/src", "utilities", "../src", "." ],
   "sdk": {
     "version": "1.0.0-preview2-1-003177"
   }

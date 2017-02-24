@@ -1,10 +1,9 @@
 ﻿using System.Net;
-using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.ResultHandling;
-using VSS.TagFileAuth.Service.WebApi.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.Executors
+namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 {
   /// <summary>
   /// The executor which sends an alert if required for a tag file processing error.
@@ -25,12 +24,7 @@ namespace VSS.TagFileAuth.Service.Executors
 
       if (request.assetId > 0)
       {
-        //Create an alert if required for request.assetId, request.tagFileName and request.error.
-
-        //In VisionLink the user can set up an alert for these errors. Since there may be a lot of them
-        //he can set the frequency of reporting of the alert in hours (e.g. 6 hours) and we accummulate
-        //them and report one alert for the interval with the first and last occurence date time and the
-        //number of incidents
+        //Log these errors
         /*
             request.error         alert type
          -2	UnknownProject	      UnableToDetermineProjectID

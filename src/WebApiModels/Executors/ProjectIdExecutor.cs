@@ -1,11 +1,9 @@
 ﻿using System.Net;
-using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.ResultHandling;
-using VSS.TagFileAuth.Service.WebApi.Interfaces;
-using VSS.TagFileAuth.Service.WebApi.Models;
+using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.Executors
+namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 {
   /// <summary>
   /// The executor which gets the project id of the project for the requested asset location and date time.

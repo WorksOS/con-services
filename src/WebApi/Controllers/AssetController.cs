@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.TagFileAuth.Service.WebApi.Models;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using VSS.TagFileAuth.Service.WebApi.Interfaces;
-using VSS.TagFileAuth.Service.WebApi.Executors;
 using VSS.Masterdata;
+using VSS.TagFileAuth.Service.WebApiModels.Models;
+using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.Executors;
 
 namespace VSS.TagFileAuth.Service.WebApi.Controllers
 {
@@ -47,7 +47,6 @@ namespace VSS.TagFileAuth.Service.WebApi.Controllers
     {
       logger.LogInformation("GetAssetID: {0}", Request.QueryString);
 
-      // must have either radioSerial Or projectID
       var isRequestOk = request.Validate();
         //getAssetIdResult.getAssetIdDescriptor = new GetAssetIdDescriptor()
         //{ LegacyAssetId = -1, MachineLevel = "Unknown" }; // NG has no 'unknown' serviceType

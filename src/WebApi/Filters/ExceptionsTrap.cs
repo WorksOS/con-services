@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using VSS.TagFileAuth.Service.WebApi.Models;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.WebApi.Filters

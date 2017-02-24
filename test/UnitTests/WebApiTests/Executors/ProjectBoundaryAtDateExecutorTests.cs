@@ -1,12 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.TagFileAuth.Service.WebApi.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.TagFileAuth.Service.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.ResultHandling;
-using VSS.TagFileAuth.Service.Executors;
 using System;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.Masterdata;
+using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.WebApiModels.Executors;
+using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -30,7 +29,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     }
 
     [TestMethod]
-    public void CanCallGetPProjectBoundaryAtDateExecutorWithLegacyAssetId()
+    public void CanCallGetProjectBoundaryAtDateExecutorWithLegacyAssetId()
     {
       long legacyProjectID = 46534636436;
       var eventkeyDate = DateTime.UtcNow;

@@ -1,10 +1,15 @@
-﻿using System.Net;
-using VSS.TagFileAuth.Service.WebApi.Enums;
-using VSS.TagFileAuth.Service.WebApi.Interfaces;
-using VSS.TagFileAuth.Service.WebApi.Models;
+﻿using System;
+using System.Linq;
+using System.Net;
+using VSS.Device.Data;
+using VSS.Project.Data;
+using VSS.TagFileAuth.Service.WebApiModels.Enums;
+using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.Models;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.TagFileAuth.Service.WebApi.Executors
+namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 {
   public class AssetIdExecutor : RequestExecutorContainer
   {
@@ -31,26 +36,43 @@ namespace VSS.TagFileAuth.Service.WebApi.Executors
       {
         //Check for manual 3D subscription for customer, Only allowed to process tag file if project Id is > 0.
         //If ok then set asset Id to -1 so Raptor knows it's a John Doe machine and set machineLevel to 18 
-        //CheckForManual3D(projectID, out assetID, out machineLevel);
+
+        // todo cache project and project subs
+        // todo use repo factory properly once interface available
+        // todo in validate check that if !radioSerial and manual device type that there IS a projectID
+        var projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
+        var p = projectRepo.GetProjectAndSubscriptions(request.projectId.Value, DateTime.UtcNow.Date);
+        var projectSubs = p.Result.ToList();
+        if (projectSubs.Count() > 0)
+        {
+          // todo
+          //CheckForManual3D(projectID, out assetID, out machineLevel);
+        }
       }
       else
       {
         //Radio serial in tag file. Use it to map to asset in VL.
-        // AssetIDCache.Init();
-        // todo var assetDevice = factory.GetAssetRepository().GetAssetDevice(request.radioSerial, ""); //  (DeviceTypeEnum)request.deviceType);
+        // todo cache asset
+        // todo use repo factory properly once interface available
+        DeviceTypeEnum whatever = (DeviceTypeEnum)request.deviceType;
 
-        //if (assetDevice.Result.LegacyAssetId > 0)
-        //{
-        //  legacyAssetId = assetDevice.Result.LegacyAssetId;
-        //  //  LoadServiceViewCache(assetID);
+        var assetRepo = factory.GetRepository<IDeviceEvent>() as DeviceRepository;
+        var a = assetRepo.GetAssociatedAsset(request.radioSerial, whatever.ToString()); //  (DeviceTypeEnum)request.deviceType);
+        var assetDevice = a.Result;
+        if (assetDevice != null)
+        {
+          legacyAssetId = assetDevice.LegacyAssetID;
 
-        //  //  machineLevel = (int)GetProjectServiceType(assetID, projectID);
-        //}
-          //else
-          //{
-          //  CheckForManual3D(projectID, out assetID, out machineLevel);
-          //}
+          // todo check subs
+          //  LoadServiceViewCache(assetID);
+          //  machineLevel = (int)GetProjectServiceType(assetID, projectID);
         }
+        else
+        {
+          // todo check subs
+          //  CheckForManual3D(projectID, out assetID, out machineLevel);
+        }
+      }
 
       result = !((legacyAssetId == -1) && (serviceType == 0));
 
@@ -65,11 +87,6 @@ namespace VSS.TagFileAuth.Service.WebApi.Executors
       }
 
     }
-
-    //protected override void ProcessErrorCodes()
-    //{
-    //  //Nothing to do
-    //}
   }
 }
 

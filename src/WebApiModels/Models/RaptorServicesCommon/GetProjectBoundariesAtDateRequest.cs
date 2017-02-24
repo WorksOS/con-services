@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace VSS.TagFileAuth.Service.Models.RaptorServicesCommon
+namespace VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon
 {
   /// <summary>
   /// The request representation used to request the boundaries of projects that are active at a specified date time and belong to the owner

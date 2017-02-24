@@ -1,4 +1,4 @@
-﻿namespace VSS.TagFileAuth.Service.Models.RaptorServicesCommon
+﻿namespace VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon
 {
   public class ProjectBoundaryPackage
   {

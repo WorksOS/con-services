@@ -1,4 +1,4 @@
-﻿namespace VSS.TagFileAuth.Service.WebApi.Enums
+﻿namespace VSS.TagFileAuth.Service.WebApiModels.Enums
 {
   public enum TagFileErrorsEnum
   {

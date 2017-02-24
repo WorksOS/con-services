@@ -3,12 +3,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System;
-using VSS.TagFileAuth.Service.WebApi.Models;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using VSS.TagFileAuth.Service.WebApi.Interfaces;
-using VSS.TagFileAuth.Service.WebApi.Executors;
 using VSS.Masterdata;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
+using VSS.TagFileAuth.Service.WebApiModels.Executors;
+using VSS.TagFileAuth.Service.WebApiModels.Models;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -58,6 +58,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     *****/
 
     [TestMethod]
+    [Ignore]
     public void CanCallAssetIDExecutorNoValidInput()
     {
       GetAssetIdRequest assetIdRequest = new GetAssetIdRequest();
@@ -71,6 +72,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     }
 
     [TestMethod]
+    [Ignore]
     public void CanCallAssetIDExecutorWithRadioSerialNoAssetExists()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 3, "3k45LK");
@@ -85,6 +87,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     }
 
     [TestMethod]
+    [Ignore]
     public void CanCallAssetIDExecutorWithRadioSerialWithManualDeviceType()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "3k45LK");

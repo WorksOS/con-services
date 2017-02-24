@@ -9,6 +9,13 @@ using VSS.TagFileAuth.Service.WebApi.Filters;
 using VSS.GenericConfiguration;
 using VSS.Masterdata;
 using MasterDataConsumer;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Asset.Data;
+using VSS.Customer.Data;
+using VSS.Device.Data;
+using VSS.Geofence.Data;
+using VSS.Project.Data;
+using VSS.Project.Service.Repositories;
 
 namespace WebApi
 {
@@ -53,7 +60,13 @@ namespace WebApi
 
       // Add framework services.
       services.AddApplicationInsightsTelemetry(Configuration);
-      services.AddTransient<IRepositoryFactory, RepositoryFactory>();
+      services.AddTransient<IRepositoryFactory, RepositoryFactory>()
+          .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
+          .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+          .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
+          .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
+          .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+          .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddMvc();
       //Configure swagger

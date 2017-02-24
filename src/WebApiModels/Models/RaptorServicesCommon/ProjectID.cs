@@ -2,7 +2,7 @@
 using System;
 
 
-namespace VSS.TagFileAuth.Service.WebApi.Models.RaptorServicesCommon
+namespace VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon
 {
   /// <summary>
   /// Raptor data model/project identifier.

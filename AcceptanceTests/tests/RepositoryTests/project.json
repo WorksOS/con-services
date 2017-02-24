@@ -1,26 +1,26 @@
 {
     "version": "1.0.0-*",
-
     "testRunner": "mstest",
-
     "dependencies": {
-        "dotnet-test-mstest": "1.1.1-preview",
-        "MSTest.TestFramework": "1.0.1-preview",
+        "dotnet-test-mstest": "1.1.2-preview",
+        "MSTest.TestFramework": "1.0.8-rc2",
         "log4net.netcore": "3.0.0",
         "log4netExtensions.netcore": "1.0.1",
-        "Microsoft.Extensions.Logging": "1.1.0",
-        "Microsoft.Extensions.Logging.Console": "1.0.0",
-        "Microsoft.Extensions.Logging.Debug": "1.0.0",
         "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-        "Microsoft.Extensions.DependencyInjection": "1.1.0",
-        "MasterDataRepos.netcore": "1.0.24",
-        "ConfigurationStore.netcore": "1.0.10",
-        "VSS.Interfaces.netcore": "1.0.1"
+        "System.Linq": "4.3.0",
+        "Microsoft.Extensions.Logging": "1.1.0",
+        "Microsoft.Extensions.Logging.Console": "1.1.0",
+        "Microsoft.Extensions.Logging.Debug": "1.1.0",
+        "WebApiModels": "1.0.0-*",
+        "MasterDataRepos.netcore": "1.0.30"
     },
 
     "frameworks": {
         "netcoreapp1.1": {
-            "imports": "dnxcore50",
+            "imports": [
+                "dnxcore50",
+                "portable-net45+win8"
+            ],
             "dependencies": {
                 "Microsoft.NETCore.App": {
                     "type": "platform",
@@ -31,7 +31,8 @@
     },
     "publishOptions": {
         "include": [
-            "appsettings.json"
+            "appsettings.json",
+            "log4nettest.xml"
         ]
     }
 }
