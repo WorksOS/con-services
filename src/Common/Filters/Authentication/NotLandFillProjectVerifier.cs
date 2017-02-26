@@ -1,10 +1,10 @@
 using System.Net;
 using System.Reflection;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
-using ActionFilterAttribute = System.Web.Http.Filters.ActionFilterAttribute;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace VSS.Raptor.Service.Common.Filters.Authentication
@@ -18,7 +18,7 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
     /// Occurs before the action method is invoked.
     /// </summary>
     /// <param name="actionContext">The action context.</param>
-    public void OnActionExecuting(ActionExecutingContext actionContext)
+    public override void OnActionExecuting(ActionExecutingContext actionContext)
     {
       object projectIdValue = null;
       if (actionContext.ActionArguments.ContainsKey("request"))
@@ -38,13 +38,14 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
       if (!(projectIdValue is long))
         return;
 
-      var authProjectsStore = actionContext.HttpContext.RequestServices.GetService<IAuthenticatedProjectsStore>();
+      var authProjectsStore = actionContext.HttpContext.RequestServices.GetRequiredService<IAuthenticatedProjectsStore>();
       if (authProjectsStore == null)
         return;
+      var customerUid = ((actionContext.HttpContext.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      var projectsById = authProjectsStore.GetProjectsById(customerUid);
+      if (!projectsById.ContainsKey((long) projectIdValue)) return;
 
-      if (!authProjectsStore.ProjectsById.ContainsKey((long) projectIdValue)) return;
-
-      if (authProjectsStore.ProjectsById[(long) projectIdValue].isLandFill)
+      if (projectsById[(long) projectIdValue].isLandFill)
         throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
             "Don't have access to the selected landfill project."

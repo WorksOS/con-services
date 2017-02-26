@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Net;
-using System.Web.Http;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.Common.Utilities;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Contracts;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
@@ -68,13 +64,13 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <returns>Execution result with a list of CCA data colour palettes.</returns>
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
-    [System.Web.Http.Route("api/v1/ccacolors")]
-    [System.Web.Http.HttpGet]
-    public CCAColorPaletteResult Get([FromUri] long projectId,
-                                     [FromUri] long assetId, 
-                                     [FromUri] DateTime? startUtc = null, 
-                                     [FromUri] DateTime? endUtc = null, 
-                                     [FromUri] int? liftId = null)
+    [Route("api/v1/ccacolors")]
+    [HttpGet]
+    public CCAColorPaletteResult Get([FromQuery] long projectId,
+                                     [FromQuery] long assetId, 
+                                     [FromQuery] DateTime? startUtc = null, 
+                                     [FromQuery] DateTime? endUtc = null, 
+                                     [FromQuery] int? liftId = null)
     {
       log.LogInformation("Get: " + Request.QueryString);
 
@@ -96,17 +92,18 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <returns>Execution result with a list of CCA data colour palettes.</returns>
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v2/ccacolors")]
-    [System.Web.Http.HttpGet]
-    public CCAColorPaletteResult Get([FromUri] Guid? projectUid,
-                                     [FromUri] long assetId,
-                                     [FromUri] DateTime? startUtc = null,
-                                     [FromUri] DateTime? endUtc = null,
-                                     [FromUri] int? liftId = null)
+    [Route("api/v2/ccacolors")]
+    [HttpGet]
+    public CCAColorPaletteResult Get([FromQuery] Guid? projectUid,
+                                     [FromQuery] long assetId,
+                                     [FromQuery] DateTime? startUtc = null,
+                                     [FromQuery] DateTime? endUtc = null,
+                                     [FromQuery] int? liftId = null)
     {
       log.LogInformation("Get: " + Request.QueryString);
+      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
 
-      long projectId = ProjectID.GetProjectId(projectUid, authProjectsStore);
+      long projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
 
       var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId);
       request.Validate();

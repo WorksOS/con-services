@@ -8,20 +8,36 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
 {
   public class AuthenticatedProjectStore : IAuthenticatedProjectsStore
   {
-    public Dictionary<long, ProjectDescriptor> ProjectsById { get; private set; }
-    public Dictionary<string, ProjectDescriptor> ProjectsByUid { get; private set; }
+    private readonly Dictionary<string, Dictionary<long, ProjectDescriptor>> customerProjectsById = 
+      new Dictionary<string, Dictionary<long, ProjectDescriptor>>(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Dictionary<string, ProjectDescriptor>> customerProjectsByUid = 
+      new Dictionary<string, Dictionary<string, ProjectDescriptor>>(StringComparer.OrdinalIgnoreCase);
 
-    public void SetAuthenticatedProjectList(List<ProjectDescriptor> projects)
+    public Dictionary<long, ProjectDescriptor> GetProjectsById(string customerUid)
+    {
+      return customerProjectsById[customerUid];
+    }
+
+    public Dictionary<string, ProjectDescriptor> GetProjectsByUid(string customerUid)
+    {
+      return customerProjectsByUid[customerUid];
+    }
+
+    public void SetAuthenticatedProjectList(string customerUid, List<ProjectDescriptor> projects)
     {
       var projectsById = new Dictionary<long, ProjectDescriptor>();
-      var projectsByUid = new Dictionary<string, ProjectDescriptor>();
+      var projectsByUid = new Dictionary<string, ProjectDescriptor>(StringComparer.OrdinalIgnoreCase);
       foreach (var project in projects)
       {
         projectsById.Add(project.projectId, project);
         projectsByUid.Add(project.projectUid, project);
       }
-      ProjectsById = projectsById;
-      ProjectsByUid = projectsByUid;
+      if (customerProjectsById.ContainsKey(customerUid))
+        customerProjectsById.Remove(customerUid);
+      customerProjectsById.Add(customerUid, projectsById);
+      if (customerProjectsByUid.ContainsKey(customerUid))
+        customerProjectsByUid.Remove(customerUid);
+      customerProjectsByUid.Add(customerUid, projectsByUid);
     }
   }
 }

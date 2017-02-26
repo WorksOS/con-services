@@ -18,7 +18,7 @@ namespace VSS.Raptor.Service.Common.Proxies
 
     public List<ProjectData> GetProjects(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      return GetList(customerUid, projectListCacheLife, "PROJECT_URL", customHeaders);
+      return GetList(customerUid, projectListCacheLife, "PROJECT_API_URL", customHeaders);
     }
   }
 }

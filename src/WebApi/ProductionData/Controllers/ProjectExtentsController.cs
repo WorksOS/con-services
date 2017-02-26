@@ -47,10 +47,10 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <executor>ProjectExtentsSubmitter</executor> 
     [ProjectIdVerifier]
     [ProjectUidVerifier]
-    [System.Web.Http.Route("api/v1/projectextents")]
-    [System.Web.Http.HttpPost]
+    [Route("api/v1/projectextents")]
+    [HttpPost]
 
-    public ProjectExtentsResult Post([System.Web.Http.FromBody] ExtentRequest request)
+    public ProjectExtentsResult Post([FromBody] ExtentRequest request)
     {
       return RequestExecutorContainer.Build<ProjectExtentsSubmitter>(logger, raptorClient, null).Process(request) as ProjectExtentsResult;
     }

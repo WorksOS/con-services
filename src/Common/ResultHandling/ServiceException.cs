@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
-using System.Net.Http;
 using System.Web.Http;
+using System.Net.Http;
 
 namespace VSS.Raptor.Service.Common.ResultHandling
 {

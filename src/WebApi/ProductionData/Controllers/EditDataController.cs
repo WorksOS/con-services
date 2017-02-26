@@ -66,10 +66,10 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/productiondata/getedits")]
-    [System.Web.Http.HttpPost]
+    [Route("api/v1/productiondata/getedits")]
+    [HttpPost]
 
-    public EditDataResult PostEditDataAcquire([System.Web.Http.FromBody] GetEditDataRequest request)
+    public EditDataResult PostEditDataAcquire([FromBody] GetEditDataRequest request)
     {
       request.Validate();
 
@@ -88,10 +88,10 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
     [ProjectWritableWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/productiondata/edit")]
-    [System.Web.Http.HttpPost]
+    [Route("api/v1/productiondata/edit")]
+    [HttpPost]
 
-    public ContractExecutionResult Post([System.Web.Http.FromBody]EditDataRequest request)
+    public ContractExecutionResult Post([FromBody]EditDataRequest request)
     {
       //Validate request
       request.Validate();

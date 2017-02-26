@@ -42,8 +42,8 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     /// </summary>
     /// <returns>The current Raptor configuration using the XML representation of the Velociraptor.Config.xml Raptor configuration file. All configuration options are included, not just the non-default setting in the actual configuration file.</returns>
     /// <executor>ConfigExecutor</executor>
-    [System.Web.Http.Route("api/v1/configuration")]
-    [System.Web.Http.HttpGet]
+    [Route("api/v1/configuration")]
+    [HttpGet]
 
     public ConfigResult Get()
     {

@@ -21,41 +21,11 @@ using VSS.Raptor.Service.Common.ResultHandling;
 namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
 {
     [TestClass]
-    [DeploymentItem(@"App_data\", "App_Data")]
     public class CoordinateSystemControllerTest
     {
         private const long PD_MODEL_ID = 544; // Dimensions 2012 project...
 
         #region Post
-        /// <summary>
-        /// Full integration test that requires a raptor stack running for posting a CS definition data.
-        /// </summary>
-        /// 
-        [TestMethod]        
-        [Ignore]
-        public void CS_PostCoordinateSytemFile_FullIntegration()
-        {
-            const string csFileName = "BootCamp 2012.dc";
-            var baseDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string csFilePath = Path.Combine(baseDir, "App_Data");
-            string csFileFullName = Path.Combine(csFilePath, csFileName);
-
-            Assert.IsTrue(File.Exists(csFileFullName), String.Format("Coordinate System definition file {0} does not exist.", csFileFullName));
-
-            ContractExecutionResult result = null;
-
-            byte[] csFileContent = ControllerTestUtil.FileToByteArray(csFileFullName);
-
-            CoordinateSystemFile request = CoordinateSystemFile.CreateCoordinateSystemFile(PD_MODEL_ID, csFileContent, csFileName);
-            var mockRaptorClient = new Mock<IASNodeClient>();
-            var mockLogger = new Mock<ILoggerFactory>();
-            var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
-            CoordinateSystemController controller = new CoordinateSystemController(mockRaptorClient.Object, mockLogger.Object, mockAuthStore.Object);
-            result = controller.Post(request);
-
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Message == "success", result.Message);
-        }
 
         /// <summary>
         ///  Uses the mock PDS client to post a CS file with successful result...
@@ -122,24 +92,6 @@ namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
     #endregion
 
     #region Get
-    /// <summary>
-    /// Full integration test that requires a raptor stack running for getting CS settings.
-    /// </summary>
-    /// 
-    [TestMethod]
-        [Ignore]
-        public void CS_GetCoordinateSytemSettings_FullIntegration()
-        {
-            var mockRaptorClient = new Mock<IASNodeClient>();
-            var mockLogger = new Mock<ILoggerFactory>();
-            var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
-
-            CoordinateSystemController controller = new CoordinateSystemController(mockRaptorClient.Object, mockLogger.Object, mockAuthStore.Object);
-            ContractExecutionResult result = controller.Get(PD_MODEL_ID);
-
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Message == "success", result.Message);
-        }
 
         /// <summary>
         ///  Uses the mock PDS client to get CS settings with successful result...
@@ -197,40 +149,6 @@ namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
         #endregion
 
     #region Coordinate Conversion
-    /// <summary>
-    /// Full integration test that requires a raptor stack running for the coordinate conversion task.
-    /// </summary>
-    /// 
-    [TestMethod]
-        [Ignore]
-        public void CS_CoordinateConversion_FullIntegration()
-        {
-          var mockRaptorClient = new Mock<IASNodeClient>();
-          var mockLogger = new Mock<ILoggerFactory>();
-          var mockAuthStore = new Mock<IAuthenticatedProjectsStore>();
-          CoordinateSystemController controller = new CoordinateSystemController(mockRaptorClient.Object, mockLogger.Object, mockAuthStore.Object);
-          CoordinateConversionRequest request = CoordinateConversionRequest.HelpSample;
-          // NE to LL conversion...
-          CoordinateConversionResult result = controller.Post(request);
-
-          Assert.IsNotNull(result);
-          Assert.IsTrue(result.Message == "success", result.Message);
-
-          // LL to NE conversion...
-          CoordinateConversionRequest request1 = CoordinateConversionRequest.CreateCoordinateConversionRequest(request.projectId.Value, TwoDCoordinateConversionType.LatLonToNorthEast, result.conversionCoordinates);
-          
-          result = controller.Post(request1);
-
-          Assert.IsNotNull(result);
-          Assert.IsTrue(result.Message == "success", result.Message);
-
-          Assert.IsTrue(Math.Truncate(request.conversionCoordinates[0].x) == Math.Truncate(result.conversionCoordinates[0].x), "1st point East value does not match!");
-          Assert.IsTrue(Math.Truncate(request.conversionCoordinates[0].y) == Math.Truncate(result.conversionCoordinates[0].y), "1st point North value does not match!");
-          Assert.IsTrue(Math.Truncate(request.conversionCoordinates[1].x) == Math.Truncate(result.conversionCoordinates[1].x), "2nd point East value does not match!");
-          Assert.IsTrue(Math.Truncate(request.conversionCoordinates[1].y) == Math.Truncate(result.conversionCoordinates[1].y), "2nd point North value does not match!");
-          Assert.IsTrue(Math.Truncate(request.conversionCoordinates[2].x) == Math.Truncate(result.conversionCoordinates[2].x), "3rd point East value does not match!");
-          Assert.IsTrue(Math.Truncate(request.conversionCoordinates[2].y) == Math.Truncate(result.conversionCoordinates[2].y), "3rd point North value does not match!");
-        }
 
         /// <summary>
         ///  Uses the mock PDS client to post a coordinate conversion request with successful result...

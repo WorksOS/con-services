@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
@@ -19,11 +19,11 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
     /// <param name="endUtc">End date of the requested CCA data in UTC.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
     /// <returns>Execution result with a list of CCA data colour palettes.</returns>
-    CCAColorPaletteResult Get([FromUri] long projectId,
-                              [FromUri] long assetId,
-                              [FromUri] DateTime? startUtc = null,
-                              [FromUri] DateTime? endUtc = null,
-                              [FromUri] int? liftId = null);
+    CCAColorPaletteResult Get([FromQuery] long projectId,
+                              [FromQuery] long assetId,
+                              [FromQuery] DateTime? startUtc = null,
+                              [FromQuery] DateTime? endUtc = null,
+                              [FromQuery] int? liftId = null);
 
     /// <summary>
     /// Gets CCA data colour palette requested from Raptor with a project unique identifier.
@@ -34,10 +34,10 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
     /// <param name="endUtc">End date of the requested CCA data in UTC.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
     /// <returns>Execution result with a list of CCA data colour palettes.</returns>
-    CCAColorPaletteResult Get([FromUri] Guid? projectUid,
-                              [FromUri] long assetId,
-                              [FromUri] DateTime? startUtc = null,
-                              [FromUri] DateTime? endUtc = null,
-                              [FromUri] int? liftId = null);
+    CCAColorPaletteResult Get([FromQuery] Guid? projectUid,
+                              [FromQuery] long assetId,
+                              [FromQuery] DateTime? startUtc = null,
+                              [FromQuery] DateTime? endUtc = null,
+                              [FromQuery] int? liftId = null);
   }
 }

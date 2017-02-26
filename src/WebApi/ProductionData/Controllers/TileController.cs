@@ -1,9 +1,5 @@
-﻿using System.Linq;
-using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
-using VSS.Raptor.Service.Common.Filters;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Contracts;
@@ -11,10 +7,8 @@ using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
 using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
 
-
 namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
-{
- 
+{ 
   public class TileController : Controller, ITileContract
   {
     /// <summary>
@@ -55,9 +49,9 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/tiles")]
-    [System.Web.Http.HttpPost]
-    public TileResult Post([System.Web.Http.FromBody] TileRequest request)
+    [Route("api/v1/tiles")]
+    [HttpPost]
+    public TileResult Post([FromBody] TileRequest request)
     {
       request.Validate();
       var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
@@ -75,9 +69,9 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/tiles/png")]
-    [System.Web.Http.HttpPost]
-    public byte[] PostRaw([System.Web.Http.FromBody] TileRequest request)
+    [Route("api/v1/tiles/png")]
+    [HttpPost]
+    public byte[] PostRaw([FromBody] TileRequest request)
     {
       request.Validate();
       var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using VSS.Raptor.Service.WebApiModels.Coord.Models;
 using VSS.Raptor.Service.WebApiModels.Coord.ResultHandling;
 
@@ -24,7 +24,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Contracts
     /// <param name="projectId">The model/project identifier.</param>
     /// <returns>Execution result with Coordinate System settings.</returns>
     /// 
-    CoordinateSystemSettings Get([FromUri] long projectId);
+    CoordinateSystemSettings Get([FromRoute] long projectId);
     
     /// <summary>
     /// Gets Coordinate System settings from a Raptor's data model with a unique identifier.
@@ -32,7 +32,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Contracts
     /// <param name="projectUid">The model/project unique identifier.</param>
     /// <returns>Execution result with Coordinate System settings.</returns>
     /// 
-    CoordinateSystemSettings Get([FromUri] Guid projectUid);
+    CoordinateSystemSettings Get([FromRoute] Guid projectUid);
 
     /// <summary>
     /// Posts a list of coordinates to a Raptor's data model for conversion.

@@ -62,9 +62,9 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
       [NotLandFillProjectVerifier]
       [ProjectUidVerifier]
       [NotLandFillProjectWithUIDVerifier]
-      [System.Web.Http.Route("api/v1/profiles/productiondata")]
-      [System.Web.Http.HttpPost]
-      public ProfileResult Post([System.Web.Http.FromBody]ProfileProductionDataRequest request)
+      [Route("api/v1/profiles/productiondata")]
+      [HttpPost]
+      public ProfileResult Post([FromBody]ProfileProductionDataRequest request)
       {
         request.Validate();
         return RequestExecutorContainer.Build<ProfileProductionDataExecutor>(logger, raptorClient, null).Process(request) as ProfileResult;

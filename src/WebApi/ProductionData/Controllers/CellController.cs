@@ -54,9 +54,9 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
       [NotLandFillProjectVerifier]
       [ProjectUidVerifier]
       [NotLandFillProjectWithUIDVerifier]
-      [System.Web.Http.Route("api/v1/productiondata/cells/passes")]
-      [System.Web.Http.HttpPost]
-      public CellPassesResult Post([System.Web.Http.FromBody]CellPassesRequest request)
+      [Route("api/v1/productiondata/cells/passes")]
+      [HttpPost]
+      public CellPassesResult Post([FromBody]CellPassesRequest request)
       {
           return RequestExecutorContainer.Build<CellPassesExecutor>(logger, raptorClient, null).Process(request) as CellPassesResult;
       }
@@ -73,9 +73,9 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
       [NotLandFillProjectVerifier]
       [ProjectUidVerifier]
       [NotLandFillProjectWithUIDVerifier]
-      [System.Web.Http.Route("api/v1/productiondata/cells/datum")]
-      [System.Web.Http.HttpPost]
-      public CellDatumResponse Post([System.Web.Http.FromBody]CellDatumRequest request)
+      [Route("api/v1/productiondata/cells/datum")]
+      [HttpPost]
+      public CellDatumResponse Post([FromBody]CellDatumRequest request)
       {
           request.Validate();
           return RequestExecutorContainer.Build<CellDatumExecutor>(logger, raptorClient, null).Process(request) as CellDatumResponse;
@@ -93,9 +93,9 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
       [NotLandFillProjectVerifier]
       [ProjectUidVerifier]
       [NotLandFillProjectWithUIDVerifier]
-      [System.Web.Http.Route("api/v1/productiondata/patches")]
-      [System.Web.Http.HttpPost]
-      public ContractExecutionResult Post([System.Web.Http.FromBody]PatchRequest request)
+      [Route("api/v1/productiondata/patches")]
+      [HttpPost]
+      public ContractExecutionResult Post([FromBody]PatchRequest request)
       {
           request.Validate();
           return RequestExecutorContainer.Build<PatchExecutor>(logger, raptorClient, null).Process(request);

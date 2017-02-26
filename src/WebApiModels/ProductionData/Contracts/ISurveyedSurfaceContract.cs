@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using VSS.Raptor.Service.WebApi.ProductionData.Controllers;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
@@ -28,7 +28,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
     /// <param name="surveyedSurfaceId">The Surveyed Surface identifier.</param>
     /// <returns></returns>
     /// 
-    ContractExecutionResult GetDel([FromUri] long projectId, [FromUri] long surveyedSurfaceId);
+    ContractExecutionResult GetDel([FromRoute] long projectId, [FromRoute] long surveyedSurfaceId);
 
     /// <summary>
     /// Deletes a Surveyed Surface form Raptor's list of surveyed surfaces.
@@ -37,7 +37,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
     /// <param name="surveyedSurfaceId">The Surveyed Surface identifier.</param>
     /// <returns></returns>
     /// 
-    ContractExecutionResult GetDel([FromUri] Guid projectUid, [FromUri] long surveyedSurfaceId);
+    ContractExecutionResult GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId);
 
     /// <summary>
     /// Gets a Surveyed Surface list from Raptor.
@@ -45,7 +45,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
     /// <param name="projectId">The model/project identifier.</param>
     /// <returns>Execution result with a list of Surveyed Surfaces.</returns>
     /// 
-    SurveyedSurfaceResult Get([FromUri] long projectId);
+    SurveyedSurfaceResult Get([FromRoute] long projectId);
 
     /// <summary>
     /// Gets a Surveyed Surface list from Raptor.
@@ -53,7 +53,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
     /// <param name="projectUid">The model/project unique identifier.</param>
     /// <returns>Execution result with a list of Surveyed Surfaces.</returns>
     /// 
-    SurveyedSurfaceResult Get([FromUri] Guid projectUid);
+    SurveyedSurfaceResult Get([FromRoute] Guid projectUid);
 
     /// <summary>
     /// Updates an existing Surveyed Surface data in a Raptor's list of surveyed surfaces if the target

@@ -27,7 +27,7 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// <returns></returns>
     public string GetGeofenceBoundary(string geofenceUid, IDictionary<string, string> customHeaders = null)
     {
-      GeofenceData cacheData = GetItem(geofenceUid, geofenceCacheLife, "GEOFENCE_URL", customHeaders);
+      GeofenceData cacheData = GetItem(geofenceUid, geofenceCacheLife, "GEOFENCE_API_URL", customHeaders);
       return cacheData == null ? null : cacheData.GeometryWKT;
     }
   }

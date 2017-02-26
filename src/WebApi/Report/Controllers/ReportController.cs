@@ -49,10 +49,10 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/export")]
-    [System.Web.Http.HttpPost]
+    [Route("api/v1/export")]
+    [HttpPost]
 
-    public ExportResult PostExportReport([System.Web.Http.FromBody] ExportReport request)
+    public ExportResult PostExportReport([FromBody] ExportReport request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null).Process(request) as ExportResult;
@@ -70,9 +70,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/compaction/passcounts/summary")]
-    [System.Web.Http.HttpPost]
-    public PassCountSummaryResult PostSummary([System.Web.Http.FromBody] PassCounts request)
+    [Route("api/v1/compaction/passcounts/summary")]
+    [HttpPost]
+    public PassCountSummaryResult PostSummary([FromBody] PassCounts request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<SummaryPassCountsExecutor>(logger, raptorClient, null).Process(request) as PassCountSummaryResult;
@@ -91,9 +91,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/compaction/passcounts/detailed")]
-    [System.Web.Http.HttpPost]
-    public PassCountDetailedResult PostDetailed([System.Web.Http.FromBody] PassCounts request)
+    [Route("api/v1/compaction/passcounts/detailed")]
+    [HttpPost]
+    public PassCountDetailedResult PostDetailed([FromBody] PassCounts request)
     {
       request.Validate();
       //pass count settings required for detailed report
@@ -119,9 +119,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/compaction/cmv/summary")]
-    [System.Web.Http.HttpPost]
-    public CMVSummaryResult PostSummary([System.Web.Http.FromBody] CMVRequest request)
+    [Route("api/v1/compaction/cmv/summary")]
+    [HttpPost]
+    public CMVSummaryResult PostSummary([FromBody] CMVRequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<SummaryCMVExecutor>(logger, raptorClient, null).Process(request) as CMVSummaryResult;
@@ -139,9 +139,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/compaction/cmv/detailed")]
-    [System.Web.Http.HttpPost]
-    public CMVDetailedResult PostDetailed([System.Web.Http.FromBody] CMVRequest request)
+    [Route("api/v1/compaction/cmv/detailed")]
+    [HttpPost]
+    public CMVDetailedResult PostDetailed([FromBody] CMVRequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<DetailedCMVExecutor>(logger, raptorClient, null).Process(request) as CMVDetailedResult;
@@ -161,9 +161,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     /// <executor>ProjectStatisticsExecutor</executor>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
-    [System.Web.Http.Route("api/v1/projects/statistics")]
-    [System.Web.Http.HttpPost]
-    public ProjectStatisticsResult PostProjectStatistics([System.Web.Http.FromBody]ProjectStatisticsRequest request)
+    [Route("api/v1/projects/statistics")]
+    [HttpPost]
+    public ProjectStatisticsResult PostProjectStatistics([FromBody]ProjectStatisticsRequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null).Process(request) as ProjectStatisticsResult;
@@ -178,9 +178,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     /// <executor>SummaryVolumesExecutor</executor>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
-    [System.Web.Http.Route("api/v1/volumes/summary")]
-    [System.Web.Http.HttpPost]
-    public SummaryVolumesResult Post([System.Web.Http.FromBody]SummaryVolumesRequest request)
+    [Route("api/v1/volumes/summary")]
+    [HttpPost]
+    public SummaryVolumesResult Post([FromBody]SummaryVolumesRequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<SummaryVolumesExecutor>(logger, raptorClient).Process(request) as SummaryVolumesResult;
@@ -196,9 +196,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/thickness/summary")]
-    [System.Web.Http.HttpPost]
-    public SummaryThicknessResult Post([System.Web.Http.FromBody]SummaryParametersBase parameters)
+    [Route("api/v1/thickness/summary")]
+    [HttpPost]
+    public SummaryThicknessResult Post([FromBody]SummaryParametersBase parameters)
     {
       parameters.Validate();
       return RequestExecutorContainer.Build<SummaryThicknessExecutor>(logger, raptorClient, null).Process(parameters) as SummaryThicknessResult;
@@ -215,9 +215,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/speed/summary")]
-    [System.Web.Http.HttpPost]
-    public SummarySpeedResult Post([System.Web.Http.FromBody]SummarySpeedRequest parameters)
+    [Route("api/v1/speed/summary")]
+    [HttpPost]
+    public SummarySpeedResult Post([FromBody]SummarySpeedRequest parameters)
     {
       parameters.Validate();
       return RequestExecutorContainer.Build<SummarySpeedExecutor>(logger, raptorClient, null).Process(parameters) as SummarySpeedResult;
@@ -234,9 +234,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/cmvchange/summary")]
-    [System.Web.Http.HttpPost]
-    public CMVChangeSummaryResult Post([System.Web.Http.FromBody]CMVChangeSummaryRequest parameters)
+    [Route("api/v1/cmvchange/summary")]
+    [HttpPost]
+    public CMVChangeSummaryResult Post([FromBody]CMVChangeSummaryRequest parameters)
     {
       parameters.Validate();
       return RequestExecutorContainer.Build<CMVChangeSummaryExecutor>(logger, raptorClient, null).Process(parameters) as CMVChangeSummaryResult;
@@ -250,9 +250,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     /// <executor>ElevationStatisticsExecutor</executor>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
-    [System.Web.Http.Route("api/v1/statistics/elevation")]
-    [System.Web.Http.HttpPost]
-    public ElevationStatisticsResult Post([System.Web.Http.FromBody]ElevationStatisticsRequest request)
+    [Route("api/v1/statistics/elevation")]
+    [HttpPost]
+    public ElevationStatisticsResult Post([FromBody]ElevationStatisticsRequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null).Process(request) as ElevationStatisticsResult;
@@ -267,9 +267,9 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
     /// <executor>SummaryCCAExecutor</executor>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
-    [System.Web.Http.Route("api/v1/compaction/cca/summary")]
-    [System.Web.Http.HttpPost]
-    public CCASummaryResult PostSummary([System.Web.Http.FromBody] CCARequest request)
+    [Route("api/v1/compaction/cca/summary")]
+    [HttpPost]
+    public CCASummaryResult PostSummary([FromBody] CCARequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<SummaryCCAExecutor>(logger, raptorClient, null).Process(request) as CCASummaryResult;

@@ -62,9 +62,9 @@ namespace VSS.Raptor.Service.WebApi.TagFileProcessing.Controllers
     [ProjectUidVerifier]
     [ProjectWritableWithUIDVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/tagfiles")]
-    [System.Web.Http.HttpPost]
-    public TAGFilePostResult Post([System.Web.Http.FromBody]TagFileRequest request)
+    [Route("api/v1/tagfiles")]
+    [HttpPost]
+    public TAGFilePostResult Post([FromBody]TagFileRequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<TagFileExecutor>(logger, raptorClient, tagProcessor).Process(request) as TAGFilePostResult;

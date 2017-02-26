@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using log4netExtensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Options;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
@@ -13,6 +16,8 @@ using VSS.Raptor.Service.Common.Filters;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Filters.Validation;
+using VSS.Raptor.Service.Common.JsonConverters;
+
 
 namespace VSS.Raptor.Service.WebApi
 {
@@ -60,7 +65,7 @@ namespace VSS.Raptor.Service.WebApi
       services.AddMvc(
         config =>
         {
-          config.Filters.Add(typeof(ValidationFilterAttribute));
+          config.Filters.Add(new ValidationFilterAttribute());
         });
 
       //Configure swagger
@@ -83,11 +88,12 @@ namespace VSS.Raptor.Service.WebApi
       //Swagger documentation can be viewed with http://localhost:5000/swagger/ui/index.html   
 
       //Configure application services
-      services.AddScoped<IASNodeClient, Common.Proxies.ASNodeClient>();
+      services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>();
+      services.AddSingleton<IAuthenticatedProjectsStore, AuthenticatedProjectStore>();
+      services.AddScoped<IASNodeClient, ASNodeClient>();
       services.AddScoped<ITagProcessor, TagProcessor>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
-      services.AddScoped<IAuthenticatedProjectsStore, AuthenticatedProjectStore>();
 
       serviceCollection = services;
     }

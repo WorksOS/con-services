@@ -19,30 +19,6 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
   {
 
     [TestMethod]
-    [Ignore]
-    // Full integration test that requires a raptor stack running
-    public void PD_PostProjectExtentsFullIntegration()
-    {
-
-      long[] excludedSsIds = new long[1]; // excluded surveyed surfaces
-      excludedSsIds[0] = 1;
-      // return results
-
-      // make request parameters
-      ExtentRequest request = ExtentRequest.CreateExtentRequest(544, excludedSsIds);
-      var mockRaptorClient = new Mock<IASNodeClient>();
-      var mockLogger = new Mock<ILoggerFactory>();
-      ProjectExtentsController controller = new ProjectExtentsController(mockRaptorClient.Object, mockLogger.Object);
-      // Act
-      ContractExecutionResult result = controller.Post(request);
-
-      // Assert
-      Assert.IsNotNull(result);
-      Assert.IsTrue(result.Message == "success", result.Message);
-    }
-
-
-    [TestMethod]
     public void PD_PostProjectExtentsSuccessful()
     {
 

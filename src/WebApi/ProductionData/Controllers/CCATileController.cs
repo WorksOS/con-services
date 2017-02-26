@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web.Http;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
@@ -80,21 +79,21 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
-    [System.Web.Http.Route("api/v1/ccatiles/png")]
-    [System.Web.Http.HttpGet]
+    [Route("api/v1/ccatiles/png")]
+    [HttpGet]
     public byte[] Get
     (
-      [FromUri] long projectId,
-      [FromUri] long assetId,
-      [FromUri] string machineName,
-      [FromUri] bool isJohnDoe,
-      [FromUri] DateTime startUtc,
-      [FromUri] DateTime endUtc,
-      [FromUri] string bbox,
-      [FromUri] ushort width,
-      [FromUri] ushort height,
-      [FromUri] int? liftId = null,
-      [FromUri] Guid? geofenceUid = null
+      [FromQuery] long projectId,
+      [FromQuery] long assetId,
+      [FromQuery] string machineName,
+      [FromQuery] bool isJohnDoe,
+      [FromQuery] DateTime startUtc,
+      [FromQuery] DateTime endUtc,
+      [FromQuery] string bbox,
+      [FromQuery] ushort width,
+      [FromQuery] ushort height,
+      [FromQuery] int? liftId = null,
+      [FromQuery] Guid? geofenceUid = null
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
@@ -133,26 +132,26 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.Route("api/v2/ccatiles/png")]
-    [System.Web.Http.HttpGet]
+    [Route("api/v2/ccatiles/png")]
+    [HttpGet]
     public byte[] Get
     (
-      [FromUri] Guid? projectUid,
-      [FromUri] long assetId,
-      [FromUri] string machineName,
-      [FromUri] bool isJohnDoe,
-      [FromUri] DateTime startUtc,
-      [FromUri] DateTime endUtc,
-      [FromUri] string bbox,
-      [FromUri] ushort width,
-      [FromUri] ushort height,
-      [FromUri] int? liftId = null,
-      [FromUri] Guid? geofenceUid = null
+      [FromQuery] Guid? projectUid,
+      [FromQuery] long assetId,
+      [FromQuery] string machineName,
+      [FromQuery] bool isJohnDoe,
+      [FromQuery] DateTime startUtc,
+      [FromQuery] DateTime endUtc,
+      [FromQuery] string bbox,
+      [FromQuery] ushort width,
+      [FromQuery] ushort height,
+      [FromQuery] int? liftId = null,
+      [FromQuery] Guid? geofenceUid = null
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
-
-      long projectId = ProjectID.GetProjectId(projectUid, authProjectsStore);
+      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      long projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
 
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
 

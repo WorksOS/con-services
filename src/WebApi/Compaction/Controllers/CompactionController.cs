@@ -1,5 +1,5 @@
 ﻿
-using System.Web.Http;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Interfaces;
@@ -44,8 +44,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// </summary>
     /// <returns>xxxResult</returns>
     /// <executor>xxxExecutor</executor>
-    [System.Web.Http.Route("api/v1/compaction/xxx")]
-    [System.Web.Http.HttpGet]
+    [Route("api/v1/compaction/xxx")]
+    [HttpGet]
     public /*xxxResult*/void Getxxx()
     {
       log.LogInformation("Getxxx");

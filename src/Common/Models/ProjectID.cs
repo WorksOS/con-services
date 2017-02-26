@@ -18,7 +18,6 @@ namespace VSS.Raptor.Service.Common.Models
   /// <summary>
   /// Raptor data model/project identifier.
   /// </summary>
-  [JsonConverter(typeof(ProjectIDConverter))]
   public class ProjectID : IValidatable
   {
     /// <summary>
@@ -93,7 +92,7 @@ namespace VSS.Raptor.Service.Common.Models
 
     }
 
-    public static long GetProjectId(Guid? projectUid, IAuthenticatedProjectsStore authProjectsStore)
+    public static long GetProjectId(string customerUid, Guid? projectUid, IAuthenticatedProjectsStore authProjectsStore)
     {
       if (!projectUid.HasValue)
       {
@@ -105,12 +104,13 @@ namespace VSS.Raptor.Service.Common.Models
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing authenticated projects store"));
       }
-      if (!authProjectsStore.ProjectsByUid.ContainsKey(projectUid.ToString()))
+      var projectsByUid = authProjectsStore.GetProjectsByUid(customerUid);
+      if (!projectsByUid.ContainsKey(projectUid.ToString()))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing Project"));
       }
-      long projectId = authProjectsStore.ProjectsByUid[projectUid.ToString()].projectId;
+      long projectId = projectsByUid[projectUid.ToString()].projectId;
       if (projectId <= 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

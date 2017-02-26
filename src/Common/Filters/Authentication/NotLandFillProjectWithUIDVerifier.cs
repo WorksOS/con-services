@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Reflection;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
@@ -40,12 +41,14 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
         if (!(projectUidValue is string))
           return;
 
-        var authProjectsStore = actionContext.HttpContext.RequestServices.GetService<IAuthenticatedProjectsStore>();
+        var authProjectsStore = actionContext.HttpContext.RequestServices.GetRequiredService<IAuthenticatedProjectsStore>();
         if (authProjectsStore == null)
           return;
+        var customerUid = ((actionContext.HttpContext.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+        var projectsByUid = authProjectsStore.GetProjectsByUid(customerUid);
 
-        var found = authProjectsStore.ProjectsByUid.ContainsKey((string) projectUidValue);
-        var landFillProject = found ? authProjectsStore.ProjectsByUid[(string) projectUidValue].isLandFill : false;
+        var found = projectsByUid.ContainsKey((string) projectUidValue);
+        var landFillProject = found ? projectsByUid[(string) projectUidValue].isLandFill : false;
 
         Guid outputGuid;
 

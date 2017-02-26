@@ -7,8 +7,8 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication.Models
 {
     public interface IAuthenticatedProjectsStore
     {
-      Dictionary<long, ProjectDescriptor> ProjectsById { get; }
-      Dictionary<string, ProjectDescriptor> ProjectsByUid { get; }
-      void SetAuthenticatedProjectList(List<ProjectDescriptor> projects);
+      Dictionary<long, ProjectDescriptor> GetProjectsById(string customerUid);
+      Dictionary<string, ProjectDescriptor> GetProjectsByUid(string customerUid);
+      void SetAuthenticatedProjectList(string customerUid, List<ProjectDescriptor> projects);
     }
 }

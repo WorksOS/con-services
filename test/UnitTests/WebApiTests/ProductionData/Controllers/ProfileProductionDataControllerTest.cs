@@ -46,26 +46,6 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
         );
     }
 
-    /// <summary>
-    /// Full integration test that requires a raptor stack running for posting a CS definition data.
-    /// </summary>
-    /// 
-    [TestMethod]
-      [Ignore]
-    public void PD_PostProfileProductionDataFullIntegration()
-    {
-      ProfileProductionDataRequest request = CreateRequest();
-      var mockRaptorClient = new Mock<IASNodeClient>();
-      var mockLogger = new Mock<ILoggerFactory>();
-
-      ProfileProductionDataController controller = new ProfileProductionDataController(mockRaptorClient.Object, mockLogger.Object);
-
-      ContractExecutionResult result = controller.Post(request);
-
-      // Assert
-      Assert.IsNotNull(result);
-      Assert.IsTrue(result.Message == "success", result.Message);
-    }
 
     /// <summary>
     /// Uses the mock PDS client to post a request with a successful result...

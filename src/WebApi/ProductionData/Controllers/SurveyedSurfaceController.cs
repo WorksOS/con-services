@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Web.Http;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Contracts;
@@ -67,10 +67,10 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
     [ProjectWritableWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/surveyedsurfaces")]
-    [System.Web.Http.HttpPost]
+    [Route("api/v1/surveyedsurfaces")]
+    [HttpPost]
 
-    public ContractExecutionResult Post([System.Web.Http.FromBody] SurveyedSurfaceRequest request)
+    public ContractExecutionResult Post([FromBody] SurveyedSurfaceRequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<SurveyedSurfaceExecutorPost>(logger, raptorClient, null).Process(request);
@@ -86,10 +86,10 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectWritableVerifier]
-    [System.Web.Http.HttpGet]
+    [HttpGet]
 
-    [System.Web.Http.Route("api/v1/projects/{projectId}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
-    public ContractExecutionResult GetDel([FromUri] long projectId, [FromUri] long surveyedSurfaceId)
+    [Route("api/v1/projects/{projectId}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
+    public ContractExecutionResult GetDel([FromRoute] long projectId, [FromRoute] long surveyedSurfaceId)
     {
       ProjectID projId = ProjectID.CreateProjectID(projectId);
       projId.Validate();
@@ -112,12 +112,14 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
     [ProjectWritableWithUIDVerifier]
-    [System.Web.Http.HttpGet]
+    [HttpGet]
 
-    [System.Web.Http.Route("api/v2/projects/{projectUid}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
-    public ContractExecutionResult GetDel([FromUri] Guid projectUid, [FromUri] long surveyedSurfaceId)
+    [Route("api/v2/projects/{projectUid}/surveyedsurfaces/{surveyedsurfaceId}/delete")]
+    public ContractExecutionResult GetDel([FromRoute] Guid projectUid, [FromRoute] long surveyedSurfaceId)
     {
-      ProjectID projId = ProjectID.CreateProjectID(ProjectID.GetProjectId(projectUid, authProjectsStore), projectUid);
+      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+
+      ProjectID projId = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
       projId.Validate();
 
       DataID ssId = DataID.CreateDataID(surveyedSurfaceId);
@@ -135,10 +137,10 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <returns>Execution result with a list of Surveyed Surfaces.</returns>
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
-    [System.Web.Http.HttpGet]
+    [HttpGet]
 
-    [System.Web.Http.Route("api/v1/projects/{projectId}/surveyedsurfaces")]
-    public SurveyedSurfaceResult Get([FromUri] long projectId)
+    [Route("api/v1/projects/{projectId}/surveyedsurfaces")]
+    public SurveyedSurfaceResult Get([FromRoute] long projectId)
     {
       ProjectID request = ProjectID.CreateProjectID(projectId);
 
@@ -153,12 +155,14 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <returns>Execution result with a list of Surveyed Surfaces.</returns>
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
-    [System.Web.Http.HttpGet]
+    [HttpGet]
 
-    [System.Web.Http.Route("api/v2/projects/{projectUid}/surveyedsurfaces")]
-    public SurveyedSurfaceResult Get([FromUri] Guid projectUid)
+    [Route("api/v2/projects/{projectUid}/surveyedsurfaces")]
+    public SurveyedSurfaceResult Get([FromRoute] Guid projectUid)
     {
-      ProjectID request = ProjectID.CreateProjectID(ProjectID.GetProjectId(projectUid, authProjectsStore), projectUid);
+      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+
+      ProjectID request = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
 
       request.Validate();
       return RequestExecutorContainer.Build<SurveyedSurfaceExecutorGet>(logger, raptorClient, null).Process(request) as SurveyedSurfaceResult;
@@ -177,8 +181,9 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
     [ProjectWritableWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/surveyedsurfaces/post")]
-    public ContractExecutionResult PostPut([System.Web.Http.FromBody] SurveyedSurfaceRequest request)
+    [Route("api/v1/surveyedsurfaces/post")]
+    [HttpPost]
+    public ContractExecutionResult PostPut([FromBody] SurveyedSurfaceRequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<SurveyedSurfaceExecutorPut>(logger, raptorClient, null).Process(request);
@@ -195,8 +200,9 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     [ProjectUidVerifier]
     [NotLandFillProjectWithUIDVerifier]
     [ProjectWritableWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/designcache/delete")]
-    public ContractExecutionResult PostDelete([System.Web.Http.FromBody] DesignNameRequest request)
+    [Route("api/v1/designcache/delete")]
+    [HttpPost]
+    public ContractExecutionResult PostDelete([FromBody] DesignNameRequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<DesignNameUpdateCacheExecutor>(logger, raptorClient, null).Process(request);

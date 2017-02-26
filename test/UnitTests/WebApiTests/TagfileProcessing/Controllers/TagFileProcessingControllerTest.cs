@@ -19,7 +19,6 @@ using VSS.Raptor.Service.Common.ResultHandling;
 namespace VSS.Raptor.Service.WebApiTests.TagfileProcessing.Controllers
 {
   [TestClass]
-  [DeploymentItem(@"App_data\","App_Data")]  
   public class TagFileProcessingControllerTest
   {
     private WGS84Fence CreateAFence()
@@ -31,37 +30,6 @@ namespace VSS.Raptor.Service.WebApiTests.TagfileProcessing.Controllers
       points.Add(WGSPoint.CreatePoint(0.631987283352491, -2.00743753668608));
       return WGS84Fence.CreateWGS84Fence(points.ToArray());
     }
-
-    [TestMethod]
-    public void TagP_PostTagFileFullIntegration()
-    {
-
-      // Accepting override ProjectID for file 1551J025SW--ACOM--121030234410.tag (MachineID = ACOM, AssetID = 1244020666025812)
-      //8/10/2014 15:18:43.288	( 6712) [TSVOICSnippetProcessor 0]: Processed file 1551J025SW--ACOM--121030234410.tag (containing 225 epochs and produced 20 cell passes) from machine '1551J025SW' type 39 (asset ID 1244020666025812) into project 544 with seed position lat=0.631935, lon=-2.007484 and extents=MinX: 2724.590, MaxX:2726.290, MinY: 1193.230, MaxY:1193.570, MinZ: 622.988, MaxZ:623.111
-     
-
-      const string tagFileName = "1551J025SW--ACOM--121030234410.tag";
-      var baseDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-      string tagFilePath = Path.Combine(baseDir, "App_Data");
-      tagFilePath = Path.Combine(tagFilePath, tagFileName);
-      byte[] tagData = ControllerTestUtil.FileToByteArray(tagFilePath);
-      WGS84Fence fence = CreateAFence();
-      TagFileRequest request = TagFileRequest.CreateTagFile(tagFileName, tagData, 544, fence, 1244020666025812,
-          false, false);
-      TWGS84FenceContainer fenceContainer = RaptorConverters.convertWGS84Fence(request.boundary);
-      var mockRaptorClient = new Mock<IASNodeClient>();
-      var mockLogger = new Mock<ILoggerFactory>();
-      var mockTagProcessor = new Mock<ITagProcessor>();
-      TagFileController controller = new TagFileController(mockRaptorClient.Object, mockTagProcessor.Object, mockLogger.Object);
-
-      // Act
-      ContractExecutionResult result = controller.Post(request);
-      // Assert
-      Assert.IsNotNull(result);
-      Assert.IsTrue(result.Message == "success", result.Message);
-    }
-
-
     
     [TestMethod]
     public void TagP_TagFileSubmitterSuccessful()

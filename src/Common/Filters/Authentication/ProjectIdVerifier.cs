@@ -1,11 +1,10 @@
 ﻿using System.Net;
 using System.Reflection;
-using System.Web.Http.Controllers;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
-using ActionFilterAttribute = System.Web.Http.Filters.ActionFilterAttribute;
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -20,7 +19,7 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
     ///   Occurs before the action method is invoked. Used for the request logging.
     /// </summary>
     /// <param name="actionContext">The action context.</param>
-    public void OnActionExecuting(ActionExecutingContext actionContext)
+    public override void OnActionExecuting(ActionExecutingContext actionContext)
     {
       object projectIdValue = null;
       if (actionContext.ActionArguments.ContainsKey("request"))
@@ -40,11 +39,12 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
       if (!(projectIdValue is long))
         return;
 
-      var authProjectsStore = actionContext.HttpContext.RequestServices.GetService<IAuthenticatedProjectsStore>();
+      var authProjectsStore = actionContext.HttpContext.RequestServices.GetRequiredService<IAuthenticatedProjectsStore>();
       if (authProjectsStore == null)
         return;
+      var customerUid = ((actionContext.HttpContext.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
 
-      if (!authProjectsStore.ProjectsById.ContainsKey((long) projectIdValue))
+      if (!authProjectsStore.GetProjectsById(customerUid).ContainsKey((long) projectIdValue))
         throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
             "Don't have access to the selected project."

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Web.Http;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.WebApiModels.Coord.Contracts;
@@ -65,9 +65,9 @@ namespace VSS.Raptor.Service.WebApi.Coord.Controllers
     [ProjectUidVerifier]
     [ProjectWritableVerifier]
     [ProjectWritableWithUIDVerifier]
-    [System.Web.Http.Route("api/v1/coordsystem")]
-    [System.Web.Http.HttpPost]
-    public CoordinateSystemSettings Post([System.Web.Http.FromBody]CoordinateSystemFile request)
+    [Route("api/v1/coordsystem")]
+    [HttpPost]
+    public CoordinateSystemSettings Post([FromBody]CoordinateSystemFile request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<CoordinateSystemExecutorPost>(logger, raptorClient, null).Process(request) as CoordinateSystemSettings;
@@ -88,9 +88,9 @@ namespace VSS.Raptor.Service.WebApi.Coord.Controllers
     /// </returns>
     /// <executor>CoordinateSystemExecutorGet</executor>
     [ProjectIdVerifier]
-    [System.Web.Http.Route("api/v1/projects/{projectId}/coordsystem")]
-    [System.Web.Http.HttpGet]
-    public CoordinateSystemSettings Get([FromUri] long projectId)
+    [Route("api/v1/projects/{projectId}/coordsystem")]
+    [HttpGet]
+    public CoordinateSystemSettings Get([FromRoute] long projectId)
     {
       ProjectID request = ProjectID.CreateProjectID(projectId);
 
@@ -113,11 +113,13 @@ namespace VSS.Raptor.Service.WebApi.Coord.Controllers
     /// </returns>
     /// <executor>CoordinateSystemExecutorGet</executor>
     [ProjectUidVerifier]
-    [System.Web.Http.Route("api/v2/projects/{projectUid}/coordsystem")]
-    [System.Web.Http.HttpGet]
-    public CoordinateSystemSettings Get([FromUri] Guid projectUid)
+    [Route("api/v2/projects/{projectUid}/coordsystem")]
+    [HttpGet]
+    public CoordinateSystemSettings Get([FromRoute] Guid projectUid)
     {
-      ProjectID request = ProjectID.CreateProjectID(ProjectID.GetProjectId(projectUid, authProjectsStore), projectUid);
+      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+
+      ProjectID request = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
 
       request.Validate();
       return RequestExecutorContainer.Build<CoordinateSystemExecutorGet>(logger, raptorClient, null).Process(request) as CoordinateSystemSettings;
@@ -133,9 +135,9 @@ namespace VSS.Raptor.Service.WebApi.Coord.Controllers
     /// <executor>CoordinateCoversionExecutor</executor>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
-    [System.Web.Http.Route("api/v1/coordinateconversion")]
-    [System.Web.Http.HttpPost]
-    public CoordinateConversionResult Post([System.Web.Http.FromBody]CoordinateConversionRequest request)
+    [Route("api/v1/coordinateconversion")]
+    [HttpPost]
+    public CoordinateConversionResult Post([FromBody]CoordinateConversionRequest request)
     {
       request.Validate();
       return RequestExecutorContainer.Build<CoordinateConversionExecutor>(logger, raptorClient, null).Process(request) as CoordinateConversionResult;

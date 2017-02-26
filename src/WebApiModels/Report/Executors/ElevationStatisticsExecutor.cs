@@ -12,6 +12,7 @@ using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 {
@@ -79,7 +80,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
         }
         else
         {
-          throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+          throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
                   "Failed to calculate elevation statistics data"));
         }
