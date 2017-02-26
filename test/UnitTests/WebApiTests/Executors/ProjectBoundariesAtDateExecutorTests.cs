@@ -2,9 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using VSS.Masterdata;
-using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors

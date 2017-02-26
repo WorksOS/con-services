@@ -1,8 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon
+namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
 {
   /// <summary>
   /// The request representation used to request the project Id that a specified asset is inside at a given location and date time.
@@ -86,15 +89,23 @@ namespace VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public bool Validate()
+    public void Validate()
     {
-      if (latitude < -90.0 || latitude  > 90.0)
-        return false;
+      const double EPSILON = 10e-8;
 
-      if (longitude < -180.0 || latitude > 180.0)
-        return false;
+      if (latitude < -Math.PI / 2 + EPSILON || latitude > Math.PI / 2 - EPSILON)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            String.Format("Latitude value of {0} should be between -90 degrees and 90 degrees", latitude)));
+      }
 
-      return true;
+      if (longitude < -Math.PI + EPSILON || longitude > Math.PI - EPSILON)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            String.Format("Longitude value of {0} should be between -180 degrees and 180 degrees", longitude)));
+      }
     }
   }
 }

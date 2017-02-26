@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using VSS.Masterdata;
-using VSS.TagFileAuth.Service.ResultHandling;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Interfaces
+namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic

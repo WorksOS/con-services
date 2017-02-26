@@ -4,8 +4,7 @@ using System.Net;
 using VSS.Device.Data;
 using VSS.Project.Data;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
-using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
-using VSS.TagFileAuth.Service.WebApiModels.Models;
+using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
@@ -41,7 +40,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         // todo use repo factory properly once interface available
         // todo in validate check that if !radioSerial and manual device type that there IS a projectID
         var projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
-        var p = projectRepo.GetProjectAndSubscriptions(request.projectId.Value, DateTime.UtcNow.Date);
+        var p = projectRepo.GetProjectAndSubscriptions(request.projectId, DateTime.UtcNow.Date);
         var projectSubs = p.Result.ToList();
         if (projectSubs.Count() > 0)
         {

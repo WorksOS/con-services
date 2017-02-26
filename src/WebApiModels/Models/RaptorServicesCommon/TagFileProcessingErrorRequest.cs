@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon
+namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
 {
   /// <summary>
   /// The request representation used to raise an alert for a tag file processing error if required.

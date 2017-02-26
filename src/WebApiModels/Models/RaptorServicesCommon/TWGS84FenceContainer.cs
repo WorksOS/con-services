@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon
+﻿
+namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
 {
   public class TWGS84FenceContainer
   {

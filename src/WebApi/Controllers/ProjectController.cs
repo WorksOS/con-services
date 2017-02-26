@@ -2,8 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
-using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
-using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VVSS.TagFileAuth.Service.Controllers
@@ -45,6 +44,8 @@ namespace VVSS.TagFileAuth.Service.Controllers
     [HttpPost]
       public GetProjectIdResult PostProjectId([FromBody]GetProjectIdRequest request)
       {
+        logger.LogInformation("PostProjectId: {0}", Request.QueryString);
+
         request.Validate();
         var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory).Process(request) as GetProjectIdResult;
 
@@ -74,6 +75,8 @@ namespace VVSS.TagFileAuth.Service.Controllers
       [HttpPost]
       public GetProjectBoundaryAtDateResult PostProjectBoundary([FromBody]GetProjectBoundaryAtDateRequest request)
       {
+        logger.LogInformation("PostProjectBoundary: {0}", Request.QueryString);
+
         request.Validate();
         var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory).Process(request) as GetProjectBoundaryAtDateResult;
 
@@ -103,10 +106,12 @@ namespace VVSS.TagFileAuth.Service.Controllers
       [HttpPost]
       public GetProjectBoundariesAtDateResult PostProjectBoundaries([FromBody]GetProjectBoundariesAtDateRequest request)
       {
+        logger.LogInformation("PostProjectBoundaries: {0}", Request.QueryString);
+
         request.Validate();
         var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory).Process(request) as GetProjectBoundariesAtDateResult;
 
-      if (result.result)
+        if (result.result)
         {
           var infoMessage = string.Format("Project boundaries were received successfully. Asset ID: {0}, tag file data/time: {1}", request.tagFileUTC);
           logger.LogInformation(infoMessage);

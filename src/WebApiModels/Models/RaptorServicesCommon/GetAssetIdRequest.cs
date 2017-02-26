@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Newtonsoft.Json;
-using VSS.TagFileAuth.Service.WebApi.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Models
+namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
 {
   /// <summary>
   /// The request representation used to request the asset Id and project monitoring subscription for a given machine whose tagfiles
@@ -75,14 +75,21 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models
     /// <summary>
     /// Validates eith assetID OR projectID is provided
     /// </summary>
-    public bool Validate()
+    public void Validate()
     {
-      if ((!string.IsNullOrEmpty(radioSerial)) ) // todo && ValidateDeviceType(deviceType) == true */)
-        return true;
-
       if (projectId > 0)
-        return true;
-      return false;
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "The project identifier must be defined!"));
+      }
+
+      if (string.IsNullOrEmpty(radioSerial)) // todo && ValidateDeviceType(deviceType) == true */) 
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Radio serial must be provided!"));
+      }
     }
   }
 }
