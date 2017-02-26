@@ -24,8 +24,14 @@ namespace VSS.Raptor.Service.Common.JsonConverters
       public override Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
       {
         var task = base.ReadRequestBodyAsync(context, encoding);
-        var result = task.Result;
-        if (result.Model is ProjectID)
+        var result = task.ContinueWith((t) =>
+          GetProjectId(context, t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+        return result;
+      }
+
+      private InputFormatterResult GetProjectId(InputFormatterContext context, InputFormatterResult result)
+      {
+        if (!result.HasError && result.Model is ProjectID)
         {
           var projectID = result.Model as ProjectID;
           if (!projectID.projectId.HasValue)
@@ -37,7 +43,7 @@ namespace VSS.Raptor.Service.Common.JsonConverters
             projectID.projectId = ProjectID.GetProjectId(customerUid, projectID.projectUid, authProjectsStore);
           }
         }
-        return task;
+        return result;
       }
 
   }
