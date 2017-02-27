@@ -1,0 +1,1337 @@
+{
+  "FilterToFilter": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 4,
+    "baseFilter": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2437.11,
+          "y": 1127.777
+        },
+        {
+          "x": 2437.79,
+          "y": 1127.777
+        },
+        {
+          "x": 2437.79,
+          "y": 1126.077
+        },
+        {
+          "x": 2437.11,
+          "y": 1126.077
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": true,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "baseFilterID": -1,
+    "baseDesignDescriptor": null,
+    "topFilter": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2437.11,
+          "y": 1127.777
+        },
+        {
+          "x": 2437.79,
+          "y": 1127.777
+        },
+        {
+          "x": 2437.79,
+          "y": 1126.077
+        },
+        {
+          "x": 2437.11,
+          "y": 1126.077
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": false,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "topFilterID": -1,
+    "topDesignDescriptor": null,
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "EarliestFilterToDesign": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 5,
+    "baseFilter": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2775.75,
+          "y": 1164.84
+        },
+        {
+          "x": 2776.09,
+          "y": 1164.84
+        },
+        {
+          "x": 2776.09,
+          "y": 1163.82
+        },
+        {
+          "x": 2775.75,
+          "y": 1163.82
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": true,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "baseFilterID": -1,
+    "baseDesignDescriptor": null,
+    "topFilter": null,
+    "topFilterID": -1,
+    "topDesignDescriptor": {
+      "id": -1,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.ttm"
+      },
+      "offset": 0
+    },
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "LatestFilterToDesign": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 5,
+    "baseFilter": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2775.75,
+          "y": 1164.84
+        },
+        {
+          "x": 2776.09,
+          "y": 1164.84
+        },
+        {
+          "x": 2776.09,
+          "y": 1163.82
+        },
+        {
+          "x": 2775.75,
+          "y": 1163.82
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": false,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "baseFilterID": -1,
+    "baseDesignDescriptor": null,
+    "topFilter": null,
+    "topFilterID": -1,
+    "topDesignDescriptor": {
+      "id": -1,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.ttm"
+      },
+      "offset": 0
+    },
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "DesignToEarliestFilter": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 6,
+    "baseFilter": null,
+    "baseFilterID": -1,
+    "baseDesignDescriptor": {
+      "id": -1,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.ttm"
+      },
+      "offset": 0
+    },
+    "topFilter": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2775.75,
+          "y": 1164.84
+        },
+        {
+          "x": 2776.09,
+          "y": 1164.84
+        },
+        {
+          "x": 2776.09,
+          "y": 1163.82
+        },
+        {
+          "x": 2775.75,
+          "y": 1163.82
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": true,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "topFilterID": -1,
+    "topDesignDescriptor": null,
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "DesignToLatestFilter": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 6,
+    "baseFilter": null,
+    "baseFilterID": -1,
+    "baseDesignDescriptor": {
+      "id": -1,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.ttm"
+      },
+      "offset": 0
+    },
+    "topFilter": {
+      "ID": null,
+      "name": null,
+      "description": null,
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": null,
+      "polygonGrid": [
+        {
+          "x": 2775.75,
+          "y": 1164.84
+        },
+        {
+          "x": 2776.09,
+          "y": 1164.84
+        },
+        {
+          "x": 2776.09,
+          "y": 1163.82
+        },
+        {
+          "x": 2775.75,
+          "y": 1163.82
+        }
+      ],
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": false,
+      "gpsAccuracy": null,
+      "gpsAccuracyIsInclusive": null
+    },
+    "topFilterID": -1,
+    "topDesignDescriptor": null,
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "NullProjectId": {
+    "callId": null,
+    "projectID": null,
+    "volumeCalcType": 4,
+    "baseFilter": {
+      "startUTC": "2012-10-31T11:00:00Z",
+      "endUTC": "2012-11-07T11:00:00Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": [
+        {
+          "Lat": 0.6319405950613299,
+          "Lon": -2.00747966041264
+        },
+        {
+          "Lat": 0.6319402983553571,
+          "Lon": -2.0074582277694257
+        },
+        {
+          "Lat": 0.6319307688576412,
+          "Lon": -2.0074582277694257
+        },
+        {
+          "Lat": 0.6319304023384983,
+          "Lon": -2.00747966041264
+        }
+      ],
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": {
+        "id": 3112,
+        "file": {
+          "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+          "path": "/77561/1158",
+          "fileName": "Large Sites Road - Trimble Road.svl"
+        },
+        "offset": 0
+      },
+      "startStation": 0,
+      "endStation": 197.776,
+      "leftOffset": 8,
+      "rightOffset": 8,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": true
+    },
+    "baseFilterID": 1194,
+    "baseDesignDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "topFilter": {
+      "startUTC": "2012-10-31T11:00:00Z",
+      "endUTC": "2012-11-07T11:00:00Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": [
+        {
+          "Lat": 0.6319405950613299,
+          "Lon": -2.00747966041264
+        },
+        {
+          "Lat": 0.6319402983553571,
+          "Lon": -2.0074582277694257
+        },
+        {
+          "Lat": 0.6319307688576412,
+          "Lon": -2.0074582277694257
+        },
+        {
+          "Lat": 0.6319304023384983,
+          "Lon": -2.00747966041264
+        }
+      ],
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": {
+        "id": 3112,
+        "file": {
+          "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+          "path": "/77561/1158",
+          "fileName": "Large Sites Road - Trimble Road.svl"
+        },
+        "offset": 0
+      },
+      "startStation": 0,
+      "endStation": 197.776,
+      "leftOffset": 8,
+      "rightOffset": 8,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false
+    },
+    "topFilterID": 1194,
+    "topDesignDescriptor": null,
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": 0,
+    "liftBuildSettings": null
+  },
+  "InvalidLatLon": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 4,
+    "baseFilter": {
+      "startUTC": "2012-10-31T11:00:00Z",
+      "endUTC": "2012-11-07T11:00:00Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": [
+        {
+          "Lat": 361,
+          "Lon": -361
+        },
+        {
+          "Lat": 361,
+          "Lon": -361
+        },
+        {
+          "Lat": 361,
+          "Lon": -361
+        },
+        {
+          "Lat": 361,
+          "Lon": -361
+        }
+      ],
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": {
+        "id": 3112,
+        "file": {
+          "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+          "path": "/77561/1158",
+          "fileName": "Large Sites Road - Trimble Road.svl"
+        },
+        "offset": 0
+      },
+      "startStation": 0,
+      "endStation": 197.776,
+      "leftOffset": 8,
+      "rightOffset": 8,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": true
+    },
+    "baseFilterID": 1194,
+    "baseDesignDescriptor": null,
+    "topFilter": {
+      "startUTC": "2012-10-31T11:00:00Z",
+      "endUTC": "2012-11-07T11:00:00Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": [
+        {
+          "Lat": 361,
+          "Lon": -361
+        },
+        {
+          "Lat": 361,
+          "Lon": -361
+        },
+        {
+          "Lat": 361,
+          "Lon": -361
+        },
+        {
+          "Lat": 361,
+          "Lon": -361
+        }
+      ],
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": {
+        "id": 3112,
+        "file": {
+          "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+          "path": "/77561/1158",
+          "fileName": "Large Sites Road - Trimble Road.svl"
+        },
+        "offset": 0
+      },
+      "startStation": 0,
+      "endStation": 197.776,
+      "leftOffset": 8,
+      "rightOffset": 8,
+      "machineDesignName": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false
+    },
+    "topFilterID": 1194,
+    "topDesignDescriptor": null,
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": 0,
+    "liftBuildSettings": null
+  },
+  "FilterToCompositeWithSurveyedSurface": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 4,
+    "baseFilter": {
+      "polygonGrid": [
+        {
+          "x": 2723.74,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1168.921
+        },
+        {
+          "x": 2723.74,
+          "y": 1168.919
+        }
+      ],
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": true
+    },
+    "baseFilterID": -1,
+    "baseDesignDescriptor": null,
+    "topFilter": {
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false
+    },
+    "topFilterID": -1,
+    "topDesignDescriptor": null,
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "FilterToCompositeNoSurveyedSurface": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 4,
+    "baseFilter": {
+      "polygonGrid": [
+        {
+          "x": 2723.74,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1168.921
+        },
+        {
+          "x": 2723.74,
+          "y": 1168.919
+        }
+      ],
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": true
+    },
+    "baseFilterID": -1,
+    "baseDesignDescriptor": null,
+    "topFilter": {
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": false
+    },
+    "topFilterID": -1,
+    "topDesignDescriptor": null,
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "CompositeToDesignWithSurveyedSurface": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 5,
+    "baseFilter": {
+      "polygonGrid": [
+        {
+          "x": 2723.74,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1168.921
+        },
+        {
+          "x": 2723.74,
+          "y": 1168.919
+        }
+      ],
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false
+    },
+    "baseFilterID": -1,
+    "baseDesignDescriptor": null,
+    "topFilter": null,
+    "topFilterID": -1,
+    "topDesignDescriptor": {
+      "id": -1,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.ttm"
+      },
+      "offset": 0
+    },
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "CompositeToDesignNoSurveyedSurface": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 5,
+    "baseFilter": {
+      "polygonGrid": [
+        {
+          "x": 2723.74,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1168.921
+        },
+        {
+          "x": 2723.74,
+          "y": 1168.919
+        }
+      ],
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": false
+    },
+    "baseFilterID": -1,
+    "baseDesignDescriptor": null,
+    "topFilter": null,
+    "topFilterID": -1,
+    "topDesignDescriptor": {
+      "id": -1,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.ttm"
+      },
+      "offset": 0
+    },
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "DesignToCompositeWithSurveyedSurface": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 6,
+    "baseFilter": null,
+    "baseFilterID": -1,
+    "baseDesignDescriptor": {
+      "id": -1,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.ttm"
+      },
+      "offset": 0
+    },
+    "topFilter": {
+      "polygonGrid": [
+        {
+          "x": 2723.74,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1168.921
+        },
+        {
+          "x": 2723.74,
+          "y": 1168.919
+        }
+      ],
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false
+    },
+    "topFilterID": -1,
+    "topDesignDescriptor": null,
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "DesignToCompositeNoSurveyedSurface": {
+    "callId": null,
+    "projectID": 1001158,
+    "volumeCalcType": 6,
+    "baseFilter": null,
+    "baseFilterID": -1,
+    "baseDesignDescriptor": {
+      "id": -1,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.ttm"
+      },
+      "offset": 0
+    },
+    "topFilter": {
+      "polygonGrid": [
+        {
+          "x": 2723.74,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1169.26
+        },
+        {
+          "x": 2725.442,
+          "y": 1168.921
+        },
+        {
+          "x": 2723.74,
+          "y": 1168.919
+        }
+      ],
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": false
+    },
+    "topFilterID": -1,
+    "topDesignDescriptor": null,
+    "additionalSpatialFilter": null,
+    "additionalSpatialFilterID": -1,
+    "liftBuildSettings": null
+  },
+  "SummationTestLotOneOfThree": {
+    "projectID": 1001158,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "CCvSummaryType": 0,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 4,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "volumeCalcType": 4,
+    "baseFilter": {
+      "startUTC": "2012-10-30T21:00:00.000Z",
+      "endUTC": "2012-10-31T21:00:00.000Z",
+      "polygonGrid": [
+        {
+          "x": 2320.837,
+          "y": 1207.681
+        },
+        {
+          "x": 2321.177,
+          "y": 1207.681
+        },
+        {
+          "x": 2321.177,
+          "y": 1207.341
+        },
+        {
+          "x": 2320.837,
+          "y": 1207.341
+        }
+      ],
+      "returnEarliest": true
+    },
+    "topFilter": {
+      "startUTC": "2012-10-30T21:00:00.000Z",
+      "endUTC": "2012-10-31T21:00:00.000Z",
+      "polygonGrid": [
+        {
+          "x": 2320.836,
+          "y": 1207.679
+        },
+        {
+          "x": 2321.836,
+          "y": 1207.679
+        },
+        {
+          "x": 2321.836,
+          "y": 1206.679
+        },
+        {
+          "x": 2320.836,
+          "y": 1206.679
+        }
+      ],
+      "returnEarliest": false
+    }
+  },
+  "SummationTestLotTwoOfThree": {
+    "projectID": 1001158,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "CCvSummaryType": 0,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 4,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "volumeCalcType": 4,
+    "baseFilter": {
+      "startUTC": "2012-10-31T21:00:00.000Z",
+      "endUTC": "2012-10-31T22:10:00.000Z",
+      "polygonGrid": [
+        {
+          "x": 2320.837,
+          "y": 1207.681
+        },
+        {
+          "x": 2321.177,
+          "y": 1207.681
+        },
+        {
+          "x": 2321.177,
+          "y": 1207.341
+        },
+        {
+          "x": 2320.837,
+          "y": 1207.341
+        }
+      ],
+      "returnEarliest": true
+    },
+    "topFilter": {
+      "startUTC": "2012-10-31T21:00:00.000Z",
+      "endUTC": "2012-10-31T22:10:00.000Z",
+      "polygonGrid": [
+        {
+          "x": 2320.836,
+          "y": 1207.679
+        },
+        {
+          "x": 2321.836,
+          "y": 1207.679
+        },
+        {
+          "x": 2321.836,
+          "y": 1206.679
+        },
+        {
+          "x": 2320.836,
+          "y": 1206.679
+        }
+      ],
+      "returnEarliest": false
+    }
+  },
+  "SummationTestLotThreeOfThree": {
+    "projectID": 1001158,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "CCvSummaryType": 0,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 4,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "volumeCalcType": 4,
+    "baseFilter": {
+      "startUTC": "2012-10-31T22:10:00.000Z",
+      "endUTC": "2012-10-31T22:20:00.000Z",
+      "polygonGrid": [
+        {
+          "x": 2320.837,
+          "y": 1207.681
+        },
+        {
+          "x": 2321.177,
+          "y": 1207.681
+        },
+        {
+          "x": 2321.177,
+          "y": 1207.341
+        },
+        {
+          "x": 2320.837,
+          "y": 1207.341
+        }
+      ],
+      "returnEarliest": true
+    },
+    "topFilter": {
+      "startUTC": "2012-10-31T22:10:00.000Z",
+      "endUTC": "2012-10-31T22:20:00.000Z",
+      "polygonGrid": [
+        {
+          "x": 2320.836,
+          "y": 1207.679
+        },
+        {
+          "x": 2321.836,
+          "y": 1207.679
+        },
+        {
+          "x": 2321.836,
+          "y": 1206.679
+        },
+        {
+          "x": 2320.836,
+          "y": 1206.679
+        }
+      ],
+      "returnEarliest": false
+    }
+  },
+  "SummationTestTheWholeLot": {
+    "projectID": 1001158,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "CCvSummaryType": 0,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 4,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "volumeCalcType": 4,
+    "baseFilter": {
+      "startUTC": "2012-10-30T21:00:00.000Z",
+      "endUTC": "2012-10-31T22:20:00.000Z",
+      "polygonGrid": [
+        {
+          "x": 2320.837,
+          "y": 1207.681
+        },
+        {
+          "x": 2321.177,
+          "y": 1207.681
+        },
+        {
+          "x": 2321.177,
+          "y": 1207.341
+        },
+        {
+          "x": 2320.837,
+          "y": 1207.341
+        }
+      ],
+      "returnEarliest": true
+    },
+    "topFilter": {
+      "startUTC": "2012-10-30T21:00:00.000Z",
+      "endUTC": "2012-10-31T22:20:00.000Z",
+      "polygonGrid": [
+        {
+          "x": 2320.836,
+          "y": 1207.679
+        },
+        {
+          "x": 2321.836,
+          "y": 1207.679
+        },
+        {
+          "x": 2321.836,
+          "y": 1206.679
+        },
+        {
+          "x": 2320.836,
+          "y": 1206.679
+        }
+      ],
+      "returnEarliest": false
+    }
+  },
+  "FilterToDesignWithFillTolerances": {
+    "projectID": 1001158,
+    "volumeCalcType": 5,
+    "CutTolerance": 0,
+    "FillTolerance": 1.5,
+    "baseFilter": {
+      "polygonGrid": [
+        {
+          "x": 2747.526,
+          "y": 1164.494
+        },
+        {
+          "x": 2748.886,
+          "y": 1164.494
+        },
+        {
+          "x": 2748.886,
+          "y": 1164.154
+        },
+        {
+          "x": 2747.526,
+          "y": 1164.154
+        }
+      ],
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": false
+    },
+    "topDesignDescriptor": {
+      "id": -1,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.ttm"
+      },
+      "offset": 0
+    }
+  },
+  "FilterToDesignWithCutTolerances": {
+    "projectID": 1001158,
+    "volumeCalcType": 5,
+    "CutTolerance": 26.6,
+    "FillTolerance": 0,
+    "baseFilter": {
+      "polygonGrid": [
+        {
+          "x": 2776.436,
+          "y": 1164.157
+        },
+        {
+          "x": 2777.796,
+          "y": 1164.157
+        },
+        {
+          "x": 2777.796,
+          "y": 1163.817
+        },
+        {
+          "x": 2776.436,
+          "y": 1163.817
+        }
+      ],
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": false
+    },
+    "topDesignDescriptor": {
+      "id": -1,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.ttm"
+      },
+      "offset": 0
+    }
+  },
+  "FilterToFilterWithBothTolerances": {
+    "projectID": 1001158,
+    "volumeCalcType": 4,
+    "CutTolerance": 0.2,
+    "FillTolerance": 0.5,
+    "topFilter": {
+      "polygonGrid": [
+        {
+          "x": 2728.138,
+          "y": 1166.88
+        },
+        {
+          "x": 2728.818,
+          "y": 1166.88
+        },
+        {
+          "x": 2728.818,
+          "y": 1165.18
+        },
+        {
+          "x": 2728.138,
+          "y": 1165.18
+        }
+      ],
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": false
+    },
+    "baseFilter": {
+      "polygonGrid": [
+        {
+          "x": 2728.138,
+          "y": 1166.88
+        },
+        {
+          "x": 2728.818,
+          "y": 1166.88
+        },
+        {
+          "x": 2728.818,
+          "y": 1165.18
+        },
+        {
+          "x": 2728.138,
+          "y": 1165.18
+        }
+      ],
+      "surveyedSurfaceExclusionList": [
+        111
+      ],
+      "returnEarliest": true
+    },
+    "liftBuildSettings": {
+      "liftDetectionType": 4
+    }
+  }
+}

@@ -1,0 +1,549 @@
+﻿{
+  "PassCountAllPassesLastElevation": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "includeSupersededLifts": false
+    },
+    "filter": {
+      "elevationType": 0,
+      "polygonGrid": [
+        {
+          "x": 2762.499,
+          "y": 1163.143
+        },
+        {
+          "x": 2763.86,
+          "y": 1163.148
+        },
+        {
+          "x": 2763.86,
+          "y": 1162.798
+        },
+        {
+          "x": 2762.499,
+          "y": 1162.794
+        }
+      ]
+    },
+    "exportType": 2,
+    "outputType": 1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": false,
+    "restrictSize": false,
+    "tolerance": 0.05,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "dateFromUTC": "2012-01-01T00:00:00.000",
+    "dateToUTC": "2013-01-01T00:00:00.000"
+  },
+  "PassCountAllPassesFirstElevation": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "includeSupersededLifts": false
+    },
+    "filter": {
+      "elevationType": 1,
+      "polygonGrid": [
+        {
+          "x": 2762.499,
+          "y": 1163.143
+        },
+        {
+          "x": 2763.86,
+          "y": 1163.148
+        },
+        {
+          "x": 2763.86,
+          "y": 1162.798
+        },
+        {
+          "x": 2762.499,
+          "y": 1162.794
+        }
+      ]
+    },
+    "exportType": 2,
+    "outputType": 1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": false,
+    "restrictSize": false,
+    "tolerance": 0.05,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "dateFromUTC": "2012-01-01T00:00:00.000",
+    "dateToUTC": "2013-01-01T00:00:00.000"
+  },
+  "PassCountAllPassesHighestElevation": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "includeSupersededLifts": false
+    },
+    "filter": {
+      "elevationType": 2,
+      "polygonGrid": [
+        {
+          "x": 2762.499,
+          "y": 1163.143
+        },
+        {
+          "x": 2763.86,
+          "y": 1163.148
+        },
+        {
+          "x": 2763.86,
+          "y": 1162.798
+        },
+        {
+          "x": 2762.499,
+          "y": 1162.794
+        }
+      ]
+    },
+    "exportType": 2,
+    "outputType": 1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": false,
+    "restrictSize": false,
+    "tolerance": 0.05,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "dateFromUTC": "2012-01-01T00:00:00.000",
+    "dateToUTC": "2013-01-01T00:00:00.000"
+  },
+  "PassCountAllPassesLowestElevation": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "includeSupersededLifts": false
+    },
+    "filter": {
+      "elevationType": 3,
+      "polygonGrid": [
+        {
+          "x": 2762.499,
+          "y": 1163.143
+        },
+        {
+          "x": 2763.86,
+          "y": 1163.148
+        },
+        {
+          "x": 2763.86,
+          "y": 1162.798
+        },
+        {
+          "x": 2762.499,
+          "y": 1162.794
+        }
+      ]
+    },
+    "exportType": 2,
+    "outputType": 1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": false,
+    "restrictSize": false,
+    "tolerance": 0.05,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "dateFromUTC": "2012-01-01T00:00:00.000",
+    "dateToUTC": "2013-01-01T00:00:00.000"
+  },
+  "PassCountAllPassesFirstElevationInclSuperseded": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "includeSupersededLifts": true
+    },
+    "filter": {
+      "elevationType": 1,
+      "polygonGrid": [
+        {
+          "x": 2762.499,
+          "y": 1163.143
+        },
+        {
+          "x": 2763.86,
+          "y": 1163.148
+        },
+        {
+          "x": 2763.86,
+          "y": 1162.798
+        },
+        {
+          "x": 2762.499,
+          "y": 1162.794
+        }
+      ]
+    },
+    "exportType": 2,
+    "outputType": 1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": false,
+    "restrictSize": false,
+    "tolerance": 0.05,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "dateFromUTC": "2012-01-01T00:00:00.000",
+    "dateToUTC": "2013-01-01T00:00:00.000"
+  },
+  "PassCountAllPassesHighestElevationInclSuperseded": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "includeSupersededLifts": true
+    },
+    "filter": {
+      "elevationType": 2,
+      "polygonGrid": [
+        {
+          "x": 2762.499,
+          "y": 1163.143
+        },
+        {
+          "x": 2763.86,
+          "y": 1163.148
+        },
+        {
+          "x": 2763.86,
+          "y": 1162.798
+        },
+        {
+          "x": 2762.499,
+          "y": 1162.794
+        }
+      ]
+    },
+    "exportType": 2,
+    "outputType": 1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": false,
+    "restrictSize": false,
+    "tolerance": 0.05,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "dateFromUTC": "2012-01-01T00:00:00.000",
+    "dateToUTC": "2013-01-01T00:00:00.000"
+  },
+  "VedaFinalPassAcomScom": {
+    "callerId": "Test",
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 6316.25,
+          "y": 6238.73
+        },
+        {
+          "x": 6316.25,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6238.73
+        }
+      ],
+      "contributingMachines": [
+        {
+          "assetID": 1,
+          "machineName": "COMPACTOR SOIL",
+          "isJohnDoe": true
+        },
+        {
+          "assetID": 2,
+          "machineName": "COMPACTOR ASPHALT",
+          "isJohnDoe": true
+        }
+      ]
+    },
+    "dateFromUTC": "2005-01-01T00:00:00",
+    "dateToUTC": "2017-06-23T03:19:35.2130131Z",
+    "filterID": -1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": true,
+    "restrictSize": true,
+    "tolerance": 0.1,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "exportType": 3,
+    "coordType": 0,
+    "outputType": 2,
+    "projectId": 1001388
+  },
+  "VedaAllPassesAutoMapReset": {
+    "callerId": "Test",
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 6316.25,
+          "y": 6238.73
+        },
+        {
+          "x": 6316.25,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6238.73
+        }
+      ],
+      "contributingMachines": [
+        {
+          "assetID": 1,
+          "machineName": "COMPACTOR SOIL",
+          "isJohnDoe": true
+        },
+        {
+          "assetID": 2,
+          "machineName": "COMPACTOR ASPHALT",
+          "isJohnDoe": true
+        }
+      ]
+    },
+    "dateFromUTC": "2005-01-01T00:00:00",
+    "dateToUTC": "2017-06-23T03:19:35.2130131Z",
+    "filterID": -1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": true,
+    "restrictSize": true,
+    "tolerance": 0.1,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "exportType": 3,
+    "coordType": 0,
+    "outputType": 3,
+    "projectId": 1001388
+  },
+  "VedaFinalPassAcomAutoMapReset": {
+    "callerId": "Test",
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 6316.25,
+          "y": 6238.73
+        },
+        {
+          "x": 6316.25,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6238.73
+        }
+      ],
+      "contributingMachines": [
+        {
+          "assetID": 2,
+          "machineName": "COMPACTOR ASPHALT",
+          "isJohnDoe": true
+        }
+      ]
+    },
+    "dateFromUTC": "2005-01-01T00:00:00",
+    "dateToUTC": "2017-06-23T03:19:35.2130131Z",
+    "filterID": -1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": true,
+    "restrictSize": true,
+    "tolerance": 0.1,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "exportType": 3,
+    "coordType": 0,
+    "outputType": 2,
+    "projectId": 1001388
+  },
+  "VedaFinalPassScomAutoMapReset": {
+    "callerId": "Test",
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 6316.25,
+          "y": 6238.73
+        },
+        {
+          "x": 6316.25,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6238.73
+        }
+      ],
+      "contributingMachines": [
+        {
+          "assetID": 1,
+          "machineName": "COMPACTOR SOIL",
+          "isJohnDoe": true
+        }
+      ]
+    },
+    "dateFromUTC": "2005-01-01T00:00:00",
+    "dateToUTC": "2017-06-23T03:19:35.2130131Z",
+    "filterID": -1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": true,
+    "restrictSize": true,
+    "tolerance": 0.1,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "exportType": 3,
+    "coordType": 0,
+    "outputType": 2,
+    "projectId": 1001388
+  },
+  "VedaAllPassesScomAutoMapReset": {
+    "callerId": "Test",
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 6316.25,
+          "y": 6238.73
+        },
+        {
+          "x": 6316.25,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6238.73
+        }
+      ],
+      "contributingMachines": [
+        {
+          "assetID": 1,
+          "machineName": "COMPACTOR SOIL",
+          "isJohnDoe": true
+        }
+      ]
+    },
+    "dateFromUTC": "2005-01-01T00:00:00",
+    "dateToUTC": "2017-06-23T03:19:35.2130131Z",
+    "filterID": -1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": true,
+    "restrictSize": true,
+    "tolerance": 0.1,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "exportType": 3,
+    "coordType": 0,
+    "outputType": 3,
+    "projectId": 1001388
+  },
+  "NoDateRange": {
+    "callerId": "Test",
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 6316.25,
+          "y": 6238.73
+        },
+        {
+          "x": 6316.25,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6239.95
+        },
+        {
+          "x": 6316.79,
+          "y": 6238.73
+        }
+      ],
+      "contributingMachines": [
+        {
+          "assetID": 1,
+          "machineName": "COMPACTOR SOIL",
+          "isJohnDoe": true
+        },
+        {
+          "assetID": 2,
+          "machineName": "COMPACTOR ASPHALT",
+          "isJohnDoe": true
+        }
+      ]
+    },
+    "filterID": -1,
+    "timeStampRequired": true,
+    "cellSizeRequired": true,
+    "rawData": true,
+    "restrictSize": true,
+    "tolerance": 0.1,
+    "includeSurveydSurface": false,
+    "precheckonly": false,
+    "filename": "Test.csv",
+    "exportType": 3,
+    "coordType": 0,
+    "outputType": 2,
+    "projectId": 1001388
+  }
+}

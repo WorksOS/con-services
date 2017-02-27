@@ -1,0 +1,110 @@
+﻿{
+  "NoFilterAtAll": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "machineSpeedTarget": {
+        "MinTargetMachineSpeed": 80,
+        "MaxTargetMachineSpeed": 100
+      }
+    }
+  },
+  "ExcludeSupercededLifts": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "machineSpeedTarget": {
+        "MinTargetMachineSpeed": 120,
+        "MaxTargetMachineSpeed": 150
+      },
+      "includeSupersededLifts": false
+    },
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 2804.995,
+          "y": 1243.385
+        },
+        {
+          "x": 2806.012,
+          "y": 1243.38
+        },
+        {
+          "x": 2806.018,
+          "y": 1242.363
+        },
+        {
+          "x": 2804.995,
+          "y": 1242.357
+        }
+      ]
+    }
+  },
+  "IncludeSupercededLifts": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "machineSpeedTarget": {
+        "MinTargetMachineSpeed": 120,
+        "MaxTargetMachineSpeed": 150
+      },
+      "includeSupersededLifts": true
+    },
+    "filter": {
+      "polygonGrid": [
+        {
+          "x": 2804.995,
+          "y": 1243.385
+        },
+        {
+          "x": 2806.012,
+          "y": 1243.38
+        },
+        {
+          "x": 2806.018,
+          "y": 1242.363
+        },
+        {
+          "x": 2804.995,
+          "y": 1242.357
+        }
+      ]
+    }
+  },
+  "MissingSpeedTarget": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1
+    }
+  },
+  "MinSpeedTargetLargerThanMaxSpeedTarget": {
+    "projectId": 1001158,
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "machineSpeedTarget": {
+        "MinTargetMachineSpeed": 120,
+        "MaxTargetMachineSpeed": 100
+      }
+    }
+  }
+}

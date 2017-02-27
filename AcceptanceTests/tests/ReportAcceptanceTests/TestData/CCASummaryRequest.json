@@ -1,0 +1,63 @@
+﻿{
+  "NoFilterAtAll": {
+    "projectId": 1999999,
+    "callId": null,
+    "liftBuildSettings": null,
+    "filter": null,
+    "filterID": -1
+  },
+  "Over33Under33On33": {
+    "projectId": 1999999,
+    "Filter": {
+      "polygonGrid": [
+        {
+          "x": 291979.409,
+          "y": 4512817.973
+        },
+        {
+          "x": 291980.442,
+          "y": 4512817.963
+        },
+        {
+          "x": 291980.442,
+          "y": 4512817.612
+        },
+        {
+          "x": 291979.409,
+          "y": 4512817.602
+        }
+      ]
+    },
+    "FilterID": -1,
+    "liftBuildSettings": null
+  },
+  "FilterByLayerAndTime": {
+    "projectId": 1999999,
+    "liftBuildSettings": null,
+    "Filter": {
+      "startUTC": "2016-05-02T23:51:12Z",
+      "endUTC": "2016-05-02T23:51:54Z",
+      "layerType": 7,
+      "layerNumber": 1,
+      "polygonGrid": [
+        {
+          "x": 291981.454,
+          "y": 4512818.982
+        },
+        {
+          "x": 291981.802,
+          "y": 4512818.982
+        },
+        {
+          "x": 291981.802,
+          "y": 4512818.638
+        },
+        {
+          "x": 291981.456,
+          "y": 4512818.638
+        }
+      ]
+    },
+    "FilterID": -1
+  }
+}
