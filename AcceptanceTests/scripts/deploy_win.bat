@@ -9,5 +9,5 @@ mkdir deploy\testresults
 REM dotnet restore
 
 cd tests
-REM dotnet publish WebApiTests -o ..\deploy\WebApiTests -f net451
+REM dotnet publish WebApiTests -o ..\deploy\WebApiTests -f net46
 
