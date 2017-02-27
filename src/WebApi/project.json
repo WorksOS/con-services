@@ -23,7 +23,7 @@
         "ConfigurationStore.netcore": "*",
         "VSS.Interfaces.netcore": "*",
         "WebApiModels": "1.0.0-*",
-        "MasterDataRepos.netcore": "1.0.30"    },
+        "MasterDataRepos.netcore": "1.0.32"   },
 
   "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final"

@@ -1,5 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using VSS.Subscription.Data.Models;
+using VSS.TagFileAuth.Service.WebApiModels.Enums;
+using System;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Models
 {
@@ -71,16 +74,26 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models
     }
 
     /// <summary>
-    /// Validates eith assetID OR projectID is provided
+    /// Validates assetID And/or projectID is provided
     /// </summary>
     public bool Validate()
     {
-      if ((!string.IsNullOrEmpty(radioSerial)) ) // todo && ValidateDeviceType(deviceType) == true */)
-        return true;
+      // must have assetId and/or projecgtID
+      if (string.IsNullOrEmpty(radioSerial) && projectId <= 0)
+        return false;
 
-      if (projectId > 0)
-        return true;
-      return false;
+      // if the number is not in enum then it returns the number
+      var isDeviceTypeValid = (((DeviceTypeEnum)deviceType).ToString() != deviceType.ToString());      
+
+      // assetId must have valid deviceType
+      if (!string.IsNullOrEmpty(radioSerial) && (deviceType < 1 || !isDeviceTypeValid))
+        return false;
+
+      // a manual/unknown deviceType must have a projectID
+      if (deviceType == 0 && projectId <= 0 )
+        return false;
+
+      return true;
     }
   }
 }

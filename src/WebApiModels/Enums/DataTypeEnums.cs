@@ -1,4 +1,6 @@
-﻿namespace VSS.TagFileAuth.Service.WebApiModels.Enums
+﻿using System.Collections.Generic;
+
+namespace VSS.TagFileAuth.Service.WebApiModels.Enums
 {
   // todo put in table?
   public enum ServiceTypeEnumCG
@@ -17,6 +19,27 @@
     Manual3DProjectMonitoring = 15,
     Landfill = 19,
     ProjectMonitoring = 20
+  }
+
+  public class ServiceTypeMapping
+  {
+    public string name = "";
+    public int CGEnum = 0;
+    public int NGEnum = 0;
+  }
+
+  public class ServiceTypeMappings
+  {
+    public List<ServiceTypeMapping> serviceTypes;
+    public ServiceTypeMappings()
+    {
+      serviceTypes = new List<ServiceTypeMapping>();
+      serviceTypes.Add(new ServiceTypeMapping() { name = "Unknown", CGEnum = 0, NGEnum = 0 });
+      serviceTypes.Add(new ServiceTypeMapping() { name = "3D Project Monitoring", CGEnum = 160, NGEnum = 13 });
+      serviceTypes.Add(new ServiceTypeMapping() { name = "Manual 3D Project Monitoring", CGEnum = 18, NGEnum = 15 });
+      serviceTypes.Add(new ServiceTypeMapping() { name = "Landfill", CGEnum = 23, NGEnum = 19 });
+      serviceTypes.Add(new ServiceTypeMapping() { name = "Project Monitoring", CGEnum = 24, NGEnum = 20 });
+    }
   }
 
   // todo check if these are the same in NG

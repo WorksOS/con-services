@@ -39,7 +39,8 @@ namespace VSS.TagFileAuth.Service.WebApi.Controllers
     ///      Radio serial may not be present in the tag file. The logic below replaces the 'john doe' handling in Raptor for these tag files.
     ///      Special case: Allow manual import of tag file if user has manual 3D subscription.
     /// </summary>
-    /// <returns>AssetUid and True for success, False for failure</returns>
+    /// <returns>AssetId and/or serviceType and True for success, 
+    ///           AssetId==-1, serviceType = 0 and False for failure</returns>
     /// <executor>AssetIdExecutor</executor>
     [Route("api/v1/asset/getId")]
     [HttpPost]
@@ -48,9 +49,6 @@ namespace VSS.TagFileAuth.Service.WebApi.Controllers
       logger.LogInformation("GetAssetID: {0}", Request.QueryString);
 
       var isRequestOk = request.Validate();
-        //getAssetIdResult.getAssetIdDescriptor = new GetAssetIdDescriptor()
-        //{ LegacyAssetId = -1, MachineLevel = "Unknown" }; // NG has no 'unknown' serviceType
-
       return RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(request) as GetAssetIdResult;
     }
   }

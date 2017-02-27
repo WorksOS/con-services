@@ -87,51 +87,10 @@ namespace RepositoryTests
     }
 
 
-    [TestMethod]
-    public void CanCallAssetIDExecutorWithExistingDeviceAsset()
-    {
-      // todo move this to a seperate project
-      Guid assetUID = Guid.NewGuid();
-      long legacyAssetId = 34457644576;
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
-      var isCreatedOk = CreateAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      Assert.IsTrue(isCreatedOk, "created assetDevice association");
-
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int) deviceType, deviceSerialNumber);  
-
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
-      Assert.IsNotNull(result, "executor should always return a result");
-      Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
-      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
-    }
-
-    [TestMethod]
-    [Ignore]
-    public void CanCallAssetIDExecutorWithExistingProject()
-    {
-      // todo move this to a seperate project
-      Guid assetUID = Guid.NewGuid();
-      long legacyAssetId = 34457644576;
-      Guid owningCustomerUID = Guid.NewGuid();
-      Guid deviceUID = Guid.NewGuid();
-      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
-      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
-      var isCreatedOk = CreateAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      Assert.IsTrue(isCreatedOk, "created assetDevice association");
-
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int)deviceType, deviceSerialNumber);
-
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
-      Assert.IsNotNull(result, "executor should always return a result");
-      Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
-      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
-    }
+ 
 
 
-    private bool CreateAssociation(Guid assetUID, long legacyAssetId, Guid owningCustomerUID, Guid deviceUID, string deviceSerialNumber, string deviceType)
+    public bool CreateAssociation(Guid assetUID, long legacyAssetId, Guid owningCustomerUID, Guid deviceUID, string deviceSerialNumber, string deviceType)
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
