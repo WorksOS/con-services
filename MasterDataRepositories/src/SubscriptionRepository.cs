@@ -280,6 +280,8 @@ namespace VSS.Project.Service.Repositories
       return serviceTypes;
     }
 
+
+    #region getters
     public async Task<Subscription.Data.Models.Subscription> GetSubscription(string subscriptionUid)
     {
       await PerhapsOpenConnection();
@@ -291,6 +293,23 @@ namespace VSS.Project.Service.Repositories
               WHERE SubscriptionUID = @subscriptionUid"
           , new { subscriptionUid }
         )).FirstOrDefault();
+
+      PerhapsCloseConnection();
+      return subscription;
+    }
+
+    public async Task<IEnumerable<Subscription.Data.Models.Subscription>> GetSubscriptionsByCustomer(string customerUid, DateTime validAtDate)
+    {
+      await PerhapsOpenConnection();
+
+      var subscription = (await Connection.QueryAsync<Subscription.Data.Models.Subscription>
+        (@"SELECT 
+                SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
+              FROM Subscription
+              WHERE fk_CustomerUID = @customerUid
+                AND @validAtDate BETWEEN StartDate AND EndDate"
+          , new { customerUid,  validAtDate }
+        ));
 
       PerhapsCloseConnection();
       return subscription;
@@ -327,5 +346,7 @@ namespace VSS.Project.Service.Repositories
       PerhapsCloseConnection();
       return projectSubscriptions;
     }
+    #endregion
+
   }
 }

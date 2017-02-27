@@ -420,7 +420,7 @@ namespace VSS.Project.Data
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate
+                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
@@ -479,7 +479,7 @@ namespace VSS.Project.Data
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate
+                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
@@ -509,7 +509,7 @@ namespace VSS.Project.Data
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate
+                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
@@ -541,7 +541,7 @@ namespace VSS.Project.Data
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate
+                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
@@ -573,8 +573,7 @@ namespace VSS.Project.Data
                 c.CustomerUID, cp.LegacyCustomerID, 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate,
-                g.GeometryWKT
+                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Customer c  
                 JOIN CustomerProject cp ON cp.fk_CustomerUID = c.CustomerUID 
                 JOIN Project p on p.ProjectUID = cp.fk_ProjectUID           
@@ -672,7 +671,7 @@ namespace VSS.Project.Data
                   p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                   p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                   cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                  ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate              
+                  ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID              
               FROM Project p 
                 LEFT JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
                 LEFT JOIN Customer c ON c.CustomerUID = cp.fk_CustomerUID
@@ -695,7 +694,7 @@ namespace VSS.Project.Data
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.EndDate AS SubscriptionEndDate
+                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID

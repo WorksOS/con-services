@@ -39,6 +39,16 @@ namespace RepositoryTests
       gc = serviceProvider.GetService<IConfigurationStore>();
     }
 
+    [TestMethod]
+    public void AssetSchemaExists()
+    {
+      const string tableName = "Asset";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "AssetUID", "LegacyAssetID", "Name" , "MakeCode" , "SerialNumber", "Model", "IconKey", "AssetType", "IsDeleted", "OwningCustomerUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
 
     [TestMethod]
     public void CustomerSchemaExists()
@@ -62,6 +72,28 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
+
+    [TestMethod]
+    public void DeviceSchemaExists()
+    {
+      const string tableName = "Device";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "DeviceUID", "DeviceSerialNumber", "DeviceType" , "DeviceState" , "DeregisteredUTC", "ModuleType", "MainboardSoftwareVersion", "RadioFirmwarePartNumber", "GatewayFirmwarePartNumber", "DataLinkType", "LastActionedUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void AssetDeviceSchemaExists()
+    {
+      const string tableName = "AssetDevice";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "fk_DeviceUID", "fk_AssetUID", "LastActionedUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
 
     [TestMethod]
     public void ProjectSchemaExists()
