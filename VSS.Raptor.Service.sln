@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MockProjectWebApi", "test\MockProjectWebApi\MockProjectWebApi.xproj", "{2AD0B73F-9C90-47DD-93F2-762F6A0EC461}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{7F9C2BE8-DC4A-4C5D-A1D8-33CA29535100}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F9C2BE8-DC4A-4C5D-A1D8-33CA29535100}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F9C2BE8-DC4A-4C5D-A1D8-33CA29535100}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AD0B73F-9C90-47DD-93F2-762F6A0EC461}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD0B73F-9C90-47DD-93F2-762F6A0EC461}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AD0B73F-9C90-47DD-93F2-762F6A0EC461}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AD0B73F-9C90-47DD-93F2-762F6A0EC461}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,5 +60,6 @@ Global
 		{F0981437-389F-46EC-8124-22ADC3893478} = {E515E228-BB40-40EA-92A9-A3332492F16E}
 		{F214C460-58CD-4C60-8459-E4DD3451588B} = {853CE658-98F7-40F5-A180-F7841E1B7689}
 		{7F9C2BE8-DC4A-4C5D-A1D8-33CA29535100} = {F214C460-58CD-4C60-8459-E4DD3451588B}
+		{2AD0B73F-9C90-47DD-93F2-762F6A0EC461} = {853CE658-98F7-40F5-A180-F7841E1B7689}
 	EndGlobalSection
 EndGlobal
