@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Newtonsoft.Json;
 using VSS.Subscription.Data.Models;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
 using System;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Models
+namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
 {
   /// <summary>
   /// The request representation used to request the asset Id and project monitoring subscription for a given machine whose tagfiles
@@ -76,8 +78,10 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models
     /// <summary>
     /// Validates assetID And/or projectID is provided
     /// </summary>
-    public bool Validate()
+    public void Validate()
     {
+      if ((!string.IsNullOrEmpty(radioSerial)) ) // todo && ValidateDeviceType(deviceType) == true */)
+        return true;
       // must have assetId and/or projecgtID
       if (string.IsNullOrEmpty(radioSerial) && projectId <= 0)
         return false;
@@ -92,8 +96,23 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models
       // a manual/unknown deviceType must have a projectID
       if (deviceType == 0 && projectId <= 0 )
         return false;
+      if (projectId > 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "The project identifier must be defined!"));
+      }
 
+      if (projectId > 0)
+        return true;
+      return false;
       return true;
+      if (string.IsNullOrEmpty(radioSerial)) // todo && ValidateDeviceType(deviceType) == true */) 
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Radio serial must be provided!"));
+      }
     }
   }
 }

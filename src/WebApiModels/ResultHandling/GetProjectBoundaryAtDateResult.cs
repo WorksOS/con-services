@@ -1,4 +1,4 @@
-﻿using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
+﻿using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
 {

@@ -1,8 +1,7 @@
 ﻿using System.Net;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
-using VSS.TagFileAuth.Service.WebApiModels.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
+using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 {
