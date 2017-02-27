@@ -197,4 +197,5 @@ src/Deploy
 Log.*
 .vs/*
 Artifacts/
+Deploy/
 
