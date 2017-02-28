@@ -81,6 +81,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsFalse(result.result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -102,6 +103,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -127,6 +129,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -152,8 +155,9 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
-      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
+      Assert.AreEqual(16, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
 
     [TestMethod]
@@ -166,6 +170,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsFalse(result.result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -176,8 +181,7 @@ namespace RepositoryTests
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
       Guid customerUID = Guid.NewGuid();
-      //var serviceTypes = new ServiceTypeMappings();
-      var isCreatedOk = CreateAssociation(projectUID, legacyProjectId, customerUID, "Project Monitoring");
+      var isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
 
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 0, "");
@@ -185,6 +189,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsFalse(result.result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -196,8 +201,8 @@ namespace RepositoryTests
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
       Guid customerUID = Guid.NewGuid();
-      var isCreatedOk = CreateAssociation(projectUID, legacyProjectId, customerUID, "Project Monitoring");
-      Assert.IsTrue(isCreatedOk, "created assetDevice association");
+      var isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
+      Assert.IsTrue(isCreatedOk, "created project");
 
       isCreatedOk = CreateCustomerSub(customerUID, "Manual 3D Project Monitoring");
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
@@ -207,7 +212,39 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.result, "successful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
+      Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
+    }
+
+    [TestMethod]
+    public void CanCallAssetIDExecutorWithExistingProjectAndDeviceAndCustomerSub()
+    {
+      Guid assetUID = Guid.NewGuid();
+      long legacyAssetId = new Random().Next(0, int.MaxValue);
+      Guid owningCustomerUID = Guid.NewGuid();
+      Guid deviceUID = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      var isCreatedOk = CreateAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
+      Assert.IsTrue(isCreatedOk, "created assetDevice association");
+
+      Guid projectUID = Guid.NewGuid();
+      int legacyProjectId = new Random().Next(0, int.MaxValue);
+      Guid customerUID = owningCustomerUID;
+      isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
+      Assert.IsTrue(isCreatedOk, "created project");
+
+      isCreatedOk = CreateCustomerSub(customerUID, "Manual 3D Project Monitoring");
+      Assert.IsTrue(isCreatedOk, "created Customer subscription");
+
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int)deviceType, deviceSerialNumber);
+      assetIdRequest.Validate();
+
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.result, "successful");
+      Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
     }
 
@@ -252,7 +289,39 @@ namespace RepositoryTests
       return (g.Result != null ? true : false);
     }
 
-    private bool CreateAssociation(Guid projectUID, int legacyProjectId, Guid customerUID, string subToInsert)
+    private bool CreateProject(Guid projectUID, int legacyProjectId, Guid customerUID)
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      { CustomerUID = customerUID, CustomerName = "The Customer Name", CustomerType = CustomerType.Customer.ToString(), ActionUTC = actionUtc };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = projectUID,
+        ProjectID = legacyProjectId,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2100, 02, 01),
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      { CustomerUID = createCustomerEvent.CustomerUID, ProjectUID = createProjectEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = actionUtc };
+    
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+      
+      var g = projectContext.GetProjectAndSubscriptions(legacyProjectId, DateTime.UtcNow.Date); g.Wait();
+      return (g.Result != null ? true : false);
+    }
+
+    private bool CreateProjectAndProjectSubs(Guid projectUID, int legacyProjectId, Guid customerUID, string subToInsert)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
@@ -305,6 +374,7 @@ namespace RepositoryTests
       var g = projectContext.GetProjectBySubcription(createProjectSubscriptionEvent.SubscriptionUID.ToString()); g.Wait();
       return (g.Result != null ? true : false);
     }
+
 
     private bool CreateCustomerSub(Guid customerUID, string subToInsert)
     {

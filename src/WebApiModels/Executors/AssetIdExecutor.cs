@@ -35,10 +35,11 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       // legacyProjectId can exist with and without a radioSerial so set this up early
       if (request.projectId > 0)
       {
-        LoadProjectAndProjectBasedSubs(request.projectId);
+        LoadProject(request.projectId);
         
         if (project != null)
         {
+          // not used in getAssetID? LoadProjectAndProjectBasedSubs(request.projectId);
           LoadManual3DCustomerBasedSubs(project.CustomerUID);
           log.LogDebug("AssetIdExecutor: Retrieved Project CustomerSubs {0}", JsonConvert.SerializeObject(customerSubs));
         }
@@ -124,7 +125,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 
     Project.Data.Models.Project project = null;
     AssetDeviceIds.Data.ExtendedModels.AssetDeviceIds assetDevice = null;
-    IEnumerable<SubscriptionData> projectSubs = null;
+    // todo IEnumerable<SubscriptionData> projectSubs = null;
     IEnumerable<SubscriptionData> customerSubs = null;
     IEnumerable<SubscriptionData> assetSubs = null;
 
@@ -139,26 +140,40 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
     #endregion caching
 
 
-    private void LoadProjectAndProjectBasedSubs(long legacyProjectId)
+    private void LoadProject(long legacyProjectId)
     {
       if (legacyProjectId > 0)
       {
         var projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
-        var p = projectRepo.GetProjectAndSubscriptions(legacyProjectId, DateTime.UtcNow.Date);
+        var p = projectRepo.GetProject(legacyProjectId);
 
-        if (p.Result != null && p.Result.ToList().Count() > 0)
+        if (p.Result != null )
         {
-          project = p.Result.ToList()[0];
-          log.LogDebug("AssetIdExecutor: Loaded project {0}", JsonConvert.SerializeObject(project));
-
-          // now get any project-based subs Landfill (23--> 19) and ProjectMonitoring (24 --> 20)
-          // todo I don't believe these are used in CG and won't be here
-          projectSubs = p.Result.ToList()
-            .Select(x => new SubscriptionData("", x.ProjectUID, x.CustomerUID, x.ServiceTypeID, x.SubscriptionStartDate, x.SubscriptionEndDate));
-          log.LogDebug("AssetIdExecutor: Loaded projectSubs {0}", JsonConvert.SerializeObject(projectSubs));
+          project = p.Result;
+          log.LogDebug("AssetIdExecutor: Loaded project {0}", JsonConvert.SerializeObject(project));          
         }
       }
     }
+
+    // todo not used in getAsssetID
+    //private void LoadProjectBasedSubs(long legacyProjectId)
+    //{
+    //  if (legacyProjectId > 0)
+    //  {
+    //    var projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
+    //    var p = projectRepo.GetProjectAndSubscriptions(legacyProjectId, DateTime.UtcNow.Date);
+
+    //    if (p.Result != null && p.Result.ToList().Count() > 0)
+    //    {          
+    //      // now get any project-based subs Landfill (23--> 19) and ProjectMonitoring (24 --> 20)
+    //      // todo I don't believe these are used in CG and won't be here
+    //      projectSubs = p.Result.ToList()
+    //        .Where(x => x.ServiceTypeID != (int)ServiceTypeEnumNG.Unknown)
+    //        .Select(x => new SubscriptionData("", x.ProjectUID, x.CustomerUID, x.ServiceTypeID, x.SubscriptionStartDate, x.SubscriptionEndDate));
+    //      log.LogDebug("AssetIdExecutor: Loaded projectSubs {0}", JsonConvert.SerializeObject(projectSubs));
+    //    }
+    //  }
+    //}
 
     private void LoadAssetDevice(string radioSerial, string deviceType)
     {
@@ -180,8 +195,9 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       {
         var subsRepo = factory.GetRepository<ISubscriptionEvent>() as SubscriptionRepository;
         var s = subsRepo.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date);
-        customerSubs = s.Result.ToList().Where(x => x.ServiceTypeID == (int)ServiceTypeEnumNG.Manual3DProjectMonitoring)
-           .Select(x => new SubscriptionData("", "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate));
+        customerSubs = s.Result.ToList()
+          .Where(x => x.ServiceTypeID == (int)ServiceTypeEnumNG.Manual3DProjectMonitoring)
+          .Select(x => new SubscriptionData("", "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate));
       }
     }
 
