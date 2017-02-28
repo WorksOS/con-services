@@ -31,10 +31,11 @@ namespace TestUtility
                     Console.WriteLine($"Publish: {topicName} Message: {message} ");
                     var data = Encoding.UTF8.GetBytes(message);
                     var deliveryReport = topic.Produce(data);                
-                    var unused = deliveryReport.ContinueWith(task =>
+                    var response = deliveryReport.ContinueWith(task =>
                     {
                         Log.Info($"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {deliveryReport.Status.ToString()}", Log.ContentType.KafkaResponse);
                     });
+                    response.Wait();
                 }
             }
             catch (Exception ex)
