@@ -7,140 +7,55 @@ using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.Masterdata;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
   [TestClass]
   public class AssetIdExecutorTests : ExecutorBaseTests
   {
-    /****** todo
-     *  // needed for TFAS
-    public async Task<AssetDevice> GetAssociatedAsset(string radioSerial, string deviceType)
+    [TestMethod]
+    public void GetFactory()
     {
-      try
-      {
-        await PerhapsOpenConnection();
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
-        {
-          return (await Connection.QueryAsync<AssetDevice>
-                  (@"SELECT 
-                        AssetUID, LegacyAssetID, OwningCustomerUID, DeviceUid, DeviceType, DeviceSerialNumber AS RadioSerial
-                      FROM Device d
-                        INNER JOIN AssetDevice ad ON ad.fk_DeviceUID = d.DeviceUID
-                        INNER JOIN Asset a ON a.AssetUID = ad.fk_AssetUID
-                      WHERE d.DeviceSerialNumber = @radioSerial
-                        AND a.IsDeleted = 0
-                        AND d.DeviceType LIKE @deviceType"
-                      , new { radioSerial, deviceType }
-                  )).FirstOrDefault();
-        });
-      }
-      finally
-      {
-        PerhapsCloseConnection();
-      }
+      IRepositoryFactory factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+      Assert.IsNotNull(factory, "Unable to retrieve factory from DI");
     }
-    *****/
 
     [TestMethod]
-    [Ignore]
+    public void GetLogger()
+    {
+      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      Assert.IsNotNull(loggerFactory, "Unable to retrieve loggerFactory from DI");
+    }
+
+    [TestMethod]
     public void CanCallAssetIDExecutorNoValidInput()
     {
       GetAssetIdRequest assetIdRequest = new GetAssetIdRequest();
       GetAssetIdResult assetIdResult = new GetAssetIdResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, loggerFactory.CreateLogger<AssetIdExecutorTests>()).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect AssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
 
     [TestMethod]
-    [Ignore]
-    public void CanCallAssetIDExecutorWithRadioSerialNoAssetExists()
-    {
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 3, "3k45LK");
-
-      GetAssetIdResult assetIdResult = new GetAssetIdResult();
-      var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
-
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(-1, result.assetId, "executor returned incorrect AssetId");
-      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
-    }
-
-    [TestMethod]
-    [Ignore]
     public void CanCallAssetIDExecutorWithRadioSerialWithManualDeviceType()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "3k45LK");
 
       GetAssetIdResult assetIdResult = new GetAssetIdResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, loggerFactory.CreateLogger<AssetIdExecutorTests>()).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect AssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
-
-    [TestMethod]
-    [Ignore]
-    public void CanCallAssetIDExecutorWithRadioSerial()
-    {
-      long legacyAssetID = 898989;
-      long legacyProjectID = -1;
-      int deviceType = 3;
-      string radioSerial = "3k45LK";
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectID, deviceType, radioSerial);
-      var asset = new CreateAssetEvent
-      {
-        AssetUID = Guid.NewGuid(),
-        LegacyAssetId = legacyAssetID        
-      };
-      var ttt = serviceProvider.GetRequiredService<IRepositoryFactory>().GetRepository<IAssetEvent>();
-      var storeResult = ttt.StoreEvent(asset);
-      Assert.IsNotNull(storeResult, "store mock Asset failed");
-      Assert.AreEqual(1, storeResult.Result, "unable to store Asset");
-
-      GetAssetIdResult assetIdResult = new GetAssetIdResult();
-      var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
-
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(legacyAssetID, result.assetId, "executor returned incorrect AssetId");
-      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
-    }
-
-    [TestMethod]
-    [Ignore]
-    public void CanCallAssetIDExecutorWithProjectId()
-    {
-      long legacyAssetID = -1;
-      long legacyProjectID = 4564546456;
-      int deviceType = 0;
-      string radioSerial = null;
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectID, deviceType, radioSerial);
-      var asset = new CreateAssetEvent
-      {
-        AssetUID = Guid.NewGuid(),
-        LegacyAssetId = legacyAssetID
-      };
-      var ttt = serviceProvider.GetRequiredService<IRepositoryFactory>().GetRepository<IAssetEvent>();
-      var storeResult = ttt.StoreEvent(asset);
-      Assert.IsNotNull(storeResult, "store mock Asset failed");
-      Assert.AreEqual(1, storeResult.Result, "unable to store Asset");
-
-      GetAssetIdResult assetIdResult = new GetAssetIdResult();
-      var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
-
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(legacyAssetID, result.assetId, "executor returned incorrect AssetId");
-      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
-    }
-
+      
   }
 }

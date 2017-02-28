@@ -5,6 +5,7 @@ using VSS.Subscription.Data.Models;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
 using System;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using WebApiModels.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
 {
@@ -14,7 +15,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
   /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project  is known 
   /// which is when a tagfile is being manually imported by a user.
   /// </summary>
-  public class GetAssetIdRequest //: ProjectID // , IValidatable//, IServiceDomainObject, IHelpSample
+  public class GetAssetIdRequest : IValidatable
   {
     /// <summary>
     /// The id of the project into which the tagfile data should be processed. A value of -1 indicates 'unknown' 
@@ -80,39 +81,30 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     /// </summary>
     public void Validate()
     {
-      if ((!string.IsNullOrEmpty(radioSerial)) ) // todo && ValidateDeviceType(deviceType) == true */)
-        return true;
-      // must have assetId and/or projecgtID
       if (string.IsNullOrEmpty(radioSerial) && projectId <= 0)
-        return false;
+      {
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                   "Must have assetId and/or projectID"));
+      }
 
       // if the number is not in enum then it returns the number
       var isDeviceTypeValid = (((DeviceTypeEnum)deviceType).ToString() != deviceType.ToString());      
 
-      // assetId must have valid deviceType
       if (!string.IsNullOrEmpty(radioSerial) && (deviceType < 1 || !isDeviceTypeValid))
-        return false;
+      {
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                   "AssetId must have valid deviceType"));
+      }
 
-      // a manual/unknown deviceType must have a projectID
       if (deviceType == 0 && projectId <= 0 )
-        return false;
-      if (projectId > 0)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "The project identifier must be defined!"));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                   "A manual/unknown deviceType must have a projectID"));
       }
-
-      if (projectId > 0)
-        return true;
-      return false;
-      return true;
-      if (string.IsNullOrEmpty(radioSerial)) // todo && ValidateDeviceType(deviceType) == true */) 
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Radio serial must be provided!"));
-      }
+      
     }
   }
 }

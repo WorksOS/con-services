@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -18,6 +19,11 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
     /// Repository factory used in ProcessEx
     /// </summary>
     protected IRepositoryFactory factory;
+
+    /// <summary>
+    /// Logger used in ProcessEx
+    /// </summary>
+    protected ILogger log;
 
     /// <summary>
     ///   Generates the errorlist for instantiated executor.
@@ -63,11 +69,12 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
     ///   Builds this instance for specified executor type.
     /// </summary>
     /// <param name="factory">Repository factory</param>
+    /// <param name="logger">Ilogger</param>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(IRepositoryFactory factory) where TExecutor : RequestExecutorContainer, new()
+    public static TExecutor Build<TExecutor>(IRepositoryFactory factory, ILogger logger) where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { factory = factory };
+      var executor = new TExecutor() { factory = factory, log = logger };
       return executor;
     }
   }

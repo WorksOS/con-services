@@ -5,6 +5,7 @@ using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -18,8 +19,9 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       GetProjectIdRequest ProjectIdRequest = new GetProjectIdRequest();
       GetProjectIdResult ProjectIdResult = new GetProjectIdResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory).Process(ProjectIdRequest) as GetProjectIdResult;
+      var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, loggerFactory.CreateLogger<ProjectIdExecutorTests>()).Process(ProjectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(-1, result.projectId, "executor returned incorrect legacy ProjectId");
     }
@@ -36,8 +38,9 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 
       GetProjectIdResult ProjectIdResult = new GetProjectIdResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory).Process(ProjectIdRequest) as GetProjectIdResult;
+      var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, loggerFactory.CreateLogger<ProjectIdExecutorTests>()).Process(ProjectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(-1, result.projectId, "executor returned incorrect legacy ProjectId");
     }

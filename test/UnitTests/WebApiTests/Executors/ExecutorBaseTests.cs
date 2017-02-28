@@ -32,22 +32,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       serviceCollection.AddSingleton<IRepositoryFactory, MockFactory>();
       serviceCollection.AddSingleton<IConfigurationStore, VSS.GenericConfiguration.GenericConfiguration>();
       serviceProvider = serviceCollection.BuildServiceProvider();
-
-     // var f = serviceProvider.GetRequiredService<IRepositoryFactory>();
     }
-
-    [TestMethod]
-    public void GetFactory()
-    {
-      IRepositoryFactory factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
-      Assert.IsNotNull(factory, "Unable to retrieve factory from DI");
-    }
-
-    [TestMethod]
-    public void GetLogger()
-    {
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-      Assert.IsNotNull(loggerFactory, "Unable to retrieve loggerFactory from DI");
-    }
+  
   }
 }

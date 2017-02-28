@@ -5,6 +5,7 @@ using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -17,8 +18,9 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     {
       GetProjectBoundaryAtDateRequest ProjectBoundaryAtDateRequest = new GetProjectBoundaryAtDateRequest();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory).Process(ProjectBoundaryAtDateRequest) as GetProjectBoundaryAtDateResult;
+      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, loggerFactory.CreateLogger<ProjectBoundaryAtDateExecutorTests>()).Process(ProjectBoundaryAtDateRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code, "executor "); // todo does executed successfully mean it executed but may return nothing?
       // todo then should Boundary be null or empty list?
@@ -34,8 +36,9 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       var eventkeyDate = DateTime.UtcNow;
       GetProjectBoundaryAtDateRequest ProjectBoundaryAtDateRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(legacyProjectID, eventkeyDate);           
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory).Process(ProjectBoundaryAtDateRequest) as GetProjectBoundaryAtDateResult;
+      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, loggerFactory.CreateLogger<ProjectBoundaryAtDateExecutorTests>()).Process(ProjectBoundaryAtDateRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary");
       Assert.IsNull(result.projectBoundary.FencePoints, "executor returned incorrect projectBoundary count");
     }

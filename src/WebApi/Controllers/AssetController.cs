@@ -4,7 +4,6 @@ using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.Controllers
 {
@@ -18,7 +17,7 @@ namespace VSS.TagFileAuth.Service.Controllers
     /// <summary>
     /// Logger for logging
     /// </summary>
-    private readonly ILogger logger;
+    private readonly ILogger log;
 
     /// <summary>
     /// Constructor with injected repository factory and logger
@@ -28,7 +27,7 @@ namespace VSS.TagFileAuth.Service.Controllers
     public AssetController(IRepositoryFactory factory, ILogger<AssetController> logger)
     {
       this.factory = factory;
-      this.logger = logger;
+      this.log = logger;
     }
 
     /// <summary>
@@ -46,19 +45,10 @@ namespace VSS.TagFileAuth.Service.Controllers
     [HttpPost]
     public GetAssetIdResult Post([FromBody]GetAssetIdRequest request)
     {
-      logger.LogInformation("GetAssetID: {0}", Request.QueryString);
-
-      var isRequestOk = request.Validate();
-        //getAssetIdResult.getAssetIdDescriptor = new GetAssetIdDescriptor()
-        //{ LegacyAssetId = -1, MachineLevel = "Unknown" }; // NG has no 'unknown' serviceType
-
-      var isRequestOk = request.Validate();
-      // must have either radioSerial Or projectID
-      request.Validate();
-      //getAssetIdResult.getAssetIdDescriptor = new GetAssetIdDescriptor()
-      //{ LegacyAssetId = -1, MachineLevel = "Unknown" }; // NG has no 'unknown' serviceType
-
-      return RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(request) as GetAssetIdResult;
+      log.LogInformation("GetAssetID: {0}", Request.QueryString);
+            
+      request.Validate(); 
+      return RequestExecutorContainer.Build<AssetIdExecutor>(factory, log).Process(request) as GetAssetIdResult;
     }
   }
 }

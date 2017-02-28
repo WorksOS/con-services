@@ -10,8 +10,6 @@ using MasterDataConsumer;
 using VSS.Device.Data;
 using VSS.Asset.Data;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
-using VSS.TagFileAuth.Service.WebApiModels.Models;
-using VSS.TagFileAuth.Service.WebApiModels.Interfaces;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -19,6 +17,7 @@ using VSS.Customer.Data;
 using VSS.Geofence.Data;
 using VSS.Project.Data;
 using VSS.Project.Service.Repositories;
+using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 
 namespace RepositoryTests
 {
@@ -32,6 +31,7 @@ namespace RepositoryTests
     ProjectRepository projectContext = null;
     SubscriptionRepository subscriptionContext = null;
     IRepositoryFactory factory = null;
+    ILogger logger = null;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -60,6 +60,7 @@ namespace RepositoryTests
       serviceProvider = serviceCollection.BuildServiceProvider();
 
       factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+      logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
 
       assetContext = factory.GetRepository<IAssetEvent>() as AssetRepository;
       customerContext = factory.GetRepository<ICustomerEvent>() as CustomerRepository;
@@ -67,41 +68,7 @@ namespace RepositoryTests
       projectContext = factory.GetRepository<IProjectEvent>() as ProjectRepository;
       subscriptionContext = factory.GetRepository<ISubscriptionEvent>() as SubscriptionRepository;
     }
-
-
-    [TestMethod]
-    public void ValidateGetAssetIdRequest()
-    {
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
-      bool isValid = assetIdRequest.Validate();
-      Assert.IsFalse(isValid, "must be at least projectID or radioSerial");
-
-      assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "ASerial5");
-      isValid = assetIdRequest.Validate();
-      Assert.IsFalse(isValid, "must be valid deviceType for radioSerial");
-
-      assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 100, "ASerial5");
-      isValid = assetIdRequest.Validate();
-      Assert.IsFalse(isValid, "still must be valid deviceType for radioSerial");
-
-      assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
-      isValid = assetIdRequest.Validate();
-      Assert.IsFalse(isValid, "manual/unknown deviceType must have a projectID");
-
-      assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(456661, 0, "");
-      isValid = assetIdRequest.Validate();
-      Assert.IsTrue(isValid, "Good projectID request");
-
-      assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 6, "AGoodSer ial6");
-      isValid = assetIdRequest.Validate();
-      Assert.IsTrue(isValid, "Good radioSerial SNM940 request");
-
-      assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(745651, 6, "AGoodSer ial6");
-      isValid = assetIdRequest.Validate();
-      Assert.IsTrue(isValid, "Good project And radioSerial request");
-
-    }
-
+    
     [TestMethod]
     public void CanCallAssetIDExecutorWithNonExistingDeviceAsset()
     {
@@ -110,9 +77,9 @@ namespace RepositoryTests
       DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
 
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int)deviceType, deviceSerialNumber);
-      Assert.IsTrue(assetIdRequest.Validate(), "AssetIdRequest is invalid");
+      assetIdRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
@@ -120,6 +87,53 @@ namespace RepositoryTests
 
     [TestMethod]
     public void CanCallAssetIDExecutorWithExistingDeviceAsset()
+    {
+      Guid assetUID = Guid.NewGuid();
+      long legacyAssetId = new Random().Next(0, int.MaxValue); 
+      Guid owningCustomerUID = Guid.NewGuid();
+      Guid deviceUID = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      var isCreatedOk = CreateAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
+      Assert.IsTrue(isCreatedOk, "created assetDevice association");
+
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int)deviceType, deviceSerialNumber);
+      assetIdRequest.Validate();
+
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
+      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
+    }
+
+
+    [TestMethod]
+    public void CanCallAssetIDExecutorWithExistingDeviceAssetAndCustomerSub()
+    {
+      Guid assetUID = Guid.NewGuid();
+      long legacyAssetId = new Random().Next(0, int.MaxValue);
+      Guid owningCustomerUID = Guid.NewGuid();
+      Guid deviceUID = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      var isCreatedOk = CreateAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
+      Assert.IsTrue(isCreatedOk, "created assetDevice association");
+
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int)deviceType, deviceSerialNumber);
+      assetIdRequest.Validate();
+
+      isCreatedOk = CreateCustomerSub(owningCustomerUID, "Manual 3D Project Monitoring");
+      Assert.IsTrue(isCreatedOk, "created Customer subscription");
+
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
+      Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
+    }
+
+    [TestMethod]
+    [Ignore]
+    public void CanCallAssetIDExecutorWithExistingDeviceAssetAndAssetSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue); ;
@@ -131,9 +145,12 @@ namespace RepositoryTests
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
 
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, (int)deviceType, deviceSerialNumber);
-      Assert.IsTrue(assetIdRequest.Validate(), "AssetIdRequest is invalid");
+      assetIdRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
+      //isCreatedOk = CreateAssetSub(AssetUID, "3D Project Monitoring");
+      //Assert.IsTrue(isCreatedOk, "created Asset subscription");
+
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
@@ -145,9 +162,9 @@ namespace RepositoryTests
       int legacyProjectId = new Random().Next(0, int.MaxValue);
 
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 0, "");
-      Assert.IsTrue(assetIdRequest.Validate(), "AssetIdRequest is invalid");
+      assetIdRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
@@ -164,9 +181,9 @@ namespace RepositoryTests
       Assert.IsTrue(isCreatedOk, "created assetDevice association");
 
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 0, "");
-      Assert.IsTrue(assetIdRequest.Validate(), "AssetIdRequest is invalid");
+      assetIdRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
@@ -175,6 +192,7 @@ namespace RepositoryTests
     [TestMethod]
     public void CanCallAssetIDExecutorWithExistingProjectAndCustomerSub()
     {
+      // tests path where only ProjectId and goes via CheckForManual3DCustomerBasedSub()
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
       Guid customerUID = Guid.NewGuid();
@@ -185,9 +203,9 @@ namespace RepositoryTests
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
 
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 0, "");
-      Assert.IsTrue(assetIdRequest.Validate(), "AssetIdRequest is invalid");
+      assetIdRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory).Process(assetIdRequest) as GetAssetIdResult;
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
@@ -195,7 +213,7 @@ namespace RepositoryTests
 
 
 
-
+    #region privates
     private bool CreateAssociation(Guid assetUID, long legacyAssetId, Guid owningCustomerUID, Guid deviceUID, string deviceSerialNumber, string deviceType)
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -307,7 +325,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString()); g.Wait();
       return (g.Result != null ? true : false);
     }
-
+    #endregion privates
   }
 
 }

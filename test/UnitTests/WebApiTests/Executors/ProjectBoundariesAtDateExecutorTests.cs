@@ -5,6 +5,7 @@ using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -18,8 +19,9 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       GetProjectBoundariesAtDateRequest ProjectBoundariesAtDateRequest = new GetProjectBoundariesAtDateRequest();
       GetProjectBoundariesAtDateResult ProjectBoundariesAtDateResult = new GetProjectBoundariesAtDateResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory).Process(ProjectBoundariesAtDateRequest) as GetProjectBoundariesAtDateResult;
+      var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, loggerFactory.CreateLogger<ProjectBoundariesAtDateExecutorTests>()).Process(ProjectBoundariesAtDateRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect ProjectBoundaries");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect ProjectBoundaries");
@@ -34,8 +36,9 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 
       GetProjectBoundariesAtDateResult ProjectBoundariesAtDateResult = new GetProjectBoundariesAtDateResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
+      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory).Process(ProjectBoundariesAtDateRequest) as GetProjectBoundariesAtDateResult;
+      var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, loggerFactory.CreateLogger<ProjectBoundariesAtDateExecutorTests>()).Process(ProjectBoundariesAtDateRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect ProjectBoundaries");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect ProjectBoundaries");
