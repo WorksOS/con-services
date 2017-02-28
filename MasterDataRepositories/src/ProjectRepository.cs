@@ -8,10 +8,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using VSS.Masterdata.Service.Repositories;
+using Repositories.DBModels;
 
-namespace VSS.Project.Data
+namespace Repositories
 {
   public class ProjectRepository : RepositoryBase, IRepository<IProjectEvent>
   {
@@ -30,7 +29,7 @@ namespace VSS.Project.Data
       if (evt is CreateProjectEvent)
       {
         var projectEvent = (CreateProjectEvent)evt;
-        var project = new Models.Project();
+        var project = new Project();
         project.LegacyProjectID = projectEvent.ProjectID;
         project.Name = projectEvent.ProjectName;
         project.ProjectTimeZone = projectEvent.ProjectTimezone;
@@ -61,7 +60,7 @@ namespace VSS.Project.Data
         // todo doesn't make sense to be able to update Project type - be careful
         var projectEvent = (UpdateProjectEvent)evt;
 
-        var project = new Models.Project();
+        var project = new Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.Name = projectEvent.ProjectName;
         project.EndDate = projectEvent.ProjectEndDate.Date;
@@ -72,7 +71,7 @@ namespace VSS.Project.Data
       else if (evt is DeleteProjectEvent)
       {
         var projectEvent = (DeleteProjectEvent)evt;
-        var project = new Models.Project();
+        var project = new Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.LastActionedUTC = projectEvent.ActionUTC;
         upsertedCount = await UpsertProjectDetail(project, "DeleteProjectEvent");
@@ -80,7 +79,7 @@ namespace VSS.Project.Data
       else if (evt is AssociateProjectCustomer)
       {
         var projectEvent = (AssociateProjectCustomer)evt;
-        var customerProject = new Models.CustomerProject();
+        var customerProject = new CustomerProject();
         customerProject.ProjectUID = projectEvent.ProjectUID.ToString();
         customerProject.CustomerUID = projectEvent.CustomerUID.ToString();
         customerProject.LegacyCustomerID = projectEvent.LegacyCustomerID;
@@ -90,7 +89,7 @@ namespace VSS.Project.Data
       else if (evt is AssociateProjectGeofence)
       {
         var projectEvent = (AssociateProjectGeofence)evt;
-        var projectGeofence = new Models.ProjectGeofence();
+        var projectGeofence = new ProjectGeofence();
         projectGeofence.ProjectUID = projectEvent.ProjectUID.ToString();
         projectGeofence.GeofenceUID = projectEvent.GeofenceUID.ToString();
         projectGeofence.LastActionedUTC = projectEvent.ActionUTC;
@@ -111,13 +110,13 @@ namespace VSS.Project.Data
     /// <param name="project"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertProjectDetail(Models.Project project, string eventType)
+    private async Task<int> UpsertProjectDetail(Project project, string eventType)
     {
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
 
-      var existing = (await Connection.QueryAsync<Models.Project>
+      var existing = (await Connection.QueryAsync<Project>
           (@"SELECT 
                 ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
                 ProjectTimeZone, LandfillTimeZone, 
@@ -145,7 +144,7 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private async Task<int> CreateProject(Models.Project project, Models.Project existing)
+    private async Task<int> CreateProject(Project project, Project existing)
     {
       var upsertedCount = 0;
       if (project.StartDate > project.EndDate)
@@ -223,7 +222,7 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private async Task<int> DeleteProject(Models.Project project, Models.Project existing)
+    private async Task<int> DeleteProject(Project project, Project existing)
     {
       var upsertedCount = 0;
       if (existing != null)
@@ -256,7 +255,7 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private async Task<int> UpdateProject(Models.Project project, Models.Project existing)
+    private async Task<int> UpdateProject(Project project, Project existing)
     {
       var upsertedCount = 0;
       if (project.EndDate < existing.StartDate)
@@ -296,13 +295,13 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private async Task<int> UpsertCustomerProjectDetail(Models.CustomerProject customerProject, string eventType)
+    private async Task<int> UpsertCustomerProjectDetail(CustomerProject customerProject, string eventType)
     {
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
 
-      var existing = (await Connection.QueryAsync<Models.CustomerProject>
+      var existing = (await Connection.QueryAsync<CustomerProject>
           (@"SELECT 
                 fk_CustomerUID AS CustomerUID, LegacyCustomerID, fk_ProjectUID AS ProjectUID, LastActionedUTC
               FROM CustomerProject
@@ -323,7 +322,7 @@ namespace VSS.Project.Data
 
 
     #region associate
-    private async Task<int> AssociateProjectCustomer(Models.CustomerProject customerProject, Models.CustomerProject existing)
+    private async Task<int> AssociateProjectCustomer(CustomerProject customerProject, CustomerProject existing)
     {
       var upsertedCount = 0;
 
@@ -349,7 +348,7 @@ namespace VSS.Project.Data
 
     }
 
-    private async Task<int> UpsertProjectGeofenceDetail(Models.ProjectGeofence projectGeofence, string eventType)
+    private async Task<int> UpsertProjectGeofenceDetail(ProjectGeofence projectGeofence, string eventType)
     {
       int upsertedCount = 0;
 
@@ -358,7 +357,7 @@ namespace VSS.Project.Data
       //    Log.DebugFormat("ProjectRepository: Upserting eventType={0} ProjectUid={1}, GeofenceUid={2}",
       //        eventType, projectGeofence.ProjectUID, projectGeofence.GeofenceUID);
 
-      var existing = (await Connection.QueryAsync<Models.ProjectGeofence>
+      var existing = (await Connection.QueryAsync<ProjectGeofence>
         (@"SELECT 
               fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
             FROM ProjectGeofence
@@ -375,7 +374,7 @@ namespace VSS.Project.Data
       return upsertedCount;
     }
 
-    private async Task<int> AssociateProjectGeofence(Models.ProjectGeofence projectGeofence, Models.ProjectGeofence existing)
+    private async Task<int> AssociateProjectGeofence(ProjectGeofence projectGeofence, ProjectGeofence existing)
     {
       var upsertedCount = 0;
       if (existing == null)
@@ -411,11 +410,11 @@ namespace VSS.Project.Data
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>
-    public async Task<Models.Project> GetProject(string projectUid)
+    public async Task<Project> GetProject(string projectUid)
     {
       await PerhapsOpenConnection();
 
-      var project = (await Connection.QueryAsync<Models.Project>
+      var project = (await Connection.QueryAsync<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -439,11 +438,11 @@ namespace VSS.Project.Data
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>
-    public async Task<Models.Project> GetProject(long legacyProjectID)
+    public async Task<Project> GetProject(long legacyProjectID)
     {
       await PerhapsOpenConnection();
 
-      var project = (await Connection.QueryAsync<Models.Project>
+      var project = (await Connection.QueryAsync<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -468,11 +467,11 @@ namespace VSS.Project.Data
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Models.Project>> GetProjectAndSubscriptions(long legacyProjectID, DateTime validAtDate)
+    public async Task<IEnumerable<Project>> GetProjectAndSubscriptions(long legacyProjectID, DateTime validAtDate)
     {
       await PerhapsOpenConnection();
 
-      var projectSubList = (await Connection.QueryAsync<Models.Project>
+      var projectSubList = (await Connection.QueryAsync<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -498,11 +497,11 @@ namespace VSS.Project.Data
     /// </summary>
     /// <param name="subscriptionUid"></param>
     /// <returns></returns>
-    public async Task<Models.Project> GetProjectBySubcription(string subscriptionUid)
+    public async Task<Project> GetProjectBySubcription(string subscriptionUid)
     {
       await PerhapsOpenConnection();
 
-      var projects = (await Connection.QueryAsync<Models.Project>
+      var projects = (await Connection.QueryAsync<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -529,10 +528,10 @@ namespace VSS.Project.Data
     /// </summary>
     /// <param name="userUid"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Models.Project>> GetProjectsForUser(string userUid)
+    public async Task<IEnumerable<Project>> GetProjectsForUser(string userUid)
     {
       await PerhapsOpenConnection();
-      var projects = (await Connection.QueryAsync<Models.Project>
+      var projects = (await Connection.QueryAsync<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -560,11 +559,11 @@ namespace VSS.Project.Data
     /// <param name="customerUid"></param>
     /// <param name="userUid"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Models.Project>> GetProjectsForCustomerUser(string customerUid, string userUid)
+    public async Task<IEnumerable<Project>> GetProjectsForCustomerUser(string customerUid, string userUid)
     {
       await PerhapsOpenConnection();
 
-      var projects = (await Connection.QueryAsync<Models.Project>
+      var projects = (await Connection.QueryAsync<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -592,11 +591,11 @@ namespace VSS.Project.Data
     /// <param name="customerUid"></param>
     /// <param name="userUid"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Models.Project>> GetProjectsForCustomer(string customerUid)
+    public async Task<IEnumerable<Project>> GetProjectsForCustomer(string customerUid)
     {
       await PerhapsOpenConnection();
       // mysql doesn't have any nice mssql features like rowNumber/paritionBy, so quicker to do in c#
-      var projects = (await Connection.QueryAsync<Models.Project>
+      var projects = (await Connection.QueryAsync<Project>
           (@"SELECT 
                 c.CustomerUID, cp.LegacyCustomerID, 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
@@ -628,11 +627,11 @@ namespace VSS.Project.Data
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns>The project</returns>
-    public async Task<Models.Project> GetProjectOnly(string projectUid)
+    public async Task<Project> GetProjectOnly(string projectUid)
     {
       await PerhapsOpenConnection();
 
-      var project = (await Connection.QueryAsync<Models.Project>
+      var project = (await Connection.QueryAsync<Project>
           (@"SELECT              
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT                
@@ -690,11 +689,11 @@ namespace VSS.Project.Data
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>
-    public async Task<Models.Project> GetProject_UnitTest(string projectUid)
+    public async Task<Project> GetProject_UnitTest(string projectUid)
     {
       await PerhapsOpenConnection();
 
-      var project = (await Connection.QueryAsync<Models.Project>
+      var project = (await Connection.QueryAsync<Project>
           (@"SELECT 
                   p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                   p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -713,11 +712,11 @@ namespace VSS.Project.Data
       return project;
     }
 
-    public async Task<IEnumerable<Models.Project>> GetProjects_UnitTests()
+    public async Task<IEnumerable<Project>> GetProjects_UnitTests()
     {
       await PerhapsOpenConnection();
 
-      var projects = (await Connection.QueryAsync<Models.Project>
+      var projects = (await Connection.QueryAsync<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,

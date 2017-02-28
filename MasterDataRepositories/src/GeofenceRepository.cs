@@ -4,15 +4,13 @@ using System.Threading.Tasks;
 using Dapper;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Geofence.Data.Models;
 using System;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using VSS.Masterdata.Service.Repositories;
+using Repositories.DBModels;
 
-namespace VSS.Geofence.Data
+namespace Repositories
 {
   public class GeofenceRepository : RepositoryBase, IRepository<IGeofenceEvent>
   {
@@ -32,7 +30,7 @@ namespace VSS.Geofence.Data
       //  lets just store all geofence types
       GeofenceType geofenceType = GetGeofenceType(evt);
 
-      var geofence = new Models.Geofence();
+      var geofence = new Geofence();
       string eventType = "Unknown";
       if (evt is CreateGeofenceEvent)
       {
@@ -104,13 +102,13 @@ namespace VSS.Geofence.Data
     /// <param name="geofence"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertGeofenceDetail(Models.Geofence geofence, string eventType)
+    private async Task<int> UpsertGeofenceDetail(Geofence geofence, string eventType)
     {
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
 
-      var existing = (await Connection.QueryAsync<Models.Geofence>
+      var existing = (await Connection.QueryAsync<Geofence>
         (@"SELECT 
                 GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
@@ -139,7 +137,7 @@ namespace VSS.Geofence.Data
       return upsertedCount;
     }
 
-    private async Task<int> CreateGeofence(Models.Geofence geofence, Models.Geofence existing)
+    private async Task<int> CreateGeofence(Geofence geofence, Geofence existing)
     {
       var upsertedCount = 0;
       if (existing == null)
@@ -163,7 +161,7 @@ namespace VSS.Geofence.Data
       return await UpdateGeofence(geofence, existing);
     }
 
-    private async Task<int> DeleteGeofence(Models.Geofence geofence, Models.Geofence existing)
+    private async Task<int> DeleteGeofence(Geofence geofence, Geofence existing)
     {
       var upsertedCount = 0;
       if (existing != null)
@@ -220,7 +218,7 @@ namespace VSS.Geofence.Data
       return upsertedCount;
     }
 
-    private async Task<int> UpdateGeofence(Models.Geofence geofence, Models.Geofence existing)
+    private async Task<int> UpdateGeofence(Geofence geofence, Geofence existing)
     {
       var upsertedCount = 0;
       if (existing != null)
@@ -265,11 +263,11 @@ namespace VSS.Geofence.Data
     /// </summary>
     /// <param name="customerUid"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Models.Geofence>> GetProjectGeofences(string customerUid)
+    public async Task<IEnumerable<Geofence>> GetProjectGeofences(string customerUid)
     {
       await PerhapsOpenConnection();
 
-      var projectGeofences = (await Connection.QueryAsync<Models.Geofence>
+      var projectGeofences = (await Connection.QueryAsync<Geofence>
          (@"SELECT 
                 GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
@@ -288,11 +286,11 @@ namespace VSS.Geofence.Data
     /// </summary>
     /// <param name="customerUid"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Models.Geofence>> GetProjectGeofencesByProjectUID(string projectUid)
+    public async Task<IEnumerable<Geofence>> GetProjectGeofencesByProjectUID(string projectUid)
     {
       await PerhapsOpenConnection();
 
-      var projectGeofences = (await Connection.QueryAsync<Models.Geofence>
+      var projectGeofences = (await Connection.QueryAsync<Geofence>
          (@"SELECT 
                 GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
@@ -307,11 +305,11 @@ namespace VSS.Geofence.Data
       return projectGeofences;
     }
 
-    public async Task<Models.Geofence> GetGeofence_UnitTest(string geofenceUid)
+    public async Task<Geofence> GetGeofence_UnitTest(string geofenceUid)
     {
       await PerhapsOpenConnection();
 
-      var geofence = (await Connection.QueryAsync<Models.Geofence>
+      var geofence = (await Connection.QueryAsync<Geofence>
           (@"SELECT 
                GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
