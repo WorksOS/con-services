@@ -435,6 +435,33 @@ namespace VSS.Project.Data
     }
 
     /// <summary>
+    /// Gets by legacyProjectID. No subs
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
+    public async Task<Models.Project> GetProject(long legacyProjectID)
+    {
+      await PerhapsOpenConnection();
+
+      var project = (await Connection.QueryAsync<Models.Project>
+          (@"SELECT 
+                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID               
+              FROM Project p 
+                JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
+                JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID                
+              WHERE p.LegacyProjectID = @legacyProjectID 
+                AND p.IsDeleted = 0",
+            new { legacyProjectID }
+          )).FirstOrDefault();
+
+      PerhapsCloseConnection();
+      return project;
+    }
+
+
+    /// <summary>
     /// There may be 0 or n subscriptions for this project. None/many may be current. 
     /// This method just gets ANY one of these or no subs (SubscriptionUID == null)
     /// We don't care, up to the calling code to decipher.
@@ -455,16 +482,17 @@ namespace VSS.Project.Data
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
+                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID
+                              AND @validAtDate BETWEEN s.StartDate AND s.EndDate 
               WHERE p.LegacyProjectID = @legacyProjectID 
-                AND p.IsDeleted = 0
-                AND @validAtDate BETWEEN s.StartDate AND s.EndDate",
+                AND p.IsDeleted = 0",
             new { legacyProjectID, validAtDate }
           ));
 
       PerhapsCloseConnection();
       return projectSubList;
     }
+
     /// <summary>
     /// gets only 1 row for a particular sub. only 1 projectUID and be associated with a sub
     /// </summary>
