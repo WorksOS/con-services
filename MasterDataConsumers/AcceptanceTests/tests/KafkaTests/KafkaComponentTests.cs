@@ -217,7 +217,8 @@ namespace KafkaTests
                 {
                     new KeyValuePair<string, string>(createDeviceEvent.DeviceUID.ToString(), messagePayload)
                 });
-
+      Console.WriteLine("topic=" + topicName);
+      Console.WriteLine("Message=" + messagePayload);
       var bar1 = serviceProvider.GetService<IKafkaConsumer<IDeviceEvent>>();
       bar1.SetTopic(baseTopic);
 
