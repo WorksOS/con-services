@@ -4,18 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Globalization;
-using System.Net;
 using System.Reflection;
 using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility.Model.TestEvents;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
-using VSS.Customer.Data.Models;
-using VSS.Subscription.Data.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-
+using Repositories.DBModels;
 
 namespace TestUtility
 {

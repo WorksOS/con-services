@@ -2,17 +2,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Customer.Data;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using log4netExtensions;
 using VSS.GenericConfiguration;
-using VSS.Asset.Data;
-using VSS.Asset.Data.Models;
-using System.Linq;
-using System.Collections.Generic;
-using VSS.Device.Data;
-using VSS.Device.Data.Models;
+using Repositories;
+using Repositories.DBModels;
 
 namespace RepositoryTests
 {

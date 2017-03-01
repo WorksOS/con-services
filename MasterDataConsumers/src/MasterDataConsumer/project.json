@@ -12,7 +12,6 @@
           "type": "platform",
           "version": "1.1.0"
         },
-        "KafkaConsumer.netcore": "*",
         "log4net.netcore": "3.0.0",
         "log4netExtensions.netcore": "1.0.1"
       }
@@ -35,6 +34,7 @@
         "Microsoft.Extensions.Logging.Console": "1.1.0",
         "Microsoft.Extensions.Logging.Debug": "1.1.0",
         "ConfigurationStore.netcore": "*",
-        "MasterDataRepos.netcore": "*"
+        "KafkaConsumer.netcore": "1.0.3",
+        "MasterDataRepos.netcore": "1.0.34"
     }
 }

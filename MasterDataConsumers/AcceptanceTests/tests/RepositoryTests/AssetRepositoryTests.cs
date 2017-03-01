@@ -5,18 +5,11 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using log4netExtensions;
 using VSS.GenericConfiguration;
-using VSS.Asset.Data;
-using VSS.Asset.Data.Models;
 using System.Linq;
 using System.Collections.Generic;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Masterdata;
-using MasterDataConsumer;
-using VSS.Project.Data;
-using VSS.Customer.Data;
-using VSS.Device.Data;
-using VSS.Geofence.Data;
-using VSS.Project.Service.Repositories;
+using Repositories;
+using Repositories.DBModels;
 
 namespace RepositoryTests
 {

@@ -481,10 +481,10 @@ namespace Repositories
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID
-                              AND @validAtDate BETWEEN s.StartDate AND s.EndDate 
+                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID                             
               WHERE p.LegacyProjectID = @legacyProjectID 
-                AND p.IsDeleted = 0",
+                AND p.IsDeleted = 0
+                AND @validAtDate BETWEEN s.StartDate AND s.EndDate",
             new { legacyProjectID, validAtDate }
           ));
 

@@ -3,12 +3,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Project.Data;
-using VSS.Project.Data.Models;
-using VSS.Customer.Data;
-using Microsoft.Extensions.Configuration;
 using log4netExtensions;
 using VSS.GenericConfiguration;
+using Repositories;
+using Repositories.DBModels;
 
 namespace RepositoryTests
 {
@@ -904,7 +902,7 @@ namespace RepositoryTests
       };
     }
 
-    private Project CopyModel(CreateProjectEvent kafkaProjectEvent)
+    private Repositories.DBModels.Project CopyModel(CreateProjectEvent kafkaProjectEvent)
     {
       return new Project()
       {

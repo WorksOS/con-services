@@ -3,16 +3,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Project.Data;
-using VSS.Project.Data.Models;
-using VSS.Customer.Data;
-using VSS.Subscription.Data.Models;
-using VSS.Project.Service.Repositories;
 using System.Linq;
 using log4netExtensions;
 using VSS.GenericConfiguration;
-using VSS.Geofence.Data.Models;
-using VSS.Geofence.Data;
+using Repositories;
+using Repositories.DBModels;
 
 namespace RepositoryTests
 {
@@ -606,8 +601,8 @@ namespace RepositoryTests
         ProjectTimezone = projectTimeZone,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = actionUtc
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectAEvent = new AssociateProjectCustomer()
@@ -657,7 +652,7 @@ namespace RepositoryTests
         GeofenceType = GeofenceType.Project.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
-        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        GeometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
         ActionUTC = actionUtc
@@ -717,8 +712,8 @@ namespace RepositoryTests
         ProjectTimezone = projectTimeZone,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((100 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
-          ActionUTC = actionUtc
+        ProjectBoundary = "POLYGON((100 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectBEvent = new AssociateProjectCustomer()
@@ -732,7 +727,7 @@ namespace RepositoryTests
         GeofenceType = GeofenceType.Project.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
-        GeometryWKT = "POLYGON((45.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        GeometryWKT = "POLYGON((100 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
         ActionUTC = actionUtc

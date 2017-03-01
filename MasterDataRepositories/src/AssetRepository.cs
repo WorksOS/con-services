@@ -20,6 +20,7 @@ namespace Repositories
       log = logger.CreateLogger<AssetRepository>();
     }
 
+    #region store
     public async Task<int> StoreEvent(IAssetEvent evt)
     {
       var upsertedCount = 0;
@@ -292,6 +293,9 @@ namespace Repositories
       }
     }
 
+    #endregion store
+
+    #region getters
     public async Task<Asset> GetAsset(string assetUid)
     {
       try
@@ -307,6 +311,30 @@ namespace Repositories
                       WHERE AssetUID = @assetUid 
                         AND IsDeleted = 0"
                       , new { assetUid }
+                  )).FirstOrDefault();
+        });
+      }
+      finally
+      {
+        PerhapsCloseConnection();
+      }
+    }
+
+    public async Task<Asset> GetAsset(long legacyAssetId)
+    {
+      try
+      {
+        await PerhapsOpenConnection();
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          return (await Connection.QueryAsync<Asset>
+                  (@"SELECT 
+                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
+                        LastActionedUTC AS LastActionedUtc
+                      FROM Asset
+                      WHERE LegacyAssetId = @legacyAssetId 
+                        AND IsDeleted = 0"
+                      , new { legacyAssetId }
                   )).FirstOrDefault();
         });
       }
@@ -363,7 +391,6 @@ namespace Repositories
       }
     }
 
-
     public async Task<IEnumerable<Asset>> GetAssets(string[] productFamily)
     {
       try
@@ -385,6 +412,8 @@ namespace Repositories
         PerhapsCloseConnection();
       }
     }
+
+    #endregion getters
 
 
     //#region AssetCount

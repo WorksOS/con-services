@@ -6,30 +6,17 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using MasterDataConsumer;
-using VSS.Project.Service.Repositories;
-using VSS.Project.Data;
-using VSS.Customer.Data;
-using VSS.Geofence.Data;
-using VSS.Project.Service.Utils;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Threading;
-using VSS.Customer.Data.Models;
-using VSS.Project.Data.Models;
-using VSS.Subscription.Data.Models;
 using System.Linq;
 using KafkaConsumer;
-using VSS.Geofence.Data.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using log4netExtensions;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
 using VSS.Project.Service.Interfaces;
 using VSS.Project.Service.Utils.Kafka;
-using VSS.Asset.Data;
-using VSS.Device.Data;
-using VSS.Asset.Data.Models;
-using VSS.Device.Data.Models;
+using Repositories;
+using Repositories.DBModels;
 
 namespace KafkaTests
 {
