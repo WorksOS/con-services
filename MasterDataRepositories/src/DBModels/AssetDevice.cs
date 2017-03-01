@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.AssetDevice.Data.Models
+namespace Repositories.DBModels
 {
   public class AssetDevice
   {

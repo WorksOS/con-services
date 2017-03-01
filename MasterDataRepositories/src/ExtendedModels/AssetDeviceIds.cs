@@ -1,4 +1,4 @@
-﻿namespace VSS.AssetDeviceIds.Data.ExtendedModels
+﻿namespace Repositories.ExtendedModels
 {
   public class AssetDeviceIds
   {

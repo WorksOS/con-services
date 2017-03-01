@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Project.Data.Models
+namespace Repositories.DBModels
 {
   public class Project
   {

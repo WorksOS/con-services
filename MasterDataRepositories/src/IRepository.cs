@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace VSS.Masterdata
+namespace Repositories
 {
     public interface IRepository<in T>
     {

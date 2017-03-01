@@ -1,6 +1,6 @@
 ﻿
 
-namespace VSS.Geofence.Data.Models
+namespace Repositories.DBModels
 {
   public enum GeofenceType
   {

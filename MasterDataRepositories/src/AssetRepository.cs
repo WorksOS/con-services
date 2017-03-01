@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -7,11 +6,10 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using VSS.Masterdata.Service.Repositories;
 using System.Collections.Generic;
+using Repositories.DBModels;
 
-namespace VSS.Asset.Data
+namespace Repositories
 {
   public class AssetRepository : RepositoryBase, IRepository<IAssetEvent>
   { 
@@ -25,7 +23,7 @@ namespace VSS.Asset.Data
     public async Task<int> StoreEvent(IAssetEvent evt)
     {
       var upsertedCount = 0;
-      var asset = new Models.Asset();
+      var asset = new Asset();
       string eventType = "Unknown";
       if (evt is CreateAssetEvent)
       {
@@ -78,7 +76,7 @@ namespace VSS.Asset.Data
     /// <param name="asset"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertAssetDetail(Models.Asset asset, string eventType)
+    private async Task<int> UpsertAssetDetail(Asset asset, string eventType)
     {
       try
       {
@@ -89,7 +87,7 @@ namespace VSS.Asset.Data
 
           var existing = await dbAsyncPolicy.ExecuteAsync(async () =>
           {
-            return (await Connection.QueryAsync<Models.Asset>
+            return (await Connection.QueryAsync<Asset>
                       (@"SELECT 
                               AssetUID AS AssetUid, Name, LegacyAssetID, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
                               LastActionedUTC AS LastActionedUtc
@@ -127,7 +125,7 @@ namespace VSS.Asset.Data
       }
     }
 
-    private async Task<int> CreateAsset(Models.Asset asset, Models.Asset existing)
+    private async Task<int> CreateAsset(Asset asset, Asset existing)
     {
       try
       {
@@ -187,7 +185,7 @@ namespace VSS.Asset.Data
       }
     }
 
-    private async Task<int> DeleteAsset(Models.Asset asset, Models.Asset existing)
+    private async Task<int> DeleteAsset(Asset asset, Asset existing)
     {
       try
       {
@@ -236,7 +234,7 @@ namespace VSS.Asset.Data
       }
     }
 
-    private async Task<int> UpdateAsset(Models.Asset asset, Models.Asset existing)
+    private async Task<int> UpdateAsset(Asset asset, Asset existing)
     {
       try
       {
@@ -294,14 +292,14 @@ namespace VSS.Asset.Data
       }
     }
 
-    public async Task<Models.Asset> GetAsset(string assetUid)
+    public async Task<Asset> GetAsset(string assetUid)
     {
       try
       {
         await PerhapsOpenConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
-          return (await Connection.QueryAsync<Models.Asset>
+          return (await Connection.QueryAsync<Asset>
                   (@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
@@ -318,14 +316,14 @@ namespace VSS.Asset.Data
       }
     }
 
-    public async Task<IEnumerable<Models.Asset>> GetAssets()
+    public async Task<IEnumerable<Asset>> GetAssets()
     {
       try
       {
         await PerhapsOpenConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
-          return (await Connection.QueryAsync<Models.Asset>
+          return (await Connection.QueryAsync<Asset>
                   (@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
@@ -344,14 +342,14 @@ namespace VSS.Asset.Data
     /// Used for unit tests so we can test deleted assets
     /// </summary>
     /// <returns></returns>
-    public async Task<IEnumerable<Models.Asset>> GetAllAssetsInternal()
+    public async Task<IEnumerable<Asset>> GetAllAssetsInternal()
     {
       try
       {
         await PerhapsOpenConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
-          return (await Connection.QueryAsync<Models.Asset>
+          return (await Connection.QueryAsync<Asset>
                   (@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
@@ -366,14 +364,14 @@ namespace VSS.Asset.Data
     }
 
 
-    public async Task<IEnumerable<Models.Asset>> GetAssets(string[] productFamily)
+    public async Task<IEnumerable<Asset>> GetAssets(string[] productFamily)
     {
       try
       {
         await PerhapsOpenConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
-          return (await Connection.QueryAsync<Models.Asset>
+          return (await Connection.QueryAsync<Asset>
                   (@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
                         LastActionedUTC AS LastActionedUtc

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Project.Data.Models
+namespace Repositories.DBModels
 {
   public class CustomerProject
   {

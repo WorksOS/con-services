@@ -7,10 +7,9 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using VSS.Masterdata.Service.Repositories;
+using Repositories.DBModels;
 
-namespace VSS.Customer.Data
+namespace Repositories
 {
   public class CustomerRepository : RepositoryBase, IRepository<ICustomerEvent>
   {
@@ -28,7 +27,7 @@ namespace VSS.Customer.Data
       if (evt is CreateCustomerEvent)
       {
         var customerEvent = (CreateCustomerEvent)evt;
-        var customer = new Models.Customer();
+        var customer = new Customer();
         customer.Name = customerEvent.CustomerName;
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.CustomerType = (CustomerType)Enum.Parse(typeof(CustomerType), customerEvent.CustomerType, true);
@@ -38,7 +37,7 @@ namespace VSS.Customer.Data
       else if (evt is UpdateCustomerEvent)
       {
         var customerEvent = (UpdateCustomerEvent)evt;
-        var customer = new Models.Customer();
+        var customer = new Customer();
         customer.Name = customerEvent.CustomerName;
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.LastActionedUTC = customerEvent.ActionUTC;
@@ -47,7 +46,7 @@ namespace VSS.Customer.Data
       else if (evt is DeleteCustomerEvent)
       {
         var customerEvent = (DeleteCustomerEvent)evt;
-        var customer = new Models.Customer();
+        var customer = new Customer();
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.LastActionedUTC = customerEvent.ActionUTC;
         upsertedCount = await UpsertCustomerDetail(customer, "DeleteCustomerEvent");
@@ -55,7 +54,7 @@ namespace VSS.Customer.Data
       else if (evt is AssociateCustomerUserEvent)
       {
         var customerEvent = (AssociateCustomerUserEvent)evt;
-        var customerUser = new Models.CustomerUser();
+        var customerUser = new CustomerUser();
         customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
         customerUser.UserUID = customerEvent.UserUID.ToString();
         customerUser.LastActionedUTC = customerEvent.ActionUTC;
@@ -64,7 +63,7 @@ namespace VSS.Customer.Data
       else if (evt is DissociateCustomerUserEvent)
       {
         var customerEvent = (DissociateCustomerUserEvent)evt;
-        var customerUser = new Models.CustomerUser();
+        var customerUser = new CustomerUser();
         customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
         customerUser.UserUID = customerEvent.UserUID.ToString();
         customerUser.LastActionedUTC = customerEvent.ActionUTC;
@@ -82,13 +81,13 @@ namespace VSS.Customer.Data
     /// <param name="customer"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertCustomerDetail(Models.Customer customer, string eventType)
+    private async Task<int> UpsertCustomerDetail(Customer customer, string eventType)
     {
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
 
-      var existing = (await Connection.QueryAsync<Models.Customer>
+      var existing = (await Connection.QueryAsync<Customer>
         (@"SELECT 
                 CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC
               FROM Customer
@@ -121,7 +120,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private async Task<int> CreateCustomer(Models.Customer customer, Models.Customer existing)
+    private async Task<int> CreateCustomer(Customer customer, Customer existing)
     {
       var upsertedCount = 0;
       if (existing == null)
@@ -164,7 +163,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private async Task<int> UpdateCustomer(Models.Customer customer, Models.Customer existing)
+    private async Task<int> UpdateCustomer(Customer customer, Customer existing)
     {
       var upsertedCount = 0;
       if (existing != null)
@@ -209,7 +208,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private async Task<int> DeleteCustomer(Models.Customer customer, Models.Customer existing)
+    private async Task<int> DeleteCustomer(Customer customer, Customer existing)
     {
       var upsertedCount = 0;
       if (existing == null)
@@ -258,11 +257,11 @@ namespace VSS.Customer.Data
       
     }
 
-    public async Task<Models.Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
+    public async Task<Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
     {
       await PerhapsOpenConnection();
 
-      var customer = (await Connection.QueryAsync<Models.Customer>
+      var customer = (await Connection.QueryAsync<Customer>
           (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, c.LastActionedUTC 
                 FROM Customer c 
                 JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
@@ -275,11 +274,11 @@ namespace VSS.Customer.Data
       return customer;
     }
 
-    public async Task<Models.Customer> GetCustomer(System.Guid customerUid)
+    public async Task<Customer> GetCustomer(System.Guid customerUid)
     {
       await PerhapsOpenConnection();
 
-      var customer = (await Connection.QueryAsync<Models.Customer>
+      var customer = (await Connection.QueryAsync<Customer>
           (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
                 FROM Customer 
                 WHERE CustomerUID = @customerUid AND IsDeleted = 0",
@@ -299,13 +298,13 @@ namespace VSS.Customer.Data
     /// <param name="customerUser"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertCustomerUserDetail(Models.CustomerUser customerUser, string eventType)
+    private async Task<int> UpsertCustomerUserDetail(CustomerUser customerUser, string eventType)
     {
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
 
-      var existing = (await Connection.QueryAsync<Models.CustomerUser>
+      var existing = (await Connection.QueryAsync<CustomerUser>
         (@"SELECT 
                 UserUID, fk_CustomerUID AS CustomerUID, LastActionedUTC
               FROM CustomerUser
@@ -327,7 +326,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private async Task<int> AssociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
+    private async Task<int> AssociateCustomerUser(CustomerUser customerUser, CustomerUser existing)
     {
       var upsertedCount = 0;
       if (existing == null)
@@ -351,7 +350,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private async Task<int> DissociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
+    private async Task<int> DissociateCustomerUser(CustomerUser customerUser, CustomerUser existing)
     {
       var upsertedCount = 0;
       if (existing != null)
@@ -382,11 +381,11 @@ namespace VSS.Customer.Data
     }
 
 
-    public async Task<Models.Customer> GetCustomer_UnitTest(System.Guid customerUid)
+    public async Task<Customer> GetCustomer_UnitTest(System.Guid customerUid)
     {
       await PerhapsOpenConnection();
 
-      var customer = (await Connection.QueryAsync<Models.Customer>
+      var customer = (await Connection.QueryAsync<Customer>
           (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
                 FROM Customer 
                 WHERE CustomerUID = @customerUid",
@@ -398,11 +397,11 @@ namespace VSS.Customer.Data
       return customer;
     }
 
-    public async Task<Models.CustomerUser> GetAssociatedCustomerbyUserUid_UnitTest(System.Guid userUid)
+    public async Task<CustomerUser> GetAssociatedCustomerbyUserUid_UnitTest(System.Guid userUid)
     {
       await PerhapsOpenConnection();
 
-      var customer = (await Connection.QueryAsync<Models.CustomerUser>
+      var customer = (await Connection.QueryAsync<CustomerUser>
           (@"SELECT fk_CustomerUID AS CustomerUID, UserUID, LastActionedUTC 
                 FROM CustomerUser
                 WHERE UserUID = @userUid",

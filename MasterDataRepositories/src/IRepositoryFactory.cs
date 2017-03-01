@@ -1,4 +1,4 @@
-namespace VSS.Masterdata
+namespace Repositories
 {
     public interface IRepositoryFactory
     {

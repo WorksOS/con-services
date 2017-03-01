@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using VSS.Subscription.Data.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using VSS.Masterdata.Service.Repositories;
+using Repositories.DBModels;
 
-namespace VSS.Project.Service.Repositories
+namespace Repositories
 {
 
   public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>
@@ -23,7 +21,7 @@ namespace VSS.Project.Service.Repositories
       log = logger.CreateLogger<SubscriptionRepository>();
     }
 
-    public Dictionary<string, VSS.Subscription.Data.Models.ServiceType> _serviceTypes = null;
+    public Dictionary<string, ServiceType> _serviceTypes = null;
 
 
     public async Task<int> StoreEvent(ISubscriptionEvent evt)
@@ -36,7 +34,7 @@ namespace VSS.Project.Service.Repositories
       if (evt is CreateProjectSubscriptionEvent)
       {
         var subscriptionEvent = (CreateProjectSubscriptionEvent)evt;
-        var subscription = new VSS.Subscription.Data.Models.Subscription();
+        var subscription = new Subscription();
         subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
         subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
         subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
@@ -50,7 +48,7 @@ namespace VSS.Project.Service.Repositories
       else if (evt is UpdateProjectSubscriptionEvent)
       {
         var subscriptionEvent = (UpdateProjectSubscriptionEvent)evt;
-        var subscription = new VSS.Subscription.Data.Models.Subscription();
+        var subscription = new Subscription();
         subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
 
         // this is dangerous. I suppose if current logic is chnanged to MOVE a servicePlan for rental customers
@@ -71,7 +69,7 @@ namespace VSS.Project.Service.Repositories
       else if (evt is AssociateProjectSubscriptionEvent)
       {
         var subscriptionEvent = (AssociateProjectSubscriptionEvent)evt;
-        var projectSubscription = new VSS.Subscription.Data.Models.ProjectSubscription();
+        var projectSubscription = new ProjectSubscription();
         projectSubscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
         projectSubscription.ProjectUID = subscriptionEvent.ProjectUID.ToString();
         projectSubscription.EffectiveDate = subscriptionEvent.EffectiveDate;
@@ -81,7 +79,7 @@ namespace VSS.Project.Service.Repositories
       else if (evt is CreateCustomerSubscriptionEvent)
       {
         var subscriptionEvent = (CreateCustomerSubscriptionEvent)evt;
-        var subscription = new VSS.Subscription.Data.Models.Subscription();
+        var subscription = new Subscription();
         subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
         subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
         subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
@@ -95,12 +93,37 @@ namespace VSS.Project.Service.Repositories
       else if (evt is UpdateCustomerSubscriptionEvent)
       {
         var subscriptionEvent = (UpdateCustomerSubscriptionEvent)evt;
-        var subscription = new VSS.Subscription.Data.Models.Subscription();
+        var subscription = new Subscription();
         subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
         subscription.StartDate = subscriptionEvent.StartDate ?? DateTime.MinValue;
         subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
         subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
         upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateCustomerSubscriptionEvent");
+      }
+      else if (evt is CreateAssetSubscriptionEvent)
+      {
+        var subscriptionEvent = (CreateAssetSubscriptionEvent)evt;
+        var subscription = new Subscription();
+        subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+        subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
+        subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
+        subscription.StartDate = subscriptionEvent.StartDate;
+        //This is to handle CG subscriptions where we set the EndDate annually.
+        //In NG the end date is the maximum unless it is cancelled/terminated.
+        subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow ? new DateTime(9999, 12, 31) : subscriptionEvent.EndDate;
+        subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+        upsertedCount = await UpsertSubscriptionDetail(subscription, "CreateAssetSubscriptionEvent");
+      }
+      else if (evt is UpdateAssetSubscriptionEvent)
+      {
+        var subscriptionEvent = (UpdateAssetSubscriptionEvent)evt;
+        var subscription = new Subscription();
+        subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+        subscription.CustomerUID = subscriptionEvent.CustomerUID.HasValue ? subscriptionEvent.CustomerUID.Value.ToString() : null;
+        subscription.StartDate = subscriptionEvent.StartDate ?? DateTime.MinValue;
+        subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
+        subscription.LastActionedUTC = subscriptionEvent.ActionUTC;        
+        upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateAssetSubscriptionEvent");
       }
 
       return upsertedCount;
@@ -115,13 +138,13 @@ namespace VSS.Project.Service.Repositories
     /// <param name="subscription"></param>
     /// <param name="eventType"></param>
     /// <returns>Number of upserted records</returns>
-    private async Task<int> UpsertSubscriptionDetail(VSS.Subscription.Data.Models.Subscription subscription, string eventType)
+    private async Task<int> UpsertSubscriptionDetail(Subscription subscription, string eventType)
     {
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
 
-      var existing = (await Connection.QueryAsync<Subscription.Data.Models.Subscription>
+      var existing = (await Connection.QueryAsync<Subscription>
         (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, StartDate, EndDate, fk_ServiceTypeID AS ServiceTypeID, LastActionedUTC 
               FROM Subscription
@@ -129,14 +152,14 @@ namespace VSS.Project.Service.Repositories
           new { subscriptionUID = subscription.SubscriptionUID }
           )).FirstOrDefault();
 
-      if (eventType == "CreateProjectSubscriptionEvent" || eventType == "CreateCustomerSubscriptionEvent")
+      if (eventType == "CreateProjectSubscriptionEvent" || eventType == "CreateCustomerSubscriptionEvent" || eventType == "CreateAssetSubscriptionEvent")
       {
-        upsertedCount = await CreateProjectSubscription(subscription, existing);
+        upsertedCount = await CreateSubscription(subscription, existing);
       }
 
-      if (eventType == "UpdateProjectSubscriptionEvent" || eventType == "UpdateCustomerSubscriptionEvent")
+      if (eventType == "UpdateProjectSubscriptionEvent" || eventType == "UpdateCustomerSubscriptionEvent" || eventType == "UpdateAssetSubscriptionEvent")
       {
-        upsertedCount = await UpdateProjectSubscription(subscription, existing);
+        upsertedCount = await UpdateSubscription(subscription, existing);
       }
       
       PerhapsCloseConnection();
@@ -144,12 +167,12 @@ namespace VSS.Project.Service.Repositories
       return upsertedCount;
     }
 
-    private async Task<int> CreateProjectSubscription(Subscription.Data.Models.Subscription subscription, VSS.Subscription.Data.Models.Subscription existing)
+    private async Task<int> CreateSubscription(Subscription subscription, Subscription existing)
     {
       var upsertedCount = 0;
       if (existing == null)
       {
-        log.LogDebug("SubscriptionRepository/CreateProjectSubscription: going to create subscription={0}", JsonConvert.SerializeObject(subscription));
+        log.LogDebug("SubscriptionRepository/CreateSubscription: going to create subscription={0}", JsonConvert.SerializeObject(subscription));
 
         const string insert =
           @"INSERT Subscription
@@ -159,16 +182,16 @@ namespace VSS.Project.Service.Repositories
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, subscription);
-          log.LogDebug("SubscriptionRepository/CreateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}", upsertedCount, subscription.SubscriptionUID);
+          log.LogDebug("SubscriptionRepository/CreateSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}", upsertedCount, subscription.SubscriptionUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
 
-      log.LogDebug("SubscriptionRepository/CreateProjectSubscription: can't create as already exists subscription={0}", JsonConvert.SerializeObject(subscription));
+      log.LogDebug("SubscriptionRepository/CreateSubscription: can't create as already exists subscription={0}", JsonConvert.SerializeObject(subscription));
       return upsertedCount;
     }
 
-    private async Task<int> UpdateProjectSubscription(VSS.Subscription.Data.Models.Subscription subscription, VSS.Subscription.Data.Models.Subscription existing)
+    private async Task<int> UpdateSubscription(Subscription subscription, Subscription existing)
     {
       // todo this code allows customerUID and serviceType to be updated - is this intentional?
 
@@ -177,7 +200,7 @@ namespace VSS.Project.Service.Repositories
       {
         if (subscription.LastActionedUTC >= existing.LastActionedUTC)
         {
-          log.LogDebug("SubscriptionRepository/UpdateProjectSubscription: going to create subscription={0}", JsonConvert.SerializeObject(subscription));
+          log.LogDebug("SubscriptionRepository/UpdateSubscription: going to create subscription={0}", JsonConvert.SerializeObject(subscription));
 
           //subscription only has values for columns to be updated
           if (string.IsNullOrEmpty(subscription.CustomerUID))
@@ -201,16 +224,16 @@ namespace VSS.Project.Service.Repositories
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
             upsertedCount = await Connection.ExecuteAsync(update, subscription);
-            log.LogDebug("SubscriptionRepository/UpdateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}", upsertedCount, subscription.SubscriptionUID);
+            log.LogDebug("SubscriptionRepository/UpdateSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}", upsertedCount, subscription.SubscriptionUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           });
         }
 
-        log.LogDebug("SubscriptionRepository/UpdateProjectSubscription: old update event ignored subscription={0}", JsonConvert.SerializeObject(subscription));        
+        log.LogDebug("SubscriptionRepository/UpdateSubscription: old update event ignored subscription={0}", JsonConvert.SerializeObject(subscription));        
       }
       else
       {
-        log.LogDebug("SubscriptionRepository/UpdateProjectSubscription: can't update as none existing subscription={0}", JsonConvert.SerializeObject(subscription));
+        log.LogDebug("SubscriptionRepository/UpdateSubscription: can't update as none existing subscription={0}", JsonConvert.SerializeObject(subscription));
       }
       return upsertedCount;
     }
@@ -282,11 +305,11 @@ namespace VSS.Project.Service.Repositories
 
 
     #region getters
-    public async Task<Subscription.Data.Models.Subscription> GetSubscription(string subscriptionUid)
+    public async Task<Subscription> GetSubscription(string subscriptionUid)
     {
       await PerhapsOpenConnection();
 
-      var subscription = (await Connection.QueryAsync<Subscription.Data.Models.Subscription>
+      var subscription = (await Connection.QueryAsync<Subscription>
         (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
@@ -298,11 +321,11 @@ namespace VSS.Project.Service.Repositories
       return subscription;
     }
 
-    public async Task<IEnumerable<Subscription.Data.Models.Subscription>> GetSubscriptionsByCustomer(string customerUid, DateTime validAtDate)
+    public async Task<IEnumerable<Subscription>> GetSubscriptionsByCustomer(string customerUid, DateTime validAtDate)
     {
       await PerhapsOpenConnection();
 
-      var subscription = (await Connection.QueryAsync<Subscription.Data.Models.Subscription>
+      var subscription = (await Connection.QueryAsync<Subscription>
         (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
@@ -315,11 +338,11 @@ namespace VSS.Project.Service.Repositories
       return subscription;
     }
 
-    public async Task<IEnumerable<Subscription.Data.Models.Subscription>> GetSubscriptions_UnitTest(string subscriptionUid)
+    public async Task<IEnumerable<Subscription>> GetSubscriptions_UnitTest(string subscriptionUid)
     {
       await PerhapsOpenConnection();
 
-      var subscriptions = (await Connection.QueryAsync<Subscription.Data.Models.Subscription>
+      var subscriptions = (await Connection.QueryAsync<Subscription>
         (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
