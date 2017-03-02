@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using MasterDataConsumer;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Threading;
 using System.Linq;
@@ -13,10 +12,10 @@ using KafkaConsumer;
 using Microsoft.Extensions.Logging;
 using log4netExtensions;
 using VSS.GenericConfiguration;
-using VSS.Project.Service.Interfaces;
-using VSS.Project.Service.Utils.Kafka;
 using Repositories;
 using Repositories.DBModels;
+using KafkaConsumer.Kafka;
+using KafkaConsumer.Interfaces;
 
 namespace KafkaTests
 {
