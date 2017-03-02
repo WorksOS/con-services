@@ -2,22 +2,16 @@
 using System.Threading.Tasks;
 using KafkaConsumer;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.Customer.Data;
-using VSS.Project.Data;
-using VSS.Project.Service.Interfaces;
-using VSS.Project.Service.Repositories;
-using VSS.Project.Service.Utils.Kafka;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Geofence.Data;
 using Microsoft.Extensions.Logging;
 using log4netExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using VSS.Asset.Data;
-using VSS.Device.Data;
+using KafkaConsumer.Interfaces;
+using KafkaConsumer.Kafka;
+using Repositories;
 
 namespace MasterDataConsumer
 {
