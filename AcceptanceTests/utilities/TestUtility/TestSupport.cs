@@ -153,7 +153,7 @@ namespace TestUtility
     {
       var topicName= string.Empty;
       var jsonString = string.Empty;
-      string eventType = eventObject.EventType.ToSafeString;
+      string eventType = eventObject.EventType;
       #region publish kafka events
       switch (eventType)
       {
