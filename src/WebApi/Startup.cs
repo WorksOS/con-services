@@ -7,15 +7,8 @@ using log4netExtensions;
 using Swashbuckle.Swagger.Model;
 using VSS.TagFileAuth.Service.WebApi.Filters;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using MasterDataConsumer;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Asset.Data;
-using VSS.Customer.Data;
-using VSS.Device.Data;
-using VSS.Geofence.Data;
-using VSS.Project.Data;
-using VSS.Project.Service.Repositories;
+using Repositories;
 
 namespace WebApi
 {
@@ -103,14 +96,7 @@ namespace WebApi
       //Enable TID here
       //app.UseTIDAuthentication();
       app.UseCors("VSS");
-      app.UseExceptionTrap();
-      //Enable TID here
-      //app.UseTIDAuthentication();
-      app.UseCors("VSS");
-      app.UseExceptionTrap();
-      //Enable TID here
-      //app.UseTIDAuthentication();
-      app.UseCors("VSS");
+  
 
       //For now don't use application insights as it clogs the log with lots of stuff.
       //app.UseApplicationInsightsRequestTelemetry();

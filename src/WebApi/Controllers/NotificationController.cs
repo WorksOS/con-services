@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Masterdata;
+using Repositories;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
@@ -48,7 +48,7 @@ namespace VSS.TagFileAuth.Service.Controllers
     //}
 
     /// <summary>
-    /// Sends an alert if required for the given tag file processing error. 
+    /// Writes to the log for the given tag file processing error. 
     /// </summary>
     /// <param name="request">Details of the error including the asset id, the tag file and the type of error</param>
     /// <returns>

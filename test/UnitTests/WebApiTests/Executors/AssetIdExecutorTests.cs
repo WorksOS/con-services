@@ -1,13 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using VSS.Masterdata;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
 using Microsoft.Extensions.Logging;
+using Repositories;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -31,8 +28,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     [TestMethod]
     public void CanCallAssetIDExecutorNoValidInput()
     {
-      GetAssetIdRequest assetIdRequest = new GetAssetIdRequest();
-      GetAssetIdResult assetIdResult = new GetAssetIdResult();
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
@@ -47,7 +43,6 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "3k45LK");
 
-      GetAssetIdResult assetIdResult = new GetAssetIdResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
