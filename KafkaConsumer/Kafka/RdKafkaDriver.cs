@@ -5,10 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.GenericConfiguration;
-using VSS.Project.Service.Utils;
-using VSS.Project.Service.Interfaces;
 
-namespace VSS.Project.Service.Utils.Kafka
+namespace KafkaConsumer.Kafka
 {
     public class RdKafkaDriver : IKafka
     {
@@ -34,19 +32,19 @@ namespace VSS.Project.Service.Utils.Kafka
             rdConsumer?.Commit();
         }
 
-        public Interfaces.Message Consume(TimeSpan timeout)
+        public Message Consume(TimeSpan timeout)
         {
             lock (syncPollObject)
             {
                 var result = rdConsumer.Consume(timeout);
                 if (result.HasValue)
                     if (result.Value.Error == ErrorCode.NO_ERROR)
-                        return new Interfaces.Message(new List<byte[]>() {result.Value.Message.Payload},
-                            Interfaces.Error.NO_ERROR);
+                        return new Message(new List<byte[]>() {result.Value.Message.Payload},
+                            Error.NO_ERROR);
                     else
-                        return new Interfaces.Message(null, (Interfaces.Error) (int) result.Value.Error);
+                        return new Message(null, (Error) (int) result.Value.Error);
                 else
-                    return new Interfaces.Message(null, Interfaces.Error.NO_DATA);
+                    return new Message(null, Error.NO_DATA);
             }
         }
 

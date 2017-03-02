@@ -1,9 +1,9 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Asset.Data.Models;
+using Repositories.DBModels;
 
-namespace MasterDataConsumer.Tests
+namespace MasterDataConsumerTests
 {
   [TestClass]
   public class AssetEventsTests

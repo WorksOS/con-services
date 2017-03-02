@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using VSS.GenericConfiguration;
 using VSS.Project.Service.Utils;
 
-namespace VSS.Project.Service.Interfaces
+namespace KafkaConsumer.Kafka
 {
     public interface IKafka
     {

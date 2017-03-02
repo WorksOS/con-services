@@ -18,8 +18,8 @@
         "Moq": "4.6.38-alpha",
         "Microsoft.Extensions.Logging.Debug": "1.1.0",
         "ConfigurationStore.netcore": "*",
-        "KafkaConsumer.netcore": "1.0.3",
-        "MasterDataRepos.netcore": "1.0.34"
+        "KafkaConsumer.netcore": "*",
+        "MasterDataRepos.netcore": "*"
     },
 
     "frameworks": {

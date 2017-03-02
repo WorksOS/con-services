@@ -3,8 +3,9 @@ using KafkaConsumer.JsonConverters;
 using Newtonsoft.Json;
 using VSS.Project.Service.Utils.JsonConverters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using KafkaConsumer.Interfaces;
 
-namespace MasterDataConsumer
+namespace KafkaConsumer
 {
   public class MessageResolver : IMessageTypeResolver
   {
