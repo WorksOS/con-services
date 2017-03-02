@@ -27,7 +27,8 @@ namespace MasterDataConsumerTests
     }
 
     [TestMethod]
-    public void CustomerEventsCopyModels()
+    [Ignore]
+    public void CustomerSubscriptionEventsCopyModels()
     {
       var now = DateTime.UtcNow;
 
