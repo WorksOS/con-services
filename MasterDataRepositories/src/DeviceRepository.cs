@@ -230,7 +230,7 @@ namespace Repositories
               @"INSERT Device
                     (DeviceUID,  DeviceSerialNumber,  DeviceType,   DeviceState,  DeregisteredUTC,  ModuleType,  MainboardSoftwareVersion,  RadioFirmwarePartNumber,  GatewayFirmwarePartNumber, DataLinkType, LastActionedUTC )
                   VALUES
-                   (@DeviceUID, @DeviceSerialNumber, @LDeviceType, @DeviceState, @DeregisteredUTC, @ModuleType, @MainboardSoftwareVersion, @RadioFirmwarePartNumber, @GatewayFirmwarePartNumber, @DataLinkType, @LastActionedUtc)
+                   (@DeviceUID, @DeviceSerialNumber, @DeviceType, @DeviceState, @DeregisteredUTC, @ModuleType, @MainboardSoftwareVersion, @RadioFirmwarePartNumber, @GatewayFirmwarePartNumber, @DataLinkType, @LastActionedUtc)
               ";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {

@@ -186,6 +186,7 @@ namespace KafkaTests
         DeviceUID = Guid.NewGuid(),
         DeviceSerialNumber = "The radio serial",
         DeviceType = "SNM940",
+        DeviceState = "active",
         ActionUTC = actionUtc
       };
 
