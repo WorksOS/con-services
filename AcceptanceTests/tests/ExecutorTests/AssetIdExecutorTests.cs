@@ -5,19 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using log4netExtensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using MasterDataConsumer;
-using VSS.Device.Data;
-using VSS.Asset.Data;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Customer.Data;
-using VSS.Geofence.Data;
-using VSS.Project.Data;
-using VSS.Project.Service.Repositories;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
+using Repositories;
 
 namespace RepositoryTests
 {
@@ -158,6 +151,18 @@ namespace RepositoryTests
       Assert.IsTrue(result.result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(16, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
+    }
+
+    [TestMethod]
+    [Ignore]
+    public void CanCallAssetIDExecutorWithExistingDeviceAssetAndAssetAndCustomerSub()
+    { // todo should return customerSub 
+    }
+
+    [TestMethod]
+    [Ignore]
+    public void CanCallAssetIDExecutorWithExistingDeviceAssetAndCustomerSubs()
+    { // todo one customerSub could be out of date, possibly 2 current??
     }
 
     [TestMethod]

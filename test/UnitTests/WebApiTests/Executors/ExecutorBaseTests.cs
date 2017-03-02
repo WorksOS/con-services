@@ -1,11 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MockClasses;
 using System;
 using log4netExtensions;
-using VSS.Masterdata;
+using Repositories;
 using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 {
@@ -29,7 +29,13 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      serviceCollection.AddSingleton<IRepositoryFactory, MockFactory>();
+      serviceCollection.AddSingleton<IRepositoryFactory, RepositoryFactory>()
+                        .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
+                        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
+                        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
+                        .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
+                        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
+                        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       serviceCollection.AddSingleton<IConfigurationStore, VSS.GenericConfiguration.GenericConfiguration>();
       serviceProvider = serviceCollection.BuildServiceProvider();
     }
