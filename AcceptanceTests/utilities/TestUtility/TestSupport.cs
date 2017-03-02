@@ -153,7 +153,7 @@ namespace TestUtility
     {
       var topicName= string.Empty;
       var jsonString = string.Empty;
-      string eventType = eventObject.EventType.ToSafeString;
+      string eventType = eventObject.EventType;
       #region publish kafka events
       switch (eventType)
       {
@@ -168,7 +168,7 @@ namespace TestUtility
             SerialNumber = eventObject.SerialNumber,
             MakeCode = eventObject.Make,
             Model = eventObject.Model,
-            IconKey = Convert.ToInt32(eventObject.IconId)
+            IconKey = Convert.ToInt32(eventObject.IconKey)
           };
           jsonString = JsonConvert.SerializeObject(new {CreateAssetEvent = createAssetEvent}, jsonSettings );
           
@@ -194,7 +194,7 @@ namespace TestUtility
           }
           if (HasProperty(eventObject, "IconId"))
           {
-            updateAssetEvent.IconKey = Convert.ToInt32(eventObject.IconId);
+            updateAssetEvent.IconKey = Convert.ToInt32(eventObject.IconKey);
           }
           jsonString = JsonConvert.SerializeObject(new {UpdateAssetEvent = updateAssetEvent}, jsonSettings );
           break;

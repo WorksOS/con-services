@@ -20,7 +20,9 @@
     "RdKafka": "0.9.2-ci-170",
     "System.ComponentModel": "4.3.0",
     "System.Data.Common": "4.3.0",
-    "TestUtility": "1.0.0-*"
+    "TestUtility": "1.0.0-*",
+    "KafkaConsumer.netcore": "1.0.4",
+    "MasterDataRepos.netcore": "1.0.36"
   },
   "frameworks": {
     "netcoreapp1.1": {
