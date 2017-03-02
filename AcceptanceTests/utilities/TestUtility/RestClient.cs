@@ -12,7 +12,7 @@ namespace TestUtility
     /// This base class provides utilty methods for validation of the response status codes,
     /// response headers, and response contents
     /// </summary>
-    public class RestClientUtil
+    public class RestClient
     {
     /// <summary>
     /// Overloaded (no auth): This method performs a valid HTTP GET, PUT, or POST request on an RESTful endpoint and stores the response in a string for later parsing
@@ -25,7 +25,7 @@ namespace TestUtility
     /// <param name="httpResponseCode">This is the HTTP STATUS CODE: 200, 201, etc.</param>
     /// <param name="customerUid">This is the customer UID for the header</param>
     /// <returns></returns>
-    public string DoHttpRequest(string resourceUri, string httpMethod,string mediaType, string payloadData, HttpStatusCode httpResponseCode, string customerUid=null)
+    public string DoHttpRequest(string resourceUri, string httpMethod,string payloadData, HttpStatusCode httpResponseCode= HttpStatusCode.OK,string mediaType="application/json", string customerUid=null)
         {
            // Stream writeStream = null;
             string responseString = null;

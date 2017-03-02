@@ -10,13 +10,13 @@ mkdir deploy\testresults
 dotnet restore
 
 cd tests
-dotnet publish IntegrationTests -o ..\deploy\IntegrationTests -f netcoreapp1.1
-dotnet publish WebApiTests -o ..\deploy\WebApiTests -f netcoreapp1.1
 dotnet publish EventTests -o ..\deploy\EventTests -f netcoreapp1.1
-dotnet publish KafkaTests -o ..\deploy\KafkaTests -f netcoreapp1.1
+dotnet publish ExecutorTests -o ..\deploy\ExecutorTests -f netcoreapp1.1
+dotnet publish IntegrationTests -o ..\deploy\IntegrationTests -f netcoreapp1.1
 dotnet publish RepositoryTests -o ..\deploy\RepositoryTests -f netcoreapp1.1
+dotnet publish WebApiTests -o ..\deploy\WebApiTests -f netcoreapp1.1
 
-copy KafkaTests\appsettings.json ..\deploy\KafkaTests\
+copy ExecutorTests\appsettings.json ..\deploy\ExecutorTests\
 copy RepositoryTests\appsettings.json ..\deploy\RepositoryTests\
 
 cd ..

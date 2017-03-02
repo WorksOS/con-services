@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -17,6 +18,8 @@ namespace TestUtility
     public DateTime FirstEventDate { get; set; }
     public DateTime LastEventDate { get; set; }
     public bool IsPublishToKafka { get; set; }
+    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified};
+    public readonly TestConfig tsCfg = new TestConfig();
     #endregion
 
     #region Private Properties
@@ -24,7 +27,7 @@ namespace TestUtility
     private readonly Random rndNumber = new Random();
     private readonly object syncLock = new object();
     private const char SEPARATOR = '|';
-    private readonly TestConfig appConfig = new TestConfig();
+
     private readonly Msg msg = new Msg();
 
     #endregion
@@ -61,7 +64,7 @@ namespace TestUtility
     {
       var mysql = new MySqlHelper();
       var query = "SELECT max(LegacyAssetID) FROM Asset;";
-      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.DbConnectionString, query);
+      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
          { return 10000; }
       var legacyAssetId = Convert.ToInt32(result);
@@ -104,6 +107,16 @@ namespace TestUtility
         }
       }
     }
+
+    public string GetBaseUri()
+    {
+      var baseUri = tsCfg.webApiUri;
+      if (Debugger.IsAttached)
+      {
+        baseUri = tsCfg.debugWebApiUri;
+      }
+      return baseUri;
+    }
     #endregion
 
     #region Private Methods
@@ -114,7 +127,7 @@ namespace TestUtility
     /// <returns></returns>
     private string SetKafkaTopicName(string masterDataEvent)
     {
-      var topicName = appConfig.masterDataTopic + masterDataEvent + appConfig.kafkaTopicSuffix;
+      var topicName = tsCfg.masterDataTopic + masterDataEvent + tsCfg.kafkaTopicSuffix;
       return topicName;
     }
 
@@ -139,7 +152,6 @@ namespace TestUtility
     private void BuildEventAndPublishToKafka(dynamic eventObject, RdKafkaDriver kafkaDriver)
     {
       var topicName= string.Empty;
-      var jsonSettings = new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified};
       var jsonString = string.Empty;
       string eventType = eventObject.EventType.ToSafeString;
       #region publish kafka events
@@ -381,7 +393,7 @@ namespace TestUtility
     {
       string dbTable = eventObject.TableName;
       var mysqlHelper = new MySqlHelper();
-      var sqlCmd = $@"INSERT INTO `{appConfig.dbSchema}`.{dbTable} ";
+      var sqlCmd = $@"INSERT INTO `{tsCfg.dbSchema}`.{dbTable} ";
       switch (dbTable)
       {
         case "Asset":
@@ -421,7 +433,7 @@ namespace TestUtility
                      ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate:yyyy-MM-dd}','{eventObject.EndDate:yyyy-MM-dd}','{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
       }
-      mysqlHelper.ExecuteMySqlInsert(appConfig.DbConnectionString, sqlCmd);
+      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
     }
 
     /// <summary>

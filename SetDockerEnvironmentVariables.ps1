@@ -21,7 +21,7 @@
 [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "TagFileAuth-Datafeed", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-TFA", "Machine")
 [Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://webapi:80/", "Machine")
-[Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://localhost:5000/", "Machine")
+[Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://localhost:3001/", "Machine")
 #>
 <#  Dev environment#>
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-TagFileAuth", "Machine")
