@@ -13,6 +13,33 @@ namespace Repositories.DBModels
     public DateTime EndDate { get; set; } = DateTime.MaxValue.Date;
 
     public DateTime LastActionedUTC { get; set; }
+
+    public override bool Equals(object obj)
+    {
+      Subscription other = obj as Subscription;
+
+      if (other == null)
+      {
+        return false;
+      }
+
+      return (SubscriptionUID == other.SubscriptionUID) && 
+             (CustomerUID == other.CustomerUID) &&
+             (ServiceTypeID == other.ServiceTypeID) &&
+             (StartDate == other.StartDate) &&
+             (EndDate == other.EndDate) &&
+             (LastActionedUTC == other.LastActionedUTC);
+    }
+
+    public override int GetHashCode()
+    {
+      return SubscriptionUID.GetHashCode() + 
+             CustomerUID.GetHashCode() +
+             ServiceTypeID.GetHashCode() +
+             StartDate.GetHashCode() +
+             EndDate.GetHashCode() +
+             LastActionedUTC.GetHashCode();
+    }
   }
 
   public class ServiceType
