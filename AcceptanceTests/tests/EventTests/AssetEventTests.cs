@@ -19,8 +19,8 @@ namespace EventTests
       var mysql = new MySqlHelper();
       msg.Title("Asset event 1","Create Asset event ");
       var eventArray = new[] {
-         "| EventType        | EventDate   | AssetUID      | AssetName | MakeCode | SerialNumber | Model | IconKey | AssetType  | LastActionedUTC |",
-        $"| CreateAssetEvent | 0d+09:00:00 | {ts.AssetUid} | AssetE1   | CAT      | XAT1         | 345D  | 10      | Excavators | 0d+09:00:00     |"};
+         "| EventType        | EventDate   | AssetUID      | AssetName | Make | SerialNumber | Model | IconKey | AssetType  | LastActionedUTC |",
+        $"| CreateAssetEvent | 0d+09:00:00 | {ts.AssetUid} | AssetE1   | CAT  | XAT1         | 345D  | 10      | Excavators | 0d+09:00:00     |"};
 
         ts.PublishEventCollection(eventArray);                                          
         mysql.VerifyTestResultDatabaseRecordCount("Asset","AssetUID",1,new Guid(ts.AssetUid));      
