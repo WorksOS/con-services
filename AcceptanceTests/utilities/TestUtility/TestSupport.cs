@@ -216,11 +216,11 @@ namespace TestUtility
             DeviceSerialNumber = eventObject.DeviceSerialNumber,
             DeviceState = eventObject.DeviceState,
             DeviceType = eventObject.DeviceType,
-            DeviceUID = eventObject.DeviceUID,          
+            DeviceUID = new Guid(eventObject.DeviceUID)          
           };
           if (HasProperty(eventObject, "DeregisteredUTC"))
           {
-            createDeviceEvent.DeregisteredUTC = eventObject.DeregisteredUTC;
+            createDeviceEvent.DeregisteredUTC = DateTime.Parse(eventObject.DeregisteredUTC);
           }
           if (HasProperty(eventObject, "DataLinkType"))
           {
@@ -238,7 +238,7 @@ namespace TestUtility
           {
             createDeviceEvent.ModuleType = eventObject.ModuleType;
           }
-          if (HasProperty(eventObject, "DataLinkType"))
+          if (HasProperty(eventObject, "RadioFirmwarePartNumber"))
           {
             createDeviceEvent.RadioFirmwarePartNumber = eventObject.RadioFirmwarePartNumber;
           }
@@ -253,7 +253,7 @@ namespace TestUtility
             DeviceSerialNumber = eventObject.DeviceSerialNumber,
             DeviceState = eventObject.DeviceState,
             DeviceType = eventObject.DeviceType,
-            DeviceUID = eventObject.DeviceUID,
+            DeviceUID = new Guid(eventObject.DeviceUID)
           };
           if (HasProperty(eventObject, "DataLinkType"))
           {
@@ -283,8 +283,8 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            AssetUID = eventObject.AssetUID,
-            DeviceUID = eventObject.DeviceUID,
+            AssetUID = new Guid(eventObject.AssetUID),
+            DeviceUID = new Guid(eventObject.DeviceUID),
           };
           jsonString = JsonConvert.SerializeObject(new { AssociateDeviceAssetEvent = associateDeviceEvent }, jsonSettings);
           break;
@@ -294,8 +294,8 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            AssetUID = eventObject.AssetUID,
-            DeviceUID = eventObject.DeviceUID,
+            AssetUID =  new Guid(eventObject.AssetUID),
+            DeviceUID = new Guid(eventObject.DeviceUID),
           };
           jsonString = JsonConvert.SerializeObject(new { DissociateDeviceAssetEvent = dissociateDeviceEvent }, jsonSettings);
           break;
