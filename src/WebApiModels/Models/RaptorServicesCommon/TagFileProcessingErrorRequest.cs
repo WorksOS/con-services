@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
+using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
 {
@@ -77,7 +78,12 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     /// </summary>
     public void Validate()
     {
-      // ...
+      if (string.IsNullOrEmpty(tagFileName) || error == 0)
+      {
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                   "Must have filename and error number"));
+      }
     }
   }
 }

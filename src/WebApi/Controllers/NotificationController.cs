@@ -62,20 +62,7 @@ namespace VSS.TagFileAuth.Service.Controllers
       log.LogInformation("PostTagFileProcessingError: {0}", Request.QueryString);
       
       request.Validate();
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, log).Process(request) as TagFileProcessingErrorResult;
-      
-      if (result.result) 
-      {
-        var infoMessage = string.Format("TAG file was processed successfully. File name: {0}, asset ID: {1}", request.tagFileName, request.assetId);
-        log.LogInformation(infoMessage);
-      }
-      else
-      {
-        var errorMessage = string.Format("TAG file failed to be processed. File name: {0}, asset ID: {1}, error: {2}", request.tagFileName, request.assetId, request.error);
-        log.LogError(errorMessage);
-      }
-      
-      return result;
+      return RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, log).Process(request) as TagFileProcessingErrorResult;
     }
   }
 }

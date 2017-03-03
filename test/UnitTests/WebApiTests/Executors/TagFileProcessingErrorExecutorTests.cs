@@ -54,7 +54,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     }
 
     [TestMethod]
-    public void CanCallGetPTagFileProcessingErrorExecutorWithLegacyAssetId()
+    public void CanCallGetTagFileProcessingErrorExecutorWithLegacyAssetId()
     {
       long legacyAssetID = 46534636436;
       string tagFileName = "Whatever";
