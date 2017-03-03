@@ -45,8 +45,7 @@ namespace TestUtility
             {
                 Log.Info($"Partition: {task.Result.Partition}, Offset: {task.Result.Offset} Incontinue: {deliveryReport.Status.ToString()}", Log.ContentType.KafkaResponse);
             });
-          //  response.Wait();
-
+            response.Wait();
         }
       }
       catch (Exception ex)

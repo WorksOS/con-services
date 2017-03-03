@@ -23,7 +23,9 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 
       //Check valid asset Id i.e. asset Id > 0
 
-      //Find the dealer or customer who is the owner of the asset 
+      //Find the dealer and/or customers who have current 3d sub on this asset and is the Owner of the asset 
+      //Find the dealer and/or customers who have current Man3d sub on this asset and is the Owner of the asset 
+      // i.e. will be 0 or 1 customer
 
       //Look for projects which are active at date time request.tagFileUTC
       //i.e. tagFileUTC is between project start and end dates

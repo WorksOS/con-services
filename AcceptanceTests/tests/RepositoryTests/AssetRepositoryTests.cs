@@ -5,15 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using log4netExtensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using MasterDataConsumer;
-using VSS.Device.Data;
-using VSS.Asset.Data;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Customer.Data;
-using VSS.Geofence.Data;
-using VSS.Project.Data;
-using VSS.Project.Service.Repositories;
+using Repositories;
 
 namespace RepositoryTests
 {

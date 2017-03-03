@@ -1,9 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Net;
 using Newtonsoft.Json;
-using VSS.Subscription.Data.Models;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
-using System;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using WebApiModels.Interfaces;
 
@@ -25,7 +22,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     [Required]
     [JsonProperty(PropertyName = "projectId", Required = Required.Always)]
     public long projectId { get; private set; }
-    
+
     /// <summary>
     /// The device type of the machine. Valid values are 0=Manual Device (John Doe machines) and 6=SNM940 (torch machines).
     /// </summary>
@@ -44,17 +41,13 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     /// <summary>
     /// Private constructor
     /// </summary>
-    //private GetAssetIdRequest()
-    //{ }
+    private GetAssetIdRequest()
+    { }
 
     /// <summary>
     /// Create instance of GetAssetIdRequest
     /// </summary>
-    public static GetAssetIdRequest CreateGetAssetIdRequest(
-      long projectId,
-      int deviceType,
-      string radioSerial
-      )
+    public static GetAssetIdRequest CreateGetAssetIdRequest(long projectId, int deviceType, string radioSerial)
     {
       return new GetAssetIdRequest
       {
@@ -68,7 +61,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     /// <summary>
     /// Example for Help
     /// </summary>
-    public static new GetAssetIdRequest HelpSample
+    public static GetAssetIdRequest HelpSample
     {
       get
       {
@@ -89,7 +82,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
       }
 
       // if the number is not in enum then it returns the number
-      var isDeviceTypeValid = (((DeviceTypeEnum)deviceType).ToString() != deviceType.ToString());      
+      var isDeviceTypeValid = (((DeviceTypeEnum)deviceType).ToString() != deviceType.ToString());
 
       if (!string.IsNullOrEmpty(radioSerial) && (deviceType < 1 || !isDeviceTypeValid))
       {
@@ -98,13 +91,13 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
                    "AssetId must have valid deviceType"));
       }
 
-      if (deviceType == 0 && projectId <= 0 )
+      if (deviceType == 0 && projectId <= 0)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
                    new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                    "A manual/unknown deviceType must have a projectID"));
       }
-      
+
     }
   }
 }

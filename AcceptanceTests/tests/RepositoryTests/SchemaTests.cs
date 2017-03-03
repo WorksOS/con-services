@@ -8,8 +8,7 @@ using log4netExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using MasterDataConsumer;
+using Repositories;
 
 namespace RepositoryTests
 {

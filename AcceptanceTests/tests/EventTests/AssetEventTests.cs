@@ -20,11 +20,11 @@ namespace EventTests
       msg.Title("Asset event 1","Create Asset event ");
       var eventArray = new[] {
          "| EventType        | EventDate   | AssetUID      | AssetName | Make | SerialNumber | Model | IconKey | AssetType  | LastActionedUTC |",
-        $"| CreateAssetEvent | 0d+09:00:00 | {ts.AssetUid} | AssetE1   | CAT  | XAT1         | 345D  | 10      | Excavators | 0d+09:00:00     |"};
+        $"| CreateAssetEvent | 0d+09:00:00 | {ts.AssetUid} | AssetE1   | CAT  | XAT1         | 374D  | 10      | Excavators | 0d+09:00:00     |"};
 
-        ts.PublishEventCollection(eventArray);                                          
-        mysql.VerifyTestResultDatabaseRecordCount("Asset","AssetUID",1,new Guid(ts.AssetUid));      
-        mysql.VerifyTestResultDatabaseFieldsAreExpected("Asset","AssetUID", "Name,SerialNumber,MakeCode,Model,IconKey,AssetType", "YT669,8JG89719,CAT,345DL,10,Unassigned",new Guid(ts.AssetUid));  
+      ts.PublishEventCollection(eventArray);                                          
+      mysql.VerifyTestResultDatabaseRecordCount("Asset","AssetUID",1,new Guid(ts.AssetUid));
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Asset", "AssetUID", "Name,MakeCode,SerialNumber,Model,IconKey,AssetType", "AssetE1,CAT,XAT1,374D,10,Excavators", new Guid(ts.AssetUid));
     }
   }
 }

@@ -1,29 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Masterdata;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
+using Newtonsoft.Json;
+using Repositories;
 
 namespace VSS.TagFileAuth.Service.Controllers
 {
   public class AssetController : Controller
   {
-    /// <summary>
-    /// Repository factory for use by executor
-    /// </summary>
     private readonly IRepositoryFactory factory;
-
-    /// <summary>
-    /// Logger for logging
-    /// </summary>
     private readonly ILogger log;
 
-    /// <summary>
-    /// Constructor with injected repository factory and logger
-    /// </summary>
-    /// <param name="factory">Repository factory</param>
-    /// <param name="logger">Logger</param>
     public AssetController(IRepositoryFactory factory, ILogger<AssetController> logger)
     {
       this.factory = factory;
@@ -43,12 +32,27 @@ namespace VSS.TagFileAuth.Service.Controllers
     /// <executor>AssetIdExecutor</executor>
     [Route("api/v1/asset/getId")]
     [HttpPost]
-    public GetAssetIdResult Post([FromBody]GetAssetIdRequest request)
+    public GetAssetIdResult GetAssetId([FromBody]GetAssetIdRequest request)
     {
-      log.LogInformation("GetAssetID: {0}", Request.QueryString);
+      log.LogInformation("GetAssetId: request:{0}", JsonConvert.SerializeObject(request) );
             
-      request.Validate(); 
-      return RequestExecutorContainer.Build<AssetIdExecutor>(factory, log).Process(request) as GetAssetIdResult;
+      request.Validate();
+      log.LogInformation("GetAssetId: after validation request:{0}", JsonConvert.SerializeObject(request));
+
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, log).Process(request) as GetAssetIdResult;
+
+      if (result.result)
+      {
+        var infoMessage = string.Format("asset/getId was processed successfully: . Request {0} Result {1}", JsonConvert.SerializeObject(Request.QueryString), JsonConvert.SerializeObject(result));
+        log.LogInformation(infoMessage);
+      }
+      else
+      {
+        var errorMessage = string.Format("asset/getId failed to be processed: . Request {0} Result {1}", JsonConvert.SerializeObject(Request.QueryString), JsonConvert.SerializeObject(result));
+        log.LogError(errorMessage);
+      }
+
+      return result;
     }
   }
 }

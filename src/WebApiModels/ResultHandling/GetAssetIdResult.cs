@@ -10,23 +10,24 @@
     /// </summary>
     public bool result { get; private set; }
 
+    private long _assetId;
+    private int _machineLevel;
     /// <summary>
     /// The id of the asset. -1 if unknown.
     /// </summary>
-    public long assetId { get; private set; }
+    public long assetId { get { return _assetId; } private set { _assetId = value; } }
 
     /// <summary>
     /// The subscription level of the asset. 
     /// Valid values are 0=Unknown, 15=2D Project Monitoring, 16=3D Project Monitoring, 18=Manual 3D Project Monitoring
     /// </summary>
-    public int machineLevel { get; private set; }
-    // todo Map serviceTypes betwen CG and NG, yes they are different 
+    public int machineLevel { get { return _machineLevel; } private set { _machineLevel = value; } }
 
     /// <summary>
     /// Private constructor
     /// </summary>
-    //private GetAssetIdResult()
-    //{ }
+    private GetAssetIdResult()
+    { }
 
     /// <summary>
     /// Create instance of GetAssetIdResult

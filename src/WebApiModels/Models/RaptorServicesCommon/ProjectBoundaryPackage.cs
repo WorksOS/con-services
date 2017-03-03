@@ -4,8 +4,5 @@
   {
     public long ProjectID;
     public TWGS84FenceContainer Boundary;
-
-    // procedure Encode(Stream: TStream);
-    // procedure Decode(Stream: TStream);
   }
 }
