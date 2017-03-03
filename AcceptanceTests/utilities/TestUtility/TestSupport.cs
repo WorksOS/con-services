@@ -192,7 +192,7 @@ namespace TestUtility
           {
             updateAssetEvent.Model = eventObject.Model;
           }
-          if (HasProperty(eventObject, "IconId"))
+          if (HasProperty(eventObject, "IconKey"))
           {
             updateAssetEvent.IconKey = Convert.ToInt32(eventObject.IconKey);
           }
@@ -207,6 +207,99 @@ namespace TestUtility
           };
           jsonString = JsonConvert.SerializeObject(new {DeleteAssetEvent = deleteAssetEvent}, jsonSettings );
           break;
+        case "CreateDeviceEvent":
+          topicName = SetKafkaTopicName("IDeviceEvent");
+          var createDeviceEvent = new CreateDeviceEvent()
+          {
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate, //TODO is this required?
+            DeviceSerialNumber = eventObject.DeviceSerialNumber,
+            DeviceState = eventObject.DeviceState,
+            DeviceType = eventObject.DeviceType,
+            DeviceUID = eventObject.DeviceUID,          
+          };
+          if (HasProperty(eventObject, "DeregisteredUTC"))
+          {
+            createDeviceEvent.DeregisteredUTC = eventObject.DeregisteredUTC;
+          }
+          if (HasProperty(eventObject, "DataLinkType"))
+          {
+            createDeviceEvent.DataLinkType = eventObject.DataLinkType;
+          }
+          if (HasProperty(eventObject, "GatewayFirmwarePartNumber"))
+          {
+            createDeviceEvent.GatewayFirmwarePartNumber = eventObject.GatewayFirmwarePartNumber;
+          }
+          if (HasProperty(eventObject, "MainboardSoftwareVersion"))
+          {
+            createDeviceEvent.MainboardSoftwareVersion = eventObject.MainboardSoftwareVersion;
+          }
+          if (HasProperty(eventObject, "ModuleType"))
+          {
+            createDeviceEvent.ModuleType = eventObject.ModuleType;
+          }
+          if (HasProperty(eventObject, "DataLinkType"))
+          {
+            createDeviceEvent.RadioFirmwarePartNumber = eventObject.RadioFirmwarePartNumber;
+          }
+          jsonString = JsonConvert.SerializeObject(new { CreateDeviceEvent = createDeviceEvent }, jsonSettings);
+          break;
+        case "UpdateDeviceEvent":
+          topicName = SetKafkaTopicName("IDeviceEvent");
+          var updateDeviceEvent = new UpdateDeviceEvent()
+          {
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate, 
+            DeviceSerialNumber = eventObject.DeviceSerialNumber,
+            DeviceState = eventObject.DeviceState,
+            DeviceType = eventObject.DeviceType,
+            DeviceUID = eventObject.DeviceUID,
+          };
+          if (HasProperty(eventObject, "DataLinkType"))
+          {
+            updateDeviceEvent.DataLinkType = eventObject.DataLinkType;
+          }
+          if (HasProperty(eventObject, "GatewayFirmwarePartNumber"))
+          {
+            updateDeviceEvent.GatewayFirmwarePartNumber = eventObject.GatewayFirmwarePartNumber;
+          }
+          if (HasProperty(eventObject, "MainboardSoftwareVersion"))
+          {
+            updateDeviceEvent.MainboardSoftwareVersion = eventObject.MainboardSoftwareVersion;
+          }
+          if (HasProperty(eventObject, "ModuleType"))
+          {
+            updateDeviceEvent.ModuleType = eventObject.ModuleType; //missing from Update repo
+          }
+          if (HasProperty(eventObject, "DataLinkType"))
+          {
+            updateDeviceEvent.RadioFirmwarePartNumber = eventObject.RadioFirmwarePartNumber;
+          }
+          jsonString = JsonConvert.SerializeObject(new { UpdateDeviceEvent = updateDeviceEvent }, jsonSettings);
+          break;
+        case "AssociateDeviceAssetEvent":
+          topicName = SetKafkaTopicName("IDeviceEvent");
+          var associateDeviceEvent = new AssociateDeviceAssetEvent()
+          {
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate,
+            AssetUID = eventObject.AssetUID,
+            DeviceUID = eventObject.DeviceUID,
+          };
+          jsonString = JsonConvert.SerializeObject(new { AssociateDeviceAssetEvent = associateDeviceEvent }, jsonSettings);
+          break;
+        case "DissociateDeviceAssetEvent":
+          topicName = SetKafkaTopicName("IDeviceEvent");
+          var dissociateDeviceEvent = new DissociateDeviceAssetEvent()
+          {
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate,
+            AssetUID = eventObject.AssetUID,
+            DeviceUID = eventObject.DeviceUID,
+          };
+          jsonString = JsonConvert.SerializeObject(new { DissociateDeviceAssetEvent = dissociateDeviceEvent }, jsonSettings);
+          break;
+
         case "CreateCustomerEvent":
           topicName = SetKafkaTopicName("ICustomerEvent");
           var createCustomerEvent = new CreateCustomerEvent()
