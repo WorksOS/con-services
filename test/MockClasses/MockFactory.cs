@@ -1,9 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.Asset.Data;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
 using VSS.TagFileAuth.Service.MockClasses;
+using Repositories;
 
 namespace MockClasses
 {

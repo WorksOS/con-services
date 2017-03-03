@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.WebApi.Filters
+namespace VSS.TagFileAuth.Service.Filters
 {
   public class ExceptionsTrap
   {

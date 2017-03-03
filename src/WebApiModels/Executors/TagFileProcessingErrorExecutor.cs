@@ -2,6 +2,8 @@
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using Microsoft.Extensions.Logging;
+using WebApiModels.Enums;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 {
@@ -37,7 +39,13 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
           6	InvalidPosition	      NoValidCellPassesInTagfile
          */
 
-         result = request.error == TagFileErrorsEnum.None;
+        result = request.error == TagFileErrorsEnum.None;
+      }
+
+      if (!result)
+      {
+        var errorMessage = string.Format("OnTagFileProcessingError: assetID = {0}, tagFileName = {1}, errorNumber = {2}, error = {3}", request.assetId, request.tagFileName, request.error, EnumExtensions.Description(request.error));
+        log.LogError(errorMessage);
       }
 
       try

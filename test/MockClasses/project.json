@@ -10,7 +10,7 @@
         "Microsoft.Extensions.Logging": "1.1.0",
         "WebApi": "1.0.0-*",
         "ConfigurationStore.netcore": "1.0.10",
-        "MasterDataRepos.netcore": "1.0.35"
+        "MasterDataRepos.netcore": "1.0.36"
     },
 
     "frameworks": {
