@@ -50,6 +50,8 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect AssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
+
+      
     }
       
   }
