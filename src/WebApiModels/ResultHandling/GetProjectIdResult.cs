@@ -11,16 +11,18 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
     /// </summary>
     public bool result { get; private set; }
 
+    private long _projectId;
+
     /// <summary>
     /// The id of the project. -1 if none.
     /// </summary>
-    public long projectId { get; private set; }
+    public long projectId { get { return _projectId; } private set { _projectId = value; } }
 
     ///// <summary>
     ///// Private constructor
     ///// </summary>
-    //private GetProjectIdResult()
-    //{ }
+    private GetProjectIdResult()
+    { }
 
     /// <summary>
     /// Create instance of GetProjectIdResult

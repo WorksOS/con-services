@@ -16,8 +16,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     [TestMethod]
     public void CanCallProjectIDExecutorNoValidInput()
     {
-      GetProjectIdRequest ProjectIdRequest = new GetProjectIdRequest();
-      GetProjectIdResult ProjectIdResult = new GetProjectIdResult();
+      GetProjectIdRequest ProjectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(-1, 91, 181, 0, DateTime.MinValue, "");
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
@@ -36,7 +35,6 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       var eventkeyDate = DateTime.UtcNow;
       GetProjectIdRequest ProjectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetID, latitude, longitude, height, eventkeyDate, "");
 
-      GetProjectIdResult ProjectIdResult = new GetProjectIdResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
