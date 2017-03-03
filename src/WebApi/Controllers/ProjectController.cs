@@ -20,7 +20,8 @@ namespace VVSS.TagFileAuth.Service.Controllers
     }
 
     /// <summary>
-    /// Gets the project id for the project whose boundary the specified asset is inside at the given location and date time. 
+    /// Gets the legacyProjectId for the project whose boundary the location is inside at the given date time. 
+    ///    authority is determined by servicePlans from the provided legacyAssetId and/or TCCOrgID .
     /// </summary>
     /// <param name="request">Details of the asset, location and date time</param>
     /// <returns>
@@ -31,9 +32,11 @@ namespace VVSS.TagFileAuth.Service.Controllers
     [HttpPost]
     public GetProjectIdResult GetProjectId([FromBody]GetProjectIdRequest request)
     {
-      log.LogInformation("GetProjectId: {0}", Request.QueryString);
+      log.LogInformation("GetProjectId: request:{0}", JsonConvert.SerializeObject(request));
 
       request.Validate();
+      log.LogInformation("GetProjectId: after validation request:{0}", JsonConvert.SerializeObject(request));
+
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, log).Process(request) as GetProjectIdResult;
 
       if (result.result)
