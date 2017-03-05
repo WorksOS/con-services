@@ -140,6 +140,17 @@ namespace RepositoryTests
     }
 
     [TestMethod]
+    public void AssetSubscriptionSchemaExists()
+    {
+      const string tableName = "AssetSubscription";
+      List<string> columnNames = new List<string>
+          {
+            "fk_AssetUID", "fk_SubscriptionUID", "EffectiveDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
     public void GeofenceSchemaExists()
     {
       const string tableName = "Geofence";

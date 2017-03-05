@@ -23,7 +23,7 @@ namespace Repositories
 
     public Dictionary<string, ServiceType> _serviceTypes = null;
 
-
+    #region store
     public async Task<int> StoreEvent(ISubscriptionEvent evt)
     {
       var upsertedCount = 0;
@@ -128,8 +128,7 @@ namespace Repositories
 
       return upsertedCount;
     }
-
-
+    
 
     /// <summary>
     /// All detail-related columns can be inserted, 
@@ -303,6 +302,8 @@ namespace Repositories
       return serviceTypes;
     }
 
+    #endregion store
+
 
     #region getters
     public async Task<Subscription> GetSubscription(string subscriptionUid)
@@ -332,6 +333,24 @@ namespace Repositories
               WHERE fk_CustomerUID = @customerUid
                 AND @validAtDate BETWEEN StartDate AND EndDate"
           , new { customerUid,  validAtDate }
+        ));
+
+      PerhapsCloseConnection();
+      return subscription;
+    }
+
+    public async Task<IEnumerable<Subscription>> GetSubscriptionsByAsset(string assetUid, DateTime validAtDate)
+    {
+      await PerhapsOpenConnection();
+
+      var subscription = (await Connection.QueryAsync<Subscription>
+        (@"SELECT 
+                s.SubscriptionUID, s.fk_CustomerUID as CustomerUID, s.fk_ServiceTypeID as ServiceTypeID, s.StartDate, s.EndDate, s.LastActionedUTC
+              FROM AssetSubscription aSub
+                INNER JOIN Subscription s ON s.SubscriptionUID = aSub.fk_SubscriptionUID
+              WHERE aSub.fk_AssetUID = @assetUid
+                AND @validAtDate BETWEEN s.StartDate AND s.EndDate"
+          , new { assetUid, validAtDate }
         ));
 
       PerhapsCloseConnection();
