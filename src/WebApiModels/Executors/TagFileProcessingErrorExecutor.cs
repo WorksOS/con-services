@@ -39,10 +39,10 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
           6	InvalidPosition	      NoValidCellPassesInTagfile
          */
 
-        result = request.error == TagFileErrorsEnum.None;
+        result = request.error != TagFileErrorsEnum.None;
       }
 
-      if (!result)
+      if (result)
       {
         var errorMessage = string.Format("OnTagFileProcessingError: assetID = {0}, tagFileName = {1}, errorNumber = {2}, error = {3}", request.assetId, request.tagFileName, request.error, EnumExtensions.Description(request.error));
         log.LogError(errorMessage);
