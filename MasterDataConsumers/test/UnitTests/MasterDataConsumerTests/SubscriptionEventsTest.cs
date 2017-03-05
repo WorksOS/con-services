@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Collections.Generic;
+using Repositories.DBModels;
 
 namespace MasterDataConsumerTests
 {
