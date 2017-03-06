@@ -179,17 +179,16 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 
 
     // asset:3dProjMon (16 --> 13) 
-    //  todo waiting for AssetSubs to be implemented in MDConsumer
     protected void LoadAssetSubs(string assetUid)
     {
       if (!string.IsNullOrEmpty(assetUid))
       {
         var subsRepo = factory.GetRepository<ISubscriptionEvent>() as SubscriptionRepository;
-        //var s = subsRepo.GetSubscriptionsByAsset(assetUid, DateTime.UtcNow.Date);
-        //assetSubs = s.Result.ToList().Where(x => x.ServiceTypeID == (int)ServiceTypeEnumNG.e3DProjectMonitoring)
-        //  .Select(x => new SubscriptionData(x.AssetUID, "", x.CustomerUID, x.ServiceTypeID, x.SubscriptionStartDate, x.SubscriptionEndDate));
+        var s = subsRepo.GetSubscriptionsByAsset(assetUid, DateTime.UtcNow.Date);
+        assetSubs = s.Result.ToList().Where(x => x.ServiceTypeID == (int)ServiceTypeEnumNG.e3DProjectMonitoring)
+          .Select(x => new SubscriptionData(assetUid, "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate));
       }
-      log.LogDebug("AssetIdExecutor: NOT IMPLEMENTED AssetSubs {0}", JsonConvert.SerializeObject(assetSubs));
+      log.LogDebug("AssetIdExecutor: AssetSubs {0}", JsonConvert.SerializeObject(assetSubs));
     }
     #endregion
 

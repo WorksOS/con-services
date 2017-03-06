@@ -35,7 +35,6 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         
         if (project != null)
         {
-          // not used in getAssetID? LoadProjectAndProjectBasedSubs(request.projectId);
           LoadManual3DCustomerBasedSubs(project.CustomerUID);
           log.LogDebug("AssetIdExecutor: Retrieved Project CustomerSubs {0}", JsonConvert.SerializeObject(customerSubs));
         }
@@ -63,11 +62,9 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         if (assetDevice != null)
         {
           legacyAssetId = assetDevice.LegacyAssetID;
-
-          // check subs
           LoadAssetSubs(assetDevice.AssetUID);
 
-          // todo OwningCustomerUID should always be present, but bug in MD airlift, most are missing.
+          // OwningCustomerUID should always be present, but bug in MD airlift means that most are missing.
           LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID);
           log.LogDebug("AssetIdExecutor: Retrieved Asset CustomerSubs {0} for OwningCustomerUID {1}", JsonConvert.SerializeObject(customerSubs), assetDevice.OwningCustomerUID);
 
@@ -117,22 +114,19 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 
     private int GetMostSignificantServiceType(string assetUID, string projectUID)
     {
-      log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset ID {0} and project ID {1}", assetUID, projectUID);
+      log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset UID {0} and project UID {1}", assetUID, projectUID);
 
       ServiceTypeEnumNG serviceType = ServiceTypeEnumNG.Unknown;
 
       IEnumerable<SubscriptionData> subs = new List<SubscriptionData>();
-      if (customerSubs != null) subs = customerSubs;
-      if (assetSubs != null)
+      if (customerSubs != null && customerSubs.Count() > 0) subs = subs.Concat(customerSubs.Select(s => s));
+      if (assetSubs != null && assetSubs.Count() > 0)
       {
-        if (subs == null)
-          subs = assetSubs;
-        else
-          subs.Concat(assetSubs);
+        subs = subs.Concat(assetSubs.Select(s => s));
       }
       log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() subs being checked {0}", JsonConvert.SerializeObject(subs));
 
-      if (subs.Count() > 0)
+      if (subs != null && subs.Count() > 0)
       {
         //Look for highest level machine subscription which is current
         int utcNowKeyDate = DateTime.UtcNow.KeyDate();
@@ -143,7 +137,10 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
             // Manual3d is least significant
             case ServiceTypeEnumNG.Manual3DProjectMonitoring:
               if (serviceType != ServiceTypeEnumNG.e3DProjectMonitoring)
+              {
+                log.LogDebug("AssetIdExecutor: GetProjectServiceType found ServiceTypeEnum.Manual3DProjectMonitoring for asset UID {0} and project UID {1}", assetUID, projectUID);
                 serviceType = ServiceTypeEnumNG.Manual3DProjectMonitoring;
+              }
               break;
 
             // 3D PM is most significant
@@ -153,9 +150,8 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
               {
                 //Allow manual tag file import for customer who has the 3D subscription for the asset
                 //and allow automatic tag file processing in all cases (can't tell customer for automatic)
-
-                //log.IfDebugFormat("GetProjectServiceType found ServiceTypeEnum.e3DProjectMonitoring for asset ID {0}", assetID);
-                if (sub.customerUid == project.CustomerUID)
+                log.LogDebug("AssetIdExecutor: GetProjectServiceType found ServiceTypeEnum.e3DProjectMonitoring for asset UID {0} and project UID {1}", assetUID, projectUID);
+                if (project == null || sub.customerUid == project.CustomerUID)
                 {
                   serviceType = ServiceTypeEnumNG.e3DProjectMonitoring;
                 }

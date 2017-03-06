@@ -128,6 +128,16 @@ namespace RepositoryTests
       CheckSchema(tableName, columnNames);
     }
 
+    [TestMethod]
+    public void AssetSubscriptionSchemaExists()
+    {
+      const string tableName = "AssetSubscription";
+      List<string> columnNames = new List<string>
+          {
+            "fk_AssetUID", "fk_SubscriptionUID", "EffectiveDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
 
 
     private void CheckSchema(string tableName, List<string> columnNames)
