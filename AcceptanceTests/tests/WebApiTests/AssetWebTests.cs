@@ -10,13 +10,12 @@ using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 namespace WebApiTests
 {
   [TestClass]
-  public class AssetTests
+  public class AssetWebTests
   {
-    private readonly Msg msg = new Msg();
-
     [TestMethod]
     public void InjectAnAssetIntoDatabaseAndRetrieveAssetIdFromWebapi()
     {
+      var msg = new Msg();
       msg.Title("Asset Test 1", "Inject an asset into database and retrieve AssetId from web api");
       var ts = new TestSupport {IsPublishToKafka = false};
       var legacyAssetId = ts.SetLegacyAssetId();
