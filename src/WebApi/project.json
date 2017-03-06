@@ -13,7 +13,7 @@
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-    "System.Net.Primitives": "4.0.11",
+    "System.Net.Primitives": "4.3.0",
     "Swashbuckle.SwaggerGen": "6.0.0-beta902",
     "Swashbuckle.SwaggerUi": "6.0.0-beta902",
     "log4net.netcore": "3.0.0",
