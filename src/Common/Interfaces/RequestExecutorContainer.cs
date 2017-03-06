@@ -91,19 +91,41 @@ namespace VSS.Raptor.Service.Common.Interfaces
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor=null, IConfigurationStore configStore=null) : this()
+    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient) : this()
     {
       this.raptorClient = raptorClient;
-      this.tagProcessor = tagProcessor;
       if (logger != null)
         this.log = logger.CreateLogger<RequestExecutorContainer>();
-      this.configStore = configStore;
     }
 
-    /// <summary>
-    /// Default constructor which creates all structures necessary for error handling.
-    /// </summary>
-    protected RequestExecutorContainer()
+        /// <summary>
+        /// Injected constructor for mocking.
+        /// </summary>
+        protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor) : this()
+        {
+            this.raptorClient = raptorClient;
+            this.tagProcessor = tagProcessor;
+            if (logger != null)
+                this.log = logger.CreateLogger<RequestExecutorContainer>();
+        }
+
+        /// <summary>
+        /// Injected constructor for mocking.
+        /// </summary>
+        protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore) : this()
+        {
+            this.raptorClient = raptorClient;
+            this.tagProcessor = tagProcessor;
+            if (logger != null)
+                this.log = logger.CreateLogger<RequestExecutorContainer>();
+            this.configStore = configStore;
+        }
+
+
+        /// <summary>
+        /// Default constructor which creates all structures necessary for error handling.
+        /// </summary>
+        protected RequestExecutorContainer()
     {
       ContractExecutionStates = new ContractExecutionStatesEnum();
       ProcessErrorCodes();
