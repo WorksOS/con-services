@@ -37,7 +37,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(TagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsFalse(result.result, "executor didn't process TagFileProcessingError without error");
+      Assert.IsTrue(result.result, "executor process TagFileProcessingError without error");
     }
 
     [TestMethod]
@@ -50,7 +50,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(TagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsTrue(result.result, "executor didn't process TagFileProcessingError with error");
+      Assert.IsFalse(result.result, "executor didn't process TagFileProcessingError with error");
     }
 
     [TestMethod]
@@ -68,7 +68,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(TagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsTrue(result.result, "executor didn't process TagFileProcessingError");
+      Assert.IsFalse(result.result, "executor didn't process TagFileProcessingError");
     }
   }
 }
