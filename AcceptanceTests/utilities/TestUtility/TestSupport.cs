@@ -63,12 +63,12 @@ namespace TestUtility
     public int SetLegacyAssetId()
     {
       var mysql = new MySqlHelper();
-      var query = "SELECT max(LegacyAssetID) FROM Asset;";
+      var query = "SELECT max(ID) FROM Asset;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
-         { return 10000; }
+         { return 1000; }
       var legacyAssetId = Convert.ToInt32(result);
-      return legacyAssetId+1;
+      return legacyAssetId+1001;
     }
 
     /// <summary>
@@ -494,6 +494,11 @@ namespace TestUtility
                 ('{AssetUid}',{eventObject.LegacyAssetID},'{eventObject.Name}','{eventObject.MakeCode}','{eventObject.SerialNumber}','{eventObject.Model}',
                 {eventObject.IconKey},'{eventObject.AssetType}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
+        case "AssetDevice":
+          sqlCmd += $@"(fk_DeviceUID,fk_AssetUID,LastActionedUTC) VALUES 
+                ('{eventObject.fk_DeviceUID}','{eventObject.fk_AssetUID}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+          break;
+
         case "Customer":
           sqlCmd += $@"(CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
                      ('{eventObject.CustomerUID}','{eventObject.Name}',{eventObject.fk_CustomerTypeID},{eventObject.IsDeleted},'{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
@@ -501,6 +506,11 @@ namespace TestUtility
         case "CustomerProject":
           sqlCmd += $@"(fk_CustomerUID,fk_ProjectUID,LegacyCustomerID,LastActionedUTC) VALUES
                      ('{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}',{eventObject.LegacyCustomerID},'{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+          break;
+        case "Device":
+          sqlCmd += $@"(DeviceUID,DeviceSerialNumber,DeviceType,DeviceState,DeregisteredUTC,ModuleType,MainboardSoftwareVersion,RadioFirmwarePartNumber,GatewayFirmwarePartNumber,DataLinkType,LastActionedUTC) VALUES 
+                ('{eventObject.DeviceUID}','{eventObject.DeviceSerialNumber}','{eventObject.DeviceType}','{eventObject.DeviceState}','{eventObject.DeregisteredUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}','{eventObject.ModuleType}','{eventObject.MainboardSoftwareVersion}','{eventObject.RadioFirmwarePartNumber}',
+                '{eventObject.GatewayFirmwarePartNumber}','{eventObject.DataLinkType}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "Geofence":
           sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,GeometryWKT,FillColor,IsTransparent,IsDeleted,Description,fk_CustomerUID,UserUID,LastActionedUTC) VALUES

@@ -8,20 +8,20 @@
     /// <summary>
     /// The result of the request. True for success and false for failure.
     /// </summary>
-    public bool result { get; private set; }
+    public bool result { get; set; }
 
     private long _assetId;
     private int _machineLevel;
     /// <summary>
-    /// The id of the asset. -1 if unknown.
+    /// The id of the asset. -1 if unknown. 
     /// </summary>
-    public long assetId { get { return _assetId; } private set { _assetId = value; } }
+    public long assetId { get { return _assetId; } set { _assetId = value; } }  // Removed private as this won't deserialize
 
     /// <summary>
     /// The subscription level of the asset. 
     /// Valid values are 0=Unknown, 15=2D Project Monitoring, 16=3D Project Monitoring, 18=Manual 3D Project Monitoring
     /// </summary>
-    public int machineLevel { get { return _machineLevel; } private set { _machineLevel = value; } }
+    public int machineLevel { get { return _machineLevel; }  set { _machineLevel = value; } } // Removed private as this won't deserialize
 
     /// <summary>
     /// Private constructor
