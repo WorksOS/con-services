@@ -113,6 +113,16 @@ namespace Repositories
         subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow ? new DateTime(9999, 12, 31) : subscriptionEvent.EndDate;
         subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
         upsertedCount = await UpsertSubscriptionDetail(subscription, "CreateAssetSubscriptionEvent");
+
+        if (upsertedCount == 1)
+        {
+          var assetSubscription = new AssetSubscription();
+          assetSubscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+          assetSubscription.AssetUID = subscriptionEvent.AssetUID.ToString();          
+          assetSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+          upsertedCount = await UpsertAssetSubscriptionDetail(assetSubscription);
+        }
+
       }
       else if (evt is UpdateAssetSubscriptionEvent)
       {
@@ -124,6 +134,15 @@ namespace Repositories
         subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
         subscription.LastActionedUTC = subscriptionEvent.ActionUTC;        
         upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateAssetSubscriptionEvent");
+
+        if (upsertedCount == 1)
+        {
+          var assetSubscription = new AssetSubscription();
+          assetSubscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+          assetSubscription.AssetUID = subscriptionEvent.AssetUID.ToString();
+          assetSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+          upsertedCount = await UpsertAssetSubscriptionDetail(assetSubscription);
+        }
       }
 
       return upsertedCount;
@@ -182,6 +201,7 @@ namespace Repositories
         {
           upsertedCount = await Connection.ExecuteAsync(insert, subscription);
           log.LogDebug("SubscriptionRepository/CreateSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}", upsertedCount, subscription.SubscriptionUID);
+
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
@@ -286,6 +306,55 @@ namespace Repositories
 
       log.LogDebug("SubscriptionRepository/AssociateProjectSubscription: can't create as already exists projectSubscription={0}", JsonConvert.SerializeObject(projectSubscription));
       PerhapsCloseConnection();     
+      return upsertedCount;
+    }
+
+    private async Task<int> UpsertAssetSubscriptionDetail(AssetSubscription assetSubscription)
+    {
+      int upsertedCount = 0;
+
+      await PerhapsOpenConnection();
+
+      var existing = (await Connection.QueryAsync<AssetSubscription>
+          (@"SELECT 
+                fk_SubscriptionUID AS SubscriptionUID, fk_AssetUID AS AssetUID, EffectiveDate, LastActionedUTC
+              FROM AssetSubscription
+              WHERE fk_AssetUID = @assetUID AND fk_SubscriptionUID = @subscriptionUID",
+          new { assetUID = assetSubscription.AssetUID, subscriptionUID = assetSubscription.SubscriptionUID }
+          )).FirstOrDefault();
+
+      upsertedCount = await AssociateAssetSubscription(assetSubscription, existing);
+
+      PerhapsCloseConnection();
+      return upsertedCount;
+    }
+
+    private async Task<int> AssociateAssetSubscription(AssetSubscription assetSubscription, AssetSubscription existing)
+    {
+      var upsertedCount = 0;
+      await PerhapsOpenConnection();
+
+      if (existing == null)
+      {
+        log.LogDebug("SubscriptionRepository/AssociateAssetSubscription: going to create assetSubscription={0}", JsonConvert.SerializeObject(assetSubscription));
+
+        const string insert =
+          @"INSERT AssetSubscription
+                (fk_SubscriptionUID, fk_AssetUID, EffectiveDate, LastActionedUTC)
+              VALUES
+                (@SubscriptionUID, @AssetUID, @EffectiveDate, @LastActionedUTC)";
+
+        PerhapsCloseConnection();
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, assetSubscription);
+          log.LogDebug("SubscriptionRepository/AssociateAssetSubscription: upserted {0} rows (1=insert, 2=update) for: SubscriptionUid:{1}", upsertedCount, assetSubscription.SubscriptionUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
+      }
+
+      log.LogDebug("SubscriptionRepository/AssociateProjectSubscription: can't create as already exists projectSubscription={0}", JsonConvert.SerializeObject(assetSubscription));
+      PerhapsCloseConnection();
       return upsertedCount;
     }
 
