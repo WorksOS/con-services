@@ -16,7 +16,7 @@
         "Microsoft.Extensions.Logging.Debug": "1.0.0",
         "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
         "WebApiModels": "1.0.0-*",
-        "MasterDataRepos.netcore": "1.0.37"
+        "MasterDataRepos.netcore": "1.0.38"
     },
 
    "frameworks": {

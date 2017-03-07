@@ -8,7 +8,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
   /// <summary>
   /// The request representation used to raise an alert for a tag file processing error if required.
   /// </summary>
-  public class TagFileProcessingErrorRequest // : IValidatable, IServiceDomainObject, IHelpSample
+  public class TagFileProcessingErrorRequest
   {
     /// <summary>
     /// The id of the asset whose tag file has the error. 

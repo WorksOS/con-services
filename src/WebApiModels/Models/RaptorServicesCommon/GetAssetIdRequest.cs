@@ -34,7 +34,6 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     [Required]
     [JsonProperty(PropertyName = "deviceType", Required = Required.Always)]
     public int deviceType { get { return _deviceType; } private set { _deviceType = value; } }
-    // todo MAY need to map deviceTypeID between CG and NG
 
     /// <summary>
     /// The radio serial number of the machine from the tagfile.

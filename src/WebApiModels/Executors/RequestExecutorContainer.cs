@@ -133,7 +133,6 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 
     protected void LoadAssetDevice(string radioSerial, string deviceType)
     {
-      // todo cache and use repoFactory when complete
       if (!string.IsNullOrEmpty(radioSerial) && !string.IsNullOrEmpty(deviceType))
       {
         var deviceRepo = factory.GetRepository<IDeviceEvent>() as DeviceRepository;

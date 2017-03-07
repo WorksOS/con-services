@@ -52,12 +52,6 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to get project id"));
       }
 
-    }
-
-    // todo what is this?
-    //protected override void ProcessErrorCodes()
-    //{
-    //  //Nothing to do
-    //}
+    }    
   }
 }
