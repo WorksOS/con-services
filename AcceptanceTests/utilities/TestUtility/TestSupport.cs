@@ -275,6 +275,10 @@ namespace TestUtility
           {
             updateDeviceEvent.RadioFirmwarePartNumber = eventObject.RadioFirmwarePartNumber;
           }
+          if (HasProperty(eventObject, "DeregisteredUTC"))
+          {
+            updateDeviceEvent.DeregisteredUTC = DateTime.Parse(eventObject.DeregisteredUTC);
+          }
           jsonString = JsonConvert.SerializeObject(new { UpdateDeviceEvent = updateDeviceEvent }, jsonSettings);
           break;
         case "AssociateDeviceAssetEvent":
@@ -532,7 +536,7 @@ namespace TestUtility
           break;
         case "Subscription":
           sqlCmd += $@"(SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
-                     ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate:yyyy-MM-dd}','{eventObject.EndDate:yyyy-MM-dd}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+                     ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate}','{eventObject.EndDate}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
       }
       mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);

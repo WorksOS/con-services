@@ -73,13 +73,14 @@ namespace WebApiTests
       var legacyAssetId = ts.SetLegacyAssetId();
       var customerUid = Guid.NewGuid();
       var subscriptionUid = Guid.NewGuid();
-      var endDate = new DateTime(9999, 12, 31);
+      var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
+      var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
       var deviceUid = Guid.NewGuid();
       // Write events to database 
       var eventsArray = new[] {
-         "| TableName    | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate                | EndDate        | ",
-        $"| Customer     | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                | 15               |                          |                | ",
-        $"| Subscription | 0d+09:00:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 15               | {ts.FirstEventDate.Date} | {endDate.Date} | "};
+         "| TableName    | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | ",
+        $"| Customer     | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                | 15               |             |                | ",
+        $"| Subscription | 0d+09:00:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 15               | {startDate} | {endDate}      | "};
       ts.PublishEventCollection(eventsArray);
       var assetEventArray = new[] {
        "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name      | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
@@ -100,7 +101,8 @@ namespace WebApiTests
       msg.DisplayWebApi(method, uri, response, requestJson);
       var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
-      Assert.AreEqual(15, actualResult.machineLevel, " Machine level do not match ");
+      // Note : 15 ng machine level but 18 is current gen machine level
+      Assert.AreEqual(18, actualResult.machineLevel, " Machine levels do not match ");
     }
   }
 }
