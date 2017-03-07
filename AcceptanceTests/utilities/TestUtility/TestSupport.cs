@@ -490,9 +490,9 @@ namespace TestUtility
       switch (dbTable)
       {
         case "Asset":
-          sqlCmd += $@"(AssetUID,LegacyAssetID,Name,MakeCode,SerialNumber,Model,IconKey,AssetType,LastActionedUTC) VALUES 
+          sqlCmd += $@"(AssetUID,LegacyAssetID,Name,MakeCode,SerialNumber,Model,IconKey,AssetType,OwningCustomerUID,LastActionedUTC) VALUES 
                 ('{AssetUid}',{eventObject.LegacyAssetID},'{eventObject.Name}','{eventObject.MakeCode}','{eventObject.SerialNumber}','{eventObject.Model}',
-                {eventObject.IconKey},'{eventObject.AssetType}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+                {eventObject.IconKey},'{eventObject.AssetType}','{eventObject.OwningCustomerUID}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "AssetDevice":
           sqlCmd += $@"(fk_DeviceUID,fk_AssetUID,LastActionedUTC) VALUES 
@@ -501,16 +501,15 @@ namespace TestUtility
 
         case "Customer":
           sqlCmd += $@"(CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
-                     ('{eventObject.CustomerUID}','{eventObject.Name}',{eventObject.fk_CustomerTypeID},{eventObject.IsDeleted},'{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+                     ('{eventObject.CustomerUID}','{eventObject.Name}',{eventObject.fk_CustomerTypeID},0,'{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "CustomerProject":
           sqlCmd += $@"(fk_CustomerUID,fk_ProjectUID,LegacyCustomerID,LastActionedUTC) VALUES
-                     ('{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}',{eventObject.LegacyCustomerID},'{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+                     ('{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}',{eventObject.LegacyCustomerID},'{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "Device":
-          sqlCmd += $@"(DeviceUID,DeviceSerialNumber,DeviceType,DeviceState,DeregisteredUTC,ModuleType,MainboardSoftwareVersion,RadioFirmwarePartNumber,GatewayFirmwarePartNumber,DataLinkType,LastActionedUTC) VALUES 
-                ('{eventObject.DeviceUID}','{eventObject.DeviceSerialNumber}','{eventObject.DeviceType}','{eventObject.DeviceState}','{eventObject.DeregisteredUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}','{eventObject.ModuleType}','{eventObject.MainboardSoftwareVersion}','{eventObject.RadioFirmwarePartNumber}',
-                '{eventObject.GatewayFirmwarePartNumber}','{eventObject.DataLinkType}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+          sqlCmd += $@"(DeviceUID,DeviceSerialNumber,DeviceType,DeviceState,DataLinkType,LastActionedUTC) VALUES 
+                ('{eventObject.DeviceUID}','{eventObject.DeviceSerialNumber}','{eventObject.DeviceType}','{eventObject.DeviceState}','{eventObject.DataLinkType}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "Geofence":
           sqlCmd += $@"(GeofenceUID,Name,fk_GeofenceTypeID,GeometryWKT,FillColor,IsTransparent,IsDeleted,Description,fk_CustomerUID,UserUID,LastActionedUTC) VALUES
@@ -533,7 +532,7 @@ namespace TestUtility
           break;
         case "Subscription":
           sqlCmd += $@"(SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
-                     ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate:yyyy-MM-dd}','{eventObject.EndDate:yyyy-MM-dd}','{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+                     ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate:yyyy-MM-dd}','{eventObject.EndDate:yyyy-MM-dd}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
       }
       mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
