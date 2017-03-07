@@ -5,7 +5,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
   /// <summary>
   /// The result representation of a get project boundary request.
   /// </summary>
-  public class GetProjectBoundaryAtDateResult : ContractExecutionResult // todo, IHelpSample
+  public class GetProjectBoundaryAtDateResult : ContractExecutionResult 
   {
     /// <summary>
     /// The result of the request. True for success and false for failure.
@@ -17,9 +17,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
     /// </summary>
     public TWGS84FenceContainer projectBoundary { get; private set; }
 
-    ///// <summary>
-    ///// Private constructor
-    ///// </summary>
+    // acceptance tests cannot serialize with a private const.
     //private GetProjectBoundaryAtDateResult()
     //{ }
 

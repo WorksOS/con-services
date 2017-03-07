@@ -4,16 +4,14 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
   /// <summary>
   /// The result representation of a tag file processing error request.
   /// </summary>
-  public class TagFileProcessingErrorResult : ContractExecutionResult // , IHelpSample
+  public class TagFileProcessingErrorResult : ContractExecutionResult 
   {
     /// <summary>
     /// The result of the request. True for success and false for failure.
     /// </summary>
     public bool result { get; private set; }
 
-    ///// <summary>
-    ///// Private constructor
-    ///// </summary>
+    // acceptance tests cannot serialize with a private const.
     //private TagFileProcessingErrorResult()
     //{ }
 

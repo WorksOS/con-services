@@ -23,11 +23,9 @@
     /// </summary>
     public int machineLevel { get { return _machineLevel; } private set { _machineLevel = value; } }
 
-    /// <summary>
-    /// Private constructor
-    /// </summary>
-    private GetAssetIdResult()
-    { }
+    // acceptance tests cannot serialize with a private const.
+    //private GetAssetIdResult()
+    //{ }
 
     /// <summary>
     /// Create instance of GetAssetIdResult

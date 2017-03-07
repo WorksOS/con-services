@@ -2,7 +2,6 @@
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Enums
 {
-  // todo put in table?
   public enum ServiceTypeEnumCG
   {
     Unknown = 0,
@@ -42,7 +41,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Enums
     }
   }
 
-  // todo check if these are the same in NG
+  // as of this date these are the same in CG and NG
   public enum DeviceTypeEnum
   {
     MANUALDEVICE = 0,

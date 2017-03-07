@@ -1,16 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using log4netExtensions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.GenericConfiguration;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using Repositories;
 
 namespace RepositoryTests
 {
@@ -19,7 +12,7 @@ namespace RepositoryTests
   {
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithNonExistingDeviceAsset()
+    public void AssetIDExecutor_NonExistingDeviceAsset()
     {
       Guid deviceUID = Guid.NewGuid();
       string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
@@ -36,7 +29,7 @@ namespace RepositoryTests
     }
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithExistingDeviceAsset()
+    public void AssetIDExecutor_ExistingDeviceAsset()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -59,7 +52,7 @@ namespace RepositoryTests
 
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithExistingDeviceAssetAndCustomerSub()
+    public void AssetIDExecutor_ExistingDeviceAssetAndCustomerSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -84,7 +77,7 @@ namespace RepositoryTests
     }
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithExistingDeviceAssetAndCustomerSub_NoOwnerCustomer()
+    public void AssetIDExecutor_ExistingDeviceAssetAndCustomerSub_NoOwnerCustomer()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -110,9 +103,8 @@ namespace RepositoryTests
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
 
-    //  todo waiting for AssetSubs to be implemented in MDConsumer
     [TestMethod]
-    public void CanCallAssetIDExecutorWithExistingDeviceAssetAndAssetSub()
+    public void AssetIDExecutor_ExistingDeviceAssetAndAssetSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -133,12 +125,11 @@ namespace RepositoryTests
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
-      Assert.AreEqual(16, result.machineLevel, "executor returned incorrect serviceType, should be 16 3dPM. todo waiting for AssetSubs to be implemented in MDConsumer");
+      Assert.AreEqual(16, result.machineLevel, "executor returned incorrect serviceType, should be 16 3dPM.");
     }
 
-    //  todo waiting for AssetSubs to be implemented in MDConsumer
     [TestMethod]
-    public void CanCallAssetIDExecutorWithExistingDeviceAssetAndAssetAndCustomerSub()
+    public void AssetIDExecutor_ExistingDeviceAssetAndAssetAndCustomerSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);
@@ -162,12 +153,12 @@ namespace RepositoryTests
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
-      Assert.AreEqual(16, result.machineLevel, "executor returned incorrect serviceType, should be 16 3dPM. todo waiting for AssetSubs to be implemented in MDConsumer");
+      Assert.AreEqual(16, result.machineLevel, "executor returned incorrect serviceType, should be 16 3dPM.");
     }
 
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithNonExistingProject()
+    public void AssetIDExecutor_NonExistingProject()
     {
       int legacyProjectId = new Random().Next(0, int.MaxValue);
 
@@ -182,7 +173,7 @@ namespace RepositoryTests
     }
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithExistingProject()
+    public void AssetIDExecutor_ExistingProject()
     {
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
@@ -201,7 +192,7 @@ namespace RepositoryTests
     }
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithExistingProjectAndCustomerSub()
+    public void AssetIDExecutor_ExistingProjectAndCustomerSub()
     {
       // tests path where only ProjectId and goes via CheckForManual3DCustomerBasedSub()
       Guid projectUID = Guid.NewGuid();
@@ -224,7 +215,7 @@ namespace RepositoryTests
     }
 
     [TestMethod]
-    public void CanCallAssetIDExecutorWithExistingProjectAndDeviceAndCustomerSub()
+    public void AssetIDExecutor_ExistingProjectAndDeviceAndCustomerSub()
     {
       Guid assetUID = Guid.NewGuid();
       long legacyAssetId = new Random().Next(0, int.MaxValue);

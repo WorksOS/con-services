@@ -18,11 +18,9 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
     /// </summary>
     public long projectId { get { return _projectId; } private set { _projectId = value; } }
 
-    ///// <summary>
-    ///// Private constructor
-    ///// </summary>
-    private GetProjectIdResult()
-    { }
+    // acceptance tests cannot serialize with a private const.
+    //private GetProjectIdResult()
+    //{ }
 
     /// <summary>
     /// Create instance of GetProjectIdResult
