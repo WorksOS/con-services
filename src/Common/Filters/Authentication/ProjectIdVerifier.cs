@@ -27,8 +27,8 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
         var request = actionContext.ActionArguments["request"];
         projectIdValue =
           request.GetType()
-            .GetProperty("projectId", BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
-            .GetValue(request);
+            ?.GetProperty("projectId", BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
+            ?.GetValue(request);
       }
 
       if (actionContext.ActionArguments.ContainsKey("projectId"))

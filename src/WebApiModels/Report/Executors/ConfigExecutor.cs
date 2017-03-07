@@ -34,15 +34,16 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
             string config = String.Empty;
             try
             {
-
                 raptorClient.RequestConfig(out config);
+                log.LogTrace("Received config {0}", config);
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(config);
                 string jsonText = JsonConvert.SerializeXmlNode(doc);
-                result = ConfigResult.CreateConfigResult(jsonText);
+                result = ConfigResult.CreateConfigResult(config);
             }
             catch (Exception e)
             {
+                log.LogError("Exception loading config: {0} at {1}",e.Message,e.StackTrace);
                 throw new ServiceException(HttpStatusCode.InternalServerError,
                         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, e.Message));
             }

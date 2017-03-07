@@ -47,7 +47,7 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
 
     public ConfigResult Get()
     {
-      return RequestExecutorContainer.Build<ConfigExecutor>(logger, raptorClient, null).Process((string)null) as ConfigResult;
+      return RequestExecutorContainer.Build<ConfigExecutor>(logger, raptorClient, null).Process(new object()) as ConfigResult;
     }
 
 
