@@ -99,6 +99,7 @@ namespace RepositoryTests
         DeviceSerialNumber = "A radio serial",
         DeviceType = "PL121",
         DeviceState = "active",
+        ModuleType = "whatIsModuleType",
         ActionUTC = firstCreatedUTC
       };
 
@@ -108,6 +109,7 @@ namespace RepositoryTests
         DeviceSerialNumber = "A radio serial changed",
         DeviceType = "PL221",
         DeviceState = "active still",
+        ModuleType = "moduleTypeUpdated",
         ActionUTC = firstCreatedUTC.AddMinutes(10)
       };
 
@@ -117,18 +119,15 @@ namespace RepositoryTests
         DeviceSerialNumber = deviceEventUpdate.DeviceSerialNumber,
         DeviceType = deviceEventUpdate.DeviceType,
         DeviceState = deviceEventUpdate.DeviceState,
+        ModuleType = deviceEventUpdate.ModuleType,
         LastActionedUtc = deviceEventUpdate.ActionUTC
       };
 
       deviceContext.InRollbackTransaction<object>(o =>
       {
-        var s = deviceContext.StoreEvent(deviceEventCreate);
-        s.Wait();
-        s = deviceContext.StoreEvent(deviceEventUpdate);
-        s.Wait();
-
-        var g = deviceContext.GetDevice(deviceFinal.DeviceUID);
-        g.Wait();
+        deviceContext.StoreEvent(deviceEventCreate).Wait();
+        deviceContext.StoreEvent(deviceEventUpdate).Wait();
+        var g = deviceContext.GetDevice(deviceFinal.DeviceUID);  g.Wait();
         Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
         Assert.AreEqual(deviceFinal, g.Result, "Asset details are incorrect from AssetRepo");
         return null;

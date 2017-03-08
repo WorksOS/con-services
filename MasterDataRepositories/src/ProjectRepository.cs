@@ -41,19 +41,19 @@ namespace Repositories
         project.ProjectType = projectEvent.ProjectType;
 
         //Don't write if there is no boundary defined
-          if (!String.IsNullOrEmpty(projectEvent.ProjectBoundary))
+        if (!String.IsNullOrEmpty(projectEvent.ProjectBoundary))
+        {
+          // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
+          if (!projectEvent.ProjectBoundary.Contains(polygonStr))
           {
-              // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
-              if (!projectEvent.ProjectBoundary.Contains(polygonStr))
-              {
-                  projectEvent.ProjectBoundary =
-                      projectEvent.ProjectBoundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');
-                  projectEvent.ProjectBoundary = String.Concat(polygonStr + "((", projectEvent.ProjectBoundary, "))");
-              }
-
-              project.GeometryWKT = projectEvent.ProjectBoundary;
-              upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
+            projectEvent.ProjectBoundary =
+                projectEvent.ProjectBoundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');
+            projectEvent.ProjectBoundary = String.Concat(polygonStr + "((", projectEvent.ProjectBoundary, "))");
           }
+
+          project.GeometryWKT = projectEvent.ProjectBoundary;
+          upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
+        }
       }
       else if (evt is UpdateProjectEvent)
       {
@@ -139,7 +139,7 @@ namespace Repositories
       {
         upsertedCount = await DeleteProject(project, existing);
       }
-      
+
       PerhapsCloseConnection();
       return upsertedCount;
     }
@@ -155,13 +155,14 @@ namespace Repositories
 
       else if (existing == null)
       {
-        log.LogDebug("ProjectRepository/CreateProject: going to create project={0}", JsonConvert.SerializeObject(project));
-
-        const string insert =
-          @"INSERT Project
-                (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT )
-              VALUES
-                (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT)";
+        log.LogDebug("ProjectRepository/CreateProject: going to create project={0}))')", JsonConvert.SerializeObject(project));
+        var formattedPolygon = string.Format("ST_GeomFromText('{0}')", project.GeometryWKT);
+        string insert = string.Format(
+          "INSERT Project " +
+          "    (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST ) " +
+          "  VALUES " +
+          "    (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0})"
+            , formattedPolygon);
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, project);
@@ -172,7 +173,7 @@ namespace Repositories
       else if (string.IsNullOrEmpty(existing.Name))
       {
         log.LogDebug("ProjectRepository/CreateProject: going to update a dummy project={0}", JsonConvert.SerializeObject(project));
-        
+
         // this code comes from landfill, however in MD, no dummy is created
         //   is this obsolete?
         const string update =
@@ -369,7 +370,7 @@ namespace Repositories
       {
         upsertedCount = await AssociateProjectGeofence(projectGeofence, existing);
       }
-      
+
       PerhapsCloseConnection();
       return upsertedCount;
     }
@@ -616,10 +617,10 @@ namespace Repositories
           ));
 
       PerhapsCloseConnection();
-      
+
       // need to get the row with the later SubscriptionEndDate if there are duplicates
       // Also if there are >1 projectGeofences.. hmm.. it will just return either
-      return projects.OrderByDescending(proj => proj.SubscriptionEndDate).GroupBy(d => d.ProjectUID).Select(g => g.First()).ToList();      
+      return projects.OrderByDescending(proj => proj.SubscriptionEndDate).GroupBy(d => d.ProjectUID).Select(g => g.First()).ToList();
     }
 
     /// <summary>
@@ -712,6 +713,81 @@ namespace Repositories
       return project;
     }
 
+
+    /// <summary>
+    /// Gets any standard project which the lat/long is within,
+    ///     which satisfies all conditions for the asset
+    /// </summary>
+    /// <param name="customerUID"></param>
+    /// <param name="latitude"></param>
+    /// <param name="longitude"></param>
+    /// <param name="timeOfPosition"></param>
+    /// <returns>The project</returns>
+    public async Task<IEnumerable<Project>> GetStandardProject(string customerUID, double latitude, double longitude, DateTime timeOfPosition)
+    {
+      await PerhapsOpenConnection();
+
+      string point = string.Format("ST_GeomFromText('POINT({0} {1})')", longitude, latitude);
+      string select = string.Format(
+        "SELECT DISTINCT " +
+        "        p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
+        "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+        "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
+        "      FROM Project p " +
+        "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
+        "      WHERE p.fk_ProjectTypeID = 0 " +
+        "        AND p.IsDeleted = 0 " +
+        "        AND @timeOfPosition BETWEEN p.StartDate AND p.EndDate " +
+        "        AND cp.fk_CustomerUID = @customerUID " +
+        "        AND st_Intersects({0}, PolygonST) = 1"
+            , point);
+
+      var projects = (await Connection.QueryAsync<Project>(select,  new { customerUID, timeOfPosition = timeOfPosition.Date } ));
+     
+      PerhapsCloseConnection();
+      return projects;
+    }
+
+    /// <summary>
+    /// Gets any ProjectMonitoring or Landfill (as requested) project which the lat/long is within,
+    ///     which satisfies all conditions for the tccOrgid
+    ///     note that project can be backfilled i.e.set to a date earlier than the serviceView
+    /// </summary>
+    /// <param name="customerUID"></param>
+    /// <param name="latitude"></param>
+    /// <param name="longitude"></param>
+    /// <param name="timeOfPosition"></param>
+    /// <returns>The project</returns>
+    public async Task<IEnumerable<Project>> GetProjectMonitoringProject(string customerUID, 
+      double latitude, double longitude, DateTime timeOfPosition, int projectType, int serviceType)
+    {
+      await PerhapsOpenConnection();
+
+      string point = string.Format("ST_GeomFromText('POINT({0} {1})')", longitude, latitude);
+      string select = string.Format(
+        "SELECT DISTINCT " +
+        "        p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
+        "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+        "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
+        "      FROM Project p " +
+        "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
+        "        INNER JOIN ProjectSubscription ps ON ps.fk_ProjectUID = cp.fk_ProjectUID " +
+        "        INNER JOIN Subscription s ON s.SubscriptionUID = ps.fk_SubscriptionUID " +
+        "      WHERE p.fk_ProjectTypeID = @projectType " +
+        "        AND p.IsDeleted = 0 " +
+        "        AND @timeOfPosition BETWEEN p.StartDate AND p.EndDate " +
+        "        AND @timeOfPosition <= s.EndDate " +
+        "        AND s.fk_ServiceTypeID = @serviceType " +
+        "        AND cp.fk_CustomerUID = @customerUID " +
+        "        AND st_Intersects({0}, PolygonST) = 1"
+            , point);
+     
+      var projects = (await Connection.QueryAsync<Project>(select, new { customerUID, timeOfPosition = timeOfPosition.Date, projectType, serviceType }));
+      
+      PerhapsCloseConnection();
+      return projects;
+    }
+
     public async Task<IEnumerable<Project>> GetProjects_UnitTests()
     {
       await PerhapsOpenConnection();
@@ -734,7 +810,6 @@ namespace Repositories
       return projects;
     }
     #endregion getters
-
 
   }
 }

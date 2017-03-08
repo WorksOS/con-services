@@ -101,7 +101,7 @@ namespace RepositoryTests
       const string tableName = "Project";
       List<string> columnNames = new List<string>
           {
-            "ID", "ProjectUID", "LegacyProjectID", "Name", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ID", "ProjectUID", "LegacyProjectID", "Name", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC", "PolygonST"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -113,6 +113,17 @@ namespace RepositoryTests
       List<string> columnNames = new List<string>
           {
             "fk_CustomerUID", "fk_ProjectUID", "LegacyCustomerID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void CustomerTccOrgSchemaExists()
+    {
+      const string tableName = "CustomerTccOrg";
+      List<string> columnNames = new List<string>
+          {
+            "CustomerUID", "TCCOrgID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }

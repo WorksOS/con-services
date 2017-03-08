@@ -54,6 +54,7 @@ namespace Repositories
 
         device.DeviceState = deviceEvent.DeviceState;
         device.DeregisteredUTC = deviceEvent.DeregisteredUTC;
+        device.ModuleType = deviceEvent.ModuleType;
         device.MainboardSoftwareVersion = deviceEvent.MainboardSoftwareVersion;
         device.RadioFirmwarePartNumber = deviceEvent.RadioFirmwarePartNumber;
         device.GatewayFirmwarePartNumber = deviceEvent.GatewayFirmwarePartNumber;

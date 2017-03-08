@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS Project (
   EndDate date DEFAULT NULL,
   
   GeometryWKT varchar(4000) DEFAULT NULL,
+  PolygonST POLYGON NULL,
   
   LastActionedUTC datetime(6) DEFAULT NULL,
   InsertUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -34,3 +35,14 @@ SET @s = (SELECT IF(
     "SELECT 1",
     "ALTER TABLE `Project` ADD COLUMN `GeometryWKT` varchar(4000) DEFAULT NULL, AFTER `EndDate`"
 ));
+
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name = 'Project'
+        AND table_schema = DATABASE()
+        AND column_name = 'PolygonST'
+    ) > 0,
+    "SELECT 1",
+    "ALTER TABLE `Project` ADD COLUMN `PolygonST` POLYGON NULL AFTER `GeometryWKT`"
+));    

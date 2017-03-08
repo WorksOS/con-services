@@ -715,6 +715,48 @@ namespace RepositoryTests
 
     #endregion
 
+    #region tccOrg
+
+    /// <summary>
+    /// Create Customer and CustomerTccOrg - Happy path i.e. 
+    ///   to test the getter
+    /// </summary>
+    [TestMethod]
+    public void CreateCustomerTccOrg_HappyPath()
+    {
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = ActionUTC
+      };
+
+      var createCustomerTccOrgEvent = new CreateCustomerTccOrgEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        TCCOrgID = "TCCOrgID " + createCustomerEvent.CustomerUID.ToString(),
+        ActionUTC = ActionUTC
+      };
+
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      var s = customerContext.StoreEvent(createCustomerTccOrgEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Customer TCCOrg event not written");
+
+      var g = customerContext.GetCustomerWithTccOrg(createCustomerEvent.CustomerUID);  g.Wait();
+      var byCustomerUID = g.Result;
+      Assert.AreEqual(createCustomerTccOrgEvent.TCCOrgID, byCustomerUID.TCCOrgID, "CustomerTCCOrg details are incorrect from CustomerRepo");
+
+      g = customerContext.GetCustomerWithTccOrg(createCustomerTccOrgEvent.TCCOrgID); g.Wait();
+      var byTCCOrg = g.Result;
+      Assert.AreEqual(byCustomerUID, byTCCOrg, "CustomerTCCOrg details are incorrect from CustomerRepo");
+    }
+
+    #endregion tccOrg
+
     #region private
     private CreateCustomerEvent CopyModel(Customer customer)
     {
