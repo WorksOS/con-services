@@ -1,0 +1,344 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6E7BACCA-3049-45F5-8118-8B45A5D39F85}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ProductionDataSvc.AcceptanceTests</RootNamespace>
+    <AssemblyName>ProductionDataSvc.AcceptanceTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestAPICoreTestFramework">
+      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\RestAPICoreTestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="ShineOn.Rtl">
+      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\ShineOn.Rtl.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="TechTalk.SpecFlow, Version=1.9.0.77, Culture=neutral, PublicKeyToken=0778194805d6db41, processorArchitecture=MSIL">
+      <HintPath>..\..\lib\SpecFlow.1.9.0\lib\net35\TechTalk.SpecFlow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VSS.Velociraptor.Library">
+      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\VSS.Velociraptor.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Velociraptor.PDSInterface">
+      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\VSS.Velociraptor.PDSInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="XnaFan.ImageComparison">
+      <HintPath>..\RaptorSvcAcceptTestsCommon\DLLs\XnaFan.ImageComparison.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="CcaColorPalette.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CcaColorPalette.feature</DependentUpon>
+    </Compile>
+    <Compile Include="DesignCache.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DesignCache.feature</DependentUpon>
+    </Compile>
+    <Compile Include="DotOnTheMap.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DotOnTheMap.feature</DependentUpon>
+    </Compile>
+    <Compile Include="EditData.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditData.feature</DependentUpon>
+    </Compile>
+    <Compile Include="FilterServices.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FilterServices.feature</DependentUpon>
+    </Compile>
+    <Compile Include="GetLifts.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GetLifts.feature</DependentUpon>
+    </Compile>
+    <Compile Include="GetMachineDesigns.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GetMachineDesigns.feature</DependentUpon>
+    </Compile>
+    <Compile Include="GetProjectExtents.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GetProjectExtents.feature</DependentUpon>
+    </Compile>
+    <Compile Include="GetProjectMachines.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GetProjectMachines.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\BeforeAndAfter.cs" />
+    <Compile Include="Models\CCAColorPaletteResult.cs" />
+    <Compile Include="Models\CellDatumRequest.cs" />
+    <Compile Include="Models\CellPassesRequest.cs" />
+    <Compile Include="Models\DesignNameRequest.cs" />
+    <Compile Include="Models\DesignNames.cs" />
+    <Compile Include="Models\FiltersResult.cs" />
+    <Compile Include="Models\GetMachineDesignResult.cs" />
+    <Compile Include="Models\GetEditDataRequest.cs" />
+    <Compile Include="Models\LayerRequest.cs" />
+    <Compile Include="Models\PatchRequest.cs" />
+    <Compile Include="Models\ProfileGridPoints.cs" />
+    <Compile Include="Models\ProfileLLPoints.cs" />
+    <Compile Include="Models\ProfileRequest.cs" />
+    <Compile Include="Models\ProjectExtentRequest.cs" />
+    <Compile Include="Models\GetMachinesResult.cs" />
+    <Compile Include="Models\SurveydSurfacesResult.cs" />
+    <Compile Include="Models\SurveyedSurfaceRequest.cs" />
+    <Compile Include="Models\TileRequest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CellDatum.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CellDatum.feature</DependentUpon>
+    </Compile>
+    <Compile Include="CellPasses.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CellPasses.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Patch.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Patch.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Profile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Profile.feature</DependentUpon>
+    </Compile>
+    <Compile Include="StepDefinitions\CcaColorPaletteSteps.cs" />
+    <Compile Include="Tiles.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tiles.feature</DependentUpon>
+    </Compile>
+    <Compile Include="StepDefinitions\DesignCacheSteps.cs" />
+    <Compile Include="StepDefinitions\DotOnTheMapSteps.cs" />
+    <Compile Include="StepDefinitions\EditDataSteps.cs" />
+    <Compile Include="StepDefinitions\FilterServicesSteps.cs" />
+    <Compile Include="StepDefinitions\GetLiftsSteps.cs" />
+    <Compile Include="StepDefinitions\GetMachineDesignsSteps.cs" />
+    <Compile Include="StepDefinitions\GetProjectExtentsSteps.cs" />
+    <Compile Include="StepDefinitions\GetProjectMachinesSteps.cs" />
+    <Compile Include="StepDefinitions\CellDatumSteps.cs" />
+    <Compile Include="StepDefinitions\CellPassesSteps.cs" />
+    <Compile Include="StepDefinitions\PatchSteps.cs" />
+    <Compile Include="StepDefinitions\ProfileSteps.cs" />
+    <Compile Include="StepDefinitions\TilesSteps.cs" />
+    <Compile Include="Models\EditDataRequest.cs" />
+    <Compile Include="StepDefinitions\SurveyedSurfaceSteps.cs" />
+    <Compile Include="SurveyedSurface.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SurveyedSurface.feature</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="CcaColorPalette.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CcaColorPalette.feature.cs</LastGenOutput>
+    </None>
+    <None Include="DesignCache.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>DesignCache.feature.cs</LastGenOutput>
+    </None>
+    <None Include="DotOnTheMap.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>DotOnTheMap.feature.cs</LastGenOutput>
+    </None>
+    <None Include="EditData.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>EditData.feature.cs</LastGenOutput>
+    </None>
+    <None Include="FilterServices.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>FilterServices.feature.cs</LastGenOutput>
+    </None>
+    <None Include="GetLifts.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>GetLifts.feature.cs</LastGenOutput>
+    </None>
+    <None Include="GetMachineDesigns.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>GetMachineDesigns.feature.cs</LastGenOutput>
+    </None>
+    <None Include="GetProjectExtents.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>GetProjectExtents.feature.cs</LastGenOutput>
+    </None>
+    <None Include="GetProjectMachines.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>GetProjectMachines.feature.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+    <None Include="CellDatum.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CellDatum.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CellPasses.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CellPasses.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Patch.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Patch.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Profile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Profile.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Tiles.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Tiles.feature.cs</LastGenOutput>
+    </None>
+    <None Include="TestData\DotOnTheMapRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\DotOnTheMapResponse.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\SurveyedSurfaceRequest.json" />
+    <None Include="SurveyedSurface.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>SurveyedSurface.feature.cs</LastGenOutput>
+    </None>
+    <None Include="TestData\CellDatumRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CellDatumResponse.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CellPassesRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CellPassesResponse.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\PatchRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\PatchResponse.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\ProfileRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\ProfileResponse.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\TileRequest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\TileResponse.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\RaptorSvcAcceptTestsCommon\RaptorSvcAcceptTestsCommon.csproj">
+      <Project>{eff9d18e-1a7d-47bb-8421-69a08d0cabae}</Project>
+      <Name>RaptorSvcAcceptTestsCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TagFileProcessing.AcceptanceTests\TagFileProcessing.AcceptanceTests.csproj">
+      <Project>{db7d000e-b663-41bf-a712-22502ff2c6a6}</Project>
+      <Name>TagFileProcessing.AcceptanceTests</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy RaptorSvcAcceptTestsCommon.dll.Local.config RaptorSvcAcceptTestsCommon.dll.config /Y</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
