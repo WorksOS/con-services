@@ -5,13 +5,12 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using KafkaConsumer;
+using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApi.Models;
+using Repositories;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using VSS.Project.Data;
-using VSS.Project.Service.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

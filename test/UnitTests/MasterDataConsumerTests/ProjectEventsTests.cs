@@ -2,8 +2,8 @@
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProjectWebApi.Models;
-using VSS.Project.Data;
-using VSS.Project.Data.Models;
+using Repositories;
+using Repositories.DBModels;
 
 namespace MasterDataConsumer.Tests
 {

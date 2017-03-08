@@ -1,4 +1,3 @@
-using VSS.Project.Data.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ProjectWebApi.Models
