@@ -6,7 +6,9 @@ copy Dockerfile deploy\
 copy scripts\runtests.bat deploy\
 mkdir deploy\testresults
 
-REM dotnet restore
+.nuget\nuget restore
+"C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild"
+
 
 cd tests
 REM dotnet publish WebApiTests -o ..\deploy\WebApiTests -f net46
