@@ -1,0 +1,649 @@
+{
+  "AllByAlignment": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 0,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": {
+      "id": 3116,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.svl"
+      },
+      "offset": 0
+    },
+    "gridPoints": null,
+    "wgs84Points": null,
+    "startStation": 12,
+    "endStation": 12.5,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "AllByLine": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 0,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": null,
+    "gridPoints": {
+      "x1": 2668.3817884973,
+      "y1": 1229.97997925147,
+      "x2": 2668.82845909767,
+      "y2": 1229.97997925147
+    },
+    "wgs84Points": null,
+    "startStation": null,
+    "endStation": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "CcvOverrideTarget": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 1,
+    "gridPoints": {
+      "x1": 2732.251,
+      "y1": 1160.925,
+      "x2": 2732.563,
+      "y2": 1160.925
+    },
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "overridingMachineCCV": 350,
+      "includeSupersededLifts": false
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "CcvPercentExcludeSupersededLifts": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 11,
+    "gridPoints": {
+      "x1": 2732.251,
+      "y1": 1160.925,
+      "x2": 2732.563,
+      "y2": 1160.925
+    },
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "overridingMachineCCV": null,
+      "includeSupersededLifts": false
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "CcvPercentIncludeSupersededLifts": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 11,
+    "gridPoints": {
+      "x1": 2732.251,
+      "y1": 1160.925,
+      "x2": 2732.563,
+      "y2": 1160.925
+    },
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "overridingMachineCCV": null,
+      "includeSupersededLifts": true
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "HeightByLine": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 2,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": null,
+    "gridPoints": {
+      "x1": 2668.3817884973,
+      "y1": 1229.97997925147,
+      "x2": 2668.82845909767,
+      "y2": 1229.97997925147
+    },
+    "wgs84Points": null,
+    "startStation": null,
+    "endStation": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "CompositeHeightByLine": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 14,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": null,
+    "gridPoints": {
+      "x1": 2668.3817884973,
+      "y1": 1229.97997925147,
+      "x2": 2668.82845909767,
+      "y2": 1229.97997925147
+    },
+    "wgs84Points": null,
+    "startStation": null,
+    "endStation": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "PassCountByLine": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 4,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": null,
+    "gridPoints": {
+      "x1": 2668.3817884973,
+      "y1": 1229.97997925147,
+      "x2": 2668.82845909767,
+      "y2": 1229.97997925147
+    },
+    "wgs84Points": null,
+    "startStation": null,
+    "endStation": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "TemperatureByAlignment": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 8,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": {
+      "id": 3116,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.svl"
+      },
+      "offset": 0
+    },
+    "gridPoints": null,
+    "wgs84Points": null,
+    "startStation": 12,
+    "endStation": 12.5,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": false,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": false,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "MdpUsingMachineMdp": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 15,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": null,
+    "gridPoints": {
+      "x1": 2830.9599456806,
+      "y1": 1222.15009477803,
+      "x2": 2830.9599456806,
+      "y2": 1221.7476204404
+    },
+    "wgs84Points": null,
+    "startStation": null,
+    "endStation": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "MdpUsingOverrideMdp": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 15,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": null,
+    "gridPoints": {
+      "x1": 2830.9599456806,
+      "y1": 1222.15009477803,
+      "x2": 2830.9599456806,
+      "y2": 1221.7476204404
+    },
+    "wgs84Points": null,
+    "startStation": null,
+    "endStation": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": 2000,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "MdpPercentUsingMachineMdp": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 16,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": null,
+    "gridPoints": {
+      "x1": 2830.9599456806,
+      "y1": 1222.15009477803,
+      "x2": 2830.9599456806,
+      "y2": 1221.7476204404
+    },
+    "wgs84Points": null,
+    "startStation": null,
+    "endStation": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": null,
+      "overridingMachineMDP": null,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "NullProjectId": {
+    "projectID": null,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 0,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": {
+      "id": 3116,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.svl"
+      },
+      "offset": 0
+    },
+    "gridPoints": null,
+    "wgs84Points": null,
+    "startStation": 12,
+    "endStation": 12.5,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "AlignmentProfileNotSpecifyingStations": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 0,
+    "filter": null,
+    "filterID": null,
+    "alignmentDesign": {
+      "id": 3116,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Milling - Milling.svl"
+      },
+      "offset": 0
+    },
+    "gridPoints": null,
+    "wgs84Points": null,
+    "startStation": null,
+    "endStation": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "CcvChangeAllLayerExclSuperseded": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 20,
+    "gridPoints": {
+      "x1": 2732.261,
+      "y1": 1160.917,
+      "x2": 2732.529,
+      "y2": 1160.917
+    },
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "overridingMachineCCV": null,
+      "cCVSummarizeTopLayerOnly": false,
+      "includeSupersededLifts": false
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "CcvChangeAllLayerInclSuperseded": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 20,
+    "gridPoints": {
+      "x1": 2732.261,
+      "y1": 1160.917,
+      "x2": 2732.529,
+      "y2": 1160.917
+    },
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "overridingMachineCCV": null,
+      "cCVSummarizeTopLayerOnly": false,
+      "includeSupersededLifts": true
+    },
+    "returnAllPassesAndLayers": false
+  },
+  "CcvChangeTopLayerInclSuperseded": {
+    "projectID": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "profileType": 20,
+    "gridPoints": {
+      "x1": 2732.261,
+      "y1": 1160.917,
+      "x2": 2732.529,
+      "y2": 1160.917
+    },
+    "liftBuildSettings": {
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "overridingMachineCCV": null,
+      "cCVSummarizeTopLayerOnly": true,
+      "includeSupersededLifts": true
+    },
+    "returnAllPassesAndLayers": false
+  }
+}

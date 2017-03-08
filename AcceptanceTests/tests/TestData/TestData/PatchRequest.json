@@ -1,0 +1,284 @@
+{
+  "HeightNoFilter": {
+    "projectId": 1001191,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 0,
+    "palettes": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "renderColorValues": false,
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0.02,
+    "designDescriptor": null,
+    "filter1": null,
+    "filterId1": -1,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 1,
+    "patchNumber": 0,
+    "patchSize": 1
+  },
+  "HeightAreaFilter": {
+    "projectId": 1001158,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 0,
+    "palettes": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "renderColorValues": false,
+    "computeVolType": 0,
+    "computeVolNoChangeTolerance": 0.02,
+    "designDescriptor": null,
+    "filter1": {
+      "startUTC": null,
+      "endUTC": null,
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": [
+        {
+          "Lat": 0.631930733951056,
+          "Lon": -2.007483884109430
+        },
+        {
+          "Lat": 0.631930733951056,
+          "Lon": -2.007483709576500
+        },
+        {
+          "Lat": 0.631930594324716,
+          "Lon": -2.007483709576500
+        },
+        {
+          "Lat": 0.631930594324716,
+          "Lon": -2.007483884109430
+        }
+      ],
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": null,
+      "startStation": null,
+      "endStation": null,
+      "leftOffset": null,
+      "rightOffset": null,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false
+    },
+    "filterId1": 1217,
+    "filter2": null,
+    "filterId2": -1,
+    "filterLayerMethod": 1,
+    "patchNumber": 0,
+    "patchSize": 1
+  },
+  "NullProjectId": {
+    "projectId": null,
+    "callId": "00000000-0000-0000-0000-000000000000",
+    "mode": 0,
+    "palettes": null,
+    "liftBuildSettings": {
+      "cCVRange": {
+        "min": 80,
+        "max": 130
+      },
+      "cCVSummarizeTopLayerOnly": true,
+      "deadBandLowerBoundary": 0.2,
+      "deadBandUpperBoundary": 0.05,
+      "firstPassThickness": 0,
+      "liftDetectionType": 2,
+      "liftThicknessType": 1,
+      "mDPRange": {
+        "min": 80,
+        "max": 130
+      },
+      "mDPSummarizeTopLayerOnly": true,
+      "overridingLiftThickness": null,
+      "overridingMachineCCV": 15,
+      "overridingMachineMDP": 115,
+      "overridingTargetPassCountRange": {
+        "min": 5,
+        "max": 5
+      },
+      "overridingTemperatureWarningLevels": {
+        "min": 190,
+        "max": 220
+      }
+    },
+    "renderColorValues": false,
+    "computeVolType": 4,
+    "computeVolNoChangeTolerance": 0.02,
+    "designDescriptor": {
+      "id": 3113,
+      "file": {
+        "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+        "path": "/77561/1158",
+        "fileName": "Large Sites Road - Trimble Road.ttm"
+      },
+      "offset": 0
+    },
+    "filter1": {
+      "startUTC": "2012-10-31T11:00:00Z",
+      "endUTC": "2012-11-07T11:00:00Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": [
+        {
+          "Lat": 36.207529,
+          "Lon": -115.020112
+        },
+        {
+          "Lat": 36.207512,
+          "Lon": -115.018884
+        },
+        {
+          "Lat": 36.206966,
+          "Lon": -115.018884
+        },
+        {
+          "Lat": 36.206945,
+          "Lon": -115.020112
+        }
+      ],
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": {
+        "id": 3112,
+        "file": {
+          "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+          "path": "/77561/1158",
+          "fileName": "Large Sites Road - Trimble Road.svl"
+        },
+        "offset": 0
+      },
+      "startStation": 0,
+      "endStation": 197.776,
+      "leftOffset": 8,
+      "rightOffset": 8,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": true
+    },
+    "filterId1": 1194,
+    "filter2": {
+      "startUTC": "2012-10-31T11:00:00Z",
+      "endUTC": "2012-11-07T11:00:00Z",
+      "onMachineDesignID": null,
+      "assetIDs": null,
+      "vibeStateOn": null,
+      "compactorDataOnly": null,
+      "elevationType": null,
+      "polygonLL": [
+        {
+          "Lat": 36.207529,
+          "Lon": -115.020112
+        },
+        {
+          "Lat": 36.207512,
+          "Lon": -115.018884
+        },
+        {
+          "Lat": 36.206966,
+          "Lon": -115.018884
+        },
+        {
+          "Lat": 36.206945,
+          "Lon": -115.020112
+        }
+      ],
+      "polygonGrid": null,
+      "forwardDirection": null,
+      "alignmentFile": {
+        "id": 3112,
+        "file": {
+          "filespaceId": "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
+          "path": "/77561/1158",
+          "fileName": "Large Sites Road - Trimble Road.svl"
+        },
+        "offset": 0
+      },
+      "startStation": 0,
+      "endStation": 197.776,
+      "leftOffset": 8,
+      "rightOffset": 8,
+      "layerType": null,
+      "designOrAlignmentFile": null,
+      "benchElevation": null,
+      "layerNumber": null,
+      "layerThickness": null,
+      "contributingMachines": null,
+      "surveyedSurfaceExclusionList": null,
+      "returnEarliest": false
+    },
+    "filterId2": 1194,
+    "filterLayerMethod": 1,
+    "patchNumber": 1,
+    "patchSize": 1
+  }
+}
