@@ -3,7 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Net;
-using VSS.Geofence.Data.Models;
+using Repositories.DBModels;
+
 
 namespace IntegrationTests
 {

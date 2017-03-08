@@ -13,7 +13,8 @@ using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
-using VSS.Project.Data.Models;
+using Repositories.DBModels;
+
 //using VSS.Project.Service.Models;
 
 namespace TestRun

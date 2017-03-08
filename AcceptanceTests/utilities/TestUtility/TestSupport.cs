@@ -13,8 +13,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using ProjectWebApi.Models;
-using VSS.Customer.Data.Models;
-using VSS.Subscription.Data.Models;
+using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 
