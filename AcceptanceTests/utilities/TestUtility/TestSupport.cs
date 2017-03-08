@@ -207,6 +207,14 @@ namespace TestUtility
           {
             updateAssetEvent.IconKey = Convert.ToInt32(eventObject.IconKey);
           }
+          if (HasProperty(eventObject, "LegacyAssetId"))
+          {
+            updateAssetEvent.LegacyAssetId = Convert.ToInt32(eventObject.LegacyAssetId);
+          }
+          if (HasProperty(eventObject, "OwningCustomerUID"))
+          {
+            updateAssetEvent.OwningCustomerUID = eventObject.OwningCustomerUID;
+          }
           jsonString = JsonConvert.SerializeObject(new {UpdateAssetEvent = updateAssetEvent}, jsonSettings );
           break;
         case "DeleteAssetEvent":

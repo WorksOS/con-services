@@ -128,7 +128,7 @@ namespace WebApiTests
       Assert.AreEqual(true, actualResult.result, "CoordConversion_Failure");
     }
 
-        private TagFileProcessingErrorResult CallWebApiGetTagFileProcessingErrorResult(TestSupport ts,long assetId, string tagFileName,TagFileErrorsEnum errorNum)
+    private TagFileProcessingErrorResult CallWebApiGetTagFileProcessingErrorResult(TestSupport ts,long assetId, string tagFileName,TagFileErrorsEnum errorNum)
     {
       var request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(assetId,tagFileName,errorNum);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);

@@ -90,7 +90,7 @@ namespace RepositoryTests
       const string tableName = "Project";
       List<string> columnNames = new List<string>
           {
-            "ID", "ProjectUID", "LegacyProjectID", "Name", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ID", "ProjectUID", "LegacyProjectID", "Name", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC","PolygonST"
           };
       CheckSchema(tableName, columnNames);
     }
