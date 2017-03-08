@@ -175,7 +175,6 @@ namespace WebApiTests
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid();
       var customerUid = Guid.NewGuid();
-      var subscriptionUid = Guid.NewGuid();
       var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
       var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
       var geometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
@@ -187,7 +186,6 @@ namespace WebApiTests
       var eventsArray = new[] {
         "| TableName       | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID |",
        $"| Customer        | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                | 15               |             |                |               |",
-    // $"| Subscription    | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 15               | {startDate} | {endDate}      |               |",
        $"| CustomerProject | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |             |                | {projectUid}  |"};
       ts.PublishEventCollection(eventsArray);
       //Call Web api
