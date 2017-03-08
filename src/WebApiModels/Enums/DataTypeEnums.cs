@@ -34,7 +34,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Enums
     {
       serviceTypes = new List<ServiceTypeMapping>();
       serviceTypes.Add(new ServiceTypeMapping() { name = "Unknown", CGEnum = 0, NGEnum = 0 });
-      serviceTypes.Add(new ServiceTypeMapping() { name = "3D Project Monitoring", CGEnum = 160, NGEnum = 13 });
+      serviceTypes.Add(new ServiceTypeMapping() { name = "3D Project Monitoring", CGEnum = 16, NGEnum = 13 });
       serviceTypes.Add(new ServiceTypeMapping() { name = "Manual 3D Project Monitoring", CGEnum = 18, NGEnum = 15 });
       serviceTypes.Add(new ServiceTypeMapping() { name = "Landfill", CGEnum = 23, NGEnum = 19 });
       serviceTypes.Add(new ServiceTypeMapping() { name = "Project Monitoring", CGEnum = 24, NGEnum = 20 });
