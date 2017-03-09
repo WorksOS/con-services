@@ -20,7 +20,7 @@ namespace EventTests
              "| EventType                      | EventDate   | StartDate  | EndDate    | SubscriptionType   | SubscriptionUID   |",
             $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Project Monitoring | {subscriptionUid} |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Subscription", "SubscriptionUID", "fk_ServiceTypeID", "20", subscriptionUid);
     }
@@ -41,7 +41,7 @@ namespace EventTests
             $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | {startDate}             | {endDate}              | Project Monitoring | {subscriptionUid} |",
             $"| UpdateProjectSubscriptionEvent | 1d+12:00:00 | {startDate.AddYears(2)} | {endDate.AddYears(-2)} | Project Monitoring | {subscriptionUid} |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Subscription", "SubscriptionUID", "StartDate, EndDate", $"{startDate.AddYears(2)},{endDate.AddYears(-2)}", subscriptionUid);
     }
@@ -63,7 +63,7 @@ namespace EventTests
             $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Project Monitoring | {subscriptionUid} |",
             $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Landfill           | {subscriptionUid} |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Subscription", "SubscriptionUID", "fk_ServiceTypeID", "20", subscriptionUid);
     }
