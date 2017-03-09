@@ -11,8 +11,6 @@ namespace EventTests
   [TestClass]
   public class ProjectEventTests
   {
-    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project-Only";
-
     [TestMethod]
     public void CreateProjectEvent()
     {
@@ -21,17 +19,15 @@ namespace EventTests
       var mysql = new MySqlHelper();
       msg.Title("Create Project test 1", "Create one project");
       var projectGuid = Guid.NewGuid();
-      var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
-      var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
-      var geometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var startDate = ts.FirstEventDate.Date.ToString("yyyy-MM-dd");
+      var endDate = new DateTime(9999, 12, 31).Date.ToString("yyyy-MM-dd");
+      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
       var eventArray = new[] {
-             "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
-            $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWKT} |" };
-
+       "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+      $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWkt} |" };
       ts.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID","Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate,GeometryWKT", 
-                                                      $"testProject1, 1, {(int)ProjectType.ProjectMonitoring}, {startDate}, {endDate}, {geometryWKT}", projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project","ProjectUID","Name,LegacyProjectID,fk_ProjectTypeID,GeometryWKT",$"testProject1,1,{(int)ProjectType.ProjectMonitoring},{geometryWkt}",projectGuid);
     }
 
     //var msg = new Msg();
