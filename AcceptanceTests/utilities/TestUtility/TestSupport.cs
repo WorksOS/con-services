@@ -18,7 +18,7 @@ namespace TestUtility
     public DateTime FirstEventDate { get; set; }
     public DateTime LastEventDate { get; set; }
     public bool IsPublishToKafka { get; set; }
-    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified};
+    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified, NullValueHandling = NullValueHandling.Ignore};
     public readonly TestConfig tsCfg = new TestConfig();
     #endregion
 
@@ -71,6 +71,17 @@ namespace TestUtility
       return legacyAssetId+1001;
     }
 
+
+    public int SetLegacyProjectId()
+    {
+      var mysql = new MySqlHelper();
+      var query = "SELECT max(ID) FROM Project;";
+      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
+      if (string.IsNullOrEmpty(result))
+         { return 1000; }
+      var legacyAssetId = Convert.ToInt32(result);
+      return legacyAssetId+1001;
+    }
     /// <summary>
     /// Set to true if writing to kafka instead of the database
     /// </summary>
@@ -168,8 +179,21 @@ namespace TestUtility
             SerialNumber = eventObject.SerialNumber,
             MakeCode = eventObject.Make,
             Model = eventObject.Model,
-            IconKey = Convert.ToInt32(eventObject.IconKey)
+            IconKey = Convert.ToInt32(eventObject.IconKey)            
           };
+          if (HasProperty(eventObject, "OwningCustomerUID"))
+          {
+            createAssetEvent.OwningCustomerUID = eventObject.OwningCustomerUID;
+          }
+          if (HasProperty(eventObject, "LegacyAssetId"))
+          {
+            createAssetEvent.LegacyAssetId = Convert.ToInt64(eventObject.LegacyAssetId);
+          }
+          if (HasProperty(eventObject, "EquipmentVIN"))
+          {
+            createAssetEvent.EquipmentVIN = eventObject.EquipmentVIN;
+          }
+
           jsonString = JsonConvert.SerializeObject(new {CreateAssetEvent = createAssetEvent}, jsonSettings );
           
           break;
@@ -196,6 +220,19 @@ namespace TestUtility
           {
             updateAssetEvent.IconKey = Convert.ToInt32(eventObject.IconKey);
           }
+          if (HasProperty(eventObject, "LegacyAssetId"))
+          {
+            updateAssetEvent.LegacyAssetId = Convert.ToInt32(eventObject.LegacyAssetId);
+          }
+          if (HasProperty(eventObject, "OwningCustomerUID"))
+          {
+            updateAssetEvent.OwningCustomerUID = eventObject.OwningCustomerUID;
+          }
+          if (HasProperty(eventObject, "EquipmentVIN"))
+          {
+            updateAssetEvent.EquipmentVIN = eventObject.EquipmentVIN;
+          }
+
           jsonString = JsonConvert.SerializeObject(new {UpdateAssetEvent = updateAssetEvent}, jsonSettings );
           break;
         case "DeleteAssetEvent":
@@ -203,7 +240,7 @@ namespace TestUtility
           var deleteAssetEvent = new DeleteAssetEvent()
           {
             ActionUTC = eventObject.EventDate,
-            AssetUID = new Guid(AssetUid),
+            AssetUID = new Guid(AssetUid)     
           };
           jsonString = JsonConvert.SerializeObject(new {DeleteAssetEvent = deleteAssetEvent}, jsonSettings );
           break;
@@ -274,6 +311,10 @@ namespace TestUtility
           if (HasProperty(eventObject, "DataLinkType"))
           {
             updateDeviceEvent.RadioFirmwarePartNumber = eventObject.RadioFirmwarePartNumber;
+          }
+          if (HasProperty(eventObject, "DeregisteredUTC"))
+          {
+            updateDeviceEvent.DeregisteredUTC = DateTime.Parse(eventObject.DeregisteredUTC);
           }
           jsonString = JsonConvert.SerializeObject(new { UpdateDeviceEvent = updateDeviceEvent }, jsonSettings);
           break;
@@ -498,14 +539,17 @@ namespace TestUtility
           sqlCmd += $@"(fk_DeviceUID,fk_AssetUID,LastActionedUTC) VALUES 
                 ('{eventObject.fk_DeviceUID}','{eventObject.fk_AssetUID}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
-
+        case "AssetSubscription":
+          sqlCmd += $@"(fk_AssetUID,fk_SubscriptionUID,EffectiveDate,LastActionedUTC) VALUES
+                     ('{eventObject.fk_AssetUID}','{eventObject.fk_SubscriptionUID}','{eventObject.EffectiveDate}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+          break;
         case "Customer":
           sqlCmd += $@"(CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
                      ('{eventObject.CustomerUID}','{eventObject.Name}',{eventObject.fk_CustomerTypeID},0,'{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "CustomerProject":
-          sqlCmd += $@"(fk_CustomerUID,fk_ProjectUID,LegacyCustomerID,LastActionedUTC) VALUES
-                     ('{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}',{eventObject.LegacyCustomerID},'{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+          sqlCmd += $@"(fk_CustomerUID,fk_ProjectUID,LastActionedUTC) VALUES
+                     ('{eventObject.fk_CustomerUID}','{eventObject.fk_ProjectUID}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "Device":
           sqlCmd += $@"(DeviceUID,DeviceSerialNumber,DeviceType,DeviceState,DataLinkType,LastActionedUTC) VALUES 
@@ -518,9 +562,9 @@ namespace TestUtility
                       '{eventObject.fk_CustomerUID}',{eventObject.UserUID},{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "Project":
-          sqlCmd += $@"(ProjectUID,LegacyProjectID,Name,fk_ProjectTypeID,IsDeleted,ProjectTimeZone,LandfillTimeZone,StartDate,EndDate,LastActionedUTC) VALUES
-                     ('{eventObject.ProjectUID}',{eventObject.LegacyProjectID}','{eventObject.Name}',{eventObject.fk_ProjectTypeID},{eventObject.IsDeleted},
-                      '{eventObject.ProjectTimeZone}','{eventObject.LandfillTimeZone}','{eventObject.StartDate:yyyy-MM-dd}','{eventObject.EndDate:yyyy-MM-dd}',{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+          sqlCmd += $@"(ProjectUID,LegacyProjectID,Name,fk_ProjectTypeID,ProjectTimeZone,LandfillTimeZone,StartDate,EndDate,GeometryWKT,LastActionedUTC) VALUES
+                     ('{eventObject.ProjectUID}',{eventObject.LegacyProjectID},'{eventObject.Name}',{eventObject.fk_ProjectTypeID},
+                      '{eventObject.ProjectTimeZone}','{eventObject.LandfillTimeZone}','{eventObject.StartDate:yyyy-MM-dd}','{eventObject.EndDate:yyyy-MM-dd}','{eventObject.GeometryWKT}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "ProjectGeofence":
           sqlCmd += $@"(fk_ProjectUID,fk_GeofenceUID,LastActionedUTC) VALUES
@@ -532,7 +576,7 @@ namespace TestUtility
           break;
         case "Subscription":
           sqlCmd += $@"(SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
-                     ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate:yyyy-MM-dd}','{eventObject.EndDate:yyyy-MM-dd}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+                     ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate}','{eventObject.EndDate}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
       }
       mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);

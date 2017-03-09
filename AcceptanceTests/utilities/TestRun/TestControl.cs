@@ -208,7 +208,7 @@ namespace TestRun
                 {
                     currentClassName = current.Name;
                     Console.WriteLine(@"#################################################################################################");
-                    Console.WriteLine(@"##################### Test Class : " + currentClassName + "##########################");
+                    Console.WriteLine(@"########################       Test Class : " + currentClassName + "      #########################");
                     Console.WriteLine(@"#################################################################################################");
                     var methods = current.GetMethods()
                         .Where(m => m.GetCustomAttributes(typeof(TestMethodAttribute)).Count() != 0) 

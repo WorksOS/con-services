@@ -15,14 +15,14 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
-    public long assetId { get; private set; }
+    public long assetId { get; set; }
 
     /// <summary>
     /// The name of the tag file with the error.
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "tagFileName", Required = Required.Always)]
-    public string tagFileName { get; private set; }
+    public string tagFileName { get; set; }
 
     /// <summary>
     /// The type of error. Values are:
@@ -37,7 +37,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "error", Required = Required.Always)]
-    public TagFileErrorsEnum error { get; private set; }
+    public TagFileErrorsEnum error { get; set; }
 
     ///// <summary>
     ///// Private constructor
