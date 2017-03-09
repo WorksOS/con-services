@@ -12,6 +12,7 @@ namespace WebApiTests
   public class TagFileProcessingTests
   {
     private readonly Msg msg = new Msg();
+
     [TestMethod]
     public void NoValidCells_InValidPosition()
     {
@@ -81,42 +82,6 @@ namespace WebApiTests
       var ts = new TestSupport { IsPublishToKafka = false };
       var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589397", TagFileErrorsEnum.UnknownProject);
       Assert.AreEqual(true, actualResult.result, "result of request doesn't match expected");
-    }
-
-    [TestMethod]
-    public void UnknownErrorNoTagFileName()
-    {
-      msg.Title("TagfileError Test 9", "TagFileError Unknown No Tagfile Name");
-      var ts = new TestSupport { IsPublishToKafka = false };
-      var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "", TagFileErrorsEnum.None);
-      Assert.AreEqual(true, actualResult.result, "Unknown error No Tagfile Name");
-    }
-
-    [TestMethod]
-    public void UnknownError1()
-    {
-      msg.Title("TagfileError Test 10", "TagFileError Unknown error1");
-      var ts = new TestSupport { IsPublishToKafka = false };
-      var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589398", TagFileErrorsEnum.None);
-      Assert.AreEqual(true, actualResult.result, "Unknown error1");
-    }
-
-    [TestMethod]
-    public void UnknownError2()
-    {
-      msg.Title("TagfileError Test 11", "TagFileError Unknown error2");
-      var ts = new TestSupport { IsPublishToKafka = false };
-      var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "", TagFileErrorsEnum.None);
-      Assert.AreEqual(true, actualResult.result, "Unknown error2");
-    }
-
-    [TestMethod]
-    public void UnknownError3()
-    {
-      msg.Title("TagfileError Test 12", "TagFileError Unknown error3");
-      var ts = new TestSupport { IsPublishToKafka = false };
-      var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, -1, "", TagFileErrorsEnum.None);
-      Assert.AreEqual(true, actualResult.result, "Unknown error3");
     }
 
     [TestMethod]

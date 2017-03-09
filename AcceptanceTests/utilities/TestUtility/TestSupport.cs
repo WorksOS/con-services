@@ -18,7 +18,7 @@ namespace TestUtility
     public DateTime FirstEventDate { get; set; }
     public DateTime LastEventDate { get; set; }
     public bool IsPublishToKafka { get; set; }
-    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified};
+    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified, NullValueHandling = NullValueHandling.Ignore};
     public readonly TestConfig tsCfg = new TestConfig();
     #endregion
 
@@ -179,8 +179,21 @@ namespace TestUtility
             SerialNumber = eventObject.SerialNumber,
             MakeCode = eventObject.Make,
             Model = eventObject.Model,
-            IconKey = Convert.ToInt32(eventObject.IconKey)
+            IconKey = Convert.ToInt32(eventObject.IconKey)            
           };
+          if (HasProperty(eventObject, "OwningCustomerUID"))
+          {
+            createAssetEvent.OwningCustomerUID = eventObject.OwningCustomerUID;
+          }
+          if (HasProperty(eventObject, "LegacyAssetId"))
+          {
+            createAssetEvent.LegacyAssetId = Convert.ToInt64(eventObject.LegacyAssetId);
+          }
+          if (HasProperty(eventObject, "EquipmentVIN"))
+          {
+            createAssetEvent.EquipmentVIN = eventObject.EquipmentVIN;
+          }
+
           jsonString = JsonConvert.SerializeObject(new {CreateAssetEvent = createAssetEvent}, jsonSettings );
           
           break;
@@ -215,6 +228,11 @@ namespace TestUtility
           {
             updateAssetEvent.OwningCustomerUID = eventObject.OwningCustomerUID;
           }
+          if (HasProperty(eventObject, "EquipmentVIN"))
+          {
+            updateAssetEvent.EquipmentVIN = eventObject.EquipmentVIN;
+          }
+
           jsonString = JsonConvert.SerializeObject(new {UpdateAssetEvent = updateAssetEvent}, jsonSettings );
           break;
         case "DeleteAssetEvent":
@@ -222,7 +240,7 @@ namespace TestUtility
           var deleteAssetEvent = new DeleteAssetEvent()
           {
             ActionUTC = eventObject.EventDate,
-            AssetUID = new Guid(AssetUid),
+            AssetUID = new Guid(AssetUid)     
           };
           jsonString = JsonConvert.SerializeObject(new {DeleteAssetEvent = deleteAssetEvent}, jsonSettings );
           break;
