@@ -26,8 +26,10 @@ namespace EventTests
        "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
       $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWkt} |" };
       ts.PublishEventCollection(eventArray);
+      var startDt = ts.FirstEventDate.ToString("MM/dd/yyyy HH:mm:ss");
+      var endDt = new DateTime(9999, 12, 31).ToString("MM/dd/yyyy HH:mm:ss");
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project","ProjectUID","Name,LegacyProjectID,fk_ProjectTypeID,GeometryWKT",$"testProject1,1,{(int)ProjectType.ProjectMonitoring},{geometryWkt}",projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project","ProjectUID","Name,LegacyProjectID,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT",$"testProject1,1,{(int)ProjectType.ProjectMonitoring},{startDt},{endDt},{geometryWkt}",projectGuid);
     }
 
     //var msg = new Msg();

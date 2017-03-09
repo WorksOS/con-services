@@ -17,7 +17,7 @@
 [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("MYSQL_SERVER_NAME_ReadVSPDB", "localhost", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_URI", "localhost", "Machine")
-[Environment]::SetEnvironmentVariable("KAFKA_PORT", "9092", "Machine")
+[Environment]::SetEnvironmentVariable("KAFKA_PORT", "2181", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "TagFileAuth-Datafeed", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-TFA", "Machine")
 [Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://webapi:80/", "Machine")
