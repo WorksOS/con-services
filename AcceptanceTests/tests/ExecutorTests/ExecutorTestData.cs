@@ -7,6 +7,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using Repositories;
+using System.Linq;
 
 namespace RepositoryTests
 {
@@ -96,7 +97,7 @@ namespace RepositoryTests
       return (g.Result != null ? true : false);
     }
 
-    protected bool CreateProject(Guid projectUID, int legacyProjectId, Guid customerUID)
+    protected bool CreateProject(Guid projectUID, int legacyProjectId, Guid customerUID, ProjectType projectType = ProjectType.LandFill)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
@@ -109,11 +110,11 @@ namespace RepositoryTests
         ProjectUID = projectUID,
         ProjectID = legacyProjectId,
         ProjectName = "The Project Name",
-        ProjectType = ProjectType.LandFill,
+        ProjectType = projectType,
         ProjectTimezone = projectTimeZone,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2100, 02, 01),
-        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))",
         ActionUTC = actionUtc
       };
 
@@ -124,7 +125,7 @@ namespace RepositoryTests
       customerContext.StoreEvent(createCustomerEvent).Wait();
       projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
 
-      var g = projectContext.GetProjectAndSubscriptions(legacyProjectId, DateTime.UtcNow.Date); g.Wait();
+      var g = projectContext.GetProject(legacyProjectId); g.Wait();
       return (g.Result != null ? true : false);
     }
 
@@ -136,7 +137,7 @@ namespace RepositoryTests
       {
         CustomerUID = customerUID,
         SubscriptionUID = Guid.NewGuid(),
-        SubscriptionType = subToInsert.ToString(),
+        SubscriptionType = subToInsert,
         StartDate = new DateTime(2016, 02, 01),
         EndDate = new DateTime(9999, 12, 31),
         ActionUTC = actionUtc
@@ -168,7 +169,7 @@ namespace RepositoryTests
         CustomerUID = customerUID,
         SubscriptionUID = Guid.NewGuid(),
         DeviceUID = null,
-        SubscriptionType = subToInsert.ToString(),
+        SubscriptionType = subToInsert,
         StartDate = new DateTime(2016, 02, 01),
         EndDate = new DateTime(9999, 12, 31),
         ActionUTC = actionUtc
@@ -180,7 +181,41 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscriptionsByAsset(createAssetSubscriptionEvent.AssetUID.ToString(), DateTime.UtcNow.Date); g.Wait();
       return (g.Result != null ? true : false);
     }
+    
+    protected bool CreateCustomer(Guid customerUID, string TccOrgId)
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      bool areWrittenOk = false;
 
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = customerUID,
+        CustomerName = "the name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUtc
+      };
+
+      var s = customerContext.StoreEvent(createCustomerEvent); s.Wait();
+      Assert.AreEqual(1, s.Result, "createCustomerEvent event not written");
+      var g = customerContext.GetCustomerWithTccOrg(createCustomerEvent.CustomerUID); g.Wait();
+      areWrittenOk = (g.Result != null ? true : false);
+
+      if (areWrittenOk && !string.IsNullOrEmpty(TccOrgId))
+      {
+        var createCustomerTccOrgEvent = new CreateCustomerTccOrgEvent()
+        {
+          CustomerUID = customerUID,
+          TCCOrgID = TccOrgId,
+          ActionUTC = actionUtc
+        };
+
+        s = customerContext.StoreEvent(createCustomerTccOrgEvent); s.Wait();
+        Assert.AreEqual(1, s.Result, "createCustomerTccOrgEvent event not written");
+        g = customerContext.GetCustomerWithTccOrg(createCustomerEvent.CustomerUID); g.Wait();
+        areWrittenOk = (g.Result != null ? true : false);
+      }
+      return areWrittenOk;
+    }
 
     protected bool CreateCustomerSub(Guid customerUID, string subToInsert)
     {

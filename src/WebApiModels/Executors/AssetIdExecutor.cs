@@ -8,6 +8,7 @@ using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Repositories.DBModels;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 {
@@ -23,15 +24,18 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       GetAssetIdRequest request = item as GetAssetIdRequest;
+      log.LogDebug("AssetIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
 
       long legacyAssetId = -1;
       int serviceType = 0;
       bool result = false;
 
+      Project project = null;
+
       // legacyProjectId can exist with and without a radioSerial so set this up early
       if (request.projectId > 0)
       {
-        LoadProject(request.projectId);
+        project = LoadProject(request.projectId);
         
         if (project != null)
         {
@@ -62,13 +66,13 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         if (assetDevice != null)
         {
           legacyAssetId = assetDevice.LegacyAssetID;
-          LoadAssetSubs(assetDevice.AssetUID);
+          LoadAssetSubs(assetDevice.AssetUID, DateTime.UtcNow);
 
           // OwningCustomerUID should always be present, but bug in MD airlift means that most are missing.
           LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID);
           log.LogDebug("AssetIdExecutor: Retrieved Asset CustomerSubs {0} for OwningCustomerUID {1}", JsonConvert.SerializeObject(customerSubs), assetDevice.OwningCustomerUID);
 
-          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, (project != null ? project.ProjectUID : null));
+          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project);
         }
         else
         {
@@ -112,9 +116,9 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       }
     }
 
-    private int GetMostSignificantServiceType(string assetUID, string projectUID)
+    private int GetMostSignificantServiceType(string assetUID, Project project)
     {
-      log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset UID {0} and project UID {1}", assetUID, projectUID);
+      log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset UID {0} and project UID {1}", assetUID, JsonConvert.SerializeObject(project));
 
       ServiceTypeEnumNG serviceType = ServiceTypeEnumNG.Unknown;
 
@@ -138,7 +142,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
             case ServiceTypeEnumNG.Manual3DProjectMonitoring:
               if (serviceType != ServiceTypeEnumNG.e3DProjectMonitoring)
               {
-                log.LogDebug("AssetIdExecutor: GetProjectServiceType found ServiceTypeEnum.Manual3DProjectMonitoring for asset UID {0} and project UID {1}", assetUID, projectUID);
+                log.LogDebug("AssetIdExecutor: GetProjectServiceType found ServiceTypeEnum.Manual3DProjectMonitoring for asset UID {0}", assetUID);
                 serviceType = ServiceTypeEnumNG.Manual3DProjectMonitoring;
               }
               break;
@@ -150,7 +154,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
               {
                 //Allow manual tag file import for customer who has the 3D subscription for the asset
                 //and allow automatic tag file processing in all cases (can't tell customer for automatic)
-                log.LogDebug("AssetIdExecutor: GetProjectServiceType found ServiceTypeEnum.e3DProjectMonitoring for asset UID {0} and project UID {1}", assetUID, projectUID);
+                log.LogDebug("AssetIdExecutor: GetProjectServiceType found ServiceTypeEnum.e3DProjectMonitoring for asset UID {0}", assetUID);
                 if (project == null || sub.customerUid == project.CustomerUID)
                 {
                   serviceType = ServiceTypeEnumNG.e3DProjectMonitoring;
@@ -163,7 +167,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         }
       }
 
-      log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset ID {0} and project ID {1}, returning serviceTypeNG {2} actually serviceTypeCG {3}", assetUID, projectUID, serviceType, ConvertServiceTypeNGtoCG(serviceType));
+      log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset ID {0}, returning serviceTypeNG {1} actually serviceTypeCG {2}", assetUID, serviceType, ConvertServiceTypeNGtoCG(serviceType));
       return (int)(ConvertServiceTypeNGtoCG(serviceType));
     }
 
