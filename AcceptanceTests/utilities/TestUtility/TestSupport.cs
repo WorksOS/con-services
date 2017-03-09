@@ -446,7 +446,8 @@ namespace TestUtility
             ProjectStartDate = DateTime.Parse(eventObject.ProjectStartDate),
             ProjectTimezone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            ProjectUID = new Guid(eventObject.ProjectUID)
+            ProjectUID = new Guid(eventObject.ProjectUID),
+            ProjectBoundary = eventObject.GeometryWKT
           };
           jsonString = JsonConvert.SerializeObject(new {CreateProjectEvent = createProjectEvent}, jsonSettings );
           break;
