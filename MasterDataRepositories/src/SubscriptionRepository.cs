@@ -283,7 +283,6 @@ namespace Repositories
     private async Task<int> AssociateProjectSubscription(ProjectSubscription projectSubscription, ProjectSubscription existing)
     {
       var upsertedCount = 0;
-      await PerhapsOpenConnection();
 
       if (existing == null)
       {
@@ -295,7 +294,6 @@ namespace Repositories
               VALUES
                 (@SubscriptionUID, @ProjectUID, @EffectiveDate, @LastActionedUTC)";
 
-        PerhapsCloseConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, projectSubscription);
@@ -305,7 +303,6 @@ namespace Repositories
       }
 
       log.LogDebug("SubscriptionRepository/AssociateProjectSubscription: can't create as already exists projectSubscription={0}", JsonConvert.SerializeObject(projectSubscription));
-      PerhapsCloseConnection();     
       return upsertedCount;
     }
 
@@ -332,7 +329,6 @@ namespace Repositories
     private async Task<int> AssociateAssetSubscription(AssetSubscription assetSubscription, AssetSubscription existing)
     {
       var upsertedCount = 0;
-      await PerhapsOpenConnection();
 
       if (existing == null)
       {
@@ -344,7 +340,6 @@ namespace Repositories
               VALUES
                 (@SubscriptionUID, @AssetUID, @EffectiveDate, @LastActionedUTC)";
 
-        PerhapsCloseConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, assetSubscription);
@@ -354,7 +349,6 @@ namespace Repositories
       }
 
       log.LogDebug("SubscriptionRepository/AssociateProjectSubscription: can't create as already exists projectSubscription={0}", JsonConvert.SerializeObject(assetSubscription));
-      PerhapsCloseConnection();
       return upsertedCount;
     }
 

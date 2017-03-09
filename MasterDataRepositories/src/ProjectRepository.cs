@@ -486,7 +486,7 @@ namespace Repositories
               WHERE p.LegacyProjectID = @legacyProjectID 
                 AND p.IsDeleted = 0
                 AND @validAtDate BETWEEN s.StartDate AND s.EndDate",
-            new { legacyProjectID, validAtDate }
+            new { legacyProjectID, validAtDate = validAtDate.Date }
           ));
 
       PerhapsCloseConnection();
@@ -768,7 +768,8 @@ namespace Repositories
         "SELECT DISTINCT " +
         "        p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
         "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
-        "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
+        "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, " +
+        "        ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID " +
         "      FROM Project p " +
         "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
         "        INNER JOIN ProjectSubscription ps ON ps.fk_ProjectUID = cp.fk_ProjectUID " +

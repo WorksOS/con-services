@@ -35,6 +35,6 @@
         "Microsoft.Extensions.Logging.Debug": "1.1.0",
         "ConfigurationStore.netcore": "*",
         "KafkaConsumer.netcore": "*",
-        "MasterDataRepos.netcore": "1.0.40"
+        "MasterDataRepos.netcore": "1.0.41"
     }
 }
