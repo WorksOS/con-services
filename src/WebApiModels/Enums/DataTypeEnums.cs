@@ -34,7 +34,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Enums
     {
       serviceTypes = new List<ServiceTypeMapping>();
       serviceTypes.Add(new ServiceTypeMapping() { name = "Unknown", CGEnum = 0, NGEnum = 0 });
-      serviceTypes.Add(new ServiceTypeMapping() { name = "3D Project Monitoring", CGEnum = 160, NGEnum = 13 });
+      serviceTypes.Add(new ServiceTypeMapping() { name = "3D Project Monitoring", CGEnum = 16, NGEnum = 13 });
       serviceTypes.Add(new ServiceTypeMapping() { name = "Manual 3D Project Monitoring", CGEnum = 18, NGEnum = 15 });
       serviceTypes.Add(new ServiceTypeMapping() { name = "Landfill", CGEnum = 23, NGEnum = 19 });
       serviceTypes.Add(new ServiceTypeMapping() { name = "Project Monitoring", CGEnum = 24, NGEnum = 20 });
@@ -92,20 +92,29 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Enums
     SNM941 = 46
   }
 
-  // todo check if these are the same in NG
-  public enum SiteTypeEnumCGC
+  //// todo check if these are the same in NG
+  //public enum SiteTypeEnumCGC
+  //{
+  //  Generic = 0,
+  //  Project = 1,
+  //  Borrow = 2,
+  //  Waste = 3,
+  //  AvoidanceZone = 4,
+  //  Stockpile = 5,
+  //  CutZone = 6,
+  //  FillZone = 7,
+  //  Import = 8,
+  //  Export = 9,
+  //  Landfill = 10
+  //}
+
+  public enum CustomerTypeEnum
   {
-    Generic = 0,
-    Project = 1,
-    Borrow = 2,
-    Waste = 3,
-    AvoidanceZone = 4,
-    Stockpile = 5,
-    CutZone = 6,
-    FillZone = 7,
-    Import = 8,
-    Export = 9,
-    Landfill = 10
+    Dealer = 0,
+    Customer = 1,
+    Account = 2,
+    Operations = 3,
+    Corporate = 4
   }
- 
+
 }
