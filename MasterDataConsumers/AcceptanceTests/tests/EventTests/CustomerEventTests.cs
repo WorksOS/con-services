@@ -17,7 +17,7 @@ namespace EventTests
             msg.Title("Customer test 1", "Create one customer");
             var eventArray = new[] {
              "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
-            $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerUid} |"};
+            $"| CreateCustomerEvent | 0d+09:00:00 | CustName    | Customer     | {customerUid} |"};
 
             testSupport.PublishEventCollection(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);                                       

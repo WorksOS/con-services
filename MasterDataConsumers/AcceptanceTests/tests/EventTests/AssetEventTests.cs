@@ -190,7 +190,7 @@ namespace EventTests
          "| EventType        | EventDate   | AssetUID      | ",
         $"| DeleteAssetEvent | 1d+09:00:00 | {ts.AssetUid} | "};
       ts.PublishEventCollection(updEventArray);  
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Asset", "AssetUID", "IsDeleted", "1", new Guid(ts.AssetUid));
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Asset", "AssetUID", "IsDeleted", "True", new Guid(ts.AssetUid));
     }
 
   }

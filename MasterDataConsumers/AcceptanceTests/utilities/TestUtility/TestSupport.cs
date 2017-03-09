@@ -184,7 +184,7 @@ namespace TestUtility
           };
           if (HasProperty(eventObject, "OwningCustomerUID"))
           {
-            createAssetEvent.OwningCustomerUID = eventObject.OwningCustomerUID;
+            createAssetEvent.OwningCustomerUID = Guid.Parse(eventObject.OwningCustomerUID);
           }
           if (HasProperty(eventObject, "LegacyAssetId"))
           {
@@ -227,7 +227,7 @@ namespace TestUtility
           }
           if (HasProperty(eventObject, "OwningCustomerUID"))
           {
-            updateAssetEvent.OwningCustomerUID = eventObject.OwningCustomerUID;
+            updateAssetEvent.OwningCustomerUID = Guid.Parse(eventObject.OwningCustomerUID);
           }
           if (HasProperty(eventObject, "EquipmentVIN"))
           {
