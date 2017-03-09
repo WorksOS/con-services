@@ -1,48 +1,150 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
+using System.Text;
 
 namespace ProjectWebApi.Models
 {
   public class ProjectBoundaryValidator
   {
-    private static List<Point> ParseBoundaryData(string s)
+    public const string POLYGON_WKT = "POLYGON((";
+
+    private static List<string> _replacements = new List<string> { "POLYGON", "(", ")" };
+
+    private static List<Point> ParseBoundaryData(string s, char pointSeparator, char coordSeparator)
     {
       var points = new List<Point>();
 
-      string[] pointsArray = s.Remove(s.Length - 1).Split(';');
+      string[] pointsArray = s./*Remove(s.Length - 1).*/Split(pointSeparator);
 
       for (int i = 0; i < pointsArray.Length; i++)
       {
-        double[] coordinates = new double[2];
-
         //gets x and y coordinates split by comma, trims whitespace at pos 0, converts to double array
-        coordinates = pointsArray[i].Trim().Split(',').Select(c => double.Parse(c)).ToArray();
-
+        var coordinates = pointsArray[i].Trim().Split(coordSeparator).Select(c => double.Parse(c)).ToArray();
         points.Add(new Point(coordinates[1], coordinates[0]));
       }
       return points;
     }
 
-    public static void Validate(string boundary)
+    public static void ValidateV1(string boundary)
     {
+      ValidatePoints(boundary, true);
+    }
+
+    public static string ValidateWKT(string wkt)
+    {
+      //Comment out until System.Data.Spatial available in .netcore (Microsoft.EntityFrameworkCore)
+
+      /*
+    try
+    {
+      if (wkt != null)
+      {
+        var dbGeometry = DbGeometry.FromText(wkt);
+        if (dbGeometry.IsValid)
+          return wkt;
+        var points = ParseGeometryData(wkt);
+            if (points.Count > 1 && points[points.Count - 1].Equals(points[points.Count - 2]))
+            {
+              points.RemoveAt(points.Count - 1);
+              var wktText = GetWicketFromPoints(points);
+              var fixedGeometry = DbGeometry.FromText(wktText);
+              if (fixedGeometry.IsValid)
+              {
+                Log.Info("Removed the Last Point in  GeometryWKT as it was duplicated");
+                return wktText;
+              }
+              else
+              {
+                //Trying One Last Time
+                // Removing all consecutive duplicate points
+                List<Point> adjustedPoints = MakingValidPoints(points);
+                var adjustedWktText = GetWicketFromPoints(adjustedPoints);
+                var adjustedFixedGeometry = DbGeometry.FromText(adjustedWktText);
+                if (adjustedFixedGeometry.IsValid)
+                {
+                  Log.Info("Removed the All the Consecutive Point in  GeometryWKT");
+                  return adjustedWktText;
+                }
+              }
+            }
+          }
+          Log.Info("Not a valid GeometryWKT");
+          return null;
+        }
+        catch
+        {
+          Log.Info("Not a valid GeometryWKT");
+          return null;
+        }
+            */
+
+      //For now, just validate the number of points and the format
+      ValidatePoints(wkt, false);
+
+      return wkt;
+    }
+
+    private static List<Point> ParseGeometryData(string s)
+    {
+      foreach (string to_replace in _replacements)
+      {
+        s = s.Replace(to_replace, string.Empty);
+      }
+      return ParseBoundaryData(s, ',', ' ');
+    }
+
+    private static string GetWicketFromPoints(List<Point> points)
+    {
+      if (points.Count == 0)
+        return "";
+
+      var polygonWkt = new StringBuilder("POLYGON((");
+      foreach (var point in points)
+      {
+        polygonWkt.Append(String.Format("{0} {1},", point.x, point.y));
+      }
+      return polygonWkt.ToString().TrimEnd(',') + ("))");
+    }
+
+    private static List<Point> MakingValidPoints(List<Point> points)
+    {
+      List<Point> adjustedPoints = new List<Point>();
+      points.Add(new Point(Double.MaxValue, Double.MaxValue));
+      for (int i = 0; i < points.Count - 1; i++)
+      {
+        var firstPoint = points[i];
+        var secondPoint = points[i + 1];
+        if (!firstPoint.Equals(secondPoint))
+        {
+          adjustedPoints.Add(firstPoint);
+        }
+      }
+      return adjustedPoints;
+    }
+
+    private static void ValidatePoints(string boundary, bool oldFormat)
+    {
+      if (string.IsNullOrEmpty(boundary))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+            "Missing project boundary");
+      }
       try
       {
-        var points = ParseBoundaryData(boundary);
+        var points = oldFormat ? ParseBoundaryData(boundary, ';', ',') : ParseGeometryData(boundary);
 
         if (points.Count < 3)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-              "Invalid project's boundary as it should contain at least 3 points");
+              "Invalid project boundary as it should contain at least 3 points");
         }
       }
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-            "Invalid project's boundary");
+            "Invalid project boundary");
       }
     }
 

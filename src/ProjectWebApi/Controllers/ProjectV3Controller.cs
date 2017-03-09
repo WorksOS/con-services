@@ -93,35 +93,19 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
         [HttpPost]
         public async Task CreateProjectV3([FromBody] CreateProjectEvent project)
         {
-            const string polygonStr = "POLYGON";
+            ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
+            string wktBoundary = project.ProjectBoundary;
 
-            Console.WriteLine("POST CreateProjectV3 - ");
+            //Convert to old format for Kafka for consistency on kakfa queue
+            string kafkaBoundary = project.ProjectBoundary
+                    .Replace(ProjectBoundaryValidator.POLYGON_WKT, string.Empty)
+                    .Replace("))", string.Empty)
+                    .Replace(',', ';')
+                    .Replace(' ', ',');
+            await CreateProject(project, kafkaBoundary, wktBoundary);
+          }
 
-            ProjectDataValidator.Validate(project, _projectService);
-            project.ReceivedUTC = DateTime.UtcNow;
-
-            //TODO this should return valid error reponses if the request is not valid!
-
-            // Check whether the ProjectBoundary is in WKT format. Convert to the old format if it is. 
-            if (project.ProjectBoundary.Contains(polygonStr))
-                project.ProjectBoundary =
-                    project.ProjectBoundary.Replace(polygonStr + "((", "")
-                        .Replace("))", "")
-                        .Replace(',', ';')
-                        .Replace(' ', ',') + ';';
-
-            ProjectBoundaryValidator.Validate(project.ProjectBoundary);
-
-            var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
-            _producer.Send(kafkaTopicName,
-                new List<KeyValuePair<string, string>>()
-                {
-                    new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-                });
-            await _projectService.StoreEvent(project).ConfigureAwait(false);
-        }
-
-        /// <summary>
+    /// <summary>
     /// Create Project
     /// </summary>
     /// <param name="project">CreateProjectEvent model</param>
@@ -132,7 +116,38 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
     [HttpPost]
     public async Task CreateProjectV1([FromBody] CreateProjectEvent project)
     {
-      CreateProjectV3(project);
+      ProjectBoundaryValidator.ValidateV1(project.ProjectBoundary);
+      string kafkaBoundary = project.ProjectBoundary;
+      //Convert to WKT format for saving in database
+      string wktBoundary = ProjectBoundaryValidator.POLYGON_WKT + project.ProjectBoundary
+        .Replace(',', ' ')
+        .Replace(';', ',') + "))";
+      await CreateProject(project, kafkaBoundary, wktBoundary);
+    }
+
+    /// <summary>
+    /// Creates a project. Handles both old and new project boundary formats.
+    /// </summary>
+    /// <param name="project">The create project event</param>
+    /// <param name="kafkaProjectBoundary">The project boundary in the old format (coords comma separated, points semicolon separated)</param>
+    /// <param name="databaseProjectBoundary">The project boundary in the new format (WKT)</param>
+    /// <returns></returns>
+    private async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary, string databaseProjectBoundary)
+    {
+      ProjectDataValidator.Validate(project, _projectService);
+      project.ReceivedUTC = DateTime.UtcNow;
+
+      //Send boundary as old format on kafka queue
+      project.ProjectBoundary = kafkaProjectBoundary;
+      var messagePayload = JsonConvert.SerializeObject(new { CreateProjectEvent = project });
+      _producer.Send(kafkaTopicName,
+          new List<KeyValuePair<string, string>>()
+          {
+                    new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+          });
+      //Save boundary as WKT
+      project.ProjectBoundary = databaseProjectBoundary;
+      await _projectService.StoreEvent(project).ConfigureAwait(false);
     }
 
     // PUT: api/Project
@@ -356,3 +371,4 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
 
     }
 }
+
