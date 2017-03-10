@@ -182,15 +182,15 @@ namespace EventTests
       msg.Title("Asset event 9","Inject A CreateAssetEvent then delete it");
       var eventArray = new[] {
          "| EventType        | EventDate   | AssetUID      | AssetName   | Make | SerialNumber | Model | IconKey | AssetType  | ",
-        $"| CreateAssetEvent | 0d+09:00:00 | {ts.AssetUid} | AssetEvent8 | CAT  | 22222        | 374D  | 10      | Excavators | "};
+        $"| CreateAssetEvent | 0d+09:00:00 | {ts.AssetUid} | AssetEvent9 | CAT  | 22222        | 374D  | 10      | Excavators | "};
       ts.PublishEventCollection(eventArray);                                          
       mysql.VerifyTestResultDatabaseRecordCount("Asset","AssetUID",1,new Guid(ts.AssetUid));
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Asset", "AssetUID", "Name,MakeCode,SerialNumber,Model", $"AssetEvent8,CAT,22222,374D", new Guid(ts.AssetUid));
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Asset", "AssetUID", "Name,MakeCode,SerialNumber,Model", $"AssetEvent9,CAT,22222,374D", new Guid(ts.AssetUid));
       var updEventArray = new[] {
          "| EventType        | EventDate   | AssetUID      | ",
         $"| DeleteAssetEvent | 1d+09:00:00 | {ts.AssetUid} | "};
       ts.PublishEventCollection(updEventArray);  
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Asset", "AssetUID", "IsDeleted", "1", new Guid(ts.AssetUid));
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Asset", "AssetUID", "IsDeleted", "True", new Guid(ts.AssetUid));
     }
 
   }

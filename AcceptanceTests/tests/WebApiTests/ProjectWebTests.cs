@@ -48,7 +48,7 @@ namespace WebApiTests
       $"| AssetDevice | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |"};
       ts.PublishEventCollection(deviceEventArray);
       //Call Web api
-      //var actualResult = CallWebApiGetProjectId(ts,legacyProjectId,3,deviceUid.ToString());
+      //var actualResult = CallWebApiGetProjectId(ts,ts.AssetUid,,deviceUid.ToString());
       //Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       //Assert.AreEqual(18, actualResult.machineLevel, " Machine levels do not match ");
       //Assert.AreEqual(true, actualResult.result , " result of request doesn't match expected");
@@ -79,3 +79,6 @@ namespace WebApiTests
     }
   }
 }
+
+      
+  

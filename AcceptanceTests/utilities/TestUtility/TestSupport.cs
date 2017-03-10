@@ -183,7 +183,7 @@ namespace TestUtility
           };
           if (HasProperty(eventObject, "OwningCustomerUID"))
           {
-            createAssetEvent.OwningCustomerUID = eventObject.OwningCustomerUID;
+            createAssetEvent.OwningCustomerUID = new Guid(eventObject.OwningCustomerUID);
           }
           if (HasProperty(eventObject, "LegacyAssetId"))
           {
@@ -226,7 +226,7 @@ namespace TestUtility
           }
           if (HasProperty(eventObject, "OwningCustomerUID"))
           {
-            updateAssetEvent.OwningCustomerUID = eventObject.OwningCustomerUID;
+            updateAssetEvent.OwningCustomerUID = new Guid(eventObject.OwningCustomerUID);
           }
           if (HasProperty(eventObject, "EquipmentVIN"))
           {
@@ -428,7 +428,7 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            EffectiveDate = DateTime.Parse(eventObject.EffectiveDate, CultureInfo.InvariantCulture),
+            EffectiveDate = eventObject.EffectiveDate,
             ProjectUID = new Guid(eventObject.ProjectUID),
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
           };
