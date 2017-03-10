@@ -54,18 +54,19 @@ namespace WebApiTests
       //Assert.AreEqual(true, actualResult.result , " result of request doesn't match expected");
     }
 
-    /// <summary>
-    /// Call the get project request
-    /// </summary>
-    /// <param name="ts"></param>
-    /// <param name="assetid"></param>
-    /// <param name="latitude"></param>
-    /// <param name="longitude"></param>
-    /// <param name="height"></param>
-    /// <param name="timeOfPosition"></param>
-    /// <param name="tccOrgUid"></param>
-    /// <returns></returns>
-    private GetProjectIdResult CallWebApiGetProjectId(TestSupport ts,long assetid,double latitude,double longitude, double height, DateTime timeOfPosition,string tccOrgUid)
+        /// <summary>
+        /// Call the get project request
+        /// </summary>
+        /// <param name="ts">test support</param>
+        /// <param name="assetid">legacy asset ID (radio serial)</param>
+        /// <param name="latitude">seed position latitude value from tagfile</param>
+        /// <param name="longitude">seed position longitude value from tagfile</param>
+        /// <param name="height">not used (seed position value from tagfile)</param>
+        /// <param name="timeOfPosition">from tagfile-used to check against valid Project time range.</param>
+        /// <param name="tccOrgUid">UID of the TCC account the VL customer is paired with. 
+        ///   Identifies which VL customer projects to search.</param>
+        /// <returns></returns>
+        private GetProjectIdResult CallWebApiGetProjectId(TestSupport ts,long assetid,double latitude,double longitude, double height, DateTime timeOfPosition,string tccOrgUid)
     {
       var request = GetProjectIdRequest.CreateGetProjectIdRequest(assetid,latitude,longitude, height, timeOfPosition,tccOrgUid);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
