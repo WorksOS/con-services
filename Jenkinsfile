@@ -1,59 +1,5 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
 
-node ('master')
-{
-    def branch = env.BRANCH_NAME
-    def buildNumber = env.BUILD_NUMBER
-    def versionPrefix = ""
-    def suffix = ""
-    def branchName = ""
-    def openCoverLocation = ""
-    def reportGeneratorLocation = ""
-    def workspacePath =""
-    def openCoverfilters ="-filter:\"+[*]* -[*]*.*Tests -[*]VSS.VisionLink.Interfaces.* -[*]MockClasses.*\"" 
-
-
-    if (branch.contains("master")) {
-       versionPrefix = "1.0."
-       branchName = "Release"
-       } else if (branch.contains("develop")) {
-       versionPrefix = "0.99."
-       branchName = "Dev"
-       } else {
-       branchName = branch.substring(branch.lastIndexOf("/") + 1)
-       suffix = "-" + branchName
-       versionPrefix = "0.98."
-       }
-    
-    def versionNumber = versionPrefix + buildNumber
-    def fullVersion = versionNumber + suffix
-
-    //openCoverLocation = tool name: 'default OpenCover', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'
-    openCoverLocation = pwd()
-    workspacePath = pwd()
-    openCoverLocation = openCoverLocation + "\\tools\\OpenCover.Console.exe"
-   //reportGeneratorLocation = tool name: 'default ReportGenerator', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'
-    reportGeneratorLocation = pwd()
-    reportGeneratorLocation = reportGeneratorLocation + "\\tools\\ReportGenerator.exe"
-
-    stage 'Checkout'
-    checkout scm
-    stage 'Restore packages'
-    bat "dotnet restore"
-    stage 'Build solution'
-    bat "./build.bat"
-    stage 'Run tests and get coverage results'
-    bat "del /q ${workspacePath}\\*.xml"
-/* *** TEMP *** - comment out until can fix
-    bat "cd ${workspacePath}\\test\\UnitTests\\MasterDataConsumerTests\\bin\\Debug\\netcoreapp1.0 & \"${openCoverLocation}\" \"-register:user\" -target:\"dotnet-test-mstest.exe\" -targetargs:\"MasterDataConsumerTests.dll\" -output:\"${workspacePath}\\coverageDF.xml\" ${openCoverfilters}"
-    bat "cd \"${workspacePath}\" & \"${reportGeneratorLocation}\" \"-reports:${workspacePath}\\*.xml\" \"-reporttypes:Html\" \"-targetdir:${workspacePath}\\Coverage\" "
-
-    def reportDir = "${workspacePath}\\Coverage"
-    def reportName = "OpenCover Results"
-    publishHTML(target:[allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: reportDir, reportFiles: 'index.htm', reportName: reportName])
-	*** END TEMP *** */
-}
-
 node('Ubuntu_Slave') {
     //Apply version number
     //We will later use it to tag images
@@ -87,8 +33,8 @@ node('Ubuntu_Slave') {
     sh "dotnet restore"
     stage 'Build solution'
     sh "bash ./build.sh"
-    stage 'Run unit tests'
-    sh "bash ./unittests.sh"
+/*    stage 'Run unit tests'
+    sh "bash ./unittests.sh" */
     stage 'Prepare Acceptance tests'
     sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
     stage 'Compose containers'
