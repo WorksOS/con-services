@@ -62,12 +62,12 @@ namespace EventTests
         $"{deviceUid},Subscribed,SNM940,{deviceUid},CDMA,Device Event 3,3.54,88", deviceUid);
 
       var updateEventArray = new[] {
-         "| EventType         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | MainboardSoftwareVersion | RadioFirmwarePartNumber |",
-        $"| UpdateDeviceEvent | 0d+09:00:00 | {deviceUid}        | Deregistered| SNM940     | {deviceUid} | CDMA         | Device Event 3            | 3.54                     | 88                      |"};
+         "| EventType         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | ",
+        $"| UpdateDeviceEvent | 0d+09:00:00 | {deviceUid}        | Deregistered| SNM940     | {deviceUid} | "};
 
       ts.PublishEventCollection(updateEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Device", "DeviceUID", 1, deviceUid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Device", "DeviceUID", "DeviceSerialNumber, DeviceState, DeviceType, DeviceUID,  DataLinkType, GatewayFirmwarePartNumber, MainboardSoftwareVersion, RadioFirmwarePartNumber",
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Device", "DeviceUID", "DeviceSerialNumber, DeviceState, DeviceType, DeviceUID, DataLinkType,GatewayFirmwarePartNumber,MainboardSoftwareVersion,RadioFirmwarePartNumber",
         $"{deviceUid},Deregistered,SNM940,{deviceUid},CDMA,Device Event 3,3.54,88", deviceUid);
     }
 
@@ -81,7 +81,7 @@ namespace EventTests
       msg.Title("Device Event 4", "Create Device Event ");
       var eventArray = new[] {
          "| EventType         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | MainboardSoftwareVersion | RadioFirmwarePartNumber |",
-        $"| CreateDeviceEvent | 0d+09:00:00 | {deviceUid}        | Subscribed  | SNM940     | {deviceUid} | CDMA         | Device Event 4            | 3.54                     |88                       |"};
+        $"| CreateDeviceEvent | 0d+09:00:00 | {deviceUid}        | Subscribed  | SNM940     | {deviceUid} | CDMA         | Device Event 4            | 3.54                     | 88                      |"};
 
       ts.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Device", "DeviceUID", 1, deviceUid);

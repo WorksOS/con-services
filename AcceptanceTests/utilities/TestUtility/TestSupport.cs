@@ -359,9 +359,12 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            CustomerName = eventObject.CustomerName,
-            CustomerUID = new Guid(eventObject.CustomerUID)
+            CustomerUID = new Guid(eventObject.CustomerUID)            
           };
+          if (HasProperty(eventObject, "CustomerName"))
+          {
+            updateCustomerEvent.CustomerName = eventObject.CustomerName; 
+          }
           jsonString = JsonConvert.SerializeObject(new {UpdateCustomerEvent = updateCustomerEvent}, jsonSettings );
           break;
         case "DeleteCustomerEvent":
@@ -457,12 +460,24 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
-            ProjectName = eventObject.ProjectName,
-            ProjectTimezone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             ProjectUID = new Guid(eventObject.ProjectUID)
           };
+          if (HasProperty(eventObject, "ProjectEndDate"))
+          {
+            updateProjectEvent.ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate);
+          }
+          if (HasProperty(eventObject, "ProjectTimezone"))
+          {
+            updateProjectEvent.ProjectTimezone = eventObject.ProjectTimezone;
+          }
+          if (HasProperty(eventObject, "ProjectName"))
+          {
+            updateProjectEvent.ProjectName = eventObject.ProjectName;
+          }
+          if (HasProperty(eventObject, "ProjectType"))
+          {
+            updateProjectEvent.ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
+          }
           jsonString = JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent}, jsonSettings );
           break;
         case "DeleteProjectEvent":

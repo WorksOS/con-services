@@ -33,14 +33,14 @@ namespace EventTests
             var customerUid = Guid.NewGuid();
             msg.Title("Customer test 2", "Update one customer");
             var eventArray = new[] {
-             "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
-            $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerUid} |"};
+             "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   | ",
+            $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerUid} | "};
 
             ts.PublishEventCollection(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);    
             var updateEventArray = new[] {
-             "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
-            $"| UpdateCustomerEvent | 0d+10:00:00 | UpdatedName  | Customer     | {customerUid} |"};
+             "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   | ",
+            $"| UpdateCustomerEvent | 0d+10:00:00 | UpdatedName  |              | {customerUid} | "};
 
             ts.PublishEventCollection(updateEventArray);     
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);                                               
