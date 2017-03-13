@@ -17,8 +17,8 @@ namespace EventTests
       msg.Title("Subscription test 1", "Create Project Subscription");
       // 'Project Monitoring'   'Landfill'  'Manual 3D Project Monitoring'
       var eventArray = new[] {
-             "| EventType                      | EventDate   | StartDate  | EndDate    | SubscriptionType   | SubscriptionUID   |",
-            $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Project Monitoring | {subscriptionUid} |"};
+       "| EventType                      | EventDate   | StartDate  | EndDate    | SubscriptionType   | SubscriptionUID   |",
+      $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Project Monitoring | {subscriptionUid} |"};
 
       ts.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
@@ -37,9 +37,9 @@ namespace EventTests
       DateTime endDate = new DateTime(9999, 12, 31);
       // 'Project Monitoring'   'Landfill'  'Manual 3D Project Monitoring'
       var eventArray = new[] {
-             "| EventType                      | EventDate   | StartDate               | EndDate                | SubscriptionType   | SubscriptionUID   |",
-            $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | {startDate}             | {endDate}              | Project Monitoring | {subscriptionUid} |",
-            $"| UpdateProjectSubscriptionEvent | 1d+12:00:00 | {startDate.AddYears(2)} | {endDate.AddYears(-2)} | Project Monitoring | {subscriptionUid} |"};
+       "| EventType                      | EventDate   | StartDate               | EndDate                | SubscriptionType   | SubscriptionUID   |",
+      $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | {startDate}             | {endDate}              | Project Monitoring | {subscriptionUid} |",
+      $"| UpdateProjectSubscriptionEvent | 1d+12:00:00 | {startDate.AddYears(2)} | {endDate.AddYears(-2)} | Project Monitoring | {subscriptionUid} |"};
 
       ts.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
@@ -59,9 +59,9 @@ namespace EventTests
       msg.Title("Subscription test 3", "Ensure Project Subscription cannot be updated");
       // 'Project Monitoring'   'Landfill'  'Manual 3D Project Monitoring'
       var eventArray = new[] {
-             "| EventType                      | EventDate   | StartDate  | EndDate    | SubscriptionType   | SubscriptionUID   |",
-            $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Project Monitoring | {subscriptionUid} |",
-            $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Landfill           | {subscriptionUid} |"};
+       "| EventType                      | EventDate   | StartDate  | EndDate    | SubscriptionType   | SubscriptionUID   |",
+      $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Project Monitoring | {subscriptionUid} |",
+      $"| CreateProjectSubscriptionEvent | 0d+12:00:00 | 2012-01-01 | 9999-12-31 | Landfill           | {subscriptionUid} |"};
 
       ts.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
