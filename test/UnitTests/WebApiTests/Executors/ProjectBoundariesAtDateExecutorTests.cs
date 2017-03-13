@@ -26,22 +26,6 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect ProjectBoundaries");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect ProjectBoundaries");
     }
-
-    [TestMethod]
-    public void CanCallGetProjectBoundariesAtDateExecutorWithLegacyAssetId()
-    {
-      long legacyProjectID = 46534636436;
-      var eventkeyDate = DateTime.UtcNow;
-      GetProjectBoundariesAtDateRequest ProjectBoundariesAtDateRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(legacyProjectID, eventkeyDate);
-
-      GetProjectBoundariesAtDateResult ProjectBoundariesAtDateResult = new GetProjectBoundariesAtDateResult();
-      var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-
-      var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, loggerFactory.CreateLogger<ProjectBoundariesAtDateExecutorTests>()).Process(ProjectBoundariesAtDateRequest) as GetProjectBoundariesAtDateResult;
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect ProjectBoundaries");
-      Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect ProjectBoundaries");
-    }
+   
   }
 }

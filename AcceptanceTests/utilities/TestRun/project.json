@@ -20,9 +20,9 @@
         "System.ComponentModel": "4.3.0",
         "System.Data.Common": "4.3.0",
         "TestUtility": "1.0.0-*",
-        "KafkaConsumer.netcore": "1.0.4",
         "WebApiModels": "1.0.0-*",
-        "MasterDataRepos.netcore": "1.0.41"
+        "KafkaConsumer.netcore": "1.0.5",
+        "MasterDataRepos.netcore": "1.0.44"
     },
   "frameworks": {
     "netcoreapp1.1": {

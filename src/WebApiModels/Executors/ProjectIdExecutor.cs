@@ -61,7 +61,8 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       // must be able to find one or other customer for a) tccOrgUid b) legacyAssetID, whichever is provided
       if (!string.IsNullOrEmpty(request.tccOrgUid))
       {
-        customerTCCOrg = LoadCustomerByTccOrgId(request.tccOrgUid);
+        var g = LoadCustomerByTccOrgId(request.tccOrgUid);
+        customerTCCOrg = g.Result != null ? g.Result : null;
       }
 
       // assetId could be valid (>0) or -1 (john doe i.e. landfill) or -2 (imported tagfile)

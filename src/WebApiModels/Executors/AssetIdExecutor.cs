@@ -9,6 +9,7 @@ using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Repositories.DBModels;
+using Repositories.ExtendedModels;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 {
@@ -31,15 +32,16 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       bool result = false;
 
       Project project = null;
+      IEnumerable<SubscriptionData> customerSubs = null;
+      IEnumerable<SubscriptionData> assetSubs = null;
 
       // legacyProjectId can exist with and without a radioSerial so set this up early
       if (request.projectId > 0)
       {
-        project = LoadProject(request.projectId);
-        
+        project = LoadProject(request.projectId);                
         if (project != null)
         {
-          LoadManual3DCustomerBasedSubs(project.CustomerUID);
+          customerSubs = LoadManual3DCustomerBasedSubs(project.CustomerUID);
           log.LogDebug("AssetIdExecutor: Retrieved Project CustomerSubs {0}", JsonConvert.SerializeObject(customerSubs));
         }
       }
@@ -55,29 +57,29 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         if (project != null)
         {
           log.LogDebug("AssetIdExecutor: Going to check CustomerSubs. No radioSerial provided. projectId {0}", request.projectId);
-          CheckForManual3DCustomerBasedSub(request.projectId, out legacyAssetId, out serviceType);
+          CheckForManual3DCustomerBasedSub(request.projectId, customerSubs, assetSubs, out legacyAssetId, out serviceType);
         }
       }
       else
       {
         //Radio serial in tag file. Use it to map to asset in VL.
-        LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum)request.deviceType).ToString());
-
-        if (assetDevice != null)
+        var g = LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum)request.deviceType).ToString());
+        if (g.Result != null)
         {
+          AssetDeviceIds assetDevice = g.Result;
           legacyAssetId = assetDevice.LegacyAssetID;
-          LoadAssetSubs(assetDevice.AssetUID, DateTime.UtcNow);
+          assetSubs = LoadAssetSubs(assetDevice.AssetUID, DateTime.UtcNow);
 
           // OwningCustomerUID should always be present, but bug in MD airlift means that most are missing.
-          LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID);
+          customerSubs = LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID);
           log.LogDebug("AssetIdExecutor: Retrieved Asset CustomerSubs {0} for OwningCustomerUID {1}", JsonConvert.SerializeObject(customerSubs), assetDevice.OwningCustomerUID);
 
-          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project);
+          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project, customerSubs, assetSubs);
         }
         else
         {
           log.LogDebug("AssetIdExecutor: Going to check CustomerSubs. No AssetDevice found. projectId {0}", request.projectId);
-          CheckForManual3DCustomerBasedSub(request.projectId, out legacyAssetId, out serviceType);
+          CheckForManual3DCustomerBasedSub(request.projectId, customerSubs, assetSubs, out legacyAssetId, out serviceType);
         }
       }
 
@@ -97,7 +99,9 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
     }
 
 
-    private void CheckForManual3DCustomerBasedSub(long legacyProjectId, out long legacyAssetId, out int serviceType)
+    private void CheckForManual3DCustomerBasedSub(long legacyProjectId,
+              IEnumerable<SubscriptionData> customerSubs, IEnumerable<SubscriptionData> assetSubs,
+              out long legacyAssetId, out int serviceType)
     {
       // these are CustomerBased and no legacyAssetID will be returned
       legacyAssetId = -1;
@@ -116,7 +120,8 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       }
     }
 
-    private int GetMostSignificantServiceType(string assetUID, Project project)
+    private int GetMostSignificantServiceType(string assetUID, Project project,
+      IEnumerable<SubscriptionData> customerSubs, IEnumerable<SubscriptionData> assetSubs)
     {
       log.LogDebug("AssetIdExecutor: GetMostSignificantServiceType() for asset UID {0} and project UID {1}", assetUID, JsonConvert.SerializeObject(project));
 

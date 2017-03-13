@@ -24,12 +24,6 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     [JsonProperty(PropertyName = "tagFileUTC", Required = Required.Always)]
     public DateTime tagFileUTC { get; private set; }
 
-    ///// <summary>
-    ///// Private constructor
-    ///// </summary>
-    //private GetProjectBoundariesAtDateRequest()
-    //{ }
-
     /// <summary>
     /// Create instance of GetProjectBoundariesAtDateRequest
     /// </summary>

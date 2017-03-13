@@ -7,8 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using TestUtility;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
+using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
@@ -108,51 +110,64 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       }
     }
 
-    protected Asset asset = null;
-    protected AssetDeviceIds assetDevice = null;
-    protected IEnumerable<SubscriptionData> projectSubs = null;
-    protected IEnumerable<SubscriptionData> customerSubs = null;
-    protected IEnumerable<SubscriptionData> assetSubs = null;
-
 
     protected Project LoadProject(long legacyProjectId)
     {
+      Project project = null;
       if (legacyProjectId > 0)
       {
         var projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
         var p = projectRepo.GetProject(legacyProjectId);
-
-        if (p.Result != null)
-        {          
-          log.LogDebug("Executor: Loaded project {0}", JsonConvert.SerializeObject(p.Result));
-          return p.Result;
+        if (p != null)
+        {
+          project = p.Result;
         }
       }
-      return null;
+      return project;
     }
 
-    protected void LoadAssetDevice(string radioSerial, string deviceType)
+    protected async Task<IEnumerable<Project>> LoadProjects(string customerUid, DateTime validAtDate)
     {
+      IEnumerable<Project> projects = null;
+      if (customerUid != null)
+      {
+        var projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
+        var p = await projectRepo.GetProjectsForCustomer(customerUid);
+
+        if (p != null)
+        {
+          log.LogDebug("Executor: Loaded projects {0} for customerUid {1}", JsonConvert.SerializeObject(p), customerUid);
+          projects = p.ToList()
+            .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate);
+        }
+      }
+      return projects;
+    }
+
+    protected async Task<AssetDeviceIds> LoadAssetDevice(string radioSerial, string deviceType)
+    {
+      AssetDeviceIds assetDevice = null;
       if (!string.IsNullOrEmpty(radioSerial) && !string.IsNullOrEmpty(deviceType))
       {
         var deviceRepo = factory.GetRepository<IDeviceEvent>() as DeviceRepository;
-        var a = deviceRepo.GetAssociatedAsset(radioSerial, deviceType);
-        assetDevice = a.Result;
+        var a = await deviceRepo.GetAssociatedAsset(radioSerial, deviceType);
+        assetDevice = a;
       }
       log.LogDebug("Executor: Loaded AssetDevice {0}", JsonConvert.SerializeObject(assetDevice));
+      return assetDevice;
     }
 
-    protected CustomerTccOrg LoadCustomerByTccOrgId(string tccOrgUid)
+    protected async Task<CustomerTccOrg> LoadCustomerByTccOrgId(string tccOrgUid)
     {
-      CustomerTccOrg customer = null; 
+      CustomerTccOrg customer = null;
       if (!string.IsNullOrEmpty(tccOrgUid))
       {
         var customerRepo = factory.GetRepository<ICustomerEvent>() as CustomerRepository;
-        var a = customerRepo.GetCustomerWithTccOrg(tccOrgUid);
-        if (a.Result != null &&
-          (a.Result.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.Result.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+        var a = await customerRepo.GetCustomerWithTccOrg(tccOrgUid);
+        if (a != null &&
+          (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
           )
-          customer = a.Result;
+          customer = a;
       }
       log.LogDebug("Executor: Loading Customer by tccOrgUid {0} using tccOrgId {1}", JsonConvert.SerializeObject(customer), tccOrgUid);
       return customer;
@@ -176,6 +191,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 
     protected Asset LoadAsset(long legacyAssetId)
     {
+      Asset asset = null;
       if (legacyAssetId> 0)
       {
         var assetRepo = factory.GetRepository<IAssetEvent>() as AssetRepository;
@@ -187,8 +203,9 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
     }
 
 
-    protected void LoadProjectBasedSubs(long legacyProjectId)
+    protected IEnumerable<SubscriptionData> LoadProjectBasedSubs(long legacyProjectId)
     {
+      IEnumerable<SubscriptionData> subs = null;
       if (legacyProjectId > 0)
       {
         var projectRepo = factory.GetRepository<IProjectEvent>() as ProjectRepository;
@@ -197,42 +214,63 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         if (p.Result != null && p.Result.ToList().Count() > 0)
         {
           // now get any project-based subs Landfill (23--> 19) and ProjectMonitoring (24 --> 20)
-          projectSubs = p.Result.ToList()
+          subs = p.Result.ToList()
             .Where(x => x.ServiceTypeID != (int)ServiceTypeEnumNG.Unknown)
             .Select(x => new SubscriptionData("", x.ProjectUID, x.CustomerUID, x.ServiceTypeID, x.SubscriptionStartDate, x.SubscriptionEndDate));
-          log.LogDebug("Executor: Loaded projectSubs {0}", JsonConvert.SerializeObject(projectSubs));
+          log.LogDebug("Executor: Loaded projectSubs {0}", JsonConvert.SerializeObject(subs));
         }
       }
+      return subs;
     }
 
 
     // customer Man3Dpm(18-15)
     // this may be from the Projects CustomerUID OR the Assets OwningCustomerUID
-    protected void LoadManual3DCustomerBasedSubs(string customerUid)
+    protected IEnumerable<SubscriptionData> LoadManual3DCustomerBasedSubs(string customerUid)
     {
+      IEnumerable<SubscriptionData> subs = null;
       if (!string.IsNullOrEmpty(customerUid))
       {
         var subsRepo = factory.GetRepository<ISubscriptionEvent>() as SubscriptionRepository;
         var s = subsRepo.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date);
-        customerSubs = s.Result.ToList()
+        subs = s.Result.ToList()
           .Where(x => x.ServiceTypeID == (int)ServiceTypeEnumNG.Manual3DProjectMonitoring)
           .Select(x => new SubscriptionData("", "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate));
       }
+      return subs;
     }
 
 
     // asset:3dProjMon (16 --> 13) 
     protected IEnumerable<SubscriptionData> LoadAssetSubs(string assetUid, DateTime validAtDate)
     {
+      IEnumerable<SubscriptionData> subs = null;
       if (!string.IsNullOrEmpty(assetUid))
       {
         var subsRepo = factory.GetRepository<ISubscriptionEvent>() as SubscriptionRepository;
         var s = subsRepo.GetSubscriptionsByAsset(assetUid, validAtDate.Date);
-        assetSubs = s.Result.ToList().Where(x => x.ServiceTypeID == (int)ServiceTypeEnumNG.e3DProjectMonitoring).Distinct()
+        subs = s.Result.ToList().Where(x => x.ServiceTypeID == (int)ServiceTypeEnumNG.e3DProjectMonitoring).Distinct()
           .Select(x => new SubscriptionData(assetUid, "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate));
       }
-      log.LogDebug("Executor: AssetSubs {0}", JsonConvert.SerializeObject(assetSubs));
-      return assetSubs;
+      log.LogDebug("Executor: AssetSubs {0}", JsonConvert.SerializeObject(subs));
+      return subs;
+    }
+
+    protected TWGS84Point[] ParseBoundaryData(string s)
+    {
+      var points = new List<TWGS84Point>();
+      string[] pointsArray = s.Substring(9, s.Length - 11).Split(',');
+
+      for (int i = 0; i < pointsArray.Length; i++)
+      {
+        double[] coordinates = new double[2];
+        coordinates = pointsArray[i].Trim().Split(' ').Select(c => double.Parse(c)).ToArray();
+        points.Add(new TWGS84Point(coordinates[1], coordinates[0]));
+      }
+      var fencePoints = new TWGS84Point[points.Count()];
+      fencePoints = points.ToArray();
+
+      return fencePoints;
     }
     #endregion
 
