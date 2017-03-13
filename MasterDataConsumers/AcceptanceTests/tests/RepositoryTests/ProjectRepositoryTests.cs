@@ -404,8 +404,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = ActionUTC
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = ActionUTC
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -455,6 +455,78 @@ namespace RepositoryTests
       project.LastActionedUTC = updateProjectEvent.ActionUTC;
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
+    }
+
+    /// <summary>
+    /// Null sent in Update event to be ignored
+    /// </summary>
+    [TestMethod]
+    public void UpdateProject_IgnoreNulls()
+    {
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = ActionUTC
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = ActionUTC
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = ActionUTC
+      };
+
+      var updateProjectEvent = new UpdateProjectEvent()
+      {
+        ProjectUID = createProjectEvent.ProjectUID,
+        ProjectType = createProjectEvent.ProjectType,
+        ProjectEndDate = createProjectEvent.ProjectEndDate,
+        ActionUTC = ActionUTC.AddHours(1)
+      };
+
+      var s = projectContext.StoreEvent(createProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not written");
+
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+
+      s = projectContext.StoreEvent(updateProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not updated");
+
+      Project project = CopyModel(createProjectEvent);
+      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
+      //project.Name = createProjectEvent.ProjectName;
+      //project.EndDate = createProjectEvent.ProjectEndDate;
+      //project.ProjectTimeZone = createProjectEvent.ProjectTimezone;
+      project.LastActionedUTC = updateProjectEvent.ActionUTC;
+      project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      var g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");

@@ -22,7 +22,7 @@ namespace Repositories.DBModels
 
     // start and end are actually only date with no time component. However C# has no date-only.
     public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; } = DateTime.MaxValue.Date;
+    public DateTime EndDate { get; set; } // = DateTime.MaxValue.Date;
 
 
     //These properties are associations from link tables

@@ -45,7 +45,7 @@ namespace RepositoryTests
       const string tableName = "Asset";
       List<string> columnNames = new List<string>
           {
-            "ID", "AssetUID", "LegacyAssetID", "Name" , "MakeCode" , "SerialNumber", "Model", "IconKey", "AssetType", "IsDeleted", "OwningCustomerUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ID", "AssetUID", "LegacyAssetID", "Name" , "MakeCode" , "SerialNumber", "Model", "ModelYear", "IconKey", "AssetType", "IsDeleted", "OwningCustomerUID", "EquipmentVIN", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -79,7 +79,7 @@ namespace RepositoryTests
       const string tableName = "Device";
       List<string> columnNames = new List<string>
           {
-            "ID", "DeviceUID", "DeviceSerialNumber", "DeviceType" , "DeviceState" , "DeregisteredUTC", "ModuleType", "MainboardSoftwareVersion", "RadioFirmwarePartNumber", "GatewayFirmwarePartNumber", "DataLinkType", "LastActionedUTC"
+            "ID", "DeviceUID", "DeviceSerialNumber", "DeviceType" , "DeviceState" , "DeregisteredUTC", "ModuleType", "MainboardSoftwareVersion", "RadioFirmwarePartNumber", "GatewayFirmwarePartNumber", "DataLinkType", "OwningCustomerUID", "LastActionedUTC"
           };
       CheckSchema(tableName, columnNames);
     }

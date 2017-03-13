@@ -69,7 +69,6 @@ namespace RepositoryTests
         AssetType = "TRACK TYPE TRACTORS",
         IconKey = 23,
         EquipmentVIN = "3HSJGTKT8GN012463",
-        ModelYear = null, // is this Year of Manufacture?
         OwningCustomerUID = Guid.NewGuid(),
         ActionUTC = firstCreatedUTC
       };
@@ -82,8 +81,10 @@ namespace RepositoryTests
         SerialNumber = assetEvent.SerialNumber,
         MakeCode = assetEvent.MakeCode,
         Model = assetEvent.Model,
+        ModelYear = assetEvent.ModelYear,
         AssetType = assetEvent.AssetType,
         IconKey = assetEvent.IconKey,
+        EquipmentVIN = assetEvent.EquipmentVIN,
         OwningCustomerUID = assetEvent.OwningCustomerUID.ToString(),
         IsDeleted = false,
         LastActionedUtc = assetEvent.ActionUTC
@@ -125,7 +126,6 @@ namespace RepositoryTests
         AssetType = "TRACK TYPE TRACTORS",
         IconKey = 23,
         EquipmentVIN = "3HSJGTKT8GN012463",
-        ModelYear = null, // is this Year of Manufacture?
         ActionUTC = firstCreatedUTC
       };
 
@@ -140,7 +140,6 @@ namespace RepositoryTests
         AssetType = "DRUM TYPE TRACTORS",
         IconKey = 23,
         EquipmentVIN = "3HSJGTKT8GN012463",
-        ModelYear = null, // is this Year of Manufacture?
         ActionUTC = firstCreatedUTC
       };
 
@@ -155,7 +154,6 @@ namespace RepositoryTests
         Model = assetEvent1.Model,
         IconKey = assetEvent1.IconKey,
         AssetType = assetEvent1.AssetType,
-        OwningCustomerUID = "",
         IsDeleted = false,
         LastActionedUtc = assetEvent1.ActionUTC
       };
@@ -170,7 +168,7 @@ namespace RepositoryTests
         Model = assetEvent2.Model,
         IconKey = assetEvent2.IconKey,
         AssetType = assetEvent2.AssetType,
-        OwningCustomerUID = "",
+        EquipmentVIN = assetEvent1.EquipmentVIN,
         IsDeleted = false,
         LastActionedUtc = assetEvent2.ActionUTC
       };
@@ -223,7 +221,6 @@ namespace RepositoryTests
         AssetType = "DRUM TYPE TRACTORS1",
         IconKey = 23,
         EquipmentVIN = "3HSJGTKT8GN012463",
-        ModelYear = null, // is this Year of Manufacture?
         ActionUTC = firstCreatedUTC
       };
 
@@ -351,10 +348,10 @@ namespace RepositoryTests
       assetContext.InRollbackTransaction<object>(o =>
       {
         var s = assetContext.StoreEvent(assetEvent).Result;
-        assetEvent.AssetType = null;
+        assetEvent.AssetType = "Track type tractor3";
         s = assetContext.StoreEvent(assetEvent).Result;
 
-        var g = assetContext.GetAssets(new[] { "Unassigned" });
+        var g = assetContext.GetAssets(new[] { "Track type tractor3" });
         g.Wait();
         Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
         // can't do == 1 until we can filter by e.g. customer
@@ -379,6 +376,7 @@ namespace RepositoryTests
         AssetType = "",
         IconKey = null,
         EquipmentVIN = "",
+        OwningCustomerUID = Guid.NewGuid(),
         ModelYear = null,
         ActionUTC = firstCreatedUTC
       };
@@ -393,7 +391,9 @@ namespace RepositoryTests
         Model = assetEvent.Model,
         IconKey = assetEvent.IconKey,
         AssetType = "Unassigned",
-        OwningCustomerUID = "",
+        OwningCustomerUID = assetEvent.OwningCustomerUID.ToString(),
+        EquipmentVIN = assetEvent.EquipmentVIN,
+        ModelYear = assetEvent.ModelYear,
         IsDeleted = false,
         LastActionedUtc = assetEvent.ActionUTC
       };
@@ -431,7 +431,8 @@ namespace RepositoryTests
         AssetType = "TRACK TYPE TRACTORS",
         IconKey = 23,
         EquipmentVIN = "3HSJGTKT8GN012463",
-        ModelYear = null,
+        OwningCustomerUID = Guid.NewGuid(),
+        ModelYear = 1880,
         ActionUTC = firstCreatedUTC
       };
 
@@ -445,21 +446,23 @@ namespace RepositoryTests
         Model = "D6RXL",
         AssetType = "TRACK TYPE TRACTORS",
         IconKey = 23,
-        ModelYear = null, // is this Year of Manufacture?
+        ModelYear = 1980, 
         ActionUTC = firstCreatedUTC
       };
 
       var asset = new Asset
       {
-        AssetUID = assetEventLater.AssetUID.ToString(),
+        AssetUID = assetEventOriginal.AssetUID.ToString(),
         Name = null,
         LegacyAssetID = assetEventLater.LegacyAssetId,
         SerialNumber = assetEventLater.SerialNumber,
         MakeCode = assetEventLater.MakeCode,
         Model = assetEventLater.Model,
+        ModelYear= assetEventOriginal.ModelYear,
         AssetType = assetEventLater.AssetType,
         IconKey = assetEventLater.IconKey,
-        OwningCustomerUID = "",
+        EquipmentVIN = assetEventOriginal.EquipmentVIN,
+        OwningCustomerUID = assetEventOriginal.OwningCustomerUID.ToString(),
         IsDeleted = false,
         LastActionedUtc = assetEventLater.ActionUTC
       };
@@ -475,7 +478,9 @@ namespace RepositoryTests
         s = assetContext.StoreEvent(assetEventLater);
         s.Wait();
 
-        asset.Name = assetEventLater.AssetName; // this should be updated now
+        // these should be updated now
+        asset.ModelYear = assetEventLater.ModelYear;
+        asset.Name = assetEventLater.AssetName; 
         g = assetContext.GetAsset(asset.AssetUID);
         g.Wait();
         Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
@@ -530,7 +535,6 @@ namespace RepositoryTests
         Model = assetEventUpdate.Model,
         IconKey = assetEventUpdate.IconKey,
         AssetType = assetEventUpdate.AssetType,
-        OwningCustomerUID = "",
         IsDeleted = false,
         LastActionedUtc = assetEventUpdate.ActionUTC
       };
@@ -550,6 +554,77 @@ namespace RepositoryTests
       });
     }
 
+
+    /// <summary>
+    /// update contains null values. should ignore those.
+    /// </summary>
+    [TestMethod]
+    public void UpdateAsset_IgnoreNullValues()
+    {
+      DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
+      var assetEventCreate = new CreateAssetEvent()
+      {
+        AssetUID = Guid.NewGuid(),
+        AssetName = "AnAssetName",
+        AssetType = "TRACK TYPE TRACTORS",
+        EquipmentVIN = "equipVin",
+        IconKey = 23,
+        LegacyAssetId = 33334444,
+        MakeCode = "J82",
+        Model = "D6RXL",
+        ModelYear = 1880,
+        OwningCustomerUID = Guid.NewGuid(),
+        SerialNumber = "S6T00561",       
+        ActionUTC = firstCreatedUTC
+      };
+
+      var assetEventUpdate = new UpdateAssetEvent()
+      {
+        AssetUID = assetEventCreate.AssetUID,
+        AssetName = null,
+        AssetType = null,
+        EquipmentVIN = null,
+        IconKey = null,
+        LegacyAssetId = null,        
+        Model = null,
+        ModelYear = null,
+        OwningCustomerUID = null,       
+        ActionUTC = firstCreatedUTC.AddMinutes(10)
+      };
+
+      var assetFinal = new Asset
+      {
+        AssetUID = assetEventCreate.AssetUID.ToString(),
+        Name = assetEventCreate.AssetName,
+        AssetType = assetEventCreate.AssetType,
+        EquipmentVIN = assetEventCreate.EquipmentVIN,
+        IconKey = assetEventCreate.IconKey,
+        LegacyAssetID = assetEventCreate.LegacyAssetId,        
+        MakeCode = assetEventCreate.MakeCode,
+        Model = assetEventCreate.Model,
+        ModelYear = assetEventCreate.ModelYear,
+        OwningCustomerUID = assetEventCreate.OwningCustomerUID.ToString(),
+        SerialNumber = assetEventCreate.SerialNumber,
+        IsDeleted = false,
+        LastActionedUtc = assetEventUpdate.ActionUTC
+      };
+
+      assetContext.InRollbackTransaction<object>(o =>
+      {
+        var s = assetContext.StoreEvent(assetEventCreate);
+        s.Wait();
+        s = assetContext.StoreEvent(assetEventUpdate);
+        s.Wait();
+
+        var g = assetContext.GetAsset(assetFinal.AssetUID);
+        g.Wait();
+        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(assetFinal, g.Result, "Asset details are incorrect from AssetRepo");
+        return null;
+      });
+    }
+
+
     /// <summary>
     /// Asset exists, with a later ActionUTC
     /// Potentially asset has already had an Update applied
@@ -568,8 +643,6 @@ namespace RepositoryTests
         Model = "D6RXL",
         AssetType = "TRACK TYPE TRACTORS",
         IconKey = 23,
-        EquipmentVIN = null,
-        ModelYear = null,
         ActionUTC = firstCreatedUTC
       };
 
@@ -581,8 +654,6 @@ namespace RepositoryTests
         Model = "D6RXL changed",
         AssetType = "TRACK TYPE TRACTORS",
         IconKey = 11,
-        EquipmentVIN = null,
-        ModelYear = null,
         ActionUTC = firstCreatedUTC.AddMinutes(10)
       };
 
@@ -594,8 +665,6 @@ namespace RepositoryTests
         Model = "D6RXL even later",
         AssetType = "TRACK TYPE TRACTORS changed",
         IconKey = 10,
-        EquipmentVIN = null,
-        ModelYear = null,
         ActionUTC = firstCreatedUTC.AddMinutes(20)
       };
 
@@ -609,7 +678,6 @@ namespace RepositoryTests
         Model = assetEventUpdateLater.Model,
         IconKey = assetEventUpdateLater.IconKey,
         AssetType = assetEventUpdateLater.AssetType,
-        OwningCustomerUID = "",
         IsDeleted = false,
         LastActionedUtc = assetEventUpdateLater.ActionUTC
       };
@@ -678,7 +746,7 @@ namespace RepositoryTests
         Model = assetEventUpdate.Model,
         IconKey = assetEventUpdate.IconKey,
         AssetType = assetEventUpdate.AssetType,
-        OwningCustomerUID = "",
+        OwningCustomerUID = null,
         IsDeleted = false,
         LastActionedUtc = assetEventUpdate.ActionUTC
       };
@@ -715,8 +783,6 @@ namespace RepositoryTests
         Model = "D6RXL",
         AssetType = "TRACK TYPE TRACTORS",
         IconKey = 23,
-        EquipmentVIN = null,
-        ModelYear = null,
         ActionUTC = firstCreatedUTC
       };
 
@@ -736,7 +802,6 @@ namespace RepositoryTests
         Model = assetEventCreate.Model,
         IconKey = assetEventCreate.IconKey,
         AssetType = assetEventCreate.AssetType,
-        OwningCustomerUID = "",
         IsDeleted = true,
         LastActionedUtc = assetEventDelete.ActionUTC
       };

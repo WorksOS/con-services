@@ -268,6 +268,8 @@ namespace Repositories
       {
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
+          project.Name = project.Name == null ? existing.Name : project.Name;
+          project.ProjectTimeZone = project.ProjectTimeZone == null ? existing.ProjectTimeZone : project.ProjectTimeZone;
           log.LogDebug("ProjectRepository/UpdateProject: updating project={0}", JsonConvert.SerializeObject(project));
 
           const string update =

@@ -134,6 +134,71 @@ namespace RepositoryTests
       });
     }
 
+
+    /// <summary>
+    /// Kafka update can come in only with fields to be updated - doh
+    /// </summary>
+    [TestMethod]
+    public void UpdateDevice_IgnoreNullValues()
+    {
+      DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
+      var deviceEventCreate = new CreateDeviceEvent()
+      {
+        DeviceUID = Guid.NewGuid(),
+        DeviceSerialNumber = "A radio serial",
+        DeviceType = "PL121",
+        DeviceState = "active",
+        ModuleType = "whatIsModuleType",
+        DataLinkType = "DL type",
+        DeregisteredUTC = firstCreatedUTC.AddMonths(-1),
+        GatewayFirmwarePartNumber = "gwNumber",
+        MainboardSoftwareVersion = "MBnumber",
+        RadioFirmwarePartNumber = "rnumber",
+        ActionUTC = firstCreatedUTC
+      };
+
+      var deviceEventUpdate = new UpdateDeviceEvent()
+      {
+        DeviceUID = deviceEventCreate.DeviceUID,
+        DeviceSerialNumber = null,
+        DeviceType = null,
+        DeviceState = null,
+        ModuleType = null,
+        DataLinkType = null,
+        DeregisteredUTC = null,
+        GatewayFirmwarePartNumber = null,
+        MainboardSoftwareVersion = null,
+        RadioFirmwarePartNumber = null,
+        ActionUTC = firstCreatedUTC.AddMinutes(10)
+      };
+
+      var deviceFinal = new Device
+      {
+        DeviceUID = deviceEventCreate.DeviceUID.ToString(),
+        DeviceSerialNumber = deviceEventCreate.DeviceSerialNumber,
+        DeviceType = deviceEventCreate.DeviceType,
+        DeviceState = deviceEventCreate.DeviceState,
+        ModuleType = deviceEventCreate.ModuleType,
+        DataLinkType = deviceEventCreate.DataLinkType,
+        DeregisteredUTC = deviceEventCreate.DeregisteredUTC,
+        GatewayFirmwarePartNumber = deviceEventCreate.GatewayFirmwarePartNumber,
+        MainboardSoftwareVersion = deviceEventCreate.MainboardSoftwareVersion,
+        RadioFirmwarePartNumber = deviceEventCreate.RadioFirmwarePartNumber,
+        LastActionedUtc = deviceEventUpdate.ActionUTC
+      };
+
+      deviceContext.InRollbackTransaction<object>(o =>
+      {
+        deviceContext.StoreEvent(deviceEventCreate).Wait();
+        deviceContext.StoreEvent(deviceEventUpdate).Wait();
+        var g = deviceContext.GetDevice(deviceFinal.DeviceUID); g.Wait();
+        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(deviceFinal, g.Result, "Asset details are incorrect from AssetRepo");
+        return null;
+      });
+    }
+
+
     /// <summary>
     /// Device exists, with a later ActionUTC
     /// Potentially device has already had an Update applied

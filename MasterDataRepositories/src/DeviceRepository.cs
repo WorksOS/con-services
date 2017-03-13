@@ -37,7 +37,7 @@ namespace Repositories
         device.MainboardSoftwareVersion = deviceEvent.MainboardSoftwareVersion;
         device.RadioFirmwarePartNumber = deviceEvent.RadioFirmwarePartNumber;
         device.GatewayFirmwarePartNumber = deviceEvent.GatewayFirmwarePartNumber;
-        device.DataLinkType = deviceEvent.DataLinkType;
+        device.DataLinkType = deviceEvent.DataLinkType;        
         device.LastActionedUtc = deviceEvent.ActionUTC;
         eventType = "CreateDeviceEvent";
         upsertedCount = await UpsertDeviceDetail(device, eventType);
@@ -51,7 +51,6 @@ namespace Repositories
         // I don't think the following 2 can/should be altered todo?
         device.DeviceSerialNumber = deviceEvent.DeviceSerialNumber;
         device.DeviceType = deviceEvent.DeviceType;
-
         device.DeviceState = deviceEvent.DeviceState;
         device.DeregisteredUTC = deviceEvent.DeregisteredUTC;
         device.ModuleType = deviceEvent.ModuleType;
@@ -59,6 +58,8 @@ namespace Repositories
         device.RadioFirmwarePartNumber = deviceEvent.RadioFirmwarePartNumber;
         device.GatewayFirmwarePartNumber = deviceEvent.GatewayFirmwarePartNumber;
         device.DataLinkType = deviceEvent.DataLinkType;
+        // apparently this is differnt to the asset ownerCustomerUID but why is it only in the update??
+        device.OwningCustomerUID = deviceEvent.OwningCustomerUID;
         device.LastActionedUtc = deviceEvent.ActionUTC;
         eventType = "UpdateDeviceEvent";
         upsertedCount = await UpsertDeviceDetail(device, eventType);
@@ -110,7 +111,7 @@ namespace Repositories
           {
             return (await Connection.QueryAsync<Device>
                       (@"SELECT 
-                            DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType,
+                            DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID,
                             LastActionedUTC AS LastActionedUtc
                           FROM Device
                           WHERE DeviceUID = @deviceUid"
@@ -159,6 +160,17 @@ namespace Repositories
         }
         else if (device.LastActionedUtc >= existing.LastActionedUtc)
         {
+          device.DeviceSerialNumber = device.DeviceSerialNumber == null ? existing.DeviceSerialNumber : device.DeviceSerialNumber;
+          device.DeviceType = device.DeviceType == null ? existing.DeviceType : device.DeviceType;
+          device.DeviceState = device.DeviceState == null ? existing.DeviceState : device.DeviceState;
+          device.DeregisteredUTC = device.DeregisteredUTC == null ? existing.DeregisteredUTC : device.DeregisteredUTC;
+          device.ModuleType = device.ModuleType == null ? existing.ModuleType : device.ModuleType;
+          device.MainboardSoftwareVersion = device.MainboardSoftwareVersion == null ? existing.MainboardSoftwareVersion : device.MainboardSoftwareVersion;
+          device.RadioFirmwarePartNumber = device.RadioFirmwarePartNumber == null ? existing.RadioFirmwarePartNumber : device.RadioFirmwarePartNumber;
+          device.GatewayFirmwarePartNumber = device.GatewayFirmwarePartNumber == null ? existing.GatewayFirmwarePartNumber : device.GatewayFirmwarePartNumber;
+          device.DataLinkType = device.DataLinkType == null ? existing.DataLinkType : device.DataLinkType;
+          device.OwningCustomerUID = device.OwningCustomerUID == null ? existing.OwningCustomerUID : device.OwningCustomerUID;
+
           const string update =
               @"UPDATE Device                
                   SET DeviceSerialNumber = @DeviceSerialNumber,
@@ -197,6 +209,17 @@ namespace Repositories
         {
           if (device.LastActionedUtc >= existing.LastActionedUtc)
           {
+            device.DeviceSerialNumber = device.DeviceSerialNumber == null ? existing.DeviceSerialNumber : device.DeviceSerialNumber;
+            device.DeviceType = device.DeviceType == null ? existing.DeviceType : device.DeviceType;
+            device.DeviceState = device.DeviceState == null ? existing.DeviceState : device.DeviceState;
+            device.DeregisteredUTC = device.DeregisteredUTC == null ? existing.DeregisteredUTC : device.DeregisteredUTC;
+            device.ModuleType = device.ModuleType == null ? existing.ModuleType : device.ModuleType;
+            device.MainboardSoftwareVersion = device.MainboardSoftwareVersion == null ? existing.MainboardSoftwareVersion : device.MainboardSoftwareVersion;
+            device.RadioFirmwarePartNumber = device.RadioFirmwarePartNumber == null ? existing.RadioFirmwarePartNumber : device.RadioFirmwarePartNumber;
+            device.GatewayFirmwarePartNumber = device.GatewayFirmwarePartNumber == null ? existing.GatewayFirmwarePartNumber : device.GatewayFirmwarePartNumber;
+            device.DataLinkType = device.DataLinkType == null ? existing.DataLinkType : device.DataLinkType;
+            device.OwningCustomerUID = device.OwningCustomerUID == null ? existing.OwningCustomerUID : device.OwningCustomerUID;
+
             const string update =
               @"UPDATE Device                
                   SET DeviceSerialNumber = @DeviceSerialNumber,
@@ -207,7 +230,8 @@ namespace Repositories
                       MainboardSoftwareVersion = @MainboardSoftwareVersion,
                       RadioFirmwarePartNumber = @RadioFirmwarePartNumber,      
                       GatewayFirmwarePartNumber = @GatewayFirmwarePartNumber,  
-                      DataLinkType = @DataLinkType,     
+                      DataLinkType = @DataLinkType,    
+                      OwningCustomerUID = @OwningCustomerUID, 
                       LastActionedUTC = @LastActionedUtc
                 WHERE DeviceUID = @deviceUid";
             return await dbAsyncPolicy.ExecuteAsync(async () =>
@@ -229,9 +253,9 @@ namespace Repositories
 
           const string upsert =
               @"INSERT Device
-                    (DeviceUID,  DeviceSerialNumber,  DeviceType,   DeviceState,  DeregisteredUTC,  ModuleType,  MainboardSoftwareVersion,  RadioFirmwarePartNumber,  GatewayFirmwarePartNumber, DataLinkType, LastActionedUTC )
+                    (DeviceUID,  DeviceSerialNumber,  DeviceType,   DeviceState,  DeregisteredUTC,  ModuleType,  MainboardSoftwareVersion,  RadioFirmwarePartNumber,  GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID, LastActionedUTC )
                   VALUES
-                   (@DeviceUID, @DeviceSerialNumber, @DeviceType, @DeviceState, @DeregisteredUTC, @ModuleType, @MainboardSoftwareVersion, @RadioFirmwarePartNumber, @GatewayFirmwarePartNumber, @DataLinkType, @LastActionedUtc)
+                   (@DeviceUID, @DeviceSerialNumber, @DeviceType, @DeviceState, @DeregisteredUTC, @ModuleType, @MainboardSoftwareVersion, @RadioFirmwarePartNumber, @GatewayFirmwarePartNumber, @DataLinkType, @OwningCustomerUID, @LastActionedUtc)
               ";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
@@ -386,7 +410,7 @@ namespace Repositories
         {
           return (await Connection.QueryAsync<Device>
                       (@"SELECT 
-                            DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType,
+                            DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID,
                             LastActionedUTC AS LastActionedUtc
                           FROM Device
                           WHERE DeviceUID = @deviceUid"

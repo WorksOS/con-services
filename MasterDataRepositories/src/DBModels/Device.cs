@@ -14,6 +14,8 @@ namespace Repositories.DBModels
     public string RadioFirmwarePartNumber { get; set; }
     public string GatewayFirmwarePartNumber { get; set; }
     public string DataLinkType { get; set; }
+    // apparently this owner is different to the asset ownerCustomerUID
+    public Guid? OwningCustomerUID { get; set; }
     public DateTime? LastActionedUtc { get; set; }
 
     public override bool Equals(object obj)
@@ -30,6 +32,7 @@ namespace Repositories.DBModels
         && otherAsset.RadioFirmwarePartNumber == RadioFirmwarePartNumber
         && otherAsset.GatewayFirmwarePartNumber == GatewayFirmwarePartNumber
         && otherAsset.DataLinkType == DataLinkType
+        && otherAsset.OwningCustomerUID == OwningCustomerUID
         && otherAsset.LastActionedUtc == LastActionedUtc;
     }
     public override int GetHashCode() { return 0; }
