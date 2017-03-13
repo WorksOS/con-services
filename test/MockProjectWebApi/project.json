@@ -20,7 +20,7 @@
   },
 
   "frameworks": {
-    "net46": {
+    "net462": {
         "buildOptions": {
           "define": [ "TRACE", "STRONG", "NET", "NET_2_0", "NET_4_0", "NET_4_5" ]
         }
