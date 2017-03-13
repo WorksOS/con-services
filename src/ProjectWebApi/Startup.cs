@@ -91,9 +91,10 @@ namespace ProjectWebApi
       loggerFactory.AddLog4Net(loggerRepoName);
 
       app.UseExceptionTrap();
+      //Enable CORS before TID so OPTIONS works without authentication
+      app.UseCors("VSS");
       //Enable TID here
       app.UseTIDAuthentication();
-      app.UseCors("VSS");
 
       app.UseApplicationInsightsRequestTelemetry();
       app.UseApplicationInsightsExceptionTelemetry();
