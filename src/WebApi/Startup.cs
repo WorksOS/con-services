@@ -110,9 +110,10 @@ namespace VSS.Raptor.Service.WebApi
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       serviceCollection.BuildServiceProvider();
       app.UseExceptionTrap();
+      //Enable CORS before TID so OPTIONS works without authentication
+      app.UseCors("VSS");
       //Enable TID here
       app.UseTIDAuthentication();
-      app.UseCors("VSS");
 
       //For now don't use application insights as it clogs the log with lots of stuff.
       //app.UseApplicationInsightsRequestTelemetry();
