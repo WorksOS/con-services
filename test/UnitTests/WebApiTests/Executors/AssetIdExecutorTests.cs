@@ -49,9 +49,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, loggerFactory.CreateLogger<AssetIdExecutorTests>()).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect AssetId");
-      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
-
-      
+      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");      
     }
       
   }

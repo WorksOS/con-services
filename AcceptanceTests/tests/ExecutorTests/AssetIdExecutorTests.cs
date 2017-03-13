@@ -179,7 +179,7 @@ namespace RepositoryTests
       int legacyProjectId = new Random().Next(0, int.MaxValue);
       Guid customerUID = Guid.NewGuid();
       var isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
-      Assert.IsTrue(isCreatedOk, "created assetDevice association");
+      Assert.IsTrue(isCreatedOk, "created project");
 
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 0, "");
       assetIdRequest.Validate();

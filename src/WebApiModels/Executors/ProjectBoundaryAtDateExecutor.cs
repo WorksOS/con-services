@@ -1,4 +1,8 @@
-﻿using System.Net;
+﻿using Repositories.DBModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
@@ -20,26 +24,24 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       GetProjectBoundaryAtDateRequest request = item as GetProjectBoundaryAtDateRequest;
 
       bool result = false;
+      TWGS84FenceContainer projectBoundary = new TWGS84FenceContainer();
+      Project project = null;
 
-      //Look for project with id request.projectId which is active at date request.tagFileUTC
-      //i.e. tagFileUTC is between project start and end dates
-      //and get its boundary points
-
-      TWGS84FenceContainer fenceContainer = new TWGS84FenceContainer();
-      ////Dummy data for testing
-      //result = true;      
-      //fenceContainer.FencePoints = new TWGS84Point[]
-      //{
-      //    new TWGS84Point{Lat=0.631986074660308, Lon=-2.00757760231466},
-      //    new TWGS84Point{Lat=0.631907507374149, Lon=-2.00758733949739},
-      //    new TWGS84Point{Lat=0.631904485465203, Lon=-2.00744352879854},
-      //    new TWGS84Point{Lat=0.631987283352491, Lon=-2.00743753668608}
-      //};
-
+      project = LoadProject(request.projectId);
+      if (project != null)
+      {
+        if (project.StartDate <= request.tagFileUTC.Date && request.tagFileUTC.Date <= project.EndDate &&
+            !string.IsNullOrEmpty(project.GeometryWKT)
+            )
+        {
+          result = true;
+          projectBoundary.FencePoints = ParseBoundaryData(project.GeometryWKT);
+        }
+      }
 
       try
       {
-        return GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(result, fenceContainer);
+        return GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(result, projectBoundary);
       }
       catch
       {
@@ -49,9 +51,47 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 
     }
 
-    //protected override void ProcessErrorCodes()
-    //{
-    //  //Nothing to do
-    //}
+   
   }
+  //public class ProjectBoundaryValidator
+  //{
+  //  public static List<TWGS84Point> ParseBoundaryData(string s)
+  //  {
+  //    var points = new List<TWGS84Point>();
+
+  //    string[] pointsArray = s.Remove(s.Length - 1).Split(';');
+
+  //    for (int i = 0; i < pointsArray.Length; i++)
+  //    {
+  //      double[] coordinates = new double[2];
+
+  //      //gets x and y coordinates split by comma, trims whitespace at pos 0, converts to double array
+  //      coordinates = pointsArray[i].Trim().Split(',').Select(c => double.Parse(c)).ToArray();
+
+  //      points.Add(new TWGS84Point(coordinates[1], coordinates[0]));
+  //    }
+  //    return points;
+  //  }
+
+  //  // validation is done before putting project on kafka que. Shouldn't be needed again.
+  //  //public static void Validate(string boundary)
+  //  //{
+  //  //  try
+  //  //  {
+  //  //    var points = ParseBoundaryData(boundary);
+
+  //  //    if (points.Count < 3)
+  //  //    {
+  //  //      throw new ServiceException(HttpStatusCode.BadRequest,
+  //  //          "Invalid project's boundary as it should contain at least 3 points");
+  //  //    }
+  //  //  }
+  //  //  catch
+  //  //  {
+  //  //    throw new ServiceException(HttpStatusCode.BadRequest,
+  //  //        "Invalid project's boundary");
+  //  //  }
+  //  //}
+
+  //}
 }
