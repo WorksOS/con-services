@@ -75,11 +75,12 @@ namespace IntegrationTests
 
       ts.PublishEventCollection(projectEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid);
+      var endDt = new DateTime(9999, 12, 31);
       var custEventArray = new[] { 
-       "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | EffectiveDate       | ProjectUID   | SubscriptionUID   | StartDate  | EndDate    | SubscriptionType   |",
-      $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |                     |              |                   |            |            |                    |",
-      $"| CreateProjectSubscriptionEvent    | 0d+09:00:00 |              |              |               |                     |              | {subscriptionUid} | 2012-01-01 | 9999-12-31 | Project Monitoring |",
-      $"| AssociateProjectSubscriptionEvent | 0d+09:00:00 |              |              |               | {ts.FirstEventDate} | {projectUid} | {subscriptionUid} |            |            |                    |"};
+       "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | EffectiveDate       | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType   |",
+      $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |                     |              |                   |                    |         |                    |",
+      $"| CreateProjectSubscriptionEvent    | 0d+09:00:00 |              |              |               |                     |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | Project Monitoring |",
+      $"| AssociateProjectSubscriptionEvent | 0d+09:00:00 |              |              |               | {ts.FirstEventDate} | {projectUid} | {subscriptionUid} |                    |         |                    |"};
 
       ts.PublishEventCollection(custEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);

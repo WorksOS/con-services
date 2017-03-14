@@ -92,10 +92,17 @@ namespace TestUtility
     /// <param name="uid">The uid to use</param>
     public void VerifyTestResultDatabaseRecordCount(string table, string column, int expectedEventCount, Guid uid)
     {
-      var sqlQuery = @"SELECT COUNT(*) FROM `{0}`.{1} WHERE {2}='{3}'";
-      var result = GetDatabaseCountForEvents(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid), expectedEventCount);
-      msg.DisplayResults(expectedEventCount + " records", result + " records");
-      Assert.AreEqual(expectedEventCount, result, " Number of expected events do not match actual events in database");
+      try
+      {
+        var sqlQuery = @"SELECT COUNT(*) FROM `{0}`.{1} WHERE {2}='{3}'";
+        var result = GetDatabaseCountForEvents(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid),expectedEventCount);
+        msg.DisplayResults(expectedEventCount + " records", result + " records");
+        Assert.AreEqual(expectedEventCount, result, " Number of expected events do not match actual events in database");
+      }
+      catch (Exception ex)
+      {
+        Assert.Fail("Exception in VerifyTestResultDatabaseRecordCount: " + ex.Message);
+      }
     }
 
     /// <summary>
@@ -106,19 +113,29 @@ namespace TestUtility
     /// <param name="fields"></param>
     /// <param name="expectedData"></param>
     /// <param name="uid">The uid to use</param>
-    public void VerifyTestResultDatabaseFieldsAreExpected(string table, string column, string fields, string expectedData, Guid uid)
+    public void VerifyTestResultDatabaseFieldsAreExpected(string table, string column, string fields,
+      string expectedData, Guid uid)
     {
-      var sqlQuery = @"SELECT {4} FROM `{0}`.{1} WHERE {2}='{3}'";
-      var allActualData = GetDatabaseFieldsForQuery(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid, fields), fields);
-      var fldArray = fields.Split(',');
-      var actualDataArray = allActualData.Split(',');
-      var expectedDataArray = expectedData.Split(',');
-      var idx = 0;
-      msg.DisplayResults(expectedData, allActualData );
-      foreach (var col in fldArray)
+      try
       {
-        Assert.AreEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(), "Expected results for " + col + " do not match actual");
-        idx++;
+
+        var sqlQuery = @"SELECT {4} FROM `{0}`.{1} WHERE {2}='{3}'";
+        var allActualData = GetDatabaseFieldsForQuery(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid, fields), fields);
+        var fldArray = fields.Split(',');
+        var actualDataArray = allActualData.Split(',');
+        var expectedDataArray = expectedData.Split(',');
+        var idx = 0;
+        msg.DisplayResults(expectedData, allActualData );
+        foreach (var col in fldArray)
+        {
+          Assert.AreEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(), "Expected results for " + col + " do not match actual");
+          idx++;
+        }
+
+        }
+      catch (Exception ex)
+      {
+        Assert.Fail("Exception in VerifyTestResultDatabaseFieldsAreExpected: " + ex.Message);
       }
     }
 
