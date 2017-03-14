@@ -13,15 +13,15 @@ echo "Run the component tests"
 
 echo "Run the component/acceptance tests"
 echo "EventTests event tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/EventTestsResults project=EventTests messages=false
+dotnet TestRun/TestRun.dll results=/testresults/EventTestsResults project=EventTests
 echo "EventTests event tests finished"
 
 echo "ExecutorTests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/ExecutorTestsResults project=ExecutorTests messages=false
+dotnet TestRun/TestRun.dll results=/testresults/ExecutorTestsResults project=ExecutorTests
 echo "ExecutorTests finished"
 
 echo "Run Integration tests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/IntegrationTestResults project=IntegrationTests messages=false
+dotnet TestRun/TestRun.dll results=/testresults/IntegrationTestResults project=IntegrationTests
 echo "Integration tests finished"
 
 echo "RepositoryTests starting...."
