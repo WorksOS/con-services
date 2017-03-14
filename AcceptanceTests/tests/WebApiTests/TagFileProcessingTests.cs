@@ -95,7 +95,7 @@ namespace WebApiTests
 
     private TagFileProcessingErrorResult CallWebApiGetTagFileProcessingErrorResult(TestSupport ts,long assetId, string tagFileName,TagFileErrorsEnum errorNum)
     {
-      var request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(assetId,tagFileName,errorNum);
+      var request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(assetId,tagFileName, (int) errorNum);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
       var uri = ts.GetBaseUri() + "api/v1/notification/tagFileProcessingError";

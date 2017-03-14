@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using WebApiModels.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
 {
@@ -12,7 +11,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
   /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project  is known 
   /// which is when a tagfile is being manually imported by a user.
   /// </summary>
-  public class GetAssetIdRequest : IValidatable
+  public class GetAssetIdRequest
   {
 
     private long _projectId;

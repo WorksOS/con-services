@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using VSS.TagFileAuth.Service.WebApiModels.Enums;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 
@@ -10,55 +12,45 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
   /// </summary>
   public class TagFileProcessingErrorRequest
   {
+
+    private long _assetId;
+    private string _tagFileName;
+    private TagFileErrorsEnum _error;
+
     /// <summary>
     /// The id of the asset whose tag file has the error. 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
-    public long assetId { get; set; }
+    public long assetId { get { return _assetId; } private set { _assetId = value; } }
 
     /// <summary>
     /// The name of the tag file with the error.
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "tagFileName", Required = Required.Always)]
-    public string tagFileName { get; set; }
+    public string tagFileName { get { return _tagFileName; } private set { _tagFileName = value; } }
 
-    /// <summary>
-    /// The type of error. Values are:
-    /// -2	UnknownProject
-    /// -1	UnknownCell
-    /// 1	NoMatchingProjectDate
-    /// 2	NoMatchingProjectArea
-    /// 3	MultipleProjects
-    /// 4	InvalidSeedPosition
-    /// 5	InvalidOnGroundFlag
-    /// 6	InvalidPosition
-    /// </summary>
     [Required]
     [JsonProperty(PropertyName = "error", Required = Required.Always)]
-    public TagFileErrorsEnum error { get; set; }
+    public TagFileErrorsEnum error { get { return _error; } private set { _error = value; } }
 
-    ///// <summary>
-    ///// Private constructor
-    ///// </summary>
-    //private TagFileProcessingErrorRequest()
-    //{ }
+    /// <summary>
+    /// Private constructor
+    /// </summary>
+    private TagFileProcessingErrorRequest()
+    { }
 
     /// <summary>
     /// Create instance of TagFileProcessingErrorRequest
     /// </summary>
-    public static TagFileProcessingErrorRequest CreateTagFileProcessingErrorRequest(
-      long assetId,
-      string tagFileName,
-      TagFileErrorsEnum error
-      )
+    public static TagFileProcessingErrorRequest CreateTagFileProcessingErrorRequest(long assetId, string tagFileName, int error)
     {
       return new TagFileProcessingErrorRequest
       {
         assetId = assetId,
         tagFileName = tagFileName,
-        error = error
+        error = (TagFileErrorsEnum)Enum.ToObject(typeof(TagFileErrorsEnum), error)
       };
     }
 
@@ -69,7 +61,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     {
       get
       {
-        return CreateTagFileProcessingErrorRequest(3984412183889397, "1003J001SW--AFS44 0021--130903184608.tag", TagFileErrorsEnum.ProjectID_NoMatchingDateTime);
+        return CreateTagFileProcessingErrorRequest(3984412183889397, "1003J001SW--AFS44 0021--130903184608.tag", (int)TagFileErrorsEnum.ProjectID_NoMatchingDateTime);
       }
     }
 
@@ -78,11 +70,25 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
     /// </summary>
     public void Validate()
     {
-      if (string.IsNullOrEmpty(tagFileName) || error == 0)
+      if (assetId <= 0)
       {
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            String.Format("Must have assetId {0}", assetId)));
+      }
+
+      if (string.IsNullOrEmpty(tagFileName))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
                    new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                   "Must have filename and error number"));
+                   "Must have filename"));
+      }
+
+      if (Enum.IsDefined(typeof(TagFileErrorsEnum), error) == false)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                   "Must have valid error number"));
       }
     }
   }

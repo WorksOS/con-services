@@ -4,6 +4,8 @@ using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using Microsoft.Extensions.Logging;
 using WebApiModels.Enums;
+using System;
+using Newtonsoft.Json;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Executors
 {
@@ -21,27 +23,14 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       TagFileProcessingErrorRequest request = item as TagFileProcessingErrorRequest;
+      log.LogDebug("TagFileProcessingErrorExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
 
       bool result = false;
 
-      if (request.assetId > 0)
-      {
-        //Log these errors
-        /*
-            request.error         alert type
-         -2	UnknownProject	      UnableToDetermineProjectID
-         -1 UnknownCell	          NoValidCellPassesInTagfile
-          1	NoMatchingProjectDate	UnableToDetermineProjectID
-          2	NoMatchingProjectArea	UnableToDetermineProjectID
-          3	MultipleProjects	    UnableToDetermineProjectID
-          4	InvalidSeedPosition	  UnableToDetermineProjectID
-          5	InvalidOnGroundFlag	  NoValidCellPassesInTagfile
-          6	InvalidPosition	      NoValidCellPassesInTagfile
-         */
-
-        result = request.error != TagFileErrorsEnum.None;
-      }
-
+      // if it got past the validation, it is complete.ok, check again
+      if (request.assetId > 0 && !string.IsNullOrEmpty(request.tagFileName) && Enum.IsDefined(typeof(TagFileErrorsEnum), request.error) == true)
+        result = true; 
+          
       if (result)
       {
         var errorMessage = string.Format("OnTagFileProcessingError: assetID = {0}, tagFileName = {1}, errorNumber = {2}, error = {3}", request.assetId, request.tagFileName, request.error, EnumExtensions.Description(request.error));
@@ -59,10 +48,5 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       }
 
     }
-
-    //protected override void ProcessErrorCodes()
-    //{
-    //  //Nothing to do
-    //}
   }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Repositories;
 using VSS.TagFileAuth.Service.WebApiModels.Executors;
 using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
@@ -9,43 +10,14 @@ namespace VSS.TagFileAuth.Service.Controllers
 {
   public class NotificationController : Controller
   {
-    /// <summary>
-    /// Repository factory for use by executor
-    /// </summary>
-    private readonly IRepositoryFactory factory;
-
-    /// <summary>
-    /// Logger for logging
-    /// </summary>
+    private readonly IRepositoryFactory factory;    
     private readonly ILogger log;
 
-
-    /// <summary>
-    /// Constructor with injected repository factory and logger
-    /// </summary>
-    /// <param name="factory">Repository factory</param>
-    /// <param name="logger">Logger</param>
     public NotificationController(IRepositoryFactory factory, ILogger<NotificationController> logger)
     {
       this.factory = factory;
       this.log = logger;
     }
-
-
-    ///// <summary>
-    ///// Raises an application alarm. Obsolete
-    ///// </summary>
-    ///// <param name="request">Details of the alarm including the level, message and exception</param>
-    ///// <returns>
-    ///// True for success and false for failure.
-    ///// </returns>
-    ///// <executor>AppAlarmExecutor</executor>
-    //[Route("api/v1/notification/appAlarm")]
-    //public AppAlarmResult PostAppAlarm([FromBody]AppAlarmRequest request)
-    //{
-    //  request.Validate();
-    //  return RequestExecutorContainer.Build<AppAlarmExecutor>(factory).Process(request) as AppAlarmResult;
-    //}
 
     /// <summary>
     /// Writes to the log for the given tag file processing error. 
@@ -59,9 +31,11 @@ namespace VSS.TagFileAuth.Service.Controllers
     [HttpPost]
     public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody]TagFileProcessingErrorRequest request)
     {
-      log.LogInformation("PostTagFileProcessingError: {0}", Request.QueryString);
-      
+      log.LogInformation("PostTagFileProcessingError: request:{0}", JsonConvert.SerializeObject(request));
+
       request.Validate();
+      log.LogInformation("PostTagFileProcessingError: after validation request:{0}", JsonConvert.SerializeObject(request));
+
       return RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, log).Process(request) as TagFileProcessingErrorResult;
     }
   }

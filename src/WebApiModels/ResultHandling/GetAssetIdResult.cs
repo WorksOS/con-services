@@ -8,14 +8,14 @@
     /// <summary>
     /// The result of the request. True for success and false for failure.
     /// </summary>
-    public bool result { get; set; }
+    public bool result { get; private set; }
 
     private long _assetId;
     private int _machineLevel;
     /// <summary>
     /// The id of the asset. -1 if unknown. 
     /// </summary>
-    public long assetId { get { return _assetId; } set { _assetId = value; } }  // Removed private as this won't deserialize
+    public long assetId { get { return _assetId; } set { _assetId = value; } } 
 
     /// <summary>
     /// The subscription level of the asset. 

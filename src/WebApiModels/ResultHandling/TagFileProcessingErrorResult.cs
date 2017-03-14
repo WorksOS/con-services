@@ -9,7 +9,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
     /// <summary>
     /// The result of the request. True for success and false for failure.
     /// </summary>
-    public bool result { get; set; }
+    public bool result { get; private set; }
 
     // acceptance tests cannot serialize with a private const.
     //private TagFileProcessingErrorResult()

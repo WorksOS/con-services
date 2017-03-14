@@ -12,10 +12,11 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
     /// </summary>
     public bool result { get; private set; }
 
+    private ProjectBoundaryPackage[] _projectBoundaries;
     /// <summary>
     /// The boundaries of the projects. Empty if none.
     /// </summary>
-    public ProjectBoundaryPackage[] projectBoundaries { get; private set; }
+    public ProjectBoundaryPackage[] projectBoundaries { get { return _projectBoundaries; } set { _projectBoundaries = value; } }  
 
     // acceptance tests cannot serialize with a private const.
     //private GetProjectBoundariesAtDateResult()

@@ -3,14 +3,13 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using WebApiModels.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
 {
   /// <summary>
   /// The request representation used to request the project Id that a specified asset is inside at a given location and date time.
   /// </summary>
-  public class GetProjectIdRequest : IValidatable
+  public class GetProjectIdRequest 
   {
 
     private long _assetId;

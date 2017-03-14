@@ -43,12 +43,12 @@ namespace VSS.TagFileAuth.Service.Controllers
 
       if (result.result)
       {
-        var infoMessage = string.Format("asset/getId was processed successfully: . Request {0} Result {1}", JsonConvert.SerializeObject(Request.QueryString), JsonConvert.SerializeObject(result));
+        var infoMessage = string.Format("asset/getId was processed successfully: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogInformation(infoMessage);
       }
       else
       {
-        var errorMessage = string.Format("asset/getId failed to be processed: . Request {0} Result {1}", JsonConvert.SerializeObject(Request.QueryString), JsonConvert.SerializeObject(result));
+        var errorMessage = string.Format("asset/getId failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogError(errorMessage);
       }
 

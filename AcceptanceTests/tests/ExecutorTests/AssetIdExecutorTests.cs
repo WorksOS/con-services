@@ -178,7 +178,9 @@ namespace RepositoryTests
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
       Guid customerUID = Guid.NewGuid();
-      var isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
+      var isCreatedOk = CreateCustomer(customerUID, "");
+      Assert.IsTrue(isCreatedOk, "created customer");
+      isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
       Assert.IsTrue(isCreatedOk, "created project");
 
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 0, "");
@@ -198,10 +200,11 @@ namespace RepositoryTests
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
       Guid customerUID = Guid.NewGuid();
-      var isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
-      Assert.IsTrue(isCreatedOk, "created project");
 
-      isCreatedOk = CreateCustomerSub(customerUID, "Manual 3D Project Monitoring");
+      CreateCustomer(customerUID, "");
+      CreateProject(projectUID, legacyProjectId, customerUID);
+
+      var isCreatedOk = CreateCustomerSub(customerUID, "Manual 3D Project Monitoring");
       Assert.IsTrue(isCreatedOk, "created Customer subscription");
 
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 0, "");
@@ -229,6 +232,7 @@ namespace RepositoryTests
       Guid projectUID = Guid.NewGuid();
       int legacyProjectId = new Random().Next(0, int.MaxValue);
       Guid customerUID = owningCustomerUID.Value;
+      CreateCustomer(customerUID, "");
       isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
       Assert.IsTrue(isCreatedOk, "created project");
 

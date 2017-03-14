@@ -8,6 +8,7 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using Repositories;
 using System.Linq;
+using VSS.TagFileAuth.Service.WebApiModels.Enums;
 
 namespace RepositoryTests
 {
@@ -97,13 +98,13 @@ namespace RepositoryTests
       return (g.Result != null ? true : false);
     }
 
-    protected bool CreateProject(Guid projectUID, int legacyProjectId, Guid customerUID, ProjectType projectType = ProjectType.LandFill)
+    protected bool CreateProject(Guid projectUID, int legacyProjectId, Guid customerUID, ProjectType projectType = ProjectType.LandFill, string projectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))")
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
-      { CustomerUID = customerUID, CustomerName = "The Customer Name", CustomerType = CustomerType.Customer.ToString(), ActionUTC = actionUtc };
+      //var createCustomerEvent = new CreateCustomerEvent()
+      //{ CustomerUID = customerUID, CustomerName = "The Customer Name", CustomerType = CustomerType.Customer.ToString(), ActionUTC = actionUtc };
 
       var createProjectEvent = new CreateProjectEvent()
       {
@@ -114,15 +115,14 @@ namespace RepositoryTests
         ProjectTimezone = projectTimeZone,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2100, 02, 01),
-        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))",
+        ProjectBoundary = projectBoundary,
         ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
-      { CustomerUID = createCustomerEvent.CustomerUID, ProjectUID = createProjectEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = actionUtc };
+      { CustomerUID = customerUID, ProjectUID = createProjectEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = actionUtc };
 
       projectContext.StoreEvent(createProjectEvent).Wait();
-      customerContext.StoreEvent(createCustomerEvent).Wait();
       projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
 
       var g = projectContext.GetProject(legacyProjectId); g.Wait();
@@ -182,7 +182,7 @@ namespace RepositoryTests
       return (g.Result != null ? true : false);
     }
     
-    protected bool CreateCustomer(Guid customerUID, string TccOrgId)
+    protected bool CreateCustomer(Guid customerUID, string TccOrgId, CustomerTypeEnum customerType = CustomerTypeEnum.Customer)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       bool areWrittenOk = false;
@@ -191,7 +191,7 @@ namespace RepositoryTests
       {
         CustomerUID = customerUID,
         CustomerName = "the name",
-        CustomerType = CustomerType.Customer.ToString(),
+        CustomerType = customerType.ToString(),
         ActionUTC = actionUtc
       };
 

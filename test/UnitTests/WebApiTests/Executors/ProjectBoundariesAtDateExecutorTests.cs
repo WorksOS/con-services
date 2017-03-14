@@ -16,7 +16,7 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Executors
     [TestMethod]
     public void CanCallProjectBoundariesAtDateExecutorNoValidInput()
     {
-      GetProjectBoundariesAtDateRequest ProjectBoundariesAtDateRequest = new GetProjectBoundariesAtDateRequest();
+      GetProjectBoundariesAtDateRequest ProjectBoundariesAtDateRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(-1, DateTime.UtcNow);
       GetProjectBoundariesAtDateResult ProjectBoundariesAtDateResult = new GetProjectBoundariesAtDateResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();

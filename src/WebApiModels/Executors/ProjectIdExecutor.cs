@@ -48,9 +48,9 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       GetProjectIdRequest request = item as GetProjectIdRequest;
-      log.LogDebug("AssetIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
+      log.LogDebug("ProjectIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
 
-      long projectId = -1; // none found
+      long projectId = -1; 
       IEnumerable<Project> potentialProjects = null;
 
       Asset asset = null;
@@ -61,18 +61,23 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       // must be able to find one or other customer for a) tccOrgUid b) legacyAssetID, whichever is provided
       if (!string.IsNullOrEmpty(request.tccOrgUid))
       {
-        var g = LoadCustomerByTccOrgId(request.tccOrgUid);
-        customerTCCOrg = g.Result != null ? g.Result : null;
+        customerTCCOrg = LoadCustomerByTccOrgId(request.tccOrgUid);
+        log.LogInformation("ProjectIdExecutor: Loaded CustomerByTccOrgId? {0}", JsonConvert.SerializeObject(customerTCCOrg));
       }
 
       // assetId could be valid (>0) or -1 (john doe i.e. landfill) or -2 (imported tagfile)
       if (request.assetId > 0)
       {
         asset = LoadAsset(request.assetId);
+        log.LogDebug("ProjectIdExecutor: Loaded asset? {0}", JsonConvert.SerializeObject(asset));
+
         if (asset != null && !string.IsNullOrEmpty(asset.OwningCustomerUID))
         {
           customerAssetOwner = LoadCustomerByCustomerUID(asset.OwningCustomerUID);
+          log.LogInformation("ProjectIdExecutor: Loaded assetsCustomer? {0}", JsonConvert.SerializeObject(customerAssetOwner));
+
           assetSubs = LoadAssetSubs(asset.AssetUID, request.timeOfPosition);
+          log.LogDebug("ProjectIdExecutor: Loaded assetSubs? {0}", JsonConvert.SerializeObject(assetSubs));
         }
       }
 
@@ -93,7 +98,14 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         {
           var p = projectRepo.GetStandardProject(customerAssetOwner.CustomerUID, request.latitude, request.longitude, request.timeOfPosition);
           if (p.Result != null && p.Result.Count() > 0)
+          {
             potentialProjects = potentialProjects == null ? p.Result : potentialProjects.Concat(p.Result);
+            log.LogInformation("ProjectIdExecutor: Loaded standardProjects which lat/long is within {0}", JsonConvert.SerializeObject(p.Result));
+          }
+          else
+          {
+            log.LogInformation("ProjectIdExecutor: No standardProjects loaded");
+          }
         }
 
         // ProjectMonitoring project
@@ -106,7 +118,14 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
                       request.latitude, request.longitude, request.timeOfPosition,
                       2 /*  ProjectMonitoring project type */, (int)ServiceTypeEnumNG.ProjectMonitoring);
           if (p.Result != null && p.Result.Count() > 0)
+          {
             potentialProjects = potentialProjects == null ? p.Result : potentialProjects.Concat(p.Result);
+            log.LogInformation("ProjectIdExecutor: Loaded pmProjects which lat/long is within {0}", JsonConvert.SerializeObject(p.Result));
+          }
+          else
+          {
+            log.LogInformation("ProjectIdExecutor: No pmProjects loaded");
+          }
         }
 
         // Landfill project
@@ -119,7 +138,14 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
           request.latitude, request.longitude, request.timeOfPosition,
           1 /*  Landfill project type */, (int)ServiceTypeEnumNG.Landfill);
           if (p.Result != null && p.Result.Count() > 0)
+          { 
             potentialProjects = potentialProjects == null ? p.Result : potentialProjects.Concat(p.Result);
+            log.LogInformation("ProjectIdExecutor: Loaded landfillProjects which lat/long is within {0}", JsonConvert.SerializeObject(p.Result));
+          }
+          else
+          {
+            log.LogInformation("ProjectIdExecutor: No landfillProjects loaded");
+          }
         }
 
         //projectId
@@ -133,6 +159,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
           projectId = -2;
         else
           projectId = potentialProjects.ToList()[0].LegacyProjectID;
+        log.LogInformation("ProjectIdExecutor: returning potential projectId {0}", projectId);
       }
 
       var result = projectId > 1;

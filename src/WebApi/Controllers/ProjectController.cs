@@ -41,12 +41,12 @@ namespace VVSS.TagFileAuth.Service.Controllers
 
       if (result.result)
       {
-        var infoMessage = string.Format("project/getid was successfully processed. Request {0} Result {1}", JsonConvert.SerializeObject(Request.QueryString), JsonConvert.SerializeObject(result));
+        var infoMessage = string.Format("project/getid was successfully processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogInformation(infoMessage);
       }
       else
       {
-        var errorMessage = string.Format("project/getid failed to be processed. Request {0} Result {1}", JsonConvert.SerializeObject(Request.QueryString), JsonConvert.SerializeObject(result)); ;
+        var errorMessage = string.Format("project/getid failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogError(errorMessage);
       }
 
@@ -65,19 +65,20 @@ namespace VVSS.TagFileAuth.Service.Controllers
     [HttpPost]
     public GetProjectBoundaryAtDateResult PostProjectBoundary([FromBody]GetProjectBoundaryAtDateRequest request)
     {
-      log.LogInformation("PostProjectBoundary: {0}", Request.QueryString);
-
+      log.LogInformation("PostProjectBoundary: {0}", JsonConvert.SerializeObject(request));
       request.Validate();
+      log.LogInformation("PostProjectBoundary: after validation request:{0}", JsonConvert.SerializeObject(request));
+
       var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, log).Process(request) as GetProjectBoundaryAtDateResult;
 
       if (result.result)
       {
-        var infoMessage = string.Format("Project boundary was received successfully. Tag file data/time: {0}", request.tagFileUTC);
+        var infoMessage = string.Format("PostProjectBoundary was processed successfully: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogInformation(infoMessage);
       }
       else
       {
-        var errorMessage = string.Format("No Project boundary was received. Tag file data/time: {0}", request.tagFileUTC);
+        var errorMessage = string.Format("PostProjectBoundary failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogError(errorMessage);
       }
 
@@ -96,19 +97,21 @@ namespace VVSS.TagFileAuth.Service.Controllers
     [HttpPost]
     public GetProjectBoundariesAtDateResult PostProjectBoundaries([FromBody]GetProjectBoundariesAtDateRequest request)
     {
-      log.LogInformation("PostProjectBoundaries: {0}", Request.QueryString);
+      log.LogInformation("PostProjectBoundaries: {0}", JsonConvert.SerializeObject(request));
 
       request.Validate();
+      log.LogInformation("PostProjectBoundaries: after validation request:{0}", JsonConvert.SerializeObject(request));
+      
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, log).Process(request) as GetProjectBoundariesAtDateResult;
 
       if (result.result)
       {
-        var infoMessage = string.Format("Project boundaries were received successfully. Asset ID: {0}, tag file data/time: {1}", request.tagFileUTC);
+        var infoMessage = string.Format("PostProjectBoundaries was processed successfully: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogInformation(infoMessage);
       }
       else
       {
-        var errorMessage = string.Format("No Project boundaries was received. Asset ID: {0}, tag file data/time: {1}", request.tagFileUTC);
+        var errorMessage = string.Format("PostProjectBoundaries failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogError(errorMessage);
       }
 

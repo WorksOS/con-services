@@ -3,14 +3,13 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using WebApiModels.Interfaces;
 
 namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
 {
   /// <summary>
   /// The request representation used to request the boundary of a project that is active at a specified date time.
   /// </summary>
-  public class GetProjectBoundaryAtDateRequest : IValidatable
+  public class GetProjectBoundaryAtDateRequest 
   {
 
     private long _projectId;

@@ -13,7 +13,7 @@ namespace ExecutorTests
     [TestMethod]
     public void TagFileProcessingErrorExecutor()
     {
-      TagFileProcessingErrorRequest request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(1, "Data from my dozer", TagFileErrorsEnum.ProjectID_NoMatchingArea);
+      TagFileProcessingErrorRequest request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(1, "Data from my dozer", (int) TagFileErrorsEnum.ProjectID_NoMatchingArea);
       request.Validate();
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, logger).Process(request) as TagFileProcessingErrorResult;

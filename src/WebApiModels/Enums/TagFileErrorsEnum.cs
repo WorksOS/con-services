@@ -8,7 +8,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Enums
     UnknownProject = -2,
     [Description("Unknown Cell")]
     UnknownCell = -1,    
-    None = 0, // used in raptor for indicating not set, but never send to logger as not valid enum
+    // invalid None = 0, // used in raptor for indicating not set, but never send to logger as not valid enum
     [Description("Project: No matching date/time")]
     ProjectID_NoMatchingDateTime = 1,
     [Description("Project: No matching area")]
