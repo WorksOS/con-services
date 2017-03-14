@@ -77,21 +77,39 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       Filter filter;
       try
       {
-        cmvSettings = JsonConvert.DeserializeObject<CMVSettings>("{'overrideTargetCMV': 'false', 'minCMVPercent': '80', 'maxCMVPercent': '120'}");
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}");//4 = None
-        filter = !startUtc.HasValue && !endUtc.HasValue ? null :
-          JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
+        cmvSettings =
+          JsonConvert.DeserializeObject<CMVSettings>(
+            "{'overrideTargetCMV': 'false', 'minCMVPercent': '80', 'maxCMVPercent': '120'}");
+        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
+        filter = !startUtc.HasValue && !endUtc.HasValue
+          ? null
+          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
       }
       catch (Exception ex)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
-                      new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                          ex.Message));
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            ex.Message));
       }
-      CMVRequest request = CMVRequest.CreateCMVRequest(projectId.Value, null, cmvSettings, liftSettings, filter, -1, null, null, null);
+      CMVRequest request = CMVRequest.CreateCMVRequest(projectId.Value, null, cmvSettings, liftSettings, filter, -1,
+        null, null, null);
       request.Validate();
-      var result = RequestExecutorContainer.Build<SummaryCMVExecutor>(logger, raptorClient, null).Process(request) as CMVSummaryResult;
-      return CmvSummaryResult.CreateCmvSummaryResult(result, cmvSettings);
+      try
+      {
+        var result = RequestExecutorContainer.Build<SummaryCMVExecutor>(logger, raptorClient, null).Process(request) as CMVSummaryResult;
+        return CmvSummaryResult.CreateCmvSummaryResult(result, cmvSettings);
+      }
+      catch (ServiceException se)
+      {
+        //Change FailedToGetResults to 204
+        if (se.Response.StatusCode == HttpStatusCode.BadRequest &&
+            se.GetResult.Code == ContractExecutionStatesEnum.FailedToGetResults)
+        {
+          se.Response.StatusCode = HttpStatusCode.NoContent;
+        }
+        throw;
+      }
+
     }
   }
 }

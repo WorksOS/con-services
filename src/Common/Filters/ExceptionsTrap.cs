@@ -36,7 +36,7 @@ namespace VSS.Raptor.Service.Common.Filters
         try
         {
           context.Response.StatusCode = 500;
-          await context.Response.WriteAsync(ex.Message);
+          await context.Response.WriteAsync(ex.Message  + ex.Source + ex.StackTrace);
         }
         finally
         {

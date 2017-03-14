@@ -19,6 +19,7 @@ namespace VSS.Raptor.Service.Common.ResultHandling
     public ServiceException(HttpStatusCode code, ContractExecutionResult result)
       : base(new HttpResponseMessage(code))
     {
+      GetResult = result;
       GetContent = JsonConvert.SerializeObject(result);
       Response.Content = new StringContent(GetContent);
     }
@@ -27,5 +28,10 @@ namespace VSS.Raptor.Service.Common.ResultHandling
     /// 
     /// </summary>
     public string GetContent { get; private set; }
+    /// <summary>
+    /// The result causing the exception
+    /// </summary>
+    public ContractExecutionResult GetResult { get; private set; }
+
   }
 }

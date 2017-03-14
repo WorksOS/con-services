@@ -32,7 +32,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
     /// <returns></returns>
     public static CmvSummaryResult CreateCmvSummaryResult(CMVSummaryResult result, CMVSettings settings)
     {
-      return new CmvSummaryResult
+      var cmvResult = new CmvSummaryResult
       {
         SummaryData = new CmvSummaryData
         {
@@ -49,6 +49,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
           MaxCMVPercent = settings.maxCMVPercent
         }
       };
+      return cmvResult;
     }
 
     /// <summary>
