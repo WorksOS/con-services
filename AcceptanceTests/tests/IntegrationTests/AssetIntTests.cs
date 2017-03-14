@@ -39,7 +39,6 @@ namespace IntegrationTests
       var uri = ts.GetBaseUri() + "api/v1/asset/getId";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri,method, requestJson);
-      msg.DisplayWebApi(method, uri, response, requestJson);
       var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response,ts.jsonSettings);
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
     }
@@ -93,7 +92,6 @@ namespace IntegrationTests
       var uri = ts.GetBaseUri() + "api/v1/asset/getId";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson);
-      msg.DisplayWebApi(method, uri, response, requestJson);
       var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(18, actualResult.machineLevel, " Machine levels do not match ");
@@ -104,7 +102,6 @@ namespace IntegrationTests
       request = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 6, deviceUid.ToString());
       requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       response = restClient.DoHttpRequest(uri, method, requestJson);
-      msg.DisplayWebApi(method, uri, response, requestJson);
       actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
 
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
@@ -223,7 +220,6 @@ namespace IntegrationTests
       request = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 6, deviceUid.ToString());
       requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       response = restClient.DoHttpRequest(uri, method, requestJson);
-      msg.DisplayWebApi(method, uri, response, requestJson);
       actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
 
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");

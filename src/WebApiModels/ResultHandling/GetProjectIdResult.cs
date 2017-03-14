@@ -9,14 +9,14 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
     /// <summary>
     /// The result of the request. True for success and false for failure.
     /// </summary>
-    public bool result { get; private set; }
+    public bool result { get; set; }
 
     private long _projectId;
 
     /// <summary>
     /// The id of the project. -1 if none.
     /// </summary>
-    public long projectId { get { return _projectId; } private set { _projectId = value; } }
+    public long projectId { get { return _projectId; } set { _projectId = value; } }
 
     // acceptance tests cannot serialize with a private const.
     //private GetProjectIdResult()
