@@ -11,5 +11,3 @@ mkdir Artifacts\Logs
 rem cd .\test\ComponentTests\scripts
 rem deploy_win.bat
 
-pause
-
