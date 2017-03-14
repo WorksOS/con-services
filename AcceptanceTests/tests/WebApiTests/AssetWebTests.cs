@@ -131,7 +131,43 @@ namespace WebApiTests
       ts.PublishEventCollection(eventsArray);
       var assetEventArray = new[] {
        "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name           | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
-      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | AssetWebTest4  | CAT      | XAT1         | 345D  | 10      | Excavators |                   |"};
+      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | AssetWebTest5  | CAT      | XAT1         | 345D  | 10      | Excavators |                   |"};
+      ts.PublishEventCollection(assetEventArray);
+      var deviceEventArray = new[] {
+       "| TableName   | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID |",
+      $"| Device      | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | Asset WebTest 4           |               |              |",
+      $"| AssetDevice | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |"};
+      ts.PublishEventCollection(deviceEventArray);
+      //Call Web api
+      var actualResult = CallWebApiGetAssetId(ts,-1,3,deviceUid.ToString());
+      Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
+      Assert.AreEqual(16, actualResult.machineLevel, " Machine levels do not match ");
+      Assert.AreEqual(true, actualResult.result , " result of request doesn't match expected");
+    }
+
+    [TestMethod]
+    public void Inject3DpmAndMaunual3DSubdevicetype3WithassetIdradioserialcallwebApItogetassetId()
+    {
+      msg.Title("Asset WebTest 6", "Inject 3D PM sub and a Manual 3D subscription, device type3 with assetId (radio serial), call webAPI to get asset Id");
+      var ts = new TestSupport { IsPublishToKafka = false };
+      var legacyAssetId = ts.SetLegacyAssetId();
+      var customerUid = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var subscriptionUid2 = Guid.NewGuid();
+      var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
+      var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
+      var deviceUid = Guid.NewGuid();
+      // Write events to database 
+      var eventsArray = new[] {
+        "| TableName         | EventDate   | fk_AssetUID   | fk_SubscriptionUID | EffectiveDate | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | ",
+       $"| AssetSubscription | 0d+09:00:00 | {ts.AssetUid} | {subscriptionUid}  | {startDate}   |                   |                | 13               |             |                | ",
+       $"| Subscription      | 0d+09:00:00 |               |                    |               | {subscriptionUid} | {customerUid}  | 13               | {startDate} | {endDate}      | ",
+       $"| Subscription      | 0d+09:01:00 |               |                    |               | {subscriptionUid2}| {customerUid}  | 15               | {startDate} | {endDate}      | "};
+
+      ts.PublishEventCollection(eventsArray);
+      var assetEventArray = new[] {
+       "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name           | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
+      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | AssetWebTest6  | CAT      | XAT1         | 345D  | 10      | Excavators |                   |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
        "| TableName   | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID |",
@@ -253,7 +289,7 @@ namespace WebApiTests
       ts.PublishEventCollection(eventsArray);
       var assetEventArray = new[] {
        "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name           | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
-      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | AssetWebTest4  | CAT      | XAT1         | 345D  | 10      | Excavators |                   |"};
+      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | AssetWebTest4  | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
        "| TableName   | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID |",

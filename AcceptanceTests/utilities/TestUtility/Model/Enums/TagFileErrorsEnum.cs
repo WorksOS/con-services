@@ -4,7 +4,7 @@
   {
     UnknownProject = -2,
     UnknownCell = -1,
-    None = 0, // used in raptor for indicating not set, but never send to logger as not valid enum
+   // None = 0, // used in raptor for indicating not set, but never send to logger as not valid enum
     ProjectID_NoMatchingDateTime = 1,
     ProjectID_NoMatchingArea = 2,
     ProjectID_MultipleProjects = 3,

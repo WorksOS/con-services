@@ -399,6 +399,38 @@ namespace TestUtility
           };
           jsonString = JsonConvert.SerializeObject(new {DissociateCustomerUserEvent = dissociateCustomerUserEvent}, jsonSettings );
           break;
+        case "CreateAssetSubscriptionEvent":
+          topicName = SetKafkaTopicName("ISubscriptionEvent");
+          var createAssetSubscriptionEvent = new CreateAssetSubscriptionEvent()
+          {
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate,
+            StartDate = DateTime.Parse(eventObject.StartDate),
+            AssetUID = new Guid(eventObject.AssetUID),
+            DeviceUID = new Guid(eventObject.DeviceUID),
+            CustomerUID = new Guid(eventObject.CustomerUID),
+            EndDate = DateTime.Parse(eventObject.EndDate),
+            SubscriptionType = eventObject.SubscriptionType,
+            SubscriptionUID = new Guid(eventObject.SubscriptionUID)
+          };
+          jsonString = JsonConvert.SerializeObject(new {CreateAssetSubscriptionEvent = createAssetSubscriptionEvent}, jsonSettings );
+          break;
+        case "UpdateAssetSubscriptionEvent":
+          topicName = SetKafkaTopicName("ISubscriptionEvent");
+          var updateAssetSubscriptionEvent = new UpdateAssetSubscriptionEvent()
+          {
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate,
+            StartDate = DateTime.Parse(eventObject.StartDate),
+            AssetUID = new Guid(eventObject.AssetUID),
+            DeviceUID = new Guid(eventObject.DeviceUID),
+            CustomerUID = new Guid(eventObject.CustomerUID),
+            EndDate = DateTime.Parse(eventObject.EndDate),
+            SubscriptionType = eventObject.SubscriptionType,
+            SubscriptionUID = new Guid(eventObject.SubscriptionUID)
+          };
+          jsonString = JsonConvert.SerializeObject(new {UpdateAssetSubscriptionEvent = updateAssetSubscriptionEvent}, jsonSettings );
+          break;
         case "CreateProjectSubscriptionEvent":
           topicName = SetKafkaTopicName("ISubscriptionEvent");
           var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
@@ -406,6 +438,7 @@ namespace TestUtility
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
             StartDate = DateTime.Parse(eventObject.StartDate),
+            CustomerUID = new Guid(eventObject.CustomerUID),
             EndDate = DateTime.Parse(eventObject.EndDate),
             SubscriptionType = eventObject.SubscriptionType,
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
@@ -431,7 +464,7 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            EffectiveDate = eventObject.EffectiveDate,
+            EffectiveDate = eventObject.EventDate, 
             ProjectUID = new Guid(eventObject.ProjectUID),
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
           };
@@ -462,7 +495,7 @@ namespace TestUtility
             ReceivedUTC = eventObject.EventDate,
             ProjectUID = new Guid(eventObject.ProjectUID)
           };
-          if (HasProperty(eventObject, "ProjectEndDate"))
+          if (HasProperty(eventObject, "ProjectEndDate") && eventObject.ProjectEndDate != null)
           {
             updateProjectEvent.ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate);
           }

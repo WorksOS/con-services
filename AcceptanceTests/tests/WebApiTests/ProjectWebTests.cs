@@ -40,7 +40,7 @@ namespace WebApiTests
       ts.PublishEventCollection(eventsArray);
       var assetEventArray = new[] {
        "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name           | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
-      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | AssetWebTest4  | CAT      | XAT1         | 345D  | 10      | Excavators |                   |"};
+      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | AssetWebTest4  | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
        "| TableName   | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID |",
@@ -48,10 +48,10 @@ namespace WebApiTests
       $"| AssetDevice | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |"};
       ts.PublishEventCollection(deviceEventArray);
       //Call Web api
-      //var actualResult = CallWebApiGetProjectId(ts,ts.AssetUid,,deviceUid.ToString());
+      //var actualResult = CallWebApiGetProjectId(ts, ts.AssetUid,, deviceUid.ToString());
       //Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       //Assert.AreEqual(18, actualResult.machineLevel, " Machine levels do not match ");
-      //Assert.AreEqual(true, actualResult.result , " result of request doesn't match expected");
+      //Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
     }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace WebApiTests
         /// <param name="tccOrgUid">UID of the TCC account the VL customer is paired with. 
         ///   Identifies which VL customer projects to search.</param>
         /// <returns></returns>
-        private GetProjectIdResult CallWebApiGetProjectId(TestSupport ts,long assetid,double latitude,double longitude, double height, DateTime timeOfPosition,string tccOrgUid)
+    private GetProjectIdResult CallWebApiGetProjectId(TestSupport ts,long assetid,double latitude,double longitude, double height, DateTime timeOfPosition,string tccOrgUid)
     {
       var request = GetProjectIdRequest.CreateGetProjectIdRequest(assetid,latitude,longitude, height, timeOfPosition,tccOrgUid);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);

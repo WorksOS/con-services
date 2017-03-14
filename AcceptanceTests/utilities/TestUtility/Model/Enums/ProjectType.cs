@@ -8,7 +8,7 @@ namespace TestUtility.Model.Enums
   public enum ProjectType
   {
     Standard = 0,
-    Landfill = 1,
+    LandFill = 1,
     ProjectMonitoring = 2
   }
 }
