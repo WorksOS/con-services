@@ -248,6 +248,105 @@ namespace RepositoryTests
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
     }
+
+    [TestMethod]
+    public void AssetIDExecutor_ExistingProjectAndDeviceAndAssetSub()
+    {
+      Guid assetUID = Guid.NewGuid();
+      long legacyAssetId = new Random().Next(0, int.MaxValue);
+      Guid? owningCustomerUID = Guid.NewGuid();
+      Guid deviceUID = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      DeviceTypeEnum deviceType = DeviceTypeEnum.Series522;
+      var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
+      Assert.IsTrue(isCreatedOk, "created assetDevice association");
+
+      Guid projectUID = Guid.NewGuid();
+      int legacyProjectId = new Random().Next(0, int.MaxValue);
+      Guid customerUID = owningCustomerUID.Value;
+      CreateCustomer(customerUID, "");
+      isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.LandFill);
+      Assert.IsTrue(isCreatedOk, "created project");
+
+      isCreatedOk = CreateAssetSub(assetUID, owningCustomerUID.Value, "3D Project Monitoring");
+      Assert.IsTrue(isCreatedOk, "created Asset subscription");
+
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int)deviceType, deviceSerialNumber);
+      assetIdRequest.Validate();
+
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.result, "successful");
+      Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
+      Assert.AreEqual(16, result.machineLevel, "executor returned incorrect serviceType, should be 3dPM (CG==16)");
+    }
+
+    [TestMethod]
+    public void AssetIDExecutor_ExistingProjectAndDeviceAndCustomerSub_SNM940ToFindSNM941()
+    {
+      Guid assetUID = Guid.NewGuid();
+      long legacyAssetId = new Random().Next(0, int.MaxValue);
+      Guid? owningCustomerUID = Guid.NewGuid();
+      Guid deviceUID = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      DeviceTypeEnum actualDeviceType = DeviceTypeEnum.SNM941;
+      DeviceTypeEnum requestedDeviceType = DeviceTypeEnum.SNM940;
+      var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, actualDeviceType.ToString());
+      Assert.IsTrue(isCreatedOk, "created assetDevice association");
+
+      Guid projectUID = Guid.NewGuid();
+      int legacyProjectId = new Random().Next(0, int.MaxValue);
+      Guid customerUID = owningCustomerUID.Value;
+      CreateCustomer(customerUID, "");
+      isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
+      Assert.IsTrue(isCreatedOk, "created project");
+
+      isCreatedOk = CreateCustomerSub(customerUID, "Manual 3D Project Monitoring");
+      Assert.IsTrue(isCreatedOk, "created Customer subscription");
+
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int)requestedDeviceType, deviceSerialNumber);
+      assetIdRequest.Validate();
+
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.result, "successful");
+      Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
+      Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
+    }
+
+    [TestMethod]
+    public void AssetIDExecutor_ExistingProjectAndDeviceAndCustomerSub_SNM941ToNOTFindSNM940()
+    {
+      Guid assetUID = Guid.NewGuid();
+      long legacyAssetId = new Random().Next(0, int.MaxValue);
+      Guid? owningCustomerUID = Guid.NewGuid();
+      Guid deviceUID = Guid.NewGuid();
+      string deviceSerialNumber = "The radio serial " + deviceUID.ToString();
+      DeviceTypeEnum actualDeviceType = DeviceTypeEnum.SNM940;
+      DeviceTypeEnum requestedDeviceType = DeviceTypeEnum.SNM941;
+      var isCreatedOk = CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, actualDeviceType.ToString());
+      Assert.IsTrue(isCreatedOk, "created assetDevice association");
+
+      Guid projectUID = Guid.NewGuid();
+      int legacyProjectId = new Random().Next(0, int.MaxValue);
+      Guid customerUID = owningCustomerUID.Value;
+      CreateCustomer(customerUID, "");
+      isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID);
+      Assert.IsTrue(isCreatedOk, "created project");
+
+      isCreatedOk = CreateCustomerSub(customerUID, "Manual 3D Project Monitoring");
+      Assert.IsTrue(isCreatedOk, "created Customer subscription");
+
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, (int)requestedDeviceType, deviceSerialNumber);
+      assetIdRequest.Validate();
+
+      var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsTrue(result.result, "successful");
+      Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
+      Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
+    }
+
   }
 }
 

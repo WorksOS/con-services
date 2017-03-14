@@ -67,6 +67,13 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
       {
         //Radio serial in tag file. Use it to map to asset in VL.
         AssetDeviceIds assetDevice = LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum)request.deviceType).ToString());
+
+        // special case in CGen US36833 If fails on DT SNM940 try as again SNM941 
+        if (assetDevice == null && (DeviceTypeEnum)request.deviceType == DeviceTypeEnum.SNM940)
+        {
+          log.LogInformation("AssetIdExecutor: Failed for SNM940 trying again as Device Type SNM941");
+          assetDevice = LoadAssetDevice(request.radioSerial, DeviceTypeEnum.SNM941.ToString());
+        }
         log.LogDebug("AssetIdExecutor: Loaded assetDevice? {0}", JsonConvert.SerializeObject(assetDevice));
 
         if (assetDevice != null)
