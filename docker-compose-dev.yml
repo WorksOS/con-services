@@ -13,7 +13,7 @@ services:
     env_file:
      - docker-compose-dev.env
   masterdataconsumercustomer:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
@@ -23,7 +23,7 @@ services:
     depends_on:
       - schema
   masterdataconsumergeofence:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
@@ -33,7 +33,7 @@ services:
     depends_on:
       - schema
   masterdataconsumersubscription:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
