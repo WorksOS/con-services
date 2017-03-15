@@ -1,2 +1,3 @@
-dotnet test ./test/UnitTests/MasterDataConsumerTests -f netcoreapp1.1 
+cd ./test/UnitTests/WebApiTests
+dotnet test -f netcoreapp1.1 
 

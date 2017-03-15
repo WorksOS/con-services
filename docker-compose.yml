@@ -4,71 +4,78 @@ services:
     build: ./artifacts/WebApi
     env_file:
      - docker-compose.env
-    ports:
-     - "3001:80"
+    volumes:
+      - ./artifacts/logs:/app/logs 
     depends_on:
       - schema
   masterdataconsumercustomer:
-    build: ./artifacts/MasterDataConsumer
-    image: masterdataconsumercustomer
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
-     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
-     - KAFKA_OFFSET=latest
-     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+    - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
+    - KAFKA_OFFSET=latest
+    - KAFKA_TOPIC_NAME_SUFFIX=-TFA
+    volumes:
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
-      - kafka
+      - kafka     
   masterdataconsumerproject:
-    build: ./artifacts/MasterDataConsumer
-    image: masterdataconsumerproject
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IProjectEvent
-     - MYSQL_DATABASE_NAME=VSS-MasterData-Project-Only
      - KAFKA_OFFSET=latest
-     - KAFKA_TOPIC_NAME_SUFFIX=-Project
-    depends_on:
-      - projectschema
-      - kafka
-  masterdataconsumergeofence:
-    build: ./artifacts/MasterDataConsumer
-    image: masterdataconsumergeofence
-    env_file:
-     - docker-compose.env
-    environment:
-     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
-     - KAFKA_OFFSET=latest
-     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+     - KAFKA_TOPIC_NAME_SUFFIX=-TFA
+    volumes:
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
-      - kafka
+      - kafka     
   masterdataconsumersubscription:
-    build: ./artifacts/MasterDataConsumer
-    image: masterdataconsumersubscription
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
      - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
      - KAFKA_OFFSET=latest
-     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+     - KAFKA_TOPIC_NAME_SUFFIX=-TFA
+    volumes:
+      - ./artifacts/logs:/app/logs
+  masterdataconsumerasset:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IAssetEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-TFA
+    volumes:
+      - ./artifacts/logs:/app/logs
+    depends_on:
+      - schema
+      - kafka
+  masterdataconsumerdevice:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    env_file:
+     - docker-compose.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IDeviceEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-TFA
+    volumes:
+      - ./artifacts/logs:/app/logs
     depends_on:
       - schema
       - kafka
   schema:
-    build: ./database
-    env_file:
-     - docker-compose.env
-    depends_on:
-      - db
-  projectschema:
-    build: ./database
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db
     env_file:
      - docker-compose.env
     environment:
-     - MYSQL_DATABASE_NAME=VSS-MasterData-Project-Only
+     - MYSQL_DATABASE_NAME=VSS-TagFileAuth
     depends_on:
       - db
   db:
@@ -76,19 +83,17 @@ services:
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
     env_file:
      - docker-compose.env
-    ports:
-      - "3306:3306"
   zookeeper:
-    image: wurstmeister/zookeeper:3.4.6
+    image: wurstmeister/zookeeper:latest
     ports:
      - "2181:2181"
   kafka:
     image: wurstmeister/kafka:latest
     env_file:
-     - docker-compose.env
+     - docker-compose.env  
     environment:
      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-     - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IProjectEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IGeofenceEvent-Project:1:1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Project:1:1
+     - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent-TFA:1:1,VSS.Interfaces.Events.MasterData.IProjectEvent-TFA:1:1,VSS.Interfaces.Events.MasterData.IGeofenceEvent-TFA:1:1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent-TFA:1:1,VSS.Interfaces.Events.MasterData.IAssetEvent-TFA:1:1,VSS.Interfaces.Events.MasterData.IDeviceEvent-TFA:1:1
     ports:
      - "9092:9092"
     volumes:
@@ -103,8 +108,6 @@ services:
       - ./AcceptanceTests/deploy/testresults:/app/testresults
     depends_on:
       - webapi
-      - masterdataconsumercustomer
-      - masterdataconsumerproject
-      - masterdataconsumergeofence
-      - masterdataconsumersubscription
+      - masterdataconsumerasset
       - kafka
+      
