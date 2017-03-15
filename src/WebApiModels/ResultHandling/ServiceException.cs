@@ -25,6 +25,6 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
     /// <summary>
     /// 
     /// </summary>
-    public string GetContent { get; private set; }
+    public string GetContent { get; set; }
   }
 }

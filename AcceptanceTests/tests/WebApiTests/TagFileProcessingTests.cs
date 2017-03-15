@@ -101,7 +101,6 @@ namespace WebApiTests
       var uri = ts.GetBaseUri() + "api/v1/notification/tagFileProcessingError";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson);
-      msg.DisplayWebApi(method, uri, response, requestJson);
       var actualResult = JsonConvert.DeserializeObject<TagFileProcessingErrorResult>(response, ts.jsonSettings);
       return actualResult;
     }

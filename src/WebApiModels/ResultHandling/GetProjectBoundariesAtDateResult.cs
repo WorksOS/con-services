@@ -10,7 +10,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
     /// <summary>
     /// The result of the request. True for success and false for failure.
     /// </summary>
-    public bool result { get; private set; }
+    public bool result { get; set; }
 
     private ProjectBoundaryPackage[] _projectBoundaries;
     /// <summary>

@@ -319,7 +319,6 @@ namespace WebApiTests
       var uri = ts.GetBaseUri() + "api/v1/asset/getId";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson);
-      msg.DisplayWebApi(method, uri, response, requestJson);
       var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
       return actualResult;
     }

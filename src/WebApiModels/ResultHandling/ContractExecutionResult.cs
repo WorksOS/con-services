@@ -50,7 +50,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
     ///   Result code.
     /// </value>
     [JsonProperty(PropertyName = "Code", Required = Required.Always)]
-    public ContractExecutionStatesEnum Code { get; protected set; }
+    public ContractExecutionStatesEnum Code { get; set; }
 
     /// <summary>
     ///   Defines user-friendly message.
@@ -59,7 +59,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
     ///   The message string.
     /// </value>
     [JsonProperty(PropertyName = "Message", Required = Required.Always)]
-    public string Message { get; protected set; }
+    public string Message { get; set; }
   }
 
   /// <summary>

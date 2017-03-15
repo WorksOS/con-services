@@ -39,7 +39,6 @@ namespace IntegrationTests
       var uri = ts.GetBaseUri() + "api/v1/asset/getId";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri,method, requestJson);
-      msg.DisplayWebApi(method, uri, response, requestJson);
       var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response,ts.jsonSettings);
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
     }
@@ -93,7 +92,6 @@ namespace IntegrationTests
       var uri = ts.GetBaseUri() + "api/v1/asset/getId";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson);
-      msg.DisplayWebApi(method, uri, response, requestJson);
       var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(18, actualResult.machineLevel, " Machine levels do not match ");
@@ -104,7 +102,6 @@ namespace IntegrationTests
       request = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 6, deviceUid.ToString());
       requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       response = restClient.DoHttpRequest(uri, method, requestJson);
-      msg.DisplayWebApi(method, uri, response, requestJson);
       actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
 
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
@@ -146,9 +143,9 @@ namespace IntegrationTests
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid);
       var endDt = new DateTime(9999, 12, 31);
       var custEventArray = new[] { 
-       "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType | DeviceUID   | AssetUID      |",
-      $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |              |                   |                    |         |                  |             |               |",
-      $"| CreateAssetSubscriptionEvent      | 0d+09:01:00 |              |              | {customerUid} |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | Landfill         | {deviceUid} | {ts.AssetUid} |"};
+       "| EventType                         | EventDate   | CustomerName | CustomerType | CustomerUID   | ProjectUID   | SubscriptionUID   | StartDate          | EndDate | SubscriptionType      | DeviceUID   | AssetUID      |",
+      $"| CreateCustomerEvent               | 0d+09:00:00 | CustName     | Customer     | {customerUid} |              |                   |                    |         |                       |             |               |",
+      $"| CreateAssetSubscriptionEvent      | 0d+09:01:00 |              |              | {customerUid} |              | {subscriptionUid} |{ts.FirstEventDate} | {endDt} | 3D Project Monitoring | {deviceUid} | {ts.AssetUid} |"};
 
       ts.PublishEventCollection(custEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Subscription", "SubscriptionUID", 1, subscriptionUid);
@@ -162,7 +159,7 @@ namespace IntegrationTests
       var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
 
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
-      Assert.AreEqual(15, actualResult.machineLevel, " Machine levels do not match ");
+      Assert.AreEqual(16, actualResult.machineLevel, " Machine levels do not match ");
       Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
     }
 
@@ -223,7 +220,6 @@ namespace IntegrationTests
       request = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId, 6, deviceUid.ToString());
       requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       response = restClient.DoHttpRequest(uri, method, requestJson);
-      msg.DisplayWebApi(method, uri, response, requestJson);
       actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
 
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
