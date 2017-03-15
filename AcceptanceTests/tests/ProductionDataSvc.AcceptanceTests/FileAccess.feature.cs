@@ -11,7 +11,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace ProjectSvc.AcceptanceTests
+namespace ProductionDataSvc.AcceptanceTests
 {
     using TechTalk.SpecFlow;
     
@@ -48,7 +48,7 @@ namespace ProjectSvc.AcceptanceTests
             if (((TechTalk.SpecFlow.FeatureContext.Current != null) 
                         && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "FileAccess")))
             {
-                ProjectSvc.AcceptanceTests.FileAccessFeature.FeatureSetup(null);
+                ProductionDataSvc.AcceptanceTests.FileAccessFeature.FeatureSetup(null);
             }
         }
         

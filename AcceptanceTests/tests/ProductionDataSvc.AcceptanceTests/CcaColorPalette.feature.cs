@@ -80,10 +80,9 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request CCA color palette for machine 1 in project 1999999", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 6
- testRunner.Then("the following color is returned", "{\r\n  \"palettes\": [\r\n\t{\r\n\t  \"Colour\": 12632064,\r\n\t  \"Value\": 1\r\n\t},\r\n\t{\r\n\t  \"Colou" +
-                    "r\": 16711680,\r\n\t  \"Value\": 2\r\n\t},\r\n\t{\r\n\t  \"Colour\": 65535,\r\n\t  \"Value\": 3\r\n\t},\r\n" +
-                    "\t{\r\n\t  \"Colour\": 32768,\r\n\t  \"Value\": 4\r\n\t}\r\n  ],\r\n  \"Code\": 0,\r\n  \"Message\": \"su" +
-                    "ccess\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the following color is returned", "{\n  \"palettes\": [\n\t{\n\t  \"Colour\": 12632064,\n\t  \"Value\": 1\n\t},\n\t{\n\t  \"Colour\": 167" +
+                    "11680,\n\t  \"Value\": 2\n\t},\n\t{\n\t  \"Colour\": 65535,\n\t  \"Value\": 3\n\t},\n\t{\n\t  \"Colour\"" +
+                    ": 32768,\n\t  \"Value\": 4\n\t}\n  ],\n  \"Code\": 0,\n  \"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

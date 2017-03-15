@@ -11,7 +11,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace TagFileProcessing.AcceptanceTests
+namespace ProductionDataSvc.AcceptanceTests
 {
     using TechTalk.SpecFlow;
     
@@ -48,7 +48,7 @@ namespace TagFileProcessing.AcceptanceTests
             if (((TechTalk.SpecFlow.FeatureContext.Current != null) 
                         && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "TagFile")))
             {
-                TagFileProcessing.AcceptanceTests.TagFileFeature.FeatureSetup(null);
+                ProductionDataSvc.AcceptanceTests.TagFileFeature.FeatureSetup(null);
             }
         }
         

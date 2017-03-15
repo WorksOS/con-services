@@ -11,7 +11,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace CoordSvc.AcceptanceTests
+namespace ProductionDataSvc.AcceptanceTests
 {
     using TechTalk.SpecFlow;
     
@@ -48,7 +48,7 @@ namespace CoordSvc.AcceptanceTests
             if (((TechTalk.SpecFlow.FeatureContext.Current != null) 
                         && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "CoordinateConversion")))
             {
-                CoordSvc.AcceptanceTests.CoordinateConversionFeature.FeatureSetup(null);
+                ProductionDataSvc.AcceptanceTests.CoordinateConversionFeature.FeatureSetup(null);
             }
         }
         

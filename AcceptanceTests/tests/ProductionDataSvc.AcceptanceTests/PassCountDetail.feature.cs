@@ -11,7 +11,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace ReportSvc.AcceptanceTests
+namespace ProductionDataSvc.AcceptanceTests
 {
     using TechTalk.SpecFlow;
     
@@ -48,7 +48,7 @@ namespace ReportSvc.AcceptanceTests
             if (((TechTalk.SpecFlow.FeatureContext.Current != null) 
                         && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "PassCountDetail")))
             {
-                ReportSvc.AcceptanceTests.PassCountDetailFeature.FeatureSetup(null);
+                ProductionDataSvc.AcceptanceTests.PassCountDetailFeature.FeatureSetup(null);
             }
         }
         
