@@ -30,7 +30,7 @@ node('Ubuntu_Slave') {
     stage 'Checkout'
     checkout scm
     stage 'Restore packages'
-    sh "sudo dotnet migrate"
+    sh "dotnet migrate"
     sh "dotnet restore"
     stage 'Build solution'
     sh "bash ./build.sh"
