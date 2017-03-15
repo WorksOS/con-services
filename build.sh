@@ -1,6 +1,7 @@
 #!/bin/bash
 
 rm -rf artifacts
+rm -rf ./backup*
 
 dotnet publish ./src/WebApi -o ../../artifacts/WebApi -f netcoreapp1.1 -c Docker
 
