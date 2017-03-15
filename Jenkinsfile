@@ -50,7 +50,7 @@ node('Ubuntu_Slave') {
     workspacePath = pwd()
     step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
     publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])
- 
+    echo "Build result is ${currentBuild.result}"
     if (currentBuild.result=='SUCCESS') {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Build Images'
