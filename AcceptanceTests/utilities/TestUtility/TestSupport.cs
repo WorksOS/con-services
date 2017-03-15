@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using Newtonsoft.Json;
-using System.Globalization;
 using System.Threading;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using System.Text.RegularExpressions;
@@ -14,12 +13,20 @@ namespace TestUtility
   public class TestSupport
   {
     #region Public Properties
+
     public string AssetUid { get; set; }
     public DateTime FirstEventDate { get; set; }
     public DateTime LastEventDate { get; set; }
     public bool IsPublishToKafka { get; set; }
-    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings {DateTimeZoneHandling = DateTimeZoneHandling.Unspecified, NullValueHandling = NullValueHandling.Ignore};
+
+    public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+    {
+      DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
+      NullValueHandling = NullValueHandling.Ignore
+    };
+
     public readonly TestConfig tsCfg = new TestConfig();
+
     #endregion
 
     #region Private Properties
@@ -66,9 +73,11 @@ namespace TestUtility
       var query = "SELECT max(ID) FROM Asset;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
-         { return 1000; }
+      {
+        return 1000;
+      }
       var legacyAssetId = Convert.ToInt32(result);
-      return legacyAssetId+1001;
+      return legacyAssetId + 1001;
     }
 
 
@@ -78,10 +87,13 @@ namespace TestUtility
       var query = "SELECT max(ID) FROM Project;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
-         { return 1000; }
+      {
+        return 1000;
+      }
       var legacyAssetId = Convert.ToInt32(result);
-      return legacyAssetId+1001;
+      return legacyAssetId + 1001;
     }
+
     /// <summary>
     /// Set to true if writing to kafka instead of the database
     /// </summary>
@@ -97,25 +109,33 @@ namespace TestUtility
     /// <param name="eventArray">string array with all the events we are going to publish</param>
     public void PublishEventCollection(string[] eventArray)
     {
-      msg.DisplayEventsToConsole(eventArray);      
-      var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
-      var kafkaDriver = new RdKafkaDriver();
-      for (var rowCnt = 1; rowCnt <= eventArray.Length-1; rowCnt++)
+      try
       {
-        var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
-        dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);        
-        var eventDate = eventObject.EventDate;
-        LastEventDate = eventDate;
-        if (IsPublishToKafka)
+        msg.DisplayEventsToConsole(eventArray);      
+        var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
+        var kafkaDriver = new RdKafkaDriver();
+        for (var rowCnt = 1; rowCnt <= eventArray.Length-1; rowCnt++)
         {
-          BuildEventAndPublishToKafka(eventObject, kafkaDriver);
-          WaitForTimeBasedOnNumberOfRecords(eventArray.Length);
+          var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
+          dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);        
+          var eventDate = eventObject.EventDate;
+          LastEventDate = eventDate;
+          if (IsPublishToKafka)
+          {
+            BuildEventAndPublishToKafka(eventObject, kafkaDriver);
+            WaitForTimeBasedOnNumberOfRecords(eventArray.Length);
+          }
+          else
+          {
+            IsNotSameAsset(true);  // This can be added directly to tests
+            BuildMySqlInsertStringAndWriteToDatabase(eventObject);          
+          }
         }
-        else
-        {
-          IsNotSameAsset(true);  // This can be added directly to tests
-          BuildMySqlInsertStringAndWriteToDatabase(eventObject);          
-        }
+      }
+      catch (Exception ex)
+      {
+        msg.DisplayException(ex.Message);
+        throw;
       }
     }
 
@@ -249,7 +269,7 @@ namespace TestUtility
           var createDeviceEvent = new CreateDeviceEvent()
           {
             ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate, //TODO is this required?
+            ReceivedUTC = eventObject.EventDate, 
             DeviceSerialNumber = eventObject.DeviceSerialNumber,
             DeviceState = eventObject.DeviceState,
             DeviceType = eventObject.DeviceType,
@@ -615,9 +635,10 @@ namespace TestUtility
                       '{eventObject.fk_CustomerUID}',{eventObject.UserUID},{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "Project":
-          sqlCmd += $@"(ProjectUID,LegacyProjectID,Name,fk_ProjectTypeID,ProjectTimeZone,LandfillTimeZone,StartDate,EndDate,GeometryWKT,LastActionedUTC) VALUES
+          var formattedPolygon = string.Format("ST_GeomFromText('{0}')", eventObject.GeometryWKT);
+          sqlCmd += $@"(ProjectUID,LegacyProjectID,Name,fk_ProjectTypeID,ProjectTimeZone,LandfillTimeZone,StartDate,EndDate,GeometryWKT,PolygonST,LastActionedUTC) VALUES
                      ('{eventObject.ProjectUID}',{eventObject.LegacyProjectID},'{eventObject.Name}',{eventObject.fk_ProjectTypeID},
-                      '{eventObject.ProjectTimeZone}','{eventObject.LandfillTimeZone}','{eventObject.StartDate:yyyy-MM-dd}','{eventObject.EndDate:yyyy-MM-dd}','{eventObject.GeometryWKT}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+                      '{eventObject.ProjectTimeZone}','{eventObject.LandfillTimeZone}','{eventObject.StartDate:yyyy-MM-dd}','{eventObject.EndDate:yyyy-MM-dd}','{eventObject.GeometryWKT}',{formattedPolygon},'{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "ProjectGeofence":
           sqlCmd += $@"(fk_ProjectUID,fk_GeofenceUID,LastActionedUTC) VALUES
