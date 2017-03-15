@@ -37,21 +37,22 @@ node('Jenkins-Win2016-Raptor') {
     bat "./unittests.bat"
     stage 'Build MockApis unit tests'
     bat "./mockapis.bat"
-
-    //stage 'Prepare Acceptance tests'
-    //sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
-    //stage 'Compose containers'
-    //sh "bash ./start_containers.sh"
-    //stage 'Wait for containers to finish'
-    //sh "bash ./wait_container.sh testcontainers"
-    //stage 'Bring containers down and archive the logs'
-    //sh "(mkdir -p ./logs && docker-compose logs > ./logs/logs.txt)" 
-    //sh "docker-compose down"
-
+    stage 'Prepare Acceptance tests'
+    bat "./acceptancetests.bat"
+    try {
+    stage 'Compose containers'
+    bat "./start_containers.bat"
+    stage 'Run Acceptance Tests'
+    bat "./runacceptancetests.bat"
+    }
+    finally {
+    stage 'Bring containers down and archive the logs'
+    bat "./stop_containers.bat"
+    }
     currentBuild.result = 'SUCCESS'
 
-//Here we need to find test results and decide if the build successfull
     //stage 'Publish test results and logs'
+    //COnvert trx to xml for archiving
     //workspacePath = pwd()
     //step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
     //publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])

@@ -6,11 +6,7 @@ services:
      - docker-compose.env
     volumes:
       - ./Artifacts/Logs:/app/logs
-  accepttest:
-    build: ./AcceptanceTests/deploy
+  mockprojectwebapi:
+    build: ./Artifacts/MockProjectWebApi
     env_file:
      - docker-compose.env
-    volumes:
-      - ./AcceptanceTests/deploy/testresults:/app/testresults
-    depends_on:
-      - webapi

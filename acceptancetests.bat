@@ -1,0 +1,2 @@
+cd AcceptanceTests
+msbuild
