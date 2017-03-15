@@ -58,16 +58,11 @@ node('Jenkins-Win2016-Raptor') {
     if (currentBuild.result=='SUCCESS') {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Build Images'
-       bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion} ./Artifacts/WebApi"
+       bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}-${branchName} ./Artifacts/WebApi"
        bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest ./Artifacts/WebApi"
  
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'
-       bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}"
-	   //sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
-       //bat "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}"
-       //bat "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi"
-       //bat "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}"
-       //bat "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest"
+       bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}-${branchName}"
     }
 }
