@@ -57,7 +57,7 @@ node('Ubuntu_Slave') {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Build Images'
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion} ./artifacts/ProjectWebApi"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}-${branch} ./artifacts/ProjectWebApi"
  
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest ./artifacts/ProjectWebApi"
  
