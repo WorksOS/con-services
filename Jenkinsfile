@@ -62,11 +62,11 @@ node('Ubuntu_Slave') {
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'
        sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}"
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}-${branch}"
 
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi"
 
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}-${branch}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest"
     }
 }
