@@ -1,4 +1,4 @@
-dotnet publish ./test/UnitTests/MockProjectWebApi -o ./Artifacts/WebApi -f net462 -c Docker
-copy ./test/UnitTests/MockProjectWebApi/appsettings.json Artifacts/WebApi/
-copy ./test/UnitTests/MockProjectWebApi Artifacts/WebApi/
+dotnet publish ./test/MockProjectWebApi -o ./Artifacts/MockProjectWebApi -f net462 -c Docker
+copy ./test/MockProjectWebApi/appsettings.json Artifacts/MockProjectWebApi/
+copy ./test/MockProjectWebApi Artifacts/WebApi/
 
