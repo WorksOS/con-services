@@ -17,9 +17,9 @@ namespace EventTests
             msg.Title("Customer test 1", "Create one customer");
             var eventArray = new[] {
              "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
-            $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerUid} |"};
+            $"| CreateCustomerEvent | 0d+09:00:00 | CustName    | Customer     | {customerUid} |"};
 
-            testSupport.InjectEventsIntoKafka(eventArray);                                                   
+            testSupport.PublishEventCollection(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);                                       
             mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "CustName,1,0", customerUid);
         }
@@ -36,13 +36,13 @@ namespace EventTests
              "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
             $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerUid} |"};
 
-            testSupport.InjectEventsIntoKafka(eventArray);                                                   
+            testSupport.PublishEventCollection(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);    
             var updateEventArray = new[] {
              "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
             $"| UpdateCustomerEvent | 0d+10:00:00 | UpdatedName  | Customer     | {customerUid} |"};
 
-            testSupport.InjectEventsIntoKafka(updateEventArray);     
+            testSupport.PublishEventCollection(updateEventArray);     
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);                                               
             mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "UpdatedName,1,0", customerUid);
         }
@@ -59,13 +59,13 @@ namespace EventTests
              "| EventType           | EventDate   | CustomerName   | CustomerType | CustomerUID   |",
             $"| CreateCustomerEvent | 0d+09:00:00 | DeleteCustName | Customer     | {customerUid} |"};
 
-            testSupport.InjectEventsIntoKafka(eventArray);       
+            testSupport.PublishEventCollection(eventArray);       
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid); 
             var deleteEventArray = new[] {
              "| EventType           | EventDate   | CustomerName   | CustomerType | CustomerUID   |",
             $"| DeleteCustomerEvent | 0d+10:00:00 | DeleteCustName | Customer     | {customerUid} |"};
 
-            testSupport.InjectEventsIntoKafka(deleteEventArray);                                                         
+            testSupport.PublishEventCollection(deleteEventArray);                                                         
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);                                       
             mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "DeleteCustName,1,1", customerUid);
         }
@@ -83,13 +83,13 @@ namespace EventTests
              "| EventType                  | EventDate   | CustomerName   | CustomerType | CustomerUID   | UserUID   |",
             $"| CreateCustomerEvent        | 0d+09:00:00 | AssociateCust  | Customer     | {customerUid} |           |"};
 
-            testSupport.InjectEventsIntoKafka(eventArray);                                                   
+            testSupport.PublishEventCollection(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);  
             var customerUserArray = new[] {
              "| EventType                  | EventDate   | CustomerName   | CustomerType | CustomerUID   | UserUID   |",
             $"| AssociateCustomerUserEvent | 0d+10:00:00 |                |              | {customerUid} | {userUid} |"};
 
-            testSupport.InjectEventsIntoKafka(customerUserArray);           
+            testSupport.PublishEventCollection(customerUserArray);           
             mysql.VerifyTestResultDatabaseRecordCount("CustomerUser", "UserUID", 1, userUid);                                                 
             mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "AssociateCust,1,0", customerUid);
             mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerUser","UserUID", "fk_CustomerUID,UserUID",$"{customerUid}, {userUid}", userUid);
@@ -108,19 +108,19 @@ namespace EventTests
              "| EventType                   | EventDate   | CustomerName   | CustomerType | CustomerUID   | UserUID   |",
             $"| CreateCustomerEvent         | 0d+09:00:00 | AssociateCust  | Customer     | {customerUid} |           |"};
 
-            testSupport.InjectEventsIntoKafka(eventArray);                                                   
+            testSupport.PublishEventCollection(eventArray);                                                   
             mysql.VerifyTestResultDatabaseRecordCount("Customer", "CustomerUID", 1, customerUid);   
             var customerUserArray = new[] {
              "| EventType                   | EventDate   | CustomerUID   | UserUID   |",
             $"| AssociateCustomerUserEvent  | 1d+09:00:00 | {customerUid} | {userUid} |"};
 
-            testSupport.InjectEventsIntoKafka(customerUserArray);         
+            testSupport.PublishEventCollection(customerUserArray);         
             mysql.VerifyTestResultDatabaseRecordCount("CustomerUser", "UserUID", 1, userUid);       
             var customerUser2Array = new[] {
              "| EventType                   | EventDate   | CustomerUID   | UserUID   |",
             $"| DissociateCustomerUserEvent | 2d+09:00:00 | {customerUid} | {userUid} |"};
 
-            testSupport.InjectEventsIntoKafka(customerUser2Array);         
+            testSupport.PublishEventCollection(customerUser2Array);         
             mysql.VerifyTestResultDatabaseRecordCount("CustomerUser", "UserUID", 0, userUid);                                                 
             mysql.VerifyTestResultDatabaseFieldsAreExpected("Customer","CustomerUID", "Name,fk_CustomerTypeID,IsDeleted", "AssociateCust,1,0", customerUid);
         }

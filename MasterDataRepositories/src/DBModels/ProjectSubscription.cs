@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.Subscription.Data.Models
+namespace Repositories.DBModels
 {
   public class ProjectSubscription
   {

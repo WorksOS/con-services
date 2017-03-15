@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace KafkaConsumer
+namespace KafkaConsumer.Interfaces
 {
     public interface IMessageTypeResolver
     {

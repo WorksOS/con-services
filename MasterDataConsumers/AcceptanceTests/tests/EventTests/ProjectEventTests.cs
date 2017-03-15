@@ -11,7 +11,9 @@ namespace EventTests
   [TestClass]
   public class ProjectEventTests
   {
-//    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project-Only";
+    //    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project-Only";
+    const string GeometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
 
     [TestMethod]
     public void CreateProjectEvent()
@@ -21,18 +23,18 @@ namespace EventTests
       var mysql = new MySqlHelper();
   //    mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
-      DateTime startDate = testSupport.ConvertVSSDateString("-1d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("2d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("-1d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("2d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
-             "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-            $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
+             "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |" ,
+            $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GeometryWKT}  |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
-        $"testProject1, 1, {(int)ProjectType.ProjectMonitoring}, {startDate}, {endDate}", //Expected
+        $"testProject1,1,{(int)ProjectType.ProjectMonitoring},{startDate},{endDate}", //Expected
         projectGuid);
     }
 
@@ -44,14 +46,14 @@ namespace EventTests
       var mysql = new MySqlHelper();
 //      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("-2d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("-2d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
-             "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-            $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject2  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
+             "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+            $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject2  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GeometryWKT} |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 0, projectGuid); //no records should be inserted
       //mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
       //  "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
@@ -67,15 +69,15 @@ namespace EventTests
       var mysql = new MySqlHelper();
 //      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("900d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("900d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
-         "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject3  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
-        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject4  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
+         "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject3  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GeometryWKT} |",
+        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject4  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GeometryWKT} |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
@@ -91,14 +93,14 @@ namespace EventTests
       var mysql = new MySqlHelper();
 //      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
-        "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName     | ProjectType            | ProjectTimezone            | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-       $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject5    | {ProjectType.Standard} | New Zealand Standard Time  | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"  };
+        "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName     | ProjectType            | ProjectTimezone            | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+       $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | testProject5    | {ProjectType.Standard} | New Zealand Standard Time  | {startDate}      | {endDate}      | {GeometryWKT} |"  };
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
@@ -117,15 +119,15 @@ namespace EventTests
 //      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       string projectName = "testProject8";
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
-         "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-        $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
-        $"| UpdateProjectEvent | 0d+09:01:00 | 1         | {projectGuid} | {projectName} | {ProjectType.Standard} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
+         "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+        $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | {GeometryWKT} |",
+        $"| UpdateProjectEvent | 0d+09:01:00 | 1         | {projectGuid} | {projectName} | {ProjectType.Standard} | New Zealand Standard Time | {startDate}      | {endDate}      | {GeometryWKT} |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
@@ -143,15 +145,15 @@ namespace EventTests
   //    mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       string projectName = "testProject10";
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("42d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("42d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
-         "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
-        $"| UpdateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate.AddYears(10)}  | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
+         "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate          | GeometryWKT   |" ,
+        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}               | {GeometryWKT} |",
+        $"| UpdateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate.AddYears(10)}  | {GeometryWKT} |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
@@ -168,15 +170,15 @@ namespace EventTests
 //      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       string projectName = "testProject11";
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("42d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("42d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 10", "Create one project");
       var eventArray = new[] {
-        " | EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
-        $"| UpdateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {startDate.AddDays(-1)}  | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
+        " | EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate           | GeometryWKT   |" ,
+        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}                | {GeometryWKT} |",
+        $"| UpdateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {startDate.AddDays(-1)}  | {GeometryWKT} |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
@@ -195,15 +197,15 @@ namespace EventTests
   //    mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       string projectName = $"Test Project 12";
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 1", "Create one project");
       var eventArray = new[] {
-        " | EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-        $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | testProject11 | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
-        $"| UpdateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
+        " | EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+        $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | testProject11 | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | {GeometryWKT} |",
+        $"| UpdateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | {GeometryWKT} |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, StartDate, EndDate", //Fields
@@ -221,15 +223,15 @@ namespace EventTests
 //      mysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       string projectName = $"Test Project 13";
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
       msg.Title("Create Project test 13", "Create one project, then delete it");
       var eventArray = new[] {
-         "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName    | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName}  | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}     | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
-        $"| DeleteProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName}  | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}     | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
+         "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName    | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+        $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName}  | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}     | {endDate}       | {GeometryWKT} |",
+        $"| DeleteProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName}  | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}     | {endDate}       | {GeometryWKT} |"};
 
-      testSupport.InjectEventsIntoKafka(eventArray);
+      testSupport.PublishEventCollection(eventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID",
         "Name, LegacyProjectID, fk_ProjectTypeID, IsDeleted, StartDate, EndDate", //Fields
@@ -248,22 +250,22 @@ namespace EventTests
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Test Project 14";
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
 
 
       var customerEventArray = new[] {
              "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID   |",
             $"| CreateCustomerEvent | 0d+09:00:00 | CustName     | Customer     | {customerGuid} |"};
 
-      testSupport.InjectEventsIntoKafka(customerEventArray); //Create customer to associate project with
+      testSupport.PublishEventCollection(customerEventArray); //Create customer to associate project with
 
       msg.Title("Create Project test 14", "Create one project");
       var projectEventArray = new[] {
-        "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-       $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
+        "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+       $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | {GeometryWKT} |"};
 
-      testSupport.InjectEventsIntoKafka(projectEventArray);
+      testSupport.PublishEventCollection(projectEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
 
 
@@ -272,7 +274,7 @@ namespace EventTests
        $"| AssociateProjectCustomer | 0d+09:00:00 | {projectGuid} | {customerGuid} | "};
 
 
-      testSupport.InjectEventsIntoKafka(associateEventArray);
+      testSupport.PublishEventCollection(associateEventArray);
       //Verify project has been associated
       mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID",
         "fk_CustomerUID, fk_ProjectUID", //Fields
@@ -294,30 +296,30 @@ namespace EventTests
       var geofenceGuid = Guid.NewGuid();
       var userGuid = Guid.NewGuid();
       string projectName = $"Test Project 15";
-      DateTime startDate = testSupport.ConvertVSSDateString("0d+00:00:00");
-      DateTime endDate = testSupport.ConvertVSSDateString("10000d+00:00:00");
+      DateTime startDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00",testSupport.FirstEventDate);
+      DateTime endDate = testSupport.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",testSupport.FirstEventDate);
 
 
       var geofenceEventArray = new[] {
          "| EventType           | EventDate   | CustomerUID    | Description | FillColor | GeofenceName | GeofenceType | GeofenceUID    | GeometryWKT | IsTransparent | UserUID    | ",
         $"| CreateGeofenceEvent | 0d+09:00:00 | {customerGuid} | Fence       | 1         | SuperFence   | 0            | {geofenceGuid} | 1,2,3,4,5,6 | {false}       | {userGuid} |"};
 
-      testSupport.InjectEventsIntoKafka(geofenceEventArray); //Create customer to associate project with
+      testSupport.PublishEventCollection(geofenceEventArray); //Create customer to associate project with
       mysql.VerifyTestResultDatabaseRecordCount("Geofence", "GeofenceUID", 1, geofenceGuid);
 
       msg.Title("Create Project test 15", "Create one project");
       var projectEventArray = new[] {
-        "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | ProjectBoundary |" ,
-       $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) | "};
+        "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+       $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      | {GeometryWKT} | "};
 
-      testSupport.InjectEventsIntoKafka(projectEventArray);
+      testSupport.PublishEventCollection(projectEventArray);
       projectMysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
 
       var associateEventArray = new[] {
         "| EventType                | EventDate   | ProjectUID    | GeofenceUID    | ",
        $"| AssociateProjectGeofence | 0d+09:00:00 | {projectGuid} | {geofenceGuid} | "};
       
-      testSupport.InjectEventsIntoKafka(associateEventArray);
+      testSupport.PublishEventCollection(associateEventArray);
 
       projectMysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
       projectMysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID",

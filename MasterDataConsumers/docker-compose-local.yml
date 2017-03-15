@@ -56,6 +56,34 @@ services:
     depends_on:
       - schema
       - kafka
+  masterdataconsumerasset:
+    build: ./artifacts/MasterDataConsumer
+    image: masterdataconsumerasset
+    env_file:
+     - docker-compose-local.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IAssetEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+    volumes:
+      - ./artifacts/logs:/app/logs
+    depends_on:
+      - schema
+      - kafka
+  masterdataconsumerdevice:
+    build: ./artifacts/MasterDataConsumer
+    image: masterdataconsumerdevice
+    env_file:
+     - docker-compose-local.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IDeviceEvent
+     - KAFKA_OFFSET=latest
+     - KAFKA_TOPIC_NAME_SUFFIX=-Project
+    volumes:
+      - ./artifacts/logs:/app/logs
+    depends_on:
+      - schema
+      - kafka
   schema:
     build: ./Database
     env_file:
@@ -79,7 +107,7 @@ services:
      - docker-compose-local.env  
     environment:
      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-     - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IProjectEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IGeofenceEvent-Project:1:1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Project:1:1
+     - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IProjectEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IGeofenceEvent-Project:1:1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IAssetEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IDeviceEvent-Project:1:1
     ports:
      - "9092:9092"
     volumes:

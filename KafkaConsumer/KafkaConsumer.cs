@@ -4,11 +4,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using VSS.Project.Service.Interfaces;
-using VSS.Project.Service.Utils;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
+using KafkaConsumer.Kafka;
+using KafkaConsumer.Interfaces;
+using Repositories;
 
 namespace KafkaConsumer
 {

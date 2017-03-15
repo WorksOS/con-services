@@ -7,10 +7,10 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using VSS.Masterdata.Service.Repositories;
+using Repositories.DBModels;
+using Repositories.ExtendedModels;
 
-namespace VSS.Customer.Data
+namespace Repositories
 {
   public class CustomerRepository : RepositoryBase, IRepository<ICustomerEvent>
   {
@@ -21,6 +21,7 @@ namespace VSS.Customer.Data
       log = logger.CreateLogger<CustomerRepository>();
     }
 
+    #region store
     public async Task<int> StoreEvent(ICustomerEvent evt)
     {
       var upsertedCount = 0;
@@ -28,7 +29,7 @@ namespace VSS.Customer.Data
       if (evt is CreateCustomerEvent)
       {
         var customerEvent = (CreateCustomerEvent)evt;
-        var customer = new Models.Customer();
+        var customer = new Customer();
         customer.Name = customerEvent.CustomerName;
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.CustomerType = (CustomerType)Enum.Parse(typeof(CustomerType), customerEvent.CustomerType, true);
@@ -38,7 +39,7 @@ namespace VSS.Customer.Data
       else if (evt is UpdateCustomerEvent)
       {
         var customerEvent = (UpdateCustomerEvent)evt;
-        var customer = new Models.Customer();
+        var customer = new Customer();
         customer.Name = customerEvent.CustomerName;
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.LastActionedUTC = customerEvent.ActionUTC;
@@ -47,7 +48,7 @@ namespace VSS.Customer.Data
       else if (evt is DeleteCustomerEvent)
       {
         var customerEvent = (DeleteCustomerEvent)evt;
-        var customer = new Models.Customer();
+        var customer = new Customer();
         customer.CustomerUID = customerEvent.CustomerUID.ToString();
         customer.LastActionedUTC = customerEvent.ActionUTC;
         upsertedCount = await UpsertCustomerDetail(customer, "DeleteCustomerEvent");
@@ -55,7 +56,7 @@ namespace VSS.Customer.Data
       else if (evt is AssociateCustomerUserEvent)
       {
         var customerEvent = (AssociateCustomerUserEvent)evt;
-        var customerUser = new Models.CustomerUser();
+        var customerUser = new CustomerUser();
         customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
         customerUser.UserUID = customerEvent.UserUID.ToString();
         customerUser.LastActionedUTC = customerEvent.ActionUTC;
@@ -64,11 +65,20 @@ namespace VSS.Customer.Data
       else if (evt is DissociateCustomerUserEvent)
       {
         var customerEvent = (DissociateCustomerUserEvent)evt;
-        var customerUser = new Models.CustomerUser();
+        var customerUser = new CustomerUser();
         customerUser.CustomerUID = customerEvent.CustomerUID.ToString();
         customerUser.UserUID = customerEvent.UserUID.ToString();
         customerUser.LastActionedUTC = customerEvent.ActionUTC;
         upsertedCount = await UpsertCustomerUserDetail(customerUser, "DissociateCustomerUserEvent");
+      }
+      else if (evt is CreateCustomerTccOrgEvent)
+      {
+        var customerEvent = (CreateCustomerTccOrgEvent)evt;
+        var customerTccOrg = new CustomerTccOrg();
+        customerTccOrg.CustomerUID = customerEvent.CustomerUID.ToString();
+        customerTccOrg.TCCOrgID = customerEvent.TCCOrgID;
+        customerTccOrg.LastActionedUTC = customerEvent.ActionUTC;
+        upsertedCount = await UpsertCustomerTccOrg(customerTccOrg, "CreateCustomerTccOrgEvent");
       }
 
       return upsertedCount;
@@ -82,13 +92,13 @@ namespace VSS.Customer.Data
     /// <param name="customer"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertCustomerDetail(Models.Customer customer, string eventType)
+    private async Task<int> UpsertCustomerDetail(Customer customer, string eventType)
     {
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
 
-      var existing = (await Connection.QueryAsync<Models.Customer>
+      var existing = (await Connection.QueryAsync<Customer>
         (@"SELECT 
                 CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC
               FROM Customer
@@ -121,7 +131,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private async Task<int> CreateCustomer(Models.Customer customer, Models.Customer existing)
+    private async Task<int> CreateCustomer(Customer customer, Customer existing)
     {
       var upsertedCount = 0;
       if (existing == null)
@@ -164,7 +174,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private async Task<int> UpdateCustomer(Models.Customer customer, Models.Customer existing)
+    private async Task<int> UpdateCustomer(Customer customer, Customer existing)
     {
       var upsertedCount = 0;
       if (existing != null)
@@ -209,7 +219,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private async Task<int> DeleteCustomer(Models.Customer customer, Models.Customer existing)
+    private async Task<int> DeleteCustomer(Customer customer, Customer existing)
     {
       var upsertedCount = 0;
       if (existing == null)
@@ -258,38 +268,6 @@ namespace VSS.Customer.Data
       
     }
 
-    public async Task<Models.Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
-    {
-      await PerhapsOpenConnection();
-
-      var customer = (await Connection.QueryAsync<Models.Customer>
-          (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, c.LastActionedUTC 
-                FROM Customer c 
-                JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
-                WHERE cu.UserUID = @userUid AND c.IsDeleted = 0",
-            new { userUid = userUid.ToString() }
-            )).FirstOrDefault();
-
-      PerhapsCloseConnection();
-
-      return customer;
-    }
-
-    public async Task<Models.Customer> GetCustomer(System.Guid customerUid)
-    {
-      await PerhapsOpenConnection();
-
-      var customer = (await Connection.QueryAsync<Models.Customer>
-          (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
-                FROM Customer 
-                WHERE CustomerUID = @customerUid AND IsDeleted = 0",
-             new { customerUid = customerUid.ToString() }
-             )).FirstOrDefault();
-
-      PerhapsCloseConnection();
-
-      return customer;
-    }
 
     /// <summary>
     /// All CustomerUser detail-related columns can be inserted, 
@@ -299,13 +277,13 @@ namespace VSS.Customer.Data
     /// <param name="customerUser"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertCustomerUserDetail(Models.CustomerUser customerUser, string eventType)
+    private async Task<int> UpsertCustomerUserDetail(CustomerUser customerUser, string eventType)
     {
       int upsertedCount = 0;
 
       await PerhapsOpenConnection();
 
-      var existing = (await Connection.QueryAsync<Models.CustomerUser>
+      var existing = (await Connection.QueryAsync<CustomerUser>
         (@"SELECT 
                 UserUID, fk_CustomerUID AS CustomerUID, LastActionedUTC
               FROM CustomerUser
@@ -327,7 +305,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private async Task<int> AssociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
+    private async Task<int> AssociateCustomerUser(CustomerUser customerUser, CustomerUser existing)
     {
       var upsertedCount = 0;
       if (existing == null)
@@ -342,7 +320,7 @@ namespace VSS.Customer.Data
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, customerUser);
-           log.LogDebug("CustomerRepository/AssociateCustomerUser: upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customerUser.CustomerUID);
+          log.LogDebug("CustomerRepository/AssociateCustomerUser: upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customerUser.CustomerUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         });
       }
@@ -351,7 +329,7 @@ namespace VSS.Customer.Data
       return upsertedCount;
     }
 
-    private async Task<int> DissociateCustomerUser(Models.CustomerUser customerUser, Models.CustomerUser existing)
+    private async Task<int> DissociateCustomerUser(CustomerUser customerUser, CustomerUser existing)
     {
       var upsertedCount = 0;
       if (existing != null)
@@ -376,17 +354,142 @@ namespace VSS.Customer.Data
       }
       else
       {
-        log.LogDebug("CustomerRepository/DissociateCustomerUser: can't delete as none existing customerUser={0}", JsonConvert.SerializeObject(customerUser));        
+        log.LogDebug("CustomerRepository/DissociateCustomerUser: can't delete as none existing customerUser={0}", JsonConvert.SerializeObject(customerUser));
       }
       return upsertedCount;
     }
 
+    /// <summary>
+    /// CustomerTccOrg event may eventually come from VLAdmin.
+    ///   this is a placeholder for testing, as of now, inserting into this table will be done manually
+    /// </summary>
+    /// <param name="customerTccOrg"></param>
+    /// <param name="eventType"></param>
+    /// <returns></returns>
+    private async Task<int> UpsertCustomerTccOrg(CustomerTccOrg customerTccOrg, string eventType)
+    {
+      int upsertedCount = 0;
 
-    public async Task<Models.Customer> GetCustomer_UnitTest(System.Guid customerUid)
+      await PerhapsOpenConnection();
+
+      var existing = (await Connection.QueryAsync<CustomerUser>
+        (@"SELECT 
+               CustomerUID, TCCOrgID, LastActionedUTC
+              FROM CustomerTccOrg
+              WHERE CustomerUID = @customerUID",
+          new { customerUID = customerTccOrg.CustomerUID }
+          )).FirstOrDefault();
+
+      if (eventType == "CreateCustomerTccOrgEvent")
+      {
+        upsertedCount = await CreateCustomerTccOrg(customerTccOrg, existing);
+      }
+
+      PerhapsCloseConnection();
+      return upsertedCount;
+    }
+
+    private async Task<int> CreateCustomerTccOrg(CustomerTccOrg customerTccOrg, CustomerUser existing)
+    {
+      var upsertedCount = 0;
+      if (existing == null)
+      {
+        log.LogDebug("CustomerRepository/CreateCustomerTccOrg: inserting a customerTccOrg={0}", JsonConvert.SerializeObject(customerTccOrg));
+        const string insert =
+          @"INSERT CustomerTccOrg
+              (CustomerUID, TCCOrgID, LastActionedUTC)
+            VALUES
+              (@CustomerUID, @TCCOrgID, @LastActionedUTC)";
+
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, customerTccOrg);
+          log.LogDebug("CustomerRepository/CreateCustomerTccOrg: upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customerTccOrg.CustomerUID);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
+      }
+
+      return upsertedCount;
+  }
+
+
+
+
+    #endregion store
+
+    #region getters
+    public async Task<Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
     {
       await PerhapsOpenConnection();
 
-      var customer = (await Connection.QueryAsync<Models.Customer>
+      var customer = (await Connection.QueryAsync<Customer>
+          (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, c.LastActionedUTC 
+                FROM Customer c 
+                JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
+                WHERE cu.UserUID = @userUid AND c.IsDeleted = 0",
+            new { userUid = userUid.ToString() }
+            )).FirstOrDefault();
+
+      PerhapsCloseConnection();
+
+      return customer;
+    }
+
+    public async Task<Customer> GetCustomer(System.Guid customerUid)
+    {
+      await PerhapsOpenConnection();
+
+      var customer = (await Connection.QueryAsync<Customer>
+          (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
+                FROM Customer 
+                WHERE CustomerUID = @customerUid AND IsDeleted = 0",
+             new { customerUid = customerUid.ToString() }
+             )).FirstOrDefault();
+
+      PerhapsCloseConnection();
+
+      return customer;
+    }
+
+    public async Task<CustomerTccOrg> GetCustomerWithTccOrg(System.Guid customerUid)
+    {
+      await PerhapsOpenConnection();
+
+      var customer = (await Connection.QueryAsync<CustomerTccOrg>
+          (@"SELECT c.CustomerUID, c.Name, c.fk_CustomerTypeID AS CustomerType, c.IsDeleted, c.LastActionedUTC, cto.TCCOrgID
+                FROM Customer c
+                  LEFT OUTER JOIN CustomerTccOrg cto ON cto.CustomerUID = c.CustomerUID
+                WHERE c.CustomerUID = @customerUid AND c.IsDeleted = 0",
+             new { customerUid = customerUid.ToString() }
+             )).FirstOrDefault();
+
+      PerhapsCloseConnection();
+
+      return customer;
+    }
+
+    public async Task<CustomerTccOrg> GetCustomerWithTccOrg(string tccOrgUid)
+    {
+      await PerhapsOpenConnection();
+
+      var customer = (await Connection.QueryAsync<CustomerTccOrg>
+          (@"SELECT c.CustomerUID, c.Name, c.fk_CustomerTypeID AS CustomerType, c.IsDeleted, c.LastActionedUTC, cto.TCCOrgID 
+                FROM CustomerTccOrg cto 
+                  INNER JOIN Customer c ON c.CustomerUID = cto.CustomerUID  
+                WHERE cto.TCCOrgId = @tccOrgUid AND c.IsDeleted = 0",
+             new { tccOrgUid }
+             )).FirstOrDefault();
+
+      PerhapsCloseConnection();
+
+      return customer;
+    }
+    
+    public async Task<Customer> GetCustomer_UnitTest(System.Guid customerUid)
+    {
+      await PerhapsOpenConnection();
+
+      var customer = (await Connection.QueryAsync<Customer>
           (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
                 FROM Customer 
                 WHERE CustomerUID = @customerUid",
@@ -398,11 +501,11 @@ namespace VSS.Customer.Data
       return customer;
     }
 
-    public async Task<Models.CustomerUser> GetAssociatedCustomerbyUserUid_UnitTest(System.Guid userUid)
+    public async Task<CustomerUser> GetAssociatedCustomerbyUserUid_UnitTest(System.Guid userUid)
     {
       await PerhapsOpenConnection();
 
-      var customer = (await Connection.QueryAsync<Models.CustomerUser>
+      var customer = (await Connection.QueryAsync<CustomerUser>
           (@"SELECT fk_CustomerUID AS CustomerUID, UserUID, LastActionedUTC 
                 FROM CustomerUser
                 WHERE UserUID = @userUid",
@@ -413,5 +516,7 @@ namespace VSS.Customer.Data
 
       return customer;
     }
+
+    #endregion getters
   }
 }

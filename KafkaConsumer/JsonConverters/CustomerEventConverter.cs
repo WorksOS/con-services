@@ -24,6 +24,11 @@ public class CustomerEventConverter : JsonCreationConverter<ICustomerEvent>
     {
         return jObject["AssociateCustomerUserEvent"].ToObject<AssociateCustomerUserEvent>();
     }
-    return jObject["DissociateCustomerUserEvent"].ToObject<DissociateCustomerUserEvent>();
+    if (jObject["DissociateCustomerUserEvent"] != null)
+    {
+      return jObject["DissociateCustomerUserEvent"].ToObject<DissociateCustomerUserEvent>();
+    }
+
+    return null;
   }
 }

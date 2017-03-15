@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Project.Data.Models
+namespace Repositories.DBModels
 {
   public class Project
   {
@@ -22,7 +22,7 @@ namespace VSS.Project.Data.Models
 
     // start and end are actually only date with no time component. However C# has no date-only.
     public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; } = DateTime.MaxValue.Date;
+    public DateTime EndDate { get; set; } // = DateTime.MaxValue.Date;
 
 
     //These properties are associations from link tables
@@ -35,6 +35,9 @@ namespace VSS.Project.Data.Models
 
     public DateTime? SubscriptionEndDate { get; set; }
     public string GeometryWKT { get; set; }
+
+    public int ServiceTypeID { get; set; } = 0;
+    public DateTime? SubscriptionStartDate { get; set; }
 
     public override bool Equals(object obj)
     {

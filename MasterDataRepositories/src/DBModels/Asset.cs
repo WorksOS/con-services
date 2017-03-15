@@ -1,15 +1,17 @@
 ﻿using System;
 
-namespace VSS.Asset.Data.Models
+namespace Repositories.DBModels
 {
   public class Asset
   {
     public string AssetUID { get; set; }
     public string Name { get; set; }
     public long LegacyAssetID { get; set; }
+    public string EquipmentVIN { get; set; }
     public string SerialNumber { get; set; }
     public string MakeCode { get; set; }
     public string Model { get; set; }
+    public int? ModelYear { get; set; }
     public string AssetType { get; set; }
     public int? IconKey { get; set; }
     public string OwningCustomerUID { get; set; }
@@ -23,9 +25,11 @@ namespace VSS.Asset.Data.Models
       return otherAsset.AssetUID == AssetUID
         && otherAsset.Name == Name
         && otherAsset.LegacyAssetID == LegacyAssetID
+        && otherAsset.EquipmentVIN == EquipmentVIN
         && otherAsset.SerialNumber == SerialNumber
         && otherAsset.MakeCode == MakeCode        
         && otherAsset.Model == Model
+        && otherAsset.ModelYear == ModelYear
         && otherAsset.AssetType == AssetType
         && otherAsset.IconKey == IconKey
         && otherAsset.OwningCustomerUID == OwningCustomerUID

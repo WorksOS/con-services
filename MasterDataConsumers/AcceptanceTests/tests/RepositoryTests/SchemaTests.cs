@@ -39,6 +39,16 @@ namespace RepositoryTests
       gc = serviceProvider.GetService<IConfigurationStore>();
     }
 
+    [TestMethod]
+    public void AssetSchemaExists()
+    {
+      const string tableName = "Asset";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "AssetUID", "LegacyAssetID", "Name" , "MakeCode" , "SerialNumber", "Model", "ModelYear", "IconKey", "AssetType", "IsDeleted", "OwningCustomerUID", "EquipmentVIN", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
 
     [TestMethod]
     public void CustomerSchemaExists()
@@ -64,12 +74,34 @@ namespace RepositoryTests
 
 
     [TestMethod]
+    public void DeviceSchemaExists()
+    {
+      const string tableName = "Device";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "DeviceUID", "DeviceSerialNumber", "DeviceType" , "DeviceState" , "DeregisteredUTC", "ModuleType", "MainboardSoftwareVersion", "RadioFirmwarePartNumber", "GatewayFirmwarePartNumber", "DataLinkType", "OwningCustomerUID", "LastActionedUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void AssetDeviceSchemaExists()
+    {
+      const string tableName = "AssetDevice";
+      List<string> columnNames = new List<string>
+          {
+            "ID", "fk_DeviceUID", "fk_AssetUID", "LastActionedUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
     public void ProjectSchemaExists()
     {
       const string tableName = "Project";
       List<string> columnNames = new List<string>
           {
-            "ID", "ProjectUID", "LegacyProjectID", "Name", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ID", "ProjectUID", "LegacyProjectID", "Name", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC", "PolygonST"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -81,6 +113,17 @@ namespace RepositoryTests
       List<string> columnNames = new List<string>
           {
             "fk_CustomerUID", "fk_ProjectUID", "LegacyCustomerID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void CustomerTccOrgSchemaExists()
+    {
+      const string tableName = "CustomerTccOrg";
+      List<string> columnNames = new List<string>
+          {
+            "CustomerUID", "TCCOrgID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -103,6 +146,17 @@ namespace RepositoryTests
       List<string> columnNames = new List<string>
           {
             "fk_ProjectUID", "fk_SubscriptionUID", "EffectiveDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void AssetSubscriptionSchemaExists()
+    {
+      const string tableName = "AssetSubscription";
+      List<string> columnNames = new List<string>
+          {
+            "fk_AssetUID", "fk_SubscriptionUID", "EffectiveDate", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }

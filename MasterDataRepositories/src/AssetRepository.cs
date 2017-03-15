@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -7,11 +6,10 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using VSS.Masterdata.Service.Repositories;
 using System.Collections.Generic;
+using Repositories.DBModels;
 
-namespace VSS.Asset.Data
+namespace Repositories
 {
   public class AssetRepository : RepositoryBase, IRepository<IAssetEvent>
   { 
@@ -22,23 +20,26 @@ namespace VSS.Asset.Data
       log = logger.CreateLogger<AssetRepository>();
     }
 
+    #region store
     public async Task<int> StoreEvent(IAssetEvent evt)
     {
       var upsertedCount = 0;
-      var asset = new Models.Asset();
+      var asset = new Asset();
       string eventType = "Unknown";
       if (evt is CreateAssetEvent)
       {
         var assetEvent = (CreateAssetEvent)evt;
-        asset.AssetUID = assetEvent.AssetUID.ToString();
         asset.Name = assetEvent.AssetName;
+        asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? null : assetEvent.AssetType;
+        asset.AssetUID = assetEvent.AssetUID.ToString();
+        asset.EquipmentVIN = assetEvent.EquipmentVIN;
         asset.LegacyAssetID = assetEvent.LegacyAssetId;
         asset.SerialNumber = assetEvent.SerialNumber;
         asset.MakeCode = assetEvent.MakeCode;
         asset.Model = assetEvent.Model;
-        asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? "Unassigned" : assetEvent.AssetType;
+        asset.ModelYear = assetEvent.ModelYear;        
         asset.IconKey = assetEvent.IconKey;
-        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.ToString();
+        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue ? assetEvent.OwningCustomerUID.ToString() : null;
         asset.IsDeleted = false;
         asset.LastActionedUtc = assetEvent.ActionUTC;
         eventType = "CreateAssetEvent";
@@ -48,11 +49,13 @@ namespace VSS.Asset.Data
         var assetEvent = (UpdateAssetEvent)evt;
         asset.AssetUID = assetEvent.AssetUID.ToString();
         asset.Name = assetEvent.AssetName;
-        asset.LegacyAssetID = assetEvent.LegacyAssetId ?? assetEvent.LegacyAssetId.Value;
+        asset.LegacyAssetID = assetEvent.LegacyAssetId.HasValue ? assetEvent.LegacyAssetId.Value : -1;
         asset.Model = assetEvent.Model;
-        asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? "Unassigned" : assetEvent.AssetType;
+        asset.ModelYear = assetEvent.ModelYear;
+        asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? null : assetEvent.AssetType;
         asset.IconKey = assetEvent.IconKey;
-        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.ToString();
+        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue ? assetEvent.OwningCustomerUID.ToString() : null;
+        asset.EquipmentVIN = assetEvent.EquipmentVIN;
         asset.IsDeleted = false;
         asset.LastActionedUtc = assetEvent.ActionUTC;
         eventType = "UpdateAssetEvent";
@@ -78,7 +81,7 @@ namespace VSS.Asset.Data
     /// <param name="asset"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertAssetDetail(Models.Asset asset, string eventType)
+    private async Task<int> UpsertAssetDetail(Asset asset, string eventType)
     {
       try
       {
@@ -89,9 +92,9 @@ namespace VSS.Asset.Data
 
           var existing = await dbAsyncPolicy.ExecuteAsync(async () =>
           {
-            return (await Connection.QueryAsync<Models.Asset>
+            return (await Connection.QueryAsync<Asset>
                       (@"SELECT 
-                              AssetUID AS AssetUid, Name, LegacyAssetID, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
+                              AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, 
                               LastActionedUTC AS LastActionedUtc
                             FROM Asset
                             WHERE AssetUID = @assetUid"
@@ -127,18 +130,19 @@ namespace VSS.Asset.Data
       }
     }
 
-    private async Task<int> CreateAsset(Models.Asset asset, Models.Asset existing)
+    private async Task<int> CreateAsset(Asset asset, Asset existing)
     {
       try
       {
         await PerhapsOpenConnection();
         if (existing == null)
         {
+          asset.AssetType = asset.AssetType == null ? "Unassigned" : asset.AssetType;
           const string upsert =
               @"INSERT Asset
-                    (AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted, LastActionedUTC )
+                    (AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, LastActionedUTC )
                   VALUES
-                   (@AssetUid, @Name, @LegacyAssetID, @SerialNumber, @MakeCode, @Model, @AssetType, @IconKey, @OwningCustomerUID, @IsDeleted, @LastActionedUtc)
+                   (@AssetUid, @Name, @LegacyAssetID, @SerialNumber, @MakeCode, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)
           ";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
@@ -149,6 +153,16 @@ namespace VSS.Asset.Data
                  // was generated by one of the internal updates e.g. LastUpdatedTime
                  || asset.LastActionedUtc >= existing.LastActionedUtc) // potential intentional reprocessing
         {
+
+          asset.Name = asset.Name == null ? existing.Name : asset.Name;
+          asset.LegacyAssetID = asset.LegacyAssetID == -1 ? existing.LegacyAssetID : asset.LegacyAssetID;
+          asset.Model = asset.Model == null ? existing.Model : asset.Model;
+          asset.ModelYear = asset.ModelYear == null ? existing.ModelYear : asset.ModelYear;
+          asset.AssetType = asset.AssetType == null ? existing.AssetType : asset.AssetType;
+          asset.IconKey = asset.IconKey == null ? existing.IconKey : asset.IconKey;
+          asset.OwningCustomerUID = asset.OwningCustomerUID == null ? existing.OwningCustomerUID : asset.OwningCustomerUID;
+          asset.EquipmentVIN = asset.EquipmentVIN == null ? existing.EquipmentVIN : asset.EquipmentVIN;
+
           const string update =
               @"UPDATE Asset                
                   SET Name = @Name,
@@ -156,9 +170,11 @@ namespace VSS.Asset.Data
                       SerialNumber = @SerialNumber,
                       MakeCode = @MakeCode,
                       Model = @Model,
+                      ModelYear = @ModelYear,
                       AssetType = @AssetType,
                       IconKey = @IconKey,      
-                      OwningCustomerUID = @OwningCustomerUID,      
+                      OwningCustomerUID = @OwningCustomerUID,
+                      EquipmentVIN = @EquipmentVIN,      
                       LastActionedUTC = @LastActionedUtc
                 WHERE AssetUID = @AssetUid";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
@@ -187,7 +203,7 @@ namespace VSS.Asset.Data
       }
     }
 
-    private async Task<int> DeleteAsset(Models.Asset asset, Models.Asset existing)
+    private async Task<int> DeleteAsset(Asset asset, Asset existing)
     {
       try
       {
@@ -236,7 +252,7 @@ namespace VSS.Asset.Data
       }
     }
 
-    private async Task<int> UpdateAsset(Models.Asset asset, Models.Asset existing)
+    private async Task<int> UpdateAsset(Asset asset, Asset existing)
     {
       try
       {
@@ -245,14 +261,25 @@ namespace VSS.Asset.Data
         {
           if (asset.LastActionedUtc >= existing.LastActionedUtc)
           {
+            asset.Name = asset.Name == null ? existing.Name : asset.Name;
+            asset.LegacyAssetID = asset.LegacyAssetID == -1 ? existing.LegacyAssetID : asset.LegacyAssetID;
+            asset.Model = asset.Model == null ? existing.Model : asset.Model;
+            asset.ModelYear = asset.ModelYear == null ? existing.ModelYear : asset.ModelYear;
+            asset.AssetType = asset.AssetType == null ? existing.AssetType : asset.AssetType;
+            asset.IconKey = asset.IconKey == null ? existing.IconKey : asset.IconKey;
+            asset.OwningCustomerUID = asset.OwningCustomerUID == null ? existing.OwningCustomerUID : asset.OwningCustomerUID;
+            asset.EquipmentVIN = asset.EquipmentVIN == null ? existing.EquipmentVIN : asset.EquipmentVIN;
+
             const string update =
                 @"UPDATE Asset                
                     SET Name = @Name,
                       LegacyAssetId = @LegacyAssetId,
                       Model = @Model,                      
+                      ModelYear = @ModelYear, 
                       AssetType = @AssetType,
                       IconKey = @IconKey,
                       OwningCustomerUID = @OwningCustomerUID,
+                      EquipmentVIN = @EquipmentVIN,
                       LastActionedUTC = @LastActionedUtc
                     WHERE AssetUID = @AssetUid";
             return await dbAsyncPolicy.ExecuteAsync(async () =>
@@ -272,11 +299,12 @@ namespace VSS.Asset.Data
           log.LogDebug("AssetRepository: Inserted an UpdateAssetEvent as none existed.  newActionedUTC{0}",
               asset.LastActionedUtc);
 
+          asset.AssetType = asset.AssetType == null ? "Unassigned" : asset.AssetType;
           const string upsert =
               @"INSERT Asset
-                    (AssetUID, Name, LegacyAssetId, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted, LastActionedUTC )
+                    (AssetUID, Name, LegacyAssetId, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, LastActionedUTC )
                   VALUES
-                    (@AssetUid, @Name, @LegacyAssetId, @Model, @AssetType, @IconKey, @OwningCustomerUID, @IsDeleted, @LastActionedUtc)
+                    (@AssetUid, @Name, @LegacyAssetId, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)
           ";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
@@ -291,16 +319,19 @@ namespace VSS.Asset.Data
       }
     }
 
-    public async Task<Models.Asset> GetAsset(string assetUid)
+    #endregion store
+
+    #region getters
+    public async Task<Asset> GetAsset(string assetUid)
     {
       try
       {
         await PerhapsOpenConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
-          return (await Connection.QueryAsync<Models.Asset>
+          return (await Connection.QueryAsync<Asset>
                   (@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
+                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE AssetUID = @assetUid 
@@ -315,16 +346,40 @@ namespace VSS.Asset.Data
       }
     }
 
-    public async Task<IEnumerable<Models.Asset>> GetAssets()
+    public async Task<Asset> GetAsset(long legacyAssetId)
     {
       try
       {
         await PerhapsOpenConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
-          return (await Connection.QueryAsync<Models.Asset>
+          return (await Connection.QueryAsync<Asset>
                   (@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
+                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
+                        LastActionedUTC AS LastActionedUtc
+                      FROM Asset
+                      WHERE LegacyAssetId = @legacyAssetId 
+                        AND IsDeleted = 0"
+                      , new { legacyAssetId }
+                  )).FirstOrDefault();
+        });
+      }
+      finally
+      {
+        PerhapsCloseConnection();
+      }
+    }
+
+    public async Task<IEnumerable<Asset>> GetAssets()
+    {
+      try
+      {
+        await PerhapsOpenConnection();
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          return (await Connection.QueryAsync<Asset>
+                  (@"SELECT 
+                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE IsDeleted = 0"
@@ -341,16 +396,16 @@ namespace VSS.Asset.Data
     /// Used for unit tests so we can test deleted assets
     /// </summary>
     /// <returns></returns>
-    public async Task<IEnumerable<Models.Asset>> GetAllAssetsInternal()
+    public async Task<IEnumerable<Asset>> GetAllAssetsInternal()
     {
       try
       {
         await PerhapsOpenConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
-          return (await Connection.QueryAsync<Models.Asset>
+          return (await Connection.QueryAsync<Asset>
                   (@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
+                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset"
                   )).ToList();
@@ -362,17 +417,16 @@ namespace VSS.Asset.Data
       }
     }
 
-
-    public async Task<IEnumerable<Models.Asset>> GetAssets(string[] productFamily)
+    public async Task<IEnumerable<Asset>> GetAssets(string[] productFamily)
     {
       try
       {
         await PerhapsOpenConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
-          return (await Connection.QueryAsync<Models.Asset>
+          return (await Connection.QueryAsync<Asset>
                   (@"SELECT 
-                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, AssetType, IconKey, OwningCustomerUID, IsDeleted,
+                        AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset 
                       WHERE AssetType IN @families
@@ -385,95 +439,7 @@ namespace VSS.Asset.Data
       }
     }
 
-
-    //#region AssetCount
-    ///// <summary>
-    /////  must have either 
-    /////      1 no parameters, which means count of 'All Assets'
-    /////      2 grouping OR parameter
-    /////  The only valid AssetCountGrouping is ProductFamily
-    /////  
-    /////  If there is a grouping, 
-    /////      then a list of existing productFamilies with count on each is returned 
-    /////  If there is not a grouping and no parameters
-    /////      then the count of ALL Assets (>=0) meeting any other criteria is returned
-    /////  If there is not a grouping but a list of parameters
-    /////      then the count of ALL Assets (>=0) with the ProductFamily and meeting any other criteria is returned
-    ///// </summary>
-    ///// <param name="grouping"></param>
-    ///// <param name="productFamily"></param>
-    ///// <returns></returns>
-    //public async Task<List<CategoryCount>> GetAssetCount(AssetCountGrouping? grouping, string[] productFamily)
-    //{
-    //  var assetCount = new List<CategoryCount>();
-
-    //  if (grouping.HasValue)
-    //    if ((productFamily != null && productFamily.Count() > 0)
-    //        || (grouping.Value != AssetCountGrouping.ProductFamily))
-    //      return assetCount;
-
-    //  try
-    //  {
-    //    await PerhapsOpenConnection();
-
-    //    if (grouping.HasValue)
-    //    {
-    //      return await dbAsyncPolicy.ExecuteAsync(async () =>
-    //      {
-    //        return (await Connection.QueryAsync<CategoryCount>
-    //        (@"SELECT 
-    //                 AssetType AS CountOf, COUNT(1) AS Count
-    //               FROM Asset 
-    //               WHERE IsDeleted = 0 
-    //               GROUP BY AssetType
-    //               ORDER BY AssetType")).ToList();
-    //      });
-    //    }
-    //    else
-    //    if (productFamily != null && productFamily.Count() > 0)
-    //    {
-    //      return await dbAsyncPolicy.ExecuteAsync(async () =>
-    //      {
-    //        string queryString = string.Format(
-    //            "SELECT " +
-    //            "    \"All Assets\" AS CountOf, COUNT(1) AS Count " +
-    //            "  FROM Asset " +
-    //            "  WHERE AssetType IN @families " +
-    //            "    AND IsDeleted = 0");
-    //        return (await Connection.QueryAsync<CategoryCount>(@queryString, new { families = productFamily })).ToList();
-
-    //      });
-    //    }
-    //    else
-    //    {
-    //      return await dbAsyncPolicy.ExecuteAsync(async () =>
-    //      {
-    //        string queryString = string.Format(
-    //            "SELECT " +
-    //            "    \"All Assets\" AS CountOf, COUNT(1) AS Count " +
-    //            "  FROM Asset " +
-    //            "  WHERE IsDeleted = 0");
-    //        return (await Connection.QueryAsync<CategoryCount>(@queryString)).ToList();
-    //      });
-    //    }
-    //  }
-    //  finally
-    //  {
-    //    PerhapsCloseConnection();
-    //  }
-    //}
-
-    // leave this in for now as there is a case in S&F WebAPI (not VSP) which requires range filters to report totals on each requested group
-    //private List<CategoryCount> FormatList(string[] productFamily, IEnumerable<CategoryCount> foundCategories)
-    //{
-    //  List<CategoryCount> categoryCounts = new List<CategoryCount>();
-    //  foreach (string f in productFamily)
-    //  {
-    //    var gotType = foundCategories == null ? null : foundCategories.FirstOrDefault(x => string.Compare(x.CountOf, f, true) == 0);
-    //    categoryCounts.Add(new CategoryCount() { CountOf = f, Count = (gotType == null ? 0 : gotType.Count) });
-    //  }
-    //  return categoryCounts;
-    //}
-    //#endregion
+    #endregion getters
+       
   }
 }

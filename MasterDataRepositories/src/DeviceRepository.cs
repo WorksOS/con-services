@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -7,11 +6,10 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Masterdata;
-using VSS.Masterdata.Service.Repositories;
-using System.Collections.Generic;
+using Repositories.DBModels;
+using Repositories.ExtendedModels;
 
-namespace VSS.Device.Data
+namespace Repositories
 {
   public class DeviceRepository : RepositoryBase, IRepository<IDeviceEvent>
   {
@@ -28,7 +26,7 @@ namespace VSS.Device.Data
       string eventType = "Unknown";
       if (evt is CreateDeviceEvent)
       {
-        var device = new VSS.Device.Data.Models.Device();
+        var device = new Device();
         var deviceEvent = (CreateDeviceEvent)evt;
         device.DeviceUID = deviceEvent.DeviceUID.ToString();
         device.DeviceSerialNumber = deviceEvent.DeviceSerialNumber;
@@ -39,34 +37,36 @@ namespace VSS.Device.Data
         device.MainboardSoftwareVersion = deviceEvent.MainboardSoftwareVersion;
         device.RadioFirmwarePartNumber = deviceEvent.RadioFirmwarePartNumber;
         device.GatewayFirmwarePartNumber = deviceEvent.GatewayFirmwarePartNumber;
-        device.DataLinkType = deviceEvent.DataLinkType;
+        device.DataLinkType = deviceEvent.DataLinkType;        
         device.LastActionedUtc = deviceEvent.ActionUTC;
-        eventType = "CreatedDeviceEvent";
+        eventType = "CreateDeviceEvent";
         upsertedCount = await UpsertDeviceDetail(device, eventType);
       }
       else if (evt is UpdateDeviceEvent)
       {
-        var device = new VSS.Device.Data.Models.Device();
+        var device = new Device();
         var deviceEvent = (UpdateDeviceEvent)evt;
         device.DeviceUID = deviceEvent.DeviceUID.ToString();
 
         // I don't think the following 2 can/should be altered todo?
         device.DeviceSerialNumber = deviceEvent.DeviceSerialNumber;
         device.DeviceType = deviceEvent.DeviceType;
-
         device.DeviceState = deviceEvent.DeviceState;
         device.DeregisteredUTC = deviceEvent.DeregisteredUTC;
+        device.ModuleType = deviceEvent.ModuleType;
         device.MainboardSoftwareVersion = deviceEvent.MainboardSoftwareVersion;
         device.RadioFirmwarePartNumber = deviceEvent.RadioFirmwarePartNumber;
         device.GatewayFirmwarePartNumber = deviceEvent.GatewayFirmwarePartNumber;
         device.DataLinkType = deviceEvent.DataLinkType;
+        // apparently this is differnt to the asset ownerCustomerUID but why is it only in the update??
+        device.OwningCustomerUID = deviceEvent.OwningCustomerUID;
         device.LastActionedUtc = deviceEvent.ActionUTC;
         eventType = "UpdateDeviceEvent";
         upsertedCount = await UpsertDeviceDetail(device, eventType);
       }
       else if (evt is AssociateDeviceAssetEvent)
       {
-        var deviceAsset = new AssetDevice.Data.Models.AssetDevice();
+        var deviceAsset = new AssetDevice();
         var deviceEvent = (AssociateDeviceAssetEvent)evt;
         deviceAsset.DeviceUID = deviceEvent.DeviceUID.ToString();
         deviceAsset.AssetUID = deviceEvent.AssetUID.ToString();
@@ -76,7 +76,7 @@ namespace VSS.Device.Data
       }
       else if (evt is DissociateDeviceAssetEvent)
       {
-        var deviceAsset = new AssetDevice.Data.Models.AssetDevice();
+        var deviceAsset = new AssetDevice();
         var deviceEvent = (DissociateDeviceAssetEvent)evt;
         deviceAsset.DeviceUID = deviceEvent.DeviceUID.ToString();
         deviceAsset.AssetUID = deviceEvent.AssetUID.ToString();
@@ -98,7 +98,7 @@ namespace VSS.Device.Data
     /// <param name="device"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertDeviceDetail(Models.Device device, string eventType)
+    private async Task<int> UpsertDeviceDetail(Device device, string eventType)
     {
       try
       {
@@ -109,9 +109,9 @@ namespace VSS.Device.Data
 
           var existing = await dbAsyncPolicy.ExecuteAsync(async () =>
           {
-            return (await Connection.QueryAsync<Models.Device>
+            return (await Connection.QueryAsync<Device>
                       (@"SELECT 
-                            DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType,
+                            DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID,
                             LastActionedUTC AS LastActionedUtc
                           FROM Device
                           WHERE DeviceUID = @deviceUid"
@@ -119,20 +119,18 @@ namespace VSS.Device.Data
                       )).FirstOrDefault();
           });
 
-          if (existing == null)
+          if (eventType == "CreateDeviceEvent")
           {
-            if (eventType == "CreateDeviceEvent")
-            {
-              upsertedCount = await CreateDevice(device, existing);
-            }
-
-            if (eventType == "UpdatedeviceEvent")
-            {
-              upsertedCount = await UpdateDevice(device, existing);
-            }
+            upsertedCount = await CreateDevice(device, existing);
           }
+
+          if (eventType == "UpdateDeviceEvent")
+          {
+            upsertedCount = await UpdateDevice(device, existing);
+          }
+
           log.LogDebug("DeviceRepository: upserted {0} rows", upsertedCount);
-          log.LogInformation("Event stored SUCCESS: {0}, {1}", eventType, JsonConvert.SerializeObject(device));
+          log.LogInformation("Event storage {0}, {1}, success: {2}", eventType, JsonConvert.SerializeObject(device), upsertedCount);
           return upsertedCount;
         }
       }
@@ -142,7 +140,7 @@ namespace VSS.Device.Data
       }
     }
 
-    private async Task<int> CreateDevice(Models.Device device, Models.Device existing)
+    private async Task<int> CreateDevice(Device device, Device existing)
     {
       try
       {
@@ -153,7 +151,7 @@ namespace VSS.Device.Data
               @"INSERT Device
                     (DeviceUID,  DeviceSerialNumber,  DeviceType,   DeviceState,  DeregisteredUTC,  ModuleType,  MainboardSoftwareVersion,  RadioFirmwarePartNumber,  GatewayFirmwarePartNumber, DataLinkType, LastActionedUTC )
                   VALUES
-                   (@DeviceUID, @DeviceSerialNumber, @LDeviceType, @DeviceState, @DeregisteredUTC, @ModuleType, @MainboardSoftwareVersion, @RadioFirmwarePartNumber, @GatewayFirmwarePartNumber, @DataLinkType, @LastActionedUtc)
+                   (@DeviceUID, @DeviceSerialNumber, @DeviceType, @DeviceState, @DeregisteredUTC, @ModuleType, @MainboardSoftwareVersion, @RadioFirmwarePartNumber, @GatewayFirmwarePartNumber, @DataLinkType, @LastActionedUtc)
               ";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
@@ -162,6 +160,17 @@ namespace VSS.Device.Data
         }
         else if (device.LastActionedUtc >= existing.LastActionedUtc)
         {
+          device.DeviceSerialNumber = device.DeviceSerialNumber == null ? existing.DeviceSerialNumber : device.DeviceSerialNumber;
+          device.DeviceType = device.DeviceType == null ? existing.DeviceType : device.DeviceType;
+          device.DeviceState = device.DeviceState == null ? existing.DeviceState : device.DeviceState;
+          device.DeregisteredUTC = device.DeregisteredUTC == null ? existing.DeregisteredUTC : device.DeregisteredUTC;
+          device.ModuleType = device.ModuleType == null ? existing.ModuleType : device.ModuleType;
+          device.MainboardSoftwareVersion = device.MainboardSoftwareVersion == null ? existing.MainboardSoftwareVersion : device.MainboardSoftwareVersion;
+          device.RadioFirmwarePartNumber = device.RadioFirmwarePartNumber == null ? existing.RadioFirmwarePartNumber : device.RadioFirmwarePartNumber;
+          device.GatewayFirmwarePartNumber = device.GatewayFirmwarePartNumber == null ? existing.GatewayFirmwarePartNumber : device.GatewayFirmwarePartNumber;
+          device.DataLinkType = device.DataLinkType == null ? existing.DataLinkType : device.DataLinkType;
+          device.OwningCustomerUID = device.OwningCustomerUID == null ? existing.OwningCustomerUID : device.OwningCustomerUID;
+
           const string update =
               @"UPDATE Device                
                   SET DeviceSerialNumber = @DeviceSerialNumber,
@@ -191,7 +200,7 @@ namespace VSS.Device.Data
       }
     }
 
-    private async Task<int> UpdateDevice(Models.Device device, Models.Device existing)
+    private async Task<int> UpdateDevice(Device device, Device existing)
     {
       try
       {
@@ -200,6 +209,17 @@ namespace VSS.Device.Data
         {
           if (device.LastActionedUtc >= existing.LastActionedUtc)
           {
+            device.DeviceSerialNumber = device.DeviceSerialNumber == null ? existing.DeviceSerialNumber : device.DeviceSerialNumber;
+            device.DeviceType = device.DeviceType == null ? existing.DeviceType : device.DeviceType;
+            device.DeviceState = device.DeviceState == null ? existing.DeviceState : device.DeviceState;
+            device.DeregisteredUTC = device.DeregisteredUTC == null ? existing.DeregisteredUTC : device.DeregisteredUTC;
+            device.ModuleType = device.ModuleType == null ? existing.ModuleType : device.ModuleType;
+            device.MainboardSoftwareVersion = device.MainboardSoftwareVersion == null ? existing.MainboardSoftwareVersion : device.MainboardSoftwareVersion;
+            device.RadioFirmwarePartNumber = device.RadioFirmwarePartNumber == null ? existing.RadioFirmwarePartNumber : device.RadioFirmwarePartNumber;
+            device.GatewayFirmwarePartNumber = device.GatewayFirmwarePartNumber == null ? existing.GatewayFirmwarePartNumber : device.GatewayFirmwarePartNumber;
+            device.DataLinkType = device.DataLinkType == null ? existing.DataLinkType : device.DataLinkType;
+            device.OwningCustomerUID = device.OwningCustomerUID == null ? existing.OwningCustomerUID : device.OwningCustomerUID;
+
             const string update =
               @"UPDATE Device                
                   SET DeviceSerialNumber = @DeviceSerialNumber,
@@ -210,7 +230,8 @@ namespace VSS.Device.Data
                       MainboardSoftwareVersion = @MainboardSoftwareVersion,
                       RadioFirmwarePartNumber = @RadioFirmwarePartNumber,      
                       GatewayFirmwarePartNumber = @GatewayFirmwarePartNumber,  
-                      DataLinkType = @DataLinkType,     
+                      DataLinkType = @DataLinkType,    
+                      OwningCustomerUID = @OwningCustomerUID, 
                       LastActionedUTC = @LastActionedUtc
                 WHERE DeviceUID = @deviceUid";
             return await dbAsyncPolicy.ExecuteAsync(async () =>
@@ -232,9 +253,9 @@ namespace VSS.Device.Data
 
           const string upsert =
               @"INSERT Device
-                    (DeviceUID,  DeviceSerialNumber,  DeviceType,   DeviceState,  DeregisteredUTC,  ModuleType,  MainboardSoftwareVersion,  RadioFirmwarePartNumber,  GatewayFirmwarePartNumber, DataLinkType, LastActionedUTC )
+                    (DeviceUID,  DeviceSerialNumber,  DeviceType,   DeviceState,  DeregisteredUTC,  ModuleType,  MainboardSoftwareVersion,  RadioFirmwarePartNumber,  GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID, LastActionedUTC )
                   VALUES
-                   (@DeviceUID, @DeviceSerialNumber, @LDeviceType, @DeviceState, @DeregisteredUTC, @ModuleType, @MainboardSoftwareVersion, @RadioFirmwarePartNumber, @GatewayFirmwarePartNumber, @DataLinkType, @LastActionedUtc)
+                   (@DeviceUID, @DeviceSerialNumber, @DeviceType, @DeviceState, @DeregisteredUTC, @ModuleType, @MainboardSoftwareVersion, @RadioFirmwarePartNumber, @GatewayFirmwarePartNumber, @DataLinkType, @OwningCustomerUID, @LastActionedUtc)
               ";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
@@ -260,7 +281,7 @@ namespace VSS.Device.Data
     /// <param name="device"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertDeviceAssetDetail(AssetDevice.Data.Models.AssetDevice assetDevice, string eventType)
+    private async Task<int> UpsertDeviceAssetDetail(AssetDevice assetDevice, string eventType)
     {
       try
       {
@@ -271,28 +292,26 @@ namespace VSS.Device.Data
 
           var existing = await dbAsyncPolicy.ExecuteAsync(async () =>
           {
-            return (await Connection.QueryAsync<AssetDevice.Data.Models.AssetDevice>
-                      (@"SELECT DeviceUID, AssetUID, LastActionedUTC
+            return (await Connection.QueryAsync<AssetDevice>
+                      (@"SELECT fk_DeviceUID AS DeviceUID, fk_AssetUID AS AssetUID, LastActionedUTC
                           FROM AssetDevice
-                          WHERE DeviceUID = @deviceUid"
+                          WHERE fk_DeviceUID = @deviceUid"
                           , new { deviceUid = assetDevice.DeviceUID }
                       )).FirstOrDefault();
           });
 
-          if (existing == null)
+          if (eventType == "AssociateDeviceAssetEvent")
           {
-            if (eventType == "AssociateDeviceAssetEvent")
-            {
-              upsertedCount = await AssociateDeviceAsset(assetDevice, existing);
-            }
-
-            if (eventType == "DissociateDeviceAssetEvent")
-            {
-              upsertedCount = await DissociateDeviceAsset(assetDevice, existing);
-            }
+            upsertedCount = await AssociateDeviceAsset(assetDevice, existing);
           }
+
+          if (eventType == "DissociateDeviceAssetEvent")
+          {
+            upsertedCount = await DissociateDeviceAsset(assetDevice, existing);
+          }
+
           log.LogDebug("DeviceRepository: upserted {0} rows", upsertedCount);
-          log.LogInformation("Event stored SUCCESS: {0}, {1}", eventType, JsonConvert.SerializeObject(assetDevice));
+          log.LogInformation("Event storage: {0}, {1}, success{2}", eventType, JsonConvert.SerializeObject(assetDevice), upsertedCount);
           return upsertedCount;
         }
       }
@@ -302,7 +321,7 @@ namespace VSS.Device.Data
       }
     }
 
-    private async Task<int> AssociateDeviceAsset(AssetDevice.Data.Models.AssetDevice assetDevice, AssetDevice.Data.Models.AssetDevice existing)
+    private async Task<int> AssociateDeviceAsset(AssetDevice assetDevice, AssetDevice existing)
     {
       try
       {
@@ -311,7 +330,7 @@ namespace VSS.Device.Data
         {
           const string upsert =
               @"INSERT AssetDevice
-                    (DeviceUID, AssetUID, LastActionedUTC )
+                    (fk_DeviceUID, fk_AssetUID, LastActionedUTC )
                   VALUES
                    (@DeviceUID, @AssetUID, @LastActionedUtc)
               ";
@@ -324,8 +343,8 @@ namespace VSS.Device.Data
         {
           const string update =
               @"UPDATE AssetDevice                
-                  SET AssetUID = @assetUid
-                WHERE DeviceUID = @deviceUid";
+                  SET fk_AssetUID = @assetUid
+                WHERE fk_DeviceUID = @deviceUid";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
             return await Connection.ExecuteAsync(update, assetDevice);
@@ -342,7 +361,7 @@ namespace VSS.Device.Data
       }
     }
 
-    private async Task<int> DissociateDeviceAsset(AssetDevice.Data.Models.AssetDevice assetDevice, AssetDevice.Data.Models.AssetDevice existing)
+    private async Task<int> DissociateDeviceAsset(AssetDevice assetDevice, AssetDevice existing)
     {
       // this is disastrous for the timing: Associate then Dissociate, then Associate received again - as it will be left as associated.
       try
@@ -353,9 +372,9 @@ namespace VSS.Device.Data
           if (assetDevice.LastActionedUtc >= existing.LastActionedUtc)
           {
             const string update =
-              @"DELETE AssetDevice                                 
-                WHERE DeviceUID = @deviceUid
-                  AND AssetUID = @assetUid";
+              @"DELETE FROM AssetDevice                                 
+                WHERE fk_DeviceUID = @deviceUid
+                  AND fk_AssetUID = @assetUid";
             return await dbAsyncPolicy.ExecuteAsync(async () =>
             {
               return await Connection.ExecuteAsync(update, assetDevice);
@@ -382,20 +401,47 @@ namespace VSS.Device.Data
 
     #region getters
 
-    public async Task<Models.Device> GetDevice(string deviceUid)
+    public async Task<Device> GetDevice(string deviceUid)
     {
       try
       {
         await PerhapsOpenConnection();
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
-          return (await Connection.QueryAsync<Models.Device>
+          return (await Connection.QueryAsync<Device>
                       (@"SELECT 
-                            DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType,
+                            DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID,
                             LastActionedUTC AS LastActionedUtc
                           FROM Device
                           WHERE DeviceUID = @deviceUid"
                       , new { deviceUid }
+                  )).FirstOrDefault();
+        });
+      }
+      finally
+      {
+        PerhapsCloseConnection();
+      }
+    }
+
+    // for TFAS
+    public async Task<AssetDeviceIds> GetAssociatedAsset(string radioSerial, string deviceType)
+    {
+      try
+      {
+        await PerhapsOpenConnection();
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          return (await Connection.QueryAsync<AssetDeviceIds>
+                  (@"SELECT 
+                        a.AssetUID, a.LegacyAssetID, a.OwningCustomerUID, d.DeviceUid, d.DeviceType, d.DeviceSerialNumber AS RadioSerial
+                      FROM Device d
+                        INNER JOIN AssetDevice ad ON ad.fk_DeviceUID = d.DeviceUID
+                        INNER JOIN Asset a ON a.AssetUID = ad.fk_AssetUID
+                      WHERE a.IsDeleted = 0
+                        AND d.DeviceSerialNumber LIKE @radioSerial
+                        AND d.DeviceType LIKE @deviceType"
+                      , new { radioSerial, deviceType }
                   )).FirstOrDefault();
         });
       }

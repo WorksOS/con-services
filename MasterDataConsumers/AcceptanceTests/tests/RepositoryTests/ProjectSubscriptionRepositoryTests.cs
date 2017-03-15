@@ -3,16 +3,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Project.Data;
-using VSS.Project.Data.Models;
-using VSS.Customer.Data;
-using VSS.Subscription.Data.Models;
-using VSS.Project.Service.Repositories;
 using System.Linq;
 using log4netExtensions;
 using VSS.GenericConfiguration;
-using VSS.Geofence.Data.Models;
-using VSS.Geofence.Data;
+using Repositories;
+using Repositories.DBModels;
 
 namespace RepositoryTests
 {
@@ -606,8 +601,8 @@ namespace RepositoryTests
         ProjectTimezone = projectTimeZone,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = actionUtc
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectAEvent = new AssociateProjectCustomer()
@@ -657,7 +652,7 @@ namespace RepositoryTests
         GeofenceType = GeofenceType.Project.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
-        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        GeometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
         ActionUTC = actionUtc
@@ -678,7 +673,7 @@ namespace RepositoryTests
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
-        GeometryWKT = "POLYGON((100 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
         ActionUTC = actionUtc
@@ -717,8 +712,8 @@ namespace RepositoryTests
         ProjectTimezone = projectTimeZone,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((100 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
-          ActionUTC = actionUtc
+        ProjectBoundary = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154))",
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectBEvent = new AssociateProjectCustomer()
@@ -732,7 +727,7 @@ namespace RepositoryTests
         GeofenceType = GeofenceType.Project.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
-        GeometryWKT = "POLYGON((45.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154))",
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
         ActionUTC = actionUtc
@@ -828,6 +823,138 @@ namespace RepositoryTests
       Assert.IsNotNull(projects[0].GeometryWKT, "geofence boundar should not be null");
     }
 
+    /// <summary>
+    ///  /// <summary>
+    /// get projects by legacyProjectID
+    /// get subs valid at a date (3 subs here, only 2 valid)
+    /// </summary>
+    [TestMethod]
+    public void GetByLegacyProjectIDAtSubscriptionDate()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+      int legacyProjectID = new Random().Next(0, int.MaxValue);
+      DateTime subscriptionDateToSearch = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      { CustomerUID = Guid.NewGuid(), CustomerName = "The Customer Name", CustomerType = CustomerType.Customer.ToString(), ActionUTC = actionUtc };
+
+      var associateCustomerUser = new AssociateCustomerUserEvent()
+      { CustomerUID = createCustomerEvent.CustomerUID, UserUID = Guid.NewGuid(), ActionUTC = actionUtc };
+
+      
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = legacyProjectID,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),       
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      { CustomerUID = createCustomerEvent.CustomerUID, ProjectUID = createProjectEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = actionUtc };
+
+      var createProjectSubscriptionEvent1 = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(2016, 11, 30),
+        ActionUTC = actionUtc
+      };
+
+      var associateProjectSubscriptionEvent1 = new AssociateProjectSubscriptionEvent()
+      {
+        SubscriptionUID = createProjectSubscriptionEvent1.SubscriptionUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        EffectiveDate = new DateTime(2016, 02, 03),
+        ActionUTC = actionUtc
+      };
+
+      var createProjectSubscriptionEvent2 = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Landfill",
+        StartDate = new DateTime(2016, 10, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUtc.AddMinutes(20)
+      };
+
+      var associateProjectSubscriptionEvent2 = new AssociateProjectSubscriptionEvent()
+      {
+        SubscriptionUID = createProjectSubscriptionEvent2.SubscriptionUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        EffectiveDate = new DateTime(2016, 02, 03),
+        ActionUTC = actionUtc.AddMinutes(22)
+      };
+
+      var createProjectSubscriptionEvent3 = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Project Monitoring",
+        StartDate = new DateTime(2016, 12, 01),
+        EndDate = new DateTime(2017, 02, 13),
+        ActionUTC = actionUtc
+      };
+
+      var associateProjectSubscriptionEvent3 = new AssociateProjectSubscriptionEvent()
+      {
+        SubscriptionUID = createProjectSubscriptionEvent3.SubscriptionUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        EffectiveDate = new DateTime(2016, 02, 03),
+        ActionUTC = actionUtc
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      customerContext.StoreEvent(associateCustomerUser).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+
+      subscriptionContext.StoreEvent(createProjectSubscriptionEvent1).Wait();
+      subscriptionContext.StoreEvent(associateProjectSubscriptionEvent1).Wait();
+
+      subscriptionContext.StoreEvent(createProjectSubscriptionEvent2).Wait();
+      subscriptionContext.StoreEvent(associateProjectSubscriptionEvent2).Wait();
+
+      subscriptionContext.StoreEvent(createProjectSubscriptionEvent3).Wait();
+      subscriptionContext.StoreEvent(associateProjectSubscriptionEvent3).Wait();
+
+      var g = projectContext.GetProjectAndSubscriptions(legacyProjectID, subscriptionDateToSearch); g.Wait();
+      var projects = g.Result.ToList();
+      Assert.IsNotNull(projects, "Unable to retrieve 1 project/sub from projectRepo");
+      Assert.AreEqual(2, projects.Count, "should be 1 project/sub from projectRepo");
+      if (projects[0].ServiceTypeID == 19)
+      {
+        Assert.AreEqual(19, projects[0].ServiceTypeID, "Landfill should be the most recent service from projectRepo");
+        Assert.AreEqual(createProjectSubscriptionEvent2.EndDate, projects[0].SubscriptionEndDate, "Landfill EndDate incorrect from projectRepo");
+        Assert.AreEqual(createProjectEvent.ProjectBoundary, projects[0].GeometryWKT, "Landfill Geometry incorrect from projectRepo");
+        Assert.AreEqual(20, projects[1].ServiceTypeID, "PM should be the most recent service from projectRepo");
+        Assert.AreEqual(createProjectSubscriptionEvent3.EndDate, projects[1].SubscriptionEndDate, "PM EndDate incorrect from projectRepo");
+      }
+      else        
+      {
+        Assert.AreEqual(20, projects[0].ServiceTypeID, "PM should be the most recent service from projectRepo");
+        Assert.AreEqual(createProjectSubscriptionEvent3.EndDate, projects[0].SubscriptionEndDate, "PM EndDate incorrect from projectRepo");
+        Assert.AreEqual(createProjectEvent.ProjectBoundary, projects[0].GeometryWKT, "PM Geometry incorrect from projectRepo");
+        Assert.AreEqual(19, projects[1].ServiceTypeID, "Landfill should be the most recent service from projectRepo");
+        Assert.AreEqual(createProjectSubscriptionEvent2.EndDate, projects[1].SubscriptionEndDate, "Landfill EndDate incorrect from projectRepo");
+
+      }
+    }
+
+
+    /// </summary>
+    /// <param name="subscriptionRepo"></param>
+    /// <param name="subscription"></param>
+    /// <returns></returns>
     #endregion
 
     #region private

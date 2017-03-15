@@ -3,12 +3,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Project.Data;
-using VSS.Project.Data.Models;
-using VSS.Customer.Data;
-using Microsoft.Extensions.Configuration;
 using log4netExtensions;
 using VSS.GenericConfiguration;
+using Repositories;
+using Repositories.DBModels;
+using System.Linq;
 
 namespace RepositoryTests
 {
@@ -18,6 +17,7 @@ namespace RepositoryTests
     IServiceProvider serviceProvider = null;
     CustomerRepository customerContext = null;
     ProjectRepository projectContext = null;
+    SubscriptionRepository subscriptionContext = null;
 
     [TestInitialize]
     public void Init()
@@ -38,6 +38,7 @@ namespace RepositoryTests
 
       customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
       projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
     }
 
 
@@ -403,8 +404,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = ActionUTC
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = ActionUTC
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -454,6 +455,78 @@ namespace RepositoryTests
       project.LastActionedUTC = updateProjectEvent.ActionUTC;
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
+    }
+
+    /// <summary>
+    /// Null sent in Update event to be ignored
+    /// </summary>
+    [TestMethod]
+    public void UpdateProject_IgnoreNulls()
+    {
+      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = ActionUTC
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = ActionUTC
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = ActionUTC
+      };
+
+      var updateProjectEvent = new UpdateProjectEvent()
+      {
+        ProjectUID = createProjectEvent.ProjectUID,
+        ProjectType = createProjectEvent.ProjectType,
+        ProjectEndDate = createProjectEvent.ProjectEndDate,
+        ActionUTC = ActionUTC.AddHours(1)
+      };
+
+      var s = projectContext.StoreEvent(createProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not written");
+
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+
+      s = projectContext.StoreEvent(updateProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not updated");
+
+      Project project = CopyModel(createProjectEvent);
+      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
+      //project.Name = createProjectEvent.ProjectName;
+      //project.EndDate = createProjectEvent.ProjectEndDate;
+      //project.ProjectTimeZone = createProjectEvent.ProjectTimezone;
+      project.LastActionedUTC = updateProjectEvent.ActionUTC;
+      project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      var g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -701,6 +774,465 @@ namespace RepositoryTests
     }
     #endregion
 
+    #region spatial
+
+    /// <summary>
+    /// Point is within the projectboundary - Happy path i.e. 
+    ///   customer, project and CustomerProject exit
+    ///   project has boundary
+    /// </summary>
+    [TestMethod]
+    public void PointInsideStandardProjectBoundary()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUTC
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.Standard,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUTC,
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUTC
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+
+      var g = projectContext.GetStandardProject(createCustomerEvent.CustomerUID.ToString(), 15, 180, createProjectEvent.ProjectStartDate.AddDays(1)); g.Wait();
+      var projects = g.Result;
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(1, g.Result.Count(), "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(projects.ToList()[0].ProjectUID, createProjectEvent.ProjectUID.ToString(), "Project details are incorrect from ProjectRepo");
+    }
+
+    /// <summary>
+    /// Point is within the projectboundary - Happy path i.e. 
+    ///   customer, project and CustomerProject exit
+    ///   project has boundary
+    /// </summary>
+    [TestMethod]
+    public void PointOutsideStandardProjectBoundary()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUTC
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.Standard,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUTC,
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUTC
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+
+      var g = projectContext.GetStandardProject(createCustomerEvent.CustomerUID.ToString(), 50, 180, createProjectEvent.ProjectStartDate.AddDays(1)); g.Wait();
+      var projects = g.Result;
+      Assert.AreEqual(0, g.Result.Count(), "Should not retrieve Project from ProjectRepo");
+    }
+
+    /// <summary>
+    /// Point is within the projectboundary - Happy path i.e. 
+    ///   customer, project and CustomerProject exit
+    ///   project has boundary
+    /// </summary>
+    [TestMethod]
+    public void PointOnPointStandardProjectBoundary()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUTC
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.Standard,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUTC,
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUTC
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+
+      var g = projectContext.GetStandardProject(createCustomerEvent.CustomerUID.ToString(), 40, 170, createProjectEvent.ProjectStartDate.AddDays(1)); g.Wait();
+      var projects = g.Result;
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(1, g.Result.Count(), "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(projects.ToList()[0].ProjectUID, createProjectEvent.ProjectUID.ToString(), "Project details are incorrect from ProjectRepo");
+    }
+
+
+    /// <summary>
+    /// Point is within the projectboundary - Happy path i.e. 
+    ///   customer, project and CustomerProject exit
+    ///   project has boundary
+    /// </summary>
+    [TestMethod]
+    public void PointInsidePMProjectBoundary()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUTC
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.ProjectMonitoring,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUTC,
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUTC
+      };
+
+      var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
+      {
+        SubscriptionUID = createProjectSubscriptionEvent.SubscriptionUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        EffectiveDate = new DateTime(2016, 02, 03),
+        ActionUTC = actionUTC
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+      subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
+      subscriptionContext.StoreEvent(associateProjectSubscriptionEvent).Wait();
+
+      var g = projectContext.GetProjectMonitoringProject(createCustomerEvent.CustomerUID.ToString(), 15, 180,
+        createProjectEvent.ProjectStartDate.AddDays(1), 
+        (int)createProjectEvent.ProjectType, subscriptionContext._serviceTypes[createProjectSubscriptionEvent.SubscriptionType].ID); g.Wait();
+      var projects = g.Result;
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(1, g.Result.Count(), "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(projects.ToList()[0].ProjectUID, createProjectEvent.ProjectUID.ToString(), "Project details are incorrect from ProjectRepo");
+    }
+
+    /// <summary>
+    /// Point is outside the projectboundary - Happy path i.e. 
+    ///   customer, project and CustomerProject exit
+    ///   project has boundary
+    /// </summary>
+    [TestMethod]
+    public void PointOutsidePMProjectBoundary()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUTC
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.ProjectMonitoring,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUTC,
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUTC
+      };
+
+      var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
+      {
+        SubscriptionUID = createProjectSubscriptionEvent.SubscriptionUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        EffectiveDate = new DateTime(2016, 02, 03),
+        ActionUTC = actionUTC
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+      subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
+      subscriptionContext.StoreEvent(associateProjectSubscriptionEvent).Wait();
+
+      var g = projectContext.GetProjectMonitoringProject(createCustomerEvent.CustomerUID.ToString(), 50, 180,
+        createProjectEvent.ProjectStartDate.AddDays(1),
+        (int)createProjectEvent.ProjectType, subscriptionContext._serviceTypes[createProjectSubscriptionEvent.SubscriptionType].ID); g.Wait();
+      var projects = g.Result;
+      Assert.AreEqual(0, g.Result.Count(), "Should not retrieve Project from ProjectRepo");
+    }
+    
+    /// <summary>
+    /// Point is outside the projectboundary - Happy path i.e. 
+    ///   customer, project and CustomerProject exit
+    ///   project has boundary
+    /// </summary>
+    [TestMethod]
+    public void PointOnPMProjectBoundary()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUTC
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.ProjectMonitoring,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUTC,
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUTC
+      };
+
+      var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
+      {
+        SubscriptionUID = createProjectSubscriptionEvent.SubscriptionUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        EffectiveDate = new DateTime(2016, 02, 03),
+        ActionUTC = actionUTC
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+      subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
+      subscriptionContext.StoreEvent(associateProjectSubscriptionEvent).Wait();
+
+      var g = projectContext.GetProjectMonitoringProject(createCustomerEvent.CustomerUID.ToString(), 15, 190,
+        createProjectEvent.ProjectStartDate.AddDays(1),
+        (int)createProjectEvent.ProjectType, subscriptionContext._serviceTypes[createProjectSubscriptionEvent.SubscriptionType].ID); g.Wait();
+      var projects = g.Result;
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(1, g.Result.Count(), "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(projects.ToList()[0].ProjectUID, createProjectEvent.ProjectUID.ToString(), "Project details are incorrect from ProjectRepo");
+    }
+
+
+    /// <summary>
+    /// Point is within the projectboundary - Happy path i.e. 
+    ///   customer, project and CustomerProject exit
+    ///   project has boundary
+    /// </summary>
+    [TestMethod]
+    public void PointInsidePMProjectBoundary_WrongServiceType()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUTC
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = 12343,
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.ProjectMonitoring,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUTC,
+        ProjectBoundary = "POLYGON((170 10, 190 10, 190 40, 170 40, 170 10))"
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUTC
+      };
+
+      var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
+      {
+        SubscriptionUID = createProjectSubscriptionEvent.SubscriptionUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        EffectiveDate = new DateTime(2016, 02, 03),
+        ActionUTC = actionUTC
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+      subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
+      subscriptionContext.StoreEvent(associateProjectSubscriptionEvent).Wait();
+
+      var g = projectContext.GetProjectMonitoringProject(createCustomerEvent.CustomerUID.ToString(), 15, 180,
+        createProjectEvent.ProjectStartDate.AddDays(1),
+        (int)createProjectEvent.ProjectType, subscriptionContext._serviceTypes["Landfill"].ID); g.Wait();
+      var projects = g.Result;
+      Assert.AreEqual(0, g.Result.Count(), "Should not retrieve Project from ProjectRepo");
+    }
+
+    #endregion spatial
+
 
     #region AssociateProjectWithCustomer
 
@@ -904,7 +1436,7 @@ namespace RepositoryTests
       };
     }
 
-    private Project CopyModel(CreateProjectEvent kafkaProjectEvent)
+    private Repositories.DBModels.Project CopyModel(CreateProjectEvent kafkaProjectEvent)
     {
       return new Project()
       {

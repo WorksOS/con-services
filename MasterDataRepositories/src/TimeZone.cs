@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace VSS.Project.Data
+namespace Repositories
 {
   /// <summary>
   /// Encapsulates time zone conversion functions

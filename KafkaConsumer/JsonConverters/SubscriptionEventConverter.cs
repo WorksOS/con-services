@@ -30,6 +30,14 @@ namespace KafkaConsumer.JsonConverters
       {
         return jObject["UpdateCustomerSubscriptionEvent"]?.ToObject<UpdateCustomerSubscriptionEvent>();
       }
+      if (jObject["CreateAssetSubscriptionEvent"] != null)
+      {
+        return jObject["CreateAssetSubscriptionEvent"].ToObject<CreateAssetSubscriptionEvent>();
+      }
+      if (jObject["UpdateAssetSubscriptionEvent"] != null)
+      {
+        return jObject["UpdateAssetSubscriptionEvent"]?.ToObject<UpdateAssetSubscriptionEvent>();
+      }
 
       return null;
     }

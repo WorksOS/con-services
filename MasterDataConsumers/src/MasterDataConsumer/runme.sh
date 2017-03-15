@@ -9,7 +9,7 @@ echo "<<< Done checking on Kafka"
 
 
 echo "Master data kafka consumer starting in 60 seconds....."
-sleep 60s
+sleep 30s
 
 echo "Master data kafka consumer starting Now "
 dotnet MasterDataConsumer.dll

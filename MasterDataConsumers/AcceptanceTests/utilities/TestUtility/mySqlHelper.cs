@@ -132,7 +132,7 @@ namespace TestUtility
       var query = $@"INSERT INTO `{appConfig.dbSchema}`.{"AssetUTCOffset"} (AssetUID,EventUTC,UTCOffsetMinutes) VALUES
                         ('{AssetUid}','2015-01-01 00:00:00.000000',{utcOffSetHours * 60});";
       var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, query);
+      mysqlHelper.ExecuteMySqlInsert(appConfig.DbConnectionString, query);
     }
 
 
@@ -152,7 +152,7 @@ namespace TestUtility
       while (retryCount < 30)
       {
         var mysqlHelper = new MySqlHelper();
-        resultCount = Convert.ToInt32(mysqlHelper.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.dbConnectionString, query));
+        resultCount = Convert.ToInt32(mysqlHelper.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.DbConnectionString, query));
         if (resultCount == eventCount)
         {
           break;
@@ -176,7 +176,7 @@ namespace TestUtility
       msg.DisplayMySqlQuery(query);
       Thread.Sleep(5000); // Delay so there is enough time to do this query
       var mysqlHelper = new MySqlHelper();
-      string eventDeviceTime = mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.dbConnectionString, query, "EventDeviceTime");
+      string eventDeviceTime = mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.DbConnectionString, query, "EventDeviceTime");
       Console.WriteLine(string.Format($@"'EventDeviceTime' in the DB = '{eventDeviceTime}'"));
       DateTime result = new DateTime();
       try
@@ -201,7 +201,7 @@ namespace TestUtility
       var assetBookmarksquery = $@"INSERT INTO `{appConfig.dbSchema}`.{"AssetBookmarks"} 
                         (AssetUID,LastReportedEventUTC) VALUES ('{assetUid}','{lastEventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
       var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(appConfig.dbConnectionString, assetBookmarksquery);
+      mysqlHelper.ExecuteMySqlInsert(appConfig.DbConnectionString, assetBookmarksquery);
     }
 
 
@@ -215,7 +215,7 @@ namespace TestUtility
       string query = $@"SELECT UTCOffsetMinutes FROM `{appConfig.dbSchema}`.AssetUTCOffset WHERE AssetUID = '{assetUid}'";
       msg.DisplayMySqlQuery(query);
       var mysqlHelper = new MySqlHelper();
-      string utcOffsetMinutes = mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.dbConnectionString, query, "UTCOffsetMinutes");
+      string utcOffsetMinutes = mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.DbConnectionString, query, "UTCOffsetMinutes");
       Console.WriteLine($@"'UTCOffsetMinutes' in the DB = '{utcOffsetMinutes}'");
 
       List<int> result = new List<int>();
@@ -245,7 +245,7 @@ namespace TestUtility
       string query = $@"SELECT LastReportedEventUTC FROM `{appConfig.dbSchema}`.AssetBookmarks WHERE AssetUID = '{assetUid}'";
       msg.DisplayMySqlQuery(query);
       var mysqlHelper = new MySqlHelper();
-      string lastReportedEventUtc = mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.dbConnectionString, query, "LastReportedEventUTC");
+      string lastReportedEventUtc = mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.DbConnectionString, query, "LastReportedEventUTC");
       Console.WriteLine($@"'LastReportedEventUTC' in the DB = '{lastReportedEventUtc}'");
 
       DateTime result = new DateTime();
@@ -273,23 +273,17 @@ namespace TestUtility
     {
       var mysqlHelper = new MySqlHelper();
       msg.DisplayMySqlQuery(query);
-      return mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.dbConnectionString, query, fields);
+      return mysqlHelper.ExecuteMySqlQueryAndReturnColumns(appConfig.DbConnectionString, query, fields);
     }
 
     /// <summary>
     /// Used to update the dbSchema name which will be used when performing database actions
     /// </summary>
     /// <param name="dbSchemaName"></param>
-    public void updateDBSchemaName(string dbSchemaName)
+    public void UpdateDbSchemaName(string dbSchemaName)
     {
-      appConfig.setMySqlDbSchema(dbSchemaName);
+      appConfig.SetMySqlDbSchema(dbSchemaName);
     }
-
-    public void updateDBServer(string dbServer)
-    {
-      appConfig.setMySqlServer(dbServer);
-    }
-
 
   }
 }

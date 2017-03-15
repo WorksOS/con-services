@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using VSS.GenericConfiguration;
 
-namespace VSS.Masterdata.Service.Repositories
+namespace Repositories
 {
   public class RepositoryBase 
   {

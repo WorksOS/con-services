@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Geofence.Data.Models
+namespace Repositories.DBModels
 {
   public class Geofence
   {
