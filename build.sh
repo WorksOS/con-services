@@ -2,10 +2,8 @@
 
 rm -rf artifacts
 
-dotnet publish ./src/MasterDataConsumer -o artifacts/MasterDataConsumer -f netcoreapp1.1 -c Docker
-dotnet publish ./src/ProjectWebApi -o artifacts/ProjectWebApi -f netcoreapp1.1 -c Docker
+dotnet publish ./src/WebApi -o artifacts/WebApi -f netcoreapp1.1 -c Docker
 
-cp src/MasterDataConsumer/appsettings.json artifacts/MasterDataConsumer/
-cp src/ProjectWebApi/appsettings.json artifacts/ProjectWebApi/
+cp src/WebApi/appsettings.json artifacts/WebApi/
 
 mkdir artifacts/logs
