@@ -10,3 +10,7 @@ services:
     build: ./Artifacts/MockProjectWebApi
     env_file:
      - docker-compose.env
+networks:
+  default:
+    external:
+      name: nat	 
