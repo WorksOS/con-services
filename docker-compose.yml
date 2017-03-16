@@ -4,8 +4,6 @@ services:
     build: ./Artifacts/WebApi
     env_file:
      - docker-compose.env
-    volumes:
-      - ./Artifacts/Logs:/app/logs
   mockprojectwebapi:
     build: ./Artifacts/MockProjectWebApi
     env_file:
