@@ -13,7 +13,7 @@ EXPOSE 80
 COPY . /app
 
 # Create the mount point to hold volume from host for logs
-#VOLUME logs
+VOLUME logs
 
 # Start the app
 ENTRYPOINT WebApi.exe
