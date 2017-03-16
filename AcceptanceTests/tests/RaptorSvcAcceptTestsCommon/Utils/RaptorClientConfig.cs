@@ -34,7 +34,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         {
             get
             {
-              return "./TestData";//DLLConfig.AppSettings.Settings["TestDataPath"].Value;
+              return "../../TestData/";//DLLConfig.AppSettings.Settings["TestDataPath"].Value;
             }
         }
         
