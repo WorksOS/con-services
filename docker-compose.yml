@@ -2,6 +2,8 @@ version: '2.1'
 services:
   webapi:
     build: ./Artifacts/WebApi
+    ports:
+     - "5000:80"
     env_file:
      - docker-compose.env
   mockprojectwebapi:

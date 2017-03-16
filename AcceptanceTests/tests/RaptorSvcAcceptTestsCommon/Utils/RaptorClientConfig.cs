@@ -27,14 +27,14 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         {
             get
             {
-                return DLLConfig.AppSettings.Settings["TestEnvironment"].Value;
+              return "Dev"; // DLLConfig.AppSettings.Settings["TestEnvironment"].Value;
             }
         }
         public static string TestDataPath
         {
             get
             {
-                return DLLConfig.AppSettings.Settings["TestDataPath"].Value;
+              return "./TestData";//DLLConfig.AppSettings.Settings["TestDataPath"].Value;
             }
         }
         
