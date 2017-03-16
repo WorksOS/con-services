@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using System.IO;
 using System.Reflection;
 using RestAPICoreTestFramework.Utils.Common;
 using RaptorSvcAcceptTestsCommon.Utils;
@@ -114,7 +115,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 server = "http://mer-vm-tc-01.ap.trimblecorp.net";
             else if (TestEnvironment == "Dev")
             {
-              server = "http://dev-aslv01.vssengg.com";
+              server = File.ReadAllText(TestDataPath+"webapiaddress.txt");
             }
           else if (TestEnvironment == "T01")
             server = "http://t01-aslv01.vssengg.com/RaptorWebAPI";

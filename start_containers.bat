@@ -1,1 +1,1 @@
-docker-compose up --build -d
+docker-compose up --build -d 2>&1 | grep -o \w*_webapi_\w* > container.txt
