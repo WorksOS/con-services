@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
@@ -188,14 +189,34 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
                     as ProjectStatisticsResult;
         }
 
+    // TEMP v2 copy of v1 until we have a simplified contract for Compaction
+    /// <summary>
+    /// Gets project statistics from Raptor.
+    /// </summary>
+    /// <param name="request">The request for statistics request to Raptor</param>
+    /// <returns></returns>
+    /// <executor>ProjectStatisticsExecutor</executor>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/projects/statistics")]
+    [HttpPost]
+    public ProjectStatisticsResult PostProjectStatistics2([FromBody] ProjectStatisticsRequest request)
+    {
+      request.Validate();
+      return
+          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null).Process(request)
+              as ProjectStatisticsResult;
+    }
 
-        /// <summary>
-        /// Gets volumes summary from Raptor.
-        /// </summary>
-        /// <param name="request">The request for volumes summary request to Raptor</param>
-        /// <returns></returns>
-        /// <executor>SummaryVolumesExecutor</executor>
-        [ProjectIdVerifier]
+
+
+    /// <summary>
+    /// Gets volumes summary from Raptor.
+    /// </summary>
+    /// <param name="request">The request for volumes summary request to Raptor</param>
+    /// <returns></returns>
+    /// <executor>SummaryVolumesExecutor</executor>
+    [ProjectIdVerifier]
         [ProjectUidVerifier]
         [Route("api/v1/volumes/summary")]
         [HttpPost]

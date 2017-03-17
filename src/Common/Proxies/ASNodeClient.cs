@@ -220,6 +220,14 @@ namespace VSS.Raptor.Service.Common.Proxies
       return layers;
     }
 
+    public bool GetMDPSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+      TMDPSettings mdpSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+      out TMDPSummary mdpSummary)
+    {
+      return client.GetMDPSummary(projectId, externalRequestDescriptor, mdpSettings, filter,
+          liftBuildSettings, out mdpSummary) == TASNodeErrorStatus.asneOK;
+    }
+
     public bool GetCMVSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
         TCMVSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
         out TCMVSummary cmvSummary)
@@ -243,6 +251,15 @@ namespace VSS.Raptor.Service.Common.Proxies
       return client.GetCMVDetails(projectId, externalRequestDescriptor, cmvSettings, filter,
           liftBuildSettings, out cmvDetails) == TASNodeErrorStatus.asneOK;
     }
+
+    public bool GetTemperatureSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+      TTemperatureSettings temperatureSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+      out TTemperature temperatureSummary)
+    {
+      return client.GetTemperatureSummary(projectId, externalRequestDescriptor, temperatureSettings, filter,
+          liftBuildSettings, out temperatureSummary) == TASNodeErrorStatus.asneOK;
+    }
+
 
     /// <summary>
     /// Stores Surveyed Surface data.

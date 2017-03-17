@@ -67,10 +67,33 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     }
 
     /// <summary>
-    /// Prevents a default instance of the <see cref="SummaryParametersBase"/> class from being created.
+    /// Private constructor
     /// </summary>
-    protected CMVChangeSummaryRequest()
+    private CMVChangeSummaryRequest()
     {
+    }
+
+    /// <summary>
+    /// Create instance of CMVRequest
+    /// </summary>
+    public static CMVChangeSummaryRequest CreateCMVChangeSummaryRequest(
+      long projectID,
+      Guid? callId,
+      LiftBuildSettings liftBuildSettings,
+      Filter filter,
+      int filterID,
+      double[] cmvChangeSummaryValues
+        )
+    {
+      return new CMVChangeSummaryRequest
+      {
+        projectId = projectID,
+        callId = callId,
+        liftBuildSettings = liftBuildSettings,
+        filter = filter,
+        filterId = filterID,
+        CMVChangeSummaryValues = cmvChangeSummaryValues
+      };
     }
 
 

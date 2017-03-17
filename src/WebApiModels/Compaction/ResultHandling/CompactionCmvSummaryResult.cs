@@ -9,7 +9,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
   /// <summary>
   /// Represents result returned by CMV Summary request for compaction
   /// </summary>
-  public class CmvSummaryResult : ContractExecutionResult
+  public class CompactionCmvSummaryResult : ContractExecutionResult
   {
     /// <summary>
     /// The CMV summary data results
@@ -20,7 +20,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
     /// <summary>
     /// Private constructor
     /// </summary>
-    private CmvSummaryResult()
+    private CompactionCmvSummaryResult()
     { }
 
 
@@ -30,9 +30,9 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
     /// <param name="result"></param>
     /// <param name="settings"></param>
     /// <returns></returns>
-    public static CmvSummaryResult CreateCmvSummaryResult(CMVSummaryResult result, CMVSettings settings)
+    public static CompactionCmvSummaryResult CreateCmvSummaryResult(CMVSummaryResult result, CMVSettings settings)
     {
-      var cmvResult = new CmvSummaryResult
+      var cmvResult = new CompactionCmvSummaryResult
       {
         SummaryData = new CmvSummaryData
         {

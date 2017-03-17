@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
-using System.ComponentModel.DataAnnotations;
 
 namespace VSS.Raptor.Service.WebApiModels.Report.Models
 {
   /// <summary>
-  /// The request representation used to request both detailed and summary CMV requests.
+  /// The request representation used to request both detailed and summary MDP requests.
   /// </summary>
-  public class CMVRequest : ProjectID, IValidatable
+  public class MDPRequest : ProjectID, IValidatable
   {
     /// <summary>
     /// An identifying string from the caller
@@ -24,9 +24,9 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     /// <summary>
     /// The various summary and target values to use in preparation of the result
     /// </summary>
-    [JsonProperty(PropertyName = "cmvSettings", Required = Required.Always)]
+    [JsonProperty(PropertyName = "mdpSettings", Required = Required.Always)]
     [Required]
-    public CMVSettings cmvSettings { get; private set; }
+    public MDPSettings mdpSettings { get; private set; }
 
     /// <summary>
     /// The lift build settings to use in the request.
@@ -69,20 +69,20 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     [JsonProperty(PropertyName = "overrideAssetIds", Required = Required.Default)]
     public List<long> overrideAssetIds { get; private set; }
 
-      /// <summary>
+    /// <summary>
     /// Private constructor
     /// </summary>
-    private CMVRequest()
+    protected MDPRequest()
     {
     }
 
     /// <summary>
-    /// Create instance of CMVRequest
+    /// Create instance of MDPRequest
     /// </summary>
-    public static CMVRequest CreateCMVRequest(
+    public static MDPRequest CreateMDPRequest(
       long projectID,
       Guid? callId,
-      CMVSettings cmvSettings,
+      MDPSettings mdpSettings,
       LiftBuildSettings liftBuildSettings,
       Filter filter,
       long filterID,
@@ -91,11 +91,11 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
       List<long> overrideAssetIds
         )
     {
-      return new CMVRequest
+      return new MDPRequest
       {
         projectId = projectID,
         callId = callId,
-        cmvSettings = cmvSettings,
+        mdpSettings = mdpSettings,
         liftBuildSettings = liftBuildSettings,
         filter = filter,
         filterID = filterID,
@@ -106,37 +106,14 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     }
 
     /// <summary>
-    /// Create example instance of CMVRequest to display in Help documentation.
-    /// </summary>
-    public static new CMVRequest HelpSample
-    {
-      get
-      {
-        return new CMVRequest()
-        {
-          projectId = 735,
-          callId = null,
-          cmvSettings = CMVSettings.HelpSample,
-          liftBuildSettings = LiftBuildSettings.HelpSample,
-          filter = Filter.HelpSample,
-          filterID = 0,
-          overrideStartUTC = null,
-          overrideEndUTC = null,
-          overrideAssetIds = null
-        };
-      }
-    }
-
-
-    /// <summary>
     /// Validates all properties
     /// </summary>
     public override void Validate()
     {
       base.Validate();
-      cmvSettings.Validate();
+      mdpSettings.Validate();
       if (liftBuildSettings != null)
-          liftBuildSettings.Validate();
+        liftBuildSettings.Validate();
       if (filter != null)
         filter.Validate();
 
