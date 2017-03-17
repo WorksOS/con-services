@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProjectWebApi.ResultsHandling;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -129,7 +130,8 @@ namespace ProjectWebApi.Models
       if (string.IsNullOrEmpty(boundary))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-            "Missing project boundary");
+             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                                          "Missing project boundary"));
       }
       try
       {
@@ -138,13 +140,15 @@ namespace ProjectWebApi.Models
         if (points.Count < 3)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-              "Invalid project boundary as it should contain at least 3 points");
+               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                                          "Invalid project boundary as it should contain at least 3 points"));
         }
       }
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-            "Invalid project boundary");
+             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                                          "Invalid project boundary"));
       }
     }
 

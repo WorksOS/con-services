@@ -72,6 +72,22 @@ namespace ProjectWebApi.Models
     /// </value>
     public int LegacyProjectId { get; set; }
 
+    /// <summary>
+    /// Gets or sets the CustomerUID which the project is associated with
+    /// </summary>
+    /// <value>
+    /// The Customer UID.
+    /// </value>
+    public string CustomerUID { get; set; }
+
+    /// <summary>
+    /// Gets or sets the customer Id from legacy VisionLink
+    /// </summary>
+    /// <value>
+    /// The legacy Customer Id.
+    /// </value>
+    public string LegacyCustomerId { get; set; }
+
     public override bool Equals(object obj)
     {
       var otherProject = obj as ProjectDescriptor;
@@ -85,6 +101,8 @@ namespace ProjectWebApi.Models
             && otherProject.ProjectTimeZone == this.ProjectTimeZone
             && otherProject.ProjectType == this.ProjectType
             && otherProject.IsArchived == this.IsArchived
+            && otherProject.LegacyCustomerId == this.LegacyCustomerId
+            && otherProject.CustomerUID == this.CustomerUID
             ;
     }
   }

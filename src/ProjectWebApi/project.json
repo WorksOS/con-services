@@ -14,7 +14,6 @@
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "ConfigurationStore.netcore": "*",
-    "MasterDataRepos.netcore": "*",
     "Swashbuckle.SwaggerGen": "6.0.0-beta902",
     "Swashbuckle.SwaggerUi": "6.0.0-beta902",
     "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1",
@@ -23,7 +22,8 @@
     "Microsoft.Extensions.Logging": "1.1.0",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
-    "KafkaConsumer.netcore": "*" 
+    "VSS.Interfaces.netcore": "1.0.3",
+    "KafkaConsumer.netcore": "1.0.6" 
   },
 
   "frameworks": {

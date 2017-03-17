@@ -3,25 +3,24 @@
 
     "testRunner": "mstest",
 
-  "dependencies": {
-    "dotnet-test-mstest": "1.1.1-preview",
-    "MSTest.TestFramework": "1.0.1-preview",
-    "OpenCover": "4.6.519",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
-    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "Microsoft.Extensions.Logging": "1.1.0",
-    "Microsoft.Extensions.Logging.Console": "1.1.0",
-    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-    "log4net.netcore": "3.0.0",
-    "log4netExtensions.netcore": "1.0.1",
-    "KafkaConsumer.netcore": "*",
-    "ConfigurationStore.netcore": "*",
-    "MasterDataRepos.netcore": "*",
-    "Moq": "4.6.38-alpha",
-    "Microsoft.Extensions.Logging.Debug": "1.1.0",
-    "ProjectWebApi": "1.0.0-*"
-  },
+    "dependencies": {
+        "dotnet-test-mstest": "1.1.1-preview",
+        "MSTest.TestFramework": "1.0.1-preview",
+        "OpenCover": "4.6.519",
+        "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+        "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
+        "Microsoft.Extensions.Configuration.Json": "1.0.0",
+        "Microsoft.Extensions.Logging": "1.1.0",
+        "Microsoft.Extensions.Logging.Console": "1.1.0",
+        "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+        "log4net.netcore": "3.0.0",
+        "log4netExtensions.netcore": "1.0.1",
+        "ConfigurationStore.netcore": "*",
+        "Moq": "4.6.38-alpha",
+        "Microsoft.Extensions.Logging.Debug": "1.1.0",
+        "ProjectWebApi": "1.0.0-*",
+        "KafkaConsumer.netcore": "1.0.6"
+    },
 
     "frameworks": {
         "netcoreapp1.1": {

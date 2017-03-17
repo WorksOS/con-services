@@ -7,10 +7,10 @@ using Swashbuckle.Swagger.Model;
 using VSS.Project.Service.WebApiModels.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using log4netExtensions;
-using KafkaConsumer;
 using KafkaConsumer.Kafka;
 using Repositories;
 using VSS.GenericConfiguration;
+using ProjectWebApi.ResultsHandling;
 
 namespace ProjectWebApi
 {
