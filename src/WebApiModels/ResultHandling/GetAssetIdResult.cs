@@ -1,4 +1,4 @@
-﻿namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
+﻿namespace WebApiModels.ResultHandling
 {
   /// <summary>
   /// The result of a request to get the legacyAssetID for a radioSerial

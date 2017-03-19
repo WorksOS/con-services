@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.TagFileAuth.Service.WebApiModels.Executors;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
+using WebApiModels.Models;
+using WebApiModels.Executors;
+using WebApiModels.ResultHandling;
 
 namespace RepositoryTests
 {

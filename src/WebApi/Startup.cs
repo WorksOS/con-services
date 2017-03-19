@@ -5,10 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using log4netExtensions;
 using Swashbuckle.Swagger.Model;
-using VSS.TagFileAuth.Service.Filters;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using Repositories;
+using WebApiModels.ResultHandling;
 
 namespace WebApi
 {
