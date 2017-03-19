@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebApiModels.Models;
 
-namespace WebApi.Filters
+namespace WebApiModels.ResultHandling
 {
   public class ExceptionsTrap
   {
@@ -26,14 +26,14 @@ namespace WebApi.Filters
       {
         await _next.Invoke(context);
       }
-      catch (AuthenticationException)
+      catch (AuthenticationException ex)
       {
         context.Response.StatusCode = 401;
       }
       catch (ServiceException ex)
       {
         context.Response.StatusCode = (int)ex.Response.StatusCode;
-        await context.Response.WriteAsync(ex.Message);
+        await context.Response.WriteAsync(ex.GetContent);
       }
       catch (Exception ex)
       {

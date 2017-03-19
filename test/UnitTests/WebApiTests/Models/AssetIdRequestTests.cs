@@ -1,8 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using WebApiModels.Models;
 
-namespace VSS.TagFileAuth.Service.WebApiTests.Models
+namespace WebApiTests.Models
 {
   [TestClass]
   public class AssetIdRequestTests
@@ -11,21 +10,24 @@ namespace VSS.TagFileAuth.Service.WebApiTests.Models
     public void ValidateGetAssetIdRequest_ValidatorCase1()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
-      Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
+      var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have assetId and/or projectID"));
     }
 
     [TestMethod]
     public void ValidateGetAssetIdRequest_ValidatorCase2()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "ASerial5");
-      Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
+      var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("AssetId must have valid deviceType"));
     }
 
     [TestMethod]
     public void ValidateGetAssetIdRequest_ValidatorCase3()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 100, "ASerial5");
-      Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
+      var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("AssetId must have valid deviceType"));
     }
 
     [TestMethod]

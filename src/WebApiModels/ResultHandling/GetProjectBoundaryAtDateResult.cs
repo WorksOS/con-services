@@ -1,6 +1,7 @@
-﻿using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
+﻿
+using WebApiModels.Models;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
+namespace WebApiModels.ResultHandling
 {
   /// <summary>
   /// The result representation of a get project boundary request.

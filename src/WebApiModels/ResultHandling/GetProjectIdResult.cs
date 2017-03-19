@@ -1,5 +1,5 @@
 ﻿
-namespace VSS.TagFileAuth.Service.WebApiModels.ResultHandling
+namespace WebApiModels.ResultHandling
 {
   /// <summary>
   /// The result representation of a get project id request.

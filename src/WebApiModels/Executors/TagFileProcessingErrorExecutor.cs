@@ -1,13 +1,12 @@
 ﻿using System.Net;
-using VSS.TagFileAuth.Service.WebApiModels.Enums;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using Microsoft.Extensions.Logging;
 using WebApiModels.Enums;
 using System;
 using Newtonsoft.Json;
+using WebApiModels.Models;
+using WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Executors
+namespace WebApiModels.Executors
 {
   /// <summary>
   /// The executor which sends an alert if required for a tag file processing error.
@@ -33,8 +32,8 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
           
       if (result)
       {
-        var errorMessage = string.Format("OnTagFileProcessingError: assetID = {0}, tagFileName = {1}, errorNumber = {2}, error = {3}", request.assetId, request.tagFileName, request.error, EnumExtensions.Description(request.error));
-        log.LogError(errorMessage);
+        var errorMessage = string.Format("OnTagFileProcessingError: assetID = {0}, tagFileName = {1}, errorNumber = {2}, error = {3}", request.assetId, request.tagFileName, (int)request.error, EnumExtensions.Description(request.error));
+        log.LogInformation(errorMessage);
       }
 
       try

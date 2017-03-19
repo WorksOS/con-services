@@ -2,11 +2,11 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Repositories;
-using VSS.TagFileAuth.Service.WebApiModels.Executors;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using WebApiModels.Executors;
+using WebApiModels.Models;
+using WebApiModels.ResultHandling;
 
-namespace VVSS.TagFileAuth.Service.Controllers
+namespace WebApi.Controllers
 {
   public class ProjectController : Controller
   {

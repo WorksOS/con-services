@@ -1,13 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.Executors;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using Microsoft.Extensions.Logging;
 using Repositories;
+using WebApiModels.Models;
+using WebApiModels.Executors;
+using WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.WebApiTests.Executors
+namespace WebApiTests.Executors
 {
   [TestClass]
   public class ProjectBoundaryAtDateExecutorTests : ExecutorBaseTests

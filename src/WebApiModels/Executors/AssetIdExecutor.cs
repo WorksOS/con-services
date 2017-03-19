@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using TestUtility;
-using VSS.TagFileAuth.Service.WebApiModels.Enums;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Repositories.DBModels;
 using Repositories.ExtendedModels;
+using WebApiModels.ResultHandling;
+using WebApiModels.Models;
+using WebApiModels.Enums;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Executors
+namespace WebApiModels.Executors
 {
   /// <summary>
   /// The executor which gets a legacyAssetId and/or serviceType for the requested radioSerial and/or legacyProjectId.

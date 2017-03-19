@@ -4,14 +4,14 @@ using Repositories.ExtendedModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using VSS.TagFileAuth.Service.WebApiModels.Enums;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using WebApiModels.ResultHandling;
+using WebApiModels.Models;
+using WebApiModels.Enums;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Executors
+namespace WebApiModels.Executors
 {
   /// <summary>
   /// The executor which gets the project id of the project for the requested asset location and date time.

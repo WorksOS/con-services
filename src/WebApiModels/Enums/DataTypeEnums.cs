@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Enums
+namespace WebApiModels.Enums
 {
   public enum ServiceTypeEnumCG
   {
