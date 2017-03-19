@@ -13,8 +13,15 @@ dotnet restore
 
 cd tests
 dotnet publish EventTests -o ../deploy/EventTests -f netcoreapp1.1
+if [ $? -ne 0 ]; then exit 1
+fi
 dotnet publish KafkaTests -o ../deploy/KafkaTests -f netcoreapp1.1
+if [ $? -ne 0 ]; then exit 1
+fi
 dotnet publish RepositoryTests -o ../deploy/RepositoryTests -f netcoreapp1.1
+if [ $? -ne 0 ]; then exit 1
+fi
+
 
 cp KafkaTests/appsettings.json ../deploy/KafkaTests/
 cp RepositoryTests/appsettings.json ../deploy/RepositoryTests/
@@ -22,3 +29,5 @@ cp RepositoryTests/appsettings.json ../deploy/RepositoryTests/
 cd ..
 cd utilities
 dotnet publish TestRun -o ../deploy/TestRun -f netcoreapp1.1
+if [ $? -ne 0 ]; then exit 1
+fi
