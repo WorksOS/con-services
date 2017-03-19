@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Enums
+namespace WebApiModels.Enums
 {
   public enum TagFileErrorsEnum
   {

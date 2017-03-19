@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Net.Http;
-using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using TestUtility;
-using TestUtility.Model.Enums;
+using WebApiModels.ResultHandling;
+using WebApiModels.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace IntegrationTests
 {

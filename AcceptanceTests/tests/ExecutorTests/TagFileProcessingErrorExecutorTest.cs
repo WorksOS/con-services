@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.TagFileAuth.Service.WebApiModels.Enums;
-using VSS.TagFileAuth.Service.WebApiModels.Executors;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using RepositoryTests;
+using WebApiModels.Enums;
+using WebApiModels.Executors;
+using WebApiModels.Models;
+using WebApiModels.ResultHandling;
 
 namespace ExecutorTests
 {

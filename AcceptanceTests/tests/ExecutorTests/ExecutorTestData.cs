@@ -7,8 +7,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using Repositories;
-using System.Linq;
-using VSS.TagFileAuth.Service.WebApiModels.Enums;
+using WebApiModels.Enums;
 
 namespace RepositoryTests
 {

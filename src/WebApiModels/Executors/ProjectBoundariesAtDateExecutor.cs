@@ -4,10 +4,10 @@ using Repositories.DBModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using WebApiModels.Models;
+using WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Executors
+namespace WebApiModels.Executors
 {
   /// <summary>
   /// The executor which gets a list of project boundaries for the requested asset id.

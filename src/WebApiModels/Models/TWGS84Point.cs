@@ -1,4 +1,4 @@
-﻿namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
+﻿namespace WebApiModels.Models
 {
   public class TWGS84Point
   {

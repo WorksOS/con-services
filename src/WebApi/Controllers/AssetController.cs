@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
-using VSS.TagFileAuth.Service.WebApiModels.Executors;
 using Newtonsoft.Json;
 using Repositories;
+using WebApiModels.Executors;
+using WebApiModels.Models;
+using WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.Controllers
+namespace WebApi.Controllers
 {
   public class AssetController : Controller
   {

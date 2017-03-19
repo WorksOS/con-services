@@ -7,12 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using TestUtility;
-using VSS.TagFileAuth.Service.WebApiModels.Enums;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using WebApiModels.Enums;
+using WebApiModels.Models;
+using WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Executors
+namespace WebApiModels.Executors
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
@@ -159,7 +159,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         var customerRepo = factory.GetRepository<ICustomerEvent>() as CustomerRepository;
         var a = customerRepo.GetCustomer(new Guid(customerUid));
         if (a != null &&
-          (a.Result.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.Result.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+          (a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
           )
           customer = a.Result;
       }
@@ -175,7 +175,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         var customerRepo = factory.GetRepository<ICustomerEvent>() as CustomerRepository;
         var a = customerRepo.GetCustomerWithTccOrg(tccOrgUid);
         if (a != null &&
-          (a.Result.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.Result.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+          (a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
           )
           customer = a.Result;
       }
@@ -191,7 +191,7 @@ namespace VSS.TagFileAuth.Service.WebApiModels.Executors
         var customerRepo = factory.GetRepository<ICustomerEvent>() as CustomerRepository;
         var a = customerRepo.GetCustomerWithTccOrg(new Guid(customerUid));
         if (a.Result != null &&
-            (a.Result.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.Result.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
+            (a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer || a.Result.CustomerType == VSS.VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
             )
         customer = a.Result;
       }

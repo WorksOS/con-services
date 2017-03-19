@@ -2,9 +2,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using WebApiModels.ResultHandling;
 
-namespace VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon
+namespace WebApiModels.Models
 {
   /// <summary>
   /// The request representation used to request the boundary of a project that is active at a specified date time.

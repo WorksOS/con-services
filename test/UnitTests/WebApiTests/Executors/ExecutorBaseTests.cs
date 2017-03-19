@@ -7,7 +7,7 @@ using Repositories;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.TagFileAuth.Service.WebApiTests.Executors
+namespace WebApiTests.Executors
 {
   [TestClass]
   public class ExecutorBaseTests

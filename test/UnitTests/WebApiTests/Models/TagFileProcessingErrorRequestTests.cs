@@ -1,10 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using VSS.TagFileAuth.Service.WebApiModels.Enums;
-using VSS.TagFileAuth.Service.WebApiModels.Models.RaptorServicesCommon;
-using VSS.TagFileAuth.Service.WebApiModels.ResultHandling;
+using WebApiModels.Models;
 
-namespace VSS.TagFileAuth.Service.WebApiTests.Models
+namespace WebApiTests.Models
 {
   [TestClass]
   public class TagFileProcessingErrorRequestTests

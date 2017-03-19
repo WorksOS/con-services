@@ -2,7 +2,7 @@
     "version": "1.0.0-*",
 
     "dependencies": {
-        "MasterDataRepos.netcore": "1.0.44",
+        "MasterDataRepos.netcore": "1.0.45",
         "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1",
         "TestUtility": "1.0.0-*"
     },
