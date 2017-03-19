@@ -715,7 +715,10 @@ namespace Repositories
       return project;
     }
 
+    #endregion getters
 
+
+    #region spatialGetters
     /// <summary>
     /// Gets any standard project which the lat/long is within,
     ///     which satisfies all conditions for the asset
@@ -791,6 +794,42 @@ namespace Repositories
       return projects;
     }
 
+    /// <summary>
+    /// Gets any project which 
+    ///      1) for this Customer
+    ///      2) is active at the time
+    ///      3) the lat/long is within,
+    /// </summary>
+    /// <param name="customerUID"></param>
+    /// <param name="geometryWKT"></param>
+    /// <param name="timeOfPosition"></param>
+    /// <returns>The project</returns>
+    public async Task<bool> DoesPolygonOverlap(string customerUID, string geometryWKT, DateTime startDate, DateTime endDate)
+    {
+      // todo does st_intersects detect inside/onpoint/online/overlap/etc?
+      await PerhapsOpenConnection();
+
+      string polygonToCheck = string.Format("ST_GeomFromText('{0}')", geometryWKT);
+      string select = string.Format(
+        "SELECT DISTINCT " +
+        "        p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
+        "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+        "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
+        "      FROM Project p " +
+        "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
+        "      WHERE p.IsDeleted = 0 " +
+        "        AND @startDate <= p.EndDate " +
+         "       AND @endDate >= p.StartDate " +
+        "        AND cp.fk_CustomerUID = @customerUID " +
+        "        AND st_Intersects({0}, PolygonST) = 1"
+            , polygonToCheck);
+
+      var projects = (await Connection.QueryAsync<Project>(select, new { customerUID, startDate = startDate.Date, endDate = endDate.Date }));
+
+      PerhapsCloseConnection();
+      return projects.Count() > 0;
+    }
+
     public async Task<IEnumerable<Project>> GetProjects_UnitTests()
     {
       await PerhapsOpenConnection();
@@ -812,7 +851,7 @@ namespace Repositories
       PerhapsCloseConnection();
       return projects;
     }
-    #endregion getters
+    #endregion spatialGetters
 
   }
 }
