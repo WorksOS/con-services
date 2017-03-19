@@ -63,7 +63,6 @@ namespace WebApiTests
         /// <param name="assetid">legacy asset ID (radio serial)</param>
         /// <param name="latitude">seed position latitude value from tagfile</param>
         /// <param name="longitude">seed position longitude value from tagfile</param>
-        /// <param name="height">not used (seed position value from tagfile)</param>
         /// <param name="timeOfPosition">from tagfile-used to check against valid Project time range.</param>
         /// <param name="tccOrgUid">UID of the TCC account the VL customer is paired with. 
         ///   Identifies which VL customer projects to search.</param>

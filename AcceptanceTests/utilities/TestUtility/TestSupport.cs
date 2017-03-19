@@ -451,6 +451,20 @@ namespace TestUtility
           };
           jsonString = JsonConvert.SerializeObject(new {UpdateAssetSubscriptionEvent = updateAssetSubscriptionEvent}, jsonSettings );
           break;
+        case " CreateCustomerSubscriptionEvent":
+          topicName = SetKafkaTopicName("ISubscriptionEvent");
+          var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
+          {
+            CustomerUID = new Guid(eventObject.CustomerUID),
+            SubscriptionUID = new Guid(eventObject.SubscriptionUID),
+            EndDate = DateTime.Parse(eventObject.EndDate),
+            SubscriptionType = eventObject.SubscriptionType,
+            StartDate = DateTime.Parse(eventObject.StartDate),   
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate                     
+          };
+          jsonString = JsonConvert.SerializeObject(new {CreateCustomerSubscriptionEvent  = createCustomerSubscriptionEvent }, jsonSettings );
+          break;
         case "CreateProjectSubscriptionEvent":
           topicName = SetKafkaTopicName("ISubscriptionEvent");
           var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
