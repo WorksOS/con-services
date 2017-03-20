@@ -191,6 +191,33 @@ namespace RepositoryTests
     }
 
     [TestMethod]
+    public void ProjectIDExecutor_JohnDoeAssetAndPMProjectAndSub_tccOrgDoesntExist()
+    {
+      long legacyAssetId = -1; // john doe
+      Guid owningCustomerUID = Guid.NewGuid();
+      string tccOrgIdCreated = Guid.NewGuid().ToString();
+      string tccOrgIdQueried = Guid.NewGuid().ToString();
+
+      CreateCustomer(owningCustomerUID, tccOrgIdCreated);
+
+      Guid projectUID = Guid.NewGuid();
+      int legacyProjectId = new Random().Next(0, int.MaxValue);
+      CreateProject(projectUID, legacyProjectId, owningCustomerUID, VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.ProjectMonitoring);
+      CreateProjectSub(projectUID, owningCustomerUID, "Project Monitoring");
+
+      double latitude = 15.0;
+      double longitude = 180.0;
+      double height = 0.0;
+      DateTime timeOfPositionUtc = DateTime.UtcNow.AddHours(-2);
+      GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(legacyAssetId, latitude, longitude, height, timeOfPositionUtc, tccOrgIdQueried);
+      projectIdRequest.Validate();
+
+      var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
+      Assert.IsNotNull(result, "executor should always return a result");
+      Assert.IsFalse(result.result, "unsuccessful");
+    }
+
+    [TestMethod]
     public void ProjectIDExecutor_ManualAssetAndPMProjectAndSub()
     {
       long legacyAssetId = -2; // 'manualImport'

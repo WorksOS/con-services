@@ -4,6 +4,7 @@ using WebApiModels.Enums;
 using WebApiModels.Models;
 using WebApiModels.Executors;
 using WebApiModels.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {
@@ -296,7 +297,7 @@ namespace RepositoryTests
       string tccOrgId = "";
 
       CreateAssetDeviceAssociation(assetUID, legacyAssetId, owningCustomerUID, deviceUID, deviceSerialNumber, deviceType.ToString());
-      CreateCustomer(owningCustomerUID, tccOrgId, CustomerTypeEnum.Account);
+      CreateCustomer(owningCustomerUID, tccOrgId, CustomerType.Account);
       CreateAssetSub(assetUID, owningCustomerUID, "3D Project Monitoring");
 
       Guid projectUID = Guid.NewGuid();

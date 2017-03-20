@@ -181,7 +181,7 @@ namespace RepositoryTests
       return (g.Result != null ? true : false);
     }
     
-    protected bool CreateCustomer(Guid customerUID, string TccOrgId, CustomerTypeEnum customerType = CustomerTypeEnum.Customer)
+    protected bool CreateCustomer(Guid customerUID, string TccOrgId, CustomerType customerType = CustomerType.Customer)
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       bool areWrittenOk = false;

@@ -27,7 +27,7 @@ namespace WebApiModels.Executors
       TWGS84FenceContainer projectBoundary = new TWGS84FenceContainer();
       Project project = null;
 
-      project = LoadProject(request.projectId);
+      project = dataRepository.LoadProject(request.projectId);
       log.LogDebug("ProjectBoundaryAtDateExecutor: Loaded project? {0}", JsonConvert.SerializeObject(project));
 
       if (project != null)
@@ -36,8 +36,8 @@ namespace WebApiModels.Executors
             !string.IsNullOrEmpty(project.GeometryWKT)
             )
         {
-          projectBoundary.FencePoints = ParseBoundaryData(project.GeometryWKT);
-          log.LogInformation("ProjectBoundaryAtDateExecutor: Loaded projectBoundary.FencePoints? {0}", JsonConvert.SerializeObject(projectBoundary.FencePoints));
+          projectBoundary.FencePoints = dataRepository.ParseBoundaryData(project.GeometryWKT);
+          log.LogDebug("ProjectBoundaryAtDateExecutor: Loaded projectBoundary.FencePoints? {0}", JsonConvert.SerializeObject(projectBoundary.FencePoints));
 
           if (projectBoundary.FencePoints.Length > 0)
             result = true;

@@ -8,6 +8,11 @@ namespace WebApiModels.ResultHandling
   /// </summary>
   public class ContractExecutionResult
   {
+    /// <summary>
+    /// The result of the request. True for success and false for failure.
+    /// </summary>
+    public bool result { get; set; }
+
     public const string DefaultMessage = "success";
 
     /// <summary>

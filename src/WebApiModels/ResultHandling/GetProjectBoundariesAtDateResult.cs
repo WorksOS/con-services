@@ -9,19 +9,9 @@ namespace WebApiModels.ResultHandling
   public class GetProjectBoundariesAtDateResult : ContractExecutionResult 
   {
     /// <summary>
-    /// The result of the request. True for success and false for failure.
-    /// </summary>
-    public bool result { get; set; }
-
-    private ProjectBoundaryPackage[] _projectBoundaries;
-    /// <summary>
     /// The boundaries of the projects. Empty if none.
     /// </summary>
-    public ProjectBoundaryPackage[] projectBoundaries { get { return _projectBoundaries; } set { _projectBoundaries = value; } }  
-
-    // acceptance tests cannot serialize with a private const.
-    //private GetProjectBoundariesAtDateResult()
-    //{ }
+    public ProjectBoundaryPackage[] projectBoundaries { get; set; }
 
     /// <summary>
     /// Create instance of GetProjectBoundariesAtDateResult
@@ -34,16 +24,6 @@ namespace WebApiModels.ResultHandling
         projectBoundaries = projectBoundaries
       };
     }
-
-    /// <summary>
-    /// Example for Help
-    /// </summary>
-    public static GetProjectBoundariesAtDateResult HelpSample
-    {
-      get
-      {
-        return CreateGetProjectBoundariesAtDateResult(true, new ProjectBoundaryPackage[] { new ProjectBoundaryPackage { Boundary = GetProjectBoundaryAtDateResult.HelpSample.projectBoundary, ProjectID = 1423 } });
-      }
-    }
+    
   }
 }
