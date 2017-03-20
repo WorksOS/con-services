@@ -16,4 +16,4 @@ COPY . /app
 #VOLUME logs
 
 # Start the app
-ENTRYPOINT WebApi.exe
+ENTRYPOINT SetupWebApi.ps1
