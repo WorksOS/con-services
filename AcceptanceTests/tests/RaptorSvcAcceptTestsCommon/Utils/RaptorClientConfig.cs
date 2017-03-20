@@ -46,7 +46,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 if (TestEnvironment == "Tc")
                     return ConstructUri(":3001");
                 else if (TestEnvironment == "Dev")
-                    return ConstructUri(":5000");
+                    return ConstructUri("80");//ConstructUri(":5000");
                 else if (TestEnvironment == "Local")
                   return ConstructUri(":5000");
                 else
@@ -60,7 +60,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 if (TestEnvironment == "Tc")
                     return ConstructUri(":3000");
                 else if (TestEnvironment == "Dev")
-                  return ConstructUri(":5000");
+                  return ConstructUri(":80");
                 else if (TestEnvironment == "Local")
                   return ConstructUri(":5000");
                 else
@@ -74,7 +74,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 if (TestEnvironment == "Tc")
                     return ConstructUri(":3002");
                 else if (TestEnvironment == "Dev")
-                  return ConstructUri(":5000");
+                  return ConstructUri(":80");
                 else if (TestEnvironment == "Local")
                     return ConstructUri(":5000");
                 else
@@ -88,7 +88,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 if (TestEnvironment == "Tc")
                     return ConstructUri(":3003");
               else if (TestEnvironment == "Dev")
-                return ConstructUri(":5000");
+                return ConstructUri(":80");
               else if (TestEnvironment == "Local")
                    return ConstructUri(":5000");
                 else
@@ -115,7 +115,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 server = "http://mer-vm-tc-01.ap.trimblecorp.net";
             else if (TestEnvironment == "Dev")
             {
-              Console.WriteLine("Hosturl:" + "http://" + File.ReadAllText(TestDataPath + "webapiaddress.txt"));
+              Console.WriteLine("Host WebAPI url:" + "http://" + File.ReadAllText(TestDataPath + "webapiaddress.txt"));
               server = "http://"+File.ReadAllText(TestDataPath+"webapiaddress.txt");
             }
           else if (TestEnvironment == "T01")
