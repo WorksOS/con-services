@@ -46,7 +46,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 if (TestEnvironment == "Tc")
                     return ConstructUri(":3001");
                 else if (TestEnvironment == "Dev")
-                    return ConstructUri("80");//ConstructUri(":5000");
+                    return ConstructUri(":80");//ConstructUri(":5000");
                 else if (TestEnvironment == "Local")
                   return ConstructUri(":5000");
                 else
