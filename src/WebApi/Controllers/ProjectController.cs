@@ -32,21 +32,19 @@ namespace WebApi.Controllers
     [HttpPost]
     public GetProjectIdResult GetProjectId([FromBody]GetProjectIdRequest request)
     {
-      log.LogInformation("GetProjectId: request:{0}", JsonConvert.SerializeObject(request));
-
+      log.LogDebug("GetProjectId: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
-      log.LogInformation("GetProjectId: after validation request:{0}", JsonConvert.SerializeObject(request));
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, log).Process(request) as GetProjectIdResult;
 
       if (result.result)
       {
-        var infoMessage = string.Format("project/getid was successfully processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
+        var infoMessage = string.Format("GetProjectId: was successfully processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogInformation(infoMessage);
       }
       else
       {
-        var errorMessage = string.Format("project/getid failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
+        var errorMessage = string.Format("GetProjectId: failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogError(errorMessage);
       }
 
@@ -65,20 +63,19 @@ namespace WebApi.Controllers
     [HttpPost]
     public GetProjectBoundaryAtDateResult PostProjectBoundary([FromBody]GetProjectBoundaryAtDateRequest request)
     {
-      log.LogInformation("PostProjectBoundary: {0}", JsonConvert.SerializeObject(request));
+      log.LogDebug("PostProjectBoundary: {0}", JsonConvert.SerializeObject(request));
       request.Validate();
-      log.LogInformation("PostProjectBoundary: after validation request:{0}", JsonConvert.SerializeObject(request));
 
       var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, log).Process(request) as GetProjectBoundaryAtDateResult;
 
       if (result.result)
       {
-        var infoMessage = string.Format("PostProjectBoundary was processed successfully: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
+        var infoMessage = string.Format("PostProjectBoundary: was processed successfully: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogInformation(infoMessage);
       }
       else
       {
-        var errorMessage = string.Format("PostProjectBoundary failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
+        var errorMessage = string.Format("PostProjectBoundary: failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogError(errorMessage);
       }
 
@@ -97,21 +94,19 @@ namespace WebApi.Controllers
     [HttpPost]
     public GetProjectBoundariesAtDateResult PostProjectBoundaries([FromBody]GetProjectBoundariesAtDateRequest request)
     {
-      log.LogInformation("PostProjectBoundaries: {0}", JsonConvert.SerializeObject(request));
-
+      log.LogDebug("PostProjectBoundaries: {0}", JsonConvert.SerializeObject(request));
       request.Validate();
-      log.LogInformation("PostProjectBoundaries: after validation request:{0}", JsonConvert.SerializeObject(request));
       
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, log).Process(request) as GetProjectBoundariesAtDateResult;
 
       if (result.result)
       {
-        var infoMessage = string.Format("PostProjectBoundaries was processed successfully: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
+        var infoMessage = string.Format("PostProjectBoundaries: was processed successfully: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogInformation(infoMessage);
       }
       else
       {
-        var errorMessage = string.Format("PostProjectBoundaries failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
+        var errorMessage = string.Format("PostProjectBoundaries: failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogError(errorMessage);
       }
 

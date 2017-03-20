@@ -5,13 +5,9 @@
   /// </summary>
   public class GetAssetIdResult : ContractExecutionResult
   {
-    /// <summary>
-    /// The result of the request. True for success and false for failure.
-    /// </summary>
-    public bool result { get;  set; }
-
     private long _assetId;
     private int _machineLevel;
+
     /// <summary>
     /// The id of the asset. -1 if unknown. 
     /// </summary>
@@ -39,13 +35,6 @@
         machineLevel = machineLevel
       };
     }
-
-    /// <summary>
-    /// Example for Help
-    /// </summary>
-    public static GetAssetIdResult HelpSample
-    {
-      get { return CreateGetAssetIdResult(true, 1892337661625085, 16); }
-    }
+    
   }
 }

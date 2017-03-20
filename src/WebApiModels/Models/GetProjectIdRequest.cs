@@ -83,17 +83,7 @@ namespace WebApiModels.Models
       };
     }
 
-    /// <summary>
-    /// Example for Help
-    /// </summary>
-    public static GetProjectIdRequest HelpSample
-    {
-      get
-      {
-        return CreateGetProjectIdRequest(1892337661625085, -43.544566584363544, 172.59246826171878, 1.2, DateTime.UtcNow.AddMinutes(-1), "476434f7-a87a-4c8a-b5cc-ab98afa3964a");
-      }
-    }
-
+    
     /// <summary>
     /// Validates all properties
     /// </summary>

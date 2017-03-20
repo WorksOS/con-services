@@ -32,8 +32,8 @@ namespace WebApiModels.Executors
           
       if (result)
       {
-        var errorMessage = string.Format("OnTagFileProcessingError: assetID = {0}, tagFileName = {1}, errorNumber = {2}, error = {3}", request.assetId, request.tagFileName, (int)request.error, EnumExtensions.Description(request.error));
-        log.LogInformation(errorMessage);
+        var errorMessage = string.Format("OnTagFileProcessingError: assetID = {0}, tagFileName = {1}, errorNumber = {2}, error = {3}", request.assetId, request.tagFileName, (int)request.error, Enum.GetName(typeof(TagFileErrorsEnum), request.error));
+        log.LogDebug(errorMessage);
       }
 
       try

@@ -60,18 +60,7 @@ namespace WebApiModels.Models
       };
     }
 
-    // 
-    /// <summary>
-    /// Example for Help
-    /// </summary>
-    public static GetAssetIdRequest HelpSample
-    {
-      get
-      {
-        return CreateGetAssetIdRequest(-1, 6, "5237598604");
-      }
-    }
-
+   
     /// <summary>
     /// Validates assetID And/or projectID is provided
     /// </summary>

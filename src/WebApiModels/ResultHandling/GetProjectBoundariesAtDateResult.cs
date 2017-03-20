@@ -8,12 +8,8 @@ namespace WebApiModels.ResultHandling
   /// </summary>
   public class GetProjectBoundariesAtDateResult : ContractExecutionResult 
   {
-    /// <summary>
-    /// The result of the request. True for success and false for failure.
-    /// </summary>
-    public bool result { get; set; }
-
     private ProjectBoundaryPackage[] _projectBoundaries;
+
     /// <summary>
     /// The boundaries of the projects. Empty if none.
     /// </summary>
@@ -34,16 +30,6 @@ namespace WebApiModels.ResultHandling
         projectBoundaries = projectBoundaries
       };
     }
-
-    /// <summary>
-    /// Example for Help
-    /// </summary>
-    public static GetProjectBoundariesAtDateResult HelpSample
-    {
-      get
-      {
-        return CreateGetProjectBoundariesAtDateResult(true, new ProjectBoundaryPackage[] { new ProjectBoundaryPackage { Boundary = GetProjectBoundaryAtDateResult.HelpSample.projectBoundary, ProjectID = 1423 } });
-      }
-    }
+    
   }
 }

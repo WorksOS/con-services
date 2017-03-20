@@ -46,17 +46,7 @@ namespace WebApiModels.Models
         tagFileUTC = tagFileUTC
       };
     }
-
-    /// <summary>
-    /// Example for Help
-    /// </summary>
-    public static GetProjectBoundaryAtDateRequest HelpSample
-    {
-      get
-      {
-        return CreateGetProjectBoundaryAtDateRequest(3912, DateTime.UtcNow.AddMinutes(-1));
-      }
-    }
+    
 
     /// <summary>
     /// Validates all properties

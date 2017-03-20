@@ -34,21 +34,19 @@ namespace WebApi.Controllers
     [HttpPost]
     public GetAssetIdResult GetAssetId([FromBody]GetAssetIdRequest request)
     {
-      log.LogInformation("GetAssetId: request:{0}", JsonConvert.SerializeObject(request) );
-            
+      log.LogDebug("GetAssetId: request:{0}", JsonConvert.SerializeObject(request) );            
       request.Validate();
-      log.LogInformation("GetAssetId: after validation request:{0}", JsonConvert.SerializeObject(request));
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, log).Process(request) as GetAssetIdResult;
 
       if (result.result)
       {
-        var infoMessage = string.Format("asset/getId was processed successfully: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
+        var infoMessage = string.Format("GetAssetId: was processed successfully: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogInformation(infoMessage);
       }
       else
       {
-        var errorMessage = string.Format("asset/getId failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
+        var errorMessage = string.Format("GetAssetId: failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
         log.LogError(errorMessage);
       }
 

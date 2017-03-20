@@ -13,27 +13,23 @@ namespace WebApiModels.Models
   public class TagFileProcessingErrorRequest
   {
 
-    private long _assetId;
-    private string _tagFileName;
-    private TagFileErrorsEnum _error;
-
     /// <summary>
     /// The id of the asset whose tag file has the error. 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
-    public long assetId { get { return _assetId; } private set { _assetId = value; } }
+    public long assetId { get; set; }
 
     /// <summary>
     /// The name of the tag file with the error.
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "tagFileName", Required = Required.Always)]
-    public string tagFileName { get { return _tagFileName; } private set { _tagFileName = value; } }
+    public string tagFileName { get; set; } = String.Empty;
 
     [Required]
     [JsonProperty(PropertyName = "error", Required = Required.Always)]
-    public TagFileErrorsEnum error { get { return _error; } private set { _error = value; } }
+    public TagFileErrorsEnum error { get; set; }
 
     /// <summary>
     /// Private constructor
@@ -53,17 +49,7 @@ namespace WebApiModels.Models
         error = (TagFileErrorsEnum)Enum.ToObject(typeof(TagFileErrorsEnum), error)
       };
     }
-
-    /// <summary>
-    /// Example for Help
-    /// </summary>
-    public static TagFileProcessingErrorRequest HelpSample
-    {
-      get
-      {
-        return CreateTagFileProcessingErrorRequest(3984412183889397, "1003J001SW--AFS44 0021--130903184608.tag", (int)TagFileErrorsEnum.ProjectID_NoMatchingDateTime);
-      }
-    }
+    
 
     /// <summary>
     /// Validates all properties
