@@ -115,8 +115,10 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 server = "http://mer-vm-tc-01.ap.trimblecorp.net";
             else if (TestEnvironment == "Dev")
             {
-              Console.WriteLine("Host WebAPI url:" + "http://" + File.ReadAllText(TestDataPath + "webapiaddress.txt"));
-              server = "http://"+File.ReadAllText(TestDataPath+"webapiaddress.txt");
+              string addr = "http://" + File.ReadAllText(TestDataPath + "webapiaddress.txt");
+              addr = addr.Replace("\n", "").Replace("\r", "");
+              Console.WriteLine("Host WebAPI url:" + addr);
+              server = addr;
             }
           else if (TestEnvironment == "T01")
             server = "http://t01-aslv01.vssengg.com/RaptorWebAPI";
