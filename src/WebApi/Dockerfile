@@ -16,4 +16,4 @@ COPY . /app
 #VOLUME logs
 
 # Start the app
-ENTRYPOINT SetupWebApi.ps1
+ENTRYPOINT ["powershell","SetupWebApi.ps1"]
