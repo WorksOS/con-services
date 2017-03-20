@@ -36,7 +36,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Models
     public List<ColorPalette> palette { get; private set; }
 
     /// <summary>
-    /// The base or earliest filter to be used.
+    /// The filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
     public CompactionFilter filter { get; private set; }

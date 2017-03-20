@@ -66,6 +66,26 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
         };
       }
     }
+
+    /// <summary>
+    /// Create instance of ElevationStatisticsRequest
+    /// </summary>
+    public static ElevationStatisticsRequest CreateElevationStatisticsRequest(
+      long projectId,
+      Guid? callId,
+      Filter filter,
+      long filterId,
+      LiftBuildSettings liftBuildSettings)
+    {
+      return new ElevationStatisticsRequest
+      {
+        projectId = projectId,
+        callId = callId,
+        Filter = filter,
+        FilterID = filterId,
+        liftBuildSettings = liftBuildSettings
+      };
+    }
   }
 
 }

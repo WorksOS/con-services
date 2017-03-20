@@ -189,27 +189,6 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
                     as ProjectStatisticsResult;
         }
 
-    // TEMP v2 copy of v1 until we have a simplified contract for Compaction
-    /// <summary>
-    /// Gets project statistics from Raptor.
-    /// </summary>
-    /// <param name="request">The request for statistics request to Raptor</param>
-    /// <returns></returns>
-    /// <executor>ProjectStatisticsExecutor</executor>
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
-    [Route("api/v2/projects/statistics")]
-    [HttpPost]
-    public ProjectStatisticsResult PostProjectStatistics2([FromBody] ProjectStatisticsRequest request)
-    {
-      request.Validate();
-      return
-          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null).Process(request)
-              as ProjectStatisticsResult;
-    }
-
-
-
     /// <summary>
     /// Gets volumes summary from Raptor.
     /// </summary>
@@ -308,14 +287,14 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
                     as ElevationStatisticsResult;
         }
 
-        /// <summary>
-        /// Posts summary CCA request to Raptor. 
-        /// </summary>
-        /// <param name="request">Summary CCA request</param>
-        /// <returns>Returns JSON structure wtih operation result.
-        /// </returns>
-        /// <executor>SummaryCCAExecutor</executor>
-        [ProjectIdVerifier]
+    /// <summary>
+    /// Posts summary CCA request to Raptor. 
+    /// </summary>
+    /// <param name="request">Summary CCA request</param>
+    /// <returns>Returns JSON structure wtih operation result.
+    /// </returns>
+    /// <executor>SummaryCCAExecutor</executor>
+    [ProjectIdVerifier]
         [ProjectUidVerifier]
         [Route("api/v1/compaction/cca/summary")]
         [HttpPost]

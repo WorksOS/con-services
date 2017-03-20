@@ -432,6 +432,128 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     #endregion
   */
 
+    /* COMMENTED OUT UNTIL OTHER FILTERS REQUIRED - simplified version below as a GET
+  /// <summary>
+  /// Gets elevation statistics from Raptor.
+  /// </summary>
+  /// <param name="request">The request for elevation statistics request to Raptor</param>
+  /// <returns></returns>
+  /// <executor>ElevationStatisticsExecutor</executor>
+  [ProjectIdVerifier]
+  [ProjectUidVerifier]
+  [Route("api/v2/compaction/elevationrange")]
+  [HttpPost]
+  public ElevationStatisticsResult PostElevationRange([FromBody] CompactionElevationRangeRequest request)
+  {
+    request.Validate();
+
+    LiftBuildSettings liftSettings;
+    try
+    {
+      liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
+    }
+    catch (Exception ex)
+    {
+      throw new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          ex.Message));
+    }
+    var layerMethod = request.filter == null || !request.filter.layerNumber.HasValue ? (FilterLayerMethod?)null : FilterLayerMethod.TagfileLayerNumber;
+
+    Filter filter = request.filter == null ? null : Filter.CreateFilter(null, null, null, request.filter.startUTC, request.filter.endUTC,
+      request.filter.onMachineDesignID, null, request.filter.vibeStateOn, null, request.filter.elevationType,
+      null, null, null, null, null, null, null, null, null, layerMethod, null, null,
+      request.filter.layerNumber, null, request.filter.contributingMachines, null, null, null, null, null, null, null);
+    filter?.Validate();
+
+    ElevationStatisticsRequest statsRequest =
+      ElevationStatisticsRequest.CreateElevationStatisticsRequest(request.projectId.Value, null, filter, 0,
+        liftSettings);
+    statsRequest.Validate();
+    return
+        RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null).Process(statsRequest)
+            as ElevationStatisticsResult;
+  }
+  */
+
+    /// <summary>
+    /// Get elevation range from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
+    /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC. </param>
+    /// <returns>Elevation statistics</returns>
+    [Route("api/v2/compaction/elevationrange")]
+    [HttpGet]
+    public ElevationStatisticsResult GetElevationRange([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    {
+      log.LogInformation("GetElevationRange: " + Request.QueryString);
+      if (!projectId.HasValue)
+      {
+        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+      }
+      LiftBuildSettings liftSettings;
+      Filter filter;
+      try
+      {
+        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
+        filter = !startUtc.HasValue && !endUtc.HasValue
+          ? null
+          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
+      }
+      catch (Exception ex)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            ex.Message));
+      }
+      ElevationStatisticsRequest statsRequest =
+        ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId.Value, null, filter, 0, liftSettings);
+      statsRequest.Validate();
+  
+      try
+      {
+        var result =
+          RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null).Process(statsRequest)
+            as ElevationStatisticsResult;
+        return result;
+      }
+      catch (ServiceException se)
+      {
+        //Change FailedToGetResults to 204
+        if (se.Response.StatusCode == HttpStatusCode.BadRequest &&
+            se.GetResult.Code == ContractExecutionStatesEnum.FailedToGetResults)
+        {
+          se.Response.StatusCode = HttpStatusCode.NoContent;
+        }
+        throw;
+      }
+
+    }
+
+    // TEMP v2 copy of v1 until we have a simplified contract for Compaction
+    /// <summary>
+    /// Gets project statistics from Raptor.
+    /// </summary>
+    /// <param name="request">The request for statistics request to Raptor</param>
+    /// <returns></returns>
+    /// <executor>ProjectStatisticsExecutor</executor>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/compaction/projectstatistics")]
+    [HttpPost]
+    public ProjectStatisticsResult PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
+    {
+      request.Validate();
+      return
+          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null).Process(request)
+              as ProjectStatisticsResult;
+    }
+
+
     #region Tiles
     /// <summary>
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as 
@@ -469,9 +591,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         request.filter.layerNumber, null, request.filter.contributingMachines, null, null, null, null, null, null, null);
       filter?.Validate();
 
-      //TODO: Check with Dmitry/Alan FilterLayerMethod in both filter and request !!!
-
-      layerMethod = request.filter == null || !request.filter.layerNumber.HasValue ? FilterLayerMethod.None : FilterLayerMethod.TagfileLayerNumber;
+      if (!layerMethod.HasValue) layerMethod = FilterLayerMethod.None;
 
       TileRequest tileRequest = TileRequest.CreateTileRequest(request.projectId.Value, null, request.mode, request.palette,
         liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0, layerMethod.Value, 

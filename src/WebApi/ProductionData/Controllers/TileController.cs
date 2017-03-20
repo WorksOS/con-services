@@ -59,27 +59,6 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
       return tileResult;
     }
 
-    // TEMP v2 copy of v1 until we have a simplified contract for Compaction
-    /// <summary>
-    /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as 
-    /// elevation, compaction, temperature, cut/fill, volumes etc
-    /// </summary>
-    /// <param name="request">A representation of the tile rendering request.</param>
-    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-    /// <executor>TilesExecutor</executor> 
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
-    [Route("api/v2/tiles")]
-    [HttpPost]
-    public TileResult Post2([FromBody] TileRequest request)
-    {
-      request.Validate();
-      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
-      return tileResult;
-    }
-
     /// <summary>
     /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as elevation, compaction, temperature, cut/fill, volumes etc
