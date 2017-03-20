@@ -18,7 +18,7 @@ namespace WebApiModels.Models
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
-    public long assetId { get; set; }
+    public long assetId  { get; set; } 
 
     /// <summary>
     /// The name of the tag file with the error.
