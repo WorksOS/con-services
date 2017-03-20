@@ -3,6 +3,10 @@ Write-host "The user `"$env:username`" logged in to laptop  `"$env:computername`
 
 $OKTORUN = "OK"
 
+$scriptpath = $MyInvocation.MyCommand.Path
+$dir = Split-Path $scriptpath
+cd $dir
+Write-host "Running from folder $dir"
 
 $ASNIP = (Get-ChildItem Env:\ASNODEIP).Value
 Write-host "ASNODEIP=$ASNIP"
@@ -21,6 +25,7 @@ else
   { (Get-Content velociraptor.config.xml).replace('[IONodeIP]', $IONIP) | Set-Content velociraptor.config.xml}
 
 if ($OKTORUN -eq "OK")
-  {& WebAPI.exe}
+ {Write-Host "SetupWebAPI finsihed OK"}
+ # {& WebAPI.exe}
 else
   { Write-host "Error! Not running WebAPI due to setup error. Check Environment variables ASNODEIP and IONODEIP are defined"  -ForegroundColor Red}

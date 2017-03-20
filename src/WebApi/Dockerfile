@@ -15,5 +15,8 @@ COPY . /app
 # Create the mount point to hold volume from host for logs
 #VOLUME logs
 
+ADD SetupWebAPI.ps1 /app/SetupWebAPI.ps1
+RUN powershell.exe -executionpolicy bypass /app/SetupWebAPI.ps1
+
 # Start the app
-ENTRYPOINT ["powershell","SetupWebApi.ps1"]
+ENTRYPOINT WebApi.exe
