@@ -115,6 +115,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 server = "http://mer-vm-tc-01.ap.trimblecorp.net";
             else if (TestEnvironment == "Dev")
             {
+              Console.WriteLine("Hosturl:" + "http://" + File.ReadAllText(TestDataPath + "webapiaddress.txt"));
               server = "http://"+File.ReadAllText(TestDataPath+"webapiaddress.txt");
             }
           else if (TestEnvironment == "T01")
