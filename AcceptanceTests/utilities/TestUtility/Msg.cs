@@ -106,7 +106,8 @@ namespace TestUtility
           Console.WriteLine("WebApi Request  :" + webRequest.Replace('&',' '));
           if (!string.IsNullOrEmpty(payload))
               { Console.WriteLine("WebApi Request Body:" + payload.Replace('&',' '));}
-          Console.WriteLine("WebApi Response :" + webResponse.Replace('&',' '));
+          if (!string.IsNullOrEmpty(webResponse))
+              { Console.WriteLine("WebApi Response :" + webResponse.Replace('&',' '));}
           Console.WriteLine();                    
       }
 

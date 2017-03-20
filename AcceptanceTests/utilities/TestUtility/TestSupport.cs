@@ -451,7 +451,7 @@ namespace TestUtility
           };
           jsonString = JsonConvert.SerializeObject(new {UpdateAssetSubscriptionEvent = updateAssetSubscriptionEvent}, jsonSettings );
           break;
-        case " CreateCustomerSubscriptionEvent":
+        case "CreateCustomerSubscriptionEvent":
           topicName = SetKafkaTopicName("ISubscriptionEvent");
           var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
           {
