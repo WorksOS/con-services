@@ -8,16 +8,10 @@ namespace WebApiModels.ResultHandling
   /// </summary>
   public class GetProjectBoundaryAtDateResult : ContractExecutionResult
   {
-    private TWGS84FenceContainer _projectBoundary;
-
     /// <summary>
     /// The boundary of the project. Empty if none.
     /// </summary>
-    public TWGS84FenceContainer projectBoundary { get { return _projectBoundary; } set { _projectBoundary = value; } }
-
-    // acceptance tests cannot serialize with a private const.
-    //private GetProjectBoundaryAtDateResult()
-    //{ }
+    public TWGS84FenceContainer projectBoundary { get; set; }
 
     /// <summary>
     /// Create instance of GetProjectBoundaryAtDateResult

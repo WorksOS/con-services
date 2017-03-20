@@ -11,13 +11,8 @@ namespace WebApiModels.Models
   /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project  is known 
   /// which is when a tagfile is being manually imported by a user.
   /// </summary>
-  public class GetAssetIdRequest
+  public class GetAssetIdRequest: ContractRequest
   {
-
-    private long _projectId;
-    private int _deviceType;
-    private string _radioSerial;
-
     /// <summary>
     /// The id of the project into which the tagfile data should be processed. A value of -1 indicates 'unknown' 
     /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project 
@@ -25,21 +20,21 @@ namespace WebApiModels.Models
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "projectId", Required = Required.Always)]
-    public long projectId { get { return _projectId; } private set { _projectId = value; } }
+    public long projectId { get; set; }
 
     /// <summary>
     /// The device type of the machine. Valid values are 0=Manual Device (John Doe machines) and 6=SNM940 (torch machines).
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "deviceType", Required = Required.Always)]
-    public int deviceType { get { return _deviceType; } private set { _deviceType = value; } }
+    public int deviceType { get; set; }
 
     /// <summary>
     /// The radio serial number of the machine from the tagfile.
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "radioSerial", Required = Required.Always)]
-    public string radioSerial { get { return _radioSerial; } private set { _radioSerial = value; } }
+    public string radioSerial { get; set; }
 
     /// <summary>
     /// Private constructor

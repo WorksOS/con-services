@@ -8,16 +8,10 @@ namespace WebApiModels.ResultHandling
   /// </summary>
   public class GetProjectBoundariesAtDateResult : ContractExecutionResult 
   {
-    private ProjectBoundaryPackage[] _projectBoundaries;
-
     /// <summary>
     /// The boundaries of the projects. Empty if none.
     /// </summary>
-    public ProjectBoundaryPackage[] projectBoundaries { get { return _projectBoundaries; } set { _projectBoundaries = value; } }  
-
-    // acceptance tests cannot serialize with a private const.
-    //private GetProjectBoundariesAtDateResult()
-    //{ }
+    public ProjectBoundaryPackage[] projectBoundaries { get; set; }
 
     /// <summary>
     /// Create instance of GetProjectBoundariesAtDateResult

@@ -9,25 +9,21 @@ namespace WebApiModels.Models
   /// <summary>
   /// The request representation used to request the boundary of a project that is active at a specified date time.
   /// </summary>
-  public class GetProjectBoundaryAtDateRequest 
+  public class GetProjectBoundaryAtDateRequest: ContractRequest 
   {
-
-    private long _projectId;
-    private DateTime _tagFileUTC;
-
     /// <summary>
     /// The id of the project to get the boundary of. 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "projectId", Required = Required.Always)]
-    public long projectId { get { return _projectId; } private set { _projectId = value; } }
+    public long projectId { get; set; }
 
     /// <summary>
     /// The date time from the tag file which must be within the active project date range. 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "tagFileUTC", Required = Required.Always)]
-    public DateTime tagFileUTC { get { return _tagFileUTC; } private set { _tagFileUTC = value; } }
+    public DateTime tagFileUTC { get; set; }
 
     /// <summary>
     /// Private constructor

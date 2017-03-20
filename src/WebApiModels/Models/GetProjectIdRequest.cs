@@ -9,58 +9,51 @@ namespace WebApiModels.Models
   /// <summary>
   /// The request representation used to request the project Id that a specified asset is inside at a given location and date time.
   /// </summary>
-  public class GetProjectIdRequest 
+  public class GetProjectIdRequest: ContractRequest
   {
-
-    private long _assetId;
-    private double _latitude;
-    private double _longitude;
-    private DateTime _timeOfPosition;
-    private string _tccOrgUid;
-
     /// <summary>
     /// The id of the asset whose tagfile is to be processed. A value of -1 indicates 'none' so all assets are considered (depending on tccOrgId). 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
-    public long assetId { get { return _assetId; } private set { _assetId = value; } }
+    public long assetId { get; set; }
 
     /// <summary>
     /// WGS84 latitude in decimal degrees. 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "latitude", Required = Required.Always)]
-    public double latitude { get { return _latitude; } private set { _latitude = value; } }
+    public double latitude { get; set; }
 
     /// <summary>
     /// WGS84 longitude in decimal degrees. 
     /// </summary>    
     [Required]
     [JsonProperty(PropertyName = "longitude", Required = Required.Always)]
-    public double longitude { get { return _longitude; } private set { _longitude = value; } }
+    public double longitude { get; set; }
 
     /// <summary>
     /// Elevation in meters. 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "height", Required = Required.Always)]
-    public double height { get; private set; }
+    public double height { get; set; }
 
     /// <summary>
     /// Date and time the asset was at the given location. 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "timeOfPosition", Required = Required.Always)]
-    public DateTime timeOfPosition { get { return _timeOfPosition; } private set { _timeOfPosition = value; } }
+    public DateTime timeOfPosition { get; set; }
 
     /// <summary>
     /// Date and time the asset was at the given location. 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "tccOrgUid", Required = Required.Always)]
-    public string tccOrgUid { get { return _tccOrgUid; } private set { _tccOrgUid = value; } }
+    public string tccOrgUid { get; set; }
 
-    
+
     /// <summary>
     /// Private constructor
     /// </summary>

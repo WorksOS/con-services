@@ -6,12 +6,10 @@ namespace WebApiModels.ResultHandling
   /// </summary>
   public class GetProjectIdResult : ContractExecutionResult
   {
-    private long _projectId;
-
     /// <summary>
     /// The id of the project. -1 if none.
     /// </summary>
-    public long projectId { get { return _projectId; } set { _projectId = value; } }
+    public long projectId { get; set; }
 
     /// <summary>
     /// Create instance of GetProjectIdResult

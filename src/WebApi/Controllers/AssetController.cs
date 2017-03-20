@@ -5,6 +5,7 @@ using Repositories;
 using WebApiModels.Executors;
 using WebApiModels.Models;
 using WebApiModels.ResultHandling;
+using WebApiModels.Utilities;
 
 namespace WebApi.Controllers
 {
@@ -39,17 +40,7 @@ namespace WebApi.Controllers
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, log).Process(request) as GetAssetIdResult;
 
-      if (result.result)
-      {
-        var infoMessage = string.Format("GetAssetId: was processed successfully: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
-        log.LogInformation(infoMessage);
-      }
-      else
-      {
-        var errorMessage = string.Format("GetAssetId: failed to be processed: Request {0} Result {1}", JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(result));
-        log.LogError(errorMessage);
-      }
-
+      log.LogResult(this.ToString(), request, result);
       return result;
     }
   }
