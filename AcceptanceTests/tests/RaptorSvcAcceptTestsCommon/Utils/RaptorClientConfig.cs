@@ -46,7 +46,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 if (TestEnvironment == "Tc")
                     return ConstructUri(":3001");
                 else if (TestEnvironment == "Dev")
-                    return ConstructUri(":80");//ConstructUri(":5000");
+                    return ConstructUri(":5000");
                 else if (TestEnvironment == "Local")
                   return ConstructUri(":5000");
                 else
@@ -60,7 +60,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 if (TestEnvironment == "Tc")
                     return ConstructUri(":3000");
                 else if (TestEnvironment == "Dev")
-                  return ConstructUri(":80");
+                  return ConstructUri(":5000");
                 else if (TestEnvironment == "Local")
                   return ConstructUri(":5000");
                 else
@@ -74,7 +74,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 if (TestEnvironment == "Tc")
                     return ConstructUri(":3002");
                 else if (TestEnvironment == "Dev")
-                  return ConstructUri(":80");
+                  return ConstructUri(":5000");
                 else if (TestEnvironment == "Local")
                     return ConstructUri(":5000");
                 else
@@ -88,7 +88,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 if (TestEnvironment == "Tc")
                     return ConstructUri(":3003");
               else if (TestEnvironment == "Dev")
-                return ConstructUri(":80");
+                return ConstructUri(":5000");
               else if (TestEnvironment == "Local")
                    return ConstructUri(":5000");
                 else
@@ -116,8 +116,8 @@ namespace RaptorSvcAcceptTestsCommon.Utils
             else if (TestEnvironment == "Dev")
             {
               string addr = "http://" + File.ReadAllText(TestDataPath + "webapiaddress.txt");
-              addr = addr.Replace("\n", "").Replace("\r", "");
-              Console.WriteLine("Host WebAPI url:" + addr);
+              addr = addr.Replace("\n", "").Replace("\r", "").Trim();
+              Console.WriteLine("Host WebAPI url>" + addr+"<");
               server = addr;
             }
           else if (TestEnvironment == "T01")
