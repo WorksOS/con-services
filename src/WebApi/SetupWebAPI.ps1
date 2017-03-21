@@ -25,7 +25,6 @@ else
   { (Get-Content velociraptor.config.xml).replace('[IONodeIP]', $IONIP) | Set-Content velociraptor.config.xml}
 
 if ($OKTORUN -eq "OK")
- {Write-Host "SetupWebAPI finsihed OK"}
- # {& WebAPI.exe}
+  {& .\\WebAPI.exe}
 else
   { Write-host "Error! Not running WebAPI due to setup error. Check Environment variables ASNODEIP and IONODEIP are defined"  -ForegroundColor Red}
