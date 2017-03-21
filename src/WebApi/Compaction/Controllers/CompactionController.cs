@@ -82,14 +82,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      CMVSettings cmvSettings;
+      CMVSettings cmvSettings = CMVSettings.CreateCMVSettings(0, 0, 120, 0, 80, false);
       LiftBuildSettings liftSettings;
       Filter filter;
       try
       {
-        cmvSettings =
-          JsonConvert.DeserializeObject<CMVSettings>(
-            "{'overrideTargetCMV': 'false', 'minCMVPercent': '80', 'maxCMVPercent': '120'}");
         liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
         filter = !startUtc.HasValue && !endUtc.HasValue
           ? null
@@ -106,8 +103,12 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       request.Validate();
       try
       {
-        var result = RequestExecutorContainer.Build<SummaryCMVExecutor>(logger, raptorClient, null).Process(request) as CMVSummaryResult;
-        return CompactionCmvSummaryResult.CreateCmvSummaryResult(result, cmvSettings);
+        var result =
+          RequestExecutorContainer.Build<SummaryCMVExecutor>(logger, raptorClient, null).Process(request) as
+            CMVSummaryResult;
+        var returnResult = CompactionCmvSummaryResult.CreateCmvSummaryResult(result, cmvSettings);
+        log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(returnResult));
+        return returnResult;
       }
       catch (ServiceException se)
       {
@@ -119,7 +120,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         }
         throw;
       }
-
+      finally
+      {
+        log.LogInformation("GetCmvSummary returned: " + Response.StatusCode);
+      }
     }
 
     /// <summary>
@@ -141,14 +145,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      MDPSettings mdpSettings;
+      MDPSettings mdpSettings = MDPSettings.CreateMDPSettings(0, 0, 120, 0, 80, false);
       LiftBuildSettings liftSettings;
       Filter filter;
       try
       {
-        mdpSettings =
-          JsonConvert.DeserializeObject<MDPSettings>(
-            "{'overrideTargetMDP': 'false', 'minMDPPercent': '80', 'maxMDPPercent': '120'}");
         liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
         filter = !startUtc.HasValue && !endUtc.HasValue
           ? null
@@ -166,7 +167,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainer.Build<SummaryMDPExecutor>(logger, raptorClient, null).Process(request) as MDPSummaryResult;
-        return CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
+        var returnResult = CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
+        log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
+        return returnResult;
       }
       catch (ServiceException se)
       {
@@ -177,6 +180,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           se.Response.StatusCode = HttpStatusCode.NoContent;
         }
         throw;
+      }
+      finally
+      {
+        log.LogInformation("GetMdpSummary returned: " + Response.StatusCode);
       }
     }
 
@@ -199,14 +206,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      PassCountSettings passCountSettings;
+      PassCountSettings passCountSettings = PassCountSettings.CreatePassCountSettings(new int[] { 4, 7 });
       LiftBuildSettings liftSettings;
       Filter filter;
       try
       {
-        //TODO: wire pass count settings when we have them as a parameter to this call
-        passCountSettings = JsonConvert.DeserializeObject<PassCountSettings>(
-            "{'passCounts': '[4,7]'}");
         liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
         filter = !startUtc.HasValue && !endUtc.HasValue
           ? null
@@ -218,13 +222,15 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             ex.Message));
       }
-      PassCounts request = PassCounts.CreatePassCountsRequest(projectId.Value, null, null, liftSettings, filter, -1,
+      PassCounts request = PassCounts.CreatePassCountsRequest(projectId.Value, null, passCountSettings, liftSettings, filter, -1,
         null, null, null);
       request.Validate();
       try
       {
         var result = RequestExecutorContainer.Build<SummaryPassCountsExecutor>(logger, raptorClient, null).Process(request) as PassCountSummaryResult;
-        return CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result, passCountSettings);
+        var returnResult = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result, passCountSettings);
+        log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(returnResult));
+        return returnResult;
       }
       catch (ServiceException se)
       {
@@ -235,6 +241,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           se.Response.StatusCode = HttpStatusCode.NoContent;
         }
         throw;
+      }
+      finally
+      {
+        log.LogInformation("GetPassCountSummary returned: " + Response.StatusCode);
       }
     }
 
@@ -257,14 +267,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      TemperatureSettings temperatureSettings;
+      TemperatureSettings temperatureSettings = TemperatureSettings.CreateTemperatureSettings(0, 175, 65, false);
       LiftBuildSettings liftSettings;
       Filter filter;
       try
       {
-        temperatureSettings = 
-          JsonConvert.DeserializeObject<TemperatureSettings>(
-            "{'overrideTemperatureRange': 'false', 'minTemperature': '65.0', 'maxTemperature': '175.0'}");
         liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
         filter = !startUtc.HasValue && !endUtc.HasValue
           ? null
@@ -282,7 +289,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainer.Build<SummaryTemperatureExecutor>(logger, raptorClient, null).Process(request) as TemperatureSummaryResult;
-        return CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(result);
+        var returnResult = CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(result);
+        log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(returnResult));
+        return returnResult;
       }
       catch (ServiceException se)
       {
@@ -293,6 +302,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           se.Response.StatusCode = HttpStatusCode.NoContent;
         }
         throw;
+      }
+      finally
+      {
+        log.LogInformation("GetTemperatureSummary returned: " + Response.StatusCode);
       }
     }
 
@@ -319,7 +332,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       Filter filter;
       try
       {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
+        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>(
+          "{'liftDetectionType': '4', 'machineSpeedTarget': { 'MinTargetMachineSpeed': '333', 'MaxTargetMachineSpeed': '417'}}");
+        //liftDetectionType 4 = None, speeds are cm/sec (12 - 15 km/hr)
         filter = !startUtc.HasValue && !endUtc.HasValue
           ? null
           : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
@@ -335,7 +350,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainer.Build<SummarySpeedExecutor>(logger, raptorClient, null).Process(request) as SummarySpeedResult;
-        return CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result);
+        var returnResult = CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result);
+        log.LogInformation("GetSpeedSummary result: " + JsonConvert.SerializeObject(returnResult));
+        return returnResult;
       }
       catch (ServiceException se)
       {
@@ -346,6 +363,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           se.Response.StatusCode = HttpStatusCode.NoContent;
         }
         throw;
+      }
+      finally
+      {
+        log.LogInformation("GetSpeedSummary returned: " + Response.StatusCode);
       }
     }
 
@@ -368,12 +389,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      double[] cmvChangeSummarySettings;
+      double[] cmvChangeSummarySettings = new double[] { 5, 20, 50, NO_CCV };
       LiftBuildSettings liftSettings;
       Filter filter;
       try
       {
-        cmvChangeSummarySettings = new double[] {5, 20, 50, NO_CCV};
         liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
         filter = !startUtc.HasValue && !endUtc.HasValue
           ? null
@@ -391,7 +411,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainer.Build<CMVChangeSummaryExecutor>(logger, raptorClient, null).Process(request) as CMVChangeSummaryResult;
-        return CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(result, cmvChangeSummarySettings);
+        var returnResult = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(result, cmvChangeSummarySettings);
+        log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
+        return returnResult;
       }
       catch (ServiceException se)
       {
@@ -402,6 +424,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           se.Response.StatusCode = HttpStatusCode.NoContent;
         }
         throw;
+      }
+      finally
+      {
+        log.LogInformation("GetCmvPercentChange returned: " + Response.StatusCode);
       }
     }
 
@@ -519,6 +545,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var result =
           RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null).Process(statsRequest)
             as ElevationStatisticsResult;
+        log.LogInformation("GetElevationRange result: " + JsonConvert.SerializeObject(result));
         return result;
       }
       catch (ServiceException se)
@@ -530,6 +557,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           se.Response.StatusCode = HttpStatusCode.NoContent;
         }
         throw;
+      }
+      finally
+      {
+        log.LogInformation("GetElevationRange returned: " + Response.StatusCode);
       }
 
     }
@@ -547,10 +578,30 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [HttpPost]
     public ProjectStatisticsResult PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
     {
+      log.LogInformation("PostProjectStatistics: " + JsonConvert.SerializeObject(request));
       request.Validate();
-      return
-          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null).Process(request)
-              as ProjectStatisticsResult;
+      try
+      {
+        var returnResult =
+            RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null).Process(request)
+                as ProjectStatisticsResult;
+        log.LogInformation("PostProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
+        return returnResult;
+      }
+      catch (ServiceException se)
+      {
+        //Change FailedToGetResults to 204
+        if (se.Response.StatusCode == HttpStatusCode.BadRequest &&
+            se.GetResult.Code == ContractExecutionStatesEnum.FailedToGetResults)
+        {
+          se.Response.StatusCode = HttpStatusCode.NoContent;
+        }
+        throw;
+      }
+      finally
+      {
+        log.LogInformation("PostProjectStatistics returned: " + Response.StatusCode);
+      }
     }
 
 
@@ -570,6 +621,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [HttpPost]
     public TileResult PostTile([FromBody] CompactionTileRequest request)
     {
+      log.LogDebug("PostTile: " + JsonConvert.SerializeObject(request));
       request.Validate();
 
       LiftBuildSettings liftSettings;

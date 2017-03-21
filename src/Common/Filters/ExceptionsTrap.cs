@@ -28,6 +28,7 @@ namespace VSS.Raptor.Service.Common.Filters
       }
       catch (ServiceException ex)
       {
+        log.LogInformation("SERVICEEXCEPTION: {0}, {1}", ex.Response, ex.GetContent);
         context.Response.StatusCode = (int)ex.Response.StatusCode;
         await context.Response.WriteAsync(ex.GetContent);
       }

@@ -86,7 +86,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                     return convertProjectStatistics(statistics);
                 else
                     throw new ServiceException(HttpStatusCode.BadRequest,
-                            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+                            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
                                     "Unable get data from Raptor."));
             }
             finally
