@@ -1,6 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
+using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 
 
@@ -29,7 +30,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    public static CompactionSpeedSummaryResult CreateSpeedSummaryResult(SummarySpeedResult result)
+    public static CompactionSpeedSummaryResult CreateSpeedSummaryResult(SummarySpeedResult result, MachineSpeedTarget speedTarget)
     {
       var speedResult = new CompactionSpeedSummaryResult
       {
@@ -38,7 +39,9 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
           PercentEqualsTarget = result.MatchTarget/result.CoverageArea*100.0,
           PercentGreaterThanTarget = result.AboveTarget/result.CoverageArea*100.0,
           PercentLessThanTarget = result.BelowTarget/result.CoverageArea*100.0,
-          TotalAreaCoveredSqMeters = result.CoverageArea
+          TotalAreaCoveredSqMeters = result.CoverageArea,
+          MinTargetMachineSpeed = speedTarget.MinTargetMachineSpeed,
+          MaxTargetMachineSpeed = speedTarget.MaxTargetMachineSpeed
         }
       };
       return speedResult;
@@ -69,8 +72,22 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
       /// </summary>
       [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
       public double TotalAreaCoveredSqMeters { get; set; }
- 
-
+      /// <summary>
+      /// Sets the minimum target machine speed. The value should be specified in cm\sec
+      /// </summary>
+      /// <value>
+      /// The minimum target machine speed.
+      /// </value>
+      [JsonProperty(PropertyName = "minTarget")]
+      public ushort MinTargetMachineSpeed { get; set; }
+      /// <summary>
+      /// Sets the maximum target machine speed. The value should be specified in cm\sec
+      /// </summary>
+      /// <value>
+      /// The maximum target machine speed.
+      /// </value>
+      [JsonProperty(PropertyName = "maxTarget")]
+      public ushort MaxTargetMachineSpeed { get; set; }
     }
 
   }

@@ -350,7 +350,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainer.Build<SummarySpeedExecutor>(logger, raptorClient, null).Process(request) as SummarySpeedResult;
-        var returnResult = CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result);
+        var returnResult = CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, liftSettings.machineSpeedTarget);
         log.LogInformation("GetSpeedSummary result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
       }
