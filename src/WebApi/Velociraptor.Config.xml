@@ -1,5 +1,5 @@
 <XML version="1.0">
-  <Config NetworkConfigFileLocation="" 
+  <Config NetworkConfigFileLocation="">
     <ASNodes>
       <ASNode IPAddress="[ASNodeIP]" Descriptor="0" CommencementDate="42596.9558155903" Healthy="True"/>
     </ASNodes>

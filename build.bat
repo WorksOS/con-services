@@ -9,6 +9,7 @@ copy src\WebApi\appsettings.json Artifacts\WebApi\
 copy src\WebApi\Dockerfile Artifacts\WebApi\
 copy src\WebApi\SetupWebAPI.ps1 Artifacts\WebApi\
 copy src\WebApi\Velociraptor.Config.Xml Artifacts\WebApi\
+copy src\WebApi\web.config Artifacts\WebApi\
 
 
 mkdir Artifacts\Logs
