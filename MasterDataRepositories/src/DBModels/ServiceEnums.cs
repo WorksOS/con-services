@@ -1,4 +1,5 @@
 using System;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Repositories.DBModels
 {
@@ -23,8 +24,21 @@ namespace Repositories.DBModels
         UnifiedFleet = 17,
         AdvancedProductivity = 18,
         Landfill = 19,
-        rojectMonitoring = 20,
+        ProjectMonitoring = 20,
         OperatorIdManageOperators = 21,
+    }
+
+    public static class Extensions
+    {        
+        public static ProjectType MatchProjectType(this ServiceTypeEnum serviceType)
+        {
+            switch (serviceType)
+            {
+                case ServiceTypeEnum.Landfill: return ProjectType.LandFill;
+                case ServiceTypeEnum.ProjectMonitoring: return ProjectType.ProjectMonitoring;
+                default: return ProjectType.Standard;
+            }
+        }
     }
 
     public enum ServiceTypeFamilyEnum
@@ -33,4 +47,5 @@ namespace Repositories.DBModels
         Customer = 2,
         Project = 3,
     }
+
 }
