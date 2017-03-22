@@ -96,7 +96,7 @@ namespace IntegrationTests
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName     | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |",
-      $"| CreateProjectEvent | 1d+09:00:00 | {legacyProjectId} | {projectUid}  | ProjectIntTest2 | {ProjectType.Standard} | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWkt} |"};
+      $"| CreateProjectEvent | 1d+09:00:00 | {legacyProjectId} | {projectUid}  | ProjectIntTest2 | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWkt} |"};
       ts.PublishEventCollection(projectEventArray);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid);
@@ -120,7 +120,7 @@ namespace IntegrationTests
       ts.PublishEventCollection(custTccOrg);
 
       var actualResult = CallWebApiGetProjectId(ts, legacyAssetId, 38.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
-      Assert.AreEqual(legacyProjectId, actualResult.projectId, " Legacy asset id's do not match");
+      Assert.AreEqual(legacyProjectId, actualResult.projectId, " Legacy project id's do not match");
       Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
     }
 
