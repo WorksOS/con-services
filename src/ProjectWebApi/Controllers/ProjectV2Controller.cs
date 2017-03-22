@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Repositories;
@@ -9,12 +6,13 @@ using VSP.MasterData.Project.WebAPI.Controllers.V3;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Microsoft.Extensions.Logging;
 
 namespace ProjectWebApi.Controllers
 {
     public class ProjectV2Controller : ProjectV3Controller
     {
-        public ProjectV2Controller(IKafka producer, IRepository<IProjectEvent> projectRepo, IConfigurationStore store) : base(producer, projectRepo, store)
+        public ProjectV2Controller(IKafka producer, IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ILoggerFactory logger) : base (producer,projectRepo, subscriptionsRepo,store, logger)
         {
         }
 

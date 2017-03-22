@@ -4,12 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using KafkaConsumer;
+using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApi.Models;
 using Repositories;
+using Repositories.DBModels;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -19,15 +20,25 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
 {
     public class ProjectV3Controller : Controller
     {
-        protected readonly IKafka _producer;
-        private readonly IRepository<IProjectEvent> _projectService;
-        protected readonly string kafkaTopicName;
+        protected readonly IKafka producer;
+        protected readonly ILogger log;
 
-        public ProjectV3Controller(IKafka producer, IRepository<IProjectEvent> projectRepo, IConfigurationStore store)
+        private readonly ProjectRepository _projectService;
+        protected readonly string kafkaTopicName;
+        private readonly SubscriptionRepository _subsService;
+
+        //TODO COnvert
+
+        public ProjectV3Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
+            IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ILoggerFactory logger)
         {
-            _producer = producer;
-            _producer.InitProducer(store);
-            _projectService = projectRepo;
+            log = logger.CreateLogger<ProjectV3Controller>();
+            this.producer = producer;
+            //We probably want to make this thing singleton?
+            this.producer.InitProducer(store);
+            //TODO change this pattern, make it safer
+            _projectService = projectRepo as ProjectRepository;
+            _subsService = subscriptionsRepo as SubscriptionRepository;
             kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                              store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
         }
@@ -40,17 +51,17 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
         /// <returns>A list of projects</returns>
         [Route("api/v3/project")]
         [HttpGet]
-        public List<ProjectDescriptor> GetProjectsV3()
+        public async Task<List<ProjectDescriptor>> GetProjectsV3()
         {
-            Console.WriteLine("GetProjectsV3");
+            log.LogInformation("GetProjectsV3");
             var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-            Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
-            var projects = (_projectService as ProjectRepository).GetProjectsForCustomer(customerUid).Result;
+            log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+            var projects = await _projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
 
             var projectList = new List<ProjectDescriptor>();
             foreach (var project in projects)
             {
-                Console.WriteLine("Build list ProjectName=" + project.Name);
+                log.LogInformation("Build list ProjectName=" + project.Name);
                 projectList.Add(
                     new ProjectDescriptor
                     {
@@ -107,12 +118,30 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             ProjectDataValidator.Validate(project, _projectService);
             project.ReceivedUTC = DateTime.UtcNow;
 
+            log.LogInformation("GetProjectsV3");
+            var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+            log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+
             //Apply here rules validating types of projects I'm able to create (i.e. LF only if there is one available LF subscription available) Performance is not a concern as this request is executed once in a blue moon
+            //Retrieve available subscriptions
+            //Should be Today used or UTC?
+            var availableSubscriptions =
+                await _subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false);
+            var projects = await _projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
+            Subscription availableFreeSub = null;
+
+            //let's find out here what project we can create
+            if (project.ProjectType == ProjectType.LandFill || project.ProjectType == ProjectType.ProjectMonitoring)
+            {
+                availableFreeSub = GetFreeSubs(availableSubscriptions, projects, project.ProjectType).First();
+                //Assign a new project to a subs
+            }
+
 
             //Send boundary as old format on kafka queue
             project.ProjectBoundary = kafkaProjectBoundary;
             var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
-            _producer.Send(kafkaTopicName,
+            producer.Send(kafkaTopicName,
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
@@ -120,6 +149,26 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             //Save boundary as WKT
             project.ProjectBoundary = databaseProjectBoundary;
             await _projectService.StoreEvent(project).ConfigureAwait(false);
+        }
+
+        //Method to check free subs for a project
+        private IEnumerable<Subscription> GetFreeSubs(IEnumerable<Subscription> availableSubscriptions,
+            IEnumerable<Repositories.DBModels.Project> projects, ProjectType type)
+        {
+            var availableFreSub = availableSubscriptions.Where(s => !projects.Where(p =>
+                                                                            p.ProjectType == type && !p.IsDeleted)
+                                                                        .Select(p => p.SubscriptionUID)
+                                                                        .Contains(s.SubscriptionUID) &&
+                                                                    s.ServiceTypeID ==
+                                                                    (int) type.MatchSubscriptionType());
+
+            var freeSubs = availableFreSub as IList<Subscription> ?? availableFreSub.ToList();
+            if (!freeSubs.Any())
+            {
+                throw new ServiceException(HttpStatusCode.Forbidden,
+                    "No available subscriptions for the selected customer");
+            }
+            return freeSubs;
         }
 
         // PUT: api/Project
@@ -138,7 +187,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             project.ReceivedUTC = DateTime.UtcNow;
 
             var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
-            _producer.Send(kafkaTopicName,
+            producer.Send(kafkaTopicName,
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
@@ -163,7 +212,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             project.ReceivedUTC = DateTime.UtcNow;
 
             var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
-            _producer.Send(kafkaTopicName,
+            producer.Send(kafkaTopicName,
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
@@ -187,7 +236,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             customerProject.ReceivedUTC = DateTime.UtcNow;
 
             var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
-            _producer.Send(kafkaTopicName,
+            producer.Send(kafkaTopicName,
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
@@ -210,7 +259,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             customerProject.ReceivedUTC = DateTime.UtcNow;
 
             var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectCustomer = customerProject});
-            _producer.Send(kafkaTopicName,
+            producer.Send(kafkaTopicName,
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
@@ -233,7 +282,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
             geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
             var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
-            _producer.Send(kafkaTopicName,
+            producer.Send(kafkaTopicName,
                 new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)

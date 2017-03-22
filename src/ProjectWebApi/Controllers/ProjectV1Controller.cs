@@ -11,13 +11,14 @@ using VSP.MasterData.Project.WebAPI.Controllers.V3;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Microsoft.Extensions.Logging;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V1
 {
     public class ProjectV1Controller : ProjectV3Controller
     {
 
-        public ProjectV1Controller(IKafka producer, IRepository<IProjectEvent> projectRepo, IConfigurationStore store) : base (producer,projectRepo,store)
+        public ProjectV1Controller(IKafka producer, IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ILoggerFactory logger) : base (producer,projectRepo, subscriptionsRepo,store, logger)
         {
         }
 
@@ -28,10 +29,10 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
         /// <returns>A dictionary of projects keyed on legacy project id</returns>
         [Route("v1")]
         [HttpGet]
-        public Dictionary<long, ProjectDescriptor> GetProjectsV1()
+        public async Task<Dictionary<long, ProjectDescriptor>> GetProjectsV1()
         {
             Console.WriteLine("GetProjectsV1 ");
-            return GetProjectsV3().ToDictionary(k => (long)k.LegacyProjectId, v => v);
+            return (await GetProjectsV3()).ToDictionary(k => (long)k.LegacyProjectId, v => v);
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
             project.ReceivedUTC = DateTime.UtcNow;
             var messagePayload = JsonConvert.SerializeObject(new { RestoreProjectEvent = project });
 
-            _producer.Send(kafkaTopicName,
+            producer.Send(kafkaTopicName,
               new List<KeyValuePair<string, string>>()
               {
            new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
