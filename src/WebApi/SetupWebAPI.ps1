@@ -24,6 +24,19 @@ if ($IONIP -eq $null)
 else 
   { (Get-Content velociraptor.config.xml).replace('[IONodeIP]', $IONIP) | Set-Content velociraptor.config.xml}
 
+# now we need to mount a share for the design files and reports
+if ($SHAREUNC -eq $null)
+  { Write-host "Error! Environment variable IONODEIP is not set"  -ForegroundColor Red; $OKTORUN = "Bad"}
+else 
+  { 
+   & sc qc lanmanworkstation
+   & sc config lanmanworkstation depend= "MrxSmb20/NSI"
+   & sc qc lanmanworkstation
+   & sc start lanmanworkstation
+   & net use Z: $SHAREUNC /user:svcRaptor "v3L0c1R^pt0R!"
+  }
+
+
 if ($OKTORUN -eq "OK")
   {& .\\WebAPI.exe}
 else
