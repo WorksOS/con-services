@@ -70,7 +70,7 @@ namespace TestUtility
     public int SetLegacyAssetId()
     {
       var mysql = new MySqlHelper();
-      var query = "SELECT max(LegacyAssetID) FROM Asset;";
+      var query = "SELECT max(ID) FROM Asset;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
       {
@@ -84,7 +84,7 @@ namespace TestUtility
     public int SetLegacyProjectId()
     {
       var mysql = new MySqlHelper();
-      var query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 2000000;";
+      var query = "SELECT max(ID) FROM Project;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
       {
