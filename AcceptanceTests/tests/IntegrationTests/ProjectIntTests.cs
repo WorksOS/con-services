@@ -95,8 +95,8 @@ namespace IntegrationTests
       var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
       const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
       var projectEventArray = new[] {
-       "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName     | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |",
-      $"| CreateProjectEvent | 1d+09:00:00 | {legacyProjectId} | {projectUid}  | ProjectIntTest2 | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWkt} |"};
+       "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName     | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   | CustomerUID   |",
+      $"| CreateProjectEvent | 1d+09:00:00 | {legacyProjectId} | {projectUid}  | ProjectIntTest2 | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWkt} | {customerUid}     |"};
       ts.PublishEventCollection(projectEventArray);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectUid);
