@@ -14,6 +14,10 @@ Write-host "ASNODEIP=$ASNIP"
 $IONIP = (Get-ChildItem Env:\IONODEIP).Value
 Write-host "IONODEIP=$IONIP"
 
+$SHAREUNC = (Get-ChildItem Env:\SHAREUNC).Value
+Write-host "SHAREUNC=$SHAREUNC"
+
+
 if ($ASNIP -eq $null)
   { Write-host "Error! Environment variable ASNODEIP is not set"  -ForegroundColor Red; $OKTORUN = "Bad"}
 else 
@@ -26,7 +30,7 @@ else
 
 # now we need to mount a share for the design files and reports
 if ($SHAREUNC -eq $null)
-  { Write-host "Error! Environment variable IONODEIP is not set"  -ForegroundColor Red; $OKTORUN = "Bad"}
+  { Write-host "Error! Environment variable SHAREUNC is not set"  -ForegroundColor Red; $OKTORUN = "Bad"}
 else 
   { 
    & sc qc lanmanworkstation
