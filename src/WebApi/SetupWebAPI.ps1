@@ -37,11 +37,10 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
-   $SHAREUNC = "dev-iolv01.vssengg.com"
    $cmd="net use Z: $SHAREUNC /user:svcRaptor v3L0c1R^pt0R!"
    Invoke-Expression $cmd
-   #& net use Z: $SHAREUNC /user:svcRaptor "v3L0c1R^pt0R!"
   }
+
 
 if ($OKTORUN -eq "OK")
   {& .\\WebAPI.exe}
