@@ -39,6 +39,16 @@ namespace Repositories.DBModels
                 default: return ProjectType.Standard;
             }
         }
+
+        public static ServiceTypeEnum MatchSubscriptionType(this ProjectType serviceType)
+        {
+            switch (serviceType)
+            {
+                case ProjectType.LandFill: return ServiceTypeEnum.Landfill;
+                case ProjectType.ProjectMonitoring: return ServiceTypeEnum.ProjectMonitoring;
+                default: return ServiceTypeEnum.ThreeDProjectMonitoring;
+            }
+        }
     }
 
     public enum ServiceTypeFamilyEnum
