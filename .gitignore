@@ -19,7 +19,7 @@ bld/
 *.boltdata/
 [Dd]eploy/
 [Tt]ests/[Ww]ork/
-
+Artifacts/
 
 # Roslyn cache directories
 *.ide/
