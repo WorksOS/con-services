@@ -37,8 +37,11 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
-   $cmd="net use Z: $SHAREUNC /user:svcRaptor v3L0c1R^pt0R!"
-   Invoke-Expression $cmd
+   # format $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
+   New-PSDrive -Persist -Name "Z" -PSProvider "FileSystem" -Root $SHAREUNC
+   #$cmd="net use Z: $SHAREUNC /user:svcRaptor v3L0c1R^pt0R!"
+   #Invoke-Expression $cmd
+   
   }
 
 

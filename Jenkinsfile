@@ -51,8 +51,12 @@ node('Jenkins-Win2016-Raptor') {
     }
     currentBuild.result = 'SUCCESS'
 
+	
     //stage 'Publish test results and logs'
     //COnvert trx to xml for archiving
+    bat ".\\msxsl.exe C:\jenkins\workspace\RaptorServicesPipeline\Dev\AcceptanceTests\tests\ProductionDataSvc.AcceptanceTests\bin\Debug\TestResults.trx '.\\mstest-to-junit.xsl' -o .\\TestResult.xml"
+    //step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
+	
     //workspacePath = pwd()
     //step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
     //publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])
