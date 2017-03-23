@@ -37,14 +37,16 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
+   $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
+   $myCmd = "net use z: "+ $SHAREUNC +" #fwww700945 /user:vssSupport /persistent:yes"
+   Write-host "Mapping command myCmd=$myCmd"
+   & cmd /c $myCmd
+   & Z:
+   $DL = (get-location).Drive.Name
+   Write-host "Current Drive=$al"
+   if ($DL -eq "Z") {  & dir; & c:}
+   else {Write-Host "Could not map drive to z:"}
 
-   # format $SHAREUNC = "\\dev-iolv01.vssengg.com\productiondata"
-   #$pass="v3L0c1R^pt0R!"|ConvertTo-SecureString -AsPlainText -Force
-   #$Cred = New-Object System.Management.Automation.PsCredential('svcRaptor',$pass)
-   Write-host "Mapping drive Z to $SHAREUNC"
-   #New-PSDrive -Persist -Name "Z" -PSProvider "FileSystem" -Root $SHAREUNC -Credential $cred
-   myCmd = "net use z: $HAREUNC v3L0c1R^pt0R! /user:svcRaptor /persistent:yes"
-   Invoke-Command $myCmd
   }
 
 
