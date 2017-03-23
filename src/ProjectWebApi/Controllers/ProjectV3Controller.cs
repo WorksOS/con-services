@@ -121,7 +121,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
         /// <param name="kafkaProjectBoundary">The project boundary in the old format (coords comma separated, points semicolon separated)</param>
         /// <param name="databaseProjectBoundary">The project boundary in the new format (WKT)</param>
         /// <returns></returns>
-        protected async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
+        protected virtual async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
             string databaseProjectBoundary)
         {
             ProjectDataValidator.Validate(project, projectService);

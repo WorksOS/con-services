@@ -99,7 +99,7 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Verify the number of expected records in the table is there for the given uid
+    /// Verify the value of fields in the table for the given uid
     /// </summary>
     /// <param name="table">Database table name</param>
     /// <param name="column">Database column name for the uid</param>
@@ -118,6 +118,30 @@ namespace TestUtility
       foreach (var col in fldArray)
       {
         Assert.AreEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(), "Expected results for " + col + " do not match actual");
+        idx++;
+      }
+    }
+
+    /// <summary>
+    /// Verify the value of fields in the table for the given uid (not equal)
+    /// </summary>
+    /// <param name="table">Database table name</param>
+    /// <param name="column">Database column name for the uid</param>
+    /// <param name="fields"></param>
+    /// <param name="expectedData"></param>
+    /// <param name="uid">The uid to use</param>
+    public void VerifyTestResultDatabaseFieldsAreNotEqualAsExpected(string table, string column, string fields, string expectedData, Guid uid)
+    {
+      var sqlQuery = @"SELECT {4} FROM `{0}`.{1} WHERE {2}='{3}'";
+      var allActualData = GetDatabaseFieldsForQuery(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid, fields), fields);
+      var fldArray = fields.Split(',');
+      var actualDataArray = allActualData.Split(',');
+      var expectedDataArray = expectedData.Split(',');
+      var idx = 0;
+      msg.DisplayResults(expectedData, allActualData);
+      foreach (var col in fldArray)
+      {
+        Assert.AreNotEqual(expectedDataArray[idx].Trim(), actualDataArray[idx].Trim(), "Expected results for " + col + " do not match actual");
         idx++;
       }
     }

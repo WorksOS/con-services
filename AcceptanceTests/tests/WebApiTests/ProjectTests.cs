@@ -41,6 +41,41 @@ namespace WebApiTests
     }
 
     [TestMethod]
+    // todo need a way to alter the version being tested.
+    [Ignore]
+    public void Create_Project_V3_NoLegacyID()
+    {
+      var msg = new Msg();
+      msg.Title("projects 1", "Create a project with v3 endpoint, with no legacyProjectId");
+      var mysql = new MySqlHelper();
+
+      var testSupport = new TestSupport();
+      CreateProject(testSupport, mysql, 0, "project 1", ProjectType.Standard);
+      var dateRange = FormatProjectDateRangeDatabase(testSupport);
+      //mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimeZone,StartDate,EndDate", 
+      //  "123456789,project 1,New Zealand Standard Time," + dateRange, testSupport.ProjectUid);  
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimeZone,StartDate,EndDate",
+        $"0,project 1,New Zealand Standard Time, {testSupport.FirstEventDate}, {testSupport.LastEventDate}", testSupport.ProjectUid);
+    }
+
+    [TestMethod]
+    [Ignore]
+    public void Create_Project_V4_NoLegacyID()
+    {
+      var msg = new Msg();
+      msg.Title("projects 1", "Create a project with v4 endpoint, with no legacyProjectId");
+      var mysql = new MySqlHelper();
+
+      var testSupport = new TestSupport();
+      CreateProject(testSupport, mysql, 0, "project 1", ProjectType.Standard);
+      var dateRange = FormatProjectDateRangeDatabase(testSupport);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "Name,ProjectTimeZone,StartDate,EndDate",
+        $"project 1,New Zealand Standard Time, {testSupport.FirstEventDate}, {testSupport.LastEventDate}", testSupport.ProjectUid);
+      mysql.VerifyTestResultDatabaseFieldsAreNotEqualAsExpected("Project", "ProjectUID", "LegacyProjectID",
+        $"0", testSupport.ProjectUid);
+    }
+
+    [TestMethod]
     public void Create_Project_Bad_Data()
     {
       var msg = new Msg();
