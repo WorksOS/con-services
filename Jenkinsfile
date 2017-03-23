@@ -54,7 +54,7 @@ node('Jenkins-Win2016-Raptor') {
 	
     //stage 'Publish test results and logs'
     //COnvert trx to xml for archiving
-    bat ".\\msxsl.exe C:\jenkins\workspace\RaptorServicesPipeline\Dev\AcceptanceTests\tests\ProductionDataSvc.AcceptanceTests\bin\Debug\TestResults.trx '.\\mstest-to-junit.xsl' -o .\\TestResult.xml"
+   // bat ".\\msxsl.exe C:\jenkins\workspace\RaptorServicesPipeline\Dev\AcceptanceTests\tests\ProductionDataSvc.AcceptanceTests\bin\Debug\TestResults.trx '.\\mstest-to-junit.xsl' -o .\\TestResult.xml"
     //step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
 	
     //workspacePath = pwd()
