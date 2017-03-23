@@ -239,7 +239,7 @@ namespace KafkaTests
       var createProjectEvent = new CreateProjectEvent()
       {
         ProjectUID = Guid.NewGuid(),
-        ProjectID = 12343,
+        ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
         ProjectTimezone = projectTimeZone,
