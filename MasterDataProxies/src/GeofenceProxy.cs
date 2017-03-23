@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies.Models;
@@ -30,6 +31,24 @@ namespace VSS.Raptor.Service.Common.Proxies
       GeofenceData cacheData = GetItem(geofenceUid, geofenceCacheLife, "GEOFENCE_API_URL", customHeaders);
       return cacheData == null ? null : cacheData.GeometryWKT;
     }
-  }
+
+        public Guid CreateGeofence(Guid customerGuid, string geofenceName, string description, string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid,  IDictionary<string, string> customHeaders = null)
+        {
+            var geofenceGuid = Guid.NewGuid();
+            var payLoadToSend = new GeofenceData()
+            {
+                CustomerUID = customerGuid,
+                GeofenceName = geofenceName,
+                Description = description,
+                GeofenceType = geofenceType,
+                GeometryWKT = geometryWKT,
+                FillColor = fillColor,
+                IsTransparent = isTransparent,
+                GeofenceUID = geofenceGuid
+            };
+            SendRequest("CREATEGEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend), customHeaders);
+            return geofenceGuid;
+        }
+    }
 }
 

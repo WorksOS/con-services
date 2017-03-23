@@ -58,7 +58,7 @@ namespace VSS.Raptor.Service.Common.Proxies
         //httpRequest.Timeout = 10000;//not in .netcore
       }
       //Apply payload if any
-      if (payloadData != null)
+      if (!String.IsNullOrEmpty(payloadData))
       {
         request.ContentType = "application/json";
         using (var writeStream = await request.GetRequestStreamAsync())
@@ -76,7 +76,9 @@ namespace VSS.Raptor.Service.Common.Proxies
         {
           using (var response = await request.GetResponseAsync())
           {
-            return JsonConvert.DeserializeObject<T>(GetStringFromResponseStream(response));
+              if (response.ContentLength > 0)
+                  return JsonConvert.DeserializeObject<T>(GetStringFromResponseStream(response));
+              return default(T);
           }
         }).Result;
     }
