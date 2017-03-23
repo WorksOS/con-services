@@ -403,7 +403,7 @@ namespace RepositoryTests
       var createProjectEvent = new CreateProjectEvent()
       {
         ProjectUID = Guid.NewGuid(),
-        ProjectID = 12343,
+        ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
         ProjectTimezone = projectTimeZone,
@@ -477,7 +477,7 @@ namespace RepositoryTests
       var createProjectEvent = new CreateProjectEvent()
       {
         ProjectUID = Guid.NewGuid(),
-        ProjectID = 12343,
+        ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
         ProjectTimezone = projectTimeZone,
@@ -595,7 +595,7 @@ namespace RepositoryTests
       var createProjectAEvent = new CreateProjectEvent()
       {
         ProjectUID = projectUidA,
-        ProjectID = 12343,
+        ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
         ProjectTimezone = projectTimeZone,
@@ -706,7 +706,7 @@ namespace RepositoryTests
       var createProjectBEvent = new CreateProjectEvent()
       {
         ProjectUID = projectUidB,
-        ProjectID = 12343,
+        ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
         ProjectTimezone = projectTimeZone,
@@ -792,7 +792,7 @@ namespace RepositoryTests
       var createProjectEvent = new CreateProjectEvent()
       {
         ProjectUID = Guid.NewGuid(),
-        ProjectID = 12343,
+        ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
         ProjectTimezone = projectTimeZone,
@@ -833,7 +833,7 @@ namespace RepositoryTests
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
-      int legacyProjectID = new Random().Next(0, int.MaxValue);
+      int legacyProjectID = new Random().Next(1, 1999999);
       DateTime subscriptionDateToSearch = new DateTime(2017, 1, 1, 2, 30, 3);
 
       var createCustomerEvent = new CreateCustomerEvent()

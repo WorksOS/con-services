@@ -32,7 +32,11 @@ SET @s = (SELECT IF(
     ) > 0,
     "SELECT 1",
     "ALTER TABLE `Asset` ADD COLUMN `EquipmentVIN` varchar(50) DEFAULT NULL AFTER `OwningCustomerUID`"
-));   
+)); 
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;   
 
 SET @s = (SELECT IF(
     (SELECT COUNT(*)
@@ -44,3 +48,7 @@ SET @s = (SELECT IF(
     "SELECT 1",
     "ALTER TABLE `Asset` ADD COLUMN `ModelYear` int(11) NULL AFTER `Model`"
 ));  
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt; 

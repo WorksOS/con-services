@@ -30,3 +30,7 @@ SET @s = (SELECT IF(
     "SELECT 1",
     "ALTER TABLE `Device` ADD COLUMN `OwningCustomerUID` varchar(36) DEFAULT NULL AFTER `DataLinkType`"
 ));
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt; 

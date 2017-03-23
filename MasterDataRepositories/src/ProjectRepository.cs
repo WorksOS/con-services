@@ -157,12 +157,22 @@ namespace Repositories
       {
         log.LogDebug("ProjectRepository/CreateProject: going to create project={0}))')", JsonConvert.SerializeObject(project));
         var formattedPolygon = string.Format("ST_GeomFromText('{0}')", project.GeometryWKT);
-        string insert = string.Format(
-          "INSERT Project " +
-          "    (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST ) " +
-          "  VALUES " +
-          "    (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0})"
-            , formattedPolygon);
+
+        string insert = null;
+        if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
+          insert = string.Format(
+              "INSERT Project " +
+              "    (ProjectUID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST ) " +
+              "  VALUES " +
+              "    (@ProjectUID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0})"
+                , formattedPolygon);
+        else
+          insert = string.Format(
+              "INSERT Project " +
+              "    (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST ) " +
+              "  VALUES " +
+              "    (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0})"
+                , formattedPolygon);
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, project);
