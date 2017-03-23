@@ -35,8 +35,6 @@ node('Jenkins-Win2016-Raptor') {
     bat "./build.bat"
     stage 'Run unit tests'
     bat "./unittests.bat"
-    stage 'Build MockApis unit tests'
-    bat "./mockapis.bat"
     stage 'Prepare Acceptance tests'
     bat "./acceptancetests.bat"
     try {
@@ -68,8 +66,6 @@ node('Jenkins-Win2016-Raptor') {
        stage 'Build Images'
        bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}-${branchName} ./Artifacts/WebApi"
        bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest ./Artifacts/WebApi"
-       bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:${fullVersion}-${branchName} ./Artifacts/MockProjectWebApi"
-       bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest ./Artifacts/MockProjectWebApi"
 
  
        //Publish to AWS Repo

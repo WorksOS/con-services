@@ -7,7 +7,7 @@ services:
     env_file:
      - docker-compose.env
   mockprojectwebapi:
-    build: ./Artifacts/MockProjectWebApi
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest
     env_file:
      - docker-compose.env
     ports:
