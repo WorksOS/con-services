@@ -29,6 +29,8 @@ node('Jenkins-Win2016-Raptor') {
 
     stage 'Checkout'
     checkout scm
+    dir('./MockProjectWebApi/src')
+   {
     stage 'Build MockApis'
     bat "./mockapis.bat"
     currentBuild.result = 'SUCCESS'
@@ -44,4 +46,5 @@ node('Jenkins-Win2016-Raptor') {
        stage 'Get ecr login, push image to Repo'
        bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}-${branchName}"
     }
+  }
 }
