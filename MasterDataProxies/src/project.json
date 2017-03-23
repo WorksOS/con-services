@@ -4,7 +4,7 @@
   "title": "Shared lib to access masterdata aspects through http",
   "description": "Shared across Merino apps, source code is availble under MerinoSandbox repo",
 
-  "version": "1.0.2",
+  "version": "1.0.3",
 
   "dependencies": {
     "Microsoft.Extensions.Logging": "1.1.0",
@@ -36,6 +36,12 @@
       "buildOptions": {
         "define": [ "TRACE", "STRONG", "NET", "NET_2_0", "NET_4_0", "NET_4_5" ]
       }
+    },
+    "net462": {
+      "buildOptions": {
+        "define": [ "TRACE", "STRONG", "NET", "NET_2_0", "NET_4_0", "NET_4_5" ]
+      }
     }
+
   }
 }
