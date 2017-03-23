@@ -143,9 +143,9 @@ namespace RepositoryTests
       var g = projectContext.GetProjectOnly(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
-      Assert.IsTrue(g.Result.LegacyProjectID > 2000000, "Project legacyProjectId is incorrect");
+      Assert.IsTrue(g.Result.LegacyProjectID >= 2000000, "Project legacyProjectId is incorrect. Actual LegacyProjectID = {0}, should be >2m", g.Result.LegacyProjectID);
       project.LegacyProjectID = g.Result.LegacyProjectID;
-      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
+      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo.");
     }
 
     /// <summary>
