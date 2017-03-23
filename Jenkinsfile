@@ -30,7 +30,7 @@ node('Jenkins-Win2016-Raptor') {
     stage 'Checkout'
     checkout scm
     stage 'Restore packages'
-    bat "dotnet restore"
+    bat "dotnet restore --no-cache"
     stage 'Build solution'
     bat "./build.bat"
     stage 'Run unit tests'
