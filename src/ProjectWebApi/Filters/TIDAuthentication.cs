@@ -24,9 +24,9 @@ namespace VSS.Project.Service.WebApiModels.Filters
             if (!context.Request.Path.Value.Contains("swagger"))
             {
 
-                bool requiresCustomerUid = context.Request.Method.ToUpper() == "GET";
+                bool requiresCustomerUid = true; //context.Request.Method.ToUpper() == "GET"; Actually we do need to have customerUId regardless request
 
-                string authorization = context.Request.Headers["X-Jwt-Assertion"];
+        string authorization = context.Request.Headers["X-Jwt-Assertion"];
                 string customerUID = context.Request.Headers["X-VisionLink-CustomerUid"];
 
                 // If no authorization header found, nothing to process further

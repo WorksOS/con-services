@@ -50,13 +50,15 @@ namespace ProjectWebApi
       services.AddCors(options =>
       {
         options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
-                .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization", "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
-                .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
+            .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
+                "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
+            .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
 
       // Add framework services.
       services.AddApplicationInsightsTelemetry(Configuration);
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
+      services.AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       services.AddTransient<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddMvc();
@@ -67,7 +69,7 @@ namespace ProjectWebApi
       {
         options.SingleApiVersion(new Info
         {
-          Version = "v1",
+          Version = "v3",
           Title = "Project Master Data API",
           Description = "API for project data",
           TermsOfService = "None"

@@ -94,11 +94,16 @@ namespace ProjectWebApi.ResultsHandling
     /// </summary>
     public static readonly int InternalProcessingError = -3;
 
-      /// <summary>
+    /// <summary>
     ///   The proposed new project overlaps in time and space, another project
     /// </summary>
     public static readonly int OverlappingProjects = -4;
-   
+
+    /// <summary>
+    ///   The proposed new project doesn't have a valid subscription plan available
+    /// </summary>
+    public static readonly int NoValidSubscription = -5;
+
 
     /// <summary>
     /// Dynamically adds new error messages addwith offset.
