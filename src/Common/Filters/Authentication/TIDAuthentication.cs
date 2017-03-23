@@ -60,7 +60,7 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
               return;
             }
             var customerProjects = projectListProxy.GetProjects(customerUID,
-              RequestUtils.GetCustomHeaders(context.Request.Headers));
+              context.Request.Headers.GetCustomHeaders());
             var authProjects = new List<ProjectDescriptor>();
             if (customerProjects != null)
             {
