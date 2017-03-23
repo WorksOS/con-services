@@ -37,11 +37,12 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
-   # format $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
-   New-PSDrive -Persist -Name "Z" -PSProvider "FileSystem" -Root $SHAREUNC
-   #$cmd="net use Z: $SHAREUNC /user:svcRaptor v3L0c1R^pt0R!"
-   #Invoke-Expression $cmd
-   
+
+   // format $SHAREUNC = "\\dev-iolv01.vssengg.com\productiondata"
+   $pass="v3L0c1R^pt0R!"|ConvertTo-SecureString -AsPlainText -Force
+   $Cred = New-Object System.Management.Automation.PsCredential('svcRaptor',$pass)
+   Write-host "Mapping drive Z to $SHAREUNC"
+   New-PSDrive -Persist -Name "Z" -PSProvider "FileSystem" -Root $SHAREUNC -Credential $cred
   }
 
 
