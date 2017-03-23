@@ -7,12 +7,17 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
+using VSS.Raptor.Service.Common.Interfaces;
 
 namespace ProjectWebApi.Controllers
 {
   public class ProjectV2Controller : ProjectV3Controller
   {
-    public ProjectV2Controller(IKafka producer, IRepository<IProjectEvent> projectRepo, IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ILoggerFactory logger) : base(producer, projectRepo, subscriptionsRepo, store, logger)
+    public ProjectV2Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
+            IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
+            IGeofenceProxy geofenceProxy, ILoggerFactory logger) 
+      : base(producer, projectRepo, subscriptionsRepo, store, 
+            subsProxy, geofenceProxy, logger)
     {
     }
 
