@@ -182,7 +182,7 @@ namespace IntegrationTests
     }
 
 
-        [TestMethod]
+   [TestMethod]
     public void ProjectMonitoSubscription_GetProjectId()
     {
       var msg = new Msg();
