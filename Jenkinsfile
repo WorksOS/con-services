@@ -46,14 +46,14 @@ node('Jenkins-Win2016-Raptor') {
     finally {
     stage 'Bring containers down and archive the logs'
     bat "./stop_containers.bat"
+     stage 'Publish test results and logs'
+    //Convert trx to xml for archiving
+    bat "./msxsl.exe ./AcceptanceTests/tests/ProductionDataSvc.AcceptanceTests/bin/Debug/testresults.trx ./mstest-to-junit.xsl -o ./TestResult.xml"
+    step([$class: 'JUnitResultArchiver', testResults: '.\\TestResult.xml'])
     }
     currentBuild.result = 'SUCCESS'
 
 	
-     stage 'Publish test results and logs'
-    //Convert trx to xml for archiving
-     bat "./msxsl.exe ./AcceptanceTests/tests/ProductionDataSvc.AcceptanceTests/bin/Debug/testresults.trx ./mstest-to-junit.xsl -o ./TestResult.xml"
-    step([$class: 'JUnitResultArchiver', testResults: '.\\TestResult.xml'])
 	
     //workspacePath = pwd()
 
