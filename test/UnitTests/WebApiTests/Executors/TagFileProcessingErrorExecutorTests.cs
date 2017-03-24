@@ -30,7 +30,7 @@ namespace WebApiTests.Executors
     [TestMethod]
     public void CanCallTagFileProcessingErrorExecutorValidInputWithError()
     {
-      TagFileProcessingErrorRequest TagFileProcessingErrorRequest = TagFileProcessingErrorRequest.HelpSample;
+      TagFileProcessingErrorRequest TagFileProcessingErrorRequest = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(345345, "theFileName", -2);
       TagFileProcessingErrorResult TagFileProcessingErrorResult = new TagFileProcessingErrorResult();
       var factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
       ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();

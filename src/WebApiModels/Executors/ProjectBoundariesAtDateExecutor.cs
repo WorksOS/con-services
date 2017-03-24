@@ -28,28 +28,28 @@ namespace WebApiModels.Executors
       bool result = false;
       ProjectBoundaryPackage[] boundaries = new ProjectBoundaryPackage[0];
 
-      var asset = LoadAsset(request.assetId);
+      var asset = dataRepository.LoadAsset(request.assetId);
       log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded Asset? {0}", JsonConvert.SerializeObject(asset));
 
       if (asset != null)
       {
         // loading customer checks that it is of the correct type
-        Customer assetOwningCustomer = LoadCustomer(asset.OwningCustomerUID);
+        Customer assetOwningCustomer = dataRepository.LoadCustomer(asset.OwningCustomerUID);
         log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theAssetsCustomer? {0}", JsonConvert.SerializeObject(assetOwningCustomer));
 
         if (assetOwningCustomer != null)
         {
           // See if the assets owner has a) a 3dPM sub on the asset or b) a Man3d sub       
           // i.e. will be 0 or 1 customer
-          IEnumerable<SubscriptionData> subs = null;
-          subs = LoadAssetSubs(asset.AssetUID, request.tagFileUTC.Date)
+          IEnumerable<Subscriptions> subs = null;
+          subs = dataRepository.LoadAssetSubs(asset.AssetUID, request.tagFileUTC.Date)
                 .Where(x => x.customerUid == assetOwningCustomer.CustomerUID);
           log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theAssetsSubs? {0}", JsonConvert.SerializeObject(subs));
 
           // we need only 1 sub.
           if (subs == null || subs.Count() == 0)
           {
-            subs = LoadManual3DCustomerBasedSubs(assetOwningCustomer.CustomerUID, request.tagFileUTC.Date);
+            subs = dataRepository.LoadManual3DCustomerBasedSubs(assetOwningCustomer.CustomerUID, request.tagFileUTC.Date);
             log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theCustomersSubs? {0}", JsonConvert.SerializeObject(subs));
           }
           
@@ -59,8 +59,8 @@ namespace WebApiModels.Executors
             //i.e. tagFileUTC is between project start and end dates
             //and which belong to the asset owner and get their boundary points
 
-            IEnumerable<Project> projects = LoadProjects(asset.OwningCustomerUID, request.tagFileUTC.Date);
-            log.LogInformation("ProjectBoundariesAtDateExecutor: Loaded Projects {0} for customer", JsonConvert.SerializeObject(projects));
+            IEnumerable<Project> projects = dataRepository.LoadProjects(asset.OwningCustomerUID, request.tagFileUTC.Date);
+            log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded Projects {0} for customer", JsonConvert.SerializeObject(projects));
 
             if (projects != null && projects.Count() > 0)
             {
@@ -68,7 +68,7 @@ namespace WebApiModels.Executors
               foreach (var p in projects)
               {
                 TWGS84FenceContainer boundaryFence = new TWGS84FenceContainer();
-                boundaryFence.FencePoints = ParseBoundaryData(p.GeometryWKT);
+                boundaryFence.FencePoints = dataRepository.ParseBoundaryData(p.GeometryWKT);
                 if (boundaryFence.FencePoints.Count() > 0)
                 {
                   list.Add(new ProjectBoundaryPackage
@@ -79,7 +79,7 @@ namespace WebApiModels.Executors
                 }
               }
               boundaries = list.ToArray();
-              log.LogInformation("ProjectBoundariesAtDateExecutor: Loaded boundaries {0} for projects", JsonConvert.SerializeObject(boundaries));
+              log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded boundaries {0} for projects", JsonConvert.SerializeObject(boundaries));
 
               if (boundaries.Count() > 0) result = true;
             }

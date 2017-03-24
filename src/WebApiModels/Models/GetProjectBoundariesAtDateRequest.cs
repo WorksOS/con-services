@@ -10,27 +10,23 @@ namespace WebApiModels.Models
   /// The request representation used to request the boundaries of projects that are active at a specified date time and belong to the owner
   /// of the specified asset.
   /// </summary>
-  public class GetProjectBoundariesAtDateRequest
+  public class GetProjectBoundariesAtDateRequest: ContractRequest
   {
-
-    private long _assetId;
-    private DateTime _tagFileUTC;
-
     /// <summary>
     /// The id of the asset owned by the customer whose active project boundaries are returned. 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
-    public long assetId { get { return _assetId; } private set { _assetId = value; } }
+    public long assetId { get; set; }
 
     /// <summary>
     /// The date time from the tag file which must be within the active project date range. 
     /// </summary>
     [Required]
     [JsonProperty(PropertyName = "tagFileUTC", Required = Required.Always)]
-    public DateTime tagFileUTC { get { return _tagFileUTC; } private set { _tagFileUTC = value; } }
+    public DateTime tagFileUTC { get; set; }
 
-        /// <summary>
+    /// <summary>
     /// Private constructor
     /// </summary>
     private GetProjectBoundariesAtDateRequest()
@@ -47,17 +43,7 @@ namespace WebApiModels.Models
         tagFileUTC = tagFileUTC
       };
     }
-
-    /// <summary>
-    /// Example for Help
-    /// </summary>
-    public static GetProjectBoundariesAtDateRequest HelpSample
-    {
-      get
-      {
-        return CreateGetProjectBoundariesAtDateRequest(1892337661625085, DateTime.UtcNow.AddMinutes(-1));
-      }
-    }
+    
 
     /// <summary>
     /// Validates all properties

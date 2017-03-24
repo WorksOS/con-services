@@ -302,6 +302,75 @@ namespace WebApiTests
       Assert.AreEqual(true, actualResult.result , " result of request doesn't match expected");
     }
 
+    [TestMethod]
+    public void ValidateAssetIdMessages1()
+    {
+      msg.Title("Asset WebTest 11", "Validate error message : Must have assetId and or projectID ");
+      var ts = new TestSupport { IsPublishToKafka = false };
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var projectUid = Guid.NewGuid();
+      var customerUid = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
+      var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
+      var geometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var projectEventArray = new[] {
+       "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name          | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone | StartDate   | EndDate   | GeometryWKT   |",
+      $"| Project   | 0d+09:00:00 | {projectUid} | {legacyProjectId} | AssetWebTest11| 2                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT} |" };
+      ts.PublishEventCollection(projectEventArray);
+      var eventsArray = new[] {
+        "| TableName       | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID |",
+       $"| Customer        | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                | 15               |             |                |               |",
+       $"| Subscription    | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 15               | {startDate} | {endDate}      |               |",
+       $"| CustomerProject | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |             |                | {projectUid}  |"};
+      ts.PublishEventCollection(eventsArray);
+
+      var request = GetAssetIdRequest.CreateGetAssetIdRequest(0,6,"");
+      var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
+      var restClient = new RestClient();
+      var uri = ts.GetBaseUri() + "api/v1/asset/getId";
+      var method = HttpMethod.Post.ToString();
+      var response = restClient.DoHttpRequest(uri, method, requestJson, System.Net.HttpStatusCode.BadRequest);
+      var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
+      Assert.AreEqual("Must have assetId and/or projectID", actualResult.Message, " result message from web api does not match expected");
+      Assert.AreEqual(ContractExecutionStatesEnum.ValidationError, actualResult.Code, "code from web api does not match expected");
+    }
+
+    [TestMethod]
+    public void ValidateAssetIdMessages2()
+    {
+      msg.Title("Asset WebTest 12", "Validate error message :AssetId must have valid deviceType ");
+      var ts = new TestSupport { IsPublishToKafka = false };
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var projectUid = Guid.NewGuid();
+      var customerUid = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
+      var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
+      var geometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var projectEventArray = new[] {
+       "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name           | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone | StartDate   | EndDate   | GeometryWKT   |",
+      $"| Project   | 0d+09:00:00 | {projectUid} | {legacyProjectId} | AssetWebTest12 | 2                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT} |" };
+      ts.PublishEventCollection(projectEventArray);
+      var eventsArray = new[] {
+        "| TableName       | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID |",
+       $"| Customer        | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                | 13               |             |                |               |",
+       $"| Subscription    | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 13               | {startDate} | {endDate}      |               |",
+       $"| CustomerProject | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |             |                | {projectUid}  |"};
+      ts.PublishEventCollection(eventsArray);
+
+      var request = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId,1500, "AAA");
+      var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
+      var restClient = new RestClient();
+      var uri = ts.GetBaseUri() + "api/v1/asset/getId";
+      var method = HttpMethod.Post.ToString();
+      var response = restClient.DoHttpRequest(uri, method, requestJson, System.Net.HttpStatusCode.BadRequest);
+      var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
+      Assert.AreEqual("AssetId must have valid deviceType", actualResult.Message, " result message from web api does not match expected");
+      Assert.AreEqual(ContractExecutionStatesEnum.ValidationError, actualResult.Code, "code from web api does not match expected");
+    }
+
+
     /// <summary>
     /// Call the web api and return the response
     /// </summary>

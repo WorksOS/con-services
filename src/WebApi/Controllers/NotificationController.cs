@@ -31,10 +31,8 @@ namespace WebApi.Controllers
     [HttpPost]
     public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody]TagFileProcessingErrorRequest request)
     {
-      log.LogInformation("PostTagFileProcessingError: request:{0}", JsonConvert.SerializeObject(request));
-
+      log.LogDebug("PostTagFileProcessingError: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
-      log.LogInformation("PostTagFileProcessingError: after validation request:{0}", JsonConvert.SerializeObject(request));
 
       return RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, log).Process(request) as TagFileProcessingErrorResult;
     }

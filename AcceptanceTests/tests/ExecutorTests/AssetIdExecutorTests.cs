@@ -4,6 +4,7 @@ using WebApiModels.Enums;
 using WebApiModels.Models;
 using WebApiModels.Executors;
 using WebApiModels.ResultHandling;
+using Repositories.DBModels;
 
 namespace RepositoryTests
 {

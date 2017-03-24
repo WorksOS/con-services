@@ -49,17 +49,7 @@ namespace WebApiModels.Models
         error = (TagFileErrorsEnum)Enum.ToObject(typeof(TagFileErrorsEnum), error)
       };
     }
-
-    /// <summary>
-    /// Example for Help
-    /// </summary>
-    public static TagFileProcessingErrorRequest HelpSample
-    {
-      get
-      {
-        return CreateTagFileProcessingErrorRequest(3984412183889397, "1003J001SW--AFS44 0021--130903184608.tag", (int)TagFileErrorsEnum.ProjectID_NoMatchingDateTime);
-      }
-    }
+    
 
     /// <summary>
     /// Validates all properties
