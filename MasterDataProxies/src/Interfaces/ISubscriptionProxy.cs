@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace VSS.Raptor.Service.Common.Interfaces
 {
     public interface ISubscriptionProxy
     {
-        void AssociateProjectSubscription(Guid subscriptionUid, Guid projectUid,
+        Task AssociateProjectSubscription(Guid subscriptionUid, Guid projectUid,
             IDictionary<string, string> customHeaders = null);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -26,13 +27,13 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// <param name="geofenceUid">The geofence UID</param>
     /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
     /// <returns></returns>
-    public string GetGeofenceBoundary(string geofenceUid, IDictionary<string, string> customHeaders = null)
+    public async Task<string> GetGeofenceBoundary(string geofenceUid, IDictionary<string, string> customHeaders = null)
     {
-      GeofenceData cacheData = GetItem(geofenceUid, geofenceCacheLife, "GEOFENCE_API_URL", customHeaders);
+      GeofenceData cacheData = await GetItem(geofenceUid, geofenceCacheLife, "GEOFENCE_API_URL", customHeaders);
       return cacheData == null ? null : cacheData.GeometryWKT;
     }
 
-        public Guid CreateGeofence(Guid customerGuid, string geofenceName, string description, string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid,  IDictionary<string, string> customHeaders = null)
+        public async Task<Guid> CreateGeofence(Guid customerGuid, string geofenceName, string description, string geofenceType, string geometryWKT, int fillColor, bool isTransparent, Guid userUid,  IDictionary<string, string> customHeaders = null)
         {
             var geofenceGuid = Guid.NewGuid();
             var payLoadToSend = new GeofenceData()
@@ -46,7 +47,7 @@ namespace VSS.Raptor.Service.Common.Proxies
                 IsTransparent = isTransparent,
                 GeofenceUID = geofenceGuid
             };
-            SendRequest("CREATEGEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend), customHeaders);
+            await SendRequest("CREATEGEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend), customHeaders);
             return geofenceGuid;
         }
     }

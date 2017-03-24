@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
@@ -16,9 +17,9 @@ namespace VSS.Raptor.Service.Common.Proxies
     {
     }
 
-    public List<ProjectData> GetProjects(string customerUid, IDictionary<string, string> customHeaders = null)
+    public async Task<List<ProjectData>> GetProjects(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      return GetList(customerUid, projectListCacheLife, "PROJECT_API_URL", customHeaders);
+      return await GetList(customerUid, projectListCacheLife, "PROJECT_API_URL", customHeaders);
     }
   }
 }
