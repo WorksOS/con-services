@@ -37,6 +37,7 @@ node('Jenkins-Win2016-Raptor') {
     bat "./unittests.bat"
     stage 'Prepare Acceptance tests'
     bat "./acceptancetests.bat"
+    currentBuild.result = 'SUCCESS'
     try {
     stage 'Compose containers'
     bat "./start_containers.bat"
@@ -51,9 +52,6 @@ node('Jenkins-Win2016-Raptor') {
     bat "./msxsl.exe ./AcceptanceTests/tests/ProductionDataSvc.AcceptanceTests/bin/Debug/testresults.trx ./mstest-to-junit.xsl -o ./TestResult.xml"
     step([$class: 'JUnitResultArchiver', testResults: '.\\TestResult.xml'])
     }
-    currentBuild.result = 'SUCCESS'
-
-	
 	
     //workspacePath = pwd()
 
