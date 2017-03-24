@@ -152,6 +152,55 @@ namespace RepositoryTests
     /// Create Project - Happy path i.e. 
     ///   customer and CustomerProject relationship also added
     ///   project doesn't exist already.
+    /// </summary>
+    [TestMethod]
+    public void CreateProjectWithCustomer_HappyPath_DuplicateLegacyProjectId()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createProjectEvent1 = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = new Random().Next(1, 1999999),
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUTC,
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
+      };
+
+      var createProjectEvent2 = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = createProjectEvent1.ProjectID,
+        ProjectName = "The Project Name 2",
+        ProjectType = createProjectEvent1.ProjectType,
+        ProjectTimezone = createProjectEvent1.ProjectTimezone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUTC,
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
+      };
+
+
+      var s1 = projectContext.StoreEvent(createProjectEvent1);
+      s1.Wait();
+      Assert.AreEqual(1, s1.Result, "Project event 1 not written");
+
+      var s2 = projectContext.StoreEvent(createProjectEvent2);
+      s2.Wait();
+      Assert.AreEqual(0, s2.Result, "Project event should not have been written");      
+    }
+
+    /// <summary>
+    /// Create Project - Happy path i.e. 
+    ///   customer and CustomerProject relationship also added
+    ///   project doesn't exist already.
     ///   ProjectCustomer is inserted first, then Project, then Customer
     /// </summary>
     [TestMethod]

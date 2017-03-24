@@ -122,7 +122,8 @@ namespace Repositories
                 ProjectTimeZone, LandfillTimeZone, 
                 LastActionedUTC, StartDate, EndDate, GeometryWKT
               FROM Project
-              WHERE ProjectUID = @projectUid", new { projectUid = project.ProjectUID }
+              WHERE ProjectUID = @projectUid
+                OR LegacyProjectId = @legacyProjectId", new { projectUid = project.ProjectUID, legacyProjectId = project.LegacyProjectID }
            )).FirstOrDefault();
 
       if (eventType == "CreateProjectEvent")

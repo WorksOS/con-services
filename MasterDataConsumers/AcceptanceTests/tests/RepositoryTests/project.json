@@ -13,7 +13,7 @@
         "Microsoft.Extensions.Logging.Debug": "1.1.0",
         "VSS.Interfaces.netcore": "1.0.3",
         "ConfigurationStore.netcore": "*",
-        "MasterDataRepos.netcore": "*",
+        "MasterDataRepos.netcore": "*"
     },
 
     "frameworks": {

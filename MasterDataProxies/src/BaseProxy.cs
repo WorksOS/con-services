@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
@@ -34,14 +35,14 @@ namespace VSS.Raptor.Service.Common.Proxies
         /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
         /// <param name="payload">The payload of the request</param>
         /// <returns>The item</returns>
-        protected T SendRequest(string urlKey, string payload, IDictionary<string, string> customHeaders)
+        protected async Task<T> SendRequest(string urlKey, string payload, IDictionary<string, string> customHeaders)
         {
             var url = ExtractUrl(urlKey);
             T result = default(T);
             try
             {
                 GracefulWebRequest request = new GracefulWebRequest(logger);
-                result = request.ExecuteRequest<T>(url, "POST", customHeaders, payload).Result;
+                result = await request.ExecuteRequest<T>(url, "POST", customHeaders, payload);
                 log.LogDebug("Result of send to master data request: {0}", result);
             }
             catch (Exception ex)
@@ -67,7 +68,7 @@ namespace VSS.Raptor.Service.Common.Proxies
         /// <param name="urlKey">The configuration store key for the URL</param>
         /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
         /// <returns>List of items</returns>
-        private List<T> GetList(string urlKey, IDictionary<string, string> customHeaders)
+        private async Task<List<T>> GetList(string urlKey, IDictionary<string, string> customHeaders)
         {
             var url = ExtractUrl(urlKey);
 
@@ -75,7 +76,7 @@ namespace VSS.Raptor.Service.Common.Proxies
             try
             {
                 GracefulWebRequest request = new GracefulWebRequest(logger);
-                result = request.ExecuteRequest<List<T>>(url, "GET", customHeaders).Result;
+                result = await request.ExecuteRequest<List<T>>(url, "GET", customHeaders);
                 log.LogDebug("Result of get master data list request: {0} items", result.Count);
             }
             catch (Exception ex)
@@ -116,7 +117,7 @@ namespace VSS.Raptor.Service.Common.Proxies
         /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
         /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
         /// <returns>Master data item</returns>
-        protected T GetItem(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders)
+        protected async Task<T> GetItem(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders)
         {
             T cacheData;
             if (!cache.TryGetValue(uid, out cacheData))
@@ -126,7 +127,7 @@ namespace VSS.Raptor.Service.Common.Proxies
                     SlidingExpiration = cacheLife
                 };
 
-                var list = GetList(urlKey, customHeaders);
+                var list = await GetList(urlKey, customHeaders);
                 foreach (var item in list)
                 {
                     var data = item as IData;
@@ -146,7 +147,7 @@ namespace VSS.Raptor.Service.Common.Proxies
         /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
         /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
         /// <returns>Master data item</returns>
-        protected List<T> GetList(string customerUid, TimeSpan cacheLife, string urlKey,
+        protected async Task<List<T>> GetList(string customerUid, TimeSpan cacheLife, string urlKey,
             IDictionary<string, string> customHeaders)
         {
             List<T> cacheData;
@@ -156,7 +157,7 @@ namespace VSS.Raptor.Service.Common.Proxies
                 {
                     SlidingExpiration = cacheLife
                 };
-                cacheData = GetList(urlKey, customHeaders);
+                cacheData = await GetList(urlKey, customHeaders);
                 cache.Set(customerUid, cacheData, opts);
             }
             return cacheData;
