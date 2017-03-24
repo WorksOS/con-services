@@ -149,7 +149,7 @@ namespace TestUtility
       var resultCount = 0;
 
       msg.DisplayMySqlQuery(query);
-      while (retryCount < 30)
+      while (retryCount < 20)
       {
         var mysqlHelper = new MySqlHelper();
         resultCount = Convert.ToInt32(mysqlHelper.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.DbConnectionString, query));

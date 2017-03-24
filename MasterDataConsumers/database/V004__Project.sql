@@ -19,10 +19,24 @@ CREATE TABLE IF NOT EXISTS Project (
   InsertUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   UpdateUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (LegacyProjectID),
-  UNIQUE KEY UIX_Project_ProjectUID (ProjectUID ASC)
+  UNIQUE KEY UIX_Project_ProjectUID (ProjectUID ASC),
+	UNIQUE KEY UIX_Project_LegacyProjectID (LegacyProjectID)
 ) ENGINE=InnoDB CHARSET = DEFAULT COLLATE = DEFAULT AUTO_INCREMENT = 2000000;
 
 
+SET @s = (SELECT IF(
+    (SELECT COUNT(*)
+       FROM INFORMATION_SCHEMA.INNODB_SYS_INDEXES 
+        WHERE Name = 'UIX_Project_LegacyProjectID'
+        ) > 0,
+    "SELECT 1",
+    "ALTER TABLE `Project` ADD UNIQUE KEY `UIX_Project_LegacyProjectID` (`LegacyProjectID`)"
+));
+
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+        
 /* currently defaults to null. This could be changed later when existing tables are backfilled */
 SET @s = (SELECT IF(
     (SELECT COUNT(*)

@@ -127,7 +127,7 @@ namespace TestRun
                     }
                     if (lowparam.Contains("class="))
                     {
-                        singleClassName = lowparam.Substring(6);
+                        singleClassName = param.Substring(6);
                     }
                     if (lowparam.Contains("project="))
                     {
