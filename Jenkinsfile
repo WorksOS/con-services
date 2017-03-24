@@ -51,11 +51,12 @@ node('Jenkins-Win2016-Raptor') {
     currentBuild.result = 'SUCCESS'
     bat ".\\msxsl.exe .\\AcceptanceTests\\tests\\ProductionDataSvc.AcceptanceTests\\bin\\Debug\\testresults.trx .\\mstest-to-junit.xsl -o .\\TestResult.xml"
     step([$class: 'JUnitResultArchiver', testResults: '**/TestResult.xml'])
+    publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './AcceptanceTests/tests/ProductionDataSvc.AcceptanceTests/bin/Debug', reportFiles: 'logs.txt', reportName: 'WebApi logs'])
     }
 	
     //workspacePath = pwd()
 
-    //publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])
+    
  
  
     echo "Build result is ${currentBuild.result}"

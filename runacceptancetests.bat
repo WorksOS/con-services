@@ -5,4 +5,5 @@ cd AcceptanceTests\tests\ProductionDataSvc.AcceptanceTests\bin\Debug
 del *.trx
 echo %ipaddress% > TestData\webapiaddress.txt
 mstest /testcontainer:ProductionDataSvc.AcceptanceTests.dll /resultsfile:testresults.trx
+docker logs %content% > logs.txt
 exit 0
