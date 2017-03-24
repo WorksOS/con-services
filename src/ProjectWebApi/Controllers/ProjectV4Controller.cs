@@ -42,7 +42,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     [HttpGet]
     public async Task<List<ProjectDescriptor>> GetProjectsV4()
     {
-      log.LogInformation("GetProjectsV4"); // todo logging
+      log.LogInformation("GetProjectsV4"); 
       return await GetProjectsV3().ConfigureAwait(false);
     }
 
@@ -85,7 +85,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         CustomerUID = project.CustomerUID,
         LegacyCustomerID = project.CustomerID,
         ProjectUID = project.ProjectUID,
-        RelationType = RelationType.Owner, // todo? not in CreateProjectEvent
+        RelationType = RelationType.Owner, 
         ActionUTC = project.ActionUTC,
         ReceivedUTC = project.ReceivedUTC
       };
@@ -100,8 +100,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       await CreateAssociateProjectCustomer(customerProject);
 
       var userUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).Name;
-      geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "", project.ProjectBoundary, 0,
-          true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders());
+      await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "", project.ProjectBoundary, 0,
+          true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false); 
 
       log.LogDebug("CreateProjectV4. completed succesfully");
     }

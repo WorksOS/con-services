@@ -97,12 +97,6 @@ namespace ProjectWebApi.Models
                new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                                           "Start date must be earlier than end date"));
           }
-          if (createEvent.ProjectID <= 0)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing legacy ProjectID"));
-          }
         }
         else if (evt is UpdateProjectEvent)
         {
