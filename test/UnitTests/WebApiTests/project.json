@@ -4,8 +4,8 @@
     "testRunner": "mstest",
 
     "dependencies": {
-        "dotnet-test-mstest": "1.1.1-preview",
-        "MSTest.TestFramework": "1.0.1-preview",
+        "dotnet-test-mstest": "1.1.2-preview",
+        "MSTest.TestFramework": "1.0.8-rc2",
         "log4net.netcore": "3.0.0",
         "log4netExtensions.netcore": "1.0.1",
         "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
@@ -16,7 +16,7 @@
         "Microsoft.Extensions.Logging.Debug": "1.1.0",
         "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
         "WebApiModels": "1.0.0-*",
-        "MasterDataRepos.netcore": "1.0.45"
+        "MasterDataRepos.netcore": "*"
     },
 
    "frameworks": {

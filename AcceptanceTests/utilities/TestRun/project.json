@@ -22,7 +22,7 @@
         "TestUtility": "1.0.0-*",
         "WebApiModels": "1.0.0-*",
         "KafkaConsumer.netcore": "1.0.6",
-        "MasterDataRepos.netcore": "1.0.45"
+        "MasterDataRepos.netcore": "*"
     },
   "frameworks": {
     "netcoreapp1.1": {
