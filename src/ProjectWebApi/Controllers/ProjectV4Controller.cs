@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApi.Models;
 using Repositories;
-using Repositories.DBModels;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -116,9 +114,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     protected override async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
         string databaseProjectBoundary)
     {
-      ProjectDataValidator.Validate(project, projectService);
-      project.ReceivedUTC = DateTime.UtcNow;
-
       await projectService.StoreEvent(project).ConfigureAwait(false);
       if (project.ProjectID <= 0)
       {
@@ -181,7 +176,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
                     new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
           });
       await projectService.StoreEvent(customerProject).ConfigureAwait(false);
-
     }
 
     // PUT: api/Project

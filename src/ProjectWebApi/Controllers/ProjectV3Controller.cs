@@ -125,6 +125,12 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
         string databaseProjectBoundary)
     {
       ProjectDataValidator.Validate(project, projectService);
+      if (project.ProjectID <= 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                                      "Missing legacy ProjectID"));
+      }
       project.ReceivedUTC = DateTime.UtcNow;
 
       //Send boundary as old format on kafka queue
