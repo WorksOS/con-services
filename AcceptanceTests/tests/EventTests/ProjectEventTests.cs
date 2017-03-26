@@ -28,7 +28,7 @@ namespace EventTests
       ts.PublishEventCollection(eventArray);
       var startDt = ts.FirstEventDate.ToString("MM/dd/yyyy HH:mm:ss");
       var endDt = new DateTime(9999, 12, 31).ToString("MM/dd/yyyy HH:mm:ss");
-      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", legacyProjectId, projectGuid);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project","ProjectUID","Name,LegacyProjectID,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT",$"testProject1,{legacyProjectId},{(int)ProjectType.ProjectMonitoring},{startDt},{endDt},{GEOMETRY_WKT}",projectGuid);
     }
 
@@ -56,7 +56,7 @@ namespace EventTests
       };
 
       ts.PublishEventCollection(updateEventArray);
-      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", legacyProjectId, projectGuid);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID","Name,fk_ProjectTypeID,StartDate,EndDate",$"{projectName},{(int)ProjectType.Standard},{startDate},{endDate},{GEOMETRY_WKT2}", projectGuid);
     }
 
