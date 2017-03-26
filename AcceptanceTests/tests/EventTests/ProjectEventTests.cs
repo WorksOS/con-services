@@ -19,16 +19,17 @@ namespace EventTests
       var ts = new TestSupport {IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectGuid = Guid.NewGuid();
+      var legacyProjectId = ts.SetLegacyProjectId();
       var startDate = ts.FirstEventDate.Date.ToString("yyyy-MM-dd");
       var endDate = new DateTime(9999, 12, 31).Date.ToString("yyyy-MM-dd");
       var eventArray = new[] {
-       "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
-      $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GEOMETRY_WKT} |" };
+       "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+      $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | testProject1  | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {GEOMETRY_WKT} |" };
       ts.PublishEventCollection(eventArray);
       var startDt = ts.FirstEventDate.ToString("MM/dd/yyyy HH:mm:ss");
       var endDt = new DateTime(9999, 12, 31).ToString("MM/dd/yyyy HH:mm:ss");
-      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project","ProjectUID","Name,LegacyProjectID,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT",$"testProject1,1,{(int)ProjectType.ProjectMonitoring},{startDt},{endDt},{GEOMETRY_WKT}",projectGuid);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", legacyProjectId, projectGuid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project","ProjectUID","Name,LegacyProjectID,fk_ProjectTypeID,StartDate,EndDate,GeometryWKT",$"testProject1,{legacyProjectId},{(int)ProjectType.ProjectMonitoring},{startDt},{endDt},{GEOMETRY_WKT}",projectGuid);
     }
 
     [TestMethod]
@@ -39,16 +40,23 @@ namespace EventTests
       var ts = new TestSupport {IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectGuid = Guid.NewGuid();
+      var legacyProjectId = ts.SetLegacyProjectId();
       string projectName = "testProject2";
       DateTime startDate = ts.ConvertTimeStampAndDayOffSetToDateTime("0d+00:00:00", ts.FirstEventDate);
       DateTime endDate = ts.ConvertTimeStampAndDayOffSetToDateTime("10000d+00:00:00",ts.FirstEventDate);
       var eventArray = new[] {
-       "| EventType          | EventDate   | ProjectID | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |" ,
-      $"| CreateProjectEvent | 0d+09:00:00 | 1         | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT}  |" ,
-      $"| UpdateProjectEvent | 0d+09:01:00 | 1         | {projectGuid} |               | {ProjectType.Standard} | Atlantic Standard Time    |                  | {endDate}      |{GEOMETRY_WKT2} |"};
+       "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |" ,
+      $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | {projectGuid} | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT}  |" ,
+      };
 
       ts.PublishEventCollection(eventArray);
-      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);
+      var updateEventArray = new[] {
+       "| EventType          | EventDate   | ProjectID         | ProjectUID    | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |" ,
+      $"| UpdateProjectEvent | 0d+09:01:00 | {legacyProjectId} | {projectGuid} |               | {ProjectType.Standard} | Atlantic Standard Time    |                  | {endDate}      |{GEOMETRY_WKT2} |"
+      };
+
+      ts.PublishEventCollection(updateEventArray);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", legacyProjectId, projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID","Name,fk_ProjectTypeID,StartDate,EndDate",$"{projectName},{(int)ProjectType.Standard},{startDate},{endDate},{GEOMETRY_WKT2}", projectGuid);
     }
 
@@ -61,6 +69,7 @@ namespace EventTests
       msg.Title("Project test 3", "Associate customer with project");
       var ts = new TestSupport {IsPublishToKafka = true};
       var mysql = new MySqlHelper();
+      var legacyProjectId = ts.SetLegacyProjectId();
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Test Project 3";
@@ -73,8 +82,8 @@ namespace EventTests
 
       ts.PublishEventCollection(customerEventArray); 
       var projectEventArray = new[] {
-       "| EventType          | EventDate   | ProjectID | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
-      $"| CreateProjectEvent | 0d+09:00:00 | 1         | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT} |" };
+       "| EventType          | EventDate   | ProjectID         | ProjectUID      | ProjectName   | ProjectType            | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT   |" ,
+      $"| CreateProjectEvent | 0d+09:00:00 | {legacyProjectId} | { projectGuid } | {projectName} | {ProjectType.LandFill} | New Zealand Standard Time | {startDate}      | {endDate}      |{GEOMETRY_WKT} |" };
       ts.PublishEventCollection(projectEventArray);
 
       mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, projectGuid);

@@ -67,14 +67,14 @@ namespace TestUtility
     /// Set the legacy asset id
     /// </summary>
     /// <returns>get the maximum legacy asset id plus 1</returns>
-    public int SetLegacyAssetId()
+    public long SetLegacyAssetId()
     {
       var mysql = new MySqlHelper();
       var query = "SELECT max(LegacyAssetID) FROM Asset;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
          { return 1000; }
-      var legacyAssetId = Convert.ToInt32(result);
+      var legacyAssetId = Convert.ToInt64(result);
       return legacyAssetId+1001;
     }
 
@@ -656,7 +656,7 @@ namespace TestUtility
           break;
         case "ProjectSubscription":
           sqlCmd += $@"(fk_SubscriptionUID,fk_ProjectUID,EffectiveDate,LastActionedUTC) VALUES
-                     ('{eventObject.fk_SubscriptionUID}','{eventObject.fk_ProjectUID}','{eventObject.EffectiveDate:yyyy-MM-dd}','{eventObject.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
+                     ('{eventObject.fk_SubscriptionUID}','{eventObject.fk_ProjectUID}','{eventObject.StartDate}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
         case "Subscription":
           sqlCmd += $@"(SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
