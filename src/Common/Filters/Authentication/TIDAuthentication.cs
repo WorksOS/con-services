@@ -59,8 +59,8 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
               await SetResult("Invalid authentication", context);
               return;
             }
-            var customerProjects = projectListProxy.GetProjects(customerUID,
-              RequestUtils.GetCustomHeaders(context.Request.Headers));
+            var customerProjects = await projectListProxy.GetProjects(customerUID,
+              context.Request.Headers.GetCustomHeaders());
             var authProjects = new List<ProjectDescriptor>();
             if (customerProjects != null)
             {

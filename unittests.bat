@@ -1,1 +1,1 @@
-dotnet test ./test/UnitTests/WebApiTests -f net46 
+dotnet test ./test/UnitTests/WebApiTests -f net462 

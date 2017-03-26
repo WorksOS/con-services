@@ -2,7 +2,7 @@
   "locked": false,
   "version": 2,
   "targets": {
-    ".NETFramework,Version=v4.6": {
+    ".NETFramework,Version=v4.6.2": {
       "Castle.Core/4.0.0": {
         "type": "package",
         "compile": {
@@ -12,7 +12,7 @@
           "lib/net45/Castle.Core.dll": {}
         }
       },
-      "ConfigurationStore.netcore/1.0.2": {
+      "ConfigurationStore.netcore/1.0.10": {
         "type": "package",
         "dependencies": {
           "Microsoft.Extensions.Configuration": "1.0.0",
@@ -20,10 +20,10 @@
           "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
           "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
           "Microsoft.Extensions.Configuration.Json": "1.0.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
           "Microsoft.Extensions.Logging": "1.1.0",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-          "NETStandard.Library": "1.6.0"
+          "NETStandard.Library": "1.6.1"
         },
         "frameworkAssemblies": [
           "System",
@@ -115,6 +115,33 @@
         },
         "runtime": {
           "lib/net451/log4netExtensions.netcore.dll": {}
+        }
+      },
+      "MasterDataProxies.netcore/1.0.5": {
+        "type": "package",
+        "dependencies": {
+          "ConfigurationStore.netcore": "1.0.10",
+          "Microsoft.Extensions.Caching.Memory": "1.0.0",
+          "Microsoft.Extensions.Configuration": "1.0.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
+          "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+          "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
+          "Microsoft.Extensions.Configuration.Json": "1.0.0",
+          "Microsoft.Extensions.Logging": "1.1.0",
+          "Microsoft.Extensions.Logging.Console": "1.1.0",
+          "Microsoft.Extensions.Logging.Debug": "1.1.0",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+          "Newtonsoft.Json": "9.0.2-beta1",
+          "Polly": "4.5.0-beta-netstandar-0001",
+          "VSS.Interfaces.netcore": "1.0.3",
+          "log4net.netcore": "3.0.0",
+          "log4netExtensions.netcore": "1.0.1"
+        },
+        "compile": {
+          "lib/net462/MasterDataProxies.netcore.dll": {}
+        },
+        "runtime": {
+          "lib/net462/MasterDataProxies.netcore.dll": {}
         }
       },
       "Microsoft.ApplicationInsights/2.1.0": {
@@ -1752,6 +1779,19 @@
           "lib/portable-net45+win8+wp8+wpa81/System.Collections.Immutable.dll": {}
         }
       },
+      "System.Collections.NonGeneric/4.0.1": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System",
+          "mscorlib"
+        ],
+        "compile": {
+          "ref/net46/System.Collections.NonGeneric.dll": {}
+        },
+        "runtime": {
+          "lib/net46/System.Collections.NonGeneric.dll": {}
+        }
+      },
       "System.ComponentModel/4.3.0": {
         "type": "package",
         "frameworkAssemblies": [
@@ -1780,6 +1820,7 @@
       "System.ComponentModel.TypeConverter/4.1.0": {
         "type": "package",
         "dependencies": {
+          "System.Collections.NonGeneric": "4.0.1",
           "System.ComponentModel.Primitives": "4.1.0"
         },
         "frameworkAssemblies": [
@@ -1787,10 +1828,10 @@
           "mscorlib"
         ],
         "compile": {
-          "ref/net45/System.ComponentModel.TypeConverter.dll": {}
+          "ref/net462/System.ComponentModel.TypeConverter.dll": {}
         },
         "runtime": {
-          "lib/net45/System.ComponentModel.TypeConverter.dll": {}
+          "lib/net462/System.ComponentModel.TypeConverter.dll": {}
         }
       },
       "System.Console/4.3.0": {
@@ -1884,11 +1925,14 @@
       },
       "System.Diagnostics.Tracing/4.3.0": {
         "type": "package",
+        "frameworkAssemblies": [
+          "mscorlib"
+        ],
         "compile": {
-          "ref/net45/_._": {}
+          "ref/net462/System.Diagnostics.Tracing.dll": {}
         },
         "runtime": {
-          "lib/net45/_._": {}
+          "lib/net462/System.Diagnostics.Tracing.dll": {}
         }
       },
       "System.Dynamic.Runtime/4.0.11": {
@@ -1927,13 +1971,14 @@
       "System.IO/4.3.0": {
         "type": "package",
         "frameworkAssemblies": [
-          "System"
+          "System",
+          "mscorlib"
         ],
         "compile": {
-          "ref/net45/_._": {}
+          "ref/net462/System.IO.dll": {}
         },
         "runtime": {
-          "lib/net45/_._": {}
+          "lib/net462/System.IO.dll": {}
         }
       },
       "System.IO.Compression/4.3.0": {
@@ -2099,11 +2144,14 @@
       },
       "System.Reflection/4.3.0": {
         "type": "package",
+        "frameworkAssemblies": [
+          "mscorlib"
+        ],
         "compile": {
-          "ref/net45/_._": {}
+          "ref/net462/System.Reflection.dll": {}
         },
         "runtime": {
-          "lib/net45/_._": {}
+          "lib/net462/System.Reflection.dll": {}
         }
       },
       "System.Reflection.Emit/4.0.1": {
@@ -2168,13 +2216,14 @@
         "frameworkAssemblies": [
           "System",
           "System.ComponentModel.Composition",
-          "System.Core"
+          "System.Core",
+          "mscorlib"
         ],
         "compile": {
-          "ref/net45/_._": {}
+          "ref/net462/System.Runtime.dll": {}
         },
         "runtime": {
-          "lib/net45/_._": {}
+          "lib/net462/System.Runtime.dll": {}
         }
       },
       "System.Runtime.CompilerServices.Unsafe/4.3.0": {
@@ -2189,13 +2238,14 @@
       "System.Runtime.Extensions/4.3.0": {
         "type": "package",
         "frameworkAssemblies": [
-          "System"
+          "System",
+          "mscorlib"
         ],
         "compile": {
-          "ref/net45/_._": {}
+          "ref/net462/System.Runtime.Extensions.dll": {}
         },
         "runtime": {
-          "lib/net45/_._": {}
+          "lib/net462/System.Runtime.Extensions.dll": {}
         }
       },
       "System.Runtime.Handles/4.3.0": {
@@ -2212,15 +2262,19 @@
       },
       "System.Runtime.InteropServices/4.3.0": {
         "type": "package",
+        "dependencies": {
+          "System.Runtime": "4.3.0"
+        },
         "frameworkAssemblies": [
           "System",
-          "System.Core"
+          "System.Core",
+          "mscorlib"
         ],
         "compile": {
-          "ref/net45/_._": {}
+          "ref/net462/System.Runtime.InteropServices.dll": {}
         },
         "runtime": {
-          "lib/net45/_._": {}
+          "lib/net462/System.Runtime.InteropServices.dll": {}
         }
       },
       "System.Runtime.InteropServices.RuntimeInformation/4.3.0": {
@@ -2277,13 +2331,13 @@
           "mscorlib"
         ],
         "compile": {
-          "ref/net46/System.Security.Cryptography.Algorithms.dll": {}
+          "ref/net461/System.Security.Cryptography.Algorithms.dll": {}
         },
         "runtime": {
-          "lib/net46/System.Security.Cryptography.Algorithms.dll": {}
+          "lib/net461/System.Security.Cryptography.Algorithms.dll": {}
         },
         "runtimeTargets": {
-          "runtimes/win/lib/net46/System.Security.Cryptography.Algorithms.dll": {
+          "runtimes/win/lib/net461/System.Security.Cryptography.Algorithms.dll": {
             "assetType": "runtime",
             "rid": "win"
           }
@@ -2336,13 +2390,13 @@
           "mscorlib"
         ],
         "compile": {
-          "ref/net46/System.Security.Cryptography.X509Certificates.dll": {}
+          "ref/net461/System.Security.Cryptography.X509Certificates.dll": {}
         },
         "runtime": {
-          "lib/net46/System.Security.Cryptography.X509Certificates.dll": {}
+          "lib/net461/System.Security.Cryptography.X509Certificates.dll": {}
         },
         "runtimeTargets": {
-          "runtimes/win/lib/net46/System.Security.Cryptography.X509Certificates.dll": {
+          "runtimes/win/lib/net461/System.Security.Cryptography.X509Certificates.dll": {
             "assetType": "runtime",
             "rid": "win"
           }
@@ -2538,6 +2592,18 @@
           "lib/net46/System.Xml.XPath.XDocument.dll": {}
         }
       },
+      "VSS.Interfaces.netcore/1.0.3": {
+        "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.0"
+        },
+        "compile": {
+          "lib/net451/VSS.Interfaces.netcore.dll": {}
+        },
+        "runtime": {
+          "lib/net451/VSS.Interfaces.netcore.dll": {}
+        }
+      },
       "VSS.Velociraptor.Interfaces/1.0.26": {
         "type": "package",
         "compile": {
@@ -2553,20 +2619,12 @@
           "lib/VSS.Velociraptor.ProjectListener.dll": {}
         }
       },
-      "VSS.VisionLink.Interfaces.Events.MasterData/1.0.1262": {
-        "type": "package",
-        "compile": {
-          "lib/net45/VSS.VisionLink.Interfaces.Events.MasterData.dll": {}
-        },
-        "runtime": {
-          "lib/net45/VSS.VisionLink.Interfaces.Events.MasterData.dll": {}
-        }
-      },
       "Common/1.0.0": {
         "type": "project",
-        "framework": ".NETFramework,Version=v4.6",
+        "framework": ".NETFramework,Version=v4.6.2",
         "dependencies": {
-          "ConfigurationStore.netcore": "1.0.2",
+          "ConfigurationStore.netcore": "1.0.0",
+          "MasterDataProxies.netcore": "1.0.0",
           "Microsoft.AspNet.WebApi.Core": "5.2.3",
           "Microsoft.AspNetCore.Mvc": "1.0.1",
           "Microsoft.AspNetCore.Mvc.DataAnnotations": "1.0.1",
@@ -2578,20 +2636,19 @@
           "Microsoft.Extensions.Configuration.Json": "1.0.0",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
           "Newtonsoft.Json": "9.0.2-beta1",
-          "Polly": "4.5.0-beta-netstandar-0001",
-          "VSS.Velociraptor.Interfaces": "1.0.26",
-          "VSS.VisionLink.Interfaces.Events.MasterData": "1.0.1262"
+          "VSS.Interfaces.netcore": "1.0.3",
+          "VSS.Velociraptor.Interfaces": "1.0.26"
         },
         "compile": {
-          "net46/Common.dll": {}
+          "net462/Common.dll": {}
         },
         "runtime": {
-          "net46/Common.dll": {}
+          "net462/Common.dll": {}
         }
       },
       "WebApi/1.0.0": {
         "type": "project",
-        "framework": ".NETFramework,Version=v4.6",
+        "framework": ".NETFramework,Version=v4.6.2",
         "dependencies": {
           "Common": "1.0.0",
           "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
@@ -2608,31 +2665,31 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
           "Swashbuckle.SwaggerGen": "6.0.0-beta902",
           "Swashbuckle.SwaggerUi": "6.0.0-beta902",
-          "System.Net.Primitives": "4.0.11",
+          "System.Net.Primitives": "4.3.0",
           "WebApiModels": "1.0.0",
           "log4net.netcore": "3.0.0",
           "log4netExtensions.netcore": "1.0.1"
         },
         "compile": {
-          "net46/WebApi.dll": {}
+          "net462/WebApi.dll": {}
         },
         "runtime": {
-          "net46/WebApi.dll": {}
+          "net462/WebApi.dll": {}
         }
       },
       "WebApiModels/1.0.0": {
         "type": "project",
-        "framework": ".NETFramework,Version=v4.6",
+        "framework": ".NETFramework,Version=v4.6.2",
         "dependencies": {
           "Common": "1.0.0",
           "Microsoft.AspNetCore.Mvc": "1.0.1",
           "Polly": "4.5.0-beta-netstandar-0001"
         },
         "compile": {
-          "net46/WebApiModels.dll": {}
+          "net462/WebApiModels.dll": {}
         },
         "runtime": {
-          "net46/WebApiModels.dll": {}
+          "net462/WebApiModels.dll": {}
         }
       }
     }
@@ -2659,12 +2716,12 @@
         "readme.txt"
       ]
     },
-    "ConfigurationStore.netcore/1.0.2": {
-      "sha512": "9Yyew9M+iulC2yVagG/G1JfoZEpfZAYg+qA99ExvcU9Nd03tEUggwN2PhRIllP6jI7jO8rvriwJtyEkxzpwCAw==",
+    "ConfigurationStore.netcore/1.0.10": {
+      "sha512": "jGGTMOXvv6XteGIG/U27uf5zLa2CGS0cyv3nRiNbumEMjnD+VXY7MqWdM1ITnlzgs+C+w22XJIeJnBL7DpFBQg==",
       "type": "package",
-      "path": "ConfigurationStore.netcore/1.0.2",
+      "path": "ConfigurationStore.netcore/1.0.10",
       "files": [
-        "ConfigurationStore.netcore.1.0.2.nupkg.sha512",
+        "ConfigurationStore.netcore.1.0.10.nupkg.sha512",
         "ConfigurationStore.netcore.nuspec",
         "lib/net46/ConfigurationStore.netcore.dll",
         "lib/net46/ConfigurationStore.netcore.pdb",
@@ -2736,6 +2793,36 @@
         "src/log4netExtensions/Log4NetAspExtensions.cs",
         "src/log4netExtensions/Log4NetProvider.cs",
         "src/log4netExtensions/Properties/AssemblyInfo.cs"
+      ]
+    },
+    "MasterDataProxies.netcore/1.0.5": {
+      "sha512": "EoxsCHUwUC1ZypVnvyxhEaddTsAluXFxzAyFE0/KQzjk6Z8Q2lzHm4utuTDeicHl44zsG7Mtiec+WLaqUGFnBQ==",
+      "type": "package",
+      "path": "MasterDataProxies.netcore/1.0.5",
+      "files": [
+        "MasterDataProxies.netcore.1.0.5.nupkg.sha512",
+        "MasterDataProxies.netcore.nuspec",
+        "lib/net46/MasterDataProxies.netcore.dll",
+        "lib/net46/MasterDataProxies.netcore.pdb",
+        "lib/net462/MasterDataProxies.netcore.dll",
+        "lib/net462/MasterDataProxies.netcore.pdb",
+        "lib/netstandard1.6/MasterDataProxies.netcore.dll",
+        "lib/netstandard1.6/MasterDataProxies.netcore.pdb",
+        "src/src/BaseProxy.cs",
+        "src/src/GeofenceProxy.cs",
+        "src/src/GracefulWebRequest.cs",
+        "src/src/Interfaces/IGeofenceProxy.cs",
+        "src/src/Interfaces/IProjectListProxy.cs",
+        "src/src/Interfaces/ISubscriptionProxy.cs",
+        "src/src/Models/AssociateProjectSubscriptionData.cs",
+        "src/src/Models/GeofenceData.cs",
+        "src/src/Models/IData.cs",
+        "src/src/Models/ProjectData.cs",
+        "src/src/Models/SubscriptionData.cs",
+        "src/src/ProjectListProxy.cs",
+        "src/src/Properties/AssemblyInfo.cs",
+        "src/src/RequestUtils.cs",
+        "src/src/SubscriptionProxy.cs"
       ]
     },
     "Microsoft.ApplicationInsights/2.1.0": {
@@ -4384,6 +4471,43 @@
         "lib/netstandard1.0/System.Collections.Immutable.xml",
         "lib/portable-net45+win8+wp8+wpa81/System.Collections.Immutable.dll",
         "lib/portable-net45+win8+wp8+wpa81/System.Collections.Immutable.xml"
+      ]
+    },
+    "System.Collections.NonGeneric/4.0.1": {
+      "sha512": "hMxFT2RhhlffyCdKLDXjx8WEC5JfCvNozAZxCablAuFRH74SCV4AgzE8yJCh/73bFnEoZgJ9MJmkjQ0dJmnKqA==",
+      "type": "package",
+      "path": "System.Collections.NonGeneric/4.0.1",
+      "files": [
+        "System.Collections.NonGeneric.4.0.1.nupkg.sha512",
+        "System.Collections.NonGeneric.nuspec",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net46/System.Collections.NonGeneric.dll",
+        "lib/netstandard1.3/System.Collections.NonGeneric.dll",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/net46/System.Collections.NonGeneric.dll",
+        "ref/netstandard1.3/System.Collections.NonGeneric.dll",
+        "ref/netstandard1.3/System.Collections.NonGeneric.xml",
+        "ref/netstandard1.3/de/System.Collections.NonGeneric.xml",
+        "ref/netstandard1.3/es/System.Collections.NonGeneric.xml",
+        "ref/netstandard1.3/fr/System.Collections.NonGeneric.xml",
+        "ref/netstandard1.3/it/System.Collections.NonGeneric.xml",
+        "ref/netstandard1.3/ja/System.Collections.NonGeneric.xml",
+        "ref/netstandard1.3/ko/System.Collections.NonGeneric.xml",
+        "ref/netstandard1.3/ru/System.Collections.NonGeneric.xml",
+        "ref/netstandard1.3/zh-hans/System.Collections.NonGeneric.xml",
+        "ref/netstandard1.3/zh-hant/System.Collections.NonGeneric.xml",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "ref/xamarintvos10/_._",
+        "ref/xamarinwatchos10/_._"
       ]
     },
     "System.ComponentModel/4.3.0": {
@@ -7562,6 +7686,213 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
+    "VSS.Interfaces.netcore/1.0.3": {
+      "sha512": "IZoRIp9qQZbqHp19231i7r1WfOP6l401u1r1GkaexMBfEacjReBj8slLSq8pc6qwEMzR+2ytI6/Kd9W1EBwTyA==",
+      "type": "package",
+      "path": "VSS.Interfaces.netcore/1.0.3",
+      "files": [
+        "VSS.Interfaces.netcore.1.0.3.nupkg.sha512",
+        "VSS.Interfaces.netcore.nuspec",
+        "lib/net451/VSS.Interfaces.netcore.dll",
+        "lib/net451/VSS.Interfaces.netcore.pdb",
+        "lib/netstandard1.6/VSS.Interfaces.netcore.dll",
+        "lib/netstandard1.6/VSS.Interfaces.netcore.pdb",
+        "src/VSS.VisionLink.Interfaces/Events.ApplicationsManagement/Models/AssociateRolePermissionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.ApplicationsManagement/Models/CreateApplicationEnvironmentEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.ApplicationsManagement/Models/CreateApplicationEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.ApplicationsManagement/Models/CreatePermissionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.ApplicationsManagement/Models/CreateRoleEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.ApplicationsManagement/Models/DissociateRolePermissionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.ApplicationsManagement/Models/UpdateApplicationEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.ApplicationsManagement/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.AssetMetadata/Context/AssetDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.AssetMetadata/Context/TimestampDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.AssetMetadata/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.AssetMetadata/UserAssetStateUpdatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.FleetSummary/AssetLatestStatusEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.FleetSummary/AssetStatusUpdatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.FleetSummary/Context/AssetDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.FleetSummary/Context/DeviceDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.FleetSummary/Context/TimestampDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.FleetSummary/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geocoding/Context/AddressDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geocoding/Context/AssetDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geocoding/Context/DeviceDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geocoding/Context/LocationEventDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geocoding/Context/OwnerDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geocoding/Context/TimestampDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geocoding/Context/TracingMetadataDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geocoding/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geocoding/ReverseGeocoding/AddressResolvedLocationEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geofence/Context/AssetDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geofence/Context/TimestampDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geofence/Determination/SiteEntryExitEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geofence/Determination/SiteEntryOccurredEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geofence/Determination/SiteExitOccurredEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Geofence/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Identity/Interfaces/IUserIdentityEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Identity/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Identity/User/AssociateUserRoleEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Identity/User/DissociateUserRoleEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Identity/User/UserIdentityCreatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Identity/User/UserIdentityUpdatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/IAssetEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/ICustomerAssetEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/ICustomerEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/ICustomerRelationshipEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/ICustomerUserEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/IDeviceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/IGeofenceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/IGroupEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/IProjectEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/ISubscriptionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Interfaces/IWorkDefinitionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/AssociateCustomerAssetEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/AssociateCustomerUserEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/AssociateDeviceAssetEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/AssociateProjectCustomer.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/AssociateProjectGeofence.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/AssociateProjectSubscriptionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateAssetEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateAssetSubscriptionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateCustomerEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateCustomerRelationshipEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateCustomerSubscriptionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateDeviceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateGeofenceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateGroupEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateProjectEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateProjectSubscriptionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateUserPreferencePayload.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CreateWorkDefinitionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/CustomerType.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DeleteAssetEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DeleteCustomerEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DeleteCustomerRelationshipEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DeleteGeofenceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DeleteGroupEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DeleteProjectEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DeleteUserPreferencePayload.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DeviceReplacementEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DeviceTransferEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DissociateCustomerAssetEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DissociateCustomerUserEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DissociateDeviceAssetEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DissociateProjectCustomer.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/DissociateProjectSubscriptionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/FavoriteGeofenceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/ProjectType.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/RelationType.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/RestoreProjectEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UnfavoriteGeofenceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateAssetEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateAssetSubscriptionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateCustomerEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateCustomerSubscriptionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateCustomerUserDetails.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateDeviceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateGeofenceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateGroupEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateProjectEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateProjectSubscriptionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateUserPreferencePayload.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/UpdateWorkDefinitionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Models/WorkDefinitionType.cs",
+        "src/VSS.VisionLink.Interfaces/Events.MasterData/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Notifications/Context/TimestampDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Notifications/Context/UserAssetDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Notifications/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Notifications/Updates/UserAssetNotificationCountUpdatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.OrgHierarchy/Context/TimestampDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.OrgHierarchy/Operations/OrgAssetsAssociatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.OrgHierarchy/Operations/OrgAssetsDissociatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.OrgHierarchy/Operations/OrgAssociatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.OrgHierarchy/Operations/OrgDissociatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.OrgHierarchy/Operations/OrgHierarchyRootCreatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.OrgHierarchy/Operations/OrgRemovedByCustomerUidEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.OrgHierarchy/Operations/OrgRemovedByOrgUidEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.OrgHierarchy/OrgManagementEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.OrgHierarchy/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Preference/CreatePreferenceKeyEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Preference/CreateUserPreferenceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Preference/DeletePreferenceKeyEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Preference/DeleteUserPreferenceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Preference/Interfaces/IPreferenceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Preference/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Preference/UpdatePreferenceKeyEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Preference/UpdateUserPreferenceEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Adjustments/RuntimeAdjustmentCreatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Adjustments/RuntimeAdjustmentRemovedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/AssetDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/DeviceDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/DiagnosticDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/ECMDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/EngineDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/EventDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/FenceDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/MachineStartDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/OperatorDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/OwnerDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/TamperLevelDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/TimestampDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Context/TracingMetadataDetail.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Interfaces/IAnnotatedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/BatteryChargingVoltageEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/BearingEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/CANAlarmCodeEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/ConsumptionLitersEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/CustomUtilizationEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/DeviceBatteryRemainingEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/DieselExhaustFluidRemainingPercentEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/DigitalSwitchStatusEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/EngineCelsiusTemperatureEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/EngineIdleHoursEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/EngineLubeOilCelsiusTemperatureEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/EngineOperatingStatusEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/EngineRPMEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/EngineReadingEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/FaultDiagnosticEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/FaultDiagnosticEventSourceAddressOnly.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/FaultEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/FenceAlarmEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/FuelLevelPercentEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/GensetStateEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/HoursEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/HydraulicOilCelsiusTemperatureEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/IdleFuelLitersEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/IdleStatusEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/IdleTimeoutEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/IgnitionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/LocationEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/MachineIdleFuelLitersEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/MaxFuelLitersEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/MovingEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/OdometerEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/OperatorEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/OperatorInformationEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/ParametersEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/PascalPressureEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/PassThroughPortDataEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/PowerStateEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/ProjectTagFileErrorEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/RawCANEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/RemoteSecurityStateEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/SecurityEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/SiteStateEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/SpeedEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/SpeedingEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/StatisticsEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/SwitchStateEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/TirePressureMonitorInfoEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/TirePressureMonitoringSystemEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Machine/TotalDieselExhaustFluidLitersEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Manual/CatInspectionEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Manual/FluidAnalysisEvent.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Telematics/Properties/AssemblyInfo.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Utilization/AssetUtilizationUpdated.cs",
+        "src/VSS.VisionLink.Interfaces/Events.Utilization/Properties/AssemblyInfo.cs"
+      ]
+    },
     "VSS.Velociraptor.Interfaces/1.0.26": {
       "sha512": "AWS6AO0Zd5+OTtw38yc3hhnUfPXiJVRSYNDHzXNuZ90osNJTbREWcZVqPhrFGKmKM6IDqVVZm87AOL997w1RJQ==",
       "type": "package",
@@ -7577,16 +7908,6 @@
         "tools/init.ps1",
         "tools/install.ps1",
         "tools/uninstall.ps1"
-      ]
-    },
-    "VSS.VisionLink.Interfaces.Events.MasterData/1.0.1262": {
-      "sha512": "9SMBCvn41ijeTR1GlPyqhcyu683UJR+CiJumHgVWB9T4P/T+hJa1ClJ3O2fKFTCQbfxfehRdG+RoXmYSEIbh4A==",
-      "type": "package",
-      "path": "VSS.VisionLink.Interfaces.Events.MasterData/1.0.1262",
-      "files": [
-        "VSS.VisionLink.Interfaces.Events.MasterData.1.0.1262.nupkg.sha512",
-        "VSS.VisionLink.Interfaces.Events.MasterData.nuspec",
-        "lib/net45/VSS.VisionLink.Interfaces.Events.MasterData.dll"
       ]
     },
     "Common/1.0.0": {
@@ -7623,7 +7944,7 @@
       "log4net.netcore >= 3.0.0",
       "log4netExtensions.netcore >= 1.0.1"
     ],
-    ".NETFramework,Version=v4.6": [
+    ".NETFramework,Version=v4.6.2": [
       "Microsoft.AspNet.WebApi.Core >= 5.2.3"
     ]
   },

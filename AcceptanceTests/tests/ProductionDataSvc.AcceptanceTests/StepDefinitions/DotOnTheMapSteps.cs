@@ -10,7 +10,6 @@ using RaptorSvcAcceptTestsCommon.Models;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TagFileProcessing.AcceptanceTests.Models;
 using System.Threading;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions

@@ -1,16 +1,18 @@
-version: '2.1'
+version: '3'
 services:
   webapi:
     build: ./Artifacts/WebApi
+    ports:
+     - "5000:80"
     env_file:
      - docker-compose.env
-    volumes:
-      - ./Artifacts/Logs:/app/logs
-  accepttest:
-    build: ./AcceptanceTests/deploy
+  mockprojectwebapi:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest
     env_file:
      - docker-compose.env
-    volumes:
-      - ./AcceptanceTests/deploy/testresults:/app/testresults
-    depends_on:
-      - webapi
+    ports:
+     - "5001:5001"
+networks:
+  default:
+    external:
+      name: nat

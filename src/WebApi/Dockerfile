@@ -1,6 +1,6 @@
 #FROM microsoft/dotnet:nanoserver
 #FROM microsoft/nanoserver
-FROM microsoft/windowsservercore
+FROM microsoft/windowsservercore:latest
 
 # Set the Working Directory
 WORKDIR /app
@@ -11,9 +11,11 @@ EXPOSE 80
 
 # Copy the app
 COPY . /app
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop';"]
+RUN set-itemproperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters' -Name ServerPriorityTimeLimit -Value 0 -Type DWord
 
 # Create the mount point to hold volume from host for logs
 #VOLUME logs
 
 # Start the app
-ENTRYPOINT WebApi.exe
+ENTRYPOINT ["powershell","-executionpolicy","bypass", ".\\SetupWebApi.ps1"]

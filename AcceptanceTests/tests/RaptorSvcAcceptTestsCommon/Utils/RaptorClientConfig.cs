@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using System.IO;
 using System.Reflection;
 using RestAPICoreTestFramework.Utils.Common;
 using RaptorSvcAcceptTestsCommon.Utils;
@@ -27,14 +28,14 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         {
             get
             {
-                return DLLConfig.AppSettings.Settings["TestEnvironment"].Value;
+              return "Dev"; // DLLConfig.AppSettings.Settings["TestEnvironment"].Value;
             }
         }
         public static string TestDataPath
         {
             get
             {
-                return DLLConfig.AppSettings.Settings["TestDataPath"].Value;
+              return "../../TestData/";//DLLConfig.AppSettings.Settings["TestDataPath"].Value;
             }
         }
         
@@ -114,7 +115,10 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 server = "http://mer-vm-tc-01.ap.trimblecorp.net";
             else if (TestEnvironment == "Dev")
             {
-              server = "http://dev-aslv01.vssengg.com";
+              string addr = "http://" + File.ReadAllText(TestDataPath + "webapiaddress.txt");
+              addr = addr.Replace("\n", "").Replace("\r", "").Trim();
+              Console.WriteLine("Host WebAPI url>" + addr+"<");
+              server = addr;
             }
           else if (TestEnvironment == "T01")
             server = "http://t01-aslv01.vssengg.com/RaptorWebAPI";

@@ -33,7 +33,9 @@ namespace RaptorSvcAcceptTestsCommon.Utils
             HttpWebResponse httpResponse = null;
 
             //Initialize the Http Request
+            Console.WriteLine("resourceURL:"+ resourceUri);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(resourceUri);
+            Console.WriteLine("After HttpWebRequest request");
             request.Headers = Auth.HeaderWithAuth;
             request.KeepAlive = true;  // Somehow need to set this as false to avoid Server Protocol Violation excpetion
             request.Method = httpMethod;

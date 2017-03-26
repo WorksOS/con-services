@@ -193,7 +193,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
       List<WGSPoint> geometry = null;
       if (geofenceUid.HasValue)
       {
-        var geometryWKT = geofenceProxy.GetGeofenceBoundary(geofenceUid.ToString(), RequestUtils.GetCustomHeaders(Request.Headers));
+                //Todo this ahould be async
+        var geometryWKT = geofenceProxy.GetGeofenceBoundary(geofenceUid.ToString(), RequestUtils.GetCustomHeaders(Request.Headers)).Result;
 
         if (string.IsNullOrEmpty(geometryWKT))
           throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
