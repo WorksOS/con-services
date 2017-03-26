@@ -116,10 +116,11 @@ namespace VSS.Raptor.Service.WebApi
             serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
             var serviceProvider =serviceCollection.BuildServiceProvider();
             app.UseExceptionTrap();
+      		  //Enable CORS before TID so OPTIONS works without authentication
+      		  app.UseCors("VSS");
             //Enable TID here
             app.UseTIDAuthentication();
-            app.UseCors("VSS");
-
+  
             //For now don't use application insights as it clogs the log with lots of stuff.
             //app.UseApplicationInsightsRequestTelemetry();
             //app.UseApplicationInsightsExceptionTelemetry();
@@ -136,17 +137,16 @@ namespace VSS.Raptor.Service.WebApi
             log.LogInformation("Testing Raptor configuration with sending config request");
             try
             {
-                serviceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out config);
-                log.LogTrace("Received config {0}", config);
+              serviceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out config);
+              log.LogTrace("Received config {0}", config);
             }
             catch (Exception e)
             {
-                log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
-                log.LogCritical("Can't talk to Raptor for some reason - check configuration");
-                Environment.Exit(138);
+              log.LogError("Exception loading config: {0} at {1}", e.Message, e.StackTrace);
+              log.LogCritical("Can't talk to Raptor for some reason - check configuration");
+              Environment.Exit(138);
             }
 
-
-        }
+      }
     }
 }

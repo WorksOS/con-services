@@ -138,6 +138,10 @@ namespace VSS.Raptor.Service.Common.Interfaces
     TDesignName[] GetOverriddenDesigns(long projectId, long assetId);
     TDesignLayer[] GetOverriddenLayers(long projectId, long assetId);
 
+    bool GetMDPSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+           TMDPSettings mdpSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+           out TMDPSummary mdpSummary);
+
     bool GetCMVSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
               TCMVSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
               out TCMVSummary cmvSummary);
@@ -150,6 +154,10 @@ namespace VSS.Raptor.Service.Common.Interfaces
     bool GetCMVDetails(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
      TCMVSettings cmvSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
      out TCMVDetails cmvDetails);
+
+    bool GetTemperatureSummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
+      TTemperatureSettings temperatureSettings, TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings,
+      out TTemperature temperatureSummary);
 
     /// <summary>
     /// Stores Surveyed Surface data.

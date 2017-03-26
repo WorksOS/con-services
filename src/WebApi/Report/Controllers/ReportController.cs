@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
@@ -188,14 +189,13 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
                     as ProjectStatisticsResult;
         }
 
-
-        /// <summary>
-        /// Gets volumes summary from Raptor.
-        /// </summary>
-        /// <param name="request">The request for volumes summary request to Raptor</param>
-        /// <returns></returns>
-        /// <executor>SummaryVolumesExecutor</executor>
-        [ProjectIdVerifier]
+    /// <summary>
+    /// Gets volumes summary from Raptor.
+    /// </summary>
+    /// <param name="request">The request for volumes summary request to Raptor</param>
+    /// <returns></returns>
+    /// <executor>SummaryVolumesExecutor</executor>
+    [ProjectIdVerifier]
         [ProjectUidVerifier]
         [Route("api/v1/volumes/summary")]
         [HttpPost]
@@ -287,14 +287,14 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
                     as ElevationStatisticsResult;
         }
 
-        /// <summary>
-        /// Posts summary CCA request to Raptor. 
-        /// </summary>
-        /// <param name="request">Summary CCA request</param>
-        /// <returns>Returns JSON structure wtih operation result.
-        /// </returns>
-        /// <executor>SummaryCCAExecutor</executor>
-        [ProjectIdVerifier]
+    /// <summary>
+    /// Posts summary CCA request to Raptor. 
+    /// </summary>
+    /// <param name="request">Summary CCA request</param>
+    /// <returns>Returns JSON structure wtih operation result.
+    /// </returns>
+    /// <executor>SummaryCCAExecutor</executor>
+    [ProjectIdVerifier]
         [ProjectUidVerifier]
         [Route("api/v1/compaction/cca/summary")]
         [HttpPost]

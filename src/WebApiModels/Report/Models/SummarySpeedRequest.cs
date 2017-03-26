@@ -60,6 +60,28 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     {
     }
 
+    /// <summary>
+    /// Create instance of SummarySpeedRequest
+    /// </summary>
+    public static SummarySpeedRequest CreateSummarySpeedRequestt(
+      long projectID,
+      Guid? callId,
+      LiftBuildSettings liftBuildSettings,
+      Filter filter,
+      int filterID
+        )
+    {
+      return new SummarySpeedRequest
+      {
+        projectId = projectID,
+        callId = callId,
+        liftBuildSettings = liftBuildSettings,
+        filter = filter,
+        filterId = filterID,
+
+      };
+    }
+
 
     /// <summary>
     /// Create example instance of PassCounts to display in Help documentation.
