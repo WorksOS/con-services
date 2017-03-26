@@ -199,3 +199,5 @@ Log.*
 Artifacts/
 Deploy/
 
+
+**/project.lock.json
