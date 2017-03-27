@@ -1,9 +1,13 @@
-version: '2.1'
+version: '3'
 services:
   webapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest
     env_file:
      - docker-compose-dev.env
     ports:
-     - "3001:80"
+     - "80:80"
+networks:
+  default:
+    external:
+      name: nat
  
