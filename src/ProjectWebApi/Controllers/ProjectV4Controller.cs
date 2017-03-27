@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApi.ResultsHandling;
+using Repositories.DBModels;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Utilities;
 using VSP.MasterData.Project.WebAPI.Controllers.V3;
@@ -21,7 +23,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 {
     public class ProjectV4Controller : ProjectBaseController
     {
-
         public ProjectV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
             IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
             IGeofenceProxy geofenceProxy, ILoggerFactory logger)
@@ -37,11 +38,35 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         /// <returns>A list of projects</returns>
         [Route("api/v4/project")]
         [HttpGet]
-        public async Task<List<ProjectDescriptor>> GetProjectsV4()
+        public async Task<ProjectDescriptorsListResult> GetProjectsV4()
         {
             log.LogInformation("GetProjectsV4");
-            return await GetProjectList().ConfigureAwait(false);
+            return new ProjectDescriptorsListResult()
+            {
+                ProjectDescriptors = await GetProjectList().ConfigureAwait(false) ?? new List<ProjectDescriptor>()
+            };
         }
+
+
+        /// <summary>
+        /// Gets available subscription for a customer
+        /// </summary>
+        /// <returns>List of available subscriptions</returns>
+        [Route("api/v4/subscriptions")]
+        [HttpGet]
+        public async Task<SubscriptionsListResult> GetSubscriptionsV4()
+        {
+            log.LogInformation("GetSubscriptionsV4");
+            var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+            log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+
+            //return empty list if no subscriptions available
+            return new SubscriptionsListResult()
+            {
+                SubscriptionDescriptors = (await GetFreeSubs(customerUid).ConfigureAwait(false) ?? new List<Subscription>()).ToList()
+            };
+        }
+
 
 
         // POST: api/project

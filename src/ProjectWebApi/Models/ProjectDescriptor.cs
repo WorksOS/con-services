@@ -1,11 +1,34 @@
+using System.Collections.Generic;
+using ProjectWebApi.ResultsHandling;
+using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ProjectWebApi.Models
 {
-  /// <summary>
-  ///   Describes VL project
-  /// </summary>
-  public class ProjectDescriptor
+
+    /// <summary>
+    /// Describes standard output for the project descriptors
+    /// </summary>
+    /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
+    public class ProjectDescriptorsListResult : ContractExecutionResult
+    {
+        public List<ProjectDescriptor> ProjectDescriptors { get; set; }
+    }
+
+    /// <summary>
+    /// Describes standard container with subscription descriptor
+    /// </summary>
+    /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
+    public class SubscriptionsListResult : ContractExecutionResult
+    {
+        public List<Subscription> SubscriptionDescriptors { get; set; }
+    }
+
+
+    /// <summary>
+    ///   Describes VL project
+    /// </summary>
+    public class ProjectDescriptor
   {
     /// <summary>
     ///   Gets or sets a value indicating whether this instance is archived.
