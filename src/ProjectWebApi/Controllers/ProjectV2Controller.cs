@@ -7,12 +7,13 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
+using VSP.MasterData.Project.WebAPI.Controllers;
 using VSS.Raptor.Service.Common.Interfaces;
 
 namespace ProjectWebApi.Controllers
 {
-  public class ProjectV2Controller : ProjectV3Controller
-  {
+  public class ProjectV2Controller : ProjectBaseController
+    {
     public ProjectV2Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
             IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
             IGeofenceProxy geofenceProxy, ILoggerFactory logger) 
@@ -32,7 +33,7 @@ namespace ProjectWebApi.Controllers
     [HttpPost]
     public async Task AssociateCustomerProjectV2([FromBody] AssociateProjectCustomer customerProject)
     {
-      await AssociateCustomerProjectV3(customerProject);
+      await AssociateProjectCustomer(customerProject);
     }
   }
 }
