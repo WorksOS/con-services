@@ -53,7 +53,7 @@ namespace ProjectWebApi
             {
                 options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
                     .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
-                        "X-VisionLink-CustomerUid", "X-VisionLink-UserUid")
+                        "X-VisionLink-CustomerUid", "X-VisionLink-UserUid", "X-Jwt-Assertion")
                     .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
             });
 

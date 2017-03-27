@@ -184,7 +184,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(CreateProjectEvt, "api/v3/project", statusCode, "Create",HttpMethod.Post.ToString() ,CustomerUid.ToString());
+      CallProjectWebApi(CreateProjectEvt, "", statusCode, "Create",HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -207,7 +207,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(UpdateProjectEvt, "api/v3/project", statusCode, "Update", HttpMethod.Put.ToString() ,CustomerUid.ToString());
+      CallProjectWebApi(UpdateProjectEvt, "", statusCode, "Update", HttpMethod.Put.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -223,7 +223,7 @@ namespace TestUtility
         ProjectUID = projectUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(DeleteProjectEvt, "api/v3/project", statusCode, "Delete", HttpMethod.Delete.ToString() ,CustomerUid.ToString());
+      CallProjectWebApi(DeleteProjectEvt, "", statusCode, "Delete", HttpMethod.Delete.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -285,14 +285,12 @@ namespace TestUtility
 
     public void GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
     {
-      var response = CallProjectWebApi(null, null, statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
+      var response = CallProjectWebApi(null, "", statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
-        var expectedProjects =
-          ConvertArrayToList<ProjectDescriptor>(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-        msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),
-          "Actual from WebApi: " + response);
+        var expectedProjects = ConvertArrayToList<ProjectDescriptor>(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
+        msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
         CollectionAssert.AreEqual(expectedProjects, actualProjects);
       }
     }
@@ -481,6 +479,7 @@ namespace TestUtility
             var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
             {
               ActionUTC = eventUtc,
+              CustomerUID = new Guid(singleEvent.CustomerUID),
               ReceivedUTC = eventUtc,
               StartDate = DateTime.Parse(singleEvent.StartDate), //, CultureInfo.InvariantCulture),
               EndDate = DateTime.Parse(singleEvent.EndDate), //CultureInfo.InvariantCulture),
@@ -495,6 +494,7 @@ namespace TestUtility
             {
               ActionUTC = eventUtc,
               ReceivedUTC = eventUtc,
+              CustomerUID = new Guid(singleEvent.CustomerUID),
               StartDate = DateTime.Parse(singleEvent.StartDate), // CultureInfo.InvariantCulture),
               EndDate = DateTime.Parse(singleEvent.EndDate), //CultureInfo.InvariantCulture),
               SubscriptionType = singleEvent.SubscriptionType,
@@ -507,7 +507,7 @@ namespace TestUtility
             var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
             {
               ActionUTC = eventUtc,
-              ReceivedUTC = eventUtc,
+              ReceivedUTC = eventUtc, 
               EffectiveDate = DateTime.Parse(singleEvent.EffectiveDate, CultureInfo.InvariantCulture),
               ProjectUID = new Guid(singleEvent.ProjectUID),
               SubscriptionUID = new Guid(singleEvent.SubscriptionUID)

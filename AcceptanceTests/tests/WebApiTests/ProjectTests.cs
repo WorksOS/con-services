@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using TestUtility;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -10,6 +9,7 @@ namespace WebApiTests
   [TestClass]
   public class ProjectTests
   {
+    private const string PROJECT_BOUNDARY = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
 
     [TestMethod]
     public void Create_Project_All_Ok()
@@ -17,12 +17,10 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 1", "Create a project");
       var mysql = new MySqlHelper();      
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      CreateProject(testSupport, mysql, projectId, "project 1", ProjectType.Standard);
-      var dateRange = FormatProjectDateRangeDatabase(testSupport);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimeZone,StartDate,EndDate",
-        $"{projectId},project 1,New Zealand Standard Time, {testSupport.FirstEventDate}, {testSupport.LastEventDate}", testSupport.ProjectUid);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProject(ts, mysql, projectId, "project 1", ProjectType.Standard);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimeZone,StartDate,EndDate",$"{projectId},project 1,New Zealand Standard Time, {ts.FirstEventDate}, {ts.LastEventDate}", ts.ProjectUid);
     }
 
     [TestMethod]
@@ -31,11 +29,10 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 2", "Create a project twice");
       var mysql = new MySqlHelper();
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      CreateProject(testSupport, mysql, projectId, "project 2", ProjectType.Standard);
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, "project 2", testSupport.FirstEventDate, testSupport.LastEventDate, "New Zealand Standard Time", 
-                                          ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProject(ts, mysql, projectId, "project 2", ProjectType.Standard);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, "project 2", ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
     }
 
     [TestMethod]
@@ -46,14 +43,9 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 1", "Create a project with v3 endpoint, with no legacyProjectId");
       var mysql = new MySqlHelper();
-
-      var testSupport = new TestSupport();
-      CreateProject(testSupport, mysql, 0, "project 1", ProjectType.Standard);
-      var dateRange = FormatProjectDateRangeDatabase(testSupport);
-      //mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimeZone,StartDate,EndDate", 
-      //  "123456789,project 1,New Zealand Standard Time," + dateRange, testSupport.ProjectUid);  
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimeZone,StartDate,EndDate",
-        $"0,project 1,New Zealand Standard Time, {testSupport.FirstEventDate}, {testSupport.LastEventDate}", testSupport.ProjectUid);
+      var ts = new TestSupport();
+      CreateProject(ts, mysql, 0, "project 1", ProjectType.Standard);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "LegacyProjectID,Name,ProjectTimeZone,StartDate,EndDate", $"0,project 1,New Zealand Standard Time, {ts.FirstEventDate}, {ts.LastEventDate}", ts.ProjectUid);
     }
 
     [TestMethod]
@@ -64,13 +56,10 @@ namespace WebApiTests
       msg.Title("projects 1", "Create a project with v4 endpoint, with no legacyProjectId");
       var mysql = new MySqlHelper();
 
-      var testSupport = new TestSupport();
-      CreateProject(testSupport, mysql, 0, "project 1", ProjectType.Standard);
-      var dateRange = FormatProjectDateRangeDatabase(testSupport);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "Name,ProjectTimeZone,StartDate,EndDate",
-        $"project 1,New Zealand Standard Time, {testSupport.FirstEventDate}, {testSupport.LastEventDate}", testSupport.ProjectUid);
-      mysql.VerifyTestResultDatabaseFieldsAreNotEqualAsExpected("Project", "ProjectUID", "LegacyProjectID",
-        $"0", testSupport.ProjectUid);
+      var ts = new TestSupport();
+      CreateProject(ts, mysql, 0, "project 1", ProjectType.Standard);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "Name,ProjectTimeZone,StartDate,EndDate", $"project 1,New Zealand Standard Time, {ts.FirstEventDate}, {ts.LastEventDate}", ts.ProjectUid);
+      mysql.VerifyTestResultDatabaseFieldsAreNotEqualAsExpected("Project", "ProjectUID", "LegacyProjectID",$"0", ts.ProjectUid);
     }
 
     [TestMethod]
@@ -79,42 +68,30 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 3", "Create a project with bad data");
 
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
       //No action UTC
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, "project 3", testSupport.FirstEventDate,
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.MinValue, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, "project 3", ts.FirstEventDate,ts.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.MinValue, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
       //No project UID
-      testSupport.CreateProjectViaWebApi(Guid.Empty, projectId, "project 3", testSupport.FirstEventDate,
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApi(Guid.Empty, projectId, "project 3", ts.FirstEventDate,ts.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
       //No time zone
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, "project 3", testSupport.FirstEventDate, 
-        testSupport.LastEventDate, null, ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, "project 3", ts.FirstEventDate, ts.LastEventDate, null, ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
       //No project name
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, null, testSupport.FirstEventDate, 
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, null, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
       //No start date
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, "project 3", DateTime.MinValue, 
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, "project 3", DateTime.MinValue, ts.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
       //No end date
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, "project 3", testSupport.FirstEventDate,
-        DateTime.MinValue, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, "project 3", ts.FirstEventDate, DateTime.MinValue, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
       //Bad end date
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, "project 3", testSupport.FirstEventDate,
-        testSupport.FirstEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, "project 3", ts.FirstEventDate, ts.FirstEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
       //Bad date range
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, "project 3", testSupport.LastEventDate,
-        testSupport.FirstEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, "project 3", ts.LastEventDate, ts.FirstEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
       //No legacy project ID
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, 0, "project 3", testSupport.FirstEventDate,
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, 0, "project 3", ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.BadRequest);
       //No boundary
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, "project 3", testSupport.FirstEventDate,
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, null, HttpStatusCode.BadRequest);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, "project 3", ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, null, HttpStatusCode.BadRequest);
       //Invalid boundary
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, "project 3", testSupport.FirstEventDate,
-        testSupport.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
-
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, "project 3", ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", ProjectType.Standard, DateTime.UtcNow, "POLYGON((-121.347189366818 38.8361907402694))", HttpStatusCode.BadRequest);
     }
 
     [TestMethod]
@@ -123,14 +100,12 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 4", "Update a project after create");
       var mysql = new MySqlHelper();
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      CreateProject(testSupport, mysql, 123456789, "project 4", ProjectType.Standard);
-      var updatedEndDate = testSupport.FirstEventDate.AddYears(3);
-      testSupport.UpdateProjectViaWebApi(testSupport.ProjectUid, "project 4 updated",
-        updatedEndDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "Name,EndDate",
-        "project 4 updated," + updatedEndDate, testSupport.ProjectUid);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProject(ts, mysql, projectId, "project 4", ProjectType.Standard);
+      var updatedEndDate = ts.FirstEventDate.AddYears(3);
+      ts.UpdateProjectViaWebApi(ts.ProjectUid, "project 4 updated", updatedEndDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "Name,EndDate", "project 4 updated," + updatedEndDate, ts.ProjectUid);
     }
 
     [TestMethod]
@@ -138,10 +113,8 @@ namespace WebApiTests
     {
       var msg = new Msg();
       msg.Title("projects 5", "Update a project before create");
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      testSupport.UpdateProjectViaWebApi(testSupport.ProjectUid, "project 5",
-        testSupport.LastEventDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
+      var ts = new TestSupport();
+      ts.UpdateProjectViaWebApi(ts.ProjectUid, "project 5", ts.LastEventDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
     }
 
 
@@ -151,28 +124,22 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 6", "Update a project with bad data");
       var mysql = new MySqlHelper();
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      CreateProject(testSupport, mysql, 123456789, "project 6", ProjectType.Standard);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProject(ts, mysql, projectId, "project 6", ProjectType.Standard);
 
       //No action UTC
-      testSupport.UpdateProjectViaWebApi(testSupport.ProjectUid, "project 6",
-        testSupport.LastEventDate, "New Zealand Standard Time", DateTime.MinValue, HttpStatusCode.BadRequest);
+      ts.UpdateProjectViaWebApi(ts.ProjectUid, "project 6", ts.LastEventDate, "New Zealand Standard Time", DateTime.MinValue, HttpStatusCode.BadRequest);
       //No project UID
-      testSupport.UpdateProjectViaWebApi(Guid.Empty, "project 6",
-        testSupport.LastEventDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.UpdateProjectViaWebApi(Guid.Empty, "project 6", ts.LastEventDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
       //No project name
-      testSupport.UpdateProjectViaWebApi(testSupport.ProjectUid, null,
-        testSupport.LastEventDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.UpdateProjectViaWebApi(ts.ProjectUid, null, ts.LastEventDate, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
       //No end date
-      testSupport.UpdateProjectViaWebApi(testSupport.ProjectUid, "project 6",
-        DateTime.MinValue, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.UpdateProjectViaWebApi(ts.ProjectUid, "project 6", DateTime.MinValue, "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
       //Bad end date (before start)
-      testSupport.UpdateProjectViaWebApi(testSupport.ProjectUid, "project 6",
-        testSupport.FirstEventDate.AddMonths(-1), "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.UpdateProjectViaWebApi(ts.ProjectUid, "project 6", ts.FirstEventDate.AddMonths(-1), "New Zealand Standard Time", DateTime.UtcNow, HttpStatusCode.BadRequest);
       //Trying to change timezone (before start)
-      testSupport.UpdateProjectViaWebApi(testSupport.ProjectUid, "project 6",
-        testSupport.LastEventDate, "Mountain Standard Time", DateTime.UtcNow, HttpStatusCode.Forbidden);
+      ts.UpdateProjectViaWebApi(ts.ProjectUid, "project 6", ts.LastEventDate, "Mountain Standard Time", DateTime.UtcNow, HttpStatusCode.Forbidden);
     }
 
     [TestMethod]
@@ -181,11 +148,11 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 7", "Delete a project after create");
       var mysql = new MySqlHelper();
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      CreateProject(testSupport, mysql, 123456789, "project 7", ProjectType.Standard);
-      testSupport.DeleteProjectViaWebApi(testSupport.ProjectUid, DateTime.UtcNow, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "IsDeleted", "1", testSupport.ProjectUid);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProject(ts, mysql, projectId, "project 7", ProjectType.Standard);
+      ts.DeleteProjectViaWebApi(ts.ProjectUid, DateTime.UtcNow, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("Project", "ProjectUID", "IsDeleted", "1", ts.ProjectUid);
     }
 
     [TestMethod]
@@ -193,9 +160,8 @@ namespace WebApiTests
     {
       var msg = new Msg();
       msg.Title("projects 8", "Delete a project before create");
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      testSupport.DeleteProjectViaWebApi(testSupport.ProjectUid, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      var ts = new TestSupport();
+      ts.DeleteProjectViaWebApi(ts.ProjectUid, DateTime.UtcNow, HttpStatusCode.BadRequest);
     }
 
 
@@ -205,14 +171,14 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 9", "Delete a project with bad data");
       var mysql = new MySqlHelper();
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      CreateProject(testSupport, mysql, 123456789, "project 9", ProjectType.Standard);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProject(ts, mysql, projectId, "project 9", ProjectType.Standard);
 
       //No action UTC
-      testSupport.DeleteProjectViaWebApi(testSupport.ProjectUid, DateTime.MinValue, HttpStatusCode.BadRequest);
+      ts.DeleteProjectViaWebApi(ts.ProjectUid, DateTime.MinValue, HttpStatusCode.BadRequest);
       //No project UID
-      testSupport.DeleteProjectViaWebApi(Guid.Empty, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.DeleteProjectViaWebApi(Guid.Empty, DateTime.UtcNow, HttpStatusCode.BadRequest);
     }
 
     [TestMethod]
@@ -221,10 +187,10 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 10", "Associate a customer with a project after create project");
       var mysql = new MySqlHelper();
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 123456789, "project 10", ProjectType.Standard, 111111111);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID", "fk_CustomerUID,LegacyCustomerID", testSupport.CustomerUid + ",111111111", testSupport.ProjectUid);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId, "project 10", ProjectType.Standard, 111111111);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID", "fk_CustomerUID,LegacyCustomerID", ts.CustomerUid + ",111111111", ts.ProjectUid);
     }
 
     [TestMethod]
@@ -233,11 +199,10 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 11", "Associate a customer with a project before create project");
       var mysql = new MySqlHelper();
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      testSupport.AssociateCustomerProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, testSupport.ProjectUid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID", "fk_CustomerUID,LegacyCustomerID", testSupport.CustomerUid + ",111111111", testSupport.ProjectUid);
+      var ts = new TestSupport();
+      ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, ts.ProjectUid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID", "fk_CustomerUID,LegacyCustomerID", ts.CustomerUid + ",111111111", ts.ProjectUid);
     }
 
     [TestMethod]
@@ -246,11 +211,10 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 12", "Associate a customer with a project after it has already been associated");
       var mysql = new MySqlHelper();
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      testSupport.AssociateCustomerProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, testSupport.ProjectUid);
-      testSupport.AssociateCustomerProjectViaWebApi(testSupport.ProjectUid, Guid.NewGuid(), 222222222, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      var ts = new TestSupport();
+      ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, ts.ProjectUid);
+      ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, Guid.NewGuid(), 222222222, DateTime.UtcNow, HttpStatusCode.BadRequest);
     }
 
     [TestMethod]
@@ -258,17 +222,15 @@ namespace WebApiTests
     {
       var msg = new Msg();
       msg.Title("projects 13", "Associate a customer and a project with bad data");
-
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
+      var ts = new TestSupport();
       //No action UTC
-      testSupport.AssociateCustomerProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, 111111111, DateTime.MinValue, HttpStatusCode.BadRequest);
+      ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, 111111111, DateTime.MinValue, HttpStatusCode.BadRequest);
       //No project UID
-      testSupport.AssociateCustomerProjectViaWebApi(Guid.Empty, testSupport.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.AssociateCustomerProjectViaWebApi(Guid.Empty, ts.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.BadRequest);
       //No customer UID
-      testSupport.AssociateCustomerProjectViaWebApi(testSupport.ProjectUid, Guid.Empty, 111111111, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, Guid.Empty, 111111111, DateTime.UtcNow, HttpStatusCode.BadRequest);
       //No legacy customer ID
-      testSupport.AssociateCustomerProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, 0, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, 0, DateTime.UtcNow, HttpStatusCode.BadRequest);
     }
 
     [TestMethod]
@@ -277,11 +239,10 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 14", "Dissociate a customer from a project after associate");
       var mysql = new MySqlHelper();
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      testSupport.AssociateCustomerProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, testSupport.ProjectUid);
-      testSupport.DissociateProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, DateTime.UtcNow, HttpStatusCode.NotImplemented);
+      var ts = new TestSupport();
+      ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, 111111111, DateTime.UtcNow, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, ts.ProjectUid);
+      ts.DissociateProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, DateTime.UtcNow, HttpStatusCode.NotImplemented);
       //At the moment, dissociate is not stored in the web api database so don't check database
     }
 
@@ -290,8 +251,8 @@ namespace WebApiTests
     {
       var msg = new Msg();
       msg.Title("projects 15", "Dissociate a customer from a project before associate");
-      var testSupport = new TestSupport();
-      testSupport.DissociateProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, DateTime.UtcNow, HttpStatusCode.NotImplemented);
+      var ts = new TestSupport();
+      ts.DissociateProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, DateTime.UtcNow, HttpStatusCode.NotImplemented);
     }
 
     [TestMethod]
@@ -299,15 +260,14 @@ namespace WebApiTests
     {
       var msg = new Msg();
       msg.Title("projects 16", "Dissociate a customer and a project with bad data");
-
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
+      var ts = new TestSupport();
+   //   var projectId = ts.SetLegacyProjectId();
       //No action UTC
-      testSupport.DissociateProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, DateTime.MinValue, HttpStatusCode.BadRequest);
+      ts.DissociateProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, DateTime.MinValue, HttpStatusCode.BadRequest);
       //No project UID
-      testSupport.DissociateProjectViaWebApi(Guid.Empty, testSupport.CustomerUid, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.DissociateProjectViaWebApi(Guid.Empty, ts.CustomerUid, DateTime.UtcNow, HttpStatusCode.BadRequest);
       //No customer UID
-      testSupport.DissociateProjectViaWebApi(testSupport.ProjectUid, Guid.Empty, DateTime.UtcNow, HttpStatusCode.NotImplemented);
+      ts.DissociateProjectViaWebApi(ts.ProjectUid, Guid.Empty, DateTime.UtcNow, HttpStatusCode.NotImplemented);
     }
 
     [TestMethod]
@@ -316,14 +276,12 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 17", "Associate a geofence with a project after create project");
       var mysql = new MySqlHelper();
-
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      CreateProject(testSupport, mysql, 123456789, "project 17", ProjectType.Standard);
-
-      testSupport.AssociateGeofenceProjectViaWebApi(testSupport.ProjectUid, testSupport.GeofenceUid, DateTime.UtcNow, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_ProjectUID", 1, testSupport.ProjectUid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_ProjectUID", "fk_GeofenceUID", testSupport.GeofenceUid.ToString(), testSupport.ProjectUid);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProject(ts, mysql, projectId, "project 17", ProjectType.Standard);
+      ts.AssociateGeofenceProjectViaWebApi(ts.ProjectUid, ts.GeofenceUid, DateTime.UtcNow, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_ProjectUID", 1, ts.ProjectUid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_ProjectUID", "fk_GeofenceUID", ts.GeofenceUid.ToString(), ts.ProjectUid);
     }
 
     [TestMethod]
@@ -332,12 +290,10 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 18", "Associate a geofence with a project before create project");
       var mysql = new MySqlHelper();
-
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      testSupport.AssociateGeofenceProjectViaWebApi(testSupport.ProjectUid, testSupport.GeofenceUid, DateTime.UtcNow, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_ProjectUID", 1, testSupport.ProjectUid);
-      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_ProjectUID", "fk_GeofenceUID", testSupport.GeofenceUid.ToString(), testSupport.ProjectUid);
+      var ts = new TestSupport();
+      ts.AssociateGeofenceProjectViaWebApi(ts.ProjectUid, ts.GeofenceUid, DateTime.UtcNow, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_ProjectUID", 1, ts.ProjectUid);
+      mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_ProjectUID", "fk_GeofenceUID", ts.GeofenceUid.ToString(), ts.ProjectUid);
     }
 
 
@@ -346,15 +302,13 @@ namespace WebApiTests
     {
       var msg = new Msg();
       msg.Title("projects 19", "Associate a geofence and a project with bad data");
-
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
+      var ts = new TestSupport();
       //No action UTC
-      testSupport.AssociateGeofenceProjectViaWebApi(testSupport.ProjectUid, testSupport.GeofenceUid, DateTime.MinValue, HttpStatusCode.BadRequest);
+      ts.AssociateGeofenceProjectViaWebApi(ts.ProjectUid, ts.GeofenceUid, DateTime.MinValue, HttpStatusCode.BadRequest);
       //No project UID
-      testSupport.AssociateGeofenceProjectViaWebApi(Guid.Empty, testSupport.GeofenceUid, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.AssociateGeofenceProjectViaWebApi(Guid.Empty, ts.GeofenceUid, DateTime.UtcNow, HttpStatusCode.BadRequest);
       //No customer UID
-      testSupport.AssociateGeofenceProjectViaWebApi(testSupport.ProjectUid, Guid.Empty, DateTime.UtcNow, HttpStatusCode.BadRequest);
+      ts.AssociateGeofenceProjectViaWebApi(ts.ProjectUid, Guid.Empty, DateTime.UtcNow, HttpStatusCode.BadRequest);
     }
 
     [TestMethod]
@@ -364,26 +318,24 @@ namespace WebApiTests
       msg.Title("projects 20", "Get projects with customer UID header");
       var mysql = new MySqlHelper();
 
-      var testSupport = new TestSupport();
-      var projectUid1 = testSupport.ProjectUid;
-      var projectId1 = testSupport.SetLegacyProjectId();
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 123456789, "project 20-1", ProjectType.Standard, 111111111);
+      var ts = new TestSupport();
+      var projectUid1 = ts.ProjectUid;
+      var projectId1 = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId1, "project 20-1", ProjectType.Standard, 111111111);
 
-      testSupport.SetProjectUid();
-      var projectUid2 = testSupport.ProjectUid;
-      var projectId2 = testSupport.SetLegacyProjectId();
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 987654321, "project 20-2", ProjectType.Standard, 111111111);
+      ts.SetProjectUid();
+      var projectUid2 = ts.ProjectUid;
+      var projectId2 = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId2, "project 20-2", ProjectType.Standard, 111111111);
+      CreateMockCustomer(ts);
 
-      CreateMockCustomer(testSupport);
-
-      var dateRange = FormatProjectDateRangeWebApi(testSupport);
+      var dateRange = FormatProjectDateRangeWebApi(ts);
       var expectedProjects = new[] {
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid          | LegacyProjectId | ProjectGeofenceWKT | ",
-            "| false      | project 20-1 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid1 + " | 123456789       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
-            "| false      | project 20-2 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid2 + " | 987654321       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
-            };
+      "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT | ",
+      "| false      | project 20-1 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {projectUid1} | {projectId1}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
+      "| false      | project 20-2 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {projectUid2} | {projectId2}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
 
-      testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
 
     [TestMethod]
@@ -392,13 +344,11 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 21", "Get projects with no customer UID header");
       var mysql = new MySqlHelper();
-      var testSupport = new TestSupport();
-      var projectId = testSupport.SetLegacyProjectId();
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 987654321, "project 21-1", ProjectType.Standard, 111111111);
-
-      CreateMockCustomer(testSupport);
-
-      testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.Forbidden, Guid.Empty, null);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId, "project 21-1", ProjectType.Standard, 111111111);
+      CreateMockCustomer(ts);
+      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.Forbidden, Guid.Empty, null);
     }
 
     [TestMethod]
@@ -408,25 +358,25 @@ namespace WebApiTests
       msg.Title("projects 22", "Get projects for one of many customers");
       var mysql = new MySqlHelper();
 
-      var testSupport = new TestSupport();
-      var projectId1 = testSupport.SetLegacyProjectId();
+      var ts = new TestSupport();
+      var projectId1 = ts.SetLegacyProjectId();
       //Customer 1
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, projectId1, "project 22-1", ProjectType.Standard, 111111111);
-      CreateMockCustomer(testSupport);
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId1, "project 22-1", ProjectType.Standard, 111111111);
+      CreateMockCustomer(ts);
       //Customer 2
-      testSupport.SetProjectUid();
-      testSupport.SetCustomerUid();
-      var projectId2 = testSupport.SetLegacyProjectId();
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, projectId2, "project 22-2", ProjectType.Standard, 222222222);
-      testSupport.CreateMockCustomer(testSupport.CustomerUid, "customer 2", CustomerType.Customer);
+      ts.SetProjectUid();
+      ts.SetCustomerUid();
+      var projectId2 = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId2, "project 22-2", ProjectType.Standard, 222222222);
+      ts.CreateMockCustomer(ts.CustomerUid, "customer 2", CustomerType.Customer);
 
-      var dateRange = FormatProjectDateRangeWebApi(testSupport);
+      var dateRange = FormatProjectDateRangeWebApi(ts);
       var expectedProjects = new[] {
-        "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid               | LegacyProjectId | ProjectGeofenceWKT |",
-        "| false      | project 22-2 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {testSupport.ProjectUid} | {projectId2}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
+        "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid      | LegacyProjectId | ProjectGeofenceWKT |",
+        "| false      | project 22-2 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {ts.ProjectUid} | {projectId2}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
             };
 
-      testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
 
     [TestMethod]
@@ -438,26 +388,25 @@ namespace WebApiTests
       msg.Title("projects 23", "Get projects for customer with some deleted");
       var mysql = new MySqlHelper();
 
-      var testSupport = new TestSupport();
-      var projectUid1 = testSupport.ProjectUid;
-      var projectId1 = testSupport.SetLegacyProjectId();
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 123456789, "project 23-1", ProjectType.Standard, 222222222);
-      testSupport.DeleteProjectViaWebApi(projectUid1, DateTime.UtcNow, HttpStatusCode.OK);
+      var ts = new TestSupport();
+      var projectUid1 = ts.ProjectUid;
+      var projectId1 = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId1, "project 23-1", ProjectType.Standard, 222222222);
+      ts.DeleteProjectViaWebApi(projectUid1, DateTime.UtcNow, HttpStatusCode.OK);
 
-      testSupport.SetProjectUid();
-      var projectUid2 = testSupport.ProjectUid;
-      var projectId2 = testSupport.SetLegacyProjectId();
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 987654321, "project 23-2", ProjectType.Standard, 222222222);
-      CreateMockCustomer(testSupport);
+      ts.SetProjectUid();
+      var projectUid2 = ts.ProjectUid;
+      var projectId2 = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId2, "project 23-2", ProjectType.Standard, 222222222);
+      CreateMockCustomer(ts);
 
-      var dateRange = FormatProjectDateRangeWebApi(testSupport);
+      var dateRange = FormatProjectDateRangeWebApi(ts);
       var expectedProjects = new[] {
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid          | LegacyProjectId | ProjectGeofenceWKT |",
-            "| true       | project 23-1 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid1 + " | 123456789       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
-            "| false      | project 23-2 | New Zealand Standard Time | Standard    | " + dateRange + "   | " + projectUid2 + " | 987654321       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
-            };
+      "| IsArchived | Name         | ProjectTimeZone           | ProjectType | StartDate | EndDate | ProjectUid     | LegacyProjectId | ProjectGeofenceWKT |",
+      "| true       | project 23-1 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {projectUid1}  | {projectId1}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
+      "| false      | project 23-2 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {projectUid2}  | {projectId2}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
 
-      testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
     [TestMethod]
     public void Get_Projects_With_Multiple_Subscriptions()
@@ -466,20 +415,19 @@ namespace WebApiTests
       msg.Title("projects 24", "Get projects with multiple subscriptions");
       var mysql = new MySqlHelper();
 
-      var testSupport = new TestSupport();
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 123459876, "project 24", ProjectType.ProjectMonitoring, 222222222);
-      CreateMockCustomer(testSupport);
-      CreateMockSubscription(testSupport, testSupport.FirstEventDate, testSupport.FirstEventDate.AddYears(1));
-      testSupport.SetSubscriptionUid();
-      CreateMockSubscription(testSupport, testSupport.FirstEventDate.AddYears(1).AddDays(1), new DateTime(9999, 12, 31));
-
-      var dateRange = FormatProjectDateRangeWebApi(testSupport);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId, "project 24", ProjectType.ProjectMonitoring, 222222222);
+      CreateMockCustomer(ts);
+      CreateMockSubscription(ts, ts.FirstEventDate, ts.FirstEventDate.AddYears(1));
+      ts.SetSubscriptionUid();
+      CreateMockSubscription(ts, ts.FirstEventDate.AddYears(1).AddDays(1), new DateTime(9999, 12, 31));
+      var dateRange = FormatProjectDateRangeWebApi(ts);
       var expectedProjects = new[] {
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid                     | LegacyProjectId | ProjectGeofenceWKT |",
-            "| false      | project 24   | New Zealand Standard Time | ProjectMonitoring | " + dateRange + "   | " + testSupport.ProjectUid + " | 123459876       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
-            };
+      "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid      | LegacyProjectId | ProjectGeofenceWKT |",
+      "| false      | project 24   | New Zealand Standard Time | ProjectMonitoring | " + dateRange + $"  | {ts.ProjectUid} | {projectId}     | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
 
-      testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
     [TestMethod]
     public void Get_Projects_With_Various_Project_Types()
@@ -488,32 +436,33 @@ namespace WebApiTests
       msg.Title("projects 25", "Get projects of different project types");
       var mysql = new MySqlHelper();
 
-      var testSupport = new TestSupport();
-      var projectUid1 = testSupport.ProjectUid;
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 123456789, "project 25-1", ProjectType.Standard, 222222222);
+      var ts = new TestSupport();
+      var projectUid1 = ts.ProjectUid;
+      var projectId1 = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId1, "project 25-1", ProjectType.Standard, 222222222);
 
-      testSupport.SetProjectUid();
-      var projectUid2 = testSupport.ProjectUid;
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 987654321, "project 25-2", ProjectType.ProjectMonitoring, 222222222);
-      CreateMockSubscription(testSupport, testSupport.FirstEventDate, testSupport.FirstEventDate.AddYears(1));
+      ts.SetProjectUid();
+      var projectUid2 = ts.ProjectUid;
+      var projectId2 = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql,projectId2, "project 25-2", ProjectType.ProjectMonitoring, 222222222);
+      CreateMockSubscription(ts, ts.FirstEventDate, ts.FirstEventDate.AddYears(1));
 
-      testSupport.SetProjectUid();
-      var projectUid3 = testSupport.ProjectUid;
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 123459876, "project 25-3", ProjectType.LandFill, 222222222);
-      testSupport.SetSubscriptionUid();
-      CreateMockSubscription(testSupport, testSupport.FirstEventDate, testSupport.FirstEventDate.AddYears(1));
+      ts.SetProjectUid();
+      var projectUid3 = ts.ProjectUid;
+      var projectId3 = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId3, "project 25-3", ProjectType.LandFill, 222222222);
+      ts.SetSubscriptionUid();
+      CreateMockSubscription(ts, ts.FirstEventDate, ts.FirstEventDate.AddYears(1));
+      CreateMockCustomer(ts);
 
-      CreateMockCustomer(testSupport);
-
-      var dateRange = FormatProjectDateRangeWebApi(testSupport);
+      var dateRange = FormatProjectDateRangeWebApi(ts);
       var expectedProjects = new[] {
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid          | LegacyProjectId | ProjectGeofenceWKT |",
-            "| false      | project 25-1 | New Zealand Standard Time | Standard          | " + dateRange + "   | " + projectUid1 + " | 123456789       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
-            "| false      | project 25-2 | New Zealand Standard Time | ProjectMonitoring | " + dateRange + "   | " + projectUid2 + " | 987654321       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
-            "| false      | project 25-3 | New Zealand Standard Time | LandFill          | " + dateRange + "   | " + projectUid3 + " | 123459876       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
-            };
+      "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid    | LegacyProjectId | ProjectGeofenceWKT |",
+      "| false      | project 25-1 | New Zealand Standard Time | Standard          | " + dateRange + $"  | {projectUid1} | {projectId1}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
+      "| false      | project 25-2 | New Zealand Standard Time | ProjectMonitoring | " + dateRange + $"  | {projectUid2} | {projectId2}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
+      "| false      | project 25-3 | New Zealand Standard Time | LandFill          | " + dateRange + $"  | {projectUid3} | {projectId3}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
-      testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
     [TestMethod]
     public void Get_Projects_With_Enddated_Subscriptions()
@@ -521,72 +470,47 @@ namespace WebApiTests
       var msg = new Msg();
       msg.Title("projects 26", "Get projects with enddated subscriptions");
       var mysql = new MySqlHelper();
-
-      var testSupport = new TestSupport();
-      CreateProjectAndAssociateWithCustomer(testSupport, mysql, 555555555, "project 26", ProjectType.ProjectMonitoring, 222222222);
-      CreateMockCustomer(testSupport);
-      CreateMockSubscription(testSupport, testSupport.FirstEventDate.AddYears(-1), testSupport.FirstEventDate);
-
-      var dateRange = FormatProjectDateRangeWebApi(testSupport);
+      var ts = new TestSupport();
+      var projectId = ts.SetLegacyProjectId();
+      CreateProjectAndAssociateWithCustomer(ts, mysql, projectId, "project 26", ProjectType.ProjectMonitoring, 222222222);
+      CreateMockCustomer(ts);
+      CreateMockSubscription(ts, ts.FirstEventDate.AddYears(-1), ts.FirstEventDate);
+      var dateRange = FormatProjectDateRangeWebApi(ts);
       var expectedProjects = new[] {
-            "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid                     | LegacyProjectId | ProjectGeofenceWKT |",
-            "| true       | project 26   | New Zealand Standard Time | ProjectMonitoring | " + dateRange + "   | " + testSupport.ProjectUid + " | 555555555       | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
-            };
-
-      testSupport.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, testSupport.CustomerUid, expectedProjects);
+      "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid      | LegacyProjectId | ProjectGeofenceWKT |",
+      "| true       | project 26   | New Zealand Standard Time | ProjectMonitoring | " + dateRange + $"  | {ts.ProjectUid} | {projectId}     | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
+      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
 
     #region privates
 
-    private void CreateMockCustomer(TestSupport testSupport)
+    private void CreateMockCustomer(TestSupport ts)
     {
-      testSupport.CreateMockCustomer(testSupport.CustomerUid, "customer 1", CustomerType.Customer);
+      ts.CreateMockCustomer(ts.CustomerUid, "customer 1", CustomerType.Customer);
     }
 
-    private void CreateProject(TestSupport testSupport, MySqlHelper mysql, int projectId, string projectName, ProjectType projectType)
+    private void CreateProject(TestSupport ts, MySqlHelper mysql, int projectId, string projectName, ProjectType projectType)
     {
-      testSupport.CreateProjectViaWebApi(testSupport.ProjectUid, projectId, projectName, testSupport.FirstEventDate,
-        testSupport.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, testSupport.ProjectUid);
+      ts.CreateProjectViaWebApi(ts.ProjectUid, projectId, projectName, ts.FirstEventDate, ts.LastEventDate, "New Zealand Standard Time", projectType, DateTime.UtcNow, PROJECT_BOUNDARY, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("Project", "ProjectUID", 1, ts.ProjectUid);
     }
 
-    private void CreateProjectAndAssociateWithCustomer(TestSupport testSupport, MySqlHelper mysql, int projectId, string projectName, ProjectType projectType, int customerId)
+    private void CreateProjectAndAssociateWithCustomer(TestSupport ts, MySqlHelper mysql, int projectId, string projectName, ProjectType projectType, int customerId)
     {
-      CreateProject(testSupport, mysql, projectId, projectName, projectType);
-      testSupport.AssociateCustomerProjectViaWebApi(testSupport.ProjectUid, testSupport.CustomerUid, customerId, DateTime.UtcNow, HttpStatusCode.OK);
-      mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, testSupport.ProjectUid);
+      CreateProject(ts, mysql, projectId, projectName, projectType);
+      ts.AssociateCustomerProjectViaWebApi(ts.ProjectUid, ts.CustomerUid, customerId, DateTime.UtcNow, HttpStatusCode.OK);
+      mysql.VerifyTestResultDatabaseRecordCount("CustomerProject", "fk_ProjectUID", 1, ts.ProjectUid);
     }
 
-    private void CreateMockSubscription(TestSupport testSupport, DateTime subStartDate, DateTime subEndDate)
+    private void CreateMockSubscription(TestSupport ts, DateTime subStartDate, DateTime subEndDate)
     {
-      testSupport.CreateMockProjectSubscription(testSupport.ProjectUid.ToString(), testSupport.SubscriptionUid.ToString(), 
-        testSupport.CustomerUid.ToString(), subStartDate, subEndDate, subStartDate);
+      ts.CreateMockProjectSubscription(ts.ProjectUid.ToString(), ts.SubscriptionUid.ToString(), ts.CustomerUid.ToString(), subStartDate, subEndDate, subStartDate);
     }
 
-    private string FormatProjectDateRangeWebApi(TestSupport testSupport)
+    private string FormatProjectDateRangeWebApi(TestSupport ts)
     {
-      return testSupport.FirstEventDate.ToString("O") + " | " + testSupport.LastEventDate.ToString("O");
+      return ts.FirstEventDate.ToString("O") + " | " + ts.LastEventDate.ToString("O");
     }
-
-    private string FormatProjectDateRangeDatabase(TestSupport testSupport)
-    {
-      return string.Format("{0},{1}", testSupport.FirstEventDate.ToString(DB_DATE_FORMAT), testSupport.LastEventDate.ToString(DB_DATE_FORMAT));
-    }
-
-    private string FormatProjectDateDatabase(DateTime date)
-    {
-      return date.ToString(DB_DATE_FORMAT);
-    }
-
-    private const string DB_DATE_FORMAT = "d/MM/yyyy hh:mm:ss tt";
-
-    private const string PROJECT_BOUNDARY =
-      "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
-
-      //Old v1 format
-         // "-121.347189366818,38.8361907402694;-121.349260032177,38.8361656688414;-121.349217116833,38.8387897637231;-121.347275197506,38.8387145521594;-121.347189366818,38.8361907402694;-121.347189366818,38.8361907402694";
-
     #endregion
-
   }
 }
