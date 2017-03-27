@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Globalization;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -66,6 +67,16 @@ namespace TestUtility
       SetSubscriptionUid();
     }
 
+    public int SetLegacyProjectId()
+    {
+      var mysql = new MySqlHelper();
+      var query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
+      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.dbConnectionString, query);
+      if (string.IsNullOrEmpty(result))
+         { return 1000; }
+      var legacyAssetId = Convert.ToInt32(result);
+      return legacyAssetId+1;
+    }
     /// <summary>
     /// Set up the first event date for the events to go in. Also used as project start date for project tests.
     /// </summary>
@@ -173,7 +184,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(CreateProjectEvt, string.Empty, statusCode, "Create");
+      CallProjectWebApi(CreateProjectEvt, "api/v3/project", statusCode, "Create",HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -196,7 +207,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(UpdateProjectEvt, string.Empty, statusCode, "Update", "PUT");
+      CallProjectWebApi(UpdateProjectEvt, "api/v3/project", statusCode, "Update", HttpMethod.Put.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -212,7 +223,7 @@ namespace TestUtility
         ProjectUID = projectUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(DeleteProjectEvt, string.Empty, statusCode, "Delete", "DELETE");
+      CallProjectWebApi(DeleteProjectEvt, "api/v3/project", statusCode, "Delete", HttpMethod.Delete.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -233,7 +244,7 @@ namespace TestUtility
         RelationType = RelationType.Customer,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(AssociateCustomerProjectEvt, "AssociateCustomer", statusCode, "Associate customer");
+      CallProjectWebApi(AssociateCustomerProjectEvt, "AssociateCustomer", statusCode, "Associate customer", HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -251,7 +262,7 @@ namespace TestUtility
         CustomerUID = customerUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(DissociateCustomerProjectEvt, "DissociateCustomer", statusCode, "Dissociate customer");
+      CallProjectWebApi(DissociateCustomerProjectEvt, "DissociateCustomer", statusCode, "Dissociate customer", HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -269,7 +280,7 @@ namespace TestUtility
         GeofenceUID = geofenceUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence");
+      CallProjectWebApi(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence", HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
     public void GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
