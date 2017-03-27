@@ -101,7 +101,10 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Models
     public override void Validate()
     {
       base.Validate();
-      filter.Validate();
+      if (filter != null)
+      {
+        filter.Validate();
+      }
       RaptorValidator.ValidatePalettes(palette, mode);
 
       if (boundBoxLL == null)

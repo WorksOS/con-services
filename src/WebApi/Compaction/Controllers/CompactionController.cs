@@ -649,7 +649,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0, layerMethod.Value, 
         request.boundBoxLL, null, request.width, request.height, 0);
       tileRequest.Validate();
-      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
+      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(tileRequest) as TileResult;
       return tileResult;
     }
     #endregion

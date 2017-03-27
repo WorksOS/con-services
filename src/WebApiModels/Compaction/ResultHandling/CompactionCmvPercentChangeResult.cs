@@ -35,12 +35,15 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
       var summaryData = new CmvChangeSummaryData[cmvChangeSummarySettings.Length];
       for (int i = 0; i < summaryData.Length; i++)
       {
-        summaryData[i].PercentRange = new double[]
+        summaryData[i] = new CmvChangeSummaryData
         {
-          i == 0 ? 0 : cmvChangeSummarySettings[i-1],
-          i == summaryData.Length-1 ? 100 : cmvChangeSummarySettings[i]
+          PercentRange = new double[]
+          {
+            i == 0 ? 0 : cmvChangeSummarySettings[i - 1],
+            i == summaryData.Length - 1 ? 100 : cmvChangeSummarySettings[i]
+          },
+          PercentValue = result.Values[i]
         };
-        summaryData[i].PercentValue = result.Values[i];
       }
       var cmvPercentChangeResult = new CompactionCmvPercentChangeResult
       {

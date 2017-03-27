@@ -108,7 +108,7 @@ namespace VSS.Raptor.Service.Common.Models
       if (!projectsByUid.ContainsKey(projectUid.ToString()))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing Project"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing Project or project does not belong to specified customer"));
       }
       long projectId = projectsByUid[projectUid.ToString()].projectId;
       if (projectId <= 0)

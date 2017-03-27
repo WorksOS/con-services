@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -21,9 +23,40 @@ namespace VSS.Raptor.Service.Common.Filters.Validation
         {
             if (!actionContext.ModelState.IsValid)
             {
-                throw new ServiceException(HttpStatusCode.BadRequest,
+              //Extract the errors. This is to handle the validation ServiceExceptions being thrown to get the real error message to return. 
+              var modelStateErrors = actionContext.ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .Select(x => new {x.Key, x.Value.Errors})
+                .ToArray();
+              List<KeyValuePair<string, string>> errors = new List<KeyValuePair<string, string>>();
+              foreach (var mse in modelStateErrors)
+              {
+                var key = mse.Key;
+                string value = string.Empty;
+                foreach (var error in mse.Errors)
+                {
+                  if (error.Exception != null)
+                  {
+                    if (error.Exception is ServiceException)
+                    {
+                     value += (error.Exception as ServiceException).GetContent;
+                    }
+                    else
+                    {
+                      value += error.Exception.Message;
+                    }
+                  }
+                  else
+                  {
+                    value += error.ErrorMessage;
+                  }
+                  value += "\r\n";
+                }
+                errors.Add(new KeyValuePair<string, string>(key, value));
+              }
+              throw new ServiceException(HttpStatusCode.BadRequest,
                         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                JsonConvert.SerializeObject(actionContext.ModelState.Values)));
+                                JsonConvert.SerializeObject(errors)));
             }
         }
     }
