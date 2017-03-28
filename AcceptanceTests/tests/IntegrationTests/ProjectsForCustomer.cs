@@ -17,7 +17,7 @@ namespace IntegrationTests
     public void Create_Project_Then_Retrieve()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -42,7 +42,7 @@ namespace IntegrationTests
     public void Create_Multiple_Projects_And_Inject_Required_Data_Then_Retrieve()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -70,7 +70,7 @@ namespace IntegrationTests
     public void Create_Then_Update_Project_Name()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       string projectName = $"Integration Test Project 3";
@@ -93,7 +93,7 @@ namespace IntegrationTests
     public void Create_Then_Update_Project_EndDate()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -119,7 +119,7 @@ namespace IntegrationTests
     public void Create_Then_Try_Update_Project_TimeZone()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -143,7 +143,7 @@ namespace IntegrationTests
     public void Create_Project_Then_Update_Project_Type()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -168,7 +168,7 @@ namespace IntegrationTests
     public void Create_Then_Delete_Project()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -198,7 +198,7 @@ namespace IntegrationTests
     public void Create_Then_Associate_Geofence_with_Project()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -241,7 +241,7 @@ namespace IntegrationTests
     public void Create_Then_Associate_Multiple_Project_Type_Geofences_with_Project()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -305,7 +305,7 @@ namespace IntegrationTests
     public void Create_Then_Associate_Multiple_NonProject_Type_Geofences_with_Project()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -375,7 +375,7 @@ namespace IntegrationTests
     {
       //TODO: This currently does nothing need to confirm that this is the intention.
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -403,7 +403,7 @@ namespace IntegrationTests
     public void Try_To_Associate_Project_With_NonExistant_Customer()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -429,7 +429,7 @@ namespace IntegrationTests
     public void Try_To_Associate_Project_With_Multiple_Customers()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -458,7 +458,7 @@ namespace IntegrationTests
     public void Try_To_Associate_Geofence_With_Multiple_Projects()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -503,7 +503,7 @@ namespace IntegrationTests
     public void Try_To_Create_Project_In_The_Past()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -529,7 +529,7 @@ namespace IntegrationTests
     public void Try_To_Create_Project_Which_Ends_Before_Starts()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
@@ -554,7 +554,7 @@ namespace IntegrationTests
     public void Create_Everything_Out_Of_Order()
     {
       var msg = new Msg();
-      var ts = new TestSupport();
+      var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
       projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
@@ -651,8 +651,5 @@ namespace IntegrationTests
       projectConsumerMysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID","fk_CustomerUID, fk_ProjectUID",$"{customerGuid}, {projectGuid}",projectGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("CustomerProject", "fk_ProjectUID","fk_CustomerUID, fk_ProjectUID",$"{customerGuid}, {projectGuid}",projectGuid);
     }
-
-
   }
-
 }

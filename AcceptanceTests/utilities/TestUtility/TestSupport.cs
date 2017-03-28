@@ -315,10 +315,18 @@ namespace TestUtility
       var response = CallProjectWebApi(null, "", statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
-        var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
-        var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-        msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
-        CollectionAssert.AreEqual(expectedProjects, actualProjects);
+        if (expectedResultsArray.Length == 0)
+        {
+          var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
+          Assert.IsTrue(expectedResultsArray.Length == actualProjects.Count, " There should not be any projects");
+        }
+        else
+        {
+          var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
+          var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
+          msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
+          CollectionAssert.AreEqual(expectedProjects, actualProjects);
+        }
       }
     }
 
