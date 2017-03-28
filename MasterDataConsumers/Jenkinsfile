@@ -119,16 +119,16 @@ dir ("MasterDataConsumers")
     if (branch.contains("release")) {
        stage 'Build release images'
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release ./artifacts/MasterDataConsumer"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-${fullVersion} ./artifacts/MasterDataConsumer"
  
 
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release ./database"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release-${fullVersion} ./database"
 
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release"
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release"
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release-${fullVersion}"
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-${fullVersion}"
 
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release"
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release`"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release-${fullVersion}"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-${fullVersion}"
 
 }
 else
