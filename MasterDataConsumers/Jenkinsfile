@@ -17,10 +17,10 @@ dir ("MasterDataConsumers")
     def openCoverfilters ="-filter:\"+[*]* -[*]*.*Tests -[*]VSS.VisionLink.Interfaces.* -[*]MockClasses.*\"" 
 
 
-    if (branch.contains("master")) {
+    if (branch.contains("release")) {
        versionPrefix = "1.0."
        branchName = "Release"
-       } else if (branch.contains("develop")) {
+       } else if (branch.contains("Dev")) {
        versionPrefix = "0.99."
        branchName = "Dev"
        } else {
@@ -70,9 +70,9 @@ dir ("MasterDataConsumers")
     def suffix = ""
     def branchName = ""
 
-    if (branch.contains("QA")) {
+    if (branch.contains("release")) {
        versionPrefix = "1.0."
-       branchName = "QA"
+       branchName = "release"
        } else if (branch.contains("Dev")) {
        versionPrefix = "0.99."
        branchName = "Dev"
@@ -113,6 +113,28 @@ dir ("MasterDataConsumers")
     if (currentBuild.result=='SUCCESS') {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Build Images'
+       stage 'Get ecr login, push image to Repo'
+       sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
+
+    if (branch.contains("release")) {
+       stage 'Build release images'
+	   
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release ./artifacts/MasterDataConsumer"
+ 
+
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release ./database"
+
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release"
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release"
+
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release`"
+
+}
+else
+{
+       stage 'Build development images'
+
 	   
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:${fullVersion}-${branch} ./artifacts/MasterDataConsumer"
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest ./artifacts/MasterDataConsumer"
@@ -122,8 +144,6 @@ dir ("MasterDataConsumers")
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest ./database"
 
        //Publish to AWS Repo
-       stage 'Get ecr login, push image to Repo'
-       sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:${fullVersion}-${branch}"
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db"
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer"
@@ -133,6 +153,7 @@ dir ("MasterDataConsumers")
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:${fullVersion}-${branch}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest"
+}
 
     }
 }
