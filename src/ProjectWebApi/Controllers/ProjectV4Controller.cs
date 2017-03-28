@@ -43,7 +43,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
             log.LogInformation("GetProjectsV4");
             return new ProjectDescriptorsListResult()
             {
-                ProjectDescriptors = await GetProjectList().ConfigureAwait(false) ?? new List<ProjectDescriptor>()
+                ProjectDescriptors = await GetProjectList().ConfigureAwait(false)
             };
         }
 
@@ -63,7 +63,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
             //return empty list if no subscriptions available
             return new SubscriptionsListResult()
             {
-                SubscriptionDescriptors = (await GetFreeSubs(customerUid).ConfigureAwait(false) ?? new List<Subscription>()).ToList()
+                SubscriptionDescriptors = (await GetFreeSubs(customerUid).ConfigureAwait(false))
             };
         }
 
@@ -80,7 +80,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         /// <response code="400">Bad request</response>
         [Route("api/v4/project")]
         [HttpPost]
-        public async Task CreateProjectV4([FromBody] CreateProjectEvent project)
+        public async Task<ContractExecutionResult> CreateProjectV4([FromBody] CreateProjectEvent project)
         {
             log.LogInformation("CreateProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
 
@@ -127,6 +127,67 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
                 true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
 
             log.LogDebug("CreateProjectV4. completed succesfully");
+            return new ContractExecutionResult();
+        }
+
+        // PUT: api/Project
+        /// <summary>
+        /// Update Project
+        /// </summary>
+        /// <param name="project">UpdateProjectEvent model</param>
+        /// <remarks>Updates existing project</remarks>
+        /// <response code="200">Ok</response>
+        /// <response code="400">Bad request</response>
+        [Route("api/v4/project")]
+        [HttpPut]
+        public async Task<ContractExecutionResult> UpdateProjectV4([FromBody] UpdateProjectEvent project)
+        {
+            log.LogInformation("UpdateProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
+
+            // validation includes check that project must exist - otherwise there will be a null legacyID.
+            ProjectDataValidator.Validate(project, projectService);
+            project.ReceivedUTC = DateTime.UtcNow;
+
+            var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
+            producer.Send(kafkaTopicName,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+                });
+            await projectService.StoreEvent(project).ConfigureAwait(false);
+
+            log.LogInformation("UpdateProjectV4. Completed successfully");
+            return new ContractExecutionResult();
+        }
+
+
+        // DELETE: api/Project/
+        /// <summary>
+        /// Delete Project
+        /// </summary>
+        /// <param name="project">DeleteProjectEvent model</param>
+        /// <remarks>Deletes existing project</remarks>
+        /// <response code="200">Ok</response>
+        /// <response code="400">Bad request</response>
+        [Route("api/v4/project")]
+        [HttpDelete]
+        public async Task<ContractExecutionResult> DeleteProjectV4([FromBody] DeleteProjectEvent project)
+        {
+            log.LogInformation("DeleteProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
+
+            ProjectDataValidator.Validate(project, projectService);
+            project.ReceivedUTC = DateTime.UtcNow;
+
+            var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
+            producer.Send(kafkaTopicName,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+                });
+            await projectService.StoreEvent(project).ConfigureAwait(false);
+
+            log.LogInformation("DeleteProjectV4. Completed succesfully");
+            return new ContractExecutionResult();
         }
 
         /// <summary>
@@ -202,65 +263,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
                 });
             await projectService.StoreEvent(customerProject).ConfigureAwait(false);
         }
-
-        // PUT: api/Project
-        /// <summary>
-        /// Update Project
-        /// </summary>
-        /// <param name="project">UpdateProjectEvent model</param>
-        /// <remarks>Updates existing project</remarks>
-        /// <response code="200">Ok</response>
-        /// <response code="400">Bad request</response>
-        [Route("api/v4/project")]
-        [HttpPut]
-        public async Task UpdateProjectV4([FromBody] UpdateProjectEvent project)
-        {
-            log.LogInformation("UpdateProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
-
-            // validation includes check that project must exist - otherwise there will be a null legacyID.
-            ProjectDataValidator.Validate(project, projectService);
-            project.ReceivedUTC = DateTime.UtcNow;
-
-            var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
-            producer.Send(kafkaTopicName,
-                new List<KeyValuePair<string, string>>()
-                {
-                    new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-                });
-            await projectService.StoreEvent(project).ConfigureAwait(false);
-
-            log.LogInformation("UpdateProjectV4. Completed successfully");
-        }
-
-
-        // DELETE: api/Project/
-        /// <summary>
-        /// Delete Project
-        /// </summary>
-        /// <param name="project">DeleteProjectEvent model</param>
-        /// <remarks>Deletes existing project</remarks>
-        /// <response code="200">Ok</response>
-        /// <response code="400">Bad request</response>
-        [Route("api/v4/project")]
-        [HttpDelete]
-        public async Task DeleteProjectV4([FromBody] DeleteProjectEvent project)
-        {
-            log.LogInformation("DeleteProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
-
-            ProjectDataValidator.Validate(project, projectService);
-            project.ReceivedUTC = DateTime.UtcNow;
-
-            var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
-            producer.Send(kafkaTopicName,
-                new List<KeyValuePair<string, string>>()
-                {
-                    new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-                });
-            await projectService.StoreEvent(project).ConfigureAwait(false);
-
-            log.LogInformation("DeleteProjectV4. Completed succesfully");
-        }
-
     }
 }
 

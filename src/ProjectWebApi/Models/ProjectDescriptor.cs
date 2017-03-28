@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using ProjectWebApi.ResultsHandling;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -12,7 +13,7 @@ namespace ProjectWebApi.Models
     /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
     public class ProjectDescriptorsListResult : ContractExecutionResult
     {
-        public List<ProjectDescriptor> ProjectDescriptors { get; set; }
+        public ImmutableList<ProjectDescriptor> ProjectDescriptors { get; set; }
     }
 
     /// <summary>
@@ -21,7 +22,7 @@ namespace ProjectWebApi.Models
     /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
     public class SubscriptionsListResult : ContractExecutionResult
     {
-        public List<Subscription> SubscriptionDescriptors { get; set; }
+        public ImmutableList<Subscription> SubscriptionDescriptors { get; set; }
     }
 
 

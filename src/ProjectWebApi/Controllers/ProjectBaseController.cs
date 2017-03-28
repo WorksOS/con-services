@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
@@ -93,7 +94,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         /// <returns></returns>
         /// <exception cref="ServiceException"></exception>
         /// <exception cref="ContractExecutionResult">No available subscriptions for the selected customer</exception>
-        protected async Task<IEnumerable<Subscription>> GetFreeSubs(string customerUid, ProjectType type)
+        protected async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type)
         {
             var availableSubscriptions =
                 await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false);
@@ -104,16 +105,14 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
                                                                         .Select(p => p.SubscriptionUID)
                                                                         .Contains(s.SubscriptionUID) &&
                                                                     s.ServiceTypeID ==
-                                                                    (int) type.MatchSubscriptionType());
-
-            var freeSubs = availableFreSub as IList<Subscription> ?? availableFreSub.ToList();
-            if (availableFreSub == null || !freeSubs.Any())
+                                                                    (int) type.MatchSubscriptionType()).ToImmutableList();
+            if (availableFreSub.Any())
             {
                 throw new ServiceException(HttpStatusCode.Forbidden,
                     new ContractExecutionResult(ContractExecutionStatesEnum.NoValidSubscription,
                         "No available subscriptions for the selected customer"));
             }
-            return freeSubs;
+            return availableFreSub;
         }
 
         /// <summary>
@@ -121,7 +120,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         /// </summary>
         /// <param name="customerUid">The customer uid.</param>
         /// <returns></returns>
-        protected async Task<IEnumerable<Subscription>> GetFreeSubs(string customerUid)
+        protected async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid)
         {
             var availableSubscriptions =
                 await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false);
@@ -130,9 +129,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
             var availableFreSub = availableSubscriptions.Where(s => !projects.Where(p =>
                                                                             !p.IsDeleted)
                                                                         .Select(p => p.SubscriptionUID)
-                                                                        .Contains(s.SubscriptionUID));
+                                                                        .Contains(s.SubscriptionUID)).ToImmutableList();
 
-            return availableFreSub as IList<Subscription> ?? availableFreSub.ToList();
+            return availableFreSub;
         }
 
 
@@ -140,30 +139,27 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         /// Gets the project list for a customer
         /// </summary>
         /// <returns></returns>
-        protected async Task<List<ProjectDescriptor>> GetProjectList()
+        protected async Task<ImmutableList<ProjectDescriptor>> GetProjectList()
         {
             var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
             log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-            var projects = await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
+            var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
-            var projectList = new List<ProjectDescriptor>();
-            foreach (var project in projects)
+            log.LogInformation($"Project list contains {projects.Count()} projects");
+
+            var projectList = projects.Select(project => new ProjectDescriptor()
             {
-                log.LogInformation("Build list ProjectName=" + project.Name);
-                projectList.Add(
-                    new ProjectDescriptor
-                    {
-                        ProjectType = project.ProjectType,
-                        Name = project.Name,
-                        ProjectTimeZone = project.ProjectTimeZone,
-                        IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
-                        StartDate = project.StartDate.ToString("O"),
-                        EndDate = project.EndDate.ToString("O"),
-                        ProjectUid = project.ProjectUID,
-                        LegacyProjectId = project.LegacyProjectID,
-                        ProjectGeofenceWKT = project.GeometryWKT
-                    });
-            }
+                ProjectType = project.ProjectType,
+                Name = project.Name,
+                ProjectTimeZone = project.ProjectTimeZone,
+                IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
+                StartDate = project.StartDate.ToString("O"),
+                EndDate = project.EndDate.ToString("O"),
+                ProjectUid = project.ProjectUID,
+                LegacyProjectId = project.LegacyProjectID,
+                ProjectGeofenceWKT = project.GeometryWKT
+            }).ToImmutableList();
+
             return projectList;
         }
 
