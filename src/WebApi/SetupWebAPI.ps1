@@ -1,4 +1,5 @@
 #This script sets up the envirionment variables for RaptorServices WebAPI
+Write-host "SetupWebAPI.ps1 Version:1.0" 
 Write-host "The user `"$env:username`" run SetupWebAPI.ps1 on machine `"$env:computername`" on $(Get-Date)"  -ForegroundColor Yellow
 
 $OKTORUN = "OK"
