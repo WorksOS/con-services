@@ -37,7 +37,7 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
-   $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
+  # debug $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
    $myCmd = "net use z: "+ $SHAREUNC +" #fwww700945 /user:vssSupport /persistent:yes"
    Write-host "Mapping command myCmd=$myCmd"
    & cmd /c $myCmd
