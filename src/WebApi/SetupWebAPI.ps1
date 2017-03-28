@@ -1,6 +1,6 @@
 #This script sets up the envirionment variables for RaptorServices WebAPI
 Write-host "SetupWebAPI.ps1 Version:1.0" 
-Write-host "The user `"$env:username`" run SetupWebAPI.ps1 on machine `"$env:computername`" on $(Get-Date)"  -ForegroundColor Yellow
+Write-host "The user `"$env:username`" run SetupWebAPI.ps1 on machine `"$env:computername`" on $(Get-Date)"
 
 $OKTORUN = "OK"
 
@@ -38,15 +38,18 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
-  # debug $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
+   # debug $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
    $myCmd = "net use z: "+ $SHAREUNC +" #fwww700945 /user:vssSupport /persistent:yes"
-   Write-host "Mapping command myCmd=$myCmd"
+   # debug  Write-host "Mapping command myCmd=$myCmd"
+   Write-Host "Mapping Raptor ProductionData folder to Z: drive
    & cmd /c $myCmd
    & Z:
    $DL = (get-location).Drive.Name
-   Write-host "Current Drive=$al"
-   if ($DL -eq "Z") {  & dir; & c:}
-   else {Write-Host "Could not map drive to z:"}
+   Write-host "Current Drive=$DL"
+   if ($DL -eq "Z")
+    {  & dir; & C:}
+   else
+    {Write-Host "Warning! Could not map IONode productionData to drive Z:"}
 
   }
 
