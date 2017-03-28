@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
@@ -38,7 +39,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
         /// <returns>A list of projects</returns>
         [Route("api/v3/project")]
         [HttpGet]
-        public async Task<List<ProjectDescriptor>> GetProjectsV3()
+        public async Task<ImmutableList<ProjectDescriptor>> GetProjectsV3()
         {
             log.LogInformation("GetProjectsV3");
             return await GetProjectList();
