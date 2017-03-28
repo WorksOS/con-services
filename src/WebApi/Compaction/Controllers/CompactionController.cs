@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
@@ -635,6 +636,43 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     public TileResult PostTile([FromBody] CompactionTileRequest request)
     {
       log.LogDebug("PostTile: " + JsonConvert.SerializeObject(request));
+
+      var tileResult = GetTile(request);
+      return tileResult;
+    }
+
+
+    /// <summary>
+    /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
+    /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as elevation, compaction, temperature, cut/fill, volumes etc
+    /// </summary>
+    /// <param name="request">A representation of the tile rendering request.</param>
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).</returns>
+    /// <executor>TilesExecutor</executor> 
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/compaction/tiles/png")]
+    [HttpPost]
+    public FileResult PostTileRaw([FromBody] CompactionTileRequest request)
+    {
+      log.LogDebug("PostTileRaw: " + JsonConvert.SerializeObject(request));
+
+      var tileResult = GetTile(request);
+      if (tileResult != null)
+      {
+        Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+        return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+      }
+      return null;
+    }
+
+    /// <summary>
+    /// Gets the requested tile from Raptor
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    private TileResult GetTile(CompactionTileRequest request)
+    {
       request.Validate();
 
       LiftBuildSettings liftSettings;
@@ -650,16 +688,16 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
       var layerMethod = request.filter == null || !request.filter.layerNumber.HasValue ? (FilterLayerMethod?)null : FilterLayerMethod.TagfileLayerNumber;
 
-      Filter filter = request.filter == null ? null : Filter.CreateFilter(null, null, null, request.filter.startUTC, request.filter.endUTC, 
-        request.filter.onMachineDesignID, null, request.filter.vibeStateOn, null, request.filter.elevationType, 
-        null, null, null, null, null, null, null, null, null, layerMethod, null, null, 
+      Filter filter = request.filter == null ? null : Filter.CreateFilter(null, null, null, request.filter.startUTC, request.filter.endUTC,
+        request.filter.onMachineDesignID, null, request.filter.vibeStateOn, null, request.filter.elevationType,
+        null, null, null, null, null, null, null, null, null, layerMethod, null, null,
         request.filter.layerNumber, null, request.filter.contributingMachines, null, null, null, null, null, null, null);
       filter?.Validate();
 
       if (!layerMethod.HasValue) layerMethod = FilterLayerMethod.None;
 
       TileRequest tileRequest = TileRequest.CreateTileRequest(request.projectId.Value, null, request.mode, request.palette,
-        liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0, layerMethod.Value, 
+        liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0, layerMethod.Value,
         request.boundBoxLL, null, request.width, request.height, 0);
       tileRequest.Validate();
       var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(tileRequest) as TileResult;

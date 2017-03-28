@@ -111,6 +111,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
 
     private TileResult ConvertResult(MemoryStream tile, TASNodeErrorStatus raptorResult)
     {
+      log.LogDebug("Raptor result for Tile: " + raptorResult);
       return TileResult.CreateTileResult(tile.ToArray(), raptorResult);
     }
 
