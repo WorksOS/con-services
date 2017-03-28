@@ -43,13 +43,13 @@ namespace MockProjectWebApi.Controllers
           new ProjectData { LegacyProjectId = 1001151, ProjectUid = Guid.NewGuid().ToString() },
           new ProjectData { LegacyProjectId = 1001152, ProjectUid = Guid.NewGuid().ToString() },
           new ProjectData { LegacyProjectId = 1001153, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001158, ProjectUid = Guid.NewGuid().ToString() },
+          new ProjectData { LegacyProjectId = 1001158, ProjectUid = "ff91dd40-1569-4765-a2bc-014321f76ace" },
           new ProjectData { LegacyProjectId = 1001184, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001186, ProjectUid = Guid.NewGuid().ToString() },
+          new ProjectData { LegacyProjectId = 1001186, ProjectUid = "8590b7fc-079e-4b5a-b5ff-8514dadfe985" },
           new ProjectData { LegacyProjectId = 1001191, ProjectUid = Guid.NewGuid().ToString() },
           new ProjectData { LegacyProjectId = 1001209, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001210, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001214, ProjectUid = Guid.NewGuid().ToString() },
+          new ProjectData { LegacyProjectId = 1001210, ProjectUid = "d0a0410e-9fcc-44b1-bf1a-378c891d2ddb" },
+          new ProjectData { LegacyProjectId = 1001214, ProjectUid = "8aed6003-b8eb-47b1-941f-096a17468bf0" },
           new ProjectData { LegacyProjectId = 1001276, ProjectUid = Guid.NewGuid().ToString() },
           new ProjectData { LegacyProjectId = 1001280, ProjectUid = Guid.NewGuid().ToString() },
           new ProjectData { LegacyProjectId = 1001285, ProjectUid = Guid.NewGuid().ToString() },
@@ -58,7 +58,7 @@ namespace MockProjectWebApi.Controllers
           new ProjectData { LegacyProjectId = 1009999, ProjectUid = Guid.NewGuid().ToString() },
           new ProjectData { LegacyProjectId = 1012413, ProjectUid = Guid.NewGuid().ToString() },
           new ProjectData { LegacyProjectId = 1099999, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1999999, ProjectUid = Guid.NewGuid().ToString() }
+          new ProjectData { LegacyProjectId = 1999999, ProjectUid = "0fa94210-0d7a-4015-9eee-4d9956f4b250" }
         };
       return projectList;
     }

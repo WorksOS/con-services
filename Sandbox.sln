@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ConfigurationStore", "ConfigurationStore\src\ConfigurationStore.xproj", "{CFAA49F7-E074-4F52-A194-4AE8AFD5C071}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "KafkaConsumer", "KafkaConsumer\KafkaConsumer.xproj", "{09FA75B5-B641-49D0-B1B4-F41125B44FE0}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "log4netExtensions", "log4netExtensions\log4netExtensions.xproj", "{66AB2429-5950-4C66-A339-B6F94D46BBC8}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MasterDataProxies", "MasterDataProxies\src\MasterDataProxies.xproj", "{C3CDA74F-64E2-44BA-95DE-03627D00B9EF}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Repositories", "MasterDataRepositories\src\Repositories.xproj", "{D7D7C2F1-BFF3-4E6D-83D2-E3B23862F1A2}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MockProjectWebApi", "MockProjectWebApi\src\MockProjectWebApi.xproj", "{2AD0B73F-9C90-47DD-93F2-762F6A0EC461}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFAA49F7-E074-4F52-A194-4AE8AFD5C071}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFAA49F7-E074-4F52-A194-4AE8AFD5C071}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFAA49F7-E074-4F52-A194-4AE8AFD5C071}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFAA49F7-E074-4F52-A194-4AE8AFD5C071}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09FA75B5-B641-49D0-B1B4-F41125B44FE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09FA75B5-B641-49D0-B1B4-F41125B44FE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09FA75B5-B641-49D0-B1B4-F41125B44FE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09FA75B5-B641-49D0-B1B4-F41125B44FE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66AB2429-5950-4C66-A339-B6F94D46BBC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66AB2429-5950-4C66-A339-B6F94D46BBC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66AB2429-5950-4C66-A339-B6F94D46BBC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66AB2429-5950-4C66-A339-B6F94D46BBC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3CDA74F-64E2-44BA-95DE-03627D00B9EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3CDA74F-64E2-44BA-95DE-03627D00B9EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3CDA74F-64E2-44BA-95DE-03627D00B9EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3CDA74F-64E2-44BA-95DE-03627D00B9EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7D7C2F1-BFF3-4E6D-83D2-E3B23862F1A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7D7C2F1-BFF3-4E6D-83D2-E3B23862F1A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7D7C2F1-BFF3-4E6D-83D2-E3B23862F1A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7D7C2F1-BFF3-4E6D-83D2-E3B23862F1A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AD0B73F-9C90-47DD-93F2-762F6A0EC461}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD0B73F-9C90-47DD-93F2-762F6A0EC461}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AD0B73F-9C90-47DD-93F2-762F6A0EC461}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AD0B73F-9C90-47DD-93F2-762F6A0EC461}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
