@@ -50,7 +50,7 @@ namespace IntegrationTests
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var projectId1 = ts.SetLegacyProjectId();
-      var projectId2 = ts.SetLegacyProjectId();
+      var projectId2 = projectId1+2;
       string projectName = $"Integration Test Project 2";
       DateTime startDate = ts.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = ts.ConvertVSSDateString("10000d+00:00:00");
@@ -475,7 +475,7 @@ namespace IntegrationTests
       var geofenceGuid = Guid.NewGuid();
       var userGuid = Guid.NewGuid();
       var projectId = ts.SetLegacyProjectId();
-      var projectId2 = ts.SetLegacyProjectId();
+      var projectId2 = projectId+2;
       var projectName = "Integration Test Project 12";
       DateTime startDate = ts.ConvertVSSDateString("0d+00:00:00");
       DateTime endDate = ts.ConvertVSSDateString("1000d+00:00:00");
