@@ -13,9 +13,8 @@ namespace ProjectWebApi.Models
 
     private static List<string> _replacements = new List<string> { "POLYGON", "(", ")" };
 
-    private static List<Point> ParseBoundaryData(string s, char pointSeparator, char coordSeparator)
+    private static IEnumerable<Point> ParseBoundaryData(string s, char pointSeparator, char coordSeparator)
     {
-      var points = new List<Point>();
 
       string[] pointsArray = s./*Remove(s.Length - 1).*/Split(pointSeparator);
 
@@ -23,9 +22,8 @@ namespace ProjectWebApi.Models
       {
         //gets x and y coordinates split by comma, trims whitespace at pos 0, converts to double array
         var coordinates = pointsArray[i].Trim().Split(coordSeparator).Select(c => double.Parse(c)).ToArray();
-        points.Add(new Point(coordinates[1], coordinates[0]));
+        yield return (new Point(coordinates[1], coordinates[0]));
       }
-      return points;
     }
 
     public static void ValidateV1(string boundary)
@@ -87,7 +85,7 @@ namespace ProjectWebApi.Models
       return wkt;
     }
 
-    private static List<Point> ParseGeometryData(string s)
+    private static IEnumerable<Point> ParseGeometryData(string s)
     {
       foreach (string to_replace in _replacements)
       {
@@ -135,7 +133,7 @@ namespace ProjectWebApi.Models
       }
       try
       {
-        var points = oldFormat ? ParseBoundaryData(boundary, ';', ',') : ParseGeometryData(boundary);
+        var points = (oldFormat ? ParseBoundaryData(boundary, ';', ',') : ParseGeometryData(boundary)).ToList();
 
         if (points.Count < 3)
         {
