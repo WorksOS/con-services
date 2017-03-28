@@ -13,13 +13,10 @@ using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
-using Repositories.DBModels;
-
-//using VSS.Project.Service.Models;
 
 namespace TestRun
 {
-    public class TestControl
+  public class TestControl
     {
         private string currentClassName = string.Empty;
         private string currentPath = string.Empty;
@@ -185,7 +182,7 @@ namespace TestRun
             Regex regex = new Regex("aaa!");
             WebRequest wr = WebRequest.Create("http://www.google.com");
             BooleanConverter bc = new BooleanConverter();
-            CustomerProject cs = new CustomerProject();
+            //CustomerProject cs = new CustomerProject();
         }
 
         /// <summary>
@@ -210,7 +207,9 @@ namespace TestRun
                 try
                 {
                     currentClassName = current.Name;
-                    Console.WriteLine("Test Class Name: " + currentClassName);
+                    Console.WriteLine(@"#################################################################################################");
+                    Console.WriteLine(@"########################       Test Class : " + currentClassName + "      #########################");
+                    Console.WriteLine(@"#################################################################################################");
                     var methods = current.GetMethods()
                         .Where(m => m.GetCustomAttributes(typeof(TestMethodAttribute)).Count() != 0) 
                         .ToList();                    
@@ -318,7 +317,9 @@ namespace TestRun
                 return;
             }
             // Set the console messages to be in the file
-            Console.WriteLine("TestMethod: " + method.Name);
+            Console.WriteLine(@"=================================================================================================");
+            Console.WriteLine("Test: " + method.Name);
+            Console.WriteLine(@"=================================================================================================");
             var consoleOut = new StringWriter();
             if (isStdoutCaptured)
             {  Console.SetOut(consoleOut); }
@@ -338,7 +339,9 @@ namespace TestRun
                 resultsJunit.SetTestPassed(method, stats, consoleOut);
                 var stdOut = Console.Out;
                 Console.SetOut(stdOut);
-                Console.WriteLine("TestMethod: " + method.Name + " - PASSED");
+                Console.WriteLine(@"=================================================================================================");
+                Console.WriteLine("Test : " + method.Name + " - PASSED");
+                Console.WriteLine(@"=================================================================================================");
             }
             catch (Exception ex)
             {
@@ -358,8 +361,9 @@ namespace TestRun
                 var stdOut = Console.Out;
                 if (isStdoutCaptured)
                     {Console.SetOut(stdOut);}
-
-            Console.WriteLine("TestMethod: " + method.Name + " - FAILED");
+                Console.WriteLine(@"=================================================================================================");
+                Console.WriteLine("Test : " + method.Name + " ***********  FAILED ************ ");
+                Console.WriteLine(@"=================================================================================================");                
             }
             finally
             {
