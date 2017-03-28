@@ -177,12 +177,13 @@ namespace TestUtility
       {
         var mysqlHelper = new MySqlHelper();
         resultCount = Convert.ToInt32(mysqlHelper.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.dbConnectionString, query));
+        msg.DisplayMySqlQuery(query);
         if (resultCount == eventCount)
         {
           break;
         }
         retryCount++;
-        Thread.Sleep(1000);
+        Thread.Sleep(1500);
       }
       return resultCount;
     }

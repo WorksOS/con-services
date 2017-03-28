@@ -168,9 +168,9 @@ namespace TestUtility
     /// <param name="projectType">project type</param>
     /// <param name="timezone">project time zone</param>
     /// <param name="actionUtc">timestamp of the event</param>
+    /// <param name="boundary"></param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public void CreateProjectViaWebApi(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate,
-      string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
+    public void CreateProjectViaWebApi(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
     {
       CreateProjectEvt = new CreateProjectEvent
       {
@@ -307,7 +307,15 @@ namespace TestUtility
     /// <returns>The web api response</returns>
     private string CallProjectWebApi(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
     {
-      var configJson = evt == null ? null : JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      string configJson;
+      if (evt == null)
+      {
+        configJson = null;
+      }
+      else
+      {
+       configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      }
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(GetBaseUri() + routeSuffix, method, "application/json", configJson, statusCode, customerUid);
       Console.WriteLine(what + " project response:" + response);
