@@ -6,8 +6,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Dynamic;
-using System.Globalization;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -224,6 +222,7 @@ namespace TestUtility
     /// <param name="timezone">project time zone</param>
     /// <param name="actionUtc">timestamp of the event</param>
     /// <param name="statusCode">expected status code from web api call</param>
+    /// <param name="projectType"></param>
     public void UpdateProjectViaWebApi(Guid projectUid, string name, DateTime endDate, string timezone, DateTime actionUtc, HttpStatusCode statusCode, ProjectType projectType = ProjectType.Standard)
     {
       UpdateProjectEvt = new UpdateProjectEvent
@@ -1018,7 +1017,6 @@ namespace TestUtility
     /// <summary>
     /// Convert the expected results into dynamic objects and forma list
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <param name="eventArray"></param>
     /// <returns></returns>
     private List<ProjectDescriptor> ConvertArrayToList(string[] eventArray)
