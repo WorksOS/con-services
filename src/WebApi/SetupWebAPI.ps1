@@ -1,4 +1,5 @@
 #This script sets up the envirionment variables for RaptorServices WebAPI
+Write-host "SetupWebAPI.ps1 Version:1.0" 
 Write-host "The user `"$env:username`" run SetupWebAPI.ps1 on machine `"$env:computername`" on $(Get-Date)"  -ForegroundColor Yellow
 
 $OKTORUN = "OK"
@@ -37,7 +38,7 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
-   $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
+  # debug $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
    $myCmd = "net use z: "+ $SHAREUNC +" #fwww700945 /user:vssSupport /persistent:yes"
    Write-host "Mapping command myCmd=$myCmd"
    & cmd /c $myCmd
