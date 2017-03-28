@@ -4,8 +4,6 @@ services:
     build: ./artifacts/ProjectWebApi
     env_file:
      - docker-compose.env
-    ports:
-     - "3001:80"
     depends_on:
       - schema
   masterdataconsumercustomer:
@@ -72,12 +70,8 @@ services:
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
     env_file:
      - docker-compose.env
-    ports:
-      - "3306:3306"
   zookeeper:
     image: wurstmeister/zookeeper:3.4.6
-    ports:
-     - "2181:2181"
   kafka:
     image: wurstmeister/kafka:latest
     env_file:
@@ -85,8 +79,7 @@ services:
     environment:
      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
      - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IProjectEvent-Project:1:1,VSS.Interfaces.Events.MasterData.IGeofenceEvent-Project:1:1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent-Project:1:1
-    ports:
-     - "9092:9092"
+     - KAFKA_ADVERTISED_PORT=9092
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
