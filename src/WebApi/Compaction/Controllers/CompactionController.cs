@@ -71,6 +71,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <returns>CMV summary</returns>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v2/compaction/cmv/summary")]
     [HttpGet]
     public CompactionCmvSummaryResult GetCmvSummary([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
@@ -134,6 +136,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <returns>MDP summary</returns>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v2/compaction/mdp/summary")]
     [HttpGet]
     public CompactionMdpSummaryResult GetMdpSummary([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
@@ -195,6 +199,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <returns>Pass count summary</returns>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v2/compaction/passcounts/summary")]
     [HttpGet]
     public CompactionPassCountSummaryResult GetPassCountSummary([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
@@ -256,6 +262,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <returns>Temperature summary</returns>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v2/compaction/temperature/summary")]
     [HttpGet]
     public CompactionTemperatureSummaryResult GetTemperatureSummary([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
@@ -317,6 +325,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <returns>Speed summary</returns>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v2/compaction/speed/summary")]
     [HttpGet]
     public CompactionSpeedSummaryResult GetSpeedSummary([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
@@ -378,6 +388,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <returns>CMV % change</returns>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v2/compaction/cmv/percentchange")]
     [HttpGet]
     public CompactionCmvPercentChangeResult GetCmvPercentChange([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
@@ -502,6 +514,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
   }
   */
 
+
     /// <summary>
     /// Get elevation range from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
     /// </summary>
@@ -510,6 +523,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
     /// <returns>Elevation statistics</returns>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
     [Route("api/v2/compaction/elevationrange")]
     [HttpGet]
     public ElevationStatisticsResult GetElevationRange([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
@@ -614,9 +629,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
     [Route("api/v2/compaction/tiles")]
     [HttpPost]
     public TileResult PostTile([FromBody] CompactionTileRequest request)
