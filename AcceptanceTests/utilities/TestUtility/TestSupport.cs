@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Globalization;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -66,6 +67,16 @@ namespace TestUtility
       SetSubscriptionUid();
     }
 
+    public int SetLegacyProjectId()
+    {
+      var mysql = new MySqlHelper();
+      var query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
+      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.dbConnectionString, query);
+      if (string.IsNullOrEmpty(result))
+         { return 1000; }
+      var legacyAssetId = Convert.ToInt32(result);
+      return legacyAssetId+1;
+    }
     /// <summary>
     /// Set up the first event date for the events to go in. Also used as project start date for project tests.
     /// </summary>
@@ -157,9 +168,9 @@ namespace TestUtility
     /// <param name="projectType">project type</param>
     /// <param name="timezone">project time zone</param>
     /// <param name="actionUtc">timestamp of the event</param>
+    /// <param name="boundary"></param>
     /// <param name="statusCode">expected status code from web api call</param>
-    public void CreateProjectViaWebApi(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate,
-      string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
+    public void CreateProjectViaWebApi(Guid projectUid, int projectId, string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, DateTime actionUtc, string boundary, HttpStatusCode statusCode)
     {
       CreateProjectEvt = new CreateProjectEvent
       {
@@ -173,7 +184,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(CreateProjectEvt, string.Empty, statusCode, "Create");
+      CallProjectWebApi(CreateProjectEvt, "", statusCode, "Create",HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -196,7 +207,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(UpdateProjectEvt, string.Empty, statusCode, "Update", "PUT");
+      CallProjectWebApi(UpdateProjectEvt, "", statusCode, "Update", HttpMethod.Put.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -212,7 +223,7 @@ namespace TestUtility
         ProjectUID = projectUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(DeleteProjectEvt, string.Empty, statusCode, "Delete", "DELETE");
+      CallProjectWebApi(DeleteProjectEvt, "", statusCode, "Delete", HttpMethod.Delete.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -233,7 +244,7 @@ namespace TestUtility
         RelationType = RelationType.Customer,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(AssociateCustomerProjectEvt, "AssociateCustomer", statusCode, "Associate customer");
+      CallProjectWebApi(AssociateCustomerProjectEvt, "AssociateCustomer", statusCode, "Associate customer", HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -251,7 +262,7 @@ namespace TestUtility
         CustomerUID = customerUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(DissociateCustomerProjectEvt, "DissociateCustomer", statusCode, "Dissociate customer");
+      CallProjectWebApi(DissociateCustomerProjectEvt, "DissociateCustomer", statusCode, "Dissociate customer", HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
     /// <summary>
@@ -269,19 +280,17 @@ namespace TestUtility
         GeofenceUID = geofenceUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence");
+      CallProjectWebApi(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence", HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
     public void GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
     {
-      var response = CallProjectWebApi(null, null, statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
+      var response = CallProjectWebApi(null, "", statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
-        var expectedProjects =
-          ConvertArrayToList<ProjectDescriptor>(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-        msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),
-          "Actual from WebApi: " + response);
+        var expectedProjects = ConvertArrayToList<ProjectDescriptor>(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
+        msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
         CollectionAssert.AreEqual(expectedProjects, actualProjects);
       }
     }
@@ -298,7 +307,15 @@ namespace TestUtility
     /// <returns>The web api response</returns>
     private string CallProjectWebApi(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
     {
-      var configJson = evt == null ? null : JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      string configJson;
+      if (evt == null)
+      {
+        configJson = null;
+      }
+      else
+      {
+       configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      }
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(GetBaseUri() + routeSuffix, method, "application/json", configJson, statusCode, customerUid);
       Console.WriteLine(what + " project response:" + response);
@@ -470,6 +487,7 @@ namespace TestUtility
             var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
             {
               ActionUTC = eventUtc,
+              CustomerUID = new Guid(singleEvent.CustomerUID),
               ReceivedUTC = eventUtc,
               StartDate = DateTime.Parse(singleEvent.StartDate), //, CultureInfo.InvariantCulture),
               EndDate = DateTime.Parse(singleEvent.EndDate), //CultureInfo.InvariantCulture),
@@ -484,6 +502,7 @@ namespace TestUtility
             {
               ActionUTC = eventUtc,
               ReceivedUTC = eventUtc,
+              CustomerUID = new Guid(singleEvent.CustomerUID),
               StartDate = DateTime.Parse(singleEvent.StartDate), // CultureInfo.InvariantCulture),
               EndDate = DateTime.Parse(singleEvent.EndDate), //CultureInfo.InvariantCulture),
               SubscriptionType = singleEvent.SubscriptionType,
@@ -496,7 +515,7 @@ namespace TestUtility
             var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
             {
               ActionUTC = eventUtc,
-              ReceivedUTC = eventUtc,
+              ReceivedUTC = eventUtc, 
               EffectiveDate = DateTime.Parse(singleEvent.EffectiveDate, CultureInfo.InvariantCulture),
               ProjectUID = new Guid(singleEvent.ProjectUID),
               SubscriptionUID = new Guid(singleEvent.SubscriptionUID)

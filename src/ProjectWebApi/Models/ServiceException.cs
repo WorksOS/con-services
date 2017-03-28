@@ -1,27 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
-using Swashbuckle.Swagger.Model;
 
-namespace ProjectWebApi.Models
+namespace ProjectWebApi.ResultsHandling
 {
+  /// <summary>
+  ///   This is an expected exception and should be ignored by unit test failure methods.
+  /// </summary>
   public class ServiceException : HttpResponseException
   {
     /// <summary>
     ///   ServiceException class constructor.
     /// </summary>
     /// <param name="code"></param>
-    /// <param name="message"></param>
-    public ServiceException(HttpStatusCode code, string message)
+    /// <param name="result"></param>
+    public ServiceException(HttpStatusCode code, ContractExecutionResult result)
       : base(new HttpResponseMessage(code))
     {
-      Response.Content = new StringContent(message);
+      GetContent = JsonConvert.SerializeObject(result);
+      Response.Content = new StringContent(GetContent);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public string GetContent { get; private set; }
   }
 }

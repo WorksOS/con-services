@@ -1,11 +1,35 @@
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using ProjectWebApi.ResultsHandling;
+using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ProjectWebApi.Models
 {
-  /// <summary>
-  ///   Describes VL project
-  /// </summary>
-  public class ProjectDescriptor
+
+    /// <summary>
+    /// Describes standard output for the project descriptors
+    /// </summary>
+    /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
+    public class ProjectDescriptorsListResult : ContractExecutionResult
+    {
+        public ImmutableList<ProjectDescriptor> ProjectDescriptors { get; set; }
+    }
+
+    /// <summary>
+    /// Describes standard container with subscription descriptor
+    /// </summary>
+    /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
+    public class SubscriptionsListResult : ContractExecutionResult
+    {
+        public ImmutableList<Subscription> SubscriptionDescriptors { get; set; }
+    }
+
+
+    /// <summary>
+    ///   Describes VL project
+    /// </summary>
+    public class ProjectDescriptor
   {
     /// <summary>
     ///   Gets or sets a value indicating whether this instance is archived.
@@ -72,6 +96,22 @@ namespace ProjectWebApi.Models
     /// </value>
     public int LegacyProjectId { get; set; }
 
+    /// <summary>
+    /// Gets or sets the CustomerUID which the project is associated with
+    /// </summary>
+    /// <value>
+    /// The Customer UID.
+    /// </value>
+    public string CustomerUID { get; set; }
+
+    /// <summary>
+    /// Gets or sets the customer Id from legacy VisionLink
+    /// </summary>
+    /// <value>
+    /// The legacy Customer Id.
+    /// </value>
+    public string LegacyCustomerId { get; set; }
+
     public override bool Equals(object obj)
     {
       var otherProject = obj as ProjectDescriptor;
@@ -85,6 +125,8 @@ namespace ProjectWebApi.Models
             && otherProject.ProjectTimeZone == this.ProjectTimeZone
             && otherProject.ProjectType == this.ProjectType
             && otherProject.IsArchived == this.IsArchived
+            && otherProject.LegacyCustomerId == this.LegacyCustomerId
+            && otherProject.CustomerUID == this.CustomerUID
             ;
     }
   }

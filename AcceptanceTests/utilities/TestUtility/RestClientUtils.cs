@@ -126,7 +126,5 @@ namespace TestUtility
             }
             return request;
         }
-
-      //public const string CUSTOMER_UID = "d7cafa93-634e-e311-b5a0-90e2ba076184";
     }
 }
