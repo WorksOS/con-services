@@ -3,9 +3,16 @@ services:
   schema:
     build: ./database
     env_file:
+     - docker-compose-local-debug.env  
+    depends_on:
+     - masterdataschema
+     - db     
+  masterdataschema:
+    build: C:\Nighthawk2\NextGenCode\MerinoSandbox\MerinoSandbox\MasterDataConsumers\database  
+    env_file:
      - docker-compose-local-debug.env
     depends_on:
-      - db
+      - db    
   db:
     image: mysql/mysql-server:5.7.15 
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 

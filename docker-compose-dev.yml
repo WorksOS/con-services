@@ -9,9 +9,15 @@ services:
     depends_on:
       - schema
   schema:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest    
+    build: ./database 
     env_file:
      - docker-compose-dev.env
+    depends_on:
+      - masterdataschema
+  masterdataschema:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest    
+    env_file:
+     - docker-compose-dev.env 
   masterdataconsumercustomer:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:

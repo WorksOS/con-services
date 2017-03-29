@@ -35,7 +35,7 @@ services:
     volumes:
       - ./artifacts/logs:/app/logs
     depends_on:
-      - schema
+      - projectonlyschema
       - kafka     
   masterdataconsumergeofence:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest    
@@ -64,12 +64,19 @@ services:
       - schema
       - kafka
   schema:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest    
+    build: ./database 
     env_file:
      - docker-compose-local.env
     depends_on:
       - db
-  projectschema:
+      - masterdataschema
+  masterdataschema:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest    
+    env_file:
+     - docker-compose-local.env    
+    depends_on:
+      - db       
+  projectonlyschema:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest    
     env_file:
      - docker-compose-local.env
