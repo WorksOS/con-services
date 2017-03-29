@@ -44,7 +44,8 @@ else
    & Z:
    $DL = (get-location).Drive.Name
    Write-host "Current Drive=$DL"
-   & dir; & C: }
+   if ($DL -eq "Z")
+    {  & dir; & C:}
    else
     {Write-Host "Warning! Could not map IONode productionData to drive Z:"}
   }
