@@ -10,9 +10,9 @@ node('Jenkins-Win2016-Raptor') {
     def suffix = ""
     def branchName = ""
 
-    if (branch.contains("QA")) {
+    if (branch.contains("release")) {
        versionPrefix = "1.0."
-       branchName = "QA"
+       branchName = "release"
        } else if (branch.contains("Dev")) {
        versionPrefix = "0.99."
        branchName = "Dev"
@@ -61,14 +61,25 @@ node('Jenkins-Win2016-Raptor') {
  
     echo "Build result is ${currentBuild.result}"
     if (currentBuild.result=='SUCCESS') {
+		if (branch.contains("release"))
+		{
+       stage 'Build Release Images'
+       bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest-release-${fullVersion} ./Artifacts/WebApi"
+ 
+       //Publish to AWS Repo
+       stage 'Get ecr login, push image to Repo'
+       bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion latest-release-${fullVersion}"
+		}
+		else
+		{
        //Rebuild Image, tag & push to AWS Docker Repo
-       stage 'Build Images'
+       stage 'Build Development Images'
        bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}-${branchName} ./Artifacts/WebApi"
        bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest ./Artifacts/WebApi"
-
  
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'
        bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\PushImages.ps1 -fullVersion ${fullVersion}-${branchName}"
+	   }
     }
 }
