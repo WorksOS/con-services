@@ -21,34 +21,3 @@ CREATE TABLE IF NOT EXISTS Asset
   UNIQUE KEY UIX_Asset_AssetUID (AssetUID),
   KEY `IX_Asset_AssetUID` (AssetUID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
-SET @s = (SELECT IF(
-    (SELECT COUNT(*)
-       FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE table_name = 'Asset'
-        AND table_schema = DATABASE()
-        AND column_name = 'EquipmentVIN'
-    ) > 0,
-    "SELECT 1",
-    "ALTER TABLE `Asset` ADD COLUMN `EquipmentVIN` varchar(50) DEFAULT NULL AFTER `OwningCustomerUID`"
-)); 
-
-PREPARE stmt FROM @s;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;   
-
-SET @s = (SELECT IF(
-    (SELECT COUNT(*)
-       FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE table_name = 'Asset'
-        AND table_schema = DATABASE()
-        AND column_name = 'ModelYear'
-    ) > 0,
-    "SELECT 1",
-    "ALTER TABLE `Asset` ADD COLUMN `ModelYear` int(11) NULL AFTER `Model`"
-));  
-
-PREPARE stmt FROM @s;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt; 
