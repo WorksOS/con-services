@@ -1,7 +1,7 @@
 version: '2'
 services:
   webapi:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-[WVERSION]
     env_file:
      - docker-compose-alpha.env
     ports:
@@ -9,11 +9,11 @@ services:
     depends_on:
       - schema
   schema:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release    
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release-[MVERSION]    
     env_file:
      - docker-compose-alpha.env
   masterdataconsumercustomer:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
     env_file:
      - docker-compose-alpha.env
     environment:
@@ -23,7 +23,7 @@ services:
     depends_on:
       - schema
   masterdataconsumergeofence:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
     env_file:
      - docker-compose-alpha.env
     environment:
@@ -33,7 +33,7 @@ services:
     depends_on:
       - schema
   masterdataconsumersubscription:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
     env_file:
      - docker-compose-alpha.env
     environment:
