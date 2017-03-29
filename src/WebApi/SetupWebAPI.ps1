@@ -38,24 +38,20 @@ else
    & sc.exe config lanmanworkstation depend= "MrxSmb20/NSI"
    & sc.exe qc lanmanworkstation
    & sc.exe start lanmanworkstation
-   # debug $SHAREUNC = "\\dev-iolv01.vssengg.com\ProductionData"
    $myCmd = "net use z: "+ $SHAREUNC +" #fwww700945 /user:vssSupport /persistent:yes"
-   # debug  Write-host "Mapping command myCmd=$myCmd"
-   Write-Host "Mapping Raptor ProductionData folder to Z: drive
+   Write-Host "Mapping Raptor ProductionData folder to Z: drive"
    & cmd /c $myCmd
    & Z:
    $DL = (get-location).Drive.Name
    Write-host "Current Drive=$DL"
-   if ($DL -eq "Z")
-    {  & dir; & C:}
+   & dir; & C: }
    else
     {Write-Host "Warning! Could not map IONode productionData to drive Z:"}
-
   }
 
 
 if ($OKTORUN -eq "OK")
   {& .\\WebAPI.exe}
 else
-  { Write-host "Error! Not running WebAPI due to setup error. Check Environment variables ASNODEIP, IONODEIP and SHAREUNC are defined"  -ForegroundColor Red}
+  { Write-host "Error! Not running WebAPI due to setup error. Check Environment variables ASNODEIP, IONODEIP and SHAREUNC are defined"  -ForegroundColor Red;}
 
