@@ -231,8 +231,8 @@ this.ScenarioSetup(scenarioInfo);
     ""percentGreaterThanTarget"": 0.20186678525980817,
     ""percentLessThanTarget"": 0.64978058802207017,
     ""totalAreaCoveredSqMeters"": 10636.7028,
-    ""minTarget"": 11.988,
-    ""maxTarget"": 15.012
+    ""minTarget"": 12.0,
+    ""maxTarget"": 15.0
   },
   ""Code"": 0,
   ""Message"": ""success""
