@@ -75,19 +75,22 @@ namespace TestUtility
       if (string.IsNullOrEmpty(result))
          { return 1000; }
       var legacyAssetId = Convert.ToInt64(result);
-      return legacyAssetId+1001;
+      return legacyAssetId+1;
     }
 
-
+    /// <summary>
+    /// Set the legacy project id from the database
+    /// </summary>
+    /// <returns></returns>
     public int SetLegacyProjectId()
     {
       var mysql = new MySqlHelper();
-      var query = "SELECT max(LegacyProjectID) FROM Project;";
+      var query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
          { return 1000; }
-      var legacyAssetId = Convert.ToInt32(result);
-      return legacyAssetId+1001;
+      var legacyProjectId = Convert.ToInt32(result);
+      return legacyProjectId+1;
     }
 
     /// <summary>
@@ -135,6 +138,10 @@ namespace TestUtility
       }
     }
 
+    /// <summary>
+    /// Gte the base uri from config. If run in debug mode from visual studio it will used a different uri
+    /// </summary>
+    /// <returns></returns>
     public string GetBaseUri()
     {
       var baseUri = tsCfg.webApiUri;
@@ -143,6 +150,21 @@ namespace TestUtility
         baseUri = tsCfg.debugWebApiUri;
       }
       return baseUri;
+    }
+
+
+    /// <summary>
+    /// Converts a special date string eg 2d+12:00:00 which signifies a two date and 12 hour offset
+    /// to a normal date time based on the first event date.
+    /// </summary>
+    /// <param name="timeStampAndDayOffSet">Date day off set and timestamp from first event date</param>
+    /// <param name="startEventDateTime"></param>
+    /// <returns>Datetime</returns>
+    public DateTime ConvertTimeStampAndDayOffSetToDateTime(string timeStampAndDayOffSet,DateTime startEventDateTime)
+    {
+      var components = Regex.Split(timeStampAndDayOffSet, @"d+\+");
+      var offset = double.Parse(components[0].Trim());
+      return DateTime.Parse(startEventDateTime.AddDays(offset).ToString("yyyy-MM-dd") + " " + components[1].Trim());
     }
     #endregion
 
@@ -743,20 +765,6 @@ namespace TestUtility
       {
         return rndNumber.Next(min, max);
       }
-    }
-
-    /// <summary>
-    /// Converts a special date string eg 2d+12:00:00 which signifies a two date and 12 hour offset
-    /// to a normal date time based on the first event date.
-    /// </summary>
-    /// <param name="timeStampAndDayOffSet">Date day off set and timestamp from first event date</param>
-    /// <param name="startEventDateTime"></param>
-    /// <returns>Datetime</returns>
-    public DateTime ConvertTimeStampAndDayOffSetToDateTime(string timeStampAndDayOffSet,DateTime startEventDateTime)
-    {
-      var components = Regex.Split(timeStampAndDayOffSet, @"d+\+");
-      var offset = double.Parse(components[0].Trim());
-      return DateTime.Parse(startEventDateTime.AddDays(offset).ToString("yyyy-MM-dd") + " " + components[1].Trim());
     }
     #endregion
   }
