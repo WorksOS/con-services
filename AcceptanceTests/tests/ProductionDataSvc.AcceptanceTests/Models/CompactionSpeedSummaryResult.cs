@@ -92,11 +92,11 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       /// <summary>
       /// The minimum percentage the measured Speed may be compared to the speedTarget from the machine
       /// </summary>
-      public int minTarget { get; set; }
+      public double minTarget { get; set; }
       /// <summary>
       /// The maximum percentage the measured Speed may be compared to the speedTarget from the machine
       /// </summary>
-      public int maxTarget { get; set; }
+      public double maxTarget { get; set; }
 
       public bool Equals(SpeedSummaryData other)
       {
