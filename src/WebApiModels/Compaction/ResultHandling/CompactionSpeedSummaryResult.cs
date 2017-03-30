@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Models;
@@ -40,8 +40,8 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
           PercentGreaterThanTarget = result.AboveTarget/result.CoverageArea*100.0,
           PercentLessThanTarget = result.BelowTarget/result.CoverageArea*100.0,
           TotalAreaCoveredSqMeters = result.CoverageArea,
-          MinTargetMachineSpeed = speedTarget.MinTargetMachineSpeed * 0.036, // cm per second converted to km per hour...
-          MaxTargetMachineSpeed = speedTarget.MaxTargetMachineSpeed * 0.036  // cm per second converted to km per hour...
+          MinTargetMachineSpeed = Math.Round(speedTarget.MinTargetMachineSpeed * 0.036, 1, MidpointRounding.AwayFromZero), // cm per second converted to km per hour...
+          MaxTargetMachineSpeed = Math.Round(speedTarget.MaxTargetMachineSpeed * 0.036, 1, MidpointRounding.AwayFromZero)  // cm per second converted to km per hour...
         }
       };
       return speedResult;
