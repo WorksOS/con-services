@@ -193,24 +193,6 @@ this.FeatureBackground();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetProjectExtents - Bad Request (Empty Request)")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetProjectExtents")]
-        public virtual void GetProjectExtents_BadRequestEmptyRequest()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("GetProjectExtents - Bad Request (Empty Request)", ((string[])(null)));
-#line 34
-this.ScenarioSetup(scenarioInfo);
-#line 4
-this.FeatureBackground();
-#line 35
- testRunner.When("I post an empty request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 36
- testRunner.Then("I should get error code -3", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("GetProjectExtents - Bad Request (Deleted Project)")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "GetProjectExtents")]
         public virtual void GetProjectExtents_BadRequestDeletedProject()

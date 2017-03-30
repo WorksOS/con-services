@@ -31,9 +31,9 @@ Scenario: GetProjectExtents - Bad Request (Invalid Project ID)
 	When I try to get the extents expecting badrequest
 	Then I should get error code -2
 
-Scenario: GetProjectExtents - Bad Request (Empty Request)
-	When I post an empty request
-	Then I should get error code -3
+#Scenario: GetProjectExtents - Bad Request (Empty Request)
+#	When I post an empty request
+#	Then I should get error code -3
 
 Scenario: GetProjectExtents - Bad Request (Deleted Project)
 	Given a GetProjectExtents project id 1000992

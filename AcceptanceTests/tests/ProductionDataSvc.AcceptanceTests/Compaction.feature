@@ -15,7 +15,7 @@ Scenario: Compaction Get CMV Summary
     "percentLessThanTarget": 99.873790492217083,
     "totalAreaCoveredSqMeters": 549.56240000000014,
     "cmvTarget": {
-      "cmvMachineTarget": 700,
+      "cmvMachineTarget": 70.0,
       "targetVaries": false
     },
     "minCMVPercent": 80,
@@ -39,7 +39,7 @@ Scenario: Compaction Get CMV Summary
       "percentLessThanTarget": 20.646682384641295,
       "totalAreaCoveredSqMeters": 1029.6492000000003,
       "mdpTarget": {
-        "mdpMachineTarget": 1500,
+        "mdpMachineTarget": 150.0,
         "targetVaries": false
       },
       "minMDPPercent": 80,
@@ -83,8 +83,8 @@ Scenario: Compaction Get CMV Summary
       "percentLessThanTarget": 100,
       "totalAreaCoveredSqMeters": 953.93120000000022,
       "temperatureTarget": {
-        "minTemperatureMachineTarget": 900,
-        "maxTemperatureMachineTarget": 1430,
+        "minTemperatureMachineTarget": 90.0,
+        "maxTemperatureMachineTarget": 143.0,
         "targetVaries": false
       }
     },
@@ -105,8 +105,8 @@ Scenario: Compaction Get CMV Summary
       "percentGreaterThanTarget": 0.20186678525980817,
       "percentLessThanTarget": 0.64978058802207017,
       "totalAreaCoveredSqMeters": 10636.7028,
-      "minTarget": 333,
-      "maxTarget": 417
+      "minTarget": 12.0,
+      "maxTarget": 15.0
     },
     "Code": 0,
     "Message": "success"

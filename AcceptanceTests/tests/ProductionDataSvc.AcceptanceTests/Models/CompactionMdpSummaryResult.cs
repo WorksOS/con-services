@@ -126,7 +126,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       /// <summary>
       /// If the MDP value is constant, this is the constant value of all MDP targets in the processed data.
       /// </summary>
-      public short mdpMachineTarget { get; set; }
+      public double mdpMachineTarget { get; set; }
       /// <summary>
       /// Are the MDP target values applying to all processed cells varying?
       /// </summary>

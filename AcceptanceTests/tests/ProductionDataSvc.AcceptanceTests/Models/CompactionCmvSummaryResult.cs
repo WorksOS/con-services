@@ -126,7 +126,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       /// <summary>
       /// If the CMV value is constant, this is the constant value of all CMV targets in the processed data.
       /// </summary>
-      public short cmvMachineTarget { get; set; }
+      public double cmvMachineTarget { get; set; }
       /// <summary>
       /// Are the CMV target values applying to all processed cells varying?
       /// </summary>
