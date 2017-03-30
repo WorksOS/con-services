@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VLPDDecls;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
@@ -447,30 +451,41 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 
     #endregion
 
-    /*
+    
     #region Palettes
 
     /// <summary>
-    /// Get elevation color palette. Either legacy project ID or project UID must be provided.
+    /// Get color palettes.
     /// </summary>
-    /// <param name="projectId">Legacy project ID</param>
-    /// <param name="projectUid">Project UID</param>
-    /// <returns>Elevation color palette</returns>
-    [Route("api/v2/compaction/elevationcolorpalette")]
+    /// <returns>Color palettes for all display types</returns>
+    [Route("api/v2/compaction/colorpalettes")]
     [HttpGet]
-    public CompactionCmvSummaryResult GetElevationColorPalette([FromQuery] long? projectId, [FromQuery] Guid? projectUid)
+    public CompactionColorPalettesResult GetColorPalettes()
     {
-      //hard coded elevation colors as per CG - see WebMapCache.ElevationPalatte
-      //calculate values from min-max elevation - see WebMapCache.ConvertProjectColors
-      //return color, value pairs + min/max elev, over and under colors with -1 value
-      throw new NotImplementedException();
+      List<DisplayMode> modes = new List<DisplayMode>
+      {
+        DisplayMode.Height, DisplayMode.CCV, DisplayMode.CCVPercent, DisplayMode.PassCount, DisplayMode.PassCountSummary, DisplayMode.CutFill, DisplayMode.TemperatureSummary, DisplayMode.MDPPercent, DisplayMode.CMVChange
+      };
+      //TODO: Add TemperatureDetails
+      //TODO: Check if I have the correct display modes
 
-      //TODO: Make a palettes endpoint that will return a palette for any display type
-      //so UI can call for values to then send back to raptor for tiles 
+      List<CompactionColorPalettesResult.Palette> palettes = new List<CompactionColorPalettesResult.Palette>();
+      foreach (var mode in modes)
+      {
+
+        var palette = new CompactionColorPalettesResult.Palette
+        {
+          displayMode = mode,
+          colors = RaptorConverters.convertColorPalettes(null, mode).Transitions
+        };
+        palettes.Add(palette);
+      }
+      return CompactionColorPalettesResult.CreateCompactionColorPalettesResult(palettes);
+      //TODO: Do we want to return the palettes like this i.e. exactly as Raptor expects
+      //or massaged for client (a) without repeated colors etc and (b) default values will need zapping or fixing
     }
-
     #endregion
-  */
+
 
     /* COMMENTED OUT UNTIL OTHER FILTERS REQUIRED - simplified version below as a GET
   /// <summary>
