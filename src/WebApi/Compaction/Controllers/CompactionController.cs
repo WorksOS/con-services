@@ -436,6 +436,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         {
           se.Response.StatusCode = HttpStatusCode.NoContent;
         }
+
         throw;
       }
       finally
@@ -663,7 +664,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
         return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
       }
-      return null;
+ 
+      throw new ServiceException(HttpStatusCode.NoContent,
+           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+               "Raptor failed to return a tile"));
     }
 
     /// <summary>

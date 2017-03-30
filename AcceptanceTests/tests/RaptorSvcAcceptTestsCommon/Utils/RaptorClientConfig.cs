@@ -28,17 +28,37 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         {
             get
             {
-              return "Dev"; // DLLConfig.AppSettings.Settings["TestEnvironment"].Value;
+              //return "Local"; 
+              return "Dev"; 
+              // DLLConfig.AppSettings.Settings["TestEnvironment"].Value;
             }
         }
         public static string TestDataPath
         {
             get
             {
-              return "../../TestData/";//DLLConfig.AppSettings.Settings["TestDataPath"].Value;
+              //Local
+              //return "../../../tests/TestData/TestData/"; 
+              //Dev
+              return "../../TestData/";
+              //DLLConfig.AppSettings.Settings["TestDataPath"].Value;
             }
         }
-        
+
+        public static string CompactionSvcBaseUri
+        {
+          get
+          {
+            if (TestEnvironment == "Tc")
+              return ConstructUri(":3001");
+            else if (TestEnvironment == "Dev")
+              return ConstructUri(":80");
+            else if (TestEnvironment == "Local")
+              return ConstructUri(":5000");
+            else
+              return ConstructUri("/compaction");
+          }
+        }
         public static string ReportSvcBaseUri
         {
             get

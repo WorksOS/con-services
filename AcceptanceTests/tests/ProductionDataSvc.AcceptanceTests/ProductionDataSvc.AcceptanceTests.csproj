@@ -108,6 +108,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Compaction.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Compaction.feature</DependentUpon>
+    </Compile>
     <Compile Include="CoordinateConversion.feature.cs">
       <DependentUpon>CoordinateConversion.feature</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -185,6 +190,14 @@
     <Compile Include="Models\CellPassesRequest.cs" />
     <Compile Include="Models\CMV.cs" />
     <Compile Include="Models\CMVChange.cs" />
+    <Compile Include="Models\CompactionCmvPercentChangeResult.cs" />
+    <Compile Include="Models\CompactionCmvSummaryResult.cs" />
+    <Compile Include="Models\CompactionFilter.cs" />
+    <Compile Include="Models\CompactionMdpSummaryResult.cs" />
+    <Compile Include="Models\CompactionPassCountSummaryResult.cs" />
+    <Compile Include="Models\CompactionSpeedSummaryResult.cs" />
+    <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
+    <Compile Include="Models\CompactionTileRequest.cs" />
     <Compile Include="Models\ConfigResult.cs" />
     <Compile Include="Models\CoordinateConversion.cs" />
     <Compile Include="Models\CoordinateSystemFile.cs" />
@@ -254,6 +267,7 @@
     <Compile Include="StepDefinitions\CMVChangeSteps.cs" />
     <Compile Include="StepDefinitions\CMVDetailSteps.cs" />
     <Compile Include="StepDefinitions\CMVSummarySteps.cs" />
+    <Compile Include="StepDefinitions\CompactionSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateConversionSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemGetSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemPostSteps.cs" />
@@ -335,6 +349,10 @@
     <None Include="CMVSummary.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CMVSummary.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Compaction.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Compaction.feature.cs</LastGenOutput>
     </None>
     <None Include="CoordinateConversion.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

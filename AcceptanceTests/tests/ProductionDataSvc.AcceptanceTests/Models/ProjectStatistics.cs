@@ -11,14 +11,18 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public class StatisticsParameters
     {
         /// <summary>
-        /// The project to request the statistics for
+        /// The project to request the statistics for using legacy project id
         /// </summary>
         public long? projectId { get; set; }
-
         /// <summary>
-        /// The set of surveyed surfaces that should be excluded from the calculation of the spatial and temporal extents of the project.
+        /// The project to request the statistics for using uid
         /// </summary>
-        public long[] excludedSurveyedSurfaceIds { get; set; }
+        public string projectUid { get; set; }
+
+    /// <summary>
+    /// The set of surveyed surfaces that should be excluded from the calculation of the spatial and temporal extents of the project.
+    /// </summary>
+    public long[] excludedSurveyedSurfaceIds { get; set; }
     }
     #endregion
 
