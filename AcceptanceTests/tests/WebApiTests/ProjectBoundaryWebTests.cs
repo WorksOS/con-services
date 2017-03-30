@@ -17,7 +17,7 @@ namespace WebApiTests
     [TestMethod]
     public void ValidProjectBoundaryForProjectIdAndTagfileDateSixPoints()
     {
-      msg.Title("Project Boundary WebTest 1", "Valid project boundary for projectId and tagfile date 6 points");
+      msg.Title("Project Boundary WebTest 1", "Valid project boundary for projectId and tagfile date 6 points. Project Monitoring subscription and project");
       var ts = new TestSupport { IsPublishToKafka = false };
       var legacyProjectId = ts.SetLegacyProjectId();
       var legacyAssetId = ts.SetLegacyAssetId();
@@ -65,7 +65,7 @@ namespace WebApiTests
     [TestMethod]
     public void ValidProjectBoundaryForProjectIdAndTagfileDateFourtyThreePoints()
     {
-      msg.Title("Project Boundary WebTest 2", "Valid project boundary for projectId and tagfile date for 43 points");
+      msg.Title("Project Boundary WebTest 2", "Valid project boundary for projectId and tagfile date for 43 points. Project Monitoring subscription and project");
       var ts = new TestSupport { IsPublishToKafka = false };
       var legacyProjectId = ts.SetLegacyProjectId();
       var legacyAssetId = ts.SetLegacyAssetId();
@@ -86,7 +86,7 @@ namespace WebApiTests
 
       var projectEventArray = new[] {
        "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name            | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone | StartDate   | EndDate   | GeometryWKT   |",
-      $"| Project   | 0d+09:00:00 | {projectUid} | {legacyProjectId} | ProjectWebTest1 | 2                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT} |" };
+      $"| Project   | 0d+09:00:00 | {projectUid} | {legacyProjectId} | ProjectWebTest2 | 2                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT} |" };
       ts.PublishEventCollection(projectEventArray);
       var eventsArray = new[] {
        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
@@ -117,9 +117,9 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void ThreeBoundariesForAssetStandardProjectThree_D_PMSubFor2Projects()
+    public void ThreeBoundariesForAssetStandardProjectThree_D_PMSubFor3Projects()
     {
-      msg.Title("Project Boundary WebTest 3", "Get one boundary for an asset with three projects");
+      msg.Title("Project Boundary WebTest 3", "Get one boundary for an asset with three projects. 3D Project Monitoring subscription and 3 different project");
       var ts = new TestSupport {IsPublishToKafka = false};
       var legacyProjectId1 = ts.SetLegacyProjectId();
       var legacyProjectId2 = legacyProjectId1+5;
@@ -181,6 +181,198 @@ namespace WebApiTests
       Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
     }
 
+    [TestMethod]
+    public void ValidProjectBoundaryForProjectIdLandfillProjectAndSubscription()
+    {
+      msg.Title("Project Boundary WebTest 4", "Valid project boundary for projectId Landfill Project And Subscription");
+      var ts = new TestSupport { IsPublishToKafka = false };
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyAssetId = ts.SetLegacyAssetId();
+      var projectUid = Guid.NewGuid();
+      var customerUid = Guid.NewGuid();
+      var tccOrg = Guid.NewGuid();
+      var deviceUid = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
+      var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
+      var geometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
+      var projectEventArray = new[] {
+       "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name            | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone | StartDate   | EndDate   | GeometryWKT   |",
+      $"| Project   | 0d+09:00:00 | {projectUid} | {legacyProjectId} | ProjectWebTest4 | 1                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT} |" };
+      ts.PublishEventCollection(projectEventArray);
+      var eventsArray = new[] {
+       "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+      $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
+      $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
+      $"| CustomerProject     | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |             |                | {projectUid}  |          |                    |",
+      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      ts.PublishEventCollection(eventsArray);
+      var assetEventArray = new[] {
+       "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name            | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
+      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectWebTest4 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
+      ts.PublishEventCollection(assetEventArray);
+      var deviceEventArray = new[] {
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectWebTest4           |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+      $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
+      ts.PublishEventCollection(deviceEventArray);
+
+      var actualResult = CallWebApiGetProjectBoundaryAtDateResult(ts,legacyProjectId, ts.FirstEventDate);
+      var expectedResult = ConvertPolygonToFencePoints(geometryWKT);
+      for (var resultCnt = 0; resultCnt < expectedResult.FencePoints.Length; resultCnt++)
+      {
+        Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
+      }     
+      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+    }
+
+    [TestMethod]
+    public void ValidProjectBoundaryForProjectIdStandardProjectAndThree_D_PM_Subscription()
+    {
+      msg.Title("Project Boundary WebTest 5", "Valid project boundary for projectId standard project and 3D Project Monitoring subscription");
+      var ts = new TestSupport { IsPublishToKafka = false };
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyAssetId = ts.SetLegacyAssetId();
+      var projectUid = Guid.NewGuid();
+      var customerUid = Guid.NewGuid();
+      var tccOrg = Guid.NewGuid();
+      var deviceUid = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
+      var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
+      var geometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
+      var projectEventArray = new[] {
+       "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name            | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone | StartDate   | EndDate   | GeometryWKT   |",
+      $"| Project   | 0d+09:00:00 | {projectUid} | {legacyProjectId} | ProjectWebTest5 | 0                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT} |" };
+      ts.PublishEventCollection(projectEventArray);
+      var eventsArray = new[] {
+       "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+      $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
+      $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 13               | {startDate} | {endDate}      |               |          |                    |",
+      $"| CustomerProject     | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |             |                | {projectUid}  |          |                    |",
+      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      ts.PublishEventCollection(eventsArray);
+      var assetEventArray = new[] {
+       "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name            | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
+      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectWebTest5 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
+      ts.PublishEventCollection(assetEventArray);
+      var deviceEventArray = new[] {
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectWebTest5           |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+      $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
+      ts.PublishEventCollection(deviceEventArray);
+
+      var actualResult = CallWebApiGetProjectBoundaryAtDateResult(ts,legacyProjectId, ts.FirstEventDate);
+      var expectedResult = ConvertPolygonToFencePoints(geometryWKT);
+      for (var resultCnt = 0; resultCnt < expectedResult.FencePoints.Length; resultCnt++)
+      {
+        Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
+      }     
+      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+    }
+
+    [TestMethod]
+    public void ValidProjectBoundaryForProjectIdStandardProjectAndManualThree_D_PM_Subscription()
+    {
+      msg.Title("Project Boundary WebTest 6", "Valid project boundary for projectId standard project and Manual 3D Project Monitoring subscription");
+      var ts = new TestSupport { IsPublishToKafka = false };
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyAssetId = ts.SetLegacyAssetId();
+      var projectUid = Guid.NewGuid();
+      var customerUid = Guid.NewGuid();
+      var tccOrg = Guid.NewGuid();
+      var deviceUid = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
+      var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
+      var geometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
+      var projectEventArray = new[] {
+       "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name            | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone | StartDate   | EndDate   | GeometryWKT   |",
+      $"| Project   | 0d+09:00:00 | {projectUid} | {legacyProjectId} | ProjectWebTest6 | 0                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT} |" };
+      ts.PublishEventCollection(projectEventArray);
+      var eventsArray = new[] {
+       "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+      $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
+      $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 15               | {startDate} | {endDate}      |               |          |                    |",
+      $"| CustomerProject     | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |             |                | {projectUid}  |          |                    |",
+      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      ts.PublishEventCollection(eventsArray);
+      var assetEventArray = new[] {
+       "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name            | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
+      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectWebTest6 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
+      ts.PublishEventCollection(assetEventArray);
+      var deviceEventArray = new[] {
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectWebTest6           |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+      $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
+      ts.PublishEventCollection(deviceEventArray);
+
+      var actualResult = CallWebApiGetProjectBoundaryAtDateResult(ts,legacyProjectId, ts.FirstEventDate);
+      var expectedResult = ConvertPolygonToFencePoints(geometryWKT);
+      for (var resultCnt = 0; resultCnt < expectedResult.FencePoints.Length; resultCnt++)
+      {
+        Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
+      }     
+      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+    }
+
+
+    [TestMethod]
+    public void ValidProjectBoundaryForProjectIdProjectMonitoringProjectAndManualThree_D_PM_Subscription()
+    {
+      msg.Title("Project Boundary WebTest 7", "Valid project boundary for projectId project monitoring project and Manual 3D Project Monitoring subscription");
+      var ts = new TestSupport { IsPublishToKafka = false };
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var legacyAssetId = ts.SetLegacyAssetId();
+      var projectUid = Guid.NewGuid();
+      var customerUid = Guid.NewGuid();
+      var tccOrg = Guid.NewGuid();
+      var deviceUid = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
+      var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
+      var geometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+
+      var projectEventArray = new[] {
+       "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name            | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone | StartDate   | EndDate   | GeometryWKT   |",
+      $"| Project   | 0d+09:00:00 | {projectUid} | {legacyProjectId} | ProjectWebTest7 | 2                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT} |" };
+      ts.PublishEventCollection(projectEventArray);
+      var eventsArray = new[] {
+       "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+      $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
+      $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+      $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 15               | {startDate} | {endDate}      |               |          |                    |",
+      $"| CustomerProject     | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |             |                | {projectUid}  |          |                    |",
+      $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
+      ts.PublishEventCollection(eventsArray);
+      var assetEventArray = new[] {
+       "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name            | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
+      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectWebTest7 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
+      ts.PublishEventCollection(assetEventArray);
+      var deviceEventArray = new[] {
+       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | ProjectWebTest7           |               |              |                    |               |",
+      $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
+      $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
+      ts.PublishEventCollection(deviceEventArray);
+
+      var actualResult = CallWebApiGetProjectBoundaryAtDateResult(ts,legacyProjectId, ts.FirstEventDate);
+      var expectedResult = ConvertPolygonToFencePoints(geometryWKT);
+      for (var resultCnt = 0; resultCnt < expectedResult.FencePoints.Length; resultCnt++)
+      {
+        Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
+      }     
+      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+    }
 
 
     /// <summary>

@@ -314,7 +314,7 @@ namespace WebApiTests
       ts.PublishEventCollection(eventsArray);
       var assetEventArray = new[] {
        "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name    | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
-      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | MbTest1 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |" };
+      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | MbTest6 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |" };
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
        "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
@@ -353,9 +353,9 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void GetThreeBoundariesForAssetStandardProjectThree_D_PMSubFor2Projects()
+    public void GetThreeBoundariesForAssetThree_D_PMSubFor3Projects()
     {
-      msg.Title("Multiple Boundaries test 6", "Get one boundary for an asset - Landfill project - 3D Project Monitoring subscription");
+      msg.Title("Multiple Boundaries test 7", "Get three boundaries for an asset - all 3 project - 3D Project Monitoring subscription");
       var ts = new TestSupport {IsPublishToKafka = false};
       var legacyProjectId1 = ts.SetLegacyProjectId();
       var legacyProjectId2 = legacyProjectId1+5;
@@ -383,9 +383,9 @@ namespace WebApiTests
 
       var projectEventArray = new[] {
        "| TableName | EventDate   | ProjectUID    | LegacyProjectID    | Name    | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone | StartDate   | EndDate   | GeometryWKT    |",
-      $"| Project   | 0d+09:00:00 | {projectUid1} | {legacyProjectId1} | MbTest6 | 0                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT1} |",
-      $"| Project   | 4d+09:00:00 | {projectUid2} | {legacyProjectId2} | MbTest6 | 1                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT2} |", 
-      $"| Project   | 4d+09:00:00 | {projectUid3} | {legacyProjectId3} | MbTest6 | 2                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT3} |", 
+      $"| Project   | 0d+09:00:00 | {projectUid1} | {legacyProjectId1} | MbTest7 | 0                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT1} |",
+      $"| Project   | 4d+09:00:00 | {projectUid2} | {legacyProjectId2} | MbTest7 | 1                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT2} |", 
+      $"| Project   | 4d+09:00:00 | {projectUid3} | {legacyProjectId3} | MbTest7 | 2                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT3} |", 
       };
       ts.PublishEventCollection(projectEventArray);
       var eventsArray = new[] {
@@ -400,11 +400,11 @@ namespace WebApiTests
       ts.PublishEventCollection(eventsArray);
       var assetEventArray = new[] {
        "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name    | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
-      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | MbTest1 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |" };
+      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | MbTest7 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |" };
       ts.PublishEventCollection(assetEventArray);
       var deviceEventArray = new[] {
        "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | MbTest6                   |               |              |                    |               |",
+      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | Series522  | {deviceUid} | CDMA         | MbTest7                   |               |              |                    |               |",
       $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
       $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
       ts.PublishEventCollection(deviceEventArray);
