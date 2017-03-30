@@ -2,8 +2,12 @@ version: '3'
 services:
   webapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest
-    env_file:
-     - docker-compose-dev.env
+    environment:
+     - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.3
+     - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-geofenceservice/1.0
+     - ASNODEIP=10.97.96.134
+     - IONODEIP=10.97.96.92
+     - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
     ports:
      - "5001:80"
 networks:
