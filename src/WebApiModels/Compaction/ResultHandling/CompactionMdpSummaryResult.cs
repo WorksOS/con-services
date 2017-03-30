@@ -42,7 +42,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
           TotalAreaCoveredSqMeters = result.totalAreaCoveredSqMeters,
           MdpTarget = new MdpTargetData
           {
-            MdpMachineTarget = result.constantTargetMDP,
+            MdpMachineTarget = result.constantTargetMDP / 10,
             TargetVaries = !result.isTargetMDPConstant
           },
           MinMDPPercent = settings.minMDPPercent,
@@ -104,7 +104,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
       /// If the MDP value is constant, this is the constant value of all MDP targets in the processed data.
       /// </summary>
       [JsonProperty(PropertyName = "mdpMachineTarget")]
-      public short MdpMachineTarget { get; set; }
+      public double MdpMachineTarget { get; set; }
       /// <summary>
       /// Are the MDP target values applying to all processed cells varying?
       /// </summary>

@@ -42,7 +42,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
           TotalAreaCoveredSqMeters = result.totalAreaCoveredSqMeters,
           CmvTarget = new CmvTargetData
           {
-            CmvMachineTarget = result.constantTargetCMV,
+            CmvMachineTarget = result.constantTargetCMV / 10,
             TargetVaries = !result.isTargetCMVConstant
           },
           MinCMVPercent = settings.minCMVPercent,
@@ -104,7 +104,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
       /// If the CMV value is constant, this is the constant value of all CMV targets in the processed data.
       /// </summary>
       [JsonProperty(PropertyName = "cmvMachineTarget")]
-      public short CmvMachineTarget { get; set; }
+      public double CmvMachineTarget { get; set; }
       /// <summary>
       /// Are the CMV target values applying to all processed cells varying?
       /// </summary>

@@ -40,8 +40,8 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
           PercentGreaterThanTarget = result.AboveTarget/result.CoverageArea*100.0,
           PercentLessThanTarget = result.BelowTarget/result.CoverageArea*100.0,
           TotalAreaCoveredSqMeters = result.CoverageArea,
-          MinTargetMachineSpeed = speedTarget.MinTargetMachineSpeed,
-          MaxTargetMachineSpeed = speedTarget.MaxTargetMachineSpeed
+          MinTargetMachineSpeed = speedTarget.MinTargetMachineSpeed * 0.036, // cm per second converted to km per hour...
+          MaxTargetMachineSpeed = speedTarget.MaxTargetMachineSpeed * 0.036  // cm per second converted to km per hour...
         }
       };
       return speedResult;
@@ -73,21 +73,21 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
       [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
       public double TotalAreaCoveredSqMeters { get; set; }
       /// <summary>
-      /// Sets the minimum target machine speed. The value should be specified in cm\sec
+      /// Sets the minimum target machine speed. The value should be specified in km\h
       /// </summary>
       /// <value>
       /// The minimum target machine speed.
       /// </value>
       [JsonProperty(PropertyName = "minTarget")]
-      public ushort MinTargetMachineSpeed { get; set; }
+      public double MinTargetMachineSpeed { get; set; }
       /// <summary>
-      /// Sets the maximum target machine speed. The value should be specified in cm\sec
+      /// Sets the maximum target machine speed. The value should be specified in km\h
       /// </summary>
       /// <value>
       /// The maximum target machine speed.
       /// </value>
       [JsonProperty(PropertyName = "maxTarget")]
-      public ushort MaxTargetMachineSpeed { get; set; }
+      public double MaxTargetMachineSpeed { get; set; }
     }
 
   }

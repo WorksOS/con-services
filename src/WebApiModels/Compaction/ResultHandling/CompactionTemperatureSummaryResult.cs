@@ -41,8 +41,8 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
           TotalAreaCoveredSqMeters = result.totalAreaCoveredSqMeters,
           TemperatureTarget = new TemperatureTargetData
           {
-            MinTemperatureMachineTarget = result.minimumTemperature,
-            MaxTemperatureMachineTarget = result.maximumTemperature,
+            MinTemperatureMachineTarget = result.minimumTemperature / 10,
+            MaxTemperatureMachineTarget = result.maximumTemperature / 10,
             TargetVaries = !result.isTargetTemperatureConstant
           }
         }
