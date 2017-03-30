@@ -19,7 +19,6 @@ namespace WebApiTests
     {
       msg.Title("Project WebTest 1", "No subscription for standard project. Get the project id for valid tag file request");
       var ts = new TestSupport { IsPublishToKafka = false };
-      var legacyProjectId = ts.SetLegacyProjectId();
       var legacyAssetId = ts.SetLegacyAssetId();
       var tccOrg = Guid.NewGuid();
       var deviceUid = Guid.NewGuid();

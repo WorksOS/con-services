@@ -127,7 +127,6 @@ namespace IntegrationTests
     [TestMethod]
     public void LandfillSubscription_GetProjectId()
     {
-      var msg = new Msg();
       msg.Title("Project Int Test 3", "Inject Asset,Device,Project and customer events with Landfill subscription. Call projects/getId and return project id");
       var ts = new TestSupport {IsPublishToKafka = true};
       var mysql = new MySqlHelper();
@@ -184,7 +183,6 @@ namespace IntegrationTests
    [TestMethod]
     public void ProjectMonitoSubscription_GetProjectId()
     {
-      var msg = new Msg();
       msg.Title("Project Int Test 4", "Inject Asset,Device,Project and customer events with Landfill subscription. Call projects/getId and return project id");
       var ts = new TestSupport {IsPublishToKafka = true};
       var mysql = new MySqlHelper();
@@ -240,7 +238,6 @@ namespace IntegrationTests
     [TestMethod]
     public void ThreeDPMSubscription_GetBoundaries()
     {
-      var msg = new Msg();
       msg.Title("Project boundaries test 1", "Inject Asset,Device,Project and customer events with 3D subscription. Call projects/getBoundaries");
       var ts = new TestSupport {IsPublishToKafka = true};
       var mysql = new MySqlHelper();
@@ -269,19 +266,19 @@ namespace IntegrationTests
       var geometryWKT3 = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.025723657623 36.2101347890754))";
 
       var deviceEventArray = new[] {
-       "| EventType                 | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | AssetUID      | AssetName | Make | SerialNumber | Model | IconKey | AssetType  | LegacyAssetId   | OwningCustomerUID |",
-      $"| CreateDeviceEvent         | 0d+09:00:00 | {deviceUid}        | Subscribed  | SNM940     | {deviceUid} | 4G           |               |           |      |              |       |         |            |                 |                   |",
-      $"| CreateAssetEvent          | 0d+09:05:00 |                    |             |            |             |              | {ts.AssetUid} | AssetInt3 | CAT  | XAT1         | 374D  | 10      | Excavators | {legacyAssetId} | {customerUid}     |",
-      $"| AssociateDeviceAssetEvent | 0d+09:10:00 |                    |             |            | {deviceUid} |              | {ts.AssetUid} |           |      |              |       |         |            |                 |                   |"};
+       "| EventType                 | EventDate   | DeviceSerialNumber | DeviceState | DeviceType | DeviceUID   | DataLinkType | AssetUID      | AssetName   | Make | SerialNumber | Model | IconKey | AssetType  | LegacyAssetId   | OwningCustomerUID |",
+      $"| CreateDeviceEvent         | 0d+09:00:00 | {deviceUid}        | Subscribed  | SNM940     | {deviceUid} | 4G           |               |             |      |              |       |         |            |                 |                   |",
+      $"| CreateAssetEvent          | 0d+09:05:00 |                    |             |            |             |              | {ts.AssetUid} | ProjectBnd1 | CAT  | XAT1         | 374D  | 10      | Excavators | {legacyAssetId} | {customerUid}     |",
+      $"| AssociateDeviceAssetEvent | 0d+09:10:00 |                    |             |            | {deviceUid} |              | {ts.AssetUid} |             |      |              |       |         |            |                 |                   |"};
       ts.PublishEventCollection(deviceEventArray);
       mysql.VerifyTestResultDatabaseRecordCount("Device", "DeviceUID", 1, deviceUid);
       mysql.VerifyTestResultDatabaseRecordCount("Asset", "AssetUID", 1, new Guid(ts.AssetUid));
 
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectID          | ProjectUID     | ProjectName     | ProjectType                     | ProjectTimezone           | ProjectStartDate | ProjectEndDate | GeometryWKT    |",
-      $"| CreateProjectEvent | 1d+09:00:00 | {legacyProjectId1} | {projectUid1}  | ProjectIntTest1 | {ProjectType.Standard}          | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWKT1} |",
-      $"| CreateProjectEvent | 1d+09:00:00 | {legacyProjectId2} | {projectUid2}  | ProjectIntTest1 | {ProjectType.LandFill}          | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWKT2} |",
-      $"| CreateProjectEvent | 1d+09:00:00 | {legacyProjectId3} | {projectUid3}  | ProjectIntTest1 | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWKT3} |"};
+      $"| CreateProjectEvent | 1d+09:00:00 | {legacyProjectId1} | {projectUid1}  | ProjectBndTest1 | {ProjectType.Standard}          | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWKT1} |",
+      $"| CreateProjectEvent | 1d+09:00:00 | {legacyProjectId2} | {projectUid2}  | ProjectBndTest1 | {ProjectType.LandFill}          | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWKT2} |",
+      $"| CreateProjectEvent | 1d+09:00:00 | {legacyProjectId3} | {projectUid3}  | ProjectBndTest1 | {ProjectType.ProjectMonitoring} | New Zealand Standard Time | {startDate}      | {endDate}      | {geometryWKT3} |"};
 
       ts.PublishEventCollection(projectEventArray);
 
