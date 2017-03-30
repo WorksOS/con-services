@@ -28,8 +28,7 @@ namespace WebApiTests
       var subscriptionUid = Guid.NewGuid();
       var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
       var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
-      var geometryWKT =
-        "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var geometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
       // Write events to database 
       var projectEventArray = new[] {
        "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name    | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone | StartDate   | EndDate   | GeometryWKT   |",

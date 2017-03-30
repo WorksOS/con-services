@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
@@ -126,7 +127,7 @@ namespace WebApiTests
 
 
     [TestMethod]
-    public void ProjectMonitoringSubscriptioAndProjectCallwebApIwithprojectid()
+    public void ProjectMonitoringSubscriptionAndProjectCallwebApIwithprojectid()
     {
       msg.Title("Project WebTest 4", "Project monitoring subscription and project. Get the project id for valid tag file request");
       var ts = new TestSupport { IsPublishToKafka = false };
@@ -170,7 +171,7 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void LandfillSubscriptioAndProjectCallwebApIwithprojectid()
+    public void LandfillSubscriptionAndProjectCallwebApIwithprojectid()
     {
       msg.Title("Project WebTest 5", "Landfill subscription and project. Get the project id for valid tag file request");
       var ts = new TestSupport { IsPublishToKafka = false };
@@ -214,7 +215,7 @@ namespace WebApiTests
     }
 
      [TestMethod]
-    public void ProjectMonitoringSubscriptioAndProjectJohnDoeCallwebApIwithprojectid()
+    public void ProjectMonitoringSubscriptionAndProjectJohnDoeCallwebApIwithprojectid()
     {
       msg.Title("Project WebTest 6", "Project monitoring subscription and project JohnDoe asset. Get the project id for valid tag file request");
       var ts = new TestSupport { IsPublishToKafka = false };
@@ -258,7 +259,7 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void LandfillSubscriptioAndProjectJohnDoeCallwebApIwithprojectid()
+    public void LandfillSubscriptionAndProjectJohnDoeCallwebApIwithprojectid()
     {
       msg.Title("Project WebTest 7", "Landfill subscription and project. Get the project id for valid tag file request");
       var ts = new TestSupport { IsPublishToKafka = false };
@@ -304,7 +305,7 @@ namespace WebApiTests
     }
 
      [TestMethod]
-    public void ProjectMonitoringSubscriptioAndProjectManualImportCallwebApIwithprojectid()
+    public void ProjectMonitoringSubscriptionAndProjectManualImportCallwebApIwithprojectid()
     {
       msg.Title("Project WebTest 8", "Project monitoring subscription and project with Manual Import. Get the project id for valid tag file request");
       var ts = new TestSupport { IsPublishToKafka = false };
@@ -563,6 +564,7 @@ namespace WebApiTests
     /// <returns>The project id result</returns>
     private GetProjectIdResult CallWebApiGetProjectId(TestSupport ts,long assetid,double latitude,double longitude, DateTime timeOfPosition,string tccOrgUid)
     {
+      Thread.Sleep(500);
       var request = GetProjectIdRequest.CreateGetProjectIdRequest(assetid,latitude,longitude, 0, timeOfPosition,tccOrgUid);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
@@ -586,6 +588,7 @@ namespace WebApiTests
     /// <returns>The project id result</returns>
     private GetProjectIdResult CallWebApiGetProjectIdBadresponse(TestSupport ts,long assetid,double latitude,double longitude, DateTime timeOfPosition,string tccOrgUid)
     {
+      Thread.Sleep(500);
       var request = GetProjectIdRequest.CreateGetProjectIdRequest(assetid,latitude,longitude, 0, timeOfPosition,tccOrgUid);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
