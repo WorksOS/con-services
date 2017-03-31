@@ -32,7 +32,7 @@ namespace TestUtility
       string responseString = null;
       Log.Info(resourceUri, Log.ContentType.ApiSend);
       var msg = new Msg();
-
+      
       HttpWebRequest request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid);
         //Initialize the Http Request
       if (payloadData != null)
@@ -54,7 +54,6 @@ namespace TestUtility
           Assert.AreEqual(httpResponseCode, response.StatusCode, "Expected this response code, " + httpResponseCode +
                                                                  ", but the actual response code was this instead, " + response.StatusCode);
         }
-        Log.Info("Web Api Response: " + responseString, Log.ContentType.ApiResponse);
         return responseString;
       }
       catch (Exception e)
@@ -78,6 +77,7 @@ namespace TestUtility
               }
             }
         }
+        msg.DisplayWebApi(httpMethod, resourceUri, responseString, payloadData);
         return responseString;
       }
     }
