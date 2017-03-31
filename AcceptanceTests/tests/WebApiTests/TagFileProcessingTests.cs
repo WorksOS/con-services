@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
@@ -95,6 +96,7 @@ namespace WebApiTests
 
     private TagFileProcessingErrorResult CallWebApiGetTagFileProcessingErrorResult(TestSupport ts,long assetId, string tagFileName,TagFileErrorsEnum errorNum)
     {
+      Thread.Sleep(500);
       var request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(assetId,tagFileName, (int) errorNum);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
