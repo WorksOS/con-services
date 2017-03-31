@@ -163,8 +163,11 @@ this.ScenarioSetup(scenarioInfo);
     ""percentGreaterThanTarget"": 45.311209033324154,
     ""percentLessThanTarget"": 51.3632608096943,
     ""totalAreaCoveredSqMeters"": 1678.9744000000003,
-    ""minTarget"": 4,
-    ""maxTarget"": 7
+    ""passCountTarget"": {
+      ""minPassCountMachineTarget"": 5,
+      ""maxPassCountMachineTarget"": 5,
+      ""targetVaries"": true
+    }
   },
   ""Code"": 0,
   ""Message"": ""success""
@@ -179,17 +182,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetTemperatureSummary()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Temperature Summary", ((string[])(null)));
-#line 73
+#line 76
   this.ScenarioSetup(scenarioInfo);
-#line 74
+#line 77
  testRunner.Given("the Compaction Temperature Summary service URI \"/api/v2/compaction/temperature/su" +
                     "mmary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 75
+#line 78
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 76
+#line 79
  testRunner.When("I request Temperature summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 77
+#line 80
  testRunner.Then("the Temperature result should be", @"{
   ""temperatureSummaryData"": {
     ""percentEqualsTarget"": 0,
@@ -215,16 +218,16 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetSpeedSummary()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Speed Summary", ((string[])(null)));
-#line 96
-  this.ScenarioSetup(scenarioInfo);
-#line 97
- testRunner.Given("the Compaction Speed Summary service URI \"/api/v2/compaction/speed/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 98
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 99
+  this.ScenarioSetup(scenarioInfo);
+#line 100
+ testRunner.Given("the Compaction Speed Summary service URI \"/api/v2/compaction/speed/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 101
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 102
  testRunner.When("I request Speed summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 100
+#line 103
  testRunner.Then("the Speed result should be", @"{
   ""speedSummaryData"": {
     ""percentEqualsTarget"": 0.088493588445472046,
@@ -247,17 +250,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetCMVChangeSummary()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary", ((string[])(null)));
-#line 116
+#line 119
   this.ScenarioSetup(scenarioInfo);
-#line 117
+#line 120
  testRunner.Given("the Compaction CMV % Change Summary service URI \"/api/v2/compaction/cmv/percentch" +
                     "ange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 118
+#line 121
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 119
+#line 122
  testRunner.When("I request CMV % change", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 120
+#line 123
  testRunner.Then("the CMV % Change result should be", @"{
   ""cmvChangeData"": [
     {
@@ -302,16 +305,16 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetElevationRange()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Range", ((string[])(null)));
-#line 158
-  this.ScenarioSetup(scenarioInfo);
-#line 159
- testRunner.Given("the Compaction Elevation Range service URI \"/api/v2/compaction/elevationrange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 160
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 161
+  this.ScenarioSetup(scenarioInfo);
+#line 162
+ testRunner.Given("the Compaction Elevation Range service URI \"/api/v2/compaction/elevationrange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 163
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 164
  testRunner.When("I request Elevation Range", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 162
+#line 165
  testRunner.Then("the Elevation Range result should be", @"{
   ""boundingExtents"": {
     ""maxX"": -115.01824137935459,
@@ -337,17 +340,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetProjectStatistics()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Project Statistics", ((string[])(null)));
-#line 181
+#line 184
   this.ScenarioSetup(scenarioInfo);
-#line 182
+#line 185
  testRunner.Given("the Compaction Project Statistics service URI \"/api/v2/compaction/projectstatisti" +
                     "cs\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 183
+#line 186
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 184
+#line 187
  testRunner.When("I request Project Statistics", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 185
+#line 188
  testRunner.Then("the Project Statistics result should be", @"{
   ""startTime"": ""2012-10-30T00:12:09.109"",
   ""endTime"": ""2012-11-08T01:00:08.756"",
@@ -374,25 +377,122 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetTiles()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Tiles", ((string[])(null)));
-#line 205
-  this.ScenarioSetup(scenarioInfo);
-#line 206
- testRunner.Given("the Compaction Tiles service URI \"/api/v2/compaction/tiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 207
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 208
+  this.ScenarioSetup(scenarioInfo);
+#line 209
+ testRunner.Given("the Compaction Tiles service URI \"/api/v2/compaction/tiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 210
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 211
   testRunner.And("a displayMode \"0\" and a bbox \"0.631930733951056, -2.007483884109430, 0.6319305943" +
                     "24716, -2.007483709576500\" and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 209
+#line 212
  testRunner.When("I request a Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 210
+#line 213
  testRunner.Then("the Tile result should be", @"{
   ""tileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAACm0lEQVR42u3TQQEAMAgAIe1f0fdyLMhBB/beQNYKQJkApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlA2gcVQcMQ9LN5NwAAAABJRU5ErkJggg=="",
   ""tileOutsideProjectExtents"": false,
   ""Code"": 0,
   ""Message"": ""success""
 }", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Palettes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        public virtual void CompactionGetPalettes()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Palettes", ((string[])(null)));
+#line 223
+  this.ScenarioSetup(scenarioInfo);
+#line 224
+ testRunner.Given("the Compaction Palettes service URI \"/api/v2/compaction/colorpalettes\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 225
+ testRunner.When("I request Palettes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 226
+ testRunner.Then("the Palettes result should be", " {\n  \"palettes\": [\n    {\n      \"displayMode\": 0,\n      \"colors\": [\n        {\n    " +
+                    "      \"colour\": 16711935,\n          \"value\": -1\n        },\n        {\n          \"" +
+                    "colour\": 16711680,\n          \"value\": 0\n        },\n        {\n          \"colour\":" +
+                    " 14760960,\n          \"value\": 68.965517241379317\n        },\n        {\n          " +
+                    "\"colour\": 16734720,\n          \"value\": 137.93103448275863\n        },\n        {\n " +
+                    "         \"colour\": 16744960,\n          \"value\": 206.89655172413796\n        },\n  " +
+                    "      {\n          \"colour\": 16755200,\n          \"value\": 275.86206896551727\n    " +
+                    "    },\n        {\n          \"colour\": 16762880,\n          \"value\": 344.8275862068" +
+                    "9657\n        },\n        {\n          \"colour\": 16768000,\n          \"value\": 413.7" +
+                    "9310344827593\n        },\n        {\n          \"colour\": 16442880,\n          \"valu" +
+                    "e\": 482.75862068965523\n        },\n        {\n          \"colour\": 14476800,\n      " +
+                    "    \"value\": 551.72413793103453\n        },\n        {\n          \"colour\": 1382144" +
+                    "0,\n          \"value\": 620.68965517241384\n        },\n        {\n          \"colour\"" +
+                    ": 13166080,\n          \"value\": 689.65517241379314\n        },\n        {\n         " +
+                    " \"colour\": 11855360,\n          \"value\": 758.62068965517244\n        },\n        {\n" +
+                    "          \"colour\": 9889280,\n          \"value\": 827.58620689655186\n        },\n  " +
+                    "      {\n          \"colour\": 8578560,\n          \"value\": 896.55172413793116\n     " +
+                    "   },\n        {\n          \"colour\": 6615040,\n          \"value\": 965.517241379310" +
+                    "46\n        },\n        {\n          \"colour\": 65280,\n          \"value\": 1034.48275" +
+                    "86206898\n        },\n        {\n          \"colour\": 61540,\n          \"value\": 1103" +
+                    ".4482758620691\n        },\n        {\n          \"colour\": 59010,\n          \"value\"" +
+                    ": 1172.4137931034484\n        },\n        {\n          \"colour\": 59030,\n          \"" +
+                    "value\": 1241.3793103448277\n        },\n        {\n          \"colour\": 59060,\n     " +
+                    "     \"value\": 1310.344827586207\n        },\n        {\n          \"colour\": 59080,\n" +
+                    "          \"value\": 1379.3103448275863\n        },\n        {\n          \"colour\": 5" +
+                    "9090,\n          \"value\": 1448.2758620689656\n        },\n        {\n          \"colo" +
+                    "ur\": 56540,\n          \"value\": 1517.2413793103449\n        },\n        {\n         " +
+                    " \"colour\": 51430,\n          \"value\": 1586.2068965517242\n        },\n        {\n   " +
+                    "       \"colour\": 46320,\n          \"value\": 1655.1724137931037\n        },\n       " +
+                    " {\n          \"colour\": 38645,\n          \"value\": 1724.137931034483\n        },\n  " +
+                    "      {\n          \"colour\": 30970,\n          \"value\": 1793.1034482758623\n       " +
+                    " },\n        {\n          \"colour\": 23295,\n          \"value\": 1862.0689655172416\n " +
+                    "       },\n        {\n          \"colour\": 18175,\n          \"value\": 1931.034482758" +
+                    "6209\n        },\n        {\n          \"colour\": 255,\n          \"value\": 2000.00000" +
+                    "00000002\n        },\n        {\n          \"colour\": 8388736,\n          \"value\": -1" +
+                    "\n        }\n      ]\n    },\n    {\n      \"displayMode\": 1,\n      \"colors\": [\n      " +
+                    "  {\n          \"colour\": 255,\n          \"value\": 0\n        },\n        {\n         " +
+                    " \"colour\": 65280,\n          \"value\": 36\n        },\n        {\n          \"colour\":" +
+                    " 65280,\n          \"value\": 44\n        },\n        {\n          \"colour\": 16711680," +
+                    "\n          \"value\": 80\n        }\n      ]\n    },\n    {\n      \"displayMode\": 2,\n  " +
+                    "    \"colors\": [\n        {\n          \"colour\": 16711680,\n          \"value\": 0\n   " +
+                    "     },\n        {\n          \"colour\": 65280,\n          \"value\": 76.5\n        },\n" +
+                    "        {\n          \"colour\": 65280,\n          \"value\": 93.500000000000014\n     " +
+                    "   },\n        {\n          \"colour\": 255,\n          \"value\": 130\n        }\n      " +
+                    "]\n    },\n    {\n      \"displayMode\": 4,\n      \"colors\": [\n        {\n          \"co" +
+                    "lour\": 16763955,\n          \"value\": 1\n        },\n        {\n          \"colour\": 1" +
+                    "6776960,\n          \"value\": 2\n        },\n        {\n          \"colour\": 65535,\n  " +
+                    "        \"value\": 3\n        },\n        {\n          \"colour\": 39423,\n          \"va" +
+                    "lue\": 4\n        },\n        {\n          \"colour\": 13434624,\n          \"value\": 5\n" +
+                    "        },\n        {\n          \"colour\": 16711935,\n          \"value\": 6\n        " +
+                    "},\n        {\n          \"colour\": 6684825,\n          \"value\": 7\n        },\n      " +
+                    "  {\n          \"colour\": 6697728,\n          \"value\": 8\n        },\n        {\n     " +
+                    "     \"colour\": 3355392,\n          \"value\": 9\n        }\n      ]\n    },\n    {\n    " +
+                    "  \"displayMode\": 14,\n      \"colors\": [\n        {\n          \"colour\": 255,\n      " +
+                    "    \"value\": 1\n        },\n        {\n          \"colour\": 65280,\n          \"value\"" +
+                    ": 6\n        },\n        {\n          \"colour\": 16711680,\n          \"value\": 100000" +
+                    "0\n        }\n      ]\n    },\n    {\n      \"displayMode\": 8,\n      \"colors\": [\n     " +
+                    "   {\n          \"colour\": 8388608,\n          \"value\": 0.2\n        },\n        {\n  " +
+                    "        \"colour\": 16711680,\n          \"value\": 0.1\n        },\n        {\n        " +
+                    "  \"colour\": 16744576,\n          \"value\": 0.05\n        },\n        {\n          \"co" +
+                    "lour\": 65280,\n          \"value\": 0\n        },\n        {\n          \"colour\": 8421" +
+                    "631,\n          \"value\": -0.05\n        },\n        {\n          \"colour\": 255,\n    " +
+                    "      \"value\": -0.1\n        },\n        {\n          \"colour\": 128,\n          \"val" +
+                    "ue\": -0.2\n        }\n      ]\n    },\n    {\n      \"displayMode\": 10,\n      \"colors\"" +
+                    ": [\n        {\n          \"colour\": 255,\n          \"value\": 0\n        },\n        {" +
+                    "\n          \"colour\": 65280,\n          \"value\": 1\n        },\n        {\n          " +
+                    "\"colour\": 16711680,\n          \"value\": 2\n        }\n      ]\n    },\n    {\n      \"d" +
+                    "isplayMode\": 19,\n      \"colors\": [\n        {\n          \"colour\": 16711680,\n     " +
+                    "     \"value\": 0\n        },\n        {\n          \"colour\": 65280,\n          \"value" +
+                    "\": 76.5\n        },\n        {\n          \"colour\": 65280,\n          \"value\": 93.50" +
+                    "0000000000014\n        },\n        {\n          \"colour\": 255,\n          \"value\": 1" +
+                    "30\n        }\n      ]\n    },\n    {\n      \"displayMode\": 27,\n      \"colors\": [\n   " +
+                    "     {\n          \"colour\": 0,\n          \"value\": 0\n        },\n        {\n        " +
+                    "  \"colour\": 65280,\n          \"value\": 10\n        },\n        {\n          \"colour\"" +
+                    ": 16776960,\n          \"value\": 20\n        },\n        {\n          \"colour\": 16744" +
+                    "192,\n          \"value\": 40\n        },\n        {\n          \"colour\": 16711935,\n  " +
+                    "        \"value\": 80\n        },\n        {\n          \"colour\": 16711680,\n         " +
+                    " \"value\": 1.7976931348623157e+308\n        }\n      ]\n    }\n  ],\n  \"Code\": 0,\n  \"M" +
+                    "essage\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

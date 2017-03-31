@@ -217,7 +217,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      PassCountSettings passCountSettings = PassCountSettings.CreatePassCountSettings(new int[] { 4, 7 });
+
       LiftBuildSettings liftSettings;
       Filter filter;
       try
@@ -233,13 +233,13 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             ex.Message));
       }
-      PassCounts request = PassCounts.CreatePassCountsRequest(projectId.Value, null, passCountSettings, liftSettings, filter, -1,
+      PassCounts request = PassCounts.CreatePassCountsRequest(projectId.Value, null, null, liftSettings, filter, -1,
         null, null, null);
       request.Validate();
       try
       {
         var result = RequestExecutorContainer.Build<SummaryPassCountsExecutor>(logger, raptorClient, null).Process(request) as PassCountSummaryResult;
-        var returnResult = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result, passCountSettings);
+        var returnResult = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
         log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
       }
@@ -464,10 +464,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       List<DisplayMode> modes = new List<DisplayMode>
       {
-        DisplayMode.Height, DisplayMode.CCV, DisplayMode.CCVPercent, DisplayMode.PassCount, DisplayMode.PassCountSummary, DisplayMode.CutFill, DisplayMode.TemperatureSummary, DisplayMode.MDPPercent, DisplayMode.CMVChange
+        DisplayMode.Height, DisplayMode.CCVPercent, DisplayMode.PassCount, DisplayMode.PassCountSummary, DisplayMode.CutFill, DisplayMode.TemperatureSummary, DisplayMode.CCVPercentSummary, DisplayMode.MDPPercentSummary, DisplayMode.CMVChange
       };
       //TODO: Add TemperatureDetails
-      //TODO: Check if I have the correct display modes
 
       List<CompactionColorPalettesResult.Palette> palettes = new List<CompactionColorPalettesResult.Palette>();
       foreach (var mode in modes)

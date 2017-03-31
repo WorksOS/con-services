@@ -30,7 +30,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
     /// <param name="result"></param>
     /// <param name="settings"></param>
     /// <returns></returns>
-    public static CompactionPassCountSummaryResult CreatePassCountSummaryResult(PassCountSummaryResult result, PassCountSettings settings)
+    public static CompactionPassCountSummaryResult CreatePassCountSummaryResult(PassCountSummaryResult result)
     {
       var passCountResult = new CompactionPassCountSummaryResult
       {
@@ -40,8 +40,12 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
           PercentGreaterThanTarget = result.percentGreaterThanTarget,
           PercentLessThanTarget = result.percentLessThanTarget,
           TotalAreaCoveredSqMeters = result.totalAreaCoveredSqMeters,
-          MinTarget = settings.passCounts[0],
-          MaxTarget = settings.passCounts[1]
+          PassCountTarget = new PassCountTargetData
+          {
+            MinPassCountMachineTarget = result.constantTargetPassCountRange.min,
+            MaxPassCountMachineTarget = result.constantTargetPassCountRange.max,
+            TargetVaries = !result.isTargetPassCountConstant
+          }         
         }
       };
       return passCountResult;
@@ -73,19 +77,35 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
       [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
       public double TotalAreaCoveredSqMeters { get; set; }
       /// <summary>
-      /// The minimum percentage the measured PassCount may be compared to the cmvTarget from the machine
+      /// Pass count machine target and whether it is constant or varies.
       /// </summary>
-      [JsonProperty(PropertyName = "minTarget", Required = Required.Default)]
-      public int MinTarget { get; set; }
-      /// <summary>
-      /// The maximum percentage the measured PassCount may be compared to the cmvTarget from the machine
-      /// </summary>
-      [JsonProperty(PropertyName = "maxTarget")]
-      public int MaxTarget { get; set; }
-
+      [JsonProperty(PropertyName = "passCountTarget")]
+      public PassCountTargetData PassCountTarget { get; set; }
     }
 
- 
+    /// <summary>
+    /// Pass count target data returned
+    /// </summary>
+    public class PassCountTargetData
+    {
+      /// <summary>
+      /// If the pass count value is constant, this is the minimum constant value of all pass count targets in the processed data.
+      /// </summary>
+      [JsonProperty(PropertyName = "minPassCountMachineTarget")]
+      public double MinPassCountMachineTarget { get; set; }
+      /// <summary>
+      /// If the pass count value is constant, this is the maximum constant value of all pass count targets in the processed data.
+      /// </summary>
+      [JsonProperty(PropertyName = "maxPassCountMachineTarget")]
+      public double MaxPassCountMachineTarget { get; set; }
+      /// <summary>
+      /// Are the pass count target values applying to all processed cells varying?
+      /// </summary>
+      [JsonProperty(PropertyName = "targetVaries")]
+      public bool TargetVaries { get; set; }
+    }
+
+
 
   }
 }
