@@ -41,6 +41,7 @@ namespace TestUtility
     public AssociateProjectGeofence AssociateProjectGeofenceEvt { get; set; }
 
     public bool IsPublishToKafka { get; set; }
+    public bool IsPublishToWebApi { get; set; }
     public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
     {
       DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
@@ -72,15 +73,34 @@ namespace TestUtility
       SetSubscriptionUid();
     }
 
+    /// <summary>
+    /// Set the legacy asset id
+    /// </summary>
+    /// <returns>get the maximum legacy asset id plus 1</returns>
+    public long SetLegacyAssetId()
+    {
+      var mysql = new MySqlHelper();
+      var query = "SELECT max(LegacyAssetID) FROM Asset;";
+      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
+      if (string.IsNullOrEmpty(result))
+         { return 1000; }
+      var legacyAssetId = Convert.ToInt64(result);
+      return legacyAssetId+1;
+    }
+
+    /// <summary>
+    /// Set the legacy project id from the database
+    /// </summary>
+    /// <returns></returns>
     public int SetLegacyProjectId()
     {
       var mysql = new MySqlHelper();
       var query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
-      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.dbConnectionString, query);
+      var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
          { return 1000; }
-      var legacyAssetId = Convert.ToInt32(result);
-      return legacyAssetId+1;
+      var legacyProjectId = Convert.ToInt32(result);
+      return legacyProjectId+1;
     }
     /// <summary>
     /// Set up the first event date for the events to go in. Also used as project start date for project tests.
@@ -166,12 +186,21 @@ namespace TestUtility
           LastEventDate = eventDate;
           if (IsPublishToKafka)
           {
-            BuildEventAndPublishToKafka(eventObject, kafkaDriver);
-            WaitForTimeBasedOnNumberOfRecords(eventArray.Length);
+            var jsonString = BuildEventIntoObject(eventObject);
+            var topicName = SetTheKafkaTopicFromTheEvent(eventObject.EventType);
+            if (!IsPublishToWebApi)
+            {
+              kafkaDriver.SendKafkaMessage(topicName, jsonString);
+              WaitForTimeBasedOnNumberOfRecords(eventArray.Length);
+            }
+            else
+            {
+              CallWebApiWithObject(jsonString, eventObject.EventType);
+            }
           }
           else
           {
-            IsNotSameAsset(true);  // This can be added directly to tests
+            IsNotSameAsset(true); 
             BuildMySqlInsertStringAndWriteToDatabase(eventObject);          
           }
         }
@@ -180,6 +209,27 @@ namespace TestUtility
       {
         msg.DisplayException(ex.Message);
         throw;
+      }
+    }
+
+    /// <summary>
+    /// Call the version 4 of the project master data
+    /// </summary>
+    /// <param name="jsonString"></param>
+    /// <param name="eventType"></param>
+    private void CallWebApiWithObject(string jsonString, string eventType)
+    {
+      switch (eventType)
+      {
+        case "CreateProjectEvent":
+          CallProjectWebApiV4("api/v4/project/", HttpMethod.Post.ToString(), jsonString, CustomerUid.ToString());
+          break;
+        case "UpdateProjectEvent":
+          CallProjectWebApiV4("api/v4/project/", HttpMethod.Put.ToString(), jsonString, CustomerUid.ToString());
+          break;
+        case "DeleteProjectEvent":
+          CallProjectWebApiV4("api/v4/project/", HttpMethod.Delete.ToString(), jsonString, CustomerUid.ToString());
+          break;
       }
     }
 
@@ -331,33 +381,6 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Call the project web api
-    /// </summary>
-    /// <param name="evt">THe project event containing the data</param>
-    /// <param name="routeSuffix">suffix to add to base uri if required</param>
-    /// <param name="statusCode">expected return code of the web api call</param>
-    /// <param name="what">name of the api being called for logging</param>
-    /// <param name="method">http method</param>
-    /// <param name="customerUid">Customer UID to add to http headers</param>
-    /// <returns>The web api response</returns>
-    private string CallProjectWebApi(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
-    {
-      string configJson;
-      if (evt == null)
-      {
-        configJson = null;
-      }
-      else
-      {
-       configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      }
-      var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(GetBaseUri() + routeSuffix, method, "application/json", configJson, statusCode, customerUid);
-      Console.WriteLine(what + " project response:" + response);
-      return response;
-    }
-
-    /// <summary>
     /// Inject the MockCustomer
     /// </summary>
     /// <param name="customerUid">Customer UID</param>
@@ -379,7 +402,7 @@ namespace TestUtility
                             (CustomerUID,Name,fk_CustomerTypeID,IsDeleted,LastActionedUTC) VALUES
                             ('{MockCustomer.CustomerUID}','{MockCustomer.Name}',{customerTypeId},{deleted},'{MockCustomer.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
       var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(tsCfg.dbConnectionString, query);
+      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, query);
     }
 
     /// <summary>
@@ -406,7 +429,7 @@ namespace TestUtility
                             (SubscriptionUID,fk_CustomerUID,fk_ServiceTypeID,StartDate,EndDate,LastActionedUTC) VALUES
                             ('{MockSubscription.SubscriptionUID}','{MockSubscription.CustomerUID}',{MockSubscription.ServiceTypeID},'{MockSubscription.StartDate:yyyy-MM-dd HH}','{MockSubscription.EndDate:yyyy-MM-dd}','{MockSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
       var mysqlHelper = new MySqlHelper();
-      mysqlHelper.ExecuteMySqlInsert(tsCfg.dbConnectionString, query);
+      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, query);
 
       MockProjectSubscription = new ProjectSubscription
       {
@@ -418,7 +441,7 @@ namespace TestUtility
       query = $@"INSERT INTO `{tsCfg.dbSchema}`.{"ProjectSubscription"} 
                             (fk_SubscriptionUID,fk_ProjectUID,EffectiveDate,LastActionedUTC) VALUES
                             ('{MockProjectSubscription.SubscriptionUID}','{MockProjectSubscription.ProjectUID}','{MockProjectSubscription.EffectiveDate:yyyy-MM-dd}','{MockProjectSubscription.LastActionedUTC:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
-      mysqlHelper.ExecuteMySqlInsert(tsCfg.dbConnectionString, query);
+      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, query);
     }
 
     /// <summary>
@@ -435,6 +458,20 @@ namespace TestUtility
       return baseUri;
     }
 
+    /// <summary>
+    /// Converts a special date string eg 2d+12:00:00 which signifies a two date and 12 hour offset
+    /// to a normal date time based on the first event date.
+    /// </summary>
+    /// <param name="timeStampAndDayOffSet">Date day off set and timestamp from first event date</param>
+    /// <param name="startEventDateTime"></param>
+    /// <returns>Datetime</returns>
+    public DateTime ConvertTimeStampAndDayOffSetToDateTime(string timeStampAndDayOffSet,DateTime startEventDateTime)
+    {
+      var components = Regex.Split(timeStampAndDayOffSet, @"d+\+");
+      var offset = double.Parse(components[0].Trim());
+      return DateTime.Parse(startEventDateTime.AddDays(offset).ToString("yyyy-MM-dd") + " " + components[1].Trim());
+    }
+
     #endregion
 
     #region Private Methods
@@ -449,6 +486,56 @@ namespace TestUtility
       return topicName;
     }
 
+    
+    /// <summary>
+    /// Set the full topic name from the event type
+    /// </summary>
+    /// <param name="eventType"></param>
+    /// <returns></returns>
+    private string SetTheKafkaTopicFromTheEvent(string eventType)
+    {
+      var topicName = string.Empty;
+      switch (eventType)
+      {
+        case "CreateAssetEvent":
+        case "UpdateAssetEvent":
+        case "DeleteAssetEvent":
+          topicName = SetKafkaTopicName("IAssetEvent");
+          break;
+        case "CreateDeviceEvent":
+        case "UpdateDeviceEvent":
+        case "AssociateDeviceAssetEvent":
+        case "DissociateDeviceAssetEvent":
+          topicName = SetKafkaTopicName("IDeviceEvent");
+          break;
+        case "CreateCustomerEvent":
+        case "UpdateCustomerEvent":
+        case "DeleteCustomerEvent":
+        case "AssociateCustomerUserEvent":
+        case "DissociateCustomerUserEvent":
+          topicName = SetKafkaTopicName("ICustomerEvent");
+          break;
+        case "CreateAssetSubscriptionEvent":
+        case "UpdateAssetSubscriptionEvent":
+        case "CreateCustomerSubscriptionEvent":
+        case "CreateProjectSubscriptionEvent":
+        case "UpdateProjectSubscriptionEvent":
+        case "AssociateProjectSubscriptionEvent":
+          topicName = SetKafkaTopicName("ISubscriptionEvent");
+          break;
+        case "CreateProjectEvent":
+        case "UpdateProjectEvent":
+        case "DeleteProjectEvent":
+        case "AssociateProjectCustomer":
+        case "AssociateProjectGeofence":
+        case "CreateGeofenceEvent":
+          topicName = SetKafkaTopicName("IGeofenceEvent");
+          break;
+      }
+      return topicName;
+    }
+
+
     /// <summary>
     /// Wait for time to let the data feed process
     /// </summary>
@@ -462,21 +549,20 @@ namespace TestUtility
       if (count > 13)
       { Thread.Sleep(1000); }
     }
+
     /// <summary>
-    /// Create an instance of the master data events. Convert to JSON and send to kafka 
+    /// Create an instance of the master data events. Convert to JSON. 
     /// </summary>
     /// <param name="eventObject">event to be published</param>
-    /// <param name="kafkaDriver">kafkadriver</param>
-    private void BuildEventAndPublishToKafka(dynamic eventObject, RdKafkaDriver kafkaDriver)
+    /// <returns>json string with event serialized</returns>
+    private string BuildEventIntoObject(dynamic eventObject)
     {
-      var topicName= string.Empty;
       var jsonString = string.Empty;
       string eventType = eventObject.EventType;
       #region publish kafka events
       switch (eventType)
       {
         case "CreateAssetEvent":
-          topicName = SetKafkaTopicName("IAssetEvent");
           var createAssetEvent = new CreateAssetEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -501,11 +587,9 @@ namespace TestUtility
             createAssetEvent.EquipmentVIN = eventObject.EquipmentVIN;
           }
 
-          jsonString = JsonConvert.SerializeObject(new {CreateAssetEvent = createAssetEvent}, jsonSettings );
-          
+          jsonString = JsonConvert.SerializeObject(new {CreateAssetEvent = createAssetEvent}, jsonSettings );          
           break;
         case "UpdateAssetEvent":
-          topicName = SetKafkaTopicName("IAssetEvent");
           var updateAssetEvent = new UpdateAssetEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -543,7 +627,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {UpdateAssetEvent = updateAssetEvent}, jsonSettings );
           break;
         case "DeleteAssetEvent":
-          topicName = SetKafkaTopicName("IAssetEvent");
           var deleteAssetEvent = new DeleteAssetEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -552,7 +635,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {DeleteAssetEvent = deleteAssetEvent}, jsonSettings );
           break;
         case "CreateDeviceEvent":
-          topicName = SetKafkaTopicName("IDeviceEvent");
           var createDeviceEvent = new CreateDeviceEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -589,7 +671,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new { CreateDeviceEvent = createDeviceEvent }, jsonSettings);
           break;
         case "UpdateDeviceEvent":
-          topicName = SetKafkaTopicName("IDeviceEvent");
           var updateDeviceEvent = new UpdateDeviceEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -626,7 +707,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new { UpdateDeviceEvent = updateDeviceEvent }, jsonSettings);
           break;
         case "AssociateDeviceAssetEvent":
-          topicName = SetKafkaTopicName("IDeviceEvent");
           var associateDeviceEvent = new AssociateDeviceAssetEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -637,7 +717,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new { AssociateDeviceAssetEvent = associateDeviceEvent }, jsonSettings);
           break;
         case "DissociateDeviceAssetEvent":
-          topicName = SetKafkaTopicName("IDeviceEvent");
           var dissociateDeviceEvent = new DissociateDeviceAssetEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -649,7 +728,6 @@ namespace TestUtility
           break;
 
         case "CreateCustomerEvent":
-          topicName = SetKafkaTopicName("ICustomerEvent");
           var createCustomerEvent = new CreateCustomerEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -661,7 +739,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {CreateCustomerEvent = createCustomerEvent}, jsonSettings );
           break;
         case "UpdateCustomerEvent":
-          topicName = SetKafkaTopicName("ICustomerEvent");
           var updateCustomerEvent = new UpdateCustomerEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -675,7 +752,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {UpdateCustomerEvent = updateCustomerEvent}, jsonSettings );
           break;
         case "DeleteCustomerEvent":
-          topicName = SetKafkaTopicName("ICustomerEvent");
           var deleteCustomerEvent = new DeleteCustomerEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -685,7 +761,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {DeleteCustomerEvent = deleteCustomerEvent}, jsonSettings );
           break;
         case "AssociateCustomerUserEvent":
-          topicName = SetKafkaTopicName("ICustomerEvent");
           var associateCustomerUserEvent = new AssociateCustomerUserEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -696,7 +771,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {AssociateCustomerUserEvent = associateCustomerUserEvent}, jsonSettings );
           break;
         case "DissociateCustomerUserEvent":
-          topicName = SetKafkaTopicName("ICustomerEvent");
           var dissociateCustomerUserEvent = new DissociateCustomerUserEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -707,7 +781,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {DissociateCustomerUserEvent = dissociateCustomerUserEvent}, jsonSettings );
           break;
         case "CreateAssetSubscriptionEvent":
-          topicName = SetKafkaTopicName("ISubscriptionEvent");
           var createAssetSubscriptionEvent = new CreateAssetSubscriptionEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -723,7 +796,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {CreateAssetSubscriptionEvent = createAssetSubscriptionEvent}, jsonSettings );
           break;
         case "UpdateAssetSubscriptionEvent":
-          topicName = SetKafkaTopicName("ISubscriptionEvent");
           var updateAssetSubscriptionEvent = new UpdateAssetSubscriptionEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -739,7 +811,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {UpdateAssetSubscriptionEvent = updateAssetSubscriptionEvent}, jsonSettings );
           break;
         case "CreateCustomerSubscriptionEvent":
-          topicName = SetKafkaTopicName("ISubscriptionEvent");
           var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
           {
             CustomerUID = new Guid(eventObject.CustomerUID),
@@ -753,7 +824,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {CreateCustomerSubscriptionEvent  = createCustomerSubscriptionEvent }, jsonSettings );
           break;
         case "CreateProjectSubscriptionEvent":
-          topicName = SetKafkaTopicName("ISubscriptionEvent");
           var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -767,7 +837,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {CreateProjectSubscriptionEvent = createProjectSubscriptionEvent}, jsonSettings );
           break;
         case "UpdateProjectSubscriptionEvent":
-          topicName = SetKafkaTopicName("ISubscriptionEvent");
           var updateProjectSubscriptionEvent = new UpdateProjectSubscriptionEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -780,7 +849,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {UpdateProjectSubscriptionEvent = updateProjectSubscriptionEvent}, jsonSettings );
           break;
         case "AssociateProjectSubscriptionEvent":
-          topicName = SetKafkaTopicName("ISubscriptionEvent");
           var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -792,7 +860,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {AssociateProjectSubscriptionEvent = associateProjectSubscriptionEvent}, jsonSettings );
           break;
         case "CreateProjectEvent":
-          topicName = SetKafkaTopicName("IProjectEvent");
           var createProjectEvent = new CreateProjectEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -809,7 +876,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {CreateProjectEvent = createProjectEvent}, jsonSettings );
           break;
         case "UpdateProjectEvent":
-          topicName = SetKafkaTopicName("IProjectEvent");
           var updateProjectEvent = new UpdateProjectEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -835,7 +901,6 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent}, jsonSettings );
           break;
         case "DeleteProjectEvent":
-          topicName = SetKafkaTopicName("IProjectEvent");
           var deleteProjectEvent = new DeleteProjectEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -845,7 +910,7 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {DeleteProjectEvent = deleteProjectEvent}, jsonSettings );
           break;
         case "AssociateProjectCustomer":
-          topicName = SetKafkaTopicName("IProjectEvent");
+          SetKafkaTopicName("IProjectEvent");
           var associateCustomerProject = new AssociateProjectCustomer()
           {
             ActionUTC = eventObject.EventDate,
@@ -856,7 +921,7 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {AssociateProjectCustomer = associateCustomerProject}, jsonSettings );
           break;
         case "AssociateProjectGeofence":
-          topicName = SetKafkaTopicName("IProjectEvent");
+          SetKafkaTopicName("IProjectEvent");
           var associateProjectGeofence = new AssociateProjectGeofence()
           {
             ActionUTC = eventObject.EventDate,
@@ -867,7 +932,7 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {AssociateProjectGeofence = associateProjectGeofence}, jsonSettings );
           break;
         case "CreateGeofenceEvent":
-          topicName = SetKafkaTopicName("IGeofenceEvent");
+          SetKafkaTopicName("IGeofenceEvent");
           var createGeofenceEvent = new CreateGeofenceEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -885,8 +950,8 @@ namespace TestUtility
           jsonString = JsonConvert.SerializeObject(new {CreateGeofenceEvent = createGeofenceEvent}, jsonSettings );
           break;
       }
+      return jsonString;
       #endregion
-      kafkaDriver.SendKafkaMessage(topicName, jsonString);
     }
 
     /// <summary>
@@ -954,7 +1019,7 @@ namespace TestUtility
                      ('{eventObject.SubscriptionUID}','{eventObject.fk_CustomerUID}','{eventObject.fk_ServiceTypeID}','{eventObject.StartDate}','{eventObject.EndDate}','{eventObject.EventDate:yyyy-MM-dd HH\:mm\:ss.fffffff}');";
           break;
       }
-      mysqlHelper.ExecuteMySqlInsert(tsCfg.dbConnectionString, sqlCmd);
+      mysqlHelper.ExecuteMySqlInsert(tsCfg.DbConnectionString, sqlCmd);
     }
 
     /// <summary>
@@ -1085,17 +1150,47 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Converts a special date string eg 2d+12:00:00 which signifies a two date and 12 hour offset
-    /// to a normal date time based on the first event date.
+    /// Call the project web api
     /// </summary>
-    /// <param name="timeStampAndDayOffSet">Date day off set and timestamp from first event date</param>
-    /// <param name="startEventDateTime"></param>
-    /// <returns>Datetime</returns>
-    public DateTime ConvertTimeStampAndDayOffSetToDateTime(string timeStampAndDayOffSet,DateTime startEventDateTime)
+    /// <param name="evt">THe project event containing the data</param>
+    /// <param name="routeSuffix">suffix to add to base uri if required</param>
+    /// <param name="statusCode">expected return code of the web api call</param>
+    /// <param name="what">name of the api being called for logging</param>
+    /// <param name="method">http method</param>
+    /// <param name="customerUid">Customer UID to add to http headers</param>
+    /// <returns>The web api response</returns>
+    private string CallProjectWebApi(IProjectEvent evt, string routeSuffix, HttpStatusCode statusCode, string what, string method = "POST", string customerUid = null)
     {
-      var components = Regex.Split(timeStampAndDayOffSet, @"d+\+");
-      var offset = double.Parse(components[0].Trim());
-      return DateTime.Parse(startEventDateTime.AddDays(offset).ToString("yyyy-MM-dd") + " " + components[1].Trim());
+      string configJson;
+      if (evt == null)
+      {
+        configJson = null;
+      }
+      else
+      {
+       configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      }
+      var uri = GetBaseUri() + "api/v3/project/" + routeSuffix;
+      var restClient = new RestClientUtil();
+      var response = restClient.DoHttpRequest(uri, method, configJson, statusCode, "application/json", customerUid);
+      Console.WriteLine(what + " project response:" + response);
+      return response;
+    }
+
+    /// <summary>
+    /// Call the version 4 of the web api
+    /// </summary>
+    /// <param name="routeSuffix"></param>
+    /// <param name="method"></param>
+    /// <param name="configJson"></param>
+    /// <param name="customerUid"></param>
+    /// <returns></returns>
+    private string CallProjectWebApiV4(string routeSuffix, string method , string configJson, string customerUid = null)
+    {
+      var uri = GetBaseUri() + routeSuffix;
+      var restClient = new RestClientUtil();
+      var response = restClient.DoHttpRequest(uri, method, configJson,HttpStatusCode.OK, "application/json", customerUid);
+      return response;
     }
     #endregion
   }

@@ -20,7 +20,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var projectId = ts.SetLegacyProjectId();
@@ -45,7 +45,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid1 = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -96,7 +96,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var projectId = ts.SetLegacyProjectId();
@@ -122,7 +122,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var projectId = ts.SetLegacyProjectId();
@@ -146,7 +146,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var projectId = ts.SetLegacyProjectId();
@@ -171,7 +171,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var projectId = ts.SetLegacyProjectId();
@@ -244,7 +244,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var geofenceGuid = Guid.NewGuid();
@@ -378,7 +378,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var projectId = ts.SetLegacyProjectId();
@@ -406,7 +406,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var projectId = ts.SetLegacyProjectId();
@@ -432,7 +432,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var projectId = ts.SetLegacyProjectId();
       var customerGuid = Guid.NewGuid();
@@ -461,7 +461,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -506,7 +506,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -531,7 +531,7 @@ namespace IntegrationTests
       var msg = new Msg();
       var ts = new TestSupport { IsPublishToKafka = true};
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var projectGuid2 = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
@@ -557,7 +557,7 @@ namespace IntegrationTests
       var ts = new TestSupport { IsPublishToKafka = true};
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var projectGuid = Guid.NewGuid();
       var customerGuid = Guid.NewGuid();
       var geofenceGuid = Guid.NewGuid();
@@ -612,7 +612,7 @@ namespace IntegrationTests
     {
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var customerEventArray = new[] {
        "| EventType           | EventDate   | CustomerName | CustomerType | CustomerUID    |",
       $"| CreateCustomerEvent | 0d+09:00:00 | E2ECust1     | Customer     | {customerGuid} |"};
@@ -627,7 +627,7 @@ namespace IntegrationTests
     {
       var mysql = new MySqlHelper();
       var projectConsumerMysql = new MySqlHelper();
-      projectConsumerMysql.updateDBSchemaName(PROJECT_DB_SCHEMA_NAME);
+      projectConsumerMysql.UpdateDbSchemaName(PROJECT_DB_SCHEMA_NAME);
       var subscriptionUid = Guid.NewGuid();
       var eventArray = new[] {
        "| EventType                         | EventDate   | StartDate  | EndDate    | SubscriptionType   | SubscriptionUID   | EffectiveDate | ProjectUID    | CustomerUID    |",

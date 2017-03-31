@@ -20,35 +20,33 @@ namespace TestUtility
     public string webApiUri = Environment.GetEnvironmentVariable("WEBAPI_URI");
     public string debugWebApiUri = Environment.GetEnvironmentVariable("WEBAPI_DEBUG_URI");
 
-    public string dbConnectionString { get; private set; }
+    public string DbConnectionString { get; private set; }
 
     public TestConfig()
     {
       dbSchema = Environment.GetEnvironmentVariable("MYSQL_DATABASE_NAME");
       mySqlServer = Environment.GetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB");
-      dbConnectionString = $@"server={mySqlServer};database={dbSchema};userid={mySqlUser};password={mySqlPassword};port={mySqlPort};Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4;SslMode=None";
+      DbConnectionString = $@"server={mySqlServer};database={dbSchema};userid={mySqlUser};password={mySqlPassword};port={mySqlPort};Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4;SslMode=None";
 
     }
 
-    public void setMySqlDbSchema(string dbSchemaName)
+    public void SetMySqlDbSchema(string dbSchemaName)
     {
       dbSchema = dbSchemaName;
-      updateConnectionString();
+      UpdateConnectionString();
     }
 
 
-    public void setMySqlServer(string dbServerName)
+    public void SetMySqlServer(string dbServerName)
     {
       mySqlServer = dbServerName;
-      updateConnectionString();
+      UpdateConnectionString();
     }
 
 
-    private void updateConnectionString()
+    private void UpdateConnectionString()
     {
-      dbConnectionString = $@"server={mySqlServer};database={dbSchema};userid={mySqlUser};password={mySqlPassword};port={mySqlPort};Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4;SslMode=None";
+      DbConnectionString = $@"server={mySqlServer};database={dbSchema};userid={mySqlUser};password={mySqlPassword};port={mySqlPort};Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4;SslMode=None";
     }
-
-
   }
 }
