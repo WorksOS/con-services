@@ -10,9 +10,9 @@ node('Ubuntu_Slave') {
     def suffix = ""
     def branchName = ""
 
-    if (branch.contains("QA")) {
+    if (branch.contains("release")) {
        versionPrefix = "1.0."
-       branchName = "QA"
+       branchName = "release"
        } else if (branch.contains("Dev")) {
        versionPrefix = "0.99."
        branchName = "Dev"
@@ -55,20 +55,36 @@ node('Ubuntu_Slave') {
  
     if (currentBuild.result=='SUCCESS') {
        //Rebuild Image, tag & push to AWS Docker Repo
-       stage 'Build Images'
+
+       //Publish to AWS Repo
+       stage 'Get ecr login, push image to Repo'
+       sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
+
+	if (branch.contains("release"))
+	{
+	       stage 'Build Release Images'
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion} ./artifacts/WebApi"
+ 
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion}"
+
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion}"
+
+	}
+	else
+	{
+
+       stage 'Build development Images'
 	   
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:${fullVersion}-${branch} ./artifacts/WebApi"
  
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest ./artifacts/WebApi"
  
-       //Publish to AWS Repo
-       stage 'Get ecr login, push image to Repo'
-       sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:${fullVersion}-${branch}"
 
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi"
 
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:${fullVersion}-${branch}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest"
+      }
     }
 }
