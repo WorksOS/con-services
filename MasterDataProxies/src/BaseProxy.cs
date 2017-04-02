@@ -91,6 +91,7 @@ namespace VSS.Raptor.Service.Common.Proxies
                 }
                 log.LogWarning("Error getting data from master data: ", message);
                 log.LogWarning("Stacktrace: ", stacktrace);
+                throw;
             }
             return result;
         }
