@@ -335,7 +335,7 @@ namespace WebApiTests
       "| false      | project 20-1 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {projectUid1} | {projectId1}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
       "| false      | project 20-2 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {projectUid2} | {projectId2}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
 
-      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
 
     [TestMethod]
@@ -348,7 +348,7 @@ namespace WebApiTests
       var projectId = ts.SetLegacyProjectId();
       CreateProjectAndAssociateWithCustomer(ts, mysql, projectId, "project 21-1", ProjectType.Standard, 111111111);
       CreateMockCustomer(ts);
-      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.Forbidden, Guid.Empty, null);
+      ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.Forbidden, Guid.Empty, null);
     }
 
     [TestMethod]
@@ -376,7 +376,7 @@ namespace WebApiTests
         "| false      | project 22-2 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {ts.ProjectUid} | {projectId2}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"
             };
 
-      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
 
     [TestMethod]
@@ -406,7 +406,7 @@ namespace WebApiTests
       "| true       | project 23-1 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {projectUid1}  | {projectId1}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
       "| false      | project 23-2 | New Zealand Standard Time | Standard    | " + dateRange + $"  | {projectUid2}  | {projectId2}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
 
-      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
     [TestMethod]
     public void Get_Projects_With_Multiple_Subscriptions()
@@ -427,7 +427,7 @@ namespace WebApiTests
       "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid      | LegacyProjectId | ProjectGeofenceWKT |",
       "| false      | project 24   | New Zealand Standard Time | ProjectMonitoring | " + dateRange + $"  | {ts.ProjectUid} | {projectId}     | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |"};
 
-      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
     [TestMethod]
     public void Get_Projects_With_Various_Project_Types()
@@ -462,7 +462,7 @@ namespace WebApiTests
       "| false      | project 25-2 | New Zealand Standard Time | ProjectMonitoring | " + dateRange + $"  | {projectUid2} | {projectId2}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |",
       "| false      | project 25-3 | New Zealand Standard Time | LandFill          | " + dateRange + $"  | {projectUid3} | {projectId3}    | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
 
-      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
     [TestMethod]
     public void Get_Projects_With_Enddated_Subscriptions()
@@ -479,7 +479,7 @@ namespace WebApiTests
       var expectedProjects = new[] {
       "| IsArchived | Name         | ProjectTimeZone           | ProjectType       | StartDate | EndDate | ProjectUid      | LegacyProjectId | ProjectGeofenceWKT |",
       "| true       | project 26   | New Zealand Standard Time | ProjectMonitoring | " + dateRange + $"  | {ts.ProjectUid} | {projectId}     | POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694)) |" };
-      ts.GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
+      ts.GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, expectedProjects);
     }
 
     #region privates

@@ -20,8 +20,8 @@
 [Environment]::SetEnvironmentVariable("KAFKA_PORT", "9092", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "Project-Consumer", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-Project", "Machine")
-[Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://webapi:80/api/v3/project/", "Machine")
-[Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://localhost:3001/api/v3/project/", "Machine")
+[Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://webapi:80/", "Machine")
+[Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://localhost:3001/", "Machine")
 #>
 <#  Dev environment#>
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")

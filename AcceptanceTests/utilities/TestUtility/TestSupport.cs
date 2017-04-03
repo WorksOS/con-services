@@ -184,18 +184,18 @@ namespace TestUtility
           dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);        
           var eventDate = eventObject.EventDate;
           LastEventDate = eventDate;
-          if (IsPublishToKafka)
+          if (IsPublishToKafka || IsPublishToWebApi)
           {
             var jsonString = BuildEventIntoObject(eventObject);
             var topicName = SetTheKafkaTopicFromTheEvent(eventObject.EventType);
-            if (!IsPublishToWebApi)
+            if (IsPublishToWebApi)
             {
-              kafkaDriver.SendKafkaMessage(topicName, jsonString);
-              WaitForTimeBasedOnNumberOfRecords(eventArray.Length);
+              CallWebApiWithProject(jsonString, eventObject.EventType);
             }
             else
             {
-              CallWebApiWithObject(jsonString, eventObject.EventType);
+              kafkaDriver.SendKafkaMessage(topicName, jsonString);
+              WaitForTimeBasedOnNumberOfRecords(eventArray.Length);
             }
           }
           else
@@ -217,7 +217,7 @@ namespace TestUtility
     /// </summary>
     /// <param name="jsonString"></param>
     /// <param name="eventType"></param>
-    private void CallWebApiWithObject(string jsonString, string eventType)
+    private void CallWebApiWithProject(string jsonString, string eventType)
     {
       switch (eventType)
       {
@@ -360,7 +360,7 @@ namespace TestUtility
       CallProjectWebApi(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence", HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
-    public void GetProjectsViaWebApiAndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
+    public void GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
     {
       var response = CallProjectWebApi(null, "", statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
@@ -373,6 +373,28 @@ namespace TestUtility
         else
         {
           var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
+          var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
+          msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
+          CollectionAssert.AreEqual(expectedProjects, actualProjects);
+        }
+      }
+    }
+
+    public void GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
+    {
+      var response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Get.ToString(), null, customerUid.ToString());
+      if (statusCode == HttpStatusCode.OK)
+      {
+        if (expectedResultsArray.Length == 0)
+        {
+          var projectDescriptorsListResult = JsonConvert.DeserializeObject<ProjectDescriptorsListResult>(response);
+          var actualProjects = projectDescriptorsListResult.ProjectDescriptors.OrderBy(p => p.ProjectUid).ToList();
+          Assert.IsTrue(expectedResultsArray.Length == actualProjects.Count, " There should not be any projects");
+        }
+        else
+        {
+          var projectDescriptorsListResult = JsonConvert.DeserializeObject<ProjectDescriptorsListResult>(response);
+          var actualProjects = projectDescriptorsListResult.ProjectDescriptors.OrderBy(p => p.ProjectUid).ToList();
           var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
           msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
           CollectionAssert.AreEqual(expectedProjects, actualProjects);
@@ -865,15 +887,17 @@ namespace TestUtility
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
             ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
-            ProjectID = Int32.Parse(eventObject.ProjectID),
+            ProjectID  = int.Parse(eventObject.ProjectID), 
             ProjectName = eventObject.ProjectName,
             ProjectStartDate = DateTime.Parse(eventObject.ProjectStartDate),
             ProjectTimezone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             ProjectUID = new Guid(eventObject.ProjectUID),
-            ProjectBoundary = eventObject.GeometryWKT
+            ProjectBoundary = eventObject.ProjectBoundary,
+            CustomerUID = new Guid(eventObject.CustomerUID),
+            CustomerID = int.Parse(eventObject.ProjectID)
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateProjectEvent = createProjectEvent}, jsonSettings );
+          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(createProjectEvent, jsonSettings) : JsonConvert.SerializeObject(new {CreateProjectEvent = createProjectEvent}, jsonSettings);
           break;
         case "UpdateProjectEvent":
           var updateProjectEvent = new UpdateProjectEvent()
@@ -898,7 +922,7 @@ namespace TestUtility
           {
             updateProjectEvent.ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
           }
-          jsonString = JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent}, jsonSettings );
+          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(updateProjectEvent, jsonSettings ) : JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent}, jsonSettings );
           break;
         case "DeleteProjectEvent":
           var deleteProjectEvent = new DeleteProjectEvent()
@@ -907,7 +931,7 @@ namespace TestUtility
             ReceivedUTC = eventObject.EventDate,
             ProjectUID = new Guid(eventObject.ProjectUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {DeleteProjectEvent = deleteProjectEvent}, jsonSettings );
+          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(deleteProjectEvent, jsonSettings ) : JsonConvert.SerializeObject(new {DeleteProjectEvent = deleteProjectEvent}, jsonSettings );
           break;
         case "AssociateProjectCustomer":
           SetKafkaTopicName("IProjectEvent");
@@ -1106,14 +1130,14 @@ namespace TestUtility
           var pd = new ProjectDescriptor
           {
             IsArchived = Boolean.Parse(eventObject.IsArchived),
-            Name = eventObject.Name,
-            ProjectTimeZone = eventObject.ProjectTimeZone,
+            Name = eventObject.ProjectName,
+            ProjectTimeZone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            StartDate = eventObject.StartDate,
-            EndDate = eventObject.EndDate,
-            ProjectUid = eventObject.ProjectUid,
-            ProjectGeofenceWKT = eventObject.ProjectGeofenceWKT,
-            LegacyProjectId = int.Parse(eventObject.LegacyProjectId)             
+            StartDate = eventObject.ProjectStartDate,
+            EndDate = eventObject.ProjectEndDate,
+            ProjectUid = eventObject.ProjectUID,
+            ProjectGeofenceWKT = eventObject.ProjectBoundary,
+            LegacyProjectId = int.Parse(eventObject.ProjectID)             
           };
 
           if (HasProperty(eventObject, "CustomerUID"))
