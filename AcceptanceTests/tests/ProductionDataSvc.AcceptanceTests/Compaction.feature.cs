@@ -227,9 +227,9 @@ this.ScenarioSetup(scenarioInfo);
 #line 100
  testRunner.Then("the Speed result should be", @"{
   ""speedSummaryData"": {
-    ""percentEqualsTarget"": 0.088493588445472046,
-    ""percentGreaterThanTarget"": 0.20186678525980817,
-    ""percentLessThanTarget"": 0.64978058802207017,
+    ""percentEqualsTarget"": 9.4,
+    ""percentGreaterThanTarget"": 21.5,
+    ""percentLessThanTarget"": 69.1,
     ""totalAreaCoveredSqMeters"": 10636.7028,
     ""minTarget"": 12.0,
     ""maxTarget"": 15.0
