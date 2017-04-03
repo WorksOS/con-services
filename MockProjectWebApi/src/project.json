@@ -22,11 +22,6 @@
   },
 
   "frameworks": {
-    "net462": {
-        "buildOptions": {
-          "define": [ "TRACE", "STRONG", "NET", "NET_2_0", "NET_4_0", "NET_4_5" ]
-        }
-      },
     "netcoreapp1.1": {
       "imports": [
         "dotnet5.6",
@@ -38,7 +33,12 @@
       "type": "platform"
      }
     },
-   }
+   },
+    "net462": {
+        "buildOptions": {
+          "define": [ "TRACE", "STRONG", "NET", "NET_2_0", "NET_4_0", "NET_4_5" ]
+        }
+      }
   },
 
   "buildOptions": {
