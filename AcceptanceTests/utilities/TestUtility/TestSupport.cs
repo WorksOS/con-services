@@ -1146,7 +1146,7 @@ namespace TestUtility
           }
           if (HasProperty(eventObject, "LegacyCustomerId"))
           {
-            pd.LegacyCustomerId = int.Parse(eventObject.LegacyCustomerId);
+            pd.LegacyCustomerId = eventObject.LegacyCustomerId;
           }
           eventList.Add(pd);
         }
