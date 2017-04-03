@@ -6,10 +6,6 @@ $fixedCommand = $command.Replace("https://","")
 Invoke-Expression $fixedCommand
 
 & docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:${fullVersion}
-& docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-${fullVersion}
 & docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest
-& docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-latest
 & docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:${fullVersion}
-& docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-${fullVersion}
 & docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest
-& docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-latest
