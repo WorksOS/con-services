@@ -19,18 +19,3 @@ CREATE TABLE IF NOT EXISTS  Device
   UNIQUE KEY `UIX_Device_DeviceUID` (DeviceUID),
   KEY `IX_Device_DeviceSerialNumber_DeviceType` (DeviceSerialNumber, DeviceType)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-SET @s = (SELECT IF(
-    (SELECT COUNT(*)
-       FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE table_name = 'Device'
-        AND table_schema = DATABASE()
-        AND column_name = 'OwningCustomerUID'
-    ) > 0,
-    "SELECT 1",
-    "ALTER TABLE `Device` ADD COLUMN `OwningCustomerUID` varchar(36) DEFAULT NULL AFTER `DataLinkType`"
-));
-
-PREPARE stmt FROM @s;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt; 
