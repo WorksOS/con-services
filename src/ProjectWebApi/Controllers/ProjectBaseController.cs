@@ -101,12 +101,13 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
           .Where(s => s.ServiceTypeID == (int)type.MatchSubscriptionType());
       var projects = await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
 
-      var availableFreSub = availableSubscriptions.Where(s => !projects.Where(p =>
-                                                                      p.ProjectType == type && !p.IsDeleted)
-                                                                  .Select(p => p.SubscriptionUID)
-                                                                  .Contains(s.SubscriptionUID) &&
-                                                              s.ServiceTypeID ==
-                                                              (int)type.MatchSubscriptionType()).ToImmutableList();
+      var availableFreSub = availableSubscriptions
+                                .Where(s => !projects
+                                                .Where(p => p.ProjectType == type && !p.IsDeleted)
+                                                .Select(p => p.SubscriptionUID)
+                                                .Contains(s.SubscriptionUID) &&
+                                                    s.ServiceTypeID == (int)type.MatchSubscriptionType())
+                                .ToImmutableList();
       if (!availableFreSub.Any())
       {
         throw new ServiceException(HttpStatusCode.Forbidden,
@@ -128,10 +129,12 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
                 .Where(s => s.ServiceTypeID == (int)ServiceTypeEnum.Landfill || s.ServiceTypeID == (int)ServiceTypeEnum.ProjectMonitoring);
       var projects = await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
 
-      var availableFreSub = availableSubscriptions.Where(s => !projects.Where(p =>
-                                                                      !p.IsDeleted)
-                                                                  .Select(p => p.SubscriptionUID)
-                                                                  .Contains(s.SubscriptionUID)).ToImmutableList();
+      var availableFreSub = availableSubscriptions
+                                .Where(s => !projects
+                                              .Where(p => !p.IsDeleted)
+                                              .Select(p => p.SubscriptionUID)
+                                              .Contains(s.SubscriptionUID))
+                                .ToImmutableList();
 
       return availableFreSub;
     }
@@ -159,7 +162,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         EndDate = project.EndDate.ToString("O"),
         ProjectUid = project.ProjectUID,
         LegacyProjectId = project.LegacyProjectID,
-        ProjectGeofenceWKT = project.GeometryWKT
+        ProjectGeofenceWKT = project.GeometryWKT,
+        CustomerUID = project.CustomerUID,
+        LegacyCustomerId = project.LegacyCustomerID.ToString()
       }).ToImmutableList();
 
       return projectList;
@@ -179,7 +184,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>()
           {
-                    new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+            new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
           });
       await projectService.StoreEvent(project).ConfigureAwait(false);
     }
@@ -209,7 +214,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>()
           {
-                    new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+            new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
           });
       //Save boundary as WKT
       project.ProjectBoundary = databaseProjectBoundary;
@@ -230,7 +235,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>()
           {
-                    new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
+            new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
           });
       await projectService.StoreEvent(customerProject).ConfigureAwait(false);
     }
@@ -249,7 +254,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>()
           {
-                    new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
+            new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
           });
       await projectService.StoreEvent(customerProject).ConfigureAwait(false);
     }
@@ -268,7 +273,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>()
           {
-                    new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
+            new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
           });
       await projectService.StoreEvent(geofenceProject).ConfigureAwait(false);
     }
@@ -287,7 +292,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>()
           {
-                    new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+            new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
           });
       await projectService.StoreEvent(project).ConfigureAwait(false);
     }
