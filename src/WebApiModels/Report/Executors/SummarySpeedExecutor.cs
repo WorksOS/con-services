@@ -54,9 +54,9 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
       return SummarySpeedResult.CreateSummarySpeedResult
           (
-              Math.Round(result.AboveTargetAreaPercent, 5),
-              Math.Round(result.BelowTargetAreaPercent, 5),
-              Math.Round(result.MatchTargetAreaPercent, 5),
+              Math.Round(result.AboveTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
+              Math.Round(result.BelowTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
+              Math.Round(result.MatchTargetAreaPercent, 1, MidpointRounding.AwayFromZero),
               Math.Round(result.CovegareArea, 5)
           );
     }
