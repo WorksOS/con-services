@@ -41,6 +41,10 @@ node('Jenkins-Win2016-Raptor') {
        stage 'Build Images'
        bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:${fullVersion}-${branchName} ./Artifacts/MockProjectWebApi"
        bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest ./Artifacts/MockProjectWebApi"
+
+       bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-${fullVersion}-${branchName} ./Artifacts/MockProjectWebApi_linux"
+       bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux ./Artifacts/MockProjectWebApi_linux"
+
  
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'
