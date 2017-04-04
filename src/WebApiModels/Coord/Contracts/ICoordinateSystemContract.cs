@@ -17,7 +17,14 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Contracts
     /// <returns>Execution result with Coordinate System settings.</returns>
     /// 
     CoordinateSystemSettings Post([FromBody]CoordinateSystemFile request);
-    
+
+    /// <summary>
+    ///  Posts Coordinate System settings file to a Raptor for validation.
+    /// </summary>
+    /// <param name="request">Description of the Coordinate System settings file for validation request.</param>
+    /// <returns>True for success and false for failure.</returns>
+    CoordinateSystemValidationResult PostValidate([FromBody]CoordinateSystemFileValidationRequest request);
+
     /// <summary>
     /// Gets Coordinate System settings from a Raptor's data model.
     /// </summary>
