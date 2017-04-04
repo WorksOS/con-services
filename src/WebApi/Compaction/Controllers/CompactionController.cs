@@ -480,15 +480,22 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       DetailPalette cmvPercentChangePalette = null;
       SummaryPalette speedSummaryPalette = null;
 
-      //TODO: get default Temperature details color/value pairs from Barret
+      //This is temporary until temperature details implemented in Raptor.
       DetailPalette temperatureDetailPalette = DetailPalette.CreateDetailPalette(
         new List<ColorValue>
         {
-          ColorValue.CreateColorValue(Colors.Blue, 20.0),
-          ColorValue.CreateColorValue(Colors.Aqua, 55.0),
-          ColorValue.CreateColorValue(Colors.Green, 75.0)
+          ColorValue.CreateColorValue(0x2D5783, 70),
+          ColorValue.CreateColorValue(0x439BDC, 80),
+          ColorValue.CreateColorValue(0xBEDFF1, 90),
+          ColorValue.CreateColorValue(0xDCEEC7, 100),
+          ColorValue.CreateColorValue(0x9DCE67, 110),
+          ColorValue.CreateColorValue(0x6BA03E, 120),
+          ColorValue.CreateColorValue(0x3A6B25, 130),
+          ColorValue.CreateColorValue(0xF6CED3, 140),
+          ColorValue.CreateColorValue(0xD57A7C, 150),
+          ColorValue.CreateColorValue(0xC13037, 160)
         },
-        Colors.Maroon, Colors.Fuchsia);
+        Colors.Red, Colors.Black);
 
 
       foreach (var mode in modes)

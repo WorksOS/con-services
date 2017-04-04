@@ -492,20 +492,48 @@ Scenario: Compaction Get CMV Summary
     "temperatureDetailPalette": {
       "colorValues": [
         {
-          "color": 255,
-          "value": 20
+          "color": 2971523,
+          "value": 70
         },
         {
-          "color": 65535,
-          "value": 55
+          "color": 4430812,
+          "value": 80
         },
         {
-          "color": 32768,
-          "value": 75
+          "color": 12509169,
+          "value": 90
+        },
+        {
+          "color": 14479047,
+          "value": 100
+        },
+        {
+          "color": 10341991,
+          "value": 110
+        },
+        {
+          "color": 7053374,
+          "value": 120
+        },
+        {
+          "color": 3828517,
+          "value": 130
+        },
+        {
+          "color": 16174803,
+          "value": 140
+        },
+        {
+          "color": 13990524,
+          "value": 150
+        },
+        {
+          "color": 12660791,
+          "value": 160
         }
       ],
-      "aboveLastColor": 8388608,
-      "belowFirstColor": 16711935
+      "aboveLastColor": 16711680,
+      "belowFirstColor": 0
     },
     "Code": 0,
     "Message": "success"

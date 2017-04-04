@@ -23,6 +23,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private Poster<StatisticsParameters, ProjectStatistics> projectStatisticsPoster;
     private Getter<ElevationStatisticsResult> elevationRangeRequester;
     private Poster<CompactionTileRequest, TileResult> tilePoster;
+    private Getter<CompactionColorPalettesResult> paletteRequester;
 
     private CompactionTileRequest tileRequest;
     private StatisticsParameters statsRequest;
@@ -220,10 +221,30 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       CompareIt(multilineText, tilePoster);
     }
 
-
-    private Getter<T> GetIt<T>()
+    [Given(@"the Compaction Palettes service URI ""(.*)""")]
+    public void GivenTheCompactionPalettesServiceURI(string url)
     {
-      this.url = string.Format("{0}?projectUid={1}", this.url, projectUid);
+      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+    }
+
+    [When(@"I request Palettes")]
+    public void WhenIRequestPalettes()
+    {
+      paletteRequester = GetIt<CompactionColorPalettesResult>(false);
+    }
+
+    [Then(@"the Palettes result should be")]
+    public void ThenThePalettesResultShouldBe(string multilineText)
+    {
+      CompareIt<CompactionColorPalettesResult>(multilineText, paletteRequester);
+    }
+
+    private Getter<T> GetIt<T>(bool requiresProjectUid=true)
+    {
+      if (requiresProjectUid)
+      {
+        this.url = string.Format("{0}?projectUid={1}", this.url, projectUid);
+      }
       Getter<T> getter = new Getter<T>(this.url);
       getter.DoValidRequest();
       return getter;

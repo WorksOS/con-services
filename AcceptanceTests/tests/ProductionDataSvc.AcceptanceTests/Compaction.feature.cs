@@ -476,10 +476,16 @@ this.ScenarioSetup(scenarioInfo);
                     ": 80\n      }\n    ],\n    \"aboveLastColor\": 16711680,\n    \"belowFirstColor\": 0\n  }" +
                     ",\n  \"speedSummaryPalette\": {\n    \"aboveTargetColor\": 8388736,\n    \"onTargetColor" +
                     "\": 65280,\n    \"belowTargetColor\": 65535\n  },\n  \"temperatureDetailPalette\": {\n   " +
-                    " \"colorValues\": [\n      {\n        \"color\": 255,\n        \"value\": 20\n      },\n   " +
-                    "   {\n        \"color\": 65535,\n        \"value\": 55\n      },\n      {\n        \"color" +
-                    "\": 32768,\n        \"value\": 75\n      }\n    ],\n    \"aboveLastColor\": 8388608,\n    " +
-                    "\"belowFirstColor\": 16711935\n  },\n  \"Code\": 0,\n  \"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+                    " \"colorValues\": [\n      {\n        \"color\": 2971523,\n        \"value\": 70\n      }," +
+                    "\n      {\n        \"color\": 4430812,\n        \"value\": 80\n      },\n      {\n        " +
+                    "\"color\": 12509169,\n        \"value\": 90\n      },\n      {\n        \"color\": 1447904" +
+                    "7,\n        \"value\": 100\n      },\n      {\n        \"color\": 10341991,\n        \"val" +
+                    "ue\": 110\n      },\n      {\n        \"color\": 7053374,\n        \"value\": 120\n      }" +
+                    ",\n      {\n        \"color\": 3828517,\n        \"value\": 130\n      },\n      {\n      " +
+                    "  \"color\": 16174803,\n        \"value\": 140\n      },\n      {\n        \"color\": 1399" +
+                    "0524,\n        \"value\": 150\n      },\n      {\n        \"color\": 12660791,\n        \"" +
+                    "value\": 160\n      }\n    ],\n    \"aboveLastColor\": 16711680,\n    \"belowFirstColor\"" +
+                    ": 0\n  },\n  \"Code\": 0,\n  \"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
