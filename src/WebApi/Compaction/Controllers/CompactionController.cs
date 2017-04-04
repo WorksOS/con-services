@@ -17,6 +17,7 @@ using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Compaction.Models;
+using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
 using VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
@@ -24,6 +25,7 @@ using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Report.Executors;
 using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.ColorValue;
 
 namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 {
@@ -464,25 +466,101 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       List<DisplayMode> modes = new List<DisplayMode>
       {
-        DisplayMode.Height, DisplayMode.CCVPercent, DisplayMode.PassCount, DisplayMode.PassCountSummary, DisplayMode.CutFill, DisplayMode.TemperatureSummary, DisplayMode.CCVPercentSummary, DisplayMode.MDPPercentSummary, DisplayMode.CMVChange
+        DisplayMode.Height, DisplayMode.CCVPercent, DisplayMode.PassCount, DisplayMode.PassCountSummary, DisplayMode.CutFill, DisplayMode.TemperatureSummary, DisplayMode.CCVPercentSummary, DisplayMode.MDPPercentSummary, DisplayMode.TargetSpeedSummary, DisplayMode.CMVChange
       };
-      //TODO: Add TemperatureDetails
 
-      List<CompactionColorPalettesResult.Palette> palettes = new List<CompactionColorPalettesResult.Palette>();
+      DetailPalette elevationPalette = null;
+      DetailPalette cmvDetailPalette = null;
+      DetailPalette passCountDetailPalette = null;
+      SummaryPalette passCountSummaryPalette = null;
+      DetailPalette cutFillPalette = null;
+      SummaryPalette temperatureSummaryPalette = null;
+      SummaryPalette cmvSummaryPalette = null;
+      SummaryPalette mdpSummaryPalette = null;
+      DetailPalette cmvPercentChangePalette = null;
+      SummaryPalette speedSummaryPalette = null;
+
+      //TODO: get default Temperature details color/value pairs from Barret
+      DetailPalette temperatureDetailPalette = DetailPalette.CreateDetailPalette(
+        new List<ColorValue>
+        {
+          ColorValue.CreateColorValue(Colors.Blue, 20.0),
+          ColorValue.CreateColorValue(Colors.Aqua, 55.0),
+          ColorValue.CreateColorValue(Colors.Green, 75.0)
+        },
+        Colors.Maroon, Colors.Fuchsia);
+
+
       foreach (var mode in modes)
       {
-
-        var palette = new CompactionColorPalettesResult.Palette
+        List<ColorValue> colorValues;
+        var raptorPalette = RaptorConverters.convertColorPalettes(null, mode).Transitions;
+        switch (mode)
         {
-          displayMode = mode,
-          colors = RaptorConverters.convertColorPalettes(null, mode).Transitions
-        };
-        palettes.Add(palette);
+          case DisplayMode.Height:
+            colorValues = new List<ColorValue>();
+            for (int i = 1; i < raptorPalette.Length - 1; i++)
+            {
+              colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+            }
+            elevationPalette = DetailPalette.CreateDetailPalette(colorValues, raptorPalette[raptorPalette.Length-1].Colour, raptorPalette[0].Colour);
+            break;
+          case DisplayMode.CCVPercent:
+            //TODO: Is this correct?
+            colorValues = new List<ColorValue>();
+            for (int i = 0; i < raptorPalette.Length - 1; i++)
+            {
+              colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+            }
+            cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, raptorPalette[raptorPalette.Length - 1].Colour, null);
+            break;
+          case DisplayMode.PassCount:
+            colorValues = new List<ColorValue>();
+            for (int i = 0; i < raptorPalette.Length - 1; i++)
+            {
+              colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+            }
+            passCountDetailPalette = DetailPalette.CreateDetailPalette(colorValues, raptorPalette[raptorPalette.Length-1].Colour, null);
+            break;
+          case DisplayMode.PassCountSummary:
+            passCountSummaryPalette = SummaryPalette.CreateSummaryPalette(raptorPalette[2].Colour, raptorPalette[1].Colour, raptorPalette[0].Colour);
+            break;
+          case DisplayMode.CutFill:
+            colorValues = new List<ColorValue>();
+            for (int i = raptorPalette.Length - 1; i >= 0; i--)
+            {
+              colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+            }
+            cutFillPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
+            break;
+          case DisplayMode.TemperatureSummary:
+            temperatureSummaryPalette = SummaryPalette.CreateSummaryPalette(raptorPalette[2].Colour, raptorPalette[1].Colour, raptorPalette[0].Colour);
+            break;
+          case DisplayMode.CCVPercentSummary:
+            cmvSummaryPalette = SummaryPalette.CreateSummaryPalette(raptorPalette[3].Colour, raptorPalette[0].Colour, raptorPalette[2].Colour);
+            break;
+          case DisplayMode.MDPPercentSummary:
+            mdpSummaryPalette = SummaryPalette.CreateSummaryPalette(raptorPalette[3].Colour, raptorPalette[0].Colour, raptorPalette[2].Colour);
+            break;
+          case DisplayMode.TargetSpeedSummary:
+            speedSummaryPalette = SummaryPalette.CreateSummaryPalette(raptorPalette[2].Colour, raptorPalette[1].Colour, raptorPalette[0].Colour);
+            break;
+          case DisplayMode.CMVChange:
+            colorValues = new List<ColorValue>();
+            for (int i = 1; i < raptorPalette.Length - 1; i++)
+            {
+              colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+            }
+            cmvPercentChangePalette = DetailPalette.CreateDetailPalette(colorValues, raptorPalette[raptorPalette.Length - 1].Colour, raptorPalette[0].Colour);
+            break;
+        }
+
       }
-      return CompactionColorPalettesResult.CreateCompactionColorPalettesResult(palettes);
-      //TODO: Do we want to return the palettes like this i.e. exactly as Raptor expects
-      //or massaged for client (a) without repeated colors etc and (b) default values will need zapping or fixing
+      return CompactionColorPalettesResult.CreateCompactionColorPalettesResult(
+        elevationPalette, cmvDetailPalette, passCountDetailPalette, passCountSummaryPalette, cutFillPalette, temperatureSummaryPalette,
+        cmvSummaryPalette, mdpSummaryPalette, cmvPercentChangePalette, speedSummaryPalette, temperatureDetailPalette);
     }
+
     #endregion
 
 

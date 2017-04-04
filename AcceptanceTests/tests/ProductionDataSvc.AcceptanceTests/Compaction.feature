@@ -225,342 +225,288 @@ Scenario: Compaction Get CMV Summary
 	When I request Palettes
 	Then the Palettes result should be
   """
-   {
-    "palettes": [
-      {
-        "displayMode": 0,
-        "colors": [
-          {
-            "colour": 16711935,
-            "value": -1
-          },
-          {
-            "colour": 16711680,
-            "value": 0
-          },
-          {
-            "colour": 14760960,
-            "value": 68.965517241379317
-          },
-          {
-            "colour": 16734720,
-            "value": 137.93103448275863
-          },
-          {
-            "colour": 16744960,
-            "value": 206.89655172413796
-          },
-          {
-            "colour": 16755200,
-            "value": 275.86206896551727
-          },
-          {
-            "colour": 16762880,
-            "value": 344.82758620689657
-          },
-          {
-            "colour": 16768000,
-            "value": 413.79310344827593
-          },
-          {
-            "colour": 16442880,
-            "value": 482.75862068965523
-          },
-          {
-            "colour": 14476800,
-            "value": 551.72413793103453
-          },
-          {
-            "colour": 13821440,
-            "value": 620.68965517241384
-          },
-          {
-            "colour": 13166080,
-            "value": 689.65517241379314
-          },
-          {
-            "colour": 11855360,
-            "value": 758.62068965517244
-          },
-          {
-            "colour": 9889280,
-            "value": 827.58620689655186
-          },
-          {
-            "colour": 8578560,
-            "value": 896.55172413793116
-          },
-          {
-            "colour": 6615040,
-            "value": 965.51724137931046
-          },
-          {
-            "colour": 65280,
-            "value": 1034.4827586206898
-          },
-          {
-            "colour": 61540,
-            "value": 1103.4482758620691
-          },
-          {
-            "colour": 59010,
-            "value": 1172.4137931034484
-          },
-          {
-            "colour": 59030,
-            "value": 1241.3793103448277
-          },
-          {
-            "colour": 59060,
-            "value": 1310.344827586207
-          },
-          {
-            "colour": 59080,
-            "value": 1379.3103448275863
-          },
-          {
-            "colour": 59090,
-            "value": 1448.2758620689656
-          },
-          {
-            "colour": 56540,
-            "value": 1517.2413793103449
-          },
-          {
-            "colour": 51430,
-            "value": 1586.2068965517242
-          },
-          {
-            "colour": 46320,
-            "value": 1655.1724137931037
-          },
-          {
-            "colour": 38645,
-            "value": 1724.137931034483
-          },
-          {
-            "colour": 30970,
-            "value": 1793.1034482758623
-          },
-          {
-            "colour": 23295,
-            "value": 1862.0689655172416
-          },
-          {
-            "colour": 18175,
-            "value": 1931.0344827586209
-          },
-          {
-            "colour": 255,
-            "value": 2000.0000000000002
-          },
-          {
-            "colour": 8388736,
-            "value": -1
-          }
-        ]
-      },
-      {
-        "displayMode": 1,
-        "colors": [
-          {
-            "colour": 255,
-            "value": 0
-          },
-          {
-            "colour": 65280,
-            "value": 36
-          },
-          {
-            "colour": 65280,
-            "value": 44
-          },
-          {
-            "colour": 16711680,
-            "value": 80
-          }
-        ]
-      },
-      {
-        "displayMode": 2,
-        "colors": [
-          {
-            "colour": 16711680,
-            "value": 0
-          },
-          {
-            "colour": 65280,
-            "value": 76.5
-          },
-          {
-            "colour": 65280,
-            "value": 93.500000000000014
-          },
-          {
-            "colour": 255,
-            "value": 130
-          }
-        ]
-      },
-      {
-        "displayMode": 4,
-        "colors": [
-          {
-            "colour": 16763955,
-            "value": 1
-          },
-          {
-            "colour": 16776960,
-            "value": 2
-          },
-          {
-            "colour": 65535,
-            "value": 3
-          },
-          {
-            "colour": 39423,
-            "value": 4
-          },
-          {
-            "colour": 13434624,
-            "value": 5
-          },
-          {
-            "colour": 16711935,
-            "value": 6
-          },
-          {
-            "colour": 6684825,
-            "value": 7
-          },
-          {
-            "colour": 6697728,
-            "value": 8
-          },
-          {
-            "colour": 3355392,
-            "value": 9
-          }
-        ]
-      },
-      {
-        "displayMode": 14,
-        "colors": [
-          {
-            "colour": 255,
-            "value": 1
-          },
-          {
-            "colour": 65280,
-            "value": 6
-          },
-          {
-            "colour": 16711680,
-            "value": 1000000
-          }
-        ]
-      },
-      {
-        "displayMode": 8,
-        "colors": [
-          {
-            "colour": 8388608,
-            "value": 0.2
-          },
-          {
-            "colour": 16711680,
-            "value": 0.1
-          },
-          {
-            "colour": 16744576,
-            "value": 0.05
-          },
-          {
-            "colour": 65280,
-            "value": 0
-          },
-          {
-            "colour": 8421631,
-            "value": -0.05
-          },
-          {
-            "colour": 255,
-            "value": -0.1
-          },
-          {
-            "colour": 128,
-            "value": -0.2
-          }
-        ]
-      },
-      {
-        "displayMode": 10,
-        "colors": [
-          {
-            "colour": 255,
-            "value": 0
-          },
-          {
-            "colour": 65280,
-            "value": 1
-          },
-          {
-            "colour": 16711680,
-            "value": 2
-          }
-        ]
-      },
-      {
-        "displayMode": 19,
-        "colors": [
-          {
-            "colour": 16711680,
-            "value": 0
-          },
-          {
-            "colour": 65280,
-            "value": 76.5
-          },
-          {
-            "colour": 65280,
-            "value": 93.500000000000014
-          },
-          {
-            "colour": 255,
-            "value": 130
-          }
-        ]
-      },
-      {
-        "displayMode": 27,
-        "colors": [
-          {
-            "colour": 0,
-            "value": 0
-          },
-          {
-            "colour": 65280,
-            "value": 10
-          },
-          {
-            "colour": 16776960,
-            "value": 20
-          },
-          {
-            "colour": 16744192,
-            "value": 40
-          },
-          {
-            "colour": 16711935,
-            "value": 80
-          },
-          {
-            "colour": 16711680,
-            "value": 1.7976931348623157e+308
-          }
-        ]
-      }
-    ],
+  {
+    "elevationPalette": {
+      "colorValues": [
+        {
+          "color": 16711680,
+          "value": 0
+        },
+        {
+          "color": 14760960,
+          "value": 68.965517241379317
+        },
+        {
+          "color": 16734720,
+          "value": 137.93103448275863
+        },
+        {
+          "color": 16744960,
+          "value": 206.89655172413796
+        },
+        {
+          "color": 16755200,
+          "value": 275.86206896551727
+        },
+        {
+          "color": 16762880,
+          "value": 344.82758620689657
+        },
+        {
+          "color": 16768000,
+          "value": 413.79310344827593
+        },
+        {
+          "color": 16442880,
+          "value": 482.75862068965523
+        },
+        {
+          "color": 14476800,
+          "value": 551.72413793103453
+        },
+        {
+          "color": 13821440,
+          "value": 620.68965517241384
+        },
+        {
+          "color": 13166080,
+          "value": 689.65517241379314
+        },
+        {
+          "color": 11855360,
+          "value": 758.62068965517244
+        },
+        {
+          "color": 9889280,
+          "value": 827.58620689655186
+        },
+        {
+          "color": 8578560,
+          "value": 896.55172413793116
+        },
+        {
+          "color": 6615040,
+          "value": 965.51724137931046
+        },
+        {
+          "color": 65280,
+          "value": 1034.4827586206898
+        },
+        {
+          "color": 61540,
+          "value": 1103.4482758620691
+        },
+        {
+          "color": 59010,
+          "value": 1172.4137931034484
+        },
+        {
+          "color": 59030,
+          "value": 1241.3793103448277
+        },
+        {
+          "color": 59060,
+          "value": 1310.344827586207
+        },
+        {
+          "color": 59080,
+          "value": 1379.3103448275863
+        },
+        {
+          "color": 59090,
+          "value": 1448.2758620689656
+        },
+        {
+          "color": 56540,
+          "value": 1517.2413793103449
+        },
+        {
+          "color": 51430,
+          "value": 1586.2068965517242
+        },
+        {
+          "color": 46320,
+          "value": 1655.1724137931037
+        },
+        {
+          "color": 38645,
+          "value": 1724.137931034483
+        },
+        {
+          "color": 30970,
+          "value": 1793.1034482758623
+        },
+        {
+          "color": 23295,
+          "value": 1862.0689655172416
+        },
+        {
+          "color": 18175,
+          "value": 1931.0344827586209
+        },
+        {
+          "color": 255,
+          "value": 2000.0000000000002
+        }
+      ],
+      "aboveLastColor": 8388736,
+      "belowFirstColor": 16711935
+    },
+    "cmvDetailPalette": {
+      "colorValues": [
+        {
+          "color": 16711680,
+          "value": 0
+        },
+        {
+          "color": 65280,
+          "value": 76.5
+        },
+        {
+          "color": 65280,
+          "value": 93.500000000000014
+        }
+      ],
+      "aboveLastColor": 255,
+      "belowFirstColor": null
+    },
+    "passCountDetailPalette": {
+      "colorValues": [
+        {
+          "color": 16763955,
+          "value": 1
+        },
+        {
+          "color": 16776960,
+          "value": 2
+        },
+        {
+          "color": 65535,
+          "value": 3
+        },
+        {
+          "color": 39423,
+          "value": 4
+        },
+        {
+          "color": 13434624,
+          "value": 5
+        },
+        {
+          "color": 16711935,
+          "value": 6
+        },
+        {
+          "color": 6684825,
+          "value": 7
+        },
+        {
+          "color": 6697728,
+          "value": 8
+        }
+      ],
+      "aboveLastColor": 3355392,
+      "belowFirstColor": null
+    },
+    "passCountSummaryPalette": {
+      "aboveTargetColor": 16711680,
+      "onTargetColor": 65280,
+      "belowTargetColor": 255
+    },
+    "cutFillPalette": {
+      "colorValues": [
+        {
+          "color": 128,
+          "value": -0.2
+        },
+        {
+          "color": 255,
+          "value": -0.1
+        },
+        {
+          "color": 8421631,
+          "value": -0.05
+        },
+        {
+          "color": 65280,
+          "value": 0
+        },
+        {
+          "color": 16744576,
+          "value": 0.05
+        },
+        {
+          "color": 16711680,
+          "value": 0.1
+        },
+        {
+          "color": 8388608,
+          "value": 0.2
+        }
+      ],
+      "aboveLastColor": null,
+      "belowFirstColor": null
+    },
+    "temperatureSummaryPalette": {
+      "aboveTargetColor": 16711680,
+      "onTargetColor": 65280,
+      "belowTargetColor": 255
+    },
+    "cmvSummaryPalette": {
+      "aboveTargetColor": 16711680,
+      "onTargetColor": 65280,
+      "belowTargetColor": 255
+    },
+    "mdpSummaryPalette": {
+      "aboveTargetColor": 16711680,
+      "onTargetColor": 65280,
+      "belowTargetColor": 255
+    },
+    "cmvPercentChangePalette": {
+      "colorValues": [
+        {
+          "color": 65280,
+          "value": 10
+        },
+        {
+          "color": 16776960,
+          "value": 20
+        },
+        {
+          "color": 16744192,
+          "value": 40
+        },
+        {
+          "color": 16711935,
+          "value": 80
+        }
+      ],
+      "aboveLastColor": 16711680,
+      "belowFirstColor": 0
+    },
+    "speedSummaryPalette": {
+      "aboveTargetColor": 8388736,
+      "onTargetColor": 65280,
+      "belowTargetColor": 65535
+    },
+    "temperatureDetailPalette": {
+      "colorValues": [
+        {
+          "color": 255,
+          "value": 20
+        },
+        {
+          "color": 65535,
+          "value": 55
+        },
+        {
+          "color": 32768,
+          "value": 75
+        }
+      ],
+      "aboveLastColor": 8388608,
+      "belowFirstColor": 16711935
+    },
     "Code": 0,
     "Message": "success"
   }
