@@ -25,15 +25,11 @@ namespace TestUtility
     /// <param name="mediaType">This is the mediaType of the HTTP request which can be json or xml </param>    
     /// <param name="customerUid">This is the customer UID for the header</param>
     /// <returns></returns>
-    public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData,
-      HttpStatusCode httpResponseCode = HttpStatusCode.OK, string mediaType = "application/json",
-      string customerUid = null)
+    public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, HttpStatusCode httpResponseCode = HttpStatusCode.OK, string mediaType = "application/json", string customerUid = null)
     {
-      string responseString = null;
       Log.Info(resourceUri, Log.ContentType.ApiSend);
       var msg = new Msg();
-
-      HttpWebRequest request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid); //Initialize the Http Request
+      var request = InitHttpRequest(resourceUri, httpMethod, mediaType, customerUid);                   //Initialize the Http Request
       if (payloadData != null)
       {
         request.ContentType = mediaType;
@@ -46,38 +42,28 @@ namespace TestUtility
       //Validate the HTTP Response Status Codes for Successful POST HTTP Request
       try
       {
+        string responseString = null;
         using (var response = (HttpWebResponse) request.GetResponseAsync().Result)
         {
           responseString = GetStringFromResponseStream(response);
           msg.DisplayWebApi(httpMethod, resourceUri, responseString, payloadData);
-          Assert.AreEqual(httpResponseCode, response.StatusCode, "Expected this response code, " + httpResponseCode +
-                                                                 ", but the actual response code was this instead, " + response.StatusCode);
+          Assert.AreEqual(httpResponseCode, response.StatusCode, "Expected this response code, " + httpResponseCode + ", but the actual response code was this instead, " + response.StatusCode);
         }
-        Log.Info("Web Api Response: " + responseString, Log.ContentType.ApiResponse);
         return responseString;
       }
-      catch (Exception e)
+      catch (AggregateException ex)
       {
-        if (e is AggregateException)
+        foreach (var e in ex.InnerExceptions)
         {
-          var exception = (e as AggregateException).InnerExceptions[0] as WebException;
-          if (exception != null)
-            using (var response = exception.Response)
-            {
-              HttpWebResponse httpResponse = (HttpWebResponse) response;
-              if (httpResponse != null)
-              {
-                Assert.AreEqual(httpResponseCode, httpResponse.StatusCode, "Expected this response code, " + httpResponseCode +
-                                                                           ", but the actual response code was this instead, " + httpResponse.StatusCode);
-                responseString = GetStringFromResponseStream(httpResponse);
-              }
-              else
-              {
-                responseString = e.Message;
-              }
-            }
+          if (!(e is WebException)) continue;
+          var webException = (WebException)e;
+          var response = webException.Response as HttpWebResponse;
+          if (response == null) continue;
+          var resp = GetStringFromResponseStream(response);    
+          msg.DisplayWebApi(httpMethod, resourceUri, resp, payloadData);      
+          throw new Exception(resp);
         }
-        return responseString;
+        return string.Empty;
       }
     }
 
@@ -112,7 +98,7 @@ namespace TestUtility
             //Initialize the Http Request
             var request = (HttpWebRequest)WebRequest.Create(resourceUri);
             request.Method = httpMethod;
-            request.Accept = mediaType;
+            request.Accept = mediaType;      
             //Hardcode authentication for now
             request.Headers["X-JWT-Assertion"] =
             "eyJ0eXAiOiJKV1QiLCJhbGciOiJTSEEyNTZ3aXRoUlNBIiwieDV0IjoiWW1FM016UTRNVFk0TkRVMlpEWm1PRGRtTlRSbU4yWmxZVGt3TVdFelltTmpNVGt6TURFelpnPT0ifQ==.eyJpc3MiOiJ3c28yLm9yZy9wcm9kdWN0cy9hbSIsImV4cCI6IjE0NTU1Nzc4MjM5MzAiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL3N1YnNjcmliZXIiOiJjbGF5X2FuZGVyc29uQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9hcHBsaWNhdGlvbmlkIjoxMDc5LCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2FwcGxpY2F0aW9ubmFtZSI6IlV0aWxpemF0aW9uIERldmVsb3AgQ0kiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2FwcGxpY2F0aW9udGllciI6IiIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvYXBpY29udGV4dCI6Ii90L3RyaW1ibGUuY29tL3V0aWxpemF0aW9uYWxwaGFlbmRwb2ludCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvdmVyc2lvbiI6IjEuMCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvdGllciI6IlVubGltaXRlZCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMva2V5dHlwZSI6IlBST0RVQ1RJT04iLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL3VzZXJ0eXBlIjoiQVBQTElDQVRJT04iLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2VuZHVzZXIiOiJjbGF5X2FuZGVyc29uQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9lbmR1c2VyVGVuYW50SWQiOiIxIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9lbWFpbGFkZHJlc3MiOiJjbGF5X2FuZGVyc29uQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9naXZlbm5hbWUiOiJDbGF5IiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9sYXN0bmFtZSI6IkFuZGVyc29uIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9vbmVUaW1lUGFzc3dvcmQiOm51bGwsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvcm9sZSI6IlN1YnNjcmliZXIscHVibGlzaGVyIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy91dWlkIjoiMjM4ODY5YWYtY2E1Yy00NWUyLWI0ZjgtNzUwNjE1YzhhOGFiIn0=.kTaMf1IY83fPHqUHTtVHn6m6aQ9wFch6c0FsNDQ7x1k=";

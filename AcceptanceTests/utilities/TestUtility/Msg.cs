@@ -114,7 +114,9 @@ namespace TestUtility
       public void DisplayException(string exception)
       {
         Console.WriteLine(DASH);
-        Console.WriteLine("**** EXCEPTION ****: " + exception);
+        var line = exception.Replace('<', ' ');
+        line = line.Replace('>', ' ');
+        Console.WriteLine("**** EXCEPTION ****: " + line);
         Console.WriteLine(DASH);
       }
     }

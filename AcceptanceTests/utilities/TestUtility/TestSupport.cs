@@ -230,7 +230,7 @@ namespace TestUtility
         case "DeleteProjectEvent":
           CallProjectWebApiV4("api/v4/project/", HttpMethod.Delete.ToString(), jsonString, CustomerUid.ToString());
           break;
-      }
+      }      
     }
 
     /// <summary>
@@ -1211,7 +1211,7 @@ namespace TestUtility
     /// <returns></returns>
     private string CallProjectWebApiV4(string routeSuffix, string method , string configJson, string customerUid = null)
     {
-      var uri = GetBaseUri() + routeSuffix;
+      var uri = GetBaseUri()  + routeSuffix;  // "http://localhost:20979/"
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(uri, method, configJson,HttpStatusCode.OK, "application/json", customerUid);
       return response;
