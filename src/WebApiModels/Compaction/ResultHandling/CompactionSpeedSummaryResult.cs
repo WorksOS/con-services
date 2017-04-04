@@ -36,9 +36,9 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
       {
         SummaryData = new SpeedSummaryData
         {
-          PercentEqualsTarget = result.MatchTarget/result.CoverageArea*100.0,
-          PercentGreaterThanTarget = result.AboveTarget/result.CoverageArea*100.0,
-          PercentLessThanTarget = result.BelowTarget/result.CoverageArea*100.0,
+          PercentEqualsTarget = result.MatchTarget,
+          PercentGreaterThanTarget = result.AboveTarget,
+          PercentLessThanTarget = result.BelowTarget,
           TotalAreaCoveredSqMeters = result.CoverageArea,
           MinTargetMachineSpeed = Math.Round(speedTarget.MinTargetMachineSpeed * 0.036, 1, MidpointRounding.AwayFromZero), // cm per second converted to km per hour...
           MaxTargetMachineSpeed = Math.Round(speedTarget.MaxTargetMachineSpeed * 0.036, 1, MidpointRounding.AwayFromZero)  // cm per second converted to km per hour...
