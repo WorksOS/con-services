@@ -15,7 +15,7 @@
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "ConfigurationStore.netcore": "*",
-    "MasterDataProxies.netcore": "1.0.6"
+    "MasterDataProxies.netcore": "1.0.6",
     "VSS.Velociraptor.Interfaces": "1.0.27"
   },
 
