@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using ProjectWebApi.Models;
 using TestUtility;
 
 namespace WebApiTests
@@ -17,10 +16,6 @@ namespace WebApiTests
     {
       msg.Title("Project Subtest 1", "Create 2 subscriptions ");
       var ts = new TestSupport();
-      var legacyProjectId1 = ts.SetLegacyProjectId();
-      var legacyProjectId2 = legacyProjectId1+1;
-      var projectUid1 = Guid.NewGuid().ToString();
-      var projectUid2 = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
       var subscriptionUid1 = Guid.NewGuid();
@@ -29,8 +24,6 @@ namespace WebApiTests
       var endDateTime = new DateTime(9999, 12, 31);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
-      const string geometryWkt1 = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
-      const string geometryWkt2 = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.025723657623 36.2101347890754))";
       var eventsArray = new[] {
          "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID    | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
         $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                    |                |                  |             |                |               |          |                    |",
@@ -40,6 +33,9 @@ namespace WebApiTests
       };
       ts.PublishEventCollection(eventsArray);
       var response = ts.CallProjectWebApiV4("api/v4/subscriptions", "GET", null, customerUid.ToString());
+      var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
+      Assert.AreEqual(objresp.SubscriptionDescriptors.Count, 2, " Expecting 2 subscriptions in the results");
+      Assert.AreEqual(objresp.Message, "success", "The message in the response should be success");
     }
   }
 }
