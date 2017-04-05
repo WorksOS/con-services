@@ -74,6 +74,22 @@ namespace VSS.Raptor.Service.WebApi.Coord.Controllers
     }
 
     /// <summary>
+    /// Posts a coordinate system (CS) definition file to a Raptor for validation.
+    /// </summary>
+    /// <param name="request">The CS definition file structure.</param>
+    /// <returns>
+    /// True for success and false for failure.
+    /// </returns>
+    /// <executor>CoordinateSystemExecutorPost</executor>
+    [Route("api/v1/coordsystem/validation")]
+    [HttpPost]
+    public CoordinateSystemSettings PostValidate([FromBody]CoordinateSystemFileValidationRequest request)
+    {
+      request.Validate();
+      return RequestExecutorContainer.Build<CoordinateSystemExecutorPost>(logger, raptorClient, null).Process(request) as CoordinateSystemSettings;
+    }
+
+    /// <summary>
     /// Gets a coordinate system (CS) definition assigned to a Raptor's data model/project.
     /// </summary>
     /// <param name="projectId">The model/project identifier.</param>

@@ -91,13 +91,80 @@ namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
         }
     #endregion
 
+    #region PostValidate
+
+    /// <summary>
+    ///  Uses the mock PDS client to post a CS file with successful result...
+    /// </summary>
+    /// 
+    [TestMethod]
+    public void CS_CoordinateSystemControllerPostValidateSuccessful()
+    {
+      byte[] csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+
+      CoordinateSystemFileValidationRequest request = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(csFileContent, "dummy.dc");
+
+      // Create the mock PDSClient with successful result...
+      var mockRaptorClient = new Mock<IASNodeClient>();
+      var mockLogger = new Mock<ILoggerFactory>();
+
+      TASNodeErrorStatus raptorResult = TASNodeErrorStatus.asneOK;
+
+      TCoordinateSystemSettings csSettings;
+
+      mockRaptorClient.Setup(prj => prj.PassSelectedCoordinateSystemFile(
+        new MemoryStream(request.csFileContent),
+        request.csFileName,
+        -1, out csSettings)).Returns(raptorResult);
+
+      // Create an executor...
+      CoordinateSystemExecutorPost executor = new CoordinateSystemExecutorPost(mockLogger.Object, mockRaptorClient.Object);
+
+      ContractExecutionResult result = executor.Process(request);
+
+      // Assert
+      Assert.IsNotNull(result);
+      Assert.IsTrue(result.Message == "success", result.Message);
+    }
+
+    /// <summary>
+    /// Uses the mock PDS client to post a CS file with unsuccessful result...
+    /// </summary>
+    /// 
+    [TestMethod]
+    public void CS_CoordinateSystemControllerPostValidationFailed()
+    {
+      byte[] csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+
+      CoordinateSystemFileValidationRequest request = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(csFileContent, "dummy.dc");
+
+      // Create the mock PDSClient with unsuccessful result...
+      var mockRaptorClient = new Mock<IASNodeClient>();
+      var mockLogger = new Mock<ILoggerFactory>();
+      TASNodeErrorStatus raptorResult = TASNodeErrorStatus.asneCouldNotConvertCSDFile;
+
+      TCoordinateSystemSettings csSettings;
+
+      mockRaptorClient.Setup(prj => prj.PassSelectedCoordinateSystemFile(
+         It.IsAny<MemoryStream>(),
+        request.csFileName,
+        -1, out csSettings)).Returns(raptorResult);
+
+      // Create an executor...
+      CoordinateSystemExecutorPost executor = new CoordinateSystemExecutorPost(mockLogger.Object, mockRaptorClient.Object);
+
+      Assert.ThrowsException<ServiceException>(() => executor.Process(request));
+    }
+
+    #endregion
+
     #region Get
 
-        /// <summary>
-        ///  Uses the mock PDS client to get CS settings with successful result...
-        /// </summary>
-        /// 
-        [TestMethod]
+    /// <summary>
+    ///  Uses the mock PDS client to get CS settings with successful result...
+    /// </summary>
+    /// 
+    [TestMethod]
         public void CS_CoordinateSystemControllerGetSuccessful()
         {
             ProjectID request = ProjectID.CreateProjectID(PD_MODEL_ID);
