@@ -61,7 +61,7 @@ namespace TestUtility
           if (response == null) continue;
           var resp = GetStringFromResponseStream(response);    
           msg.DisplayWebApi(httpMethod, resourceUri, resp, payloadData);      
-          throw new Exception(resp);
+          return resp;
         }
         return string.Empty;
       }
