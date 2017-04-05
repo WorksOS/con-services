@@ -37,7 +37,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         /// and both active and archived projects.
         /// </summary>
         /// <returns>A list of projects</returns>
-        [Route("api/v4/project")]
+        [Route("api/v4/projects")]
         [HttpGet]
         public async Task<ProjectDescriptorsListResult> GetProjectsV4()
         {
