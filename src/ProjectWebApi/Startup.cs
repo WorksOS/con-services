@@ -74,7 +74,7 @@ namespace ProjectWebApi
             {
                 options.SingleApiVersion(new Info
                 {
-                    Version = "v3",
+                    Version = "v1",
                     Title = "Project Master Data API",
                     Description = "API for project data",
                     TermsOfService = "None"

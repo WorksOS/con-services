@@ -67,9 +67,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task ValidateAssociateSubscriptions(CreateProjectEvent project)
     {
-      log.LogInformation("ValidateAssociateSubscriptions");
+      log.LogDebug("ValidateAssociateSubscriptions");
       var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      log.LogDebug($"CustomerUID={customerUid} and user={User}");
 
       //Apply here rules validating types of projects I'm able to create (i.e. LF only if there is one available LF subscription available) Performance is not a concern as this request is executed once in a blue moon
       //Retrieve available subscriptions
@@ -79,6 +79,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       if (project.ProjectType == ProjectType.LandFill || project.ProjectType == ProjectType.ProjectMonitoring)
       {
         var availableFreeSub = (await GetFreeSubs(customerUid, project.ProjectType)).First();
+        log.LogDebug($"Receieved {availableFreeSub.SubscriptionUID} subscription");
         //Assign a new project to a subs
         await subsProxy.AssociateProjectSubscription(Guid.Parse(availableFreeSub.SubscriptionUID),
             project.ProjectUID,
@@ -86,38 +87,43 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       }
     }
 
-    /// <summary>
-    /// Gets the free subs for a project type
-    /// </summary>
-    /// <param name="customerUid">The customer uid.</param>
-    /// <param name="type">The type.</param>
-    /// <returns></returns>
-    /// <exception cref="ServiceException"></exception>
-    /// <exception cref="ContractExecutionResult">No available subscriptions for the selected customer</exception>
-    protected async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type)
-    {
-      var availableSubscriptions =
-          (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
-          .Where(s => s.ServiceTypeID == (int)type.MatchSubscriptionType());
-      var projects = await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
-
-      var availableFreSub = availableSubscriptions
-                                .Where(s => !projects
-                                                .Where(p => p.ProjectType == type && !p.IsDeleted)
-                                                .Select(p => p.SubscriptionUID)
-                                                .Contains(s.SubscriptionUID) &&
-                                                    s.ServiceTypeID == (int)type.MatchSubscriptionType())
-                                .ToImmutableList();
-      if (!availableFreSub.Any())
+      /// <summary>
+      /// Gets the free subs for a project type
+      /// </summary>
+      /// <param name="customerUid">The customer uid.</param>
+      /// <param name="type">The type.</param>
+      /// <returns></returns>
+      /// <exception cref="ServiceException"></exception>
+      /// <exception cref="ContractExecutionResult">No available subscriptions for the selected customer</exception>
+      protected async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type)
       {
-        throw new ServiceException(HttpStatusCode.Forbidden,
-            new ContractExecutionResult(ContractExecutionStatesEnum.NoValidSubscription,
-                "No available subscriptions for the selected customer"));
-      }
-      return availableFreSub;
-    }
+          var availableSubscriptions =
+              (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
+              .Where(s => s.ServiceTypeID == (int) type.MatchSubscriptionType()).ToImmutableList();
+          log.LogDebug($"Receieved {availableSubscriptions.Count()} subscriptions with contents {JsonConvert.SerializeObject(availableSubscriptions)}");
+          var projects =
+              (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
-    /// <summary>
+          log.LogDebug($"Receieved {projects.Count()} projects with contents {JsonConvert.SerializeObject(projects)}");
+
+          var availableFreSub = availableSubscriptions
+              .Where(s => !projects
+                              .Where(p => p.ProjectType == type && !p.IsDeleted)
+                              .Select(p => p.SubscriptionUID)
+                              .Contains(s.SubscriptionUID) &&
+                          s.ServiceTypeID == (int) type.MatchSubscriptionType())
+              .ToImmutableList();
+          log.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
+          if (!availableFreSub.Any())
+          {
+              throw new ServiceException(HttpStatusCode.Forbidden,
+                  new ContractExecutionResult(ContractExecutionStatesEnum.NoValidSubscription,
+                      "No available subscriptions for the selected customer"));
+          }
+          return availableFreSub;
+      }
+
+      /// <summary>
     /// Gets the free subscription regardless project type.
     /// </summary>
     /// <param name="customerUid">The customer uid.</param>
@@ -170,12 +176,53 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       return projectList;
     }
 
-    /// <summary>
-    /// Updates the project.
-    /// </summary>
-    /// <param name="project">The project.</param>
-    /// <returns></returns>
-    protected async Task UpdateProject(UpdateProjectEvent project)
+        /// <summary>
+        /// Gets the project.
+        /// </summary>
+        /// <param name="projectUid">The project uid.</param>
+        /// <returns></returns>
+        protected async Task<ProjectDescriptor> GetProject(string projectUid)
+        {
+            var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+            log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+            var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).First(p=>p.ProjectUID==projectUid);
+
+            if (projects == null)
+            {
+                log.LogWarning($"User doesn't have access to {projectUid}");
+                throw new ServiceException(HttpStatusCode.Forbidden,
+                    new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+                        "No access to the project for a user or project does not exists."));
+
+            }
+
+            log.LogInformation($"Project {projectUid} retrieved");
+
+            var project = new ProjectDescriptor()
+            {
+                ProjectType = projects.ProjectType,
+                Name = projects.Name,
+                ProjectTimeZone = projects.ProjectTimeZone,
+                IsArchived = projects.IsDeleted || projects.SubscriptionEndDate < DateTime.UtcNow,
+                StartDate = projects.StartDate.ToString("O"),
+                EndDate = projects.EndDate.ToString("O"),
+                ProjectUid = projects.ProjectUID,
+                LegacyProjectId = projects.LegacyProjectID,
+                ProjectGeofenceWKT = projects.GeometryWKT,
+                CustomerUID = projects.CustomerUID,
+                LegacyCustomerId = projects.LegacyCustomerID.ToString()
+            };
+
+            return project;
+        }
+
+
+        /// <summary>
+        /// Updates the project.
+        /// </summary>
+        /// <param name="project">The project.</param>
+        /// <returns></returns>
+        protected async Task UpdateProject(UpdateProjectEvent project)
     {
       ProjectDataValidator.Validate(project, projectService);
       project.ReceivedUTC = DateTime.UtcNow;
