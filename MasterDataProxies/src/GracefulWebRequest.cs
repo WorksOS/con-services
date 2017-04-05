@@ -103,6 +103,58 @@ namespace VSS.Raptor.Service.Common.Proxies
         }
 
 
+        public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload,
+            IDictionary<string, string> customHeaders = null)
+        {
+            log.LogDebug("Requesting project data from {0}", endpoint);
+            if (customHeaders != null)
+            {
+                log.LogDebug("Custom Headers:");
+                foreach (var key in customHeaders.Keys)
+                {
+                    log.LogDebug("   {0}: {1}", key, customHeaders[key]);
+                }
+            }
+
+            var request = WebRequest.Create(endpoint);
+            request.Method = "POST";
+            if (request is HttpWebRequest)
+            {
+                var httpRequest = request as HttpWebRequest;
+                httpRequest.Accept = "application/json";
+                //Add custom headers e.g. JWT, CustomerUid, UserUid
+                if (customHeaders != null)
+                {
+                    foreach (var key in customHeaders.Keys)
+                    {
+                        httpRequest.Headers[key] = customHeaders[key];
+                    }
+                }
+                //TODO Add timeout here
+                //httpRequest.Timeout = 10000;//not in .netcore
+            }
+            request.ContentType = "application/octet-stream"; //What should be the payload format?
+            using (var writeStream = await request.GetRequestStreamAsync())
+            {
+                await payload.CopyToAsync(writeStream);
+            }
+
+            return await Policy
+                .Handle<Exception>()
+                .Retry(3)
+                .ExecuteAndCapture(async () =>
+                {
+                    string responseString = null;
+                    using (var response = await request.GetResponseAsync())
+                    {
+                        responseString = GetStringFromResponseStream(response);
+                    }
+                    if (!string.IsNullOrEmpty(responseString))
+                        return JsonConvert.DeserializeObject<T>(responseString);
+                    return default(T);
+                }).Result;
+        }
+
         //////// TEMP CODE ///////
         private T GetFromFile<T>(string endpoint)
         {
