@@ -63,6 +63,7 @@ namespace TestUtility
           msg.DisplayWebApi(httpMethod, resourceUri, resp, payloadData);      
           return resp;
         }
+        msg.DisplayException(ex.Message);
         return string.Empty;
       }
     }

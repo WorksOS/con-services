@@ -94,7 +94,7 @@ namespace TestUtility
     {
       var sqlQuery = @"SELECT COUNT(*) FROM `{0}`.{1} WHERE {2}='{3}'";
       var result = GetDatabaseCountForEvents(string.Format(sqlQuery, appConfig.dbSchema, table, column, uid), expectedEventCount);
-      msg.DisplayResults(expectedEventCount + " records", result + " records");
+     // msg.DisplayResults(expectedEventCount + " records", result + " records");
       Assert.AreEqual(expectedEventCount, result, " Number of expected events do not match actual events in database");
     }
 

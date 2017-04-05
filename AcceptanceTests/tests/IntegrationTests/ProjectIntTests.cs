@@ -411,7 +411,7 @@ namespace IntegrationTests
     /// TODO
     /// Currently this is allowed, although this may be revisited in the future
     /// </summary>
-    [TestMethod] [Ignore]
+    [TestMethod] 
     public void Try_To_Associate_Geofence_With_Multiple_Projects()
     {
       var msg = new Msg();
@@ -445,7 +445,7 @@ namespace IntegrationTests
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_GeofenceUID", 1, geofenceGuid);
       mysql.VerifyTestResultDatabaseFieldsAreExpected("ProjectGeofence", "fk_GeofenceUID", "fk_ProjectUID", $"{projectGuid}", geofenceGuid);
 
-      ts.AssociateGeofenceProjectViaWebApi(projectGuid2, geofenceGuid, DateTime.Now, HttpStatusCode.BadRequest);
+      ts.AssociateGeofenceProjectViaWebApi(projectGuid2, geofenceGuid, DateTime.Now, HttpStatusCode.OK);
       mysql.VerifyTestResultDatabaseRecordCount("ProjectGeofence", "fk_ProjectUID", 1, projectGuid2);
 
       var expectedProjects = new string[] {
