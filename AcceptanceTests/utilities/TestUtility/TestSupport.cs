@@ -7,10 +7,12 @@ using System.Net.Http;
 using System.Threading;
 using System.Dynamic;
 using System.Text.RegularExpressions;
+using System.Reflection;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApi.Models;
+using ProjectWebApi.ResultsHandling;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
@@ -190,7 +192,7 @@ namespace TestUtility
             var topicName = SetTheKafkaTopicFromTheEvent(eventObject.EventType);
             if (IsPublishToWebApi)
             {
-              CallWebApiWithProject(jsonString, eventObject.EventType);
+              CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID);
             }
             else
             {
@@ -212,25 +214,51 @@ namespace TestUtility
       }
     }
 
+    public string PublishEventToWebApi(string[] eventArray)
+    {
+      try
+      {
+        msg.DisplayEventsToConsole(eventArray);      
+        var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
+        var eventRow = eventArray.ElementAt(1).Split(SEPARATOR);
+        dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);        
+        var eventDate = eventObject.EventDate;
+        LastEventDate = eventDate;
+        var jsonString = BuildEventIntoObject(eventObject);
+        var response = CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID);
+        return response;
+      }
+      catch (Exception ex)
+      {
+        msg.DisplayException(ex.Message);
+        return ex.Message;
+      }
+    }
+
+
     /// <summary>
     /// Call the version 4 of the project master data
     /// </summary>
     /// <param name="jsonString"></param>
     /// <param name="eventType"></param>
-    private void CallWebApiWithProject(string jsonString, string eventType)
+    /// <param name="customerUid"></param>
+    private string CallWebApiWithProject(string jsonString, string eventType, string customerUid)
     {
+      var response = string.Empty;
       switch (eventType)
       {
         case "CreateProjectEvent":
-          CallProjectWebApiV4("api/v4/project/", HttpMethod.Post.ToString(), jsonString, CustomerUid.ToString());
+          response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Post.ToString(), jsonString, customerUid);
           break;
         case "UpdateProjectEvent":
-          CallProjectWebApiV4("api/v4/project/", HttpMethod.Put.ToString(), jsonString, CustomerUid.ToString());
+          response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Put.ToString(), jsonString, customerUid);
           break;
         case "DeleteProjectEvent":
-          CallProjectWebApiV4("api/v4/project/", HttpMethod.Delete.ToString(), jsonString, CustomerUid.ToString());
+          response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Delete.ToString(), jsonString, customerUid);
           break;
-      }      
+      }   
+      var jsonResponse = JsonConvert.DeserializeObject<ContractExecutionResult>(response);
+      return jsonResponse.Message;
     }
 
     /// <summary>
@@ -380,7 +408,7 @@ namespace TestUtility
       }
     }
 
-    public void GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
+    public void GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
     {
       var response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Get.ToString(), null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
@@ -397,7 +425,29 @@ namespace TestUtility
           var actualProjects = projectDescriptorsListResult.ProjectDescriptors.OrderBy(p => p.ProjectUid).ToList();
           var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
           msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
-          CollectionAssert.AreEqual(expectedProjects, actualProjects);
+          Assert.IsFalse(expectedResultsArray.Length == actualProjects.Count, " Number of projects return do not match expected");
+          CompareTheActualProjectListWithExpected(actualProjects, expectedProjects,ignoreZeros);
+        }
+      }
+    }
+
+    private void CompareTheActualProjectListWithExpected(List<ProjectDescriptor> actualProjects, List<ProjectDescriptor> expectedProjects, bool ignoreZeros)
+    {
+      for (var cntlist = 0; cntlist < actualProjects.Count; cntlist++)
+      {
+        var oType = actualProjects[cntlist].GetType();
+        foreach (var oProperty in oType.GetProperties())
+        {
+          var expectedValue = oProperty.GetValue(expectedProjects[cntlist], null);
+          var actualValue = oProperty.GetValue(actualProjects[cntlist], null);
+          if (expectedValue.ToString() == "0" && ignoreZeros == true)
+          {
+            continue;
+          }
+          if (!object.Equals(expectedValue, actualValue))
+          {
+            Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue + " on the " + cntlist + 1 + " element in the list");
+          }
         }
       }
     }
@@ -886,17 +936,23 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
-            ProjectID  = int.Parse(eventObject.ProjectID), 
-            ProjectName = eventObject.ProjectName,
             ProjectStartDate = DateTime.Parse(eventObject.ProjectStartDate),
+            ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
+            ProjectName = eventObject.ProjectName,
             ProjectTimezone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            ProjectUID = new Guid(eventObject.ProjectUID),
             ProjectBoundary = eventObject.ProjectBoundary,
-            CustomerUID = new Guid(eventObject.CustomerUID),
-            CustomerID = int.Parse(eventObject.ProjectID)
+            ProjectUID = new Guid(eventObject.ProjectUID),
+            CustomerUID = new Guid(eventObject.CustomerUID)
           };
+          if (HasProperty(eventObject, "ProjectID"))
+          {
+            createProjectEvent.ProjectID = int.Parse(eventObject.ProjectID);
+          }
+          if (HasProperty(eventObject, "CustomerID"))
+          {
+            createProjectEvent.CustomerID = int.Parse(eventObject.CustomerID);
+          }
           jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(createProjectEvent, jsonSettings) : JsonConvert.SerializeObject(new {CreateProjectEvent = createProjectEvent}, jsonSettings);
           break;
         case "UpdateProjectEvent":
@@ -1065,7 +1121,12 @@ namespace TestUtility
     /// <returns>true or false</returns>
     private static bool HasProperty(dynamic obj, string propertyName)
     {
-      return ((IDictionary<string, object>)obj).ContainsKey(propertyName);
+      var expandoDict = (IDictionary<string, object>) obj;
+      if (expandoDict.ContainsKey(propertyName) && expandoDict[propertyName] != null)
+      {
+        return true;
+      }
+      return false;
     }
 
     /// <summary>
@@ -1136,17 +1197,19 @@ namespace TestUtility
             StartDate = eventObject.ProjectStartDate,
             EndDate = eventObject.ProjectEndDate,
             ProjectUid = eventObject.ProjectUID,
-            ProjectGeofenceWKT = eventObject.ProjectBoundary,
-            LegacyProjectId = int.Parse(eventObject.ProjectID)             
+            ProjectGeofenceWKT = eventObject.ProjectBoundary,                        
           };
-
+          if (HasProperty(eventObject, "ProjectID"))
+          {
+            pd.LegacyProjectId = int.Parse(eventObject.ProjectID);
+          }
           if (HasProperty(eventObject, "CustomerUID"))
           {
             pd.CustomerUID = eventObject.CustomerUID;
           }
-          if (HasProperty(eventObject, "LegacyCustomerId"))
+          if (HasProperty(eventObject, "CustomerID"))
           {
-            pd.LegacyCustomerId = eventObject.LegacyCustomerId;
+            pd.LegacyCustomerId = eventObject.CustomerID;
           }
           eventList.Add(pd);
         }
@@ -1209,7 +1272,7 @@ namespace TestUtility
     /// <param name="configJson"></param>
     /// <param name="customerUid"></param>
     /// <returns></returns>
-    private string CallProjectWebApiV4(string routeSuffix, string method , string configJson, string customerUid = null)
+    public string CallProjectWebApiV4(string routeSuffix, string method , string configJson, string customerUid = null)
     {
       var uri = GetBaseUri()  + routeSuffix;  // "http://localhost:20979/"
       var restClient = new RestClientUtil();
