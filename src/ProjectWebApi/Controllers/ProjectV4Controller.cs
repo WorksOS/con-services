@@ -90,8 +90,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
             ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
 
             string wktBoundary = project.ProjectBoundary;
+            log.LogDebug($"Testing if there are overlapping projects for project {project.ProjectName}");
             await DoesProjectOverlap(project, wktBoundary);
-            // todo ensure a legacyProjectID and legacyCustomerId exist & put in project - another US 
 
             //Convert to old format for Kafka for consistency on kakfa queue
             string kafkaBoundary = project.ProjectBoundary
@@ -122,6 +122,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
             await CreateAssociateProjectCustomer(customerProject);
 
             var userUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).Name;
+            log.LogDebug($"Creating a geofence for project {project.ProjectName}");
             await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "", project.ProjectBoundary,
                 0,
                 true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
@@ -200,6 +201,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         protected override async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
             string databaseProjectBoundary)
         {
+            log.LogDebug($"Creating the project {project.ProjectName}");
             await projectService.StoreEvent(project).ConfigureAwait(false);
             if (project.ProjectID <= 0)
             {
@@ -208,12 +210,12 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
                     project.ProjectID = existing.LegacyProjectID;
                 else
                 {
-                    throw new ServiceException(HttpStatusCode.Forbidden,
+                    throw new ServiceException(HttpStatusCode.InternalServerError,
                         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
                             "LegacyProjectId has not been generated"));
                 }
             }
-
+            log.LogDebug($"Using Legacy projectId {project.ProjectID} for project {project.ProjectName}");
             //Send boundary as old format on kafka queue
             project.ProjectBoundary = kafkaProjectBoundary;
             var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
@@ -240,10 +242,12 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
                     project.ProjectStartDate, project.ProjectEndDate).ConfigureAwait(false);
             if (overlaps)
             {
+                log.LogWarning($"There are overlappitn projects for {project.ProjectName}, dates {project.ProjectStartDate}:{project.ProjectEndDate}, geofence {databaseProjectBoundary}");
                 throw new ServiceException(HttpStatusCode.Forbidden,
                     new ContractExecutionResult(ContractExecutionStatesEnum.NoValidSubscription,
                         "Project boundary overlaps another project, for this customer and time span"));
             }
+            log.LogDebug($"No overlapping projects for {project.ProjectName}");
             return overlaps;
         }
 
@@ -255,6 +259,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         /// <returns></returns>
         private async Task CreateAssociateProjectCustomer(AssociateProjectCustomer customerProject)
         {
+            log.LogDebug($"Associating Project {customerProject.ProjectUID} with Customer {customerProject.CustomerUID}");
             var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
             producer.Send(kafkaTopicName,
                 new List<KeyValuePair<string, string>>()
