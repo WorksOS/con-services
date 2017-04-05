@@ -9,7 +9,7 @@ using Repositories.DBModels;
 namespace IntegrationTests
 {
   [TestClass]
-  public class ProjectsForCustomer
+  public class ProjectIntTests
   {
     private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project-Only";
 

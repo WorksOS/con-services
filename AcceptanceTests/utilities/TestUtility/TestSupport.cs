@@ -403,7 +403,9 @@ namespace TestUtility
           var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
           var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
           msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
-          CollectionAssert.AreEqual(expectedProjects, actualProjects);
+          //CollectionAssert.AreEqual(expectedProjects, actualProjects);
+          Assert.IsFalse(expectedResultsArray.Length == actualProjects.Count, " Number of projects return do not match expected");
+          CompareTheActualProjectListWithExpected(actualProjects, expectedProjects,true);
         }
       }
     }
@@ -440,9 +442,16 @@ namespace TestUtility
         {
           var expectedValue = oProperty.GetValue(expectedProjects[cntlist], null);
           var actualValue = oProperty.GetValue(actualProjects[cntlist], null);
-          if (expectedValue.ToString() == "0" && ignoreZeros == true)
+          if (ignoreZeros)
           {
-            continue;
+            if (expectedValue == null)
+            {
+              continue;
+            }
+            if (expectedValue.ToString() == "0")
+            {
+              continue;
+            }
           }
           if (!object.Equals(expectedValue, actualValue))
           {
