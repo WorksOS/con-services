@@ -80,13 +80,13 @@ namespace VSS.Raptor.Service.WebApi.Coord.Controllers
     /// <returns>
     /// True for success and false for failure.
     /// </returns>
-    /// <executor>CoordinateSystemValidationExecutor</executor>
+    /// <executor>CoordinateSystemExecutorPost</executor>
     [Route("api/v1/coordsystem/validation")]
     [HttpPost]
-    public CoordinateSystemValidationResult PostValidate([FromBody]CoordinateSystemFileValidationRequest request)
+    public CoordinateSystemSettings PostValidate([FromBody]CoordinateSystemFileValidationRequest request)
     {
       request.Validate();
-      return RequestExecutorContainer.Build<CoordinateSystemValidationExecutor>(logger, raptorClient, null).Process(request) as CoordinateSystemValidationResult;
+      return RequestExecutorContainer.Build<CoordinateSystemExecutorPost>(logger, raptorClient, null).Process(request) as CoordinateSystemSettings;
     }
 
     /// <summary>

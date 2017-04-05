@@ -118,7 +118,7 @@ namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
         -1, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
-      CoordinateSystemValidationExecutor executor = new CoordinateSystemValidationExecutor(mockLogger.Object, mockRaptorClient.Object);
+      CoordinateSystemExecutorPost executor = new CoordinateSystemExecutorPost(mockLogger.Object, mockRaptorClient.Object);
 
       ContractExecutionResult result = executor.Process(request);
 
@@ -151,7 +151,7 @@ namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
         -1, out csSettings)).Returns(raptorResult);
 
       // Create an executor...
-      CoordinateSystemValidationExecutor executor = new CoordinateSystemValidationExecutor(mockLogger.Object, mockRaptorClient.Object);
+      CoordinateSystemExecutorPost executor = new CoordinateSystemExecutorPost(mockLogger.Object, mockRaptorClient.Object);
 
       Assert.ThrowsException<ServiceException>(() => executor.Process(request));
     }
