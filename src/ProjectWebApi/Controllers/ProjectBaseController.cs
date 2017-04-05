@@ -176,12 +176,53 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       return projectList;
     }
 
-    /// <summary>
-    /// Updates the project.
-    /// </summary>
-    /// <param name="project">The project.</param>
-    /// <returns></returns>
-    protected async Task UpdateProject(UpdateProjectEvent project)
+        /// <summary>
+        /// Gets the project.
+        /// </summary>
+        /// <param name="projectUid">The project uid.</param>
+        /// <returns></returns>
+        protected async Task<ProjectDescriptor> GetProject(string projectUid)
+        {
+            var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+            log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+            var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).First(p=>p.ProjectUID==projectUid);
+
+            if (projects == null)
+            {
+                log.LogWarning($"User doesn't have access to {projectUid}");
+                throw new ServiceException(HttpStatusCode.Forbidden,
+                    new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+                        "No access to the project for a user or project does not exists."));
+
+            }
+
+            log.LogInformation($"Project {projectUid} retrieved");
+
+            var project = new ProjectDescriptor()
+            {
+                ProjectType = projects.ProjectType,
+                Name = projects.Name,
+                ProjectTimeZone = projects.ProjectTimeZone,
+                IsArchived = projects.IsDeleted || projects.SubscriptionEndDate < DateTime.UtcNow,
+                StartDate = projects.StartDate.ToString("O"),
+                EndDate = projects.EndDate.ToString("O"),
+                ProjectUid = projects.ProjectUID,
+                LegacyProjectId = projects.LegacyProjectID,
+                ProjectGeofenceWKT = projects.GeometryWKT,
+                CustomerUID = projects.CustomerUID,
+                LegacyCustomerId = projects.LegacyCustomerID.ToString()
+            };
+
+            return project;
+        }
+
+
+        /// <summary>
+        /// Updates the project.
+        /// </summary>
+        /// <param name="project">The project.</param>
+        /// <returns></returns>
+        protected async Task UpdateProject(UpdateProjectEvent project)
     {
       ProjectDataValidator.Validate(project, projectService);
       project.ReceivedUTC = DateTime.UtcNow;

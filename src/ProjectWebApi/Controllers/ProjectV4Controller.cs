@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
@@ -47,6 +48,18 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
             };
         }
 
+        /// <summary>
+        /// Gets a project for a customer. 
+        /// </summary>
+        /// <returns>A project data</returns>
+        [Route("api/v4/project")]
+        [HttpGet]
+        public async Task<ProjectDescriptor> GetProjectV4([FromQuery] string projectUid)
+        {
+            log.LogInformation("GetProjectV4");
+            return await GetProject(projectUid).ConfigureAwait(false);
+        }
+
 
         /// <summary>
         /// Gets available subscription for a customer
@@ -63,11 +76,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
             //return empty list if no subscriptions available
             return new SubscriptionsListResult()
             {
-                SubscriptionDescriptors = (await GetFreeSubs(customerUid).ConfigureAwait(false))
+                SubscriptionDescriptors =
+                    (await GetFreeSubs(customerUid).ConfigureAwait(false)).Select(
+                        SubscriptionDescriptor.FromSubscription).ToImmutableList()
             };
         }
-
-
 
         // POST: api/project
         /// <summary>
@@ -242,7 +255,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
                     project.ProjectStartDate, project.ProjectEndDate).ConfigureAwait(false);
             if (overlaps)
             {
-                log.LogWarning($"There are overlappitn projects for {project.ProjectName}, dates {project.ProjectStartDate}:{project.ProjectEndDate}, geofence {databaseProjectBoundary}");
+                log.LogWarning(
+                    $"There are overlappitn projects for {project.ProjectName}, dates {project.ProjectStartDate}:{project.ProjectEndDate}, geofence {databaseProjectBoundary}");
                 throw new ServiceException(HttpStatusCode.Forbidden,
                     new ContractExecutionResult(ContractExecutionStatesEnum.NoValidSubscription,
                         "Project boundary overlaps another project, for this customer and time span"));
