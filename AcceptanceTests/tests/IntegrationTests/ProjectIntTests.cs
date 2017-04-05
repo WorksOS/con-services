@@ -411,7 +411,7 @@ namespace IntegrationTests
     /// TODO
     /// Currently this is allowed, although this may be revisited in the future
     /// </summary>
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void Try_To_Associate_Geofence_With_Multiple_Projects()
     {
       var msg = new Msg();

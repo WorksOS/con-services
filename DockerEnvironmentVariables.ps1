@@ -36,7 +36,8 @@
 [Environment]::SetEnvironmentVariable("KAFKA_PORT", "9092", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_GROUP_NAME", "Project-Consumer", "Machine")
 [Environment]::SetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX", "-Dev", "Machine")
-[Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://10.97.96.103:3001/api/v3/project/", "Machine")
-[Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://10.97.96.103:3001/api/v3/project/", "Machine")
-
+[Environment]::SetEnvironmentVariable("WEBAPI_URI", "http://10.97.96.103:3001/", "Machine")
+[Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://10.97.96.103:3001/", "Machine")
+[Environment]::SetEnvironmentVariable("ASSOCIATESUBSPROJECT_API_URL", "http://mockprojectwebapi:5001/", "Machine")
+[Environment]::SetEnvironmentVariable("CREATEGEOFENCE_API_URL", "http://mockprojectwebapi:5001/", "Machine")
 
