@@ -9,7 +9,7 @@ services:
     depends_on:
       - schema
   schema:
-    build: ./database 
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest
     env_file:
      - docker-compose-dev.env
     depends_on:
