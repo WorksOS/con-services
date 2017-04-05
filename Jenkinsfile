@@ -67,6 +67,12 @@ node('Ubuntu_Slave') {
 	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-${fullVersion}"
 
 	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-${fullVersion}"
+		   
+		   sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion} ./database"
+ 
+	       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion}"
+
+	       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest-release-${fullVersion}"
 
 	}
 	else
@@ -84,6 +90,17 @@ node('Ubuntu_Slave') {
 
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}-${branch}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest"
+	   
+	   sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:${fullVersion}-${branch} ./database"
+ 
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest ./database"
+ 
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:${fullVersion}-${branch}"
+
+       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db"
+
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:${fullVersion}-${branch}"
+       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest"
 	}
 
     }
