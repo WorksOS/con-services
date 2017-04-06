@@ -22,7 +22,7 @@
     "Microsoft.Extensions.Logging": "1.1.0",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
-    "VSS.Interfaces.netcore": "1.0.3",
+    "VSS.Interfaces.netcore": "*",
     "KafkaConsumer.netcore": "1.0.6",
     "MasterDataRepos.netcore": "*",
     "MasterDataProxies.netcore": "*"
