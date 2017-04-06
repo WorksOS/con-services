@@ -48,5 +48,40 @@ namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
             coordSystemFile = CoordinateSystemFile.CreateCoordinateSystemFile(1, null, fileName);
             Assert.IsFalse(validator.TryValidate(coordSystemFile, out results));
         }
+
+    [TestMethod]
+    public void CoordinateSystemFileValidationRequestTest()
+    {
+      var validator = new DataAnnotationsValidator();
+
+      ICollection<ValidationResult> results;
+
+      string fileName = "test.dc";
+
+      byte[] fileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+
+      // Test the CreateCoordinateSystemFileValidationRequest() method with valid parameters... 
+      CoordinateSystemFileValidationRequest coordSystemFileValidation = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(fileContent, "test.dc");
+      Assert.IsTrue(validator.TryValidate(coordSystemFileValidation, out results));
+
+      // Test the CreateCoordinateSystemFileValidationRequest() method with a file name length exceeds 256 characters... 
+      string prefix = "overlimit";
+      //int maxCount = (int)(CoordinateSystemFile.MAX_FILE_NAME_LENGTH / prefix.Length);
+
+      for (int i = 1; prefix.Length <= CoordinateSystemFileValidationRequest.MAX_FILE_NAME_LENGTH; i++)
+        prefix += prefix;
+
+      coordSystemFileValidation = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(fileContent, prefix + fileName);
+      Assert.IsFalse(validator.TryValidate(coordSystemFileValidation, out results));
+
+      // Test the CreateCoordinateSystemFileValidationRequest() method with no file name provided... 
+      coordSystemFileValidation = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(fileContent, string.Empty);
+      Assert.IsFalse(validator.TryValidate(coordSystemFileValidation, out results));
+
+      // Test the CreateCoordinateSystemFileValidationRequest() method with no content provided... 
+      coordSystemFileValidation = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(null, fileName);
+      Assert.IsFalse(validator.TryValidate(coordSystemFileValidation, out results));
     }
+
+  }
 }

@@ -1,18 +1,19 @@
 ﻿
+using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Filters.Validation;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
-
+using VSS.Raptor.Service.WebApiModels.Interfaces;
 
 namespace VSS.Raptor.Service.WebApiModels.Coord.Models
 {
   /// <summary>
   /// Coordinate system (CS) definition file domain object. Model represents a coordinate system definition.
   /// </summary>
-  public class CoordinateSystemFile : ProjectID, IValidatable
-    {
+  public class CoordinateSystemFile : ProjectID, IValidatable, IIsProjectIDApplicable
+  {
         public const int MAX_FILE_NAME_LENGTH = 256;
 
         /// <summary>
@@ -82,5 +83,10 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Models
             // Validation rules might be placed in here...
             // throw new NotImplementedException();
         }
+
+    public bool HasProjectID()
+    {
+      return true;
     }
+  }
 }
