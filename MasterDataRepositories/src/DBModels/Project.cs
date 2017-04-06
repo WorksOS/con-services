@@ -39,6 +39,9 @@ namespace Repositories.DBModels
     public int ServiceTypeID { get; set; } = 0;
     public DateTime? SubscriptionStartDate { get; set; }
 
+    public string CoordinateSystemFileName { get; set; }
+    public DateTime? CoordinateSystemLastActionedUTC { get; set; }
+
     public override bool Equals(object obj)
     {
       var otherProject = obj as Project;
@@ -53,6 +56,8 @@ namespace Repositories.DBModels
             && otherProject.EndDate == this.EndDate
             && otherProject.LastActionedUTC == this.LastActionedUTC
             && otherProject.GeometryWKT == this.GeometryWKT
+            && otherProject.CoordinateSystemFileName == this.CoordinateSystemFileName           
+            && otherProject.CoordinateSystemLastActionedUTC == this.CoordinateSystemLastActionedUTC
             ;
     }
     public override int GetHashCode() { return 0; }

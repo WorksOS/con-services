@@ -74,7 +74,9 @@ namespace RepositoryTests
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUTC,
-        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
+        CoordinateSystemFileName = "thisLocation\\this.cs"
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -103,6 +105,7 @@ namespace RepositoryTests
       Assert.AreEqual(1, s.Result, "Project event not written");
 
       Project project = CopyModel(createProjectEvent);
+      project.CoordinateSystemLastActionedUTC = createProjectEvent.ActionUTC;
       g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
@@ -491,6 +494,9 @@ namespace RepositoryTests
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+
+        CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
+        CoordinateSystemFileName = "thisLocation\\this.cs",
         ActionUTC = ActionUTC
       };
 
@@ -511,6 +517,7 @@ namespace RepositoryTests
         ProjectTimezone = createProjectEvent.ProjectTimezone,
 
         ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
+        CoordinateSystemFileName = "thatLocation\\that.cs",
         ActionUTC = ActionUTC.AddHours(1)
       };
 
@@ -540,6 +547,8 @@ namespace RepositoryTests
       project.EndDate = updateProjectEvent.ProjectEndDate;
       project.LastActionedUTC = updateProjectEvent.ActionUTC;
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project.CoordinateSystemFileName = updateProjectEvent.CoordinateSystemFileName;
+      project.CoordinateSystemLastActionedUTC = updateProjectEvent.ActionUTC;
       g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
@@ -1060,7 +1069,8 @@ namespace RepositoryTests
         ProjectStartDate = project.StartDate,
         ProjectEndDate = project.EndDate,
         ActionUTC = project.LastActionedUTC,
-        ProjectBoundary = project.GeometryWKT
+        ProjectBoundary = project.GeometryWKT,
+        CoordinateSystemFileName = project.CoordinateSystemFileName
       };
     }
 
@@ -1080,7 +1090,8 @@ namespace RepositoryTests
         LastActionedUTC = kafkaProjectEvent.ActionUTC,
         StartDate = kafkaProjectEvent.ProjectStartDate,
         EndDate = kafkaProjectEvent.ProjectEndDate,
-        GeometryWKT = kafkaProjectEvent.ProjectBoundary
+        GeometryWKT = kafkaProjectEvent.ProjectBoundary,
+        CoordinateSystemFileName = kafkaProjectEvent.CoordinateSystemFileName
       };
     }
     #endregion Private
