@@ -388,6 +388,12 @@ namespace TestUtility
       CallProjectWebApi(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence", HttpMethod.Post.ToString() ,CustomerUid.ToString());
     }
 
+    /// <summary>
+    /// Call web api version 3
+    /// </summary>
+    /// <param name="statusCode"></param>
+    /// <param name="customerUid"></param>
+    /// <param name="expectedResultsArray"></param>
     public void GetProjectsViaWebApiV3AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray)
     {
       var response = CallProjectWebApi(null, "", statusCode, "Get", "GET", customerUid == Guid.Empty ? null : customerUid.ToString());
@@ -403,13 +409,19 @@ namespace TestUtility
           var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
           var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
           msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
-          //CollectionAssert.AreEqual(expectedProjects, actualProjects);
           Assert.IsFalse(expectedResultsArray.Length == actualProjects.Count, " Number of projects return do not match expected");
           CompareTheActualProjectListWithExpected(actualProjects, expectedProjects,true);
         }
       }
     }
 
+    /// <summary>
+    /// Call web api version 4 
+    /// </summary>
+    /// <param name="statusCode"></param>
+    /// <param name="customerUid"></param>
+    /// <param name="expectedResultsArray"></param>
+    /// <param name="ignoreZeros"></param>
     public void GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
     {
       var response = CallProjectWebApiV4("api/v4/projects/", HttpMethod.Get.ToString(), null, customerUid.ToString());
@@ -427,13 +439,34 @@ namespace TestUtility
           var actualProjects = projectDescriptorsListResult.ProjectDescriptors.OrderBy(p => p.ProjectUid).ToList();
           var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
           msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
-          Assert.IsFalse(expectedResultsArray.Length == actualProjects.Count, " Number of projects return do not match expected");
+          Assert.IsTrue(expectedResultsArray.Length-1 == actualProjects.Count, " Number of projects return do not match expected");
           CompareTheActualProjectListWithExpected(actualProjects, expectedProjects,ignoreZeros);
         }
       }
     }
 
-    private void CompareTheActualProjectListWithExpected(List<ProjectDescriptor> actualProjects, List<ProjectDescriptor> expectedProjects, bool ignoreZeros)
+    public void GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
+    {
+      var response = CallProjectWebApiV4("api/v4/project?projectUid=" + projectUid , HttpMethod.Get.ToString(), null, customerUid.ToString());
+      if (statusCode == HttpStatusCode.OK)
+      {
+        var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectDescriptor>(response);
+        var actualProject = new List<ProjectDescriptor>();
+        actualProject.Add(projectDescriptorResult);
+        var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
+        msg.DisplayResults("Expected project :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
+        Assert.IsTrue(actualProject.Count == 1, " There should be one project");
+        CompareTheActualProjectListWithExpected(actualProject, expectedProjects,ignoreZeros);
+      }
+    }
+
+    /// <summary>
+    /// Compare the two lists of projects
+    /// </summary>
+    /// <param name="actualProjects"></param>
+    /// <param name="expectedProjects"></param>
+    /// <param name="ignoreZeros">Ignore nulls or zeros if expected results</param>
+    public void CompareTheActualProjectListWithExpected(List<ProjectDescriptor> actualProjects, List<ProjectDescriptor> expectedProjects, bool ignoreZeros)
     {
       for (var cntlist = 0; cntlist < actualProjects.Count; cntlist++)
       {
@@ -1269,7 +1302,8 @@ namespace TestUtility
       var uri = GetBaseUri() + "api/v3/project/" + routeSuffix;
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(uri, method, configJson, statusCode, "application/json", customerUid);
-      Console.WriteLine(what + " project response:" + response);
+      if (response.Length > 0)
+         { Console.WriteLine(what + " project response:" + response);}
       return response;
     }
 

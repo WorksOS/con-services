@@ -163,7 +163,7 @@ namespace TestUtility
       {
         var mysqlHelper = new MySqlHelper();
         resultCount = Convert.ToInt32(mysqlHelper.ExecuteMySqlQueryAndReturnRecordCountResult(appConfig.DbConnectionString, query));
-        msg.DisplayMySqlQuery(query);
+        //msg.DisplayMySqlQuery(query);
         if (resultCount == eventCount)
         {
           break;
