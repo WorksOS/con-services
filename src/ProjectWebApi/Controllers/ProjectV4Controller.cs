@@ -256,7 +256,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
             if (overlaps)
             {
                 log.LogWarning(
-                    $"There are overlappitn projects for {project.ProjectName}, dates {project.ProjectStartDate}:{project.ProjectEndDate}, geofence {databaseProjectBoundary}");
+                    $"There are overlapping projects for {project.ProjectName}, dates {project.ProjectStartDate}:{project.ProjectEndDate}, geofence {databaseProjectBoundary}");
                 throw new ServiceException(HttpStatusCode.Forbidden,
                     new ContractExecutionResult(ContractExecutionStatesEnum.NoValidSubscription,
                         "Project boundary overlaps another project, for this customer and time span"));
