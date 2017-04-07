@@ -4,6 +4,7 @@ using Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApi.ResultsHandling;
+using System.IO;
 
 namespace ProjectWebApi.Models
 {
@@ -12,6 +13,20 @@ namespace ProjectWebApi.Models
   /// </summary>
   public class ProjectDataValidator
   {
+    private const int MAX_FILE_NAME_LENGTH = 256;
+
+    /// <summary>
+    /// Validate the coordinateSystem filename
+    /// </summary>
+    /// <param name="fileName">FileName</param>
+    public static void ValidateFileName(string fileName)
+    {
+      if (fileName.Length > MAX_FILE_NAME_LENGTH || string.IsNullOrEmpty(fileName) || fileName.IndexOfAny(Path.GetInvalidPathChars()) > 0 || String.IsNullOrEmpty(Path.GetFileName(fileName)))
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                                          String.Format("Supplied CoordinateSystem filename is not valid. Exceeds the length limit of {0}, empty or contains illegal characters.", MAX_FILE_NAME_LENGTH)));      
+    }
+
     /// <summary>
     /// Validates the data of a specific project event
     /// </summary>

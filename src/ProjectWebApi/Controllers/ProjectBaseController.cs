@@ -27,6 +27,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected readonly ILogger log;
     protected readonly ISubscriptionProxy subsProxy;
     protected readonly IGeofenceProxy geofenceProxy;
+    protected readonly IRaptorProxy raptorProxy;
 
     protected readonly ProjectRepository projectService;
     protected readonly string kafkaTopicName;
@@ -41,10 +42,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <param name="store">The store.</param>
     /// <param name="subsProxy">The subs proxy.</param>
     /// <param name="geofenceProxy">The geofence proxy.</param>
+    /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
     public ProjectBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
         IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-        IGeofenceProxy geofenceProxy, ILoggerFactory logger)
+        IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
     {
       log = logger.CreateLogger<ProjectBaseController>();
       this.producer = producer;
@@ -55,6 +57,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       subsService = subscriptionsRepo as SubscriptionRepository;
       this.subsProxy = subsProxy;
       this.geofenceProxy = geofenceProxy;
+      this.raptorProxy = raptorProxy;
 
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
@@ -87,43 +90,43 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       }
     }
 
-      /// <summary>
-      /// Gets the free subs for a project type
-      /// </summary>
-      /// <param name="customerUid">The customer uid.</param>
-      /// <param name="type">The type.</param>
-      /// <returns></returns>
-      /// <exception cref="ServiceException"></exception>
-      /// <exception cref="ContractExecutionResult">No available subscriptions for the selected customer</exception>
-      protected async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type)
+    /// <summary>
+    /// Gets the free subs for a project type
+    /// </summary>
+    /// <param name="customerUid">The customer uid.</param>
+    /// <param name="type">The type.</param>
+    /// <returns></returns>
+    /// <exception cref="ServiceException"></exception>
+    /// <exception cref="ContractExecutionResult">No available subscriptions for the selected customer</exception>
+    protected async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type)
+    {
+      var availableSubscriptions =
+          (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
+          .Where(s => s.ServiceTypeID == (int)type.MatchSubscriptionType()).ToImmutableList();
+      log.LogDebug($"Receieved {availableSubscriptions.Count()} subscriptions with contents {JsonConvert.SerializeObject(availableSubscriptions)}");
+      var projects =
+          (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
+
+      log.LogDebug($"Receieved {projects.Count()} projects with contents {JsonConvert.SerializeObject(projects)}");
+
+      var availableFreSub = availableSubscriptions
+          .Where(s => !projects
+                          .Where(p => p.ProjectType == type && !p.IsDeleted)
+                          .Select(p => p.SubscriptionUID)
+                          .Contains(s.SubscriptionUID) &&
+                      s.ServiceTypeID == (int)type.MatchSubscriptionType())
+          .ToImmutableList();
+      log.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
+      if (!availableFreSub.Any())
       {
-          var availableSubscriptions =
-              (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
-              .Where(s => s.ServiceTypeID == (int) type.MatchSubscriptionType()).ToImmutableList();
-          log.LogDebug($"Receieved {availableSubscriptions.Count()} subscriptions with contents {JsonConvert.SerializeObject(availableSubscriptions)}");
-          var projects =
-              (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
-
-          log.LogDebug($"Receieved {projects.Count()} projects with contents {JsonConvert.SerializeObject(projects)}");
-
-          var availableFreSub = availableSubscriptions
-              .Where(s => !projects
-                              .Where(p => p.ProjectType == type && !p.IsDeleted)
-                              .Select(p => p.SubscriptionUID)
-                              .Contains(s.SubscriptionUID) &&
-                          s.ServiceTypeID == (int) type.MatchSubscriptionType())
-              .ToImmutableList();
-          log.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
-          if (!availableFreSub.Any())
-          {
-              throw new ServiceException(HttpStatusCode.Forbidden,
-                  new ContractExecutionResult(ContractExecutionStatesEnum.NoValidSubscription,
-                      "No available subscriptions for the selected customer"));
-          }
-          return availableFreSub;
+        throw new ServiceException(HttpStatusCode.Forbidden,
+            new ContractExecutionResult(ContractExecutionStatesEnum.NoValidSubscription,
+                "No available subscriptions for the selected customer"));
       }
+      return availableFreSub;
+    }
 
-      /// <summary>
+    /// <summary>
     /// Gets the free subscription regardless project type.
     /// </summary>
     /// <param name="customerUid">The customer uid.</param>
@@ -170,59 +173,61 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         LegacyProjectId = project.LegacyProjectID,
         ProjectGeofenceWKT = project.GeometryWKT,
         CustomerUID = project.CustomerUID,
-        LegacyCustomerId = project.LegacyCustomerID.ToString()
+        LegacyCustomerId = project.LegacyCustomerID.ToString(),
+        CoordinateSystemFileName = project.CoordinateSystemFileName
       }).ToImmutableList();
 
       return projectList;
     }
 
-        /// <summary>
-        /// Gets the project.
-        /// </summary>
-        /// <param name="projectUid">The project uid.</param>
-        /// <returns></returns>
-        protected async Task<ProjectDescriptor> GetProject(string projectUid)
-        {
-            var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-            log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-            var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).First(p=>p.ProjectUID==projectUid);
+    /// <summary>
+    /// Gets the project.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <returns></returns>
+    protected async Task<ProjectDescriptor> GetProject(string projectUid)
+    {
+      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      var project = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).First(p => p.ProjectUID == projectUid);
 
-            if (projects == null)
-            {
-                log.LogWarning($"User doesn't have access to {projectUid}");
-                throw new ServiceException(HttpStatusCode.Forbidden,
-                    new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
-                        "No access to the project for a user or project does not exists."));
+      if (project == null)
+      {
+        log.LogWarning($"User doesn't have access to {projectUid}");
+        throw new ServiceException(HttpStatusCode.Forbidden,
+            new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+                "No access to the project for a user or project does not exists."));
 
-            }
+      }
 
-            log.LogInformation($"Project {projectUid} retrieved");
+      log.LogInformation($"Project {projectUid} retrieved");
 
-            var project = new ProjectDescriptor()
-            {
-                ProjectType = projects.ProjectType,
-                Name = projects.Name,
-                ProjectTimeZone = projects.ProjectTimeZone,
-                IsArchived = projects.IsDeleted || projects.SubscriptionEndDate < DateTime.UtcNow,
-                StartDate = projects.StartDate.ToString("O"),
-                EndDate = projects.EndDate.ToString("O"),
-                ProjectUid = projects.ProjectUID,
-                LegacyProjectId = projects.LegacyProjectID,
-                ProjectGeofenceWKT = projects.GeometryWKT,
-                CustomerUID = projects.CustomerUID,
-                LegacyCustomerId = projects.LegacyCustomerID.ToString()
-            };
+      var projectDescriptor = new ProjectDescriptor()
+      {
+        ProjectType = project.ProjectType,
+        Name = project.Name,
+        ProjectTimeZone = project.ProjectTimeZone,
+        IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
+        StartDate = project.StartDate.ToString("O"),
+        EndDate = project.EndDate.ToString("O"),
+        ProjectUid = project.ProjectUID,
+        LegacyProjectId = project.LegacyProjectID,
+        ProjectGeofenceWKT = project.GeometryWKT,
+        CustomerUID = project.CustomerUID,
+        LegacyCustomerId = project.LegacyCustomerID.ToString(),
+        CoordinateSystemFileName = project.CoordinateSystemFileName
+      };
 
-            return project;
-        }
+      return projectDescriptor;
+    }
 
 
-        /// <summary>
-        /// Updates the project.
-        /// </summary>
-        /// <param name="project">The project.</param>
-        /// <returns></returns>
-        protected async Task UpdateProject(UpdateProjectEvent project)
+    /// <summary>
+    /// Updates the project.
+    /// </summary>
+    /// <param name="project">The project.</param>
+    /// <returns></returns>
+    protected async Task UpdateProject(UpdateProjectEvent project)
     {
       ProjectDataValidator.Validate(project, projectService);
       project.ReceivedUTC = DateTime.UtcNow;

@@ -65,6 +65,7 @@ namespace ProjectWebApi
             services.AddSingleton<IConfigurationStore, GenericConfiguration>();
             services.AddSingleton<ISubscriptionProxy, SubscriptionProxy>();
             services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
+            services.AddSingleton<IRaptorProxy, RaptorProxy>();
 
             services.AddMvc();
             //Configure swagger

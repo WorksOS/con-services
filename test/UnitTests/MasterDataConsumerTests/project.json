@@ -20,7 +20,7 @@
         "Microsoft.Extensions.Logging.Debug": "1.1.0",
         "ProjectWebApi": "1.0.0-*",
         "KafkaConsumer.netcore": "1.0.6",
-        "MasterDataRepos.netcore": "1.0.49"
+        "MasterDataRepos.netcore": "1.0.51"
     },
 
     "frameworks": {

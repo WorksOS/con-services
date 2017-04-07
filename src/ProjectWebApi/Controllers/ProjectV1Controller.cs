@@ -21,9 +21,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
 
         public ProjectV1Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
             IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-            IGeofenceProxy geofenceProxy, ILoggerFactory logger)
+            IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
             : base(producer, projectRepo, subscriptionsRepo, store,
-                subsProxy, geofenceProxy, logger)
+                subsProxy, geofenceProxy, raptorProxy, logger)
         {
         }
 

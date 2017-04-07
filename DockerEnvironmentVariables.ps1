@@ -24,6 +24,8 @@
 [Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://localhost:3001/", "Machine")
 [Environment]::SetEnvironmentVariable("ASSOCIATESUBSPROJECT_API_URL", "http://mockprojectwebapi:5001/", "Machine")
 [Environment]::SetEnvironmentVariable("CREATEGEOFENCE_API_URL", "http://mockprojectwebapi:5001/", "Machine")
+[Environment]::SetEnvironmentVariable("COORDSYSVALIDATE_API_URL", "http://mockprojectwebapi:5001/", "Machine")
+[Environment]::SetEnvironmentVariable("COORDSYSPOST_API_URL", "http://mockprojectwebapi:5001/", "Machine")
 #>
 <#  Dev environment#>
 [Environment]::SetEnvironmentVariable("MYSQL_DATABASE_NAME", "VSS-MasterData-Project", "Machine")
@@ -40,4 +42,6 @@
 [Environment]::SetEnvironmentVariable("WEBAPI_DEBUG_URI", "http://10.97.96.103:3001/", "Machine")
 [Environment]::SetEnvironmentVariable("ASSOCIATESUBSPROJECT_API_URL", "http://mockprojectwebapi:5001/", "Machine")
 [Environment]::SetEnvironmentVariable("CREATEGEOFENCE_API_URL", "http://mockprojectwebapi:5001/", "Machine")
+[Environment]::SetEnvironmentVariable("COORDSYSVALIDATE_API_URL", "http://mockprojectwebapi:5001/", "Machine")
+[Environment]::SetEnvironmentVariable("COORDSYSPOST_API_URL", "http://mockprojectwebapi:5001/", "Machine")
 
