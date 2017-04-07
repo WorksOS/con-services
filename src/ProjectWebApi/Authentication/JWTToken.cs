@@ -148,9 +148,9 @@ namespace VSS.Project.Service.WebApi.Authentication
           var jwtTokenparts = validJwt.Split('.');
 
           // set isValidjwtToken to true if the jwtToken has three parts
-          isValidJwtToken = jwtTokenparts.Length == 3 &&
-                            (jwtTokenparts[0].Length % 4 == 0 && jwtTokenparts[1].Length % 4 == 0 &&
-                             jwtTokenparts[2].Length % 4 == 0);
+          isValidJwtToken = jwtTokenparts.Length == 3; //&&
+                           // (jwtTokenparts[0].Length%4 == 0 && jwtTokenparts[1].Length%4 == 0 &&
+                           //  jwtTokenparts[2].Length%4 == 0);
         }
       }
 
@@ -175,14 +175,18 @@ namespace VSS.Project.Service.WebApi.Authentication
           // Split the jwtToken into header, claims and signature parts
           var jwtTokenparts = jwtToken.Split('.');
 
-        //select the claims part from jwtTokenParts
-        var claimData = jwtTokenparts[1];
+          //select the claims part from jwtTokenParts
+          var claimData = jwtTokenparts[1];
+
+          //Tempory fix to handle changes in #TPAAS-4770, token length is now variable however 
+          // to decode successfully claimData % 4 == 0 must be true therefore padding is added
+          claimData = claimData.PadRight(claimData.Length + claimData.Length % 4, '=');
 
           // Convert the claimsPart to Base64 format
           var base64ClaimData = Convert.FromBase64String(claimData);
 
-        // Encode the base64 claim data to UTF8 format string
-        var encodedClaimData = Encoding.UTF8.GetString(base64ClaimData);
+          // Encode the base64 claim data to UTF8 format string
+          var encodedClaimData = Encoding.UTF8.GetString(base64ClaimData);
 
 
           // Convert the encoded Claim Data Jwt object
