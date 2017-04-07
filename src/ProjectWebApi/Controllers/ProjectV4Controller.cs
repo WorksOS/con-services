@@ -338,8 +338,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
                               "Landfill is missing its CoordinateSystem"));
       }
 
-      var csFileName = ((UpdateProjectEvent)project).CoordinateSystemFileName;
-      var csFileContent = ((UpdateProjectEvent)project).CoordinateSystemFileContent;
+      var csFileName = (project is CreateProjectEvent) ? ((CreateProjectEvent)project).CoordinateSystemFileName : ((UpdateProjectEvent)project).CoordinateSystemFileName;
+      var csFileContent = (project is CreateProjectEvent) ? ((CreateProjectEvent)project).CoordinateSystemFileContent : ((UpdateProjectEvent)project).CoordinateSystemFileContent;
       if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
       {
         ProjectDataValidator.ValidateFileName(csFileName);
