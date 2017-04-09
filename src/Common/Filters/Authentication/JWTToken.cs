@@ -147,10 +147,11 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
           // split the jwtToken into parts
           var jwtTokenparts = validJwt.Split('.');
 
-          // set isValidjwtToken to true if the jwtToken has three parts
-          isValidJwtToken = jwtTokenparts.Length == 3 &&
-                            (jwtTokenparts[0].Length % 4 == 0 && jwtTokenparts[1].Length % 4 == 0 &&
-                             jwtTokenparts[2].Length % 4 == 0);
+          //Commented sections below are a result of changes in #TPAAS-4770 the length of the token is now variable
+          //this is a temporary fix while a more permanent soultion is developed.
+          isValidJwtToken = jwtTokenparts.Length == 3; //&&
+                           // (jwtTokenparts[0].Length%4 == 0 && jwtTokenparts[1].Length%4 == 0 &&
+                           //  jwtTokenparts[2].Length%4 == 0);
         }
       }
 
@@ -177,6 +178,10 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
 
           //select the claims part from jwtTokenParts
           var claimData = jwtTokenparts[1];
+
+          //Tempory fix to handle changes in #TPAAS-4770, token length is now variable however 
+          // to decode successfully claimData % 4 == 0 must be true therefore padding is added
+          claimData = claimData.PadRight(claimData.Length + (4 - claimData.Length % 4), '=');
 
           // Convert the claimsPart to Base64 format
           var base64ClaimData = Convert.FromBase64String(claimData);
