@@ -181,8 +181,12 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
 
           //Tempory fix to handle changes in #TPAAS-4770, token length is now variable however 
           // to decode successfully claimData % 4 == 0 must be true therefore padding is added
-          claimData = claimData.PadRight(claimData.Length + (4 - claimData.Length % 4), '=');
-
+          if (claimData.Length % 4 != 0)
+          {
+            claimData = claimData.PadRight(claimData.Length + (4 - claimData.Length % 4), '=');
+          }
+          
+ 
           // Convert the claimsPart to Base64 format
           var base64ClaimData = Convert.FromBase64String(claimData);
 
