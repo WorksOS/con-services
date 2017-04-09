@@ -355,19 +355,23 @@ Scenario: Compaction Get CMV Summary
     "cmvDetailPalette": {
       "colorValues": [
         {
-          "color": 16711680,
+          "color": 255,
           "value": 0
         },
         {
           "color": 65280,
-          "value": 76.5
+          "value": 36
         },
         {
           "color": 65280,
-          "value": 93.500000000000014
+          "value": 44
+        },
+        {
+          "color": 16711680,
+          "value": 80
         }
       ],
-      "aboveLastColor": 255,
+      "aboveLastColor": 8421504,
       "belowFirstColor": null
     },
     "passCountDetailPalette": {
@@ -537,7 +541,7 @@ Scenario: Compaction Get CMV Summary
     },
     "Code": 0,
     "Message": "success"
-  }
+  } 
 	"""
 
 
