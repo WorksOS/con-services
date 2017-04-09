@@ -180,7 +180,8 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
           var claimData = jwtTokenparts[1];
 
           //Tempory fix to handle changes in #TPAAS-4770, token length is now variable however 
-          // to decode successfully claimData % 4 == 0 must be true therefore padding is added
+          // to decode successfully claimData % 4 == 0 must be true therefore padding is added.
+          // in Base64 1 char - > 2char so there will never be padding > 2 see https://tools.ietf.org/html/rfc4648#section-8
           if (claimData.Length % 4 != 0)
           {
             claimData = claimData.PadRight(claimData.Length + (4 - claimData.Length % 4), '=');
