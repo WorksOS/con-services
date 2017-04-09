@@ -27,7 +27,8 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Models
     [JsonProperty(PropertyName = "endUTC", Required = Required.Default)]
     public DateTime? endUTC { get; private set; }
     /// <summary>
-    /// Only filter cell passes recorded when the vibratory drum was 'on'.  If set to null, returns all cell passes.  If true, returns only cell passes with the cell pass parameter and the drum was on.  If false, returns only cell passes with the cell pass parameter and the drum was off.
+    /// Only filter cell passes recorded when the vibratory drum was 'on'.  If set to null, returns all cell passes.  
+    /// If true, returns only cell passes with the cell pass parameter and the drum was on.  If false, returns only cell passes with the cell pass parameter and the drum was off.
     /// </summary>
     [JsonProperty(PropertyName = "vibeState", Required = Required.Default)]
     public bool? vibeStateOn { get; private set; }

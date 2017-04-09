@@ -22,12 +22,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private Getter<CompactionCmvPercentChangeResult> cmvPercentChangeRequester;
     private Poster<StatisticsParameters, ProjectStatistics> projectStatisticsPoster;
     private Getter<ElevationStatisticsResult> elevationRangeRequester;
-    private Poster<CompactionTileRequest, TileResult> tilePoster;
+    //private Poster<CompactionTileRequest, TileResult> tilePoster;
+    private Getter<TileResult> tileRequester;
     private Getter<CompactionColorPalettesResult> paletteRequester;
 
-    private CompactionTileRequest tileRequest;
+    //private CompactionTileRequest tileRequest;
     private StatisticsParameters statsRequest;
     private string projectUid;
+    private string queryParameters = string.Empty;
 
 
     [Given(@"the Compaction CMV Summary service URI ""(.*)""")]
@@ -191,6 +193,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void GivenADisplayModeAndABboxLLAndAWidthAndAHeight(int mode, string bbox, int width, int height)
     {
       string[] parts = bbox.Split(new char[] { ',' });
+      /*
       BoundingBox2DLatLon latLngs = new BoundingBox2DLatLon
       {
         bottomLeftLon = double.Parse(parts[1]),
@@ -206,19 +209,24 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         width = (ushort)width,
         height = (ushort)height
       };
+      */
+      queryParameters = string.Format("&mode={0}&blLat={1}&blLon={2}&trLat={3}&trLon={4}&width={5}&height={6}", 
+        mode, parts[0], parts[1], parts[2], parts[3], width, height);
     }
 
 
     [When(@"I request a Tile")]
     public void WhenIRequestATile()
     {
-      tilePoster = PostIt<CompactionTileRequest, TileResult>(tileRequest);
+      //tilePoster = PostIt<CompactionTileRequest, TileResult>(tileRequest);
+      tileRequester = GetIt<TileResult>();
     }
 
     [Then(@"the Tile result should be")]
     public void ThenTheTileResultShouldBe(string multilineText)
     {
-      CompareIt(multilineText, tilePoster);
+      //CompareIt(multilineText, tilePoster);
+      CompareIt<TileResult>(multilineText, tileRequester);
     }
 
     [Given(@"the Compaction Palettes service URI ""(.*)""")]
@@ -245,6 +253,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       {
         this.url = string.Format("{0}?projectUid={1}", this.url, projectUid);
       }
+      this.url += this.queryParameters;
       Getter<T> getter = new Getter<T>(this.url);
       getter.DoValidRequest();
       return getter;

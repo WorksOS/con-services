@@ -747,7 +747,12 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as elevation, compaction, temperature, cut/fill, volumes etc
     /// </summary>
     /// <param name="request">A representation of the tile rendering request.</param>
-    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).</returns>
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
+    /// If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered 
+    /// in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to 
+    /// indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 
+    /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).
+    /// </returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -764,6 +769,148 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
       }
  
+      throw new ServiceException(HttpStatusCode.NoContent,
+           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+               "Raptor failed to return a tile"));
+    }
+
+    /// <summary>
+    /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as 
+    /// elevation, compaction, temperature, cut/fill, volumes etc
+    /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="machines">Cell passes are only considered if the machines that recorded them are included in this list of machines. 
+    /// Use machine ID (historically VL Asset ID), or Machine Name from tagfile, not both.
+    /// This may be null, which is no restriction on machines. </param>
+    /// <param name="blLon">The bottom left corner of the bounding box, expressed in radians</param>
+    /// <param name="blLat">The bottom left corner of the bounding box, expressed in radians</param>
+    /// <param name="trLon">The top right corner of the bounding box, expressed in radians</param>
+    /// <param name="trLat">The top right corner of the bounding box, expressed in radians</param>
+    /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
+    /// <param name="height">The height, in pixels, of the image tile to be rendered</param>
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
+    /// <executor>TilesExecutor</executor> 
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/compaction/tiles")]
+    [HttpGet]
+    public TileResult GetTile(
+      [FromQuery] long? projectId, 
+      [FromQuery] Guid? projectUid, 
+      [FromQuery] DisplayMode mode, 
+      [FromQuery] DateTime? startUtc, 
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn, 
+      [FromQuery] ElevationType? elevationType, 
+      [FromQuery] int? layerNumber, 
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] List<MachineDetails> machines,
+      [FromQuery] double blLon, 
+      [FromQuery] double blLat,
+      [FromQuery] double trLon, 
+      [FromQuery] double trLat, 
+      [FromQuery] int width, 
+      [FromQuery] int height)
+    {
+      log.LogDebug("GetTile: " + Request.QueryString);
+      if (!projectId.HasValue)
+      {
+        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+      }
+      CompactionTileRequest request = CompactionTileRequest.CreateTileRequest(projectId.Value, mode, null, 
+        CompactionFilter.CreateFilter(startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, machines),
+        BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLon, blLat, trLon, trLat), (ushort)width, (ushort)height);
+      var tileResult = GetTile(request);
+      return tileResult;
+    }
+
+
+    /// <summary>
+    /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
+    /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as elevation, compaction, temperature, cut/fill, volumes etc
+    /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="machines">Cell passes are only considered if the machines that recorded them are included in this list of machines. 
+    /// Use machine ID (historically VL Asset ID), or Machine Name from tagfile, not both.
+    /// This may be null, which is no restriction on machines. </param>
+    /// <param name="blLon">The bottom left corner of the bounding box, expressed in radians</param>
+    /// <param name="blLat">The bottom left corner of the bounding box, expressed in radians</param>
+    /// <param name="trLon">The top right corner of the bounding box, expressed in radians</param>
+    /// <param name="trLat">The top right corner of the bounding box, expressed in radians</param>
+    /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
+    /// <param name="height">The height, in pixels, of the image tile to be rendered</param>
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
+    /// If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered 
+    /// in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to 
+    /// indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 
+    /// (number of cells across a subgrid) * 0.34 (default width in meters of a single cell).
+    /// </returns>
+    /// <executor>TilesExecutor</executor> 
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/compaction/tiles/png")]
+    [HttpGet]
+    public FileResult GetTileRaw(
+      [FromQuery] long? projectId,
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DisplayMode mode,
+      [FromQuery] DateTime? startUtc,
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] List<MachineDetails> machines,
+      [FromQuery] double blLon,
+      [FromQuery] double blLat,
+      [FromQuery] double trLon,
+      [FromQuery] double trLat,
+      [FromQuery] int width,
+      [FromQuery] int height)
+    {
+      log.LogDebug("GetTileRaw: " + Request.QueryString);
+      if (!projectId.HasValue)
+      {
+        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+      }
+      CompactionTileRequest request = CompactionTileRequest.CreateTileRequest(projectId.Value, mode, null,
+        CompactionFilter.CreateFilter(startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, machines),
+        BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLon, blLat, trLon, trLat), (ushort)width, (ushort)height);
+      var tileResult = GetTile(request);
+      if (tileResult != null)
+      {
+        Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+        return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
+      }
+
       throw new ServiceException(HttpStatusCode.NoContent,
            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
                "Raptor failed to return a tile"));
