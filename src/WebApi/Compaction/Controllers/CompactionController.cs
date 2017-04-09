@@ -466,7 +466,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       List<DisplayMode> modes = new List<DisplayMode>
       {
-        DisplayMode.Height, DisplayMode.CCVPercent, DisplayMode.PassCount, DisplayMode.PassCountSummary, DisplayMode.CutFill, DisplayMode.TemperatureSummary, DisplayMode.CCVPercentSummary, DisplayMode.MDPPercentSummary, DisplayMode.TargetSpeedSummary, DisplayMode.CMVChange
+        DisplayMode.Height, DisplayMode.CCV, DisplayMode.PassCount, DisplayMode.PassCountSummary, DisplayMode.CutFill, DisplayMode.TemperatureSummary, DisplayMode.CCVPercentSummary, DisplayMode.MDPPercentSummary, DisplayMode.TargetSpeedSummary, DisplayMode.CMVChange
       };
 
       DetailPalette elevationPalette = null;
@@ -512,14 +512,14 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             }
             elevationPalette = DetailPalette.CreateDetailPalette(colorValues, raptorPalette[raptorPalette.Length-1].Colour, raptorPalette[0].Colour);
             break;
-          case DisplayMode.CCVPercent:
-            //TODO: Is this correct?
+          case DisplayMode.CCV:
             colorValues = new List<ColorValue>();
-            for (int i = 0; i < raptorPalette.Length - 1; i++)
+            for (int i = 0; i < raptorPalette.Length; i++)
             {
               colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
             }
-            cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, raptorPalette[raptorPalette.Length - 1].Colour, null);
+            //above hardcoded in Raptor to RGB 128,128,128. No below required as minimum is 0.
+            cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, Colors.Gray, null);
             break;
           case DisplayMode.PassCount:
             colorValues = new List<ColorValue>();
