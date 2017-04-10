@@ -128,6 +128,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="CoordinateSystemPostValidate.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoordinateSystemPostValidate.feature</DependentUpon>
+    </Compile>
     <Compile Include="DesignCache.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -272,6 +277,7 @@
     <Compile Include="StepDefinitions\CoordinateConversionSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemGetSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemPostSteps.cs" />
+    <Compile Include="StepDefinitions\CoordinateSystemPostValidateSteps.cs" />
     <Compile Include="StepDefinitions\ElevationStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportSteps.cs" />
     <Compile Include="StepDefinitions\FileAccessSteps.cs" />
@@ -366,6 +372,10 @@
     <None Include="CoordinateSystemPost.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CoordinateSystemPost.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CoordinateSystemPostValidate.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CoordinateSystemPostValidate.feature.cs</LastGenOutput>
     </None>
     <None Include="DesignCache.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -491,6 +501,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CMVSummaryResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CoordSysValidationResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\CoordSysValidationRequest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\CoordSysRequest.json">
