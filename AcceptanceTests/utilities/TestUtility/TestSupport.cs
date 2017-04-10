@@ -8,6 +8,7 @@ using System.Threading;
 using System.Dynamic;
 using System.Text.RegularExpressions;
 using System.Reflection;
+using System.Text;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -15,8 +16,6 @@ using ProjectWebApi.Models;
 using ProjectWebApi.ResultsHandling;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-
-
 
 namespace TestUtility
 {
@@ -985,7 +984,9 @@ namespace TestUtility
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             ProjectBoundary = eventObject.ProjectBoundary,
             ProjectUID = new Guid(eventObject.ProjectUID),
-            CustomerUID = new Guid(eventObject.CustomerUID)
+            CustomerUID = new Guid(eventObject.CustomerUID),
+            CoordinateSystemFileContent = Encoding.ASCII.GetBytes(tsCfg.coordinateSystem),
+            CoordinateSystemFileName = tsCfg.coordinateSystemFile            
           };
           if (HasProperty(eventObject, "ProjectID"))
           {
@@ -1002,7 +1003,9 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            ProjectUID = new Guid(eventObject.ProjectUID)
+            ProjectUID = new Guid(eventObject.ProjectUID),
+            CoordinateSystemFileContent = Encoding.ASCII.GetBytes(tsCfg.coordinateSystem),
+            CoordinateSystemFileName = tsCfg.coordinateSystemFile        
           };
           if (HasProperty(eventObject, "ProjectEndDate") && eventObject.ProjectEndDate != null)
           {
