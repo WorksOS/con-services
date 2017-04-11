@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -130,7 +131,26 @@ namespace TCCFileAccess.Implementation
             return await GetFiles(org.filespaceId, path, createdAfterUTC);
         }
 
-
+        public Task PutFile(Organization org, string path, string filename, Stream contents)
+        {
+            Log.LogDebug("PutFile: org={0} {1}, fullName={2} {3}", org.shortName, org.filespaceId, path, filename);
+            try
+            {
+                PutFileParams getFileParams = new PutFileParams
+                {
+                    filespaceid = org.filespaceId,
+                    path = path,
+                    replace = true,
+                    commitUpload=true,
+                    upfile=filename
+                };
+            }
+            catch(Exception ex)
+            {
+            }
+            
+            return;
+        }
         /// <summary>
         /// Gets the file. The resulting stream should be disposed after read completed
         /// </summary>

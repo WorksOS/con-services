@@ -12,8 +12,7 @@
     "Newtonsoft.Json": "9.0.1",
     "ConfigurationStore.netcore": "*",
     "System.Linq": "4.3.0",
-    "MasterDataProxies.netcore": "*",
-    "RestSharp.NetCore": "105.2.4-rc4-24214-01"
+    "MasterDataProxies.netcore": "*"
   },
 
   "frameworks": {
