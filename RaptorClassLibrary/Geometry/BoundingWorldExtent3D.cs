@@ -433,6 +433,23 @@ namespace VSS.VisionLink.Raptor.Geometry
         }
 
         /// <summary>
+        /// Scale the plan size of the boundary by factor with respect to the center of the bounding rectangle
+        /// </summary>
+        /// <param name="factor"></param>
+        public void ScalePlan(double factor)
+        {
+            double cx = CenterX;
+            double cy = CenterY;
+            double sx2 = SizeX / 2;
+            double sy2 = SizeY / 2;
+
+            MinX = cx - (sx2 * factor);
+            MinY = cy - (sy2 * factor);
+            MaxX = cx + (sx2 * factor);
+            MaxY = cy + (sy2 * factor);
+        }
+
+        /// <summary>
         /// Compute the size of the X dimension in the bounding extents
         /// </summary>
         public double SizeX => MaxX - MinX;

@@ -68,10 +68,11 @@ namespace VSS.VisionLink.Raptor.Pipelines
         {
         }
 
-        public RequestAnalyser(SubGridPipelineBase owner) : this()
+        public RequestAnalyser(SubGridPipelineBase owner, BoundingWorldExtent3D worldExtents) : this()
         {
             Owner = owner;
             Mask = new SubGridTreeBitMask();
+            WorldExtents = worldExtents;
         }
 
         public bool Execute()

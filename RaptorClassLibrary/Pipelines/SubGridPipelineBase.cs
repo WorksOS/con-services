@@ -143,7 +143,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
         public void Initiate()
         {
             // First analyse the request to determin the set of subgrids that will need to be requested
-            RequestAnalyser analyser = new RequestAnalyser(this);
+            RequestAnalyser analyser = new RequestAnalyser(this, WorldExtents);
             if (!analyser.Execute())
             {
                 // Leave gracefully...

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Client
 {
@@ -28,6 +29,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             if (instance == null)
             {
                 instance = new ClientLeafSubGridFactory();
+
+                // Hardwiring registration of client data types here. May want to make this more dependency injection controlled....
+                instance.RegisterClientLeafSubGridType(GridDataType.Height, typeof(ClientHeightLeafSubGrid));
             }
 
             return instance;

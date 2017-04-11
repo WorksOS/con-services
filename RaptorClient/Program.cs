@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Client
 {
     class Program
     {
-        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
+//        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
 
         public static void TestTileRendering()
         {
@@ -54,24 +54,25 @@ namespace VSS.VisionLink.Raptor.Client
                     {
                         for (int J = 0; J < gridCuts; J++)
                         {
-                            RenderOverlayTile render = new RenderOverlayTile(ID,
-                                                                     DisplayMode.Height,
-                                                                     new XYZ(extents.MinX + I * tileSize, extents.MinY + J * tileSize),
-                                                                     new XYZ(extents.MinX + (I + 1) * tileSize, extents.MinY + (J + 1) * tileSize),
-                                                                     true, // CoordsAreGrid
-                                                                     5000, // PixelsX
-                                                                     5000, // PixelsY
-                                                                     new Filters.CombinedFilter(siteModel)
-                                                                     {                                                                         
-                                                                         SpatialFilter = new Filters.CellSpatialFilter()
-                                                                         {
-                                                                             CoordsAreGrid = true,
-                                                                             IsSpatial = true,
-                                                                             Fence = new Fence(extents.MinX + I * tileSize, extents.MinY + J * tileSize,
-                                                                                               extents.MinX + (I + 1) * tileSize, extents.MinY + (J + 1) * tileSize)
-                                                                         }
-                                                                     }, //null, // Filter1
-                                                                     null); // Filter2
+                            RenderOverlayTile render = new RenderOverlayTile
+                                (ID,
+                                 DisplayMode.Height,
+                                 new XYZ(extents.MinX + I * tileSize, extents.MinY + J * tileSize),
+                                 new XYZ(extents.MinX + (I + 1) * tileSize, extents.MinY + (J + 1) * tileSize),
+                                 true, // CoordsAreGrid
+                                 5000, // PixelsX
+                                 5000, // PixelsY
+                                 new Filters.CombinedFilter(siteModel) // Filter1
+                                 {
+                                     SpatialFilter = new Filters.CellSpatialFilter()  
+                                     {
+                                         CoordsAreGrid = true,
+                                         IsSpatial = true,
+                                         Fence = new Fence(extents.MinX + I * tileSize, extents.MinY + J * tileSize,
+                                                           extents.MinX + (I + 1) * tileSize, extents.MinY + (J + 1) * tileSize)
+                                     }
+                                 },
+                                 null); // Filter2
                             Bitmap bmp = render.Execute();
 
                             if (bmp != null)
@@ -103,14 +104,13 @@ namespace VSS.VisionLink.Raptor.Client
                 {
                     throw;
                 }
-
             }
         }
 
         public static void ProcessSingleTAGFile(string fileName)
         {
             // Create the site model and machine etc to aggregate the processed TAG file into
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(1, true);
+            SiteModel siteModel = SiteModels.Instance().GetSiteModel(2, true);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
             // Convert a TAG file usign a TAGFileConverter into a mini-site model
@@ -154,7 +154,7 @@ namespace VSS.VisionLink.Raptor.Client
             AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(StorageProxy_Ignite.Instance(), integrator.TasksToProcess);
 
             // Create the site model and machine etc to aggregate the processed TAG file into
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(1, true);
+            SiteModel siteModel = SiteModels.Instance().GetSiteModel(2, true);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
             string[] files = Directory.GetFiles(folder);
@@ -207,11 +207,11 @@ namespace VSS.VisionLink.Raptor.Client
         static void Main(string[] args)
         {
             // Register Height grid data typpe with the Client Leaf subgrid factory
-            ClientLeafSubGridFactory.RegisterClientLeafSubGridType(GridDataType.Height, typeof(ClientHeightLeafSubGrid));
+//            ClientLeafSubGridFactory.RegisterClientLeafSubGridType(GridDataType.Height, typeof(ClientHeightLeafSubGrid));
 
             // ProcessMachine10101TAGFiles();
             // ProcessMachine333TAGFiles();
-            //ProcessSingleTAGFile(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
+            ProcessSingleTAGFile(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
             //ProcessSingleTAGFile();
             // Process all TAG files for project 4733:
             //ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 1");
