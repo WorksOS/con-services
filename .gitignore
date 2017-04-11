@@ -194,6 +194,7 @@ _Pvt_Extensions/
 ModelManifest.xml
 *.WebApi.XML
 Deploy_Production/
+.vs
 **/restore.dg
 **/project.lock.json
 **/project.lock.json
