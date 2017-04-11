@@ -10,8 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using RestSharp;
-using RestSharp.Extensions;
 using TagFileHarvester.Models;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Proxies;
@@ -69,7 +67,7 @@ namespace TCCFileAccess.Implementation
             try
             {
                 GetFileSpacesParams fileSpaceParams = new GetFileSpacesParams {};
-                var filespacesResult = await ExecuteRequest<GetFileSpacesResult>(Ticket, Method.GET,
+                var filespacesResult = await ExecuteRequest<GetFileSpacesResult>(Ticket, "GET",
                     "/tcc/GetFileSpaces", fileSpaceParams);
                 if (filespacesResult != null)
                 {
@@ -208,7 +206,7 @@ namespace TCCFileAccess.Implementation
                         force = true,
                         path = dstFullName.Substring(0, dstFullName.LastIndexOf("/")) + "/"
                     };
-                    var resultCreate = await ExecuteRequest<RenResult>(Ticket, Method.GET, "/tcc/MkDir", mkdirParams);
+                    var resultCreate = await ExecuteRequest<RenResult>(Ticket, "GET", "/tcc/MkDir", mkdirParams);
                     if (resultCreate == null)
                     {
                         Log.LogError("Can not create folder for org {0} folder {1}", org.shortName,
@@ -226,7 +224,7 @@ namespace TCCFileAccess.Implementation
                     merge = false,
                     replace = true
                 };
-                var renResult = await ExecuteRequest<RenResult>(Ticket, Method.GET, "/tcc/Ren", renParams);
+                var renResult = await ExecuteRequest<RenResult>(Ticket, "GET", "/tcc/Ren", renParams);
                 if (renResult != null)
                 {
                     if (renResult.success || renResult.errorid.Contains("INVALID_OPERATION_FILE_IS_LOCKED"))
@@ -264,7 +262,7 @@ namespace TCCFileAccess.Implementation
                     filterfolders = true,
                  //   filemasklist = "*.*"
                 };
-                var dirResult = await ExecuteRequest<DirResult>(Ticket, Method.GET, "/tcc/Dir", dirParams);
+                var dirResult = await ExecuteRequest<DirResult>(Ticket, "GET", "/tcc/Dir", dirParams);
                 if (dirResult != null)
                 {
                     if (dirResult.success)
@@ -340,7 +338,7 @@ namespace TCCFileAccess.Implementation
                     path = path,
                     recursive = true
                 };
-                var lastDirChangeResult = await ExecuteRequest<LastDirChangeResult>(Ticket, Method.GET,
+                var lastDirChangeResult = await ExecuteRequest<LastDirChangeResult>(Ticket, "GET",
                     "/tcc/LastDirChange", lastDirChangeParams);
                 if (lastDirChangeResult != null)
                 {
@@ -374,7 +372,7 @@ namespace TCCFileAccess.Implementation
                 filterfolders = true,
                 filemasklist = "*.tag"
             };
-            var dirResult = await ExecuteRequest<DirResult>(Ticket, Method.GET, "/tcc/Dir", dirParams);
+            var dirResult = await ExecuteRequest<DirResult>(Ticket, "GET", "/tcc/Dir", dirParams);
             if (dirResult != null)
             {
                 if (dirResult.success)
@@ -402,7 +400,7 @@ namespace TCCFileAccess.Implementation
                     filespaceid = filespaceId,
                     path = folder
                 };
-                var getFileAttrResult = await ExecuteRequest<GetFileAttributesResult>(Ticket, Method.GET,
+                var getFileAttrResult = await ExecuteRequest<GetFileAttributesResult>(Ticket, "GET",
                     "/tcc/GetFileAttributes", getFileAttrParams);
                 if (getFileAttrResult != null)
                 {
@@ -461,7 +459,7 @@ namespace TCCFileAccess.Implementation
                     mode = "noredirect",
                     forcegmt = true
                 };
-                var loginResult = await ExecuteRequest<LoginResult>(ticket, Method.GET, "/tcc/Login", loginParams);
+                var loginResult = await ExecuteRequest<LoginResult>(ticket, "GET", "/tcc/Login", loginParams);
                 if (loginResult != null)
                 {
                     if (loginResult.success)
@@ -500,7 +498,7 @@ namespace TCCFileAccess.Implementation
             }
         }
 
-        private async Task<T> ExecuteRequest<T>(string token, Method method, string contractPath, object requestData,
+        private async Task<T> ExecuteRequest<T>(string token, string method, string contractPath, object requestData,
             bool returnRaw = false)
         {
             if (String.IsNullOrEmpty(tccBaseUrl))
@@ -515,7 +513,7 @@ namespace TCCFileAccess.Implementation
             var properties = from p in requestData.GetType().GetRuntimeFields()
                 where p.GetValue(requestData) != null
                 select new {p.Name, Value = p.GetValue(requestData)};
-            if (method == Method.GET)
+            if (method == "GET")
                 foreach (var p in properties)
                 {
                     requestString += $"&{p.Name}={p.Value.ToString()}";
@@ -528,7 +526,7 @@ namespace TCCFileAccess.Implementation
             var result = default(T);
             try
             {
-                if (method == Method.GET)
+                if (method == "GET")
                     result = await gracefulClient.ExecuteRequest<T>(requestString, method.ToString(), headers);
                 else
                     result = await gracefulClient.ExecuteRequest<T>(requestString, method.ToString(), headers, body);
