@@ -1,4 +1,5 @@
 ﻿using MasterDataProxies.Models;
+using Newtonsoft.Json;
 
 namespace MasterDataProxies.Interfaces
 {
@@ -7,8 +8,30 @@ namespace MasterDataProxies.Interfaces
   /// </summary>
   public class CoordinateSystemFile : ProjectID
   {
+    /// <summary>
+    /// The content of the CS definition file as an array of bytes.
+    /// </summary>
+    /// 
+    [JsonProperty(PropertyName = "csFileContent", Required = Required.Always)]
+    [Required]
     public byte[] csFileContent { get; private set; }
+
+    /// <summary>
+    /// The name of the CS definition file.
+    /// </summary>
+    /// 
+    [JsonProperty(PropertyName = "csFileName", Required = Required.Always)]
+    [Required]
     public string csFileName { get; private set; }
+
+    /// <summary>
+    /// Private constructor.
+    /// </summary>
+    /// 
+    private CoordinateSystemFile()
+    {
+      // ...
+    }
 
     public static CoordinateSystemFile CreateCoordinateSystemFile(long projectId, byte[] csFileContent, string csFileName)
     {
@@ -19,6 +42,15 @@ namespace MasterDataProxies.Interfaces
       tempCS.csFileContent = csFileContent;
 
       return tempCS;
+    }
+
+    /// <summary>
+    /// Validation method.
+    /// </summary>
+    public void Validate()
+    {
+      // Validation rules might be placed in here...
+      // throw new NotImplementedException();
     }
   }
 }
