@@ -40,6 +40,12 @@ namespace Repositories
         project.StartDate = projectEvent.ProjectStartDate.Date;
         project.ProjectType = projectEvent.ProjectType;
 
+        if (!string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName))
+        {
+          project.CoordinateSystemFileName = projectEvent.CoordinateSystemFileName;
+          project.CoordinateSystemLastActionedUTC = projectEvent.ActionUTC;
+        }
+
         //Don't write if there is no boundary defined
         if (!String.IsNullOrEmpty(projectEvent.ProjectBoundary))
         {
@@ -57,7 +63,6 @@ namespace Repositories
       }
       else if (evt is UpdateProjectEvent)
       {
-        // todo doesn't make sense to be able to update Project type - be careful
         var projectEvent = (UpdateProjectEvent)evt;
 
         var project = new Project();
@@ -66,6 +71,12 @@ namespace Repositories
         project.EndDate = projectEvent.ProjectEndDate.Date;
         project.LastActionedUTC = projectEvent.ActionUTC;
         project.ProjectType = projectEvent.ProjectType;
+
+        if (!string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName))
+        {
+          project.CoordinateSystemFileName = projectEvent.CoordinateSystemFileName;
+          project.CoordinateSystemLastActionedUTC = projectEvent.ActionUTC;
+        }
         upsertedCount = await UpsertProjectDetail(project, "UpdateProjectEvent");
       }
       else if (evt is DeleteProjectEvent)
@@ -120,7 +131,8 @@ namespace Repositories
           (@"SELECT 
                 ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
                 ProjectTimeZone, LandfillTimeZone, 
-                LastActionedUTC, StartDate, EndDate, GeometryWKT
+                LastActionedUTC, StartDate, EndDate, GeometryWKT,
+                CoordinateSystemFileName, CoordinateSystemLastActionedUTC
               FROM Project
               WHERE ProjectUID = @projectUid
                 OR LegacyProjectId = @legacyProjectId", new { projectUid = project.ProjectUID, legacyProjectId = project.LegacyProjectID }
@@ -163,16 +175,16 @@ namespace Repositories
         if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
           insert = string.Format(
               "INSERT Project " +
-              "    (ProjectUID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST ) " +
+              "    (ProjectUID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
               "  VALUES " +
-              "    (@ProjectUID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0})"
+              "    (@ProjectUID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
                 , formattedPolygon);
         else
           insert = string.Format(
               "INSERT Project " +
-              "    (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST ) " +
+              "    (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC ) " +
               "  VALUES " +
-              "    (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0})"
+              "    (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
                 , formattedPolygon);
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
@@ -185,7 +197,7 @@ namespace Repositories
       {
         log.LogDebug("ProjectRepository/CreateProject: going to update a dummy project={0}", JsonConvert.SerializeObject(project));
 
-        // this code comes from landfill, however in MD, no dummy is created
+        // this code comes from landfill, however in MD, no dummy is created. 
         //   is this obsolete?
         const string update =
             @"UPDATE Project                
@@ -198,7 +210,9 @@ namespace Repositories
                   StartDate = @StartDate,
                   EndDate = @EndDate,
                   LastActionedUTC = @LastActionedUTC,
-                  GeometryWKT = @GeometryWKT
+                  GeometryWKT = @GeometryWKT,
+                  CoordinateSystemFileName = @CoordinateSystemFileName,
+                  CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC
                 WHERE ProjectUID = @ProjectUID";
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
@@ -214,13 +228,22 @@ namespace Repositories
         // must be a later update was applied before the create arrived
         // leave the more recent EndDate, Name, ProjectType and actionUTC alone
 
+        // a more recent cs exists, leave it
+        if (!string.IsNullOrEmpty(existing.CoordinateSystemFileName))
+        {
+          project.CoordinateSystemFileName = existing.CoordinateSystemFileName;
+          project.CoordinateSystemLastActionedUTC = existing.CoordinateSystemLastActionedUTC;
+        }
+
         const string update =
             @"UPDATE Project                
                 SET LegacyProjectID = @LegacyProjectID,                  
                   ProjectTimeZone = @ProjectTimeZone,
                   LandfillTimeZone = @LandfillTimeZone,
                   StartDate = @StartDate,
-                  GeometryWKT = @GeometryWKT
+                  GeometryWKT = @GeometryWKT,
+                  CoordinateSystemFileName = @CoordinateSystemFileName,
+                  CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC
                 WHERE ProjectUID = @ProjectUID";
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
@@ -281,6 +304,11 @@ namespace Repositories
         {
           project.Name = project.Name == null ? existing.Name : project.Name;
           project.ProjectTimeZone = project.ProjectTimeZone == null ? existing.ProjectTimeZone : project.ProjectTimeZone;
+          if (string.IsNullOrEmpty(project.CoordinateSystemFileName))
+          {
+            project.CoordinateSystemFileName = existing.CoordinateSystemFileName;
+            project.CoordinateSystemLastActionedUTC = existing.CoordinateSystemLastActionedUTC;
+          }
           log.LogDebug("ProjectRepository/UpdateProject: updating project={0}", JsonConvert.SerializeObject(project));
 
           const string update =
@@ -288,7 +316,9 @@ namespace Repositories
                 SET Name = @Name,
                   LastActionedUTC = @LastActionedUTC,
                   EndDate = @EndDate, 
-                  fk_ProjectTypeID = @ProjectType
+                  fk_ProjectTypeID = @ProjectType,
+                  CoordinateSystemFileName = @CoordinateSystemFileName,
+                  CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC
                 WHERE ProjectUID = @ProjectUID";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
@@ -432,6 +462,7 @@ namespace Repositories
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
@@ -460,6 +491,7 @@ namespace Repositories
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID               
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
@@ -489,6 +521,7 @@ namespace Repositories
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
@@ -519,6 +552,7 @@ namespace Repositories
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
@@ -549,6 +583,7 @@ namespace Repositories
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
@@ -581,6 +616,7 @@ namespace Repositories
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
@@ -614,6 +650,7 @@ namespace Repositories
                 c.CustomerUID, cp.LegacyCustomerID, 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Customer c  
                 JOIN CustomerProject cp ON cp.fk_CustomerUID = c.CustomerUID 
@@ -648,7 +685,8 @@ namespace Repositories
       var project = (await Connection.QueryAsync<Project>
           (@"SELECT              
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
-                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT                
+                p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC
               FROM Project p 
               WHERE p.ProjectUID = @projectUid",
             new { projectUid }
@@ -711,6 +749,7 @@ namespace Repositories
           (@"SELECT 
                   p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                   p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                  p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                   cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                   ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID              
               FROM Project p 
@@ -748,6 +787,7 @@ namespace Repositories
         "SELECT DISTINCT " +
         "        p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
         "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+        "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
         "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
         "      FROM Project p " +
         "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
@@ -784,6 +824,7 @@ namespace Repositories
         "SELECT DISTINCT " +
         "        p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
         "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+        "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
         "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, " +
         "        ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID " +
         "      FROM Project p " +
@@ -825,6 +866,7 @@ namespace Repositories
         "SELECT DISTINCT " +
         "        p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
         "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
+        "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
         "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
         "      FROM Project p " +
         "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
@@ -849,6 +891,7 @@ namespace Repositories
           (@"SELECT 
                 p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
+                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
