@@ -6,7 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors;
+using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.Machines;
+using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
@@ -18,14 +21,12 @@ namespace VSS.VisionLink.Raptor.Client
 {
     class Program
     {
-//        private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
-
         public static void TestTileRendering()
         {
             int ID = 1;
             int gridCuts = 10; // eg: A 4x4 grid of tiles
 
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID, true);
+            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
 
             // Get the project extent so we know where to render
             BoundingWorldExtent3D extents = ProjectExtents.ProductionDataOnly(ID);
@@ -62,9 +63,9 @@ namespace VSS.VisionLink.Raptor.Client
                                  true, // CoordsAreGrid
                                  5000, // PixelsX
                                  5000, // PixelsY
-                                 new Filters.CombinedFilter(siteModel) // Filter1
+                                 new CombinedFilter(siteModel) // Filter1
                                  {
-                                     SpatialFilter = new Filters.CellSpatialFilter()  
+                                     SpatialFilter = new CellSpatialFilter()  
                                      {
                                          CoordsAreGrid = true,
                                          IsSpatial = true,
@@ -81,24 +82,6 @@ namespace VSS.VisionLink.Raptor.Client
                             }
                         }
                     }
-
-                    /*
-                   RenderOverlayTile render = new RenderOverlayTile(ID,
-                                                                    DisplayMode.Height,
-                                                                    new XYZ(extents.MinX, extents.MinY),
-                                                                    new XYZ(extents.MaxX, extents.MaxY),
-                                                                    true, // CoordsAreGrid
-                                                                    5000, // PixelsX
-                                                                    5000, // PixelsY
-                                                                    null, // Filter1
-                                                                    null); // Filter2
-                   Bitmap bmp = render.Execute();
-
-                   if (bmp != null)
-                   {
-                       bmp.Save("c:\\temp\\raptorignitedata\\bitmap.bmp");
-                   }
-                    */
                 }
                 catch (Exception E)
                 {
@@ -110,7 +93,7 @@ namespace VSS.VisionLink.Raptor.Client
         public static void ProcessSingleTAGFile(string fileName)
         {
             // Create the site model and machine etc to aggregate the processed TAG file into
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(2, true);
+            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(2, true);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
             // Convert a TAG file usign a TAGFileConverter into a mini-site model
@@ -154,7 +137,7 @@ namespace VSS.VisionLink.Raptor.Client
             AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(StorageProxy_Ignite.Instance(), integrator.TasksToProcess);
 
             // Create the site model and machine etc to aggregate the processed TAG file into
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(2, true);
+            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(2, true);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
             string[] files = Directory.GetFiles(folder);
@@ -206,9 +189,6 @@ namespace VSS.VisionLink.Raptor.Client
 
         static void Main(string[] args)
         {
-            // Register Height grid data typpe with the Client Leaf subgrid factory
-//            ClientLeafSubGridFactory.RegisterClientLeafSubGridType(GridDataType.Height, typeof(ClientHeightLeafSubGrid));
-
             // ProcessMachine10101TAGFiles();
             // ProcessMachine333TAGFiles();
             ProcessSingleTAGFile(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");

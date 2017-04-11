@@ -12,6 +12,7 @@ using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.Raptor.IgnitePOC.TestApp
@@ -23,7 +24,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private Bitmap PerformRender()
         {
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID, true);
+            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID, false);
 
             if (!extents.IsValidPlanExtent)
             {

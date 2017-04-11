@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Interfaces;
+using VSS.VisionLink.Raptor.Machines.Interfaces;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.Machines
 {
     /// <summary>
     /// Implements a container for all the machines that have had activity within a Site Model

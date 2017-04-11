@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Interfaces;
+using VSS.VisionLink.Raptor.Machines;
+using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
 
@@ -204,7 +206,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                     // Integrate the items present in the 'TargetSiteModel' into the real sitemodel
                     // read from the datamodel file itself, then synchronously write it to the DataModel
                     // avoiding the use of the deferred persistor.
-                    SiteModelFromDM = SiteModels.Instance().GetSiteModel(Task.TargetSiteModelID);
+                    SiteModelFromDM = SiteModels.SiteModels.Instance().GetSiteModel(Task.TargetSiteModelID);
 
                     if (SiteModelFromDM == null)
                     {

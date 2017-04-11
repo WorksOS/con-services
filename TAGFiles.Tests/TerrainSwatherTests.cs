@@ -12,6 +12,8 @@ using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Types;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.VisionLink.Raptor.Machines;
+using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Swather.Tests
 {

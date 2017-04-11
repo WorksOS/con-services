@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Raptor.Interfaces
+namespace VSS.VisionLink.Raptor.Machines.Interfaces
 {
-    public interface ISiteModel
+    public interface IMachinesTargetValuesList
     {
     }
 }

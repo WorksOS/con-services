@@ -10,6 +10,7 @@ using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Rendering;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.Types;
+using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.Executors
 {
@@ -74,7 +75,7 @@ namespace VSS.VisionLink.Raptor.Executors
                 try
                 {
                     // Get the SiteModel for the request
-                    SiteModel SiteModel = SiteModels.Instance().GetSiteModel(DataModelID);
+                    SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID);
                     if (SiteModel == null)
                     {
                         throw new ArgumentException(String.Format("Unable to acquire site model instance for ID:{0}", DataModelID));

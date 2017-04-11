@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Interfaces;
+using VSS.VisionLink.Raptor.Machines.Interfaces;
+using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.Events
 {

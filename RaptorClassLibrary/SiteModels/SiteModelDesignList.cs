@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.SiteModels
 {
     [Serializable]
     public class SiteModelDesignList : List<SiteModelDesign>

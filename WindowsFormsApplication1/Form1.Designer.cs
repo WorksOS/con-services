@@ -50,7 +50,7 @@
             // 
             // btnZoomAll
             // 
-            this.btnZoomAll.Location = new System.Drawing.Point(613, 12);
+            this.btnZoomAll.Location = new System.Drawing.Point(562, 12);
             this.btnZoomAll.Name = "btnZoomAll";
             this.btnZoomAll.Size = new System.Drawing.Size(75, 23);
             this.btnZoomAll.TabIndex = 1;
@@ -60,7 +60,7 @@
             // 
             // bntTranslateNorth
             // 
-            this.bntTranslateNorth.Location = new System.Drawing.Point(613, 123);
+            this.bntTranslateNorth.Location = new System.Drawing.Point(562, 123);
             this.bntTranslateNorth.Name = "bntTranslateNorth";
             this.bntTranslateNorth.Size = new System.Drawing.Size(75, 23);
             this.bntTranslateNorth.TabIndex = 2;
@@ -70,7 +70,7 @@
             // 
             // btnZoomOut
             // 
-            this.btnZoomOut.Location = new System.Drawing.Point(613, 70);
+            this.btnZoomOut.Location = new System.Drawing.Point(562, 70);
             this.btnZoomOut.Name = "btnZoomOut";
             this.btnZoomOut.Size = new System.Drawing.Size(75, 23);
             this.btnZoomOut.TabIndex = 3;
@@ -80,7 +80,7 @@
             // 
             // btmZoomIn
             // 
-            this.btmZoomIn.Location = new System.Drawing.Point(613, 41);
+            this.btmZoomIn.Location = new System.Drawing.Point(562, 41);
             this.btmZoomIn.Name = "btmZoomIn";
             this.btmZoomIn.Size = new System.Drawing.Size(75, 23);
             this.btmZoomIn.TabIndex = 4;
@@ -90,7 +90,7 @@
             // 
             // bntTranslateEast
             // 
-            this.bntTranslateEast.Location = new System.Drawing.Point(654, 152);
+            this.bntTranslateEast.Location = new System.Drawing.Point(603, 152);
             this.bntTranslateEast.Name = "bntTranslateEast";
             this.bntTranslateEast.Size = new System.Drawing.Size(75, 23);
             this.bntTranslateEast.TabIndex = 5;
@@ -100,7 +100,7 @@
             // 
             // bntTranslateWest
             // 
-            this.bntTranslateWest.Location = new System.Drawing.Point(574, 152);
+            this.bntTranslateWest.Location = new System.Drawing.Point(523, 152);
             this.bntTranslateWest.Name = "bntTranslateWest";
             this.bntTranslateWest.Size = new System.Drawing.Size(74, 23);
             this.bntTranslateWest.TabIndex = 6;
@@ -110,7 +110,7 @@
             // 
             // bntTranslateSouth
             // 
-            this.bntTranslateSouth.Location = new System.Drawing.Point(613, 181);
+            this.bntTranslateSouth.Location = new System.Drawing.Point(562, 181);
             this.bntTranslateSouth.Name = "bntTranslateSouth";
             this.bntTranslateSouth.Size = new System.Drawing.Size(75, 23);
             this.bntTranslateSouth.TabIndex = 7;
@@ -122,7 +122,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1001, 643);
+            this.ClientSize = new System.Drawing.Size(693, 522);
             this.Controls.Add(this.bntTranslateSouth);
             this.Controls.Add(this.bntTranslateWest);
             this.Controls.Add(this.bntTranslateEast);
@@ -132,7 +132,7 @@
             this.Controls.Add(this.btnZoomAll);
             this.Controls.Add(this.pictureBox1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Raptor.Net/Ignite Test Application";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Interfaces;
+using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.Types;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.SiteModels
 {
     [Serializable]
     public class SiteModel

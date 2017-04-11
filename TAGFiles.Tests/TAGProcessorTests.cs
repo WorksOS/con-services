@@ -9,6 +9,8 @@ using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Machines;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Tests
 {

@@ -8,7 +8,7 @@ using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.Cells
 {
     /* This unit implements the full pass coverage cells for the Intelligent
        Compaction data grid.

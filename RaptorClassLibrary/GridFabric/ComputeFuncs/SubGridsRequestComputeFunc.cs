@@ -16,6 +16,7 @@ using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
+using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
@@ -68,7 +69,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
                 AreaControlSet AreaControlSet = AreaControlSet.Null();
 
-                SiteModel SiteModel = SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
+                SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(localArg.SiteModelID);
 
                 IClientLeafSubGrid ClientGrid = ClientLeafSubGridFactory.GetSubGrid(localArg.GridDataType);
                 ClientGrid.CellSize = SiteModel.Grid.CellSize;

@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Raptor.Types;
 using System.IO;
 using VSS.VisionLink.Raptor;
+using VSS.VisionLink.Raptor.Cells;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {

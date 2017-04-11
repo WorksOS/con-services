@@ -7,7 +7,7 @@ using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Types;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.Machines
 {
     /// <summary>
     /// Defines all the metadata relating to a machine that has contributed in some way to a site model. These machine instances

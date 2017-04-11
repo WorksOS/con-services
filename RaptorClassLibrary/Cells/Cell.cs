@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.Cells
 {
     /// <summary>
     /// TICCell represents cell instances stored in the compaction information grid.

@@ -338,7 +338,7 @@ namespace VSS.VisionLink.Raptor.Rendering
         protected void SetDisplayerPalette()
         {
             // Do something simple for the POC
-            BoundingWorldExtent3D extent = SiteModels.Instance().GetSiteModel(DataModelID).GetAdjustedDataModelSpatialExtents(new long[0]);
+            BoundingWorldExtent3D extent = SiteModels.SiteModels.Instance().GetSiteModel(DataModelID).GetAdjustedDataModelSpatialExtents(new long[0]);
             Palette = new HeightPalette(extent.MinZ, extent.MaxZ);
             Displayer.Palette = Palette;
 

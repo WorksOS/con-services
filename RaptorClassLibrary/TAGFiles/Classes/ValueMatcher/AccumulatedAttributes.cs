@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Common;
+using VSS.VisionLink.Raptor.Cells;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes
 {

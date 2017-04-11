@@ -7,6 +7,7 @@ using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
+using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.Events
 {

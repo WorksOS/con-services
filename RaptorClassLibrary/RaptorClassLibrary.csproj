@@ -88,10 +88,10 @@
     <Compile Include="Filters\SubGridFilterMasks.cs" />
     <Compile Include="Geometry\BoundingIntegerExtent2D.cs" />
     <Compile Include="Geometry\BoundingWorldExtent3D.cs" />
-    <Compile Include="Cell.cs" />
-    <Compile Include="CellEvents.cs" />
-    <Compile Include="CellPass.cs" />
-    <Compile Include="CellTargets.cs" />
+    <Compile Include="Cells\Cell.cs" />
+    <Compile Include="Cells\CellEvents.cs" />
+    <Compile Include="Cells\CellPass.cs" />
+    <Compile Include="Cells\CellTargets.cs" />
     <Compile Include="Filters\FilteredPassData.cs" />
     <Compile Include="Filters\FilteredSinglePassInfo.cs" />
     <Compile Include="Filters\FilteredValueAssignmentContext.cs" />
@@ -107,10 +107,10 @@
     <Compile Include="GridFabric\Requests\SubGridRequests.cs" />
     <Compile Include="GridFabric\Responses\SubGridRequestsResponse.cs" />
     <Compile Include="GridFabric\Types\SubGridRequestsResponseResult.cs" />
-    <Compile Include="Interfaces\IFilter.cs" />
-    <Compile Include="Interfaces\IMachine.cs" />
-    <Compile Include="Interfaces\IMachinesList.cs" />
-    <Compile Include="Interfaces\IMachinesTargetValuesList.cs" />
+    <Compile Include="Filters\Interfaces\IFilter.cs" />
+    <Compile Include="Machines\Interfaces\IMachine.cs" />
+    <Compile Include="Machines\Interfaces\IMachinesList.cs" />
+    <Compile Include="Machines\Interfaces\IMachinesTargetValuesList.cs" />
     <Compile Include="Pipelines\RequestAnalyser.cs" />
     <Compile Include="Pipelines\SubGridPipelineBase.cs" />
     <Compile Include="ProductionDataExistanceMap.cs" />
@@ -123,23 +123,23 @@
     <Compile Include="Rendering\ProductionPVMDisplayerBase.cs" />
     <Compile Include="Rendering\PVMDisplayerBase.cs" />
     <Compile Include="Rendering\PVMDisplayer_Height.cs" />
-    <Compile Include="SiteModels.cs" />
+    <Compile Include="SiteModels\SiteModels.cs" />
     <Compile Include="Storage\Interfaces\IStorageProxy.cs" />
     <Compile Include="Events\MachinesTargetValues.cs" />
-    <Compile Include="MachinesList.cs" />
-    <Compile Include="SiteModelDesign.cs" />
-    <Compile Include="SiteModelDesignList.cs" />
+    <Compile Include="Machines\MachinesList.cs" />
+    <Compile Include="SiteModels\SiteModelDesign.cs" />
+    <Compile Include="SiteModels\SiteModelDesignList.cs" />
     <Compile Include="Storage\RaptorCacheStore.cs" />
     <Compile Include="Storage\StorageProxy.cs" />
     <Compile Include="Storage\StorageProxyFactory.cs" />
     <Compile Include="SubGridTrees\Client\ClientLeafSubgridFactoryFactory.cs" />
     <Compile Include="SubGridTrees\Client\SubGridTreeLeafSubGridBaseResult.cs" />
     <Compile Include="SubGridTrees\Server\Interfaces\IServerLeafSubgrid.cs" />
-    <Compile Include="Interfaces\ISiteModel.cs" />
-    <Compile Include="Machine.cs" />
+    <Compile Include="SiteModels\Interfaces\ISiteModel.cs" />
+    <Compile Include="Machines\Machine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RaptorConfig.cs" />
-    <Compile Include="SiteModel.cs" />
+    <Compile Include="SiteModels\SiteModel.cs" />
     <Compile Include="Storage\StorageProxy_Ignite.cs" />
     <Compile Include="Storage\StorageProxy_FileSystem.cs" />
     <Compile Include="SubGridTrees\Client\ClientLeafSubGrid.cs" />
@@ -347,7 +347,9 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

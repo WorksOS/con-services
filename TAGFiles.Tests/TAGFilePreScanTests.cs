@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.TAGFiles.Types;
 using System.IO;
 using VSS.VisionLink.Raptor.TAGFiles.Tests;
+using VSS.VisionLink.Raptor.Cells;
 
 namespace VSS.VisionLink.Raptor.Executors.Tests
 {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.SiteModels
 {
     /// <summary>
     /// Describes a single design used in the site model. It's chief purpose is to record the name of the design 

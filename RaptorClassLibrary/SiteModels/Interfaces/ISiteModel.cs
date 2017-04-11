@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Raptor.Interfaces
+namespace VSS.VisionLink.Raptor.SiteModels.Interfaces
 {
-    public interface IMachine
+    public interface ISiteModel
     {
     }
 }

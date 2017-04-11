@@ -25,6 +25,7 @@ using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Ordinates;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Positioning;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Proofing;
 using VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Time;
+using VSS.VisionLink.Raptor.Cells;
 
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Tests
 {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.Cells
 {
     /// <summary>
     /// Stores the values of various 'target' values that were active on the machine at the time the pass information was captured.

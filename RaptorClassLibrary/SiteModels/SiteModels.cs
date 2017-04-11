@@ -7,7 +7,7 @@ using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Types;
 
-namespace VSS.VisionLink.Raptor
+namespace VSS.VisionLink.Raptor.SiteModels
 {
     /// <summary>
     /// SiteModels contains a map of site model/data model identifiers (long) and SiteModel instances. 
