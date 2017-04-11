@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace MockProjectWebApi.ResultsHandling
+namespace MockProjectWebApi.Utils
 {
 
   public abstract class GenericEnum<T, U> where T : GenericEnum<T, U>, new()

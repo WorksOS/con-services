@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.MockProjectWebApi.Service.Common.Filters;
+using MockProjectWebApi.Utils;
 
 namespace MockProjectWebApi
 {

@@ -12,15 +12,13 @@ namespace MasterDataProxies.Models
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "csFileContent", Required = Required.Always)]
-    [Required]
-    public string csFileContent { get; set; }
+    public byte[] csFileContent { get; set; }
 
     /// <summary>
     /// The name of the CS definition file.
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "csFileName", Required = Required.Always)]
-    [Required]
     public string csFileName { get; set; }
 
     /// <summary>
@@ -39,7 +37,7 @@ namespace MasterDataProxies.Models
     /// <param name="csFileName">The file's name.</param>
     /// <returns>An instance of the CoordinateSystemFile class.</returns>
     ///
-    public static CoordinateSystemFileValidationRequest CreateCoordinateSystemFileValidationRequest(string csFileContent, string csFileName)
+    public static CoordinateSystemFileValidationRequest CreateCoordinateSystemFileValidationRequest(byte[] csFileContent, string csFileName)
     {
       var tempCS = new CoordinateSystemFileValidationRequest();
 
