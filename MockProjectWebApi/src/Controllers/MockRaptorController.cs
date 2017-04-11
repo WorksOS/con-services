@@ -1,8 +1,6 @@
-﻿using System.Net;
-using MasterDataProxies.Interfaces;
-using MasterDataProxies.Models;
-using Microsoft.AspNetCore.Mvc;
-using MasterDataProxies.ResultHandling;
+﻿using Microsoft.AspNetCore.Mvc;
+using MockProjectWebApi.Models;
+using MockProjectWebApi.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {
