@@ -13,7 +13,6 @@ namespace MasterDataProxies.Interfaces
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "csFileContent", Required = Required.Always)]
-    [Required]
     public byte[] csFileContent { get; private set; }
 
     /// <summary>
@@ -21,7 +20,6 @@ namespace MasterDataProxies.Interfaces
     /// </summary>
     /// 
     [JsonProperty(PropertyName = "csFileName", Required = Required.Always)]
-    [Required]
     public string csFileName { get; private set; }
 
     /// <summary>

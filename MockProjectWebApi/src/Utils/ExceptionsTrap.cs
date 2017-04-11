@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 
-namespace VSS.MockProjectWebApi.Service.Common.Filters
+namespace MockProjectWebApi.Utils
 {
   public class ExceptionsTrap
   {
