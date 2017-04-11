@@ -1,0 +1,81 @@
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.VisionLink.Raptor.SubGridTrees;
+
+namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
+{
+    [TestClass]
+    public class GenericSubGridTreeTests
+    {
+        [TestMethod]
+        public void Test_GenericSubGridTree_Creation()
+        {
+           var tree1 = new GenericSubGridTree<bool>(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>());
+
+            Assert.IsTrue(tree1 != null && tree1.NumLevels == SubGridTree.SubGridTreeLevels && tree1.CellSize == 1.0,
+                "Generic sub grid tree not created as expected with 3 arg constructor");
+
+            var tree2 = new GenericSubGridTree<bool>(SubGridTree.SubGridTreeLevels, 1.0);
+
+            Assert.IsTrue(tree2 != null && tree2.NumLevels == SubGridTree.SubGridTreeLevels && tree2.CellSize == 1.0,
+                "Generic sub grid tree not created as expected with  arg constructor");
+        }
+
+        [TestMethod]
+        public void Test_GenericSubGridTree_GetCell()
+        {
+            var tree = new GenericSubGridTree<bool>(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>());
+
+            Assert.IsTrue(tree[0, 0] == false, "Newly created tree has non-null value for cell(0, 0)");
+            tree[0, 0] = true;
+            Assert.IsTrue(tree[0, 0] == true, "Assigned true value not returned");
+        }
+
+        [TestMethod]
+        public void Test_GenericSubGridTree_SetCell()
+        {
+            var tree = new GenericSubGridTree<bool>(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>());
+
+            tree[0, 0] = true;
+            Assert.IsTrue(tree[0, 0] == true, "Assigned true value not returned");
+        }
+
+        [TestMethod]
+        public void Test_GenericSubGridTree_NullCellValue()
+        {
+            var tree1 = new GenericSubGridTree<bool> (SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>());
+            Assert.IsTrue(tree1.NullCellValue == false, "Unexpected default null value for <bool> tree, value is {0}", tree1.NullCellValue);
+
+            var tree2 = new GenericSubGridTree<long> (SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<long>>());
+            Assert.IsTrue(tree2.NullCellValue == 0, "Unexpected default null value for <long> tree, value is {0}", tree2.NullCellValue);
+
+            var tree3 = new GenericSubGridTree<object>(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<long>>());
+            Assert.IsTrue(tree3.NullCellValue == null, "Unexpected default null value for <object> tree, value is {0}", tree3.NullCellValue);
+        }
+
+        [TestMethod]
+        public void Test_GenericSubGridTree_ForEach()
+        {
+            var tree = new GenericSubGridTree<bool>(SubGridTree.SubGridTreeLevels, 1.0, new SubGridFactory<NodeSubGrid, GenericLeafSubGrid<bool>>());
+            int count;
+
+            // Count 'true' cells (should be none yet)
+            count = 0;
+            tree.ForEach(x => { count = x ? count++ : count; return true; });
+            Assert.IsTrue(count == 0, "New tree has non-false cells!");
+
+            // Add some true cells to the tree and count them
+            for (uint x = 0; x < 10; x++)
+            {
+                for (uint y = 0; y < 10; y++)
+                {
+                    tree[x * 10, y * 10] = true;
+                }
+            }
+
+            count = 0;
+            tree.ForEach(x => { count = x ? count + 1 : count; return true; });
+            Assert.IsTrue(count == 100, "New tree has unexpected count of true cells! {0}", count);
+        }
+    }
+}

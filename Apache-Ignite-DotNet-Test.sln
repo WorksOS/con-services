@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apache-Ignite-DotNet-Test", "Apache-Ignite-DotNet-Test\Apache-Ignite-DotNet-Test.csproj", "{6FA7A532-B415-49EA-99F2-03EE1567A00C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorClassLibrary", "RaptorClassLibrary\RaptorClassLibrary.csproj", "{D900B783-706F-4845-82E1-3C93C1E06DF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorClassLibrary.Tests", "RaptorClassLibrary.Tests\RaptorClassLibrary.Tests.csproj", "{B7B4C47F-1F4C-409B-A73D-159D7FADB06C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClassLibrary", "TestClassLibrary\TestClassLibrary.csproj", "{11C2E468-0F3B-436E-9F88-DAD728A4D0E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAGFiles.Tests", "TAGFiles.Tests\TAGFiles.Tests.csproj", "{18856B8B-9821-4036-AF0F-4401707355C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raptor.Common", "Raptor.Common\Raptor.Common.csproj", "{197081DD-40E6-42AF-8A77-A3A0445042EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorClient", "RaptorClient\RaptorClient.csproj", "{7DD49C6B-042D-40CE-8E8E-430146E3AF97}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6FA7A532-B415-49EA-99F2-03EE1567A00C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FA7A532-B415-49EA-99F2-03EE1567A00C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FA7A532-B415-49EA-99F2-03EE1567A00C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FA7A532-B415-49EA-99F2-03EE1567A00C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D900B783-706F-4845-82E1-3C93C1E06DF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D900B783-706F-4845-82E1-3C93C1E06DF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D900B783-706F-4845-82E1-3C93C1E06DF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D900B783-706F-4845-82E1-3C93C1E06DF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7B4C47F-1F4C-409B-A73D-159D7FADB06C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7B4C47F-1F4C-409B-A73D-159D7FADB06C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7B4C47F-1F4C-409B-A73D-159D7FADB06C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7B4C47F-1F4C-409B-A73D-159D7FADB06C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11C2E468-0F3B-436E-9F88-DAD728A4D0E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11C2E468-0F3B-436E-9F88-DAD728A4D0E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11C2E468-0F3B-436E-9F88-DAD728A4D0E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11C2E468-0F3B-436E-9F88-DAD728A4D0E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18856B8B-9821-4036-AF0F-4401707355C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18856B8B-9821-4036-AF0F-4401707355C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18856B8B-9821-4036-AF0F-4401707355C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18856B8B-9821-4036-AF0F-4401707355C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{197081DD-40E6-42AF-8A77-A3A0445042EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{197081DD-40E6-42AF-8A77-A3A0445042EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{197081DD-40E6-42AF-8A77-A3A0445042EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{197081DD-40E6-42AF-8A77-A3A0445042EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DD49C6B-042D-40CE-8E8E-430146E3AF97}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

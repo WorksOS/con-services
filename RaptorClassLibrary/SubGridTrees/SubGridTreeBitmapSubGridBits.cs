@@ -1,0 +1,569 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.SubGridTrees.Helpers;
+
+namespace VSS.VisionLink.Raptor.SubGridTrees
+{
+    public struct SubGridTreeBitmapSubGridBits : IEquatable<SubGridTreeBitmapSubGridBits>
+    {
+        /// <summary>
+        /// The code used in serialised bit masks to indicate all bits are unset (0), and so are not explicitly written
+        /// </summary>
+        private const byte Serialisation_NoBitsSet = 0;
+
+        /// <summary>
+        /// The code used in serialised bit masks to indicate all bits are set (1), and so are not explicitly written
+        /// </summary>
+        private const byte Serialisation_AllBitsSet = 1;
+
+        /// <summary>
+        /// The code used in serialised bit masks to indicate the number of set bits is in the range 
+        /// 1..SubgridTree.CellsPerSubgrid and so are explicitly written
+        /// </summary>
+        private const byte Serialisation_ArbitraryBitsSet = 2;
+
+        /// <summary>
+        /// Represents the individual bit in the bits representing left most cell in a row for the TSubGridBitMap leaf cell.
+        /// </summary>
+        private const uint SubGridBitMapHighBitMask = (uint)1 << (SubGridTree.SubGridTreeDimension - 1);
+
+        /// <summary>
+        /// The array that stores the memory for the individual bit flags (of which there are 32x32 = 1024)
+        /// </summary>
+        public uint[] Bits;
+
+        /// <summary>
+        /// Default indexer for bit values in the mask
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public bool this[byte x, byte y]
+        {
+            get { return BitSet(x, y); }
+            set { SetBitValue(x, y, value); }
+        }
+
+        /// <summary>
+        /// The options used to control the initial state of a BitMask when it is created
+        /// </summary>
+        public enum SubGridBitsCreationOptions
+        {
+            /// <summary>
+            /// All bits in the bit mask are set to on (1)
+            /// </summary>
+            Filled,
+
+            /// <summary>
+            /// All bits in the bit mask are set to off (0)
+            /// </summary>
+            Unfilled
+        }
+
+        /// <summary>
+        /// Initialise the internal state of a new structure. This must be called prior to use of the instance.
+        /// If filled is true then all bits in the bits array will be set to '1'
+        /// </summary>
+        /// <param name="filled"></param>
+        public SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions options)
+        {
+            Bits = new uint[SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear.Length];
+
+            if (options == SubGridBitsCreationOptions.Filled)
+            {
+                Fill();
+            }
+            else if (options == SubGridBitsCreationOptions.Unfilled)
+            {
+                // Note: The defualt .Net behaviuour of clearing the memory for the bit mask achieves the same result as Clear...
+                // Clear();
+            }
+            else
+            {
+                Debug.Assert(false, "Unknown SubGridTreeBitmapSubGridBits creation option");
+            }
+        }
+
+        /// <summary>
+        /// Set all the bits in subgrid bits structure to 0.
+        /// </summary>
+        public void Clear()
+        {
+            // Perform a fast block copy of the bytes in the precalculate empty Bits 
+            // array in BitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear array into the local Bits array
+            // Note: The copy is in terms of bytes, not elements. 
+            // This is about as fast as a managed copy of array items can be.
+            Buffer.BlockCopy(SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear, 0, Bits, 0, (int)SubgridBitsHelper.BytesInBitsArray);
+            //Array.Clear(Bits, 0, Bits.Length);
+        }
+
+        /// <summary>
+        /// Set all the bits in subgrid bits structure to 1.
+        /// </summary>
+        public void Fill()
+        {
+            // Perform a fast block copy of the bytes in the precalculate empty Bits 
+            // array in BitsHelper.SubGridTreeLeafBitmapSubGridBits_Clear array into the local Bits array
+            // Note: The copy is in terms of bytes, not elements. 
+            // This is about as fast as a managed copy of array items can be.
+            Buffer.BlockCopy(SubgridBitsHelper.SubGridTreeLeafBitmapSubGridBits_Fill, 0, Bits, 0, (int)SubgridBitsHelper.BytesInBitsArray);
+        }
+
+        public void Assign(SubGridTreeBitmapSubGridBits source)
+        {
+            Buffer.BlockCopy(source.Bits, 0, Bits, 0, (int)SubgridBitsHelper.BytesInBitsArray);
+        }
+
+        /// <summary>
+        /// Determine if the bit at location (CellX, CellY) in the bit array is set (1)
+        /// </summary>
+        /// <param name="CellX"></param>
+        /// <param name="CellY"></param>
+        /// <returns></returns>
+        public bool BitSet(int CellX, int CellY) => (Bits[CellY] & (SubGridBitMapHighBitMask >> CellX)) != 0;
+
+        /// <summary>
+        /// Defines an overloaded bitwise equality operator for the Bits from a and b
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator ==(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b) => a.Equals(b);
+
+        /// <summary>
+        /// Defines an overloaded bitwise inequality operator for the Bits from a and b
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator !=(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b) => !a.Equals(b);
+
+        /// <summary>
+        /// Defines an overloaded bitwise AND/& operator that ANDs together the Bits from a and b and returns a 
+        /// new SubGridTreeLeafBitmapSubGridBits instance with the result
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static SubGridTreeBitmapSubGridBits operator &(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
+        {
+            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                result.Bits[i] = a.Bits[i] & b.Bits[i];
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Defines an overloaded bitwise OR/| operator that ORs together the Bits from a and b and returns a 
+        /// new SubGridTreeLeafBitmapSubGridBits instance with the result
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static SubGridTreeBitmapSubGridBits operator |(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
+        {
+            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                result.Bits[i] = a.Bits[i] | b.Bits[i];
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Defines an overloaded bitwise XOR/^ operator that XORs together the Bits from a and b and returns a 
+        /// new SubGridTreeLeafBitmapSubGridBits instance with the result
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static SubGridTreeBitmapSubGridBits operator ^(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
+        {
+            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                result.Bits[i] = a.Bits[i] ^ b.Bits[i];
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Subtracts all the set bits in b from the set bits in a.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static SubGridTreeBitmapSubGridBits operator -(SubGridTreeBitmapSubGridBits a, SubGridTreeBitmapSubGridBits b)
+        {
+            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                result.Bits[i] = a.Bits[i] ^ (a.Bits[i] & b.Bits[i]);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Defines an overloaded bitwise NOT/~ operator that NOTs the Bits from a and returns a 
+        /// new SubGridTreeLeafBitmapSubGridBits instance with the result
+        /// </summary>
+        /// <param name="bits"></param>
+        /// <returns></returns>
+        public static SubGridTreeBitmapSubGridBits operator ~(SubGridTreeBitmapSubGridBits bits)
+        {
+            SubGridTreeBitmapSubGridBits result = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                result.Bits[i] = ~bits.Bits[i];
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Return a new SubGridTreeLeafBitmapSubGridBits instance with all bits set to on (1)
+        /// </summary>
+        public static SubGridTreeBitmapSubGridBits FullMask => new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled);
+
+        /// <summary>
+        /// Clear the bit at the location given by CellX, CellY in the bits array
+        /// </summary>
+        /// <param name="CellX"></param>
+        /// <param name="CellY"></param>
+        public void ClearBit(int CellX, int CellY) => Bits[CellY] &= ~(SubGridBitMapHighBitMask >> CellX);
+
+        /// <summary>
+        /// Count the number of bits in the bit mask that are set to on (1)
+        /// </summary>
+        /// <returns></returns>
+        public uint CountBits()
+        {
+            uint result = 0;
+
+            for (int i = 0; i < SubgridBitsHelper.BitsArrayLength; i++)
+                result += BitCounterHelper.CountSetBits(Bits[i]);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Compute the integer cell address extent that covers the set bits in the bitmask.
+        /// The result is a bounding rectangle in the space of (0..SubGridTreeDimension - 1, 0..SubGridTreeDimension - 1)
+        /// </summary>
+        /// <returns></returns>
+        public BoundingIntegerExtent2D ComputeCellsExtents()
+        {
+            BoundingIntegerExtent2D result = new BoundingIntegerExtent2D();
+            result.SetInverted();
+
+            for (int Y = 0; Y < SubGridTree.SubGridTreeDimension; Y++)
+                if (Bits[Y] != 0)
+                    for (int X = 0; X < SubGridTree.SubGridTreeDimension; X++)
+                        if (BitSet(X, Y))
+                            result.Include(X, Y);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Determine if all of the bits in the bitmask are not set (0)
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmpty()
+        {
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+                if (Bits[i] != 0)
+                    return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Determine if all of the bits in the bitmask are set (1)
+        /// </summary>
+        /// <returns></returns>
+        public bool IsFull()
+        {
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+                if (Bits[i] != 0xFFFFFFFF)
+                    return false;
+
+            return true;
+        }
+        /*
+          // Not implemented in Next Gen. Any similar requriement can extract the bits and set them externally
+                class function TSubGridTreeLeafBitmapSubGridBits.FromVariant(const Vrnt: Variant): TSubGridTreeLeafBitmapSubGridBits;
+                var
+                  Packager: TSubGridTreeLeafBitmapSubGridBitsPackager;
+                begin
+                  Packager := TSubGridTreeLeafBitmapSubGridBitsPackager.Create;
+
+                  try
+                    Packager.FromVariant(Vrnt);
+                    Result := Packager.Bits;
+                  finally
+                    Packager.Free;
+                  end;
+                end;
+                */
+
+        /*
+       // Not implemented in Next Gen. Any similar requriement can extract the bits and set them externally
+       function TSubGridTreeLeafBitmapSubGridBits.ToVariant: Variant;
+       var
+         Packager: TSubGridTreeLeafBitmapSubGridBitsPackager;
+       begin
+         Packager := TSubGridTreeLeafBitmapSubGridBitsPackager.Create;
+
+         try
+           Packager.Bits := Self;
+           Result := Packager.ToVariant;
+         finally
+           Packager.Free;
+         end;
+       end;
+        */
+
+            /// <summary>
+        /// Set the bit at the location identified by [CellX, CellY] to set (1)
+        /// </summary>
+        /// <param name="CellX"></param>
+        /// <param name="CellY"></param>
+        public void SetBit(int CellX, int CellY) => Bits[CellY] |= SubGridBitMapHighBitMask >> CellX;
+
+        /// <summary>
+        /// Set the bit at the location identified by [CellX, CellY] to unset (0) or set (1) based on the value parameter
+        /// </summary>
+        /// <param name="CellX"></param>
+        /// <param name="CellY"></param>
+        /// <param name="Value"></param>
+        public void SetBitValue(int CellX, int CellY, bool Value)
+        {
+            if (Value)
+                Bits[CellY] |= SubGridBitMapHighBitMask >> CellX;
+            else
+                Bits[CellY] &= ~(SubGridBitMapHighBitMask >> CellX);
+        }
+
+        /// <summary>
+        /// Writes the contents of the mask in a binary form using the given binary write
+        /// </summary>
+        /// <param name="writer"></param>
+        public void Write(BinaryWriter writer)
+        {
+            switch (CountBits())
+            {
+                case 0:
+                    writer.Write(Serialisation_NoBitsSet);
+                    break;
+                case SubGridTree.CellsPerSubgrid:
+                    writer.Write(Serialisation_AllBitsSet);
+                    break;
+                default:
+                    writer.Write(Serialisation_ArbitraryBitsSet);
+                    foreach (uint u in Bits)
+                    {
+                        writer.Write(u);
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Reads the contents of the mask from a binary form using the given binary reader
+        /// </summary>
+        /// <param name="reader"></param>
+        public void Read(BinaryReader reader)
+        {
+            switch (reader.ReadByte())
+            {
+                case Serialisation_NoBitsSet:
+                    Clear();
+                    break;
+                case Serialisation_AllBitsSet:
+                    Fill();
+                    break;
+                case Serialisation_ArbitraryBitsSet:
+                    for (int i = 0; i < Bits.Length; i++)
+                    {
+                        Bits[i] = reader.ReadUInt32();
+                    }
+                    break;
+                default:
+                    Debug.Assert(false, "Unknown TSubGridTreeLeafBitmapSubGridBits control byte in read stream");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Iterate over all the bits in the bit map that are set (1) and execute the given action/lambda expression
+        /// with the CellX, CellY location of the set bit
+        /// </summary>
+        /// <param name="functor"></param>
+        public void ForEachSetBit(Action<int, int> functor)
+        {
+            uint RowBits;
+
+            for (int Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+            {
+                RowBits = Bits[Row];
+
+                if (RowBits == 0)
+                {
+                    continue;
+                }
+
+                for (int Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
+                {
+                    if ((RowBits & (SubGridBitMapHighBitMask >> Column)) != 0)
+                    {
+                        functor(Column, Row);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Iterate over all the bits in the bit map that are not set (0) and execute the given action/lambda expression
+        /// with the CellX, CellY location of the not set bit
+        /// </summary>
+        /// <param name="functor"></param>
+        public void ForEachClearBit(Action<int, int> functor)
+        {
+            uint RowBits;
+
+            for (byte Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+            {
+                RowBits = Bits[Row];
+
+                if (RowBits == 0xFFFFFFFF)
+                {
+                    continue;
+                }
+
+                for (byte Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
+                {
+                    if ((RowBits & (SubGridBitMapHighBitMask >> Column)) == 0)
+                    {
+                        functor(Column, Row);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Iterate over all the bits in the bit map ) and execute the given action/lambda expression
+        /// with the CellX, CellY location of the bit
+        /// </summary>
+        /// <param name="functor"></param>
+        public void ForEach(Action<byte, byte> functor)
+        {
+            for (byte Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+            {
+                for (byte Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
+                {
+                    functor(Column, Row);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Iterate over every bit in the bit mask calling the given function/lambda expression on it.
+        /// If the result of functor is true, then set the corresponding bit to set (1), else set it to not set (0)
+        /// </summary>
+        /// <param name="functor"></param>
+        public void ForEach(Func<byte, byte, bool> functor)
+        {
+            uint RowBits;
+
+            for (byte Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+            {
+                RowBits = Bits[Row];
+
+                for (byte Column = 0; Column < SubGridTree.SubGridTreeDimension; Column++)
+                {
+                    if (functor(Column, Row))
+                    {
+                        RowBits |= (SubGridBitMapHighBitMask >> Column);
+                    }
+                    else
+                    {
+                        RowBits &= ~(SubGridBitMapHighBitMask >> Column);
+                    }
+                }
+
+                Bits[Row] = RowBits;
+            }
+        }
+
+        /// <summary>
+        /// Convert a row of bits to a printable string that emits bits as a line of zero's and one's separated by spaces
+        /// </summary>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public string RowToString(int Row)
+        {
+            // Initialise a string builder with appropriate number of spaces
+            StringBuilder sb = new StringBuilder(new String(' ', 2 * SubGridTree.SubGridTreeDimension));
+
+            // Set each alternate space in the string with a 0 or 1 for each bit
+            uint RowBits = Bits[Row];
+            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            {
+                sb[2 * i + 1] = ((RowBits & (SubGridBitMapHighBitMask >> i)) != 0) ? '1' : '0';
+            }
+
+            return sb.ToString();
+        }
+
+        /*
+       Procedure TSubGridTreeLeafBitmapSubGridBits.DumpToLog(const Name : String);
+       var
+         Row : Integer;
+       begin
+         SIGLogMessage.PublishNoODS(Nil, 'Bit Mask: ' + Name, slmcDebug);
+
+         if IsEmpty then
+           SIGLogMessage.PublishNoODS(Nil, '<Empty>', slmcDebug)
+         else
+           if IsFull then
+             SIGLogMessage.PublishNoODS(Nil, '<Full>', slmcDebug)
+           else
+             for Row := 0 to kSubGridTreeDimension - 1 do
+               SIGLogMessage.PublishNoODS(Nil, Format('%2d: %s', [Row, RowToString(Row)]), slmcDebug);
+       end;
+       */
+
+        public bool Equals(SubGridTreeBitmapSubGridBits other)
+        {
+            if (other == null) return false;
+
+            for (int i = 0; i < Bits.Length; i++)
+            {
+                if (Bits[i] != other.Bits[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+}
