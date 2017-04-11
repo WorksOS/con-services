@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 
-namespace VSS.Raptor.Service.Common.Filters
+namespace VSS.MockProjectWebApi.Service.Common.Filters
 {
   public class ExceptionsTrap
   {
