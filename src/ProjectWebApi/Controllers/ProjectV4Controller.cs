@@ -96,7 +96,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       log.LogInformation("CreateProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
 
       ProjectDataValidator.Validate(project, projectService);
-      ValidateCoordSystem(project);
+      await ValidateCoordSystem(project).ConfigureAwait(false); 
 
       project.ReceivedUTC = DateTime.UtcNow;
       ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
@@ -159,7 +159,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, projectService);
-      ValidateCoordSystem(project);
+      await ValidateCoordSystem(project).ConfigureAwait(false);
       project.ReceivedUTC = DateTime.UtcNow;
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
@@ -322,7 +322,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// validate CordinateSystem if provided
     /// </summary>
     /// <param name=""></param>
-    private async void ValidateCoordSystem(IProjectEvent project)
+    private async Task<bool> ValidateCoordSystem(IProjectEvent project)
     {
       // a Creating a landfill must have a CS, else optional
       //  if updating a landfill, or other then May have one. Note that a null one doesn't overwrite any existing.
@@ -331,7 +331,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         var projectEvent = (CreateProjectEvent)project;
         if (projectEvent.ProjectType == ProjectType.LandFill
           && (string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName)
-                || projectEvent.CoordinateSystemFileContent == null)
+               || projectEvent.CoordinateSystemFileContent == null)
           )
           throw new ServiceException(HttpStatusCode.BadRequest,
                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -344,15 +344,24 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       {
         ProjectDataValidator.ValidateFileName(csFileName);
         var coordinateSystemSettingsResult = await raptorProxy.CoordinateSystemValidate(csFileContent, csFileName, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
-        if (coordinateSystemSettingsResult == null || coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
+        if (coordinateSystemSettingsResult == null )
+        {
+          log.LogError($"Validation of CS failed. result returned = null");
+
+          throw new ServiceException(HttpStatusCode.BadRequest,
+                        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                                  string.Format("Invalid CoordinateSystem. esult returned = null")));
+        }
+        if (coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
           log.LogError($"Validation of CS failed. Reason: {0} {1}", coordinateSystemSettingsResult.Code, coordinateSystemSettingsResult.Message);
 
           throw new ServiceException(HttpStatusCode.BadRequest,
-                        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                  string.Format("Invalid CoordinateSystem. Reason: {0} {1}", coordinateSystemSettingsResult.Code, coordinateSystemSettingsResult.Message)));
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              string.Format("Invalid CoordinateSystem. Reason: {0} {1}", coordinateSystemSettingsResult.Code, coordinateSystemSettingsResult.Message)));
         }
       }
+      return true;
     }
   }
 }
