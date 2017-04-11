@@ -14,7 +14,8 @@ namespace MockProjectWebApi.Controllers
       [HttpPost]
       void DummyPost()
       {
-          return;
+        Console.WriteLine("DummyPost");
+      return;
       }
 
 
