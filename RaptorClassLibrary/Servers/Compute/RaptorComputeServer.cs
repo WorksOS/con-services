@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Storage;
 
-namespace VSS.VisionLink.Raptor.Servers
+namespace VSS.VisionLink.Raptor.Servers.Compute
 {
     /// <summary>
     /// Defines a representation of a server responsible for performing Raptor related compute operations using

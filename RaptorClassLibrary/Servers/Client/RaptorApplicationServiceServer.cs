@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Raptor.Servers
+namespace VSS.VisionLink.Raptor.Servers.Client
 {
     /// <summary>
     /// Represents a server instance that client servers implmenting application service type capabilities such as

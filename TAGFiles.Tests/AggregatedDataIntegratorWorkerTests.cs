@@ -58,7 +58,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator.Tests
             // Construct an integration worker and ask it to perform the integration
             List<AggregatedDataIntegratorTask> ProcessedTasks = null;
 
-            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(StorageProxy_Ignite.Instance());
+            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(StorageProxy.Instance());
             worker.ProcessTask(ProcessedTasks);
 
             //            Assert.Fail();

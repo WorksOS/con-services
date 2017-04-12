@@ -11,6 +11,10 @@ using VSS.VisionLink.Raptor.GridFabric.Arguments;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
+    /// <summary>
+    /// The grid compute function responsible for coordinating rendering of a tile on a server compute node in response to 
+    /// a client server Ingore instance requesting it.
+    /// </summary>
     [Serializable]
     public class TileRenderRequestComputeFunc : IComputeFunc<TileRenderRequestArgument, Bitmap>
     {

@@ -696,7 +696,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 MemoryStream SMS = null; // = new MemoryStream();
 
-                FSError = StorageProxy_FileSystem.Instance().ReadSpatialStreamFromPersistentStore
+                FSError = StorageProxy.Instance().ReadSpatialStreamFromPersistentStore
                             (Owner.ID, FileName, OriginX, OriginY,
                              FileSystemSpatialStreamType.SubGridSegment, Segment.SegmentInfo.FSGranuleIndex, out SMS,
                              out StoreGranuleIndex, out StoreGranuleCount);

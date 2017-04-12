@@ -15,6 +15,7 @@ using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Servers;
+using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Types;
 
@@ -62,7 +63,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                      {
                          CoordsAreGrid = true,
                          IsSpatial = true,
-                         Fence = new Fence(extents.MinX, extents.MinY, extents.MaxX, extents.MaxY)
+                         Fence = new Fence(extents)
                      }
                  },
                  null // filter 2

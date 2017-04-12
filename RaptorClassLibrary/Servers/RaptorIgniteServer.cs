@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Servers.Compute;
 
 namespace VSS.VisionLink.Raptor.Servers
 {

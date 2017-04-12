@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Machines;
 using VSS.VisionLink.Raptor.Servers;
+using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
@@ -58,10 +60,14 @@ namespace VSS.VisionLink.Raptor.Client
                     {
                         for (int J = 0; J < gridCuts; J++)
                         {
+                            BoundingWorldExtent3D renderExtents = new BoundingWorldExtent3D
+                                (extents.MinX + I * tileSize, extents.MinY + J * tileSize,
+                                 extents.MinX + (I + 1) * tileSize, extents.MinY + (J + 1) * tileSize);
+
                             Bitmap bmp = RaptorTileRenderingServer.NewInstance().RenderTile(new TileRenderRequestArgument
                             (ID,
                              DisplayMode.Height,
-                             extents,
+                             renderExtents,
                              true, // CoordsAreGrid
                              500, // PixelsX
                              500, // PixelsY
@@ -71,38 +77,16 @@ namespace VSS.VisionLink.Raptor.Client
                                  {
                                      CoordsAreGrid = true,
                                      IsSpatial = true,
-                                     Fence = new Fence(extents.MinX, extents.MinY, extents.MaxX, extents.MaxY)
+                                     Fence = new Fence(renderExtents)
                                  }
                              },
                              null // filter 2
                             ));
 
-                            /*
-                            RenderOverlayTile render = new RenderOverlayTile
-                                (ID,
-                                 DisplayMode.Height,
-                                 new XYZ(extents.MinX + I * tileSize, extents.MinY + J * tileSize),
-                                 new XYZ(extents.MinX + (I + 1) * tileSize, extents.MinY + (J + 1) * tileSize),
-                                 true, // CoordsAreGrid
-                                 5000, // PixelsX
-                                 5000, // PixelsY
-                                 new CombinedFilter(siteModel) // Filter1
-                                 {
-                                     SpatialFilter = new CellSpatialFilter()  
-                                     {
-                                         CoordsAreGrid = true,
-                                         IsSpatial = true,
-                                         Fence = new Fence(extents.MinX + I * tileSize, extents.MinY + J * tileSize,
-                                                           extents.MinX + (I + 1) * tileSize, extents.MinY + (J + 1) * tileSize)
-                                     }
-                                 },
-                                 null); // Filter2
-                            Bitmap bmp = render.Execute();
-                            */
-
                             if (bmp != null)
                             {
                                 bmp.Save(String.Format("c:\\temp\\raptorignitedata\\bitmap{0}x{1}.bmp", I, J));
+                                bmp.Save(String.Format("c:\\temp\\raptorignitedata\\bitmap{0}x{1}.png", I, J), ImageFormat.Png);
                             }
                         }
                     }
@@ -139,7 +123,7 @@ namespace VSS.VisionLink.Raptor.Client
 
             // Construct an integration worker and ask it to perform the integration
             List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
-            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(StorageProxy_Ignite.Instance(), integrator.TasksToProcess);
+            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(StorageProxy.Instance(), integrator.TasksToProcess);
 
             try
             {
@@ -158,7 +142,7 @@ namespace VSS.VisionLink.Raptor.Client
             int count = 0;
 
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
-            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(StorageProxy_Ignite.Instance(), integrator.TasksToProcess);
+            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(StorageProxy.Instance(), integrator.TasksToProcess);
 
             // Create the site model and machine etc to aggregate the processed TAG file into
             SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(2, true);
@@ -213,6 +197,9 @@ namespace VSS.VisionLink.Raptor.Client
 
         static void Main(string[] args)
         {
+            // Obtain a TAGFileProcessign client server
+            TAGFileProcessingServer TAGServer = new TAGFileProcessingServer();
+                
             // ProcessMachine10101TAGFiles();
             // ProcessMachine333TAGFiles();
             ProcessSingleTAGFile(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");

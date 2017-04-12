@@ -14,13 +14,13 @@ namespace VSS.VisionLink.Raptor.Storage
     /// </summary>
     public class StorageProxy_FileSystem : IStorageProxy
     {
-        private static IStorageProxy _instance = null;
+//        private static IStorageProxy _instance = null;
 
         public StorageProxy_FileSystem()
         {
 
         }
-
+/*
         public static IStorageProxy Instance()
         {
             if (_instance == null)
@@ -31,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
             return _instance;
         }
-
+*/
         FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(long DataModelID, string StreamName, uint SubgridX, uint SubgridY, FileSystemSpatialStreamType StreamType, uint GranuleIndex, out MemoryStream Stream, out uint StoreGranuleIndex, out uint StoreGranuleCount)
         {
             throw new NotImplementedException();

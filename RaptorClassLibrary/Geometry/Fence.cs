@@ -39,6 +39,14 @@ namespace VSS.VisionLink.Raptor.Geometry
         }
 
         /// <summary>
+        /// Constructor that creates a rectangular fence from a woorld coordinate bounding extent
+        /// </summary>
+        /// <param name="extent"></param>
+        public Fence(BoundingWorldExtent3D extent) : this(extent.MinX, extent.MinY, extent.MaxX, extent.MaxY)
+        {
+        }
+
+        /// <summary>
         /// Default indexer for the list of fence points
         /// </summary>
         /// <param name="index"></param>

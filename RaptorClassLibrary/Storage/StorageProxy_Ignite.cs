@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.Storage
     /// </summary>
     public class StorageProxy_Ignite : IStorageProxy
     {
-        private static IStorageProxy _instance = null;
+//        private static IStorageProxy _instance = null;
 
         private static IIgnite ignite = null;
 
@@ -80,6 +80,7 @@ namespace VSS.VisionLink.Raptor.Storage
             }
         }
 
+        /*
         public static IStorageProxy Instance()
         {
             if (_instance == null)
@@ -95,6 +96,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
             return _instance;
         }
+        */
 
         private static string ComputeNamedStreamCacheKey(long DataModelID, string Name)
         {

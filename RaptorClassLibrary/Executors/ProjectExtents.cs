@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.Servers;
+using VSS.VisionLink.Raptor.Servers.Client;
 using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.Executors

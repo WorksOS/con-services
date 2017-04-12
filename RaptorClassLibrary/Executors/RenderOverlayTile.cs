@@ -700,7 +700,7 @@ namespace VSS.VisionLink.Raptor.Executors
 
                     return Renderer.Displayer.MapView.BitmapCanvas;
 
-                    //              PackageRenderedTileIntoPNG(Renderer.Displayer);
+                    // PackageRenderedTileIntoPNG(Renderer.Displayer);
                     // TODO - report the final rendered result back
                     //throw new NotImplementedException();
                 }

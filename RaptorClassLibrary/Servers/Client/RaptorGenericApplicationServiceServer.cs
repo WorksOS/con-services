@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VSS.VisionLink.Raptor.Servers
+namespace VSS.VisionLink.Raptor.Servers.Client
 {
     /// <summary>
     /// An application service server that can take a generic action to perform in the context of an application service service
