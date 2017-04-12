@@ -255,7 +255,8 @@ namespace TestUtility
         case "DeleteProjectEvent":
           response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Delete.ToString(), jsonString, customerUid);
           break;
-      }   
+      }
+      Console.WriteLine(response);  
       var jsonResponse = JsonConvert.DeserializeObject<ContractExecutionResult>(response);
       return jsonResponse.Message;
     }
