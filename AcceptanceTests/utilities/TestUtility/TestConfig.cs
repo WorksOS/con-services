@@ -28,7 +28,6 @@ namespace TestUtility
                                      "50TM3933.054270000008174.140120000000.008730000000000.000450000000000.001907997000001.00001301300000" + 
                                      "81TM13673.746000000007198.06011000000190.3735100000000.000085670000000.00000015000000                                " + 
                                      "C8TM4SCS900 Localization             SCS900 Record                   WGS84 Equivalent Datum          ";
-    public string coordinateSystemFile = "CoordinateSystem.dc";
     public string DbConnectionString { get; private set; }
 
     public TestConfig()

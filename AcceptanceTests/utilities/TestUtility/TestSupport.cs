@@ -192,6 +192,7 @@ namespace TestUtility
             if (IsPublishToWebApi)
             {
               CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID);
+              Thread.Sleep(1500); //Give web api time to update
             }
             else
             {
@@ -287,7 +288,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(CreateProjectEvt, "", statusCode, "Create",HttpMethod.Post.ToString() ,CustomerUid.ToString());
+      CallProjectWebApi(CreateProjectEvt, "", statusCode, "Create",HttpMethod.Post.ToString() ,CustomerUid.ToString());      
     }
 
     /// <summary>
@@ -984,10 +985,13 @@ namespace TestUtility
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             ProjectBoundary = eventObject.ProjectBoundary,
             ProjectUID = new Guid(eventObject.ProjectUID),
-            CustomerUID = new Guid(eventObject.CustomerUID),
-            CoordinateSystemFileContent = Encoding.ASCII.GetBytes(tsCfg.coordinateSystem),
-            CoordinateSystemFileName = tsCfg.coordinateSystemFile            
+            CustomerUID = new Guid(eventObject.CustomerUID)      
           };
+          if (HasProperty(eventObject, "CoordinateSystem"))
+          {
+            createProjectEvent.CoordinateSystemFileName = eventObject.CoordinateSystem;
+            createProjectEvent.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(tsCfg.coordinateSystem);
+          }
           if (HasProperty(eventObject, "ProjectID"))
           {
             createProjectEvent.ProjectID = int.Parse(eventObject.ProjectID);
@@ -1003,10 +1007,13 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            ProjectUID = new Guid(eventObject.ProjectUID),
-            CoordinateSystemFileContent = Encoding.ASCII.GetBytes(tsCfg.coordinateSystem),
-            CoordinateSystemFileName = tsCfg.coordinateSystemFile        
+            ProjectUID = new Guid(eventObject.ProjectUID),  
           };
+          if (HasProperty(eventObject, "CoordinateSystem"))
+          {
+            updateProjectEvent.CoordinateSystemFileName = eventObject.CoordinateSystem;
+            updateProjectEvent.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(tsCfg.coordinateSystem);
+          }
           if (HasProperty(eventObject, "ProjectEndDate") && eventObject.ProjectEndDate != null)
           {
             updateProjectEvent.ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate);
@@ -1244,6 +1251,10 @@ namespace TestUtility
             ProjectUid = eventObject.ProjectUID,
             ProjectGeofenceWKT = eventObject.ProjectBoundary,                        
           };
+          if (HasProperty(eventObject, "CoordinateSystem"))
+          {
+            pd.CoordinateSystemFileName = eventObject.CoordinateSystem;
+          }
           if (HasProperty(eventObject, "ProjectID"))
           {
             pd.LegacyProjectId = int.Parse(eventObject.ProjectID);
@@ -1307,6 +1318,7 @@ namespace TestUtility
       var response = restClient.DoHttpRequest(uri, method, configJson, statusCode, "application/json", customerUid);
       if (response.Length > 0)
          { Console.WriteLine(what + " project response:" + response);}
+      Thread.Sleep(1000);  // Delay in case another
       return response;
     }
 

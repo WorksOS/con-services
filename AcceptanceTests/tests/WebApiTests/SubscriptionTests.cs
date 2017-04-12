@@ -110,12 +110,11 @@ namespace WebApiTests
         $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                    |                |                  | {startDate} |                | {projectUid2} |          | {subscriptionUid2}  |"
       };
       ts.PublishEventCollection(eventsArray);
-
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType          | EventDate   | ProjectUID    | ProjectID          | ProjectName     | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | ",
-      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | {legacyProjectId1} | Project Sub 3-1 | ProjectMonitoring | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      |" ,
-      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | {legacyProjectId2} | Project Sub 3-2 | ProjectMonitoring | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      |" };
+       "| EventType          | EventDate   | ProjectUID    | ProjectID          | ProjectName     | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      | ",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | {legacyProjectId1} | Project Sub 4-1 | ProjectMonitoring | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" ,
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | {legacyProjectId2} | Project Sub 4-2 | ProjectMonitoring | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };;
       ts.PublishEventCollection(projectEventArray);
       var response = ts.CallProjectWebApiV4("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
@@ -132,7 +131,7 @@ namespace WebApiTests
     [TestMethod]
     public void Create4SubscriptionsAndUse2ForLandfillProjects()
     {
-      msg.Title("Project Subtest 3", "Get 4 subscriptions and use two ");
+      msg.Title("Project Subtest 4", "Get 4 subscriptions and use two ");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -166,9 +165,9 @@ namespace WebApiTests
 
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType          | EventDate   | ProjectUID    | ProjectID          | ProjectName     | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | ",
-      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | {legacyProjectId1} | Project Sub 4-1 | LandFill          | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      |" ,
-      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | {legacyProjectId2} | Project Sub 4-2 | LandFill          | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      |" };
+       "| EventType          | EventDate   | ProjectUID    | ProjectID          | ProjectName     | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      |",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | {legacyProjectId1} | Project Sub 4-1 | LandFill          | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" ,
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | {legacyProjectId2} | Project Sub 4-2 | LandFill          | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       ts.PublishEventCollection(projectEventArray);
       var response = ts.CallProjectWebApiV4("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
