@@ -12,6 +12,9 @@ using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.GridFabric.Requests;
+using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Types;
 
@@ -24,12 +27,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private Bitmap PerformRender()
         {
-            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID, false);
+            // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
+            SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
 
-            if (!extents.IsValidPlanExtent)
-            {
-                return null;
-            }
+            // Pull the sitemodel extents using the ProjectExtents executor which will use the Ignite instance created by the generic application service server above
+            extents = ProjectExtents.ProductionDataOnly(ID);
 
             try
             {
@@ -47,51 +49,38 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     extents.MaxX += Delta;
                 }
 
-                double tileSize = extents.SizeX;
-
-                RenderOverlayTile render = new RenderOverlayTile
-                    (ID,
-                     DisplayMode.Height,
-                     new XYZ(extents.MinX, extents.MinY),
-                     new XYZ(extents.MaxX, extents.MaxY),
-                     true, // CoordsAreGrid
-                     500, // PixelsX
-                     500, // PixelsY
-                     new CombinedFilter(siteModel) // Filter1
-                         {
-                         SpatialFilter = new CellSpatialFilter()
-                         {
-                             CoordsAreGrid = true,
-                             IsSpatial = true,
-                             Fence = new Fence(extents.MinX, extents.MinY, extents.MaxX, extents.MaxY)
-                         }
-                     },
-                     null); // Filter2
-
-                Bitmap bmp = render.Execute();
-
-                return bmp;
+                return  RaptorTileRenderingServer.NewInstance().RenderTile(new TileRenderRequestArgument
+                (ID,
+                 DisplayMode.Height,
+                 extents,
+                 true, // CoordsAreGrid
+                 500, // PixelsX
+                 500, // PixelsY
+                 new CombinedFilter(siteModel) // Filter1
+                 {
+                     SpatialFilter = new CellSpatialFilter()
+                     {
+                         CoordsAreGrid = true,
+                         IsSpatial = true,
+                         Fence = new Fence(extents.MinX, extents.MinY, extents.MaxX, extents.MaxY)
+                     }
+                 },
+                 null // filter 2
+                ));
             }
             catch (Exception E)
             {
                 return null;
             }
         }
-    
 
-    public Form1()
+        public Form1()
         {
             InitializeComponent();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void DoRender()
@@ -105,47 +94,46 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             }
         }
 
+        private void ViewPortChange(Action viewPortAction)
+        {
+            viewPortAction();
+            DoRender();
+        }
+
         private void ZoomAll_Click(object sender, EventArgs e)
         {
             // Get the project extent so we know where to render
-            extents = ProjectExtents.ProductionDataOnly(ID);
-            DoRender();
+            ViewPortChange(() => extents = ProjectExtents.ProductionDataOnly(ID));
         }
 
         private void btmZoomIn_Click(object sender, EventArgs e)
         {
-            extents.ScalePlan(0.8);
-            DoRender();
+            ViewPortChange(() => extents.ScalePlan(0.8));
         }
 
         private void btnZoomOut_Click(object sender, EventArgs e)
         {
-            extents.ScalePlan(1.25);
-            DoRender();
+            ViewPortChange(() => extents.ScalePlan(1.25));
         }
 
         private void btnTranslateNorth_Click(object sender, EventArgs e)
         {
-            extents.Offset(0, 0.2 * extents.SizeX);
-            DoRender();
+            ViewPortChange(() => extents.Offset(0, 0.2 * extents.SizeX));
         }
 
         private void bntTranslateWest_Click(object sender, EventArgs e)
         {
-            extents.Offset(-0.2 * extents.SizeX, 0);
-            DoRender();
+            ViewPortChange(() => extents.Offset(-0.2 * extents.SizeX, 0));
         }
 
         private void bntTranslateEast_Click(object sender, EventArgs e)
         {
-            extents.Offset(0.2 * extents.SizeX, 0);
-            DoRender();
+            ViewPortChange(() => extents.Offset(0.2 * extents.SizeX, 0));
         }
 
         private void bntTranslateSouth_Click(object sender, EventArgs e)
         {
-            extents.Offset(0, -0.2 * extents.SizeX);
-            DoRender();
+            ViewPortChange(() => extents.Offset(0, -0.2 * extents.SizeX));
         }
     }
 }

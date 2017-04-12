@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.GridFabric.Requests;
 using VSS.VisionLink.Raptor.Machines;
+using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
@@ -55,6 +58,26 @@ namespace VSS.VisionLink.Raptor.Client
                     {
                         for (int J = 0; J < gridCuts; J++)
                         {
+                            Bitmap bmp = RaptorTileRenderingServer.NewInstance().RenderTile(new TileRenderRequestArgument
+                            (ID,
+                             DisplayMode.Height,
+                             extents,
+                             true, // CoordsAreGrid
+                             500, // PixelsX
+                             500, // PixelsY
+                             new CombinedFilter(siteModel) // Filter1
+                             {
+                                 SpatialFilter = new CellSpatialFilter()
+                                 {
+                                     CoordsAreGrid = true,
+                                     IsSpatial = true,
+                                     Fence = new Fence(extents.MinX, extents.MinY, extents.MaxX, extents.MaxY)
+                                 }
+                             },
+                             null // filter 2
+                            ));
+
+                            /*
                             RenderOverlayTile render = new RenderOverlayTile
                                 (ID,
                                  DisplayMode.Height,
@@ -75,6 +98,7 @@ namespace VSS.VisionLink.Raptor.Client
                                  },
                                  null); // Filter2
                             Bitmap bmp = render.Execute();
+                            */
 
                             if (bmp != null)
                             {

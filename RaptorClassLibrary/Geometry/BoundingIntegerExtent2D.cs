@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.Geometry
 {
+    [Serializable]
     public struct BoundingIntegerExtent2D : IEquatable<BoundingIntegerExtent2D>
     {
         public Int32 MinX, MinY, MaxX, MaxY;

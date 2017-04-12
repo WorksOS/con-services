@@ -10,6 +10,7 @@ namespace VSS.VisionLink.Raptor.Geometry
     /// <summary>
     /// A simple polygon desribing a fence and including tests for different geometry elements
     /// </summary>
+    [Serializable]
     public class Fence
     {
         private double minX;

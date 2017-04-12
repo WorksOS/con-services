@@ -102,9 +102,12 @@
     <Compile Include="Geometry\UTMCoordPointPair.cs" />
     <Compile Include="Geometry\XYZ.cs" />
     <Compile Include="GridFabric\Arguments\SubGridsRequestArgument.cs" />
+    <Compile Include="GridFabric\Arguments\TileRenderRequestArgument.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFunc.cs" />
+    <Compile Include="GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
     <Compile Include="GridFabric\Listeners\SubGridListener.cs" />
     <Compile Include="GridFabric\Requests\SubGridRequests.cs" />
+    <Compile Include="GridFabric\Requests\TileRenderRequest.cs" />
     <Compile Include="GridFabric\Responses\SubGridRequestsResponse.cs" />
     <Compile Include="GridFabric\Types\SubGridRequestsResponseResult.cs" />
     <Compile Include="Filters\Interfaces\IFilter.cs" />
@@ -123,6 +126,13 @@
     <Compile Include="Rendering\ProductionPVMDisplayerBase.cs" />
     <Compile Include="Rendering\PVMDisplayerBase.cs" />
     <Compile Include="Rendering\PVMDisplayer_Height.cs" />
+    <Compile Include="Servers\RaptorApplicationServiceServer.cs" />
+    <Compile Include="Servers\RaptorClientServer.cs" />
+    <Compile Include="Servers\RaptorComputeServer.cs" />
+    <Compile Include="Servers\RaptorGenericApplicationServiceServer.cs" />
+    <Compile Include="Servers\RaptorIgniteServer.cs" />
+    <Compile Include="Servers\RaptorProjectStatisticsServer.cs" />
+    <Compile Include="Servers\RaptorTileRenderingServer.cs" />
     <Compile Include="SiteModels\SiteModels.cs" />
     <Compile Include="Storage\Interfaces\IStorageProxy.cs" />
     <Compile Include="Events\MachinesTargetValues.cs" />
@@ -347,9 +357,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

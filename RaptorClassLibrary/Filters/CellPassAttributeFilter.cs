@@ -53,6 +53,7 @@ namespace VSS.VisionLink.Raptor.Filters
     /// server data grid is prepared before returning it to the client to fulfill client
     /// grid data requests
     /// </summary>
+    [Serializable]
     public abstract class DataPassFilter : ICellPassAttributeFilter
     {
         /// <summary>
@@ -383,6 +384,7 @@ namespace VSS.VisionLink.Raptor.Filters
     /// <summary>
     /// TICGridDataFilter provides filtering support for grid data requested by the client
     /// </summary>
+    [Serializable]
     public class CellPassAttributeFilter : DataPassFilter
     {
         // Time based filtering members
@@ -493,7 +495,8 @@ namespace VSS.VisionLink.Raptor.Filters
         /// A subgrid containing sampled elevations from a benchmark surface defining the bench surface for
         /// an elevation range filter.
         /// </summary>
-        public ClientHeightLeafSubGrid ElevationRangeDesignElevations { get; set; } = null;
+        [NonSerialized]
+        public ClientHeightLeafSubGrid ElevationRangeDesignElevations = null;
 
         /// <summary>
         /// Denotes whether analysis of cell passes in a cell are analysed into separate layers accodring to 

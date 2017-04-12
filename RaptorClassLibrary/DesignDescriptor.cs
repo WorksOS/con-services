@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor
 {
+    [Serializable]
     public struct DesignDescriptor : IEquatable<DesignDescriptor>
     {
         public long DesignID;

@@ -31,6 +31,7 @@ namespace VSS.VisionLink.Raptor.Storage
         {
             if (ignite == null)
             {
+                /*
                 IgniteConfiguration cfg = new IgniteConfiguration()
                 {
                     GridName = "Raptor",
@@ -38,18 +39,27 @@ namespace VSS.VisionLink.Raptor.Storage
                     // Register custom class for Ignite serialization
                     BinaryConfiguration = new Apache.Ignite.Core.Binary.BinaryConfiguration(typeof(MemoryStream)),
 
-                    JvmMaxMemoryMb = 6000
+                    JvmMaxMemoryMb = 6000,
+                    ClientMode = true
+                    //Assemblies = null
+
+                   // Localhost = "127.0.0.1"
                 };
 
                 ignite = Ignition.Start(cfg);
+                */
+
                 ignite = Ignition.TryGetIgnite("Raptor");
 
-                if (ignite == null)
-                {
-                    ignite = Ignition.GetIgnite();
-                }
+//                if (ignite == null)
+//                {
+//                    ignite = Ignition.GetIgnite();
+//                }
+
+                cache = ignite.GetCache<String, MemoryStream>("DataModels");
 
                 // Add a cache to Ignite
+                /*
                 cache = ignite.GetOrCreateCache<String, MemoryStream>
                     (new CacheConfiguration()
                     {
@@ -64,8 +74,9 @@ namespace VSS.VisionLink.Raptor.Storage
                             EvictionPolicy = new LruEvictionPolicy()
                         {
                             MaxMemorySize = 2000000000,
-                        }
+                        },
                     });
+                */
             }
         }
 
@@ -190,7 +201,6 @@ namespace VSS.VisionLink.Raptor.Storage
         {
             try
             {
-
                 cache.Put(ComputeNamedStreamCacheKey(DataModelID, StreamName), Stream);
                 return FileSystemErrorStatus.OK;
             }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.SiteModels;
 
 namespace VSS.VisionLink.Raptor.Executors
@@ -20,7 +21,7 @@ namespace VSS.VisionLink.Raptor.Executors
         /// <returns></returns>
         public static BoundingWorldExtent3D ProductionDataOnly(long ID)
         {
-            SiteModel SiteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
+            SiteModel SiteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.SiteModels.Instance().GetSiteModel(ID, false));
 
             return SiteModel == null ? BoundingWorldExtent3D.Inverted() : SiteModel.SiteModelExtent;
         }

@@ -689,12 +689,14 @@ namespace VSS.VisionLink.Raptor.Executors
 
                 if (ResultStatus == RequestErrorStatus.OK)
                 {
+                    /*
                     // Draw diagonal cross and top left corner indicators
                     Renderer.Displayer.MapView.DrawLine(BLPoint.X, BLPoint.Y, TRPoint.X, TRPoint.Y, Color.Red);
                     Renderer.Displayer.MapView.DrawLine(BLPoint.X, TRPoint.Y, TRPoint.X, BLPoint.Y, Color.Red);
 
                     Renderer.Displayer.MapView.DrawLine(BLPoint.X, TRPoint.Y, BLPoint.X, TRPoint.Y - 50, Color.Red);
                     Renderer.Displayer.MapView.DrawLine(BLPoint.X, TRPoint.Y, BLPoint.X + 50, TRPoint.Y - 0.1, Color.Red);
+                    */
 
                     return Renderer.Displayer.MapView.BitmapCanvas;
 

@@ -10,6 +10,7 @@ namespace VSS.VisionLink.Raptor.Filters
     /// <summary>
     /// Combined filter represents both spatial and attribute based filtering considerations
     /// </summary>
+    [Serializable]
     public class CombinedFilter
     {
         public CellPassAttributeFilter AttributeFilter = null;

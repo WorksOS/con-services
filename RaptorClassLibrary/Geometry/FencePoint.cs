@@ -10,6 +10,7 @@ namespace VSS.VisionLink.Raptor.Geometry
     /// <summary>
     /// A simple class containined a 3D point location expressed as double ordinates in the X, Y & Z axes
     /// </summary>
+    [Serializable]
     public class FencePoint
     {
         /// <summary>
