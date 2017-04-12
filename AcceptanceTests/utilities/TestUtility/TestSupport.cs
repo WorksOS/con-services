@@ -192,7 +192,6 @@ namespace TestUtility
             if (IsPublishToWebApi)
             {
               CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID);
-              Thread.Sleep(1500); //Give web api time to update
             }
             else
             {
@@ -1318,7 +1317,6 @@ namespace TestUtility
       var response = restClient.DoHttpRequest(uri, method, configJson, statusCode, "application/json", customerUid);
       if (response.Length > 0)
          { Console.WriteLine(what + " project response:" + response);}
-      Thread.Sleep(1000);  // Delay in case another
       return response;
     }
 
