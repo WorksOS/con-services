@@ -244,6 +244,7 @@ namespace TestUtility
     private string CallWebApiWithProject(string jsonString, string eventType, string customerUid)
     {
       var response = string.Empty;
+      Thread.Sleep(2000);
       switch (eventType)
       {
         case "CreateProjectEvent":
