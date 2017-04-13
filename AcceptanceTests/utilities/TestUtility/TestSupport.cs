@@ -256,6 +256,7 @@ namespace TestUtility
           response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Delete.ToString(), jsonString, customerUid);
           break;
       }
+      Thread.Sleep(2000);
       Console.WriteLine(response);  
       var jsonResponse = JsonConvert.DeserializeObject<ContractExecutionResult>(response);
       return jsonResponse.Message;
