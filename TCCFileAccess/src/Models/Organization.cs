@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TagFileHarvester.Models
+namespace TCCFileAccess.Models
 {
   public class Organization : IEquatable<Organization>
   {

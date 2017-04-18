@@ -1,6 +1,6 @@
 using System;
 
-namespace TCCFileAccess.Implementation
+namespace TCCFileAccess.Models
 {
         public class TCCFile
         {
