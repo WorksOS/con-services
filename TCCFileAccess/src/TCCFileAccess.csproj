@@ -18,10 +18,7 @@
     <PackageReference Include="ConfigurationStore.netcore" Version="*" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\MasterDataProxies\src\MasterDataProxies.csproj" />
+    <PackageReference Include="MasterDataProxies.netcore" Version="*" />
   </ItemGroup>
 
 </Project>

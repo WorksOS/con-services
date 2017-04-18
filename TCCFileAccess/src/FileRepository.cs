@@ -264,7 +264,6 @@ namespace TCCFileAccess
         {
             Log.LogDebug("GetFolders: org={0} {1}, lastModfiedUTC={2}, path={3}", org.shortName, org.filespaceId,
                 lastModifiedUTC, path);
-            List<string> folders = null;
             try
             {
                 //Get list of folders one level down from path
