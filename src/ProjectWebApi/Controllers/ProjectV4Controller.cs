@@ -29,7 +29,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     {
     }
 
-
+    #region projects
     /// <summary>
     /// Gets a list of projects for a customer. The list includes projects of all project types
     /// and both active and archived projects.
@@ -56,28 +56,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     {
       log.LogInformation("GetProjectV4");
       return await GetProject(projectUid).ConfigureAwait(false);
-    }
-
-
-    /// <summary>
-    /// Gets available subscription for a customer
-    /// </summary>
-    /// <returns>List of available subscriptions</returns>
-    [Route("api/v4/subscriptions")]
-    [HttpGet]
-    public async Task<SubscriptionsListResult> GetSubscriptionsV4()
-    {
-      log.LogInformation("GetSubscriptionsV4");
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-
-      //return empty list if no subscriptions available
-      return new SubscriptionsListResult()
-      {
-        SubscriptionDescriptors =
-              (await GetFreeSubs(customerUid).ConfigureAwait(false)).Select(
-                  SubscriptionDescriptor.FromSubscription).ToImmutableList()
-      };
     }
 
     // POST: api/project
@@ -218,7 +196,53 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       log.LogInformation("DeleteProjectV4. Completed succesfully");
       return new ContractExecutionResult();
     }
+    #endregion projects
 
+
+    #region subscriptions
+    /// <summary>
+    /// Gets available subscription for a customer
+    /// </summary>
+    /// <returns>List of available subscriptions</returns>
+    [Route("api/v4/subscriptions")]
+    [HttpGet]
+    public async Task<SubscriptionsListResult> GetSubscriptionsV4()
+    {
+      log.LogInformation("GetSubscriptionsV4");
+      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+
+      //return empty list if no subscriptions available
+      return new SubscriptionsListResult()
+      {
+        SubscriptionDescriptors =
+          (await GetFreeSubs(customerUid).ConfigureAwait(false)).Select(
+            SubscriptionDescriptor.FromSubscription).ToImmutableList()
+      };
+    }
+    #endregion subscriptions
+
+    #region ImportedFiles
+
+    /// <summary>
+    /// Gets a list of imported files for a project. The list includes files of all types.
+    /// </summary>
+    /// <returns>A list of files</returns>
+    [Route("api/v4/importedfiles")]
+    [HttpGet]
+    public async Task<ImportedFileDescriptorListResult> GetImportedFilesV4([FromQuery] string projectUid)
+    {
+      log.LogInformation("GetImportedFilesV4");
+      return new ImportedFileDescriptorListResult()
+      {
+        ImportedFileDescriptors = await GetImportedFileList(projectUid).ConfigureAwait(false)
+      };
+    }
+
+    #endregion ImportedFiles
+
+
+    #region private
     /// <summary>
     /// Creates a project. Handles both old and new project boundary formats.
     /// </summary>
@@ -363,6 +387,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       }
       return true;
     }
+    #endregion private
+
   }
 }
 
