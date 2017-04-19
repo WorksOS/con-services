@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,53 +23,7 @@ namespace VSS.Raptor.Service.Common.Proxies
         public async Task<T> ExecuteRequest<T>(string endpoint, string method,
             IDictionary<string, string> customHeaders = null, string payloadData = null)
         {
-            log.LogDebug("Requesting project data from {0}", endpoint);
-            if (customHeaders != null)
-            {
-                log.LogDebug("Custom Headers:");
-                foreach (var key in customHeaders.Keys)
-                {
-                    log.LogDebug("   {0}: {1}", key, customHeaders[key]);
-                }
-            }
-            //////////////////////////////////////////////////////
-            // TEMPORARY CODE until .netcore 1.2 available with FileWebRequest 
-            // then the real code should work for both HttpWebRequest and FileWebRequest
-            /////////////////////////////////////////////////////
-            if (!endpoint.ToLower().StartsWith("http")) //i.e. file
-            {
-                return GetFromFile<T>(endpoint);
-            }
-            //////// END TEMP CODE ///////
-
-            var request = WebRequest.Create(endpoint);
-            request.Method = method;
-            if (request is HttpWebRequest)
-            {
-                var httpRequest = request as HttpWebRequest;
-                httpRequest.Accept = "application/json";
-                //Add custom headers e.g. JWT, CustomerUid, UserUid
-                if (customHeaders != null)
-                {
-                    foreach (var key in customHeaders.Keys)
-                    {
-                        httpRequest.Headers[key] = customHeaders[key];
-                    }
-                }
-                //TODO Add timeout here
-                //httpRequest.Timeout = 10000;//not in .netcore
-            }
-            //Apply payload if any
-            if (!String.IsNullOrEmpty(payloadData))
-            {
-                request.ContentType = "application/json";
-                using (var writeStream = await request.GetRequestStreamAsync())
-                {
-                    UTF8Encoding encoding = new UTF8Encoding();
-                    byte[] bytes = encoding.GetBytes(payloadData);
-                    writeStream.Write(bytes, 0, bytes.Length);
-                }
-            }
+            var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
 
             return await Policy
                 .Handle<Exception>()
@@ -83,7 +38,66 @@ namespace VSS.Raptor.Service.Common.Proxies
                     if (!string.IsNullOrEmpty(responseString))
                         return JsonConvert.DeserializeObject<T>(responseString);
                     return default(T);
-                }).Result;
+                })
+                .Result;
+        }
+
+        public async Task<Stream> ExecuteRequest(string endpoint, string method,
+            IDictionary<string, string> customHeaders = null, string payloadData = null)
+        {
+            var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
+
+            return await Policy
+                .Handle<Exception>()
+                .Retry(3)
+                .ExecuteAndCapture(async () =>
+                {
+                    using (var response = await request.GetResponseAsync())
+                    {
+                         return GetStreamFromResponse(response);
+                    }
+                })
+                .Result;
+        }
+
+        private async Task<WebRequest> PrepareWebRequest(string endpoint, string method, IDictionary<string, string> customHeaders, string payloadData)
+        {
+            log.LogDebug("Requesting data from {0}", endpoint);
+            if (customHeaders != null)
+            {
+                log.LogDebug("Custom Headers:");
+                foreach (var key in customHeaders.Keys)
+                {
+                    log.LogDebug("   {0}: {1}", key, customHeaders[key]);
+                }
+            }
+            var request = WebRequest.Create(endpoint);
+            request.Method = method;
+            if (request is HttpWebRequest)
+            {
+                var httpRequest = request as HttpWebRequest;
+                httpRequest.Accept = "application/json";
+                //Add custom headers e.g. JWT, CustomerUid, UserUid
+                if (customHeaders != null)
+                {
+                    foreach (var key in customHeaders.Keys)
+                    {
+                        httpRequest.Headers[key] = customHeaders[key];
+                    }
+                }
+            }
+            //Apply payload if any
+            if (!String.IsNullOrEmpty(payloadData))
+            {
+                request.ContentType = "application/json";
+                using (var writeStream = await request.GetRequestStreamAsync())
+                {
+                    UTF8Encoding encoding = new UTF8Encoding();
+                    byte[] bytes = encoding.GetBytes(payloadData);
+                    writeStream.Write(bytes, 0, bytes.Length);
+                }
+            }
+            return request;
         }
 
         private string GetStringFromResponseStream(WebResponse response)
@@ -99,6 +113,21 @@ namespace VSS.Raptor.Service.Common.Proxies
                     return responseString;
                 }
                 return string.Empty;
+            }
+        }
+
+        private Stream GetStreamFromResponse(WebResponse response)
+        {
+            using (var readStream = response.GetResponseStream())
+            {
+                var streamFromResponse = new MemoryStream();
+
+                if (readStream != null)
+                {
+                    readStream.CopyTo(streamFromResponse);
+                    return streamFromResponse;
+                }
+                return null;
             }
         }
 
@@ -121,7 +150,7 @@ namespace VSS.Raptor.Service.Common.Proxies
             if (request is HttpWebRequest)
             {
                 var httpRequest = request as HttpWebRequest;
-                httpRequest.Accept = "application/json";
+                httpRequest.Accept = "*/*";
                 //Add custom headers e.g. JWT, CustomerUid, UserUid
                 if (customHeaders != null)
                 {
@@ -130,15 +159,11 @@ namespace VSS.Raptor.Service.Common.Proxies
                         httpRequest.Headers[key] = customHeaders[key];
                     }
                 }
-                //TODO Add timeout here
-                //httpRequest.Timeout = 10000;//not in .netcore
             }
-            request.ContentType = "application/octet-stream"; //What should be the payload format?
             using (var writeStream = await request.GetRequestStreamAsync())
             {
-                await payload.CopyToAsync(writeStream);
+              await payload.CopyToAsync(writeStream);
             }
-
             return await Policy
                 .Handle<Exception>()
                 .Retry(3)
@@ -155,43 +180,5 @@ namespace VSS.Raptor.Service.Common.Proxies
                 }).Result;
         }
 
-        //////// TEMP CODE ///////
-        private T GetFromFile<T>(string endpoint)
-        {
-            // absorb any exception, returning null
-            T result = default(T);
-            log.LogDebug(
-                "GracefulRequest.GetFromFile(): Going to try to open file for reading: {0}. current directory:{1}",
-                endpoint, System.IO.Directory.GetCurrentDirectory());
-
-            try
-            {
-                using (FileStream fs = new FileStream(endpoint, FileMode.Open, FileAccess.Read))
-                {
-                    if (fs != null)
-                    {
-                        using (StreamReader r = new StreamReader(fs))
-                        {
-                            string json = r.ReadToEnd();
-                            result = JsonConvert.DeserializeObject<T>(json);
-                        }
-                    }
-                    else
-                    {
-                        log.LogError(
-                            "GracefulRequest.GetFromFile(): Failed to open file for reading: {0}. current directory:{1}",
-                            endpoint, System.IO.Directory.GetCurrentDirectory());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                log.LogError("GracefulRequest.GetFromFile(): Exception getting data from file: {0}", ex);
-            }
-
-            return result;
-        }
-
-        //////// END TEMP CODE ///////
     }
 }

@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace TagFileHarvester.Models
+namespace TCCFileAccess.Models
 {
   public class MkDir
   {

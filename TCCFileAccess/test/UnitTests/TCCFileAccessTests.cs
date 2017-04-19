@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using log4netExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TCCFileAccess.Implementation;
+using TCCFileAccess;
 using VSS.GenericConfiguration;
 
 namespace UnitTests
@@ -32,7 +34,7 @@ namespace UnitTests
             serviceCollection.AddLogging();
             serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
             serviceCollection.AddSingleton<IConfigurationStore, VSS.GenericConfiguration.GenericConfiguration>();
-            serviceCollection.AddTransient<IFileRepository,FileRepository>();
+            serviceCollection.AddSingleton<IFileRepository,FileRepository>();
             serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
@@ -58,9 +60,30 @@ namespace UnitTests
         {
             var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
             var orgs = await fileaccess.ListOrganizations();
-            var folders = await fileaccess.ListFolders(orgs[0], DateTime.MinValue);
-            var files = await fileaccess.GetFiles(orgs[0].filespaceId, folders[0], DateTime.MinValue);
-            Assert.IsNotNull(files);
+            var folders = await fileaccess.GetFolders(orgs.First(), DateTime.MinValue,"/");
+            Assert.IsTrue(folders.entries.Length>0);
+        }
+
+        [TestMethod]
+        public async Task CanUplpoadFile()
+        {
+            var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+            var orgs = await fileaccess.ListOrganizations();
+            var fileStream = File.Open("appsettings.json", FileMode.Open);
+            var fileuploadresult = await fileaccess.PutFile(orgs.First(), "/barney", "unittest.json", fileStream, fileStream.Length);
+            Assert.IsNotNull(fileuploadresult);
+            Assert.AreEqual(fileuploadresult.success,"true");
+        }
+
+        [TestMethod]
+        public async Task CanDownloadFile()
+        {
+            var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+            var orgs = await fileaccess.ListOrganizations();
+            var fileStream = File.Open("appsettings.json", FileMode.Open);
+            var fileuploadresult = await fileaccess.PutFile(orgs.First(), "/unittest.json", "unittest.json", fileStream, fileStream.Length);
+            var downloadFileResult = await fileaccess.GetFile(orgs.First(), "/unittest.json");
+            Assert.AreEqual(downloadFileResult.Length, fileStream.Length);
         }
 
     }
