@@ -69,6 +69,78 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       this.authProjectsStore = authProjectsStore;
     }
 
+    /// <summary>
+    /// Creates an instance of the CMVRequest class and populate it with data.
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="startUtc"></param>
+    /// <param name="endUtc"></param>
+    /// <param name="cmvMin"></param>
+    /// <param name="cmvMax"></param>
+    /// <returns>An instance of the CMVRequest class.</returns>
+    private CMVRequest GetCMVRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc, short cmvTarget = 0, short cmvMin = 0, short cmvMax = 0)
+    {
+      if (!projectId.HasValue)
+      {
+        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+      }
+      CMVSettings cmvSettings = CMVSettings.CreateCMVSettings(cmvTarget, cmvMax, 120, cmvMin, 80, false);
+      LiftBuildSettings liftSettings;
+      Filter filter;
+      try
+      {
+        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
+        filter = !startUtc.HasValue && !endUtc.HasValue
+            ? null
+            : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
+      }
+      catch (Exception ex)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            ex.Message));
+      }
+
+      return CMVRequest.CreateCMVRequest(projectId.Value, null, cmvSettings, liftSettings, filter, -1, null, null, null);
+    }
+
+    /// <summary>
+    /// Creates an instance of the PassCounts class and populate it with data.
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="startUtc"></param>
+    /// <param name="endUtc"></param>
+    /// <returns>An instance of the PassCounts class.</returns>
+    private PassCounts GetPassCountRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc)
+    {
+      if (!projectId.HasValue)
+      {
+        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+      }
+
+      LiftBuildSettings liftSettings;
+      Filter filter;
+      try
+      {
+        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
+        filter = !startUtc.HasValue && !endUtc.HasValue
+          ? null
+          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
+      }
+      catch (Exception ex)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            ex.Message));
+      }
+
+      return PassCounts.CreatePassCountsRequest(projectId.Value, null, null, liftSettings, filter, -1, null, null, null);
+    }
+
     #region Summary Data for Widgets
     /// <summary>
     /// Get CMV summary from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
@@ -86,36 +158,16 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
     {
       log.LogInformation("GetCmvSummary: " + Request.QueryString);
-      if (!projectId.HasValue)
-      {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
-      }
-      CMVSettings cmvSettings = CMVSettings.CreateCMVSettings(0, 0, 120, 0, 80, false);
-      LiftBuildSettings liftSettings;
-      Filter filter;
-      try
-      {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
-        filter = !startUtc.HasValue && !endUtc.HasValue
-          ? null
-          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
-      CMVRequest request = CMVRequest.CreateCMVRequest(projectId.Value, null, cmvSettings, liftSettings, filter, -1,
-        null, null, null);
+
+      CMVRequest request = GetCMVRequest(projectId, projectUid, startUtc, endUtc);
       request.Validate();
+
       try
       {
         var result =
           RequestExecutorContainer.Build<SummaryCMVExecutor>(logger, raptorClient, null).Process(request) as
             CMVSummaryResult;
-        var returnResult = CompactionCmvSummaryResult.CreateCmvSummaryResult(result, cmvSettings);
+        var returnResult = CompactionCmvSummaryResult.CreateCmvSummaryResult(result, request.cmvSettings);
         log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
       }
@@ -214,30 +266,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
     {
       log.LogInformation("GetPassCountSummary: " + Request.QueryString);
-      if (!projectId.HasValue)
-      {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
-      }
 
-      LiftBuildSettings liftSettings;
-      Filter filter;
-      try
-      {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
-        filter = !startUtc.HasValue && !endUtc.HasValue
-          ? null
-          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
-      PassCounts request = PassCounts.CreatePassCountsRequest(projectId.Value, null, null, liftSettings, filter, -1,
-        null, null, null);
+      PassCounts request = GetPassCountRequest(projectId, projectUid, startUtc, endUtc);
       request.Validate();
+
       try
       {
         var result = RequestExecutorContainer.Build<SummaryPassCountsExecutor>(logger, raptorClient, null).Process(request) as PassCountSummaryResult;
@@ -451,9 +483,99 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
     }
 
+        #endregion
+
+    #region Detailed Data for the map
+    /// <summary>
+    /// Get CMV details from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
+    /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC. </param>
+    /// <returns>CMV details</returns>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/compaction/cmv/details")]
+    [HttpGet]
+    public CompactionCmvDetailedResult GetCmvDetails([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
+        [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    {
+      log.LogInformation("GetCmvDetails: " + Request.QueryString);
+
+      CMVRequest request = GetCMVRequest(projectId, projectUid, startUtc, endUtc, 70, 20, 100);
+      request.Validate();
+
+      try
+      {
+        var result = RequestExecutorContainer.Build<DetailedCMVExecutor>(logger, raptorClient, null).Process(request) as CMVDetailedResult;
+        var returnResult = CompactionCmvDetailedResult.CreateCmvDetailedResult(result);
+
+        log.LogInformation("GetCmvDetails result: " + JsonConvert.SerializeObject(returnResult));
+
+        return returnResult;
+      }
+      catch (ServiceException se)
+      {
+          //Change FailedToGetResults to 204
+          if (se.Response.StatusCode == HttpStatusCode.BadRequest &&
+              se.GetResult.Code == ContractExecutionStatesEnum.FailedToGetResults)
+          {
+              se.Response.StatusCode = HttpStatusCode.NoContent;
+          }
+          throw;
+      }
+      finally
+      {
+          log.LogInformation("GetCmvDetails returned: " + Response.StatusCode);
+      }
+    }
+
+    /// <summary>
+    /// Get pass count details from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
+    /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="startUtc">Start UTC.</param>
+    /// <param name="endUtc">End UTC. </param>
+    /// <returns>Pass count details</returns>
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/compaction/passcounts/details")]
+    [HttpGet]
+    public CompactionPassCountDetailedResult GetPassCountDetails([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    {
+      log.LogInformation("GetPassCountDetails: " + Request.QueryString);
+
+      PassCounts request = GetPassCountRequest(projectId, projectUid, startUtc, endUtc);
+      request.Validate();
+
+      try
+      {
+        var result = RequestExecutorContainer.Build<DetailedPassCountExecutor>(logger, raptorClient, null).Process(request) as PassCountDetailedResult;
+        var returnResult = CompactionPassCountDetailedResult.CreatePassCountDetailedResult(result);
+        log.LogInformation("GetPassCountDetails result: " + JsonConvert.SerializeObject(returnResult));
+        return returnResult;
+      }
+      catch (ServiceException se)
+      {
+        //Change FailedToGetResults to 204
+        if (se.Response.StatusCode == HttpStatusCode.BadRequest &&
+            se.GetResult.Code == ContractExecutionStatesEnum.FailedToGetResults)
+        {
+          se.Response.StatusCode = HttpStatusCode.NoContent;
+        }
+        throw;
+      }
+      finally
+      {
+        log.LogInformation("GetPassCountDetails returned: " + Response.StatusCode);
+      }
+    }
+
     #endregion
 
-    
     #region Palettes
 
     /// <summary>

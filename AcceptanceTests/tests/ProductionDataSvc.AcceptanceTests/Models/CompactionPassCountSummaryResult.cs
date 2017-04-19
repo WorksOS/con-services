@@ -90,11 +90,11 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       /// </summary>
       public double totalAreaCoveredSqMeters { get; set; }
       /// <summary>
-      /// The minimum percentage the measured PassCount may be compared to the passCountTarget from the machine
+      /// The minimum value the measured PassCount may be compared to the passCountTarget from the machine
       /// </summary>
       public int minTarget { get; set; }
       /// <summary>
-      /// The maximum percentage the measured PassCount may be compared to the passCountTarget from the machine
+      /// The maximum value the measured PassCount may be compared to the passCountTarget from the machine
       /// </summary>
       public int maxTarget { get; set; }
 

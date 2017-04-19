@@ -53,7 +53,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
           bool success = raptorClient.GetPassCountDetails(request.projectId ?? -1,
               ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0,
                   TASNodeCancellationDescriptorType.cdtPassCountDetailed),
-              ConvertSettings(request.passCountSettings),
+              request.passCountSettings != null ? ConvertSettings(request.passCountSettings) : new TPassCountSettings(),
               raptorFilter,
               RaptorConverters.ConvertLift(request.liftBuildSettings, raptorFilter.LayerMethod),
               out passCountDetails);

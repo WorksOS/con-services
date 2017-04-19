@@ -15,8 +15,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private string url;
 
     private Getter<CompactionCmvSummaryResult> cmvSummaryRequester;
+    private Getter<CompactionCmvDetailedResult> cmvDetailsRequester;
     private Getter<CompactionMdpSummaryResult> mdpSummaryRequester;
     private Getter<CompactionPassCountSummaryResult> passCountSummaryRequester;
+    private Getter<CompactionPassCountDetailedResult> passCountDetailsRequester;
     private Getter<CompactionSpeedSummaryResult> speedSummaryRequester;
     private Getter<CompactionTemperatureSummaryResult> temperatureSummaryRequester;
     private Getter<CompactionCmvPercentChangeResult> cmvPercentChangeRequester;
@@ -50,8 +52,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       cmvSummaryRequester = GetIt<CompactionCmvSummaryResult>();
     }
 
-    [Then(@"the CMV result should be")]
-    public void ThenTheCMVResultShouldBe(string multilineText)
+    [Then(@"the CMV summary result should be")]
+    public void ThenTheCMVSummaryResultShouldBe(string multilineText)
     {
       CompareIt<CompactionCmvSummaryResult>(multilineText, cmvSummaryRequester);
     }
@@ -86,11 +88,30 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       passCountSummaryRequester = GetIt<CompactionPassCountSummaryResult>();
     }
 
-    [Then(@"the Passcount result should be")]
+    [Then(@"the Passcount summary result should be")]
     public void ThenThePasscountResultShouldBe(string multilineText)
     {
       CompareIt<CompactionPassCountSummaryResult>(multilineText, passCountSummaryRequester);
     }
+
+    [Given(@"the Compaction Passcount Details service URI ""(.*)""")]
+    public void GivenTheCompactionPasscountDetailsServiceURI(string url)
+    {
+      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+    }
+
+    [When(@"I request Passcount details")]
+    public void WhenIRequestPasscountDetails()
+    {
+      passCountDetailsRequester = GetIt<CompactionPassCountDetailedResult>();
+    }
+
+    [Then(@"the Passcount details result should be")]
+    public void ThenThePasscountDetailsResultShouldBe(string multilineText)
+    {
+      CompareIt<CompactionPassCountDetailedResult>(multilineText, passCountDetailsRequester);
+    }
+
 
     [Given(@"the Compaction Temperature Summary service URI ""(.*)""")]
     public void GivenTheCompactionTemperatureSummaryServiceURI(string url)
@@ -247,6 +268,24 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       CompareIt<CompactionColorPalettesResult>(multilineText, paletteRequester);
     }
 
+    [Given(@"the Compaction CMV Details service URI ""(.*)""")]
+    public void GivenTheCompactionCMVDetailsServiceURI(string url)
+    {
+      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+    }
+
+    [When(@"I request CMV details")]
+    public void WhenIRequestCMVDetails()
+    {
+      cmvDetailsRequester = GetIt<CompactionCmvDetailedResult>();      
+    }
+
+    [Then(@"the CMV details result should be")]
+    public void ThenTheCMVDetailsResultShouldBe(string multilineText)
+    {
+      CompareIt<CompactionCmvDetailedResult>(multilineText, cmvDetailsRequester);
+    }
+
     private Getter<T> GetIt<T>(bool requiresProjectUid=true)
     {
       if (requiresProjectUid)
@@ -269,7 +308,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
     private void CompareIt<T>(string multilineText, Getter<T> requester)
     {
-      T expected = JsonConvert.DeserializeObject<T>(multilineText);
+      T expected = JsonConvert.DeserializeObject<T>(multilineText);      
       Assert.AreEqual(expected, requester.CurrentResponse);
     }
 

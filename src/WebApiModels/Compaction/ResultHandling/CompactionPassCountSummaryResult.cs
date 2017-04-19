@@ -1,7 +1,6 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
+using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
@@ -79,33 +78,9 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
       /// <summary>
       /// Pass count machine target and whether it is constant or varies.
       /// </summary>
-      [JsonProperty(PropertyName = "passCountTarget")]
+      [JsonProperty(PropertyName = "PassCountTarget")]
       public PassCountTargetData PassCountTarget { get; set; }
     }
-
-    /// <summary>
-    /// Pass count target data returned
-    /// </summary>
-    public class PassCountTargetData
-    {
-      /// <summary>
-      /// If the pass count value is constant, this is the minimum constant value of all pass count targets in the processed data.
-      /// </summary>
-      [JsonProperty(PropertyName = "minPassCountMachineTarget")]
-      public double MinPassCountMachineTarget { get; set; }
-      /// <summary>
-      /// If the pass count value is constant, this is the maximum constant value of all pass count targets in the processed data.
-      /// </summary>
-      [JsonProperty(PropertyName = "maxPassCountMachineTarget")]
-      public double MaxPassCountMachineTarget { get; set; }
-      /// <summary>
-      /// Are the pass count target values applying to all processed cells varying?
-      /// </summary>
-      [JsonProperty(PropertyName = "targetVaries")]
-      public bool TargetVaries { get; set; }
-    }
-
-
 
   }
 }
