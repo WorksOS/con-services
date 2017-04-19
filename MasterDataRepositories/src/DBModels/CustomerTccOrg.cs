@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace Repositories.ExtendedModels
+namespace Repositories.DBModels
 {
   public class CustomerTccOrg
   {
