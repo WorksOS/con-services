@@ -23,7 +23,7 @@ namespace VSS.Project.Service.WebApiModels.Filters
 
                 bool requiresCustomerUid = true; //context.Request.Method.ToUpper() == "GET"; Actually we do need to have customerUId regardless request
 
-        string authorization = context.Request.Headers["X-Jwt-Assertion"];
+                string authorization = context.Request.Headers["X-Jwt-Assertion"];
                 string customerUID = context.Request.Headers["X-VisionLink-CustomerUid"];
 
                 // If no authorization header found, nothing to process further
@@ -32,10 +32,8 @@ namespace VSS.Project.Service.WebApiModels.Filters
                     await SetResult("No account selected", context);
                     return;
                 }
-
-                string token = authorization.Substring("Bearer ".Length).Trim();
                 // If no token found, no further work possible
-                if (string.IsNullOrEmpty(token))
+                if (string.IsNullOrEmpty(authorization))
                 {
                     await SetResult("No authentication token", context);
                     return;
@@ -43,7 +41,7 @@ namespace VSS.Project.Service.WebApiModels.Filters
 
                 try
                 {
-                    var jwtToken = new TPaaSJWT(token);
+                    var jwtToken = new TPaaSJWT(authorization);
                     var identity = string.IsNullOrEmpty(customerUID)
                         ? new GenericIdentity(jwtToken.UserUid.ToString())
                         : new GenericIdentity(jwtToken.UserUid.ToString(), customerUID);
