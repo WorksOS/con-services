@@ -1,22 +1,19 @@
-﻿using System.Security.Principal;
+﻿using System;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Repositories;
-using VSS.Project.Service.WebApi.Authentication;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Authentication.JWT;
 
 namespace VSS.Project.Service.WebApiModels.Filters
 {
     public class TIDAuthentication
     {
         private readonly RequestDelegate _next;
-        private IRepository<IProjectEvent> projectRepo;
 
-        public TIDAuthentication(RequestDelegate next, IRepository<IProjectEvent> projects )
+        public TIDAuthentication(RequestDelegate next )
         {
             _next = next;
-            projectRepo = projects;
         }
 
         public async Task Invoke(HttpContext context)
@@ -43,16 +40,20 @@ namespace VSS.Project.Service.WebApiModels.Filters
                     await SetResult("No authentication token", context);
                     return;
                 }
-                var jwtToken = new JWTToken();
-                if (!jwtToken.SetToken(authorization))
+
+                try
+                {
+                    var jwtToken = new TPaaSJWT(token);
+                    var identity = string.IsNullOrEmpty(customerUID)
+                        ? new GenericIdentity(jwtToken.UserUid.ToString())
+                        : new GenericIdentity(jwtToken.UserUid.ToString(), customerUID);
+                    context.User = new GenericPrincipal(identity, new string[] { });
+                }
+                catch (Exception e)
                 {
                     await SetResult("Invalid authentication", context);
                     return;
                 }
-                var identity = string.IsNullOrEmpty(customerUID)
-                    ? new GenericIdentity(jwtToken.UserUID)
-                    : new GenericIdentity(jwtToken.UserUID, customerUID);
-                context.User = new GenericPrincipal(identity, new string[] {});
             }
             await _next.Invoke(context);
         }
