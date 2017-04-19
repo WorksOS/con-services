@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.Authentication.JWT;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
@@ -33,60 +34,65 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
 
         public async Task Invoke(HttpContext context)
         {
-          if (!context.Request.Path.Value.Contains("swagger"))
-          {
+            if (!context.Request.Path.Value.Contains("swagger"))
+            {
 
-            string authorization = context.Request.Headers["X-Jwt-Assertion"];
-            string customerUID = context.Request.Headers["X-VisionLink-CustomerUid"];
+                string authorization = context.Request.Headers["X-Jwt-Assertion"];
+                string customerUID = context.Request.Headers["X-VisionLink-CustomerUid"];
 
-            // If no authorization header found, nothing to process further
-            if (string.IsNullOrEmpty(authorization) || string.IsNullOrEmpty(customerUID))
-            {
-              await SetResult("No account selected", context);
-              return;
-            }
-
-            string token = authorization.Substring("Bearer ".Length).Trim();
-            // If no token found, no further work possible
-            if (string.IsNullOrEmpty(token))
-            {
-              await SetResult("No authentication token", context);
-              return;
-            }
-            var jwtToken = new JWTToken();
-            if (!jwtToken.SetToken(authorization))
-            {
-              await SetResult("Invalid authentication", context);
-              return;
-            }
-            var customerProjects = await projectListProxy.GetProjects(customerUID,
-              context.Request.Headers.GetCustomHeaders());
-            var authProjects = new List<ProjectDescriptor>();
-            if (customerProjects != null)
-            {
-              foreach (var project in customerProjects)
-              {
-                var projectDesc = new ProjectDescriptor
+                // If no authorization header found, nothing to process further
+                if (string.IsNullOrEmpty(authorization) || string.IsNullOrEmpty(customerUID))
                 {
-                  isLandFill = project.ProjectType == ProjectType.LandFill,
-                  isArchived = project.IsArchived,
-                  projectUid = project.ProjectUid,
-                  projectId = project.LegacyProjectId
-                };
-                authProjects.Add(projectDesc);
-              }
-            }
-            authProjectsStore.SetAuthenticatedProjectList(customerUID, authProjects);
-            log.LogDebug("Authorization: for Customer: {0} projectList is: {1}", customerUID, authProjects.Count);
+                    await SetResult("No account selected", context);
+                    return;
+                }
 
-            var identity = string.IsNullOrEmpty(customerUID)
-              ? new GenericIdentity(jwtToken.UserUID)
-              : new GenericIdentity(jwtToken.UserUID, customerUID);
-            var principal = new GenericPrincipal(identity, new string[] {});
-            context.User = principal;
-            //Thread.CurrentPrincipal = principal;
-          }
-          await _next.Invoke(context);
+                string token = authorization.Substring("Bearer ".Length).Trim();
+                // If no token found, no further work possible
+                if (string.IsNullOrEmpty(token))
+                {
+                    await SetResult("No authentication token", context);
+                    return;
+                }
+                try
+                {
+                    var jwtToken = new TPaaSJWT(token);
+                    var customerProjects = await projectListProxy.GetProjects(customerUID,
+                        context.Request.Headers.GetCustomHeaders());
+                    var authProjects = new List<ProjectDescriptor>();
+                    if (customerProjects != null)
+                    {
+                        foreach (var project in customerProjects)
+                        {
+                            var projectDesc = new ProjectDescriptor
+                            {
+                                isLandFill = project.ProjectType == ProjectType.LandFill,
+                                isArchived = project.IsArchived,
+                                projectUid = project.ProjectUid,
+                                projectId = project.LegacyProjectId
+                            };
+                            authProjects.Add(projectDesc);
+                        }
+                    }
+                    authProjectsStore.SetAuthenticatedProjectList(customerUID, authProjects);
+                    log.LogDebug("Authorization: for Customer: {0} projectList is: {1}", customerUID,
+                        authProjects.Count);
+
+                    var identity = string.IsNullOrEmpty(customerUID)
+                        ? new GenericIdentity(jwtToken.UserUid.ToString())
+                        : new GenericIdentity(jwtToken.UserUid.ToString(), customerUID);
+                    var principal = new GenericPrincipal(identity, new string[] { });
+                    context.User = principal;
+                    //Thread.CurrentPrincipal = principal;
+                }
+                catch
+                {
+                    await SetResult("Invalid authentication", context);
+                    return;
+
+                }
+            }
+            await _next.Invoke(context);
         }
 
         private async Task SetResult(string message, HttpContext context)
