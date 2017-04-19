@@ -47,16 +47,14 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
                     return;
                 }
 
-                string token = authorization.Substring("Bearer ".Length).Trim();
-                // If no token found, no further work possible
-                if (string.IsNullOrEmpty(token))
+                if (string.IsNullOrEmpty(authorization))
                 {
                     await SetResult("No authentication token", context);
                     return;
                 }
                 try
                 {
-                    var jwtToken = new TPaaSJWT(token);
+                    var jwtToken = new TPaaSJWT(authorization);
                     var customerProjects = await projectListProxy.GetProjects(customerUID,
                         context.Request.Headers.GetCustomHeaders());
                     var authProjects = new List<ProjectDescriptor>();
