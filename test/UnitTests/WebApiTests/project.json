@@ -4,21 +4,21 @@
     "testRunner": "mstest",
 
   "dependencies": {
-    "dotnet-test-mstest": "1.1.1-preview",
-    "MSTest.TestFramework": "1.0.1-preview",
     "log4net.netcore": "3.0.0",
     "log4netExtensions.netcore": "1.0.1",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
-    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "Microsoft.Extensions.Logging": "1.1.0",
-    "Microsoft.Extensions.Logging.Console": "1.1.0",
-    "Microsoft.Extensions.Logging.Debug": "1.1.0",
-    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "WebApiModels": "1.0.0-*",
     "WebApi": "1.0.0-*",
     "Common": "1.0.0-*",
-    "Moq": "4.6.39-alpha"
+    "dotnet-test-mstest": "1.1.2-preview",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.1",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.1.1",
+    "Microsoft.Extensions.Configuration.Json": "1.1.1",
+    "Microsoft.Extensions.Logging": "1.1.1",
+    "Microsoft.Extensions.Logging.Console": "1.1.1",
+    "Microsoft.Extensions.Logging.Debug": "1.1.1",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.1",
+    "Moq": "4.7.8",
+    "MSTest.TestFramework": "1.1.14"
   },
 
    "frameworks": {

@@ -1,10 +1,10 @@
-﻿{
+{
   "version": "1.0.0-*",
 
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc": "1.0.1",
-    "Polly": "4.5.0-beta-netstandar-0001",
-    "Common": "1.0.0-*"
+    "Common": "1.0.0-*",
+    "Microsoft.AspNetCore.Mvc": "1.1.2",
+    "Polly": "5.0.6"
   },
 
   "frameworks": {
