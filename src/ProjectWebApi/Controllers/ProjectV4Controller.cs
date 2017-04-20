@@ -91,10 +91,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <response code="400">Bad request</response>
     [Route("api/v4/project")]
     [HttpPost]
-    public async Task<ContractExecutionResult> CreateProjectV4([FromBody] CreateProjectEvent project)
+    public async Task<ContractExecutionResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
-      log.LogInformation("CreateProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
+      log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
+      CreateProjectEvent project = null; // todo
       ProjectDataValidator.Validate(project, projectService);
       await ValidateCoordSystem(project).ConfigureAwait(false); 
 
