@@ -13,4 +13,4 @@ COPY . /app
 #VOLUME logs
 
 # Start the app
-ENTRYPOINT dotnet src.dll
+ENTRYPOINT dotnet MockProjectWebApi.dll
