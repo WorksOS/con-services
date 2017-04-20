@@ -18,4 +18,4 @@ RUN set-itemproperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Par
 #VOLUME logs
 
 # Start the app
-ENTRYPOINT .\\MockProjectWebApi.exe
+ENTRYPOINT .\\src.exe
