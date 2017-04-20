@@ -9,7 +9,6 @@
     "WebApiModels": "1.0.0-*",
     "WebApi": "1.0.0-*",
     "Common": "1.0.0-*",
-    "dotnet-test-mstest": "1.1.2-preview",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.1",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.1.1",
     "Microsoft.Extensions.Configuration.Json": "1.1.1",
@@ -18,7 +17,8 @@
     "Microsoft.Extensions.Logging.Debug": "1.1.1",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.1",
     "Moq": "4.7.8",
-    "MSTest.TestFramework": "1.1.14"
+    "dotnet-test-mstest": "1.1.1-preview",
+    "MSTest.TestFramework": "1.0.1-preview"
   },
 
    "frameworks": {
