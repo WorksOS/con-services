@@ -195,11 +195,13 @@
     <Compile Include="Models\CellPassesRequest.cs" />
     <Compile Include="Models\CMV.cs" />
     <Compile Include="Models\CMVChange.cs" />
+    <Compile Include="Models\CompactionCmvDetailedResult.cs" />
     <Compile Include="Models\CompactionCmvPercentChangeResult.cs" />
     <Compile Include="Models\CompactionCmvSummaryResult.cs" />
     <Compile Include="Models\CompactionColorPalettesResult.cs" />
     <Compile Include="Models\CompactionFilter.cs" />
     <Compile Include="Models\CompactionMdpSummaryResult.cs" />
+    <Compile Include="Models\CompactionPassCountDetailedResult.cs" />
     <Compile Include="Models\CompactionPassCountSummaryResult.cs" />
     <Compile Include="Models\CompactionSpeedSummaryResult.cs" />
     <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
