@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RaptorSvcAcceptTestsCommon.Models;
+using RaptorSvcAcceptTestsCommon.Utils;
 using System;
-using System.Linq;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
@@ -100,7 +100,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         if (other == null)
           return false;
 
-        return this.percents.SequenceEqual(other.percents) &&
+        return Common.ArraysOfDoublesAreEqual(this.percents, other.percents) &&
                Math.Round(this.totalCoverageArea, 2) == Math.Round(other.totalCoverageArea, 2) &&
                this.minTarget == other.minTarget &&
                this.maxTarget == other.maxTarget;

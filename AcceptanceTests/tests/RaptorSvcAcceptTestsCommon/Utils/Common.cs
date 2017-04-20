@@ -84,5 +84,33 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 }
             }
         }
+
+    /// <summary>
+    /// Test whether two arrays of doubles are equivalent.
+    /// </summary>
+    /// <param name="arrayA"></param>
+    /// <param name="arrayB"></param>
+    /// /// <param name="precision"></param>
+    /// <returns>True or False.</returns>
+    public static bool ArraysOfDoublesAreEqual(double[] arrayA, double[] arrayB, int precision = 2)
+    {
+      if (arrayA == null && arrayB == null)
+        return true;
+      else if (arrayA == null || arrayB == null)
+        return false;
+      else
+      {
+        if (arrayA.Length != arrayB.Length)
+          return false;
+
+        for (int i = 0; i < arrayA.Length; ++i)
+        {
+          if (Math.Round(arrayA[i], precision) != Math.Round(arrayB[i], precision))
+            return false;
+        }
+
+        return true;
+      }
     }
+  }
 }

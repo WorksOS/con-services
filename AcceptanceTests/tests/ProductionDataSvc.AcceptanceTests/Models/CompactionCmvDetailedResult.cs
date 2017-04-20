@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RaptorSvcAcceptTestsCommon.Models;
+using RaptorSvcAcceptTestsCommon.Utils;
 using System;
-using System.Linq;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
@@ -31,10 +31,9 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
-      //return this.Percents.Equals(other.Percents) &&
-      return this.Percents.SequenceEqual(other.Percents) &&
-       this.Code == other.Code &&
-       this.Message == other.Message;
+       return Common.ArraysOfDoublesAreEqual(this.Percents, other.Percents) &&
+        this.Code == other.Code &&
+        this.Message == other.Message;
     }
 
     public static bool operator ==(CompactionCmvDetailedResult a, CompactionCmvDetailedResult b)
