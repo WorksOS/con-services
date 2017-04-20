@@ -25,7 +25,8 @@
     "KafkaConsumer.netcore": "1.0.6",
     "VSS.Interfaces.netcore": "*",
     "MasterDataProxies.netcore": "1.0.9",
-    "MasterDataRepos.netcore": "1.0.51"
+    "MasterDataRepos.netcore": "1.0.51",
+    "VSS.Authentication.JWT": "*"
   },
 
   "frameworks": {
