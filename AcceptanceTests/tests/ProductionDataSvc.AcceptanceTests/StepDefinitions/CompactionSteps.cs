@@ -231,8 +231,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         height = (ushort)height
       };
       */
-      queryParameters = string.Format("&mode={0}&blLat={1}&blLon={2}&trLat={3}&trLon={4}&width={5}&height={6}", 
-        mode, parts[0], parts[1], parts[2], parts[3], width, height);
+      queryParameters = string.Format("&mode={0}&BBOX={1}&WIDTH={2}&HEIGHT={3}", 
+        mode, bbox, width, height);
     }
 
 

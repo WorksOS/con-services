@@ -1143,10 +1143,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 
         switch (count++)
         {
-          case 0: blLong = num; break;
-          case 1: blLat = num; break;
-          case 2: trLong = num; break;
-          case 3: trLat = num; break;
+          case 0: blLat = num; break;
+          case 1: blLong = num; break;
+          case 2: trLat = num; break;
+          case 3: trLong = num; break;
         }
       }
     }
