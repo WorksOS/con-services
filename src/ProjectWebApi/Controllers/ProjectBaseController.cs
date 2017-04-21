@@ -18,6 +18,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApi.ResultsHandling;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Utilities;
+using ProjectWebApiCommon.Utilities;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers
 {
@@ -153,31 +154,14 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// Gets the project list for a customer
     /// </summary>
     /// <returns></returns>
-    protected async Task<ImmutableList<ProjectDescriptor>> GetProjectList()
+    protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
     {
       var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
       var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
       log.LogInformation($"Project list contains {projects.Count()} projects");
-
-      var projectList = projects.Select(project => new ProjectDescriptor()
-      {
-        ProjectType = project.ProjectType,
-        Name = project.Name,
-        ProjectTimeZone = project.ProjectTimeZone,
-        IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
-        StartDate = project.StartDate.ToString("O"),
-        EndDate = project.EndDate.ToString("O"),
-        ProjectUid = project.ProjectUID,
-        LegacyProjectId = project.LegacyProjectID,
-        ProjectGeofenceWKT = project.GeometryWKT,
-        CustomerUID = project.CustomerUID,
-        LegacyCustomerId = project.LegacyCustomerID.ToString(),
-        CoordinateSystemFileName = project.CoordinateSystemFileName
-      }).ToImmutableList();
-
-      return projectList;
+      return projects;
     }
 
     /// <summary>
@@ -185,7 +169,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
-    protected async Task<ProjectDescriptor> GetProject(string projectUid)
+    protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
       var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
@@ -201,24 +185,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       }
 
       log.LogInformation($"Project {projectUid} retrieved");
-
-      var projectDescriptor = new ProjectDescriptor()
-      {
-        ProjectType = project.ProjectType,
-        Name = project.Name,
-        ProjectTimeZone = project.ProjectTimeZone,
-        IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
-        StartDate = project.StartDate.ToString("O"),
-        EndDate = project.EndDate.ToString("O"),
-        ProjectUid = project.ProjectUID,
-        LegacyProjectId = project.LegacyProjectID,
-        ProjectGeofenceWKT = project.GeometryWKT,
-        CustomerUID = project.CustomerUID,
-        LegacyCustomerId = project.LegacyCustomerID.ToString(),
-        CoordinateSystemFileName = project.CoordinateSystemFileName
-      };
-
-      return projectDescriptor;
+      return project;
     }
 
 
