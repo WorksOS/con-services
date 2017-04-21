@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -900,6 +901,15 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as 
     /// elevation, compaction, temperature, cut/fill, volumes etc
     /// </summary>
+    /// <param name="SERVICE">WMS parameter - value WMS</param>
+    /// <param name="VERSION">WMS parameter - value 1.3</param>
+    /// <param name="REQUEST">WMS parameter - value GetMap</param>
+    /// <param name="FORMAT">WMS parameter - value image/png</param>
+    /// <param name="TRANSPARENT">WMS parameter - value true</param>
+    /// <param name="LAYERS">WMS parameter - value Layers</param>
+    /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
@@ -914,15 +924,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
     /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
     /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="machines">Cell passes are only considered if the machines that recorded them are included in this list of machines. 
-    /// Use machine ID (historically VL Asset ID), or Machine Name from tagfile, not both.
-    /// This may be null, which is no restriction on machines. </param>
-    /// <param name="blLon">The bottom left corner of the bounding box, expressed in radians</param>
-    /// <param name="blLat">The bottom left corner of the bounding box, expressed in radians</param>
-    /// <param name="trLon">The top right corner of the bounding box, expressed in radians</param>
-    /// <param name="trLat">The top right corner of the bounding box, expressed in radians</param>
-    /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
-    /// <param name="height">The height, in pixels, of the image tile to be rendered</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectIdVerifier]
@@ -930,6 +936,15 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [Route("api/v2/compaction/tiles")]
     [HttpGet]
     public TileResult GetTile(
+      [FromQuery] string SERVICE,
+      [FromQuery] string VERSION,
+      [FromQuery] string REQUEST,
+      [FromQuery] string FORMAT,
+      [FromQuery] string TRANSPARENT,
+      [FromQuery] string LAYERS,
+      [FromQuery] int WIDTH,
+      [FromQuery] int HEIGHT,
+      [FromQuery] string BBOX,
       [FromQuery] long? projectId, 
       [FromQuery] Guid? projectUid, 
       [FromQuery] DisplayMode mode, 
@@ -939,13 +954,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       [FromQuery] ElevationType? elevationType, 
       [FromQuery] int? layerNumber, 
       [FromQuery] long? onMachineDesignId,
-      [FromQuery] List<MachineDetails> machines,
-      [FromQuery] double blLon, 
-      [FromQuery] double blLat,
-      [FromQuery] double trLon, 
-      [FromQuery] double trLat, 
-      [FromQuery] int width, 
-      [FromQuery] int height)
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogDebug("GetTile: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -953,9 +964,25 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
+      MachineDetails machine = null;
+      if (assetID.HasValue || !string.IsNullOrEmpty(machineName) || isJohnDoe.HasValue)
+      {
+        if (!assetID.HasValue || string.IsNullOrEmpty(machineName) || !isJohnDoe.Value)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+               "If using a machine, asset ID machine name and john doe flag must be provided"));
+        }
+        machine = MachineDetails.CreateMachineDetails(assetID.Value, machineName, isJohnDoe.Value);
+      }
+      List<MachineDetails> machines = machine == null ? null : new List<MachineDetails> { machine };
+
+      double blLong = 0, blLat = 0, trLong = 0, trLat = 0;
+      GetBoundingBox(BBOX, out blLong, out blLat, out trLong, out trLat);
+
       CompactionTileRequest request = CompactionTileRequest.CreateTileRequest(projectId.Value, mode, null, 
         CompactionFilter.CreateFilter(startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, machines),
-        BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLon, blLat, trLon, trLat), (ushort)width, (ushort)height);
+        BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat), (ushort)WIDTH, (ushort)HEIGHT);
       var tileResult = GetTile(request);
       return tileResult;
     }
@@ -965,6 +992,15 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as elevation, compaction, temperature, cut/fill, volumes etc
     /// </summary>
+    /// <param name="SERVICE">WMS parameter - value WMS</param>
+    /// <param name="VERSION">WMS parameter - value 1.3</param>
+    /// <param name="REQUEST">WMS parameter - value GetMap</param>
+    /// <param name="FORMAT">WMS parameter - value image/png</param>
+    /// <param name="TRANSPARENT">WMS parameter - value true</param>
+    /// <param name="LAYERS">WMS parameter - value Layers</param>
+    /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="mode">The thematic mode to be rendered; elevation, compaction, temperature etc</param>
@@ -979,15 +1015,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
     /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
     /// May be null/empty, which indicates no restriction.</param>
-    /// <param name="machines">Cell passes are only considered if the machines that recorded them are included in this list of machines. 
-    /// Use machine ID (historically VL Asset ID), or Machine Name from tagfile, not both.
-    /// This may be null, which is no restriction on machines. </param>
-    /// <param name="blLon">The bottom left corner of the bounding box, expressed in radians</param>
-    /// <param name="blLat">The bottom left corner of the bounding box, expressed in radians</param>
-    /// <param name="trLon">The top right corner of the bounding box, expressed in radians</param>
-    /// <param name="trLat">The top right corner of the bounding box, expressed in radians</param>
-    /// <param name="width">The width, in pixels, of the image tile to be rendered</param>
-    /// <param name="height">The height, in pixels, of the image tile to be rendered</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
     /// If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered 
     /// in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to 
@@ -1000,6 +1032,15 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [Route("api/v2/compaction/tiles/png")]
     [HttpGet]
     public FileResult GetTileRaw(
+      [FromQuery] string SERVICE,
+      [FromQuery] string VERSION,
+      [FromQuery] string REQUEST,
+      [FromQuery] string FORMAT,
+      [FromQuery] string TRANSPARENT,
+      [FromQuery] string LAYERS,
+      [FromQuery] int WIDTH,
+      [FromQuery] int HEIGHT,
+      [FromQuery] string BBOX,
       [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid,
       [FromQuery] DisplayMode mode,
@@ -1009,13 +1050,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       [FromQuery] ElevationType? elevationType,
       [FromQuery] int? layerNumber,
       [FromQuery] long? onMachineDesignId,
-      [FromQuery] List<MachineDetails> machines,
-      [FromQuery] double blLon,
-      [FromQuery] double blLat,
-      [FromQuery] double trLon,
-      [FromQuery] double trLat,
-      [FromQuery] int width,
-      [FromQuery] int height)
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogDebug("GetTileRaw: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -1023,9 +1060,24 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
+      MachineDetails machine = null;
+      if (assetID.HasValue || !string.IsNullOrEmpty(machineName) || isJohnDoe.HasValue)
+      {
+        if (!assetID.HasValue || string.IsNullOrEmpty(machineName) || !isJohnDoe.Value)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+               "If using a machine, asset ID machine name and john doe flag must be provided"));
+        }
+        machine = MachineDetails.CreateMachineDetails(assetID.Value, machineName, isJohnDoe.Value);
+      }
+      List<MachineDetails> machines = machine == null ? null : new List<MachineDetails> { machine };
+
+      double blLong = 0, blLat = 0, trLong = 0, trLat = 0;
+      GetBoundingBox(BBOX, out blLong, out blLat, out trLong, out trLat);
       CompactionTileRequest request = CompactionTileRequest.CreateTileRequest(projectId.Value, mode, null,
         CompactionFilter.CreateFilter(startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, machines),
-        BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLon, blLat, trLon, trLat), (ushort)width, (ushort)height);
+        BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat), (ushort)WIDTH, (ushort)HEIGHT);
       var tileResult = GetTile(request);
       if (tileResult != null)
       {
@@ -1036,6 +1088,67 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       throw new ServiceException(HttpStatusCode.NoContent,
            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
                "Raptor failed to return a tile"));
+    }
+
+    /// <summary>
+    /// Get the bounding box values from the query parameter
+    /// </summary>
+    /// <param name="bbox">The query parameter containing the bounding box in decimal degrees</param>
+    /// <param name="blLong">Bottom left longitude in radians</param>
+    /// <param name="blLat">Bottom left latitude in radians</param>
+    /// <param name="trLong">Top right longitude in radians</param>
+    /// <param name="trLat">Top right latitude in radians</param>
+    private void GetBoundingBox(string bbox, out double blLong, out double blLat, out double trLong, out double trLat)
+    {
+      blLong = 0;
+      blLat = 0;
+      trLong = 0;
+      trLat = 0;
+
+      int count = 0;
+      foreach (string s in bbox.Split(','))
+      {
+        double num;
+
+        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out num))
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+               "Invalid bounding box"));
+        }
+        num = num * Math.PI / 180.0;//convert decimal degrees to radians
+        //Latitude Must be in range -pi/2 to pi/2 and longitude in the range -pi to pi
+        if (count == 0 || count == 2)
+        {
+          if (num < -Math.PI / 2)
+          {
+            num = num + Math.PI;
+          }
+          else if (num > Math.PI / 2)
+          {
+            num = num - Math.PI;
+          }
+        }
+        if (count == 1 || count == 3)
+        {
+          if (num < -Math.PI)
+          {
+            num = num + 2 * Math.PI;
+          }
+          else if (num > Math.PI)
+          {
+            num = num - 2 * Math.PI;
+          }
+        }
+
+        switch (count++)
+        {
+          case 0: blLong = num; break;
+          case 1: blLat = num; break;
+          case 2: trLong = num; break;
+          case 3: trLat = num; break;
+        }
+      }
     }
 
     /// <summary>
