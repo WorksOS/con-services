@@ -24,11 +24,9 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private Getter<CompactionCmvPercentChangeResult> cmvPercentChangeRequester;
     private Poster<StatisticsParameters, ProjectStatistics> projectStatisticsPoster;
     private Getter<ElevationStatisticsResult> elevationRangeRequester;
-    //private Poster<CompactionTileRequest, TileResult> tilePoster;
     private Getter<TileResult> tileRequester;
     private Getter<CompactionColorPalettesResult> paletteRequester;
 
-    //private CompactionTileRequest tileRequest;
     private StatisticsParameters statsRequest;
     private string projectUid;
     private string queryParameters = string.Empty;
@@ -213,24 +211,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Given(@"a displayMode ""(.*)"" and a bbox ""(.*)"" and a width ""(.*)"" and a height ""(.*)""")]
     public void GivenADisplayModeAndABboxLLAndAWidthAndAHeight(int mode, string bbox, int width, int height)
     {
-      string[] parts = bbox.Split(new char[] { ',' });
-      /*
-      BoundingBox2DLatLon latLngs = new BoundingBox2DLatLon
-      {
-        bottomLeftLon = double.Parse(parts[1]),
-        bottomleftLat = double.Parse(parts[0]),
-        topRightLon = double.Parse(parts[3]),
-        topRightLat = double.Parse(parts[2]),
-      };
-      tileRequest = new CompactionTileRequest
-      {
-        projectUid = this.projectUid,
-        mode = (DisplayMode)mode,
-        boundBoxLL = latLngs,
-        width = (ushort)width,
-        height = (ushort)height
-      };
-      */
       queryParameters = string.Format("&mode={0}&BBOX={1}&WIDTH={2}&HEIGHT={3}", 
         mode, bbox, width, height);
     }
@@ -239,14 +219,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I request a Tile")]
     public void WhenIRequestATile()
     {
-      //tilePoster = PostIt<CompactionTileRequest, TileResult>(tileRequest);
       tileRequester = GetIt<TileResult>();
     }
 
     [Then(@"the Tile result should be")]
     public void ThenTheTileResultShouldBe(string multilineText)
     {
-      //CompareIt(multilineText, tilePoster);
       CompareIt<TileResult>(multilineText, tileRequester);
     }
 
