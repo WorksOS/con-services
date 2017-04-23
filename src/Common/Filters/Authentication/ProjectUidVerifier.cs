@@ -27,10 +27,14 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
       if (actionContext.ActionArguments.ContainsKey("request"))
       {
         var request = actionContext.ActionArguments["request"];
-        projectUidValue =
-          request.GetType()
-            .GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
-            .GetValue(request);
+        //Ignore any query parameter called 'request'
+        if (request.GetType() != typeof(string))
+        {
+          projectUidValue =
+            request.GetType()
+              .GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
+              .GetValue(request);
+        }
       }
 
       if (actionContext.ActionArguments.ContainsKey(propertyName))

@@ -451,8 +451,8 @@ this.ScenarioSetup(scenarioInfo);
 #line 260
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 261
-  testRunner.And("a displayMode \"0\" and a bbox \"0.631930733951056, -2.007483884109430, 0.6319305943" +
-                    "24716, -2.007483709576500\" and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("a displayMode \"0\" and a bbox \"36.206964000089840283, -115.0203540002853231, 36.20" +
+                    "6956000089640213, -115.02034400028509253\" and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 262
  testRunner.When("I request a Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
