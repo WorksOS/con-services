@@ -78,7 +78,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
       /// <summary>
       /// Pass count machine target and whether it is constant or varies.
       /// </summary>
-      [JsonProperty(PropertyName = "PassCountTarget")]
+      [JsonProperty(PropertyName = "passCountTarget")]
       public PassCountTargetData PassCountTarget { get; set; }
     }
 
