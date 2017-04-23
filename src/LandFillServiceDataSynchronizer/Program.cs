@@ -93,7 +93,7 @@ namespace LandFillServiceDataSynchronizer
       SyncVolumesTimer = new Timer(dataSync.RunUpdateVolumesFromRaptor);
       var sleepTime = ConfigurationManager.AppSettings["HoursToSleepForVolumes"];
       var hoursToSleep = string.IsNullOrEmpty(sleepTime) ? 2 : double.Parse(sleepTime);
-      SyncVolumesTimer.Change(TimeSpan.FromSeconds(5), TimeSpan.FromHours(hoursToSleep));
+      SyncVolumesTimer.Change(TimeSpan.FromMinutes(30), TimeSpan.FromHours(hoursToSleep));
 
       sleepTime = ConfigurationManager.AppSettings["HoursToSleepForCCA"];
       hoursToSleep = string.IsNullOrEmpty(sleepTime) ? 24 : double.Parse(sleepTime);

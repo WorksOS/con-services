@@ -207,7 +207,10 @@ namespace LandfillService.Common.ApiClients
               polygonLL = geofence
             }
           };
-          return ParseResponse<SummaryVolumesResult>(await Request(this.reportEndpoint + "volumes/summary", userUid, volumeParams));
+
+            var result = ParseResponse<SummaryVolumesResult>(await Request(this.reportEndpoint + "volumes/summary", userUid, volumeParams));
+            Log.DebugFormat("Volumes request for project {0}: {1} {2} Result : {3}", project.id, this.reportEndpoint, JsonConvert.SerializeObject(volumeParams),result.ToString());
+            return result;
         }
 
         private async Task<ProjectExtentsResult> GetProjectExtentsAsync(string userUid, Project project)

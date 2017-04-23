@@ -23,7 +23,7 @@ namespace LandFillServiceDataSynchronizer
       Log = logger;
     }
 
-    private RaptorApiClient raptorApiClient = new RaptorApiClient();
+    //private RaptorApiClient raptorApiClient = new RaptorApiClient();
 
     private List<Project> GetListOfProjectsToRetrieve()
     {
@@ -37,7 +37,7 @@ namespace LandFillServiceDataSynchronizer
       Log.DebugFormat("Got {0} projects to process for volumes",projects.Count);
       foreach (var project in projects)
       {
-        var startDate = raptorApiClient.GetProjectStatisticsAsync(userId, project).Result.startTime.Date;
+        var startDate = new RaptorApiClient().GetProjectStatisticsAsync(userId, project).Result.startTime.Date;
         if (startDate < DateTime.Today.AddDays(-90))
           startDate = DateTime.Today.AddDays(-90);
         var geofenceUids = LandfillDb.GetGeofences(project.projectUid).Select(g => g.uid.ToString()).ToList();
@@ -76,7 +76,7 @@ namespace LandFillServiceDataSynchronizer
         foreach (var dateEntry in project.Value)
         {
           var geofence = geofences.ContainsKey(dateEntry.geofenceUid) ? geofences[dateEntry.geofenceUid] : null;
-          raptorApiClient.GetVolumeInBackground(userId, project.Key, geofence, dateEntry).Wait();
+                    new RaptorApiClient().GetVolumeInBackground(userId, project.Key, geofence, dateEntry).Wait();
         }
       }
 
@@ -105,14 +105,14 @@ namespace LandFillServiceDataSynchronizer
         var geofences = GetGeofenceBoundaries(project.id, geofenceUids);
 
         //Process CCA for scheduled date
-        TimeZoneInfo hwZone = raptorApiClient.GetTimeZoneInfoForTzdbId(project.timeZoneName);
+        TimeZoneInfo hwZone = new RaptorApiClient().GetTimeZoneInfoForTzdbId(project.timeZoneName);
         var projDate = utcDate.Date.Add(hwZone.BaseUtcOffset);
         var nowDate = DateTime.UtcNow.Date.Add(hwZone.BaseUtcOffset);
         //In case we're backfilling...
         while (projDate <= nowDate)
         {
           var machinesToProcess =
-              raptorApiClient.GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
+              new RaptorApiClient().GetMachineLiftsInBackground(userId, project, utcDate.Date, utcDate.Date).Result;
           Log.DebugFormat("Processing project {0} with {1} machines for date {2}", project.id, machinesToProcess.Count,
               utcDate.Date);
 
@@ -125,7 +125,7 @@ namespace LandFillServiceDataSynchronizer
         var missingDates = LandfillDb.GetDatesWithNoCCA(project);
         foreach (var missingDate in missingDates)
         {
-          var machinesToProcess = raptorApiClient.GetMachineLiftsInBackground(userId, project, missingDate, missingDate).Result;
+          var machinesToProcess = new RaptorApiClient().GetMachineLiftsInBackground(userId, project, missingDate, missingDate).Result;
           Log.DebugFormat("Processing project {0} with {1} machines for missing date {2}", project.id, machinesToProcess.Count, missingDate);
 
           ProcessCCA(missingDate, project, geofenceUids, geofences, machinesToProcess);          
@@ -140,7 +140,7 @@ namespace LandFillServiceDataSynchronizer
           var geofence = geofences.ContainsKey(cca.geofenceUid) ? geofences[cca.geofenceUid] : null;
 
           Log.DebugFormat("Re-processing project {0}, geofence {1}, machine {2}, lift {3}", project.id, cca.geofenceUid, machines[cca.machineId], cca.liftId);
-          raptorApiClient.GetCCAInBackground(
+                    new RaptorApiClient().GetCCAInBackground(
             userId, project, cca.geofenceUid, geofence, cca.date, cca.machineId, machines[cca.machineId], cca.liftId).Wait();          
         }
         Log.InfoFormat("END Processing project {0}", project.id);
@@ -170,13 +170,13 @@ namespace LandFillServiceDataSynchronizer
           {
             Log.DebugFormat("Processing project {0}, geofence {1}, machine {2}, lift {3}, machineId {4}", 
               project.id, geofenceUid, machine, lift.layerId, machineIds[machine]);
-            raptorApiClient.GetCCAInBackground(
+                        new RaptorApiClient().GetCCAInBackground(
               userId, project, geofenceUid, geofence, date, machineIds[machine], machine, lift.layerId).Wait();
           }
           //Also do the 'All Lifts'
           Log.DebugFormat("Processing project {0}, geofence {1}, machine {2}, lift {3}, machineId {4}", 
             project.id, geofenceUid, machine, "ALL", machineIds[machine]);
-          raptorApiClient.GetCCAInBackground(
+                    new RaptorApiClient().GetCCAInBackground(
             userId, project, geofenceUid, geofence, date, machineIds[machine], machine, null).Wait();
         }
       }
