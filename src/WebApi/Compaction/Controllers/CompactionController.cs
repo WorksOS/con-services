@@ -1075,6 +1075,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 
       double blLong = 0, blLat = 0, trLong = 0, trLat = 0;
       GetBoundingBox(BBOX, out blLong, out blLat, out trLong, out trLat);
+      log.LogDebug("BBOX in radians: blLong=" + blLong + ",blLat=" + blLat + ",trLong=" + trLong + ",trLat=" + trLat);
       CompactionTileRequest request = CompactionTileRequest.CreateTileRequest(projectId.Value, mode, null,
         CompactionFilter.CreateFilter(startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, machines),
         BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat), (ushort)WIDTH, (ushort)HEIGHT);
@@ -1082,6 +1083,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       if (tileResult != null)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+        Response.Headers.Add("Cache-Control", "public");
+        Response.Headers.Add("Expires", DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
         return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
       }
 
