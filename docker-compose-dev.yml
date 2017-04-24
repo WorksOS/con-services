@@ -10,6 +10,9 @@ services:
      - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
     ports:
      - "5001:80"
+    restart: always
+    deploy:
+      replicas: 1
 networks:
   default:
     external:
