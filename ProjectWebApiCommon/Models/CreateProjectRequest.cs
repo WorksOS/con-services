@@ -10,99 +10,93 @@ namespace ProjectWebApi.Models
   /// If CustomerUI, ProjectUID and ProjectID are null, then they will be populated via other means.
   /// This handles create of project, association to the customer and notification to raptor.
   /// </summary>
-  public class CreateProjectRequest 
+  public class CreateProjectRequest
   {
     /// <summary>
     /// The unique ID of the project. if null, then one will be generated.
     /// </summary>
-    [JsonProperty(PropertyName = "ProjectUid", Required = Required.AllowNull)]
-    public Guid? ProjectUid { get; set; }
+    [JsonProperty(PropertyName = "ProjectUID", Required = Required.Default)]
+    public Guid? ProjectUID { get; set; } = null;
 
+    
     /// <summary>
     /// The unique ID of the customer which the project is to be associated with. 
     /// if null, then the customer from the header will be used.
     /// </summary>
-    [JsonProperty(PropertyName = "CustomerUid", Required = Required.AllowNull)]
-    public Guid? CustomerUid { get; set; }
+    [JsonProperty(PropertyName = "CustomerUID", Required = Required.Default)]
+    public Guid? CustomerUID { get; set; } = null;
 
     /// <summary>
     /// The legacy ID of the project.
     /// This long/int is required by Raptor as it can't handle Guids. 
     /// if null, then we generate it from the next available in the ProjectMDM database.
     /// </summary>
-    [JsonProperty(PropertyName = "ProjectId", Required = Required.AllowNull)]
-    public int? ProjectId { get; set; }
+    [JsonProperty(PropertyName = "ProjectID", Required = Required.Default)]
+    public int? ProjectID { get; set; } = null;
 
     /// <summary>
     /// The type of the project.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectType", Required = Required.Always)]
-    [Required(ErrorMessage = "ProjectType is required.")]
     public ProjectType ProjectType { get; set; }
 
     /// <summary>
     /// The name of the project.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectName", Required = Required.Always)]
-    [Required(ErrorMessage = "ProjectName is required.")]
     public string ProjectName { get; set; }
 
     /// <summary>
     /// The description of the project.
     /// Can be up to 2000 characters
     /// </summary>
-    [JsonProperty(PropertyName = "Description", Required = Required.Always)]
+    [JsonProperty(PropertyName = "Description", Required = Required.AllowNull)]
     public string Description { get; set; }
 
     /// <summary>
     /// The start date of the project.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectStartDate", Required = Required.Always)]
-    [Required(ErrorMessage = "ProjectStartDate is required.")]
     public DateTime ProjectStartDate { get; set; }
 
     /// <summary>
     /// The end date of the project.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectEndDate", Required = Required.Always)]
-    [Required(ErrorMessage = "ProjectEndDate is required.")]
     public DateTime ProjectEndDate { get; set; }
 
     /// <summary>
     /// The time zone of the project.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectTimezone", Required = Required.Always)]
-    [Required(ErrorMessage = "ProjectTimezone is required.")]
     public string ProjectTimezone { get; set; }
     
     /// <summary>
     /// The boundary of the project. This is immutable.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectBoundary", Required = Required.Always)]
-    [Required(ErrorMessage = "ProjectBoundary is required.")]
     public string ProjectBoundary { get; set; }
 
     /// <summary>
     /// The legacy customer number.
     /// This is no longer required by raptor so will be optional.
     /// </summary>
-    [JsonProperty(PropertyName = "CustomerId", Required = Required.AllowNull)]
-    [Required(ErrorMessage = "CustomerId is required.")]
-    public long? CustomerId { get; set; }
+    [JsonProperty(PropertyName = "CustomerID", Required = Required.Default)]
+    public long? CustomerID { get; set; } = 0;
 
     /// <summary>
     /// The CS of the project. 
     /// This is required for landfills but optional for other project types.
     /// </summary>
-    [JsonProperty(PropertyName = "CoordinateSystemFileName", Required = Required.AllowNull)]
-    public string CoordinateSystemFileName { get; set; }
+    [JsonProperty(PropertyName = "CoordinateSystemFileName", Required = Required.Default)]
+    public string CoordinateSystemFileName { get; set; } = string.Empty;
 
     /// <summary>
-    /// The guts of the CoordinateSystem to be contained in the CoordinateSystemFileName. 
-    /// Required if CoordinateSystemFileName is provided.
+    /// The guts of the CoordinateSystem to be contained in the CoordinateSystemFileContent. 
+    /// Required if CoordinateSystemFilenAME is provided.
     /// </summary>
-    [JsonProperty(PropertyName = "CoordinateSystemFileName", Required = Required.AllowNull)]
-    public byte[] CoordinateSystemFileContent { get; set; }
+    [JsonProperty(PropertyName = "CoordinateSystemFileContent", Required = Required.Default)]
+    public byte[] CoordinateSystemFileContent { get; set; } = null;
 
 
     /// <summary>
@@ -114,7 +108,7 @@ namespace ProjectWebApi.Models
     /// <summary>
     /// Create instance of CreateProjectRequest
     /// </summary>
-    public static CreateProjectRequest CreateACreateProjectRequest(Guid? projectUid, Guid? customerUid, 
+    public static CreateProjectRequest CreateACreateProjectRequest(Guid projectUid, Guid? customerUid, 
       int? projectId, ProjectType projectType, string projectName, string description,
       DateTime projectStartDate, DateTime projectEndDate, string projectTimezone, string projectBoundary,
       long? customerId, string coordinateSystemFileName, byte[] coordinateSystemFileContent
@@ -122,9 +116,9 @@ namespace ProjectWebApi.Models
     {
       return new CreateProjectRequest
       {
-        ProjectUid = projectUid,
-        CustomerUid = customerUid,
-        ProjectId = projectId,
+        ProjectUID = projectUid,
+        CustomerUID = customerUid,
+        ProjectID = projectId,
         ProjectType = projectType,
         ProjectName = projectName,
         Description = description,
@@ -132,7 +126,7 @@ namespace ProjectWebApi.Models
         ProjectEndDate = projectEndDate,
         ProjectTimezone = projectTimezone,
         ProjectBoundary = projectBoundary,
-        CustomerId = customerId,
+        CustomerID = customerId,
         CoordinateSystemFileName = coordinateSystemFileName,
         CoordinateSystemFileContent = coordinateSystemFileContent
       };

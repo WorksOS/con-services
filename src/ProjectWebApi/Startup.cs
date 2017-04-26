@@ -12,6 +12,7 @@ using Repositories;
 using VSS.GenericConfiguration;
 using ProjectWebApi.ResultsHandling;
 using ProjectWebApiCommon.Utilities;
+using VSP.MasterData.Project.WebAPI;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
 
@@ -56,7 +57,7 @@ namespace ProjectWebApi
       {
         options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
           .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
-            "X-VisionLink-CustomerUid", "X-VisionLink-UserUid", "X-Jwt-Assertion")
+            "X-VisionLink-CustomerUID", "X-VisionLink-UserUid", "X-Jwt-Assertion")
           .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
 
@@ -70,8 +71,11 @@ namespace ProjectWebApi
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<IRaptorProxy, RaptorProxy>();
 
-      services.AddMvc();
-      //Configure swagger
+      services.AddMvc(
+        config =>
+        {
+          config.Filters.Add(new ValidationFilterAttribute());
+        });      //Configure swagger
       services.AddSwaggerGen();
 
       services.ConfigureSwaggerGen(options =>

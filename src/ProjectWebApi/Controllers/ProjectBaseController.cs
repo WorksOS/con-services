@@ -173,7 +173,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     {
       var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-      var project = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).First(p => p.ProjectUID == projectUid);
+      var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false));
+      Repositories.DBModels.Project project = null;
+      var enumerable = projects as IList<Repositories.DBModels.Project> ?? projects.ToList();
+      if (enumerable.Any())
+        project = enumerable.First(p => p.ProjectUID == projectUid);
 
       if (project == null)
       {

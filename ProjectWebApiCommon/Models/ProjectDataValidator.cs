@@ -88,6 +88,18 @@ namespace ProjectWebApi.Models
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Missing ProjectName"));
           }
+          if (createEvent.ProjectName.Length > 255)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "ProjectName is longer than the 255 characters allowed"));
+          }
+          if (!string.IsNullOrEmpty(createEvent.Description) && createEvent.Description.Length > 2000)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Description is longer than the 2000 characters allowed"));
+          }
           if (createEvent.ProjectStartDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
@@ -122,6 +134,18 @@ namespace ProjectWebApi.Models
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "ProjectName cannot be empty"));
           }
+          if (updateEvent.ProjectName.Length > 255)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "ProjectName is longer than the 255 characters allowed"));
+          }
+          if (!string.IsNullOrEmpty(updateEvent.Description) && updateEvent.Description.Length > 2000)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Description is longer than the 2000 characters allowed"));
+          }
           if (updateEvent.ProjectEndDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
@@ -135,7 +159,7 @@ namespace ProjectWebApi.Models
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "ProjectEndDate must be later than start date"));
           }
-          if (!project.ProjectTimeZone.Equals(updateEvent.ProjectTimezone))
+          if (!string.IsNullOrEmpty(updateEvent.ProjectTimezone) && !project.ProjectTimeZone.Equals(updateEvent.ProjectTimezone))
           {
             throw new ServiceException(HttpStatusCode.Forbidden,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

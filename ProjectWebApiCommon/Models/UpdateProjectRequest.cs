@@ -15,57 +15,47 @@ namespace ProjectWebApi.Models
     /// <summary>
     /// The unique ID of the project. if null, then one will be generated.
     /// </summary>
-    [JsonProperty(PropertyName = "ProjectUid", Required = Required.AllowNull)]
+    [JsonProperty(PropertyName = "ProjectUID", Required = Required.Always)]
     public Guid ProjectUid { get; set; }
 
     /// <summary>
     /// The type of the project.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectType", Required = Required.Always)]
-    [Required(ErrorMessage = "ProjectType is required.")]
     public ProjectType ProjectType { get; set; }
 
     /// <summary>
     /// The name of the project.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectName", Required = Required.Always)]
-    [Required(ErrorMessage = "ProjectName is required.")]
     public string ProjectName { get; set; }
 
     /// <summary>
     /// The description of the project.
     /// Can be up to 2000 characters
     /// </summary>
-    [JsonProperty(PropertyName = "Description", Required = Required.Always)]
+    [JsonProperty(PropertyName = "Description", Required = Required.AllowNull)]
     public string Description { get; set; }
 
     /// <summary>
     /// The end date of the project.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectEndDate", Required = Required.Always)]
-    [Required(ErrorMessage = "ProjectEndDate is required.")]
     public DateTime ProjectEndDate { get; set; }
-
-    /// <summary>
-    /// The time zone of the project.
-    /// </summary>
-    [JsonProperty(PropertyName = "ProjectTimezone", Required = Required.Always)]
-    [Required(ErrorMessage = "ProjectTimezone is required.")]
-    public string ProjectTimezone { get; set; }
-    
+  
     /// <summary>
     /// The CS of the project. 
     /// This is required for landfills but optional for other project types.
     /// </summary>
-    [JsonProperty(PropertyName = "CoordinateSystemFileName", Required = Required.AllowNull)]
-    public string CoordinateSystemFileName { get; set; }
+    [JsonProperty(PropertyName = "CoordinateSystemFileName", Required = Required.Default)]
+    public string CoordinateSystemFileName { get; set; } = string.Empty;
 
     /// <summary>
     /// The guts of the CoordinateSystem to be contained in the CoordinateSystemFileName. 
     /// Required if CoordinateSystemFileName is provided.
     /// </summary>
-    [JsonProperty(PropertyName = "CoordinateSystemFileName", Required = Required.AllowNull)]
-    public byte[] CoordinateSystemFileContent { get; set; }
+    [JsonProperty(PropertyName = "CoordinateSystemFileContent", Required = Required.Default)]
+    public byte[] CoordinateSystemFileContent { get; set; } = null;
 
 
     /// <summary>
@@ -79,7 +69,7 @@ namespace ProjectWebApi.Models
     /// </summary>
     public static UpdateProjectRequest CreateUpdateProjectRequest(Guid projectUid, 
       ProjectType projectType, string projectName, string description,
-      DateTime projectEndDate, string projectTimezone, 
+      DateTime projectEndDate, 
       string coordinateSystemFileName, byte[] coordinateSystemFileContent
       )
     {
@@ -90,7 +80,6 @@ namespace ProjectWebApi.Models
         ProjectName = projectName,
         Description = description,
         ProjectEndDate = projectEndDate,
-        ProjectTimezone = projectTimezone,
         CoordinateSystemFileName = coordinateSystemFileName,
         CoordinateSystemFileContent = coordinateSystemFileContent
       };

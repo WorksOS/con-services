@@ -45,16 +45,16 @@ namespace ProjectWebApiCommon.Utilities
         //define mappings <source type, destination type>
         cfg =>
         {
-          cfg.AllowNullCollections = true; // byte[] can be null
+          cfg.AllowNullCollections = true; // so that byte[] can be null
           cfg.CreateMap<CreateProjectRequest, CreateProjectEvent>()
-            .ForMember(x => x.CustomerID, opt => opt.MapFrom(src => src.CustomerId ?? 0))
+            .ForMember(x => x.CustomerID, opt => opt.MapFrom(src => src.CustomerID ?? 0))
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
             .ForMember(x => x.ReceivedUTC, opt => opt.Ignore());
           cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
-            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore());
+            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
+            .ForMember(x => x.ProjectTimezone, opt => opt.Ignore());
           cfg.CreateMap<Project, ProjectV4Descriptor>()
-            .ForMember(x => x.Description, opt => opt.Ignore()) // todo
             .ForMember(x => x.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
             .ForMember(x => x.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
             .ForMember(x => x.IsArchived, opt => opt.MapFrom(src => (src.IsDeleted || src.SubscriptionEndDate < DateTime.UtcNow)))

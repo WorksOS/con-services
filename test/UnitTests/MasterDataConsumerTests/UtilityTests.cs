@@ -23,16 +23,16 @@ namespace VSS.Visionlink.Project.UnitTests
         456, null, null);
 
       var kafkaEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
-      Assert.AreEqual(request.ProjectUid, kafkaEvent.ProjectUID, "ProjectUid has not been mapped correctly");
-      Assert.AreEqual(request.CustomerId, kafkaEvent.CustomerID, "CustomerId has not been mapped correctly");
+      Assert.AreEqual(request.ProjectUID, kafkaEvent.ProjectUID, "ProjectUID has not been mapped correctly");
+      Assert.AreEqual(request.CustomerID, kafkaEvent.CustomerID, "CustomerID has not been mapped correctly");
       Assert.AreEqual(request.ProjectType, kafkaEvent.ProjectType, "ProjectType has not been mapped correctly");
       Assert.AreEqual(request.ProjectName, kafkaEvent.ProjectName, "ProjectName has not been mapped correctly");
-      // todo Assert.AreEqual(request.Description, kafkaEvent.Description, "Description has not been mapped correctly");
+      Assert.AreEqual(request.Description, kafkaEvent.Description, "Description has not been mapped correctly");
       Assert.AreEqual(request.ProjectStartDate, kafkaEvent.ProjectStartDate, "ProjectStartDate has not been mapped correctly");
       Assert.AreEqual(request.ProjectEndDate, kafkaEvent.ProjectEndDate, "ProjectEndDate has not been mapped correctly");
       Assert.AreEqual(request.ProjectTimezone, kafkaEvent.ProjectTimezone, "ProjectTimezone has not been mapped correctly");
       Assert.AreEqual(request.ProjectBoundary, kafkaEvent.ProjectBoundary, "ProjectBoundary has not been mapped correctly");
-      Assert.AreEqual(request.ProjectId, kafkaEvent.ProjectID, "ProjectId has not been mapped correctly");
+      Assert.AreEqual(request.ProjectID, kafkaEvent.ProjectID, "ProjectID has not been mapped correctly");
       Assert.AreEqual(request.CoordinateSystemFileName, kafkaEvent.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
       Assert.AreEqual(request.CoordinateSystemFileContent, kafkaEvent.CoordinateSystemFileContent, "CoordinateSystemFileContent has not been mapped correctly");
 
@@ -41,7 +41,7 @@ namespace VSS.Visionlink.Project.UnitTests
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<CreateProjectRequest>(request);
-      Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(request.ProjectUID, copyOfRequest.ProjectUID, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
     }
 
@@ -52,15 +52,14 @@ namespace VSS.Visionlink.Project.UnitTests
 
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
       (Guid.NewGuid(), ProjectType.Standard, "projectName", "this is the description",
-        new DateTime(2017, 02, 15), "NZ whatsup", "csName", new byte[] {1,2,3});
+        new DateTime(2017, 02, 15), "csName", new byte[] {1,2,3});
 
       var kafkaEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
-      Assert.AreEqual(request.ProjectUid, kafkaEvent.ProjectUID, "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(request.ProjectUid, kafkaEvent.ProjectUID, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(request.ProjectType, kafkaEvent.ProjectType, "ProjectType has not been mapped correctly");
       Assert.AreEqual(request.ProjectName, kafkaEvent.ProjectName, "ProjectName has not been mapped correctly");
-      // todo Assert.AreEqual(request.Description, kafkaEvent.Description, "Description has not been mapped correctly");
+      Assert.AreEqual(request.Description, kafkaEvent.Description, "Description has not been mapped correctly");
       Assert.AreEqual(request.ProjectEndDate, kafkaEvent.ProjectEndDate, "ProjectEndDate has not been mapped correctly");
-      Assert.AreEqual(request.ProjectTimezone, kafkaEvent.ProjectTimezone, "ProjectTimezone has not been mapped correctly");
       Assert.AreEqual(request.CoordinateSystemFileName, kafkaEvent.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
       CollectionAssert.AreEqual(request.CoordinateSystemFileContent, kafkaEvent.CoordinateSystemFileContent, "CoordinateSystemFileContent has not been mapped correctly");
 
@@ -69,7 +68,7 @@ namespace VSS.Visionlink.Project.UnitTests
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<UpdateProjectRequest>(request);
-      Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUid has not been mapped correctly");
+      Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
     }
 
@@ -85,7 +84,7 @@ namespace VSS.Visionlink.Project.UnitTests
         LegacyProjectID = 123,
         ProjectType = ProjectType.ProjectMonitoring,
         Name = "the Name",
-        // todo Description = "the Description",
+        Description = "the Description",
         ProjectTimeZone = "NZ stuff",
         LandfillTimeZone = "",
         StartDate = new DateTime(2017, 01, 20),
@@ -111,7 +110,7 @@ namespace VSS.Visionlink.Project.UnitTests
       Assert.AreEqual(project.LegacyProjectID, result.LegacyProjectId, "LegacyProjectID has not been mapped correctly");
       Assert.AreEqual(project.ProjectType, result.ProjectType, "ProjectType has not been mapped correctly");
       Assert.AreEqual(project.Name, result.Name, "Name has not been mapped correctly");
-      // todo Assert.AreEqual(project.Description, result.Description, "Description has not been mapped correctly");
+      Assert.AreEqual(project.Description, result.Description, "Description has not been mapped correctly");
       Assert.AreEqual(project.ProjectTimeZone, result.ProjectTimeZone, "ProjectTimeZone has not been mapped correctly");
       Assert.AreEqual(project.StartDate.ToString("O"), result.StartDate, "StartDate has not been mapped correctly");
       Assert.AreEqual(project.EndDate.ToString("O"), result.EndDate, "EndDate has not been mapped correctly");

@@ -55,7 +55,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
               ProjectUid = project.ProjectUID,
               LegacyProjectId = project.LegacyProjectID,
               ProjectGeofenceWKT = project.GeometryWKT,
-              CustomerUid = project.CustomerUID,
+              CustomerUID = project.CustomerUID,
               LegacyCustomerId = project.LegacyCustomerID.ToString(),
               CoordinateSystemFileName = project.CoordinateSystemFileName
             }

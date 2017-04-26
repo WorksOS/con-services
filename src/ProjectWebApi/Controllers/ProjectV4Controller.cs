@@ -99,10 +99,17 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     [HttpPost]
     public async Task<ProjectV4Descriptor> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
+      if (projectRequest == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing Project request"));
+      }
+
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
-      if (projectRequest.CustomerUid == null) projectRequest.CustomerUid = Guid.Parse(((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
-      if (projectRequest.ProjectUid == null) projectRequest.ProjectUid = Guid.NewGuid();
+      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = Guid.Parse(((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid();
 
       var project = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
@@ -165,6 +172,12 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     [HttpPut]
     public async Task<ProjectV4Descriptor> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest)
     {
+      if (projectRequest == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing Project request"));
+      }
       log.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
@@ -324,6 +337,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
           });
       await projectService.StoreEvent(customerProject).ConfigureAwait(false);
     }
+  
     /// <summary>
     /// validate CordinateSystem if provided
     /// </summary>

@@ -24,12 +24,11 @@
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "KafkaConsumer.netcore": "1.0.6",
     "VSS.Interfaces.netcore": "*",
-    "MasterDataProxies.netcore": "1.0.9",
-    "MasterDataRepos.netcore": "1.0.51",
     "VSS.Authentication.JWT": "*",
     "AutoMapper": "6.0.2",
-    "ProjectWebApiCommon": "1.0.0-*"
-  },
+    "ProjectWebApiCommon": "1.0.0-*",
+    "MasterDataProxies.netcore": "1.0.10",
+    "MasterDataRepos.netcore": "1.0.53"  },
 
   "frameworks": {
     "netcoreapp1.1": {
