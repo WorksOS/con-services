@@ -61,8 +61,11 @@ namespace WebApi
           .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
           .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddMvc();
-      //Configure swagger
+      services.AddMvc(
+        config =>
+        {
+          config.Filters.Add(new ValidationFilterAttribute());
+        });
       services.AddSwaggerGen();
 
       services.ConfigureSwaggerGen(options =>
