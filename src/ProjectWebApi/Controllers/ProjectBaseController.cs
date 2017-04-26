@@ -51,7 +51,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       log = logger.CreateLogger<ProjectBaseController>();
       this.producer = producer;
       //We probably want to make this thing singleton?
-      this.producer.InitProducer(store);
+      if (!this.producer.IsInitializedProducer)
+        this.producer.InitProducer(store);
       //TODO change this pattern, make it safer
       projectService = projectRepo as ProjectRepository;
       subsService = subscriptionsRepo as SubscriptionRepository;

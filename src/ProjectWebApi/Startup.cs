@@ -61,7 +61,7 @@ namespace ProjectWebApi
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
             services.AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
-            services.AddTransient<IKafka, RdKafkaDriver>();
+            services.AddSingleton<IKafka, RdKafkaDriver>();
             services.AddSingleton<IConfigurationStore, GenericConfiguration>();
             services.AddSingleton<ISubscriptionProxy, SubscriptionProxy>();
             services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
