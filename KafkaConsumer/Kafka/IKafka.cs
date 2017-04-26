@@ -22,7 +22,8 @@ namespace KafkaConsumer.Kafka
         void Send(IEnumerable<KeyValuePair<string, KeyValuePair<string, string>>> topicMessagesToSendWithKeys);
         Message Consume(TimeSpan timeout);
         void Dispose();
-
+        bool IsInitializedProducer { get; }
+        bool IsInitializedConsumer { get; }
     }
 
     public class Message
