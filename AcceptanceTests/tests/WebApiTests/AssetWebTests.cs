@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
@@ -381,6 +382,7 @@ namespace WebApiTests
     /// <returns></returns>
     private GetAssetIdResult CallWebApiGetAssetId(TestSupport ts,long projectId, int deviceType, string radioSerial)
     {
+      Thread.Sleep(500);
       var request = GetAssetIdRequest.CreateGetAssetIdRequest(projectId,deviceType, radioSerial);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
