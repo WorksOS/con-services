@@ -757,8 +757,12 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     public TileResult PostTile([FromBody] CompactionTileRequest request)
     {
       log.LogDebug("PostTile: " + JsonConvert.SerializeObject(request));
+      request.Validate();
 
-      var tileResult = GetTile(request);
+      Filter filter = request.filter == null ? null : CompactionSettings.CompactionTileFilter(
+        request.filter.startUTC, request.filter.endUTC, request.filter.onMachineDesignID, request.filter.vibeStateOn, 
+        request.filter.elevationType, request.filter.layerNumber, request.filter.contributingMachines);
+      var tileResult = GetTile(filter, request.projectId.Value, request.mode, request.width, request.height, request.boundBoxLL);
       return tileResult;
     }
 
@@ -782,8 +786,12 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     public FileResult PostTileRaw([FromBody] CompactionTileRequest request)
     {
       log.LogDebug("PostTileRaw: " + JsonConvert.SerializeObject(request));
+      request.Validate();
 
-      var tileResult = GetTile(request);
+      Filter filter = request.filter == null ? null : CompactionSettings.CompactionTileFilter(
+        request.filter.startUTC, request.filter.endUTC, request.filter.onMachineDesignID, request.filter.vibeStateOn, 
+        request.filter.elevationType, request.filter.layerNumber, request.filter.contributingMachines);
+      var tileResult = GetTile(filter, request.projectId.Value, request.mode, request.width, request.height, request.boundBoxLL);
       if (tileResult != null)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
@@ -868,26 +876,12 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      MachineDetails machine = null;
-      if (assetID.HasValue || !string.IsNullOrEmpty(machineName) || isJohnDoe.HasValue)
-      {
-        if (!assetID.HasValue || string.IsNullOrEmpty(machineName) || !isJohnDoe.Value)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-               "If using a machine, asset ID machine name and john doe flag must be provided"));
-        }
-        machine = MachineDetails.CreateMachineDetails(assetID.Value, machineName, isJohnDoe.Value);
-      }
-      List<MachineDetails> machines = machine == null ? null : new List<MachineDetails> { machine };
-
-      double blLong = 0, blLat = 0, trLong = 0, trLat = 0;
-      GetBoundingBox(BBOX, out blLong, out blLat, out trLong, out trLat);
-
-      CompactionTileRequest request = CompactionTileRequest.CreateTileRequest(projectId.Value, mode, null, 
-        CompactionFilter.CreateFilter(startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, machines),
-        BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat), (ushort)WIDTH, (ushort)HEIGHT);
-      var tileResult = GetTile(request);
+      List<MachineDetails> machines = GetMachines(assetID, machineName, isJohnDoe);
+      bool haveFilter = startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue ||
+                        vibeStateOn.HasValue || elevationType.HasValue || layerNumber.HasValue || machines != null;
+      Filter filter = haveFilter ? CompactionSettings.CompactionTileFilter(
+        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, machines) : null;
+      var tileResult = GetTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       return tileResult;
     }
 
@@ -967,27 +961,13 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       {
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
-      }
-      MachineDetails machine = null;
-      if (assetID.HasValue || !string.IsNullOrEmpty(machineName) || isJohnDoe.HasValue)
-      {
-        if (!assetID.HasValue || string.IsNullOrEmpty(machineName) || !isJohnDoe.Value)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-               "If using a machine, asset ID machine name and john doe flag must be provided"));
-        }
-        machine = MachineDetails.CreateMachineDetails(assetID.Value, machineName, isJohnDoe.Value);
-      }
-      List<MachineDetails> machines = machine == null ? null : new List<MachineDetails> { machine };
-
-      double blLong = 0, blLat = 0, trLong = 0, trLat = 0;
-      GetBoundingBox(BBOX, out blLong, out blLat, out trLong, out trLat);
-      log.LogDebug("BBOX in radians: blLong=" + blLong + ",blLat=" + blLat + ",trLong=" + trLong + ",trLat=" + trLat);
-      CompactionTileRequest request = CompactionTileRequest.CreateTileRequest(projectId.Value, mode, null,
-        CompactionFilter.CreateFilter(startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, machines),
-        BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat), (ushort)WIDTH, (ushort)HEIGHT);
-      var tileResult = GetTile(request);
+      }   
+      List<MachineDetails> machines = GetMachines(assetID, machineName, isJohnDoe);   
+      bool haveFilter = startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue ||
+                        vibeStateOn.HasValue || elevationType.HasValue || layerNumber.HasValue || machines != null;
+      Filter filter = haveFilter ? CompactionSettings.CompactionTileFilter(
+        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, machines) : null;
+      var tileResult = GetTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       if (tileResult != null)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
@@ -1000,21 +980,40 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
                "Raptor failed to return a tile"));
     }
+    /// <summary>
+    /// Gets the list of contributing machines from the query parameters
+    /// </summary>
+    /// <param name="assetID">The asset ID</param>
+    /// <param name="machineName">The machine name</param>
+    /// <param name="isJohnDoe">The john doe flag</param>
+    /// <returns>List of machines</returns>
+    private List<MachineDetails> GetMachines(long? assetID, string machineName, bool? isJohnDoe)
+    {
+      MachineDetails machine = null;
+      if (assetID.HasValue || !string.IsNullOrEmpty(machineName) || isJohnDoe.HasValue)
+      {
+        if (!assetID.HasValue || string.IsNullOrEmpty(machineName) || !isJohnDoe.HasValue)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+               "If using a machine, asset ID machine name and john doe flag must be provided"));
+        }
+        machine = MachineDetails.CreateMachineDetails(assetID.Value, machineName, isJohnDoe.Value);
+      }
+      return machine == null ? null : new List<MachineDetails> { machine };
+    }
 
     /// <summary>
     /// Get the bounding box values from the query parameter
     /// </summary>
     /// <param name="bbox">The query parameter containing the bounding box in decimal degrees</param>
-    /// <param name="blLong">Bottom left longitude in radians</param>
-    /// <param name="blLat">Bottom left latitude in radians</param>
-    /// <param name="trLong">Top right longitude in radians</param>
-    /// <param name="trLat">Top right latitude in radians</param>
-    private void GetBoundingBox(string bbox, out double blLong, out double blLat, out double trLong, out double trLat)
+    /// <returns>Bounding box in radians</returns>
+    private BoundingBox2DLatLon GetBoundingBox(string bbox)
     {
-      blLong = 0;
-      blLat = 0;
-      trLong = 0;
-      trLat = 0;
+      double blLong = 0;
+      double blLat = 0;
+      double trLong = 0;
+      double trLat = 0;
 
       int count = 0;
       foreach (string s in bbox.Split(','))
@@ -1060,32 +1059,28 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           case 3: trLong = num; break;
         }
       }
+      log.LogDebug("BBOX in radians: blLong=" + blLong + ",blLat=" + blLat + ",trLong=" + trLong + ",trLat=" + trLat);
+      return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
     }
 
     /// <summary>
     /// Gets the requested tile from Raptor
     /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
-    private TileResult GetTile(CompactionTileRequest request)
+    /// <param name="filter"></param>
+    /// <param name="projectId"></param>
+    /// <param name="mode"></param>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="bbox"></param>
+    /// <returns>Tile result</returns>
+    private TileResult GetTile(Filter filter, long projectId, DisplayMode mode, ushort width, ushort height, BoundingBox2DLatLon bbox)
     {
-      request.Validate();
-
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-
-      var layerMethod = request.filter == null || !request.filter.layerNumber.HasValue ? (FilterLayerMethod?)null : FilterLayerMethod.TagfileLayerNumber;
-
-      Filter filter = request.filter == null ? null : Filter.CreateFilter(null, null, null, request.filter.startUTC, request.filter.endUTC,
-        request.filter.onMachineDesignID, null, request.filter.vibeStateOn, null, request.filter.elevationType,
-        null, null, null, null, null, null, null, null, null, layerMethod, null, null,
-        request.filter.layerNumber, null, request.filter.contributingMachines, null, null, null, null, null, null, null);
       filter?.Validate();
 
-      if (!layerMethod.HasValue) layerMethod = FilterLayerMethod.None;
-
-      TileRequest tileRequest = TileRequest.CreateTileRequest(request.projectId.Value, null, request.mode, request.palette,
-        liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0, layerMethod.Value,
-        request.boundBoxLL, null, request.width, request.height, 0);
+      TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode, CompactionSettings.CompactionPalette(mode),
+        liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0, filter == null ? FilterLayerMethod.None :  filter.layerType.Value,
+        bbox, null, width, height);
       tileRequest.Validate();
       var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(tileRequest) as TileResult;
       return tileResult;

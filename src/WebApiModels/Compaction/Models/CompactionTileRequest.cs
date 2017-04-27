@@ -28,14 +28,6 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Models
     public DisplayMode mode { get; private set; }
 
     /// <summary>
-    /// The set of colours to be used to map the datum values in the thematic data to colours to be rendered in the tile.
-    /// In case of cut/fill data rendering the transition order should be datum value descendent.
-    /// </summary>
-    [JsonProperty(PropertyName = "palette", Required = Required.Default)]
-    //Use default palette
-    public List<ColorPalette> palette { get; private set; }
-
-    /// <summary>
     /// The filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter", Required = Required.Default)]
@@ -76,7 +68,6 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Models
     public static CompactionTileRequest CreateTileRequest(
         long projectId,
         DisplayMode mode,
-        List<ColorPalette> palette,
         CompactionFilter filter,
         BoundingBox2DLatLon boundingBoxLatLon,
         ushort width,
@@ -87,7 +78,6 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Models
       {
         projectId = projectId,
         mode = mode,
-        palette = palette,
         filter = filter,
         boundBoxLL = boundingBoxLatLon,
         width = width,
@@ -105,7 +95,6 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Models
       {
         filter.Validate();
       }
-      RaptorValidator.ValidatePalettes(palette, mode);
 
       if (boundBoxLL == null)
       {
