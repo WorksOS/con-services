@@ -32,7 +32,6 @@ namespace VSS.Project.Service.WebApiModels.Filters
                     await SetResult("No account selected", context);
                     return;
                 }
-
                 // If no token found, no further work possible
                 if (string.IsNullOrEmpty(authorization))
                 {

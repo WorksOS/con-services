@@ -244,6 +244,7 @@ namespace TestUtility
     private string CallWebApiWithProject(string jsonString, string eventType, string customerUid)
     {
       var response = string.Empty;
+      Thread.Sleep(2000);
       switch (eventType)
       {
         case "CreateProjectEvent":
@@ -256,6 +257,7 @@ namespace TestUtility
           response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Delete.ToString(), jsonString, customerUid);
           break;
       }
+      Thread.Sleep(2000);
       Console.WriteLine(response);  
       var jsonResponse = JsonConvert.DeserializeObject<ContractExecutionResult>(response);
       return jsonResponse.Message;
