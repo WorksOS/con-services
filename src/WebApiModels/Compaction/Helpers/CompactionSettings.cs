@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Models;
+using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
 using VSS.Raptor.Service.WebApiModels.Report.Models;
@@ -92,16 +93,27 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
     public static List<ColorPalette> CompactionPalette(DisplayMode mode)
     {
       /*
-      List<ColorValue> palette = new List<ColorValue>();
+      List<ColorValue> palette;
       switch (mode)
       {
         case DisplayMode.Height:
-          colorValues = new List<ColorValue>();
-          for (int i = 1; i < raptorPalette.Length - 1; i++)
+ 
+
+          int numberOfColors = 30;
+
+          double step = (cs.elevationMaximum.value - cs.elevationMinimum.value) / (numberOfColors - 1);
+          List<int> colors = RaptorConverters.ElevationPalette();
+
+          palette = new List<ColorPalette>();
+          palette.Add(ColorPalette.CreateColorPalette(cs.elevationBelowColor, -1));
+          for (int i = 0; i < colors.Count; i++)
           {
-            colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+            palette.Add(ColorPalette.CreateColorPalette((uint)colors[i], cs.elevationMinimum.value + i * step));
           }
-          elevationPalette = DetailPalette.CreateDetailPalette(colorValues, raptorPalette[raptorPalette.Length - 1].Colour, raptorPalette[0].Colour);
+          palette.Add(ColorPalette.CreateColorPalette(cs.elevationAboveColor, -1));
+
+
+
           break;
         case DisplayMode.CCV:
           colorValues = new List<ColorValue>();

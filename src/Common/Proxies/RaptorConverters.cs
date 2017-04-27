@@ -90,7 +90,7 @@ namespace VSS.Raptor.Service.Common.Proxies
         }
 
         // ElevationPalette comes from WebMapCache.cs
-        private static List<int> ElevationPalette()
+        public static List<int> ElevationPalette()
         {
             return new List<int> {
 				      RGBToColor(255,0,0),
