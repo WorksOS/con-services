@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VLPDDecls;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
@@ -17,6 +14,7 @@ using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
 using VSS.Raptor.Service.WebApiModels.Compaction.Models;
 using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
 using VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling;
@@ -52,7 +50,6 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IAuthenticatedProjectsStore authProjectsStore;
 
-    private const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
 
 
     /// <summary>
@@ -77,32 +74,17 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid"></param>
     /// <param name="startUtc"></param>
     /// <param name="endUtc"></param>
-    /// <param name="cmvMin"></param>
-    /// <param name="cmvMax"></param>
     /// <returns>An instance of the CMVRequest class.</returns>
-    private CMVRequest GetCMVRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc, short cmvTarget = 0, short cmvMin = 0, short cmvMax = 0)
+    private CMVRequest GetCMVRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc)
     {
       if (!projectId.HasValue)
       {
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      CMVSettings cmvSettings = CMVSettings.CreateCMVSettings(cmvTarget, cmvMax, 120, cmvMin, 80, false);
-      LiftBuildSettings liftSettings;
-      Filter filter;
-      try
-      {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
-        filter = !startUtc.HasValue && !endUtc.HasValue
-            ? null
-            : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
+      CMVSettings cmvSettings = CompactionSettings.CompactionCmvSettings;
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
 
       return CMVRequest.CreateCMVRequest(projectId.Value, null, cmvSettings, liftSettings, filter, -1, null, null, null);
     }
@@ -114,32 +96,20 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid"></param>
     /// <param name="startUtc"></param>
     /// <param name="endUtc"></param>
+    /// <param name="isSummary"></param>
     /// <returns>An instance of the PassCounts class.</returns>
-    private PassCounts GetPassCountRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc)
+    private PassCounts GetPassCountRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc, bool isSummary)
     {
       if (!projectId.HasValue)
       {
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
+      PassCountSettings passCountSettings = isSummary ? null : CompactionSettings.CompactionPassCountSettings;
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
 
-      LiftBuildSettings liftSettings;
-      Filter filter;
-      try
-      {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
-        filter = !startUtc.HasValue && !endUtc.HasValue
-          ? null
-          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
-
-      return PassCounts.CreatePassCountsRequest(projectId.Value, null, null, liftSettings, filter, -1, null, null, null);
+      return PassCounts.CreatePassCountsRequest(projectId.Value, null, passCountSettings, liftSettings, filter, -1, null, null, null);
     }
 
     #region Summary Data for Widgets
@@ -210,21 +180,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
       MDPSettings mdpSettings = MDPSettings.CreateMDPSettings(0, 0, 120, 0, 80, false);
-      LiftBuildSettings liftSettings;
-      Filter filter;
-      try
-      {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
-        filter = !startUtc.HasValue && !endUtc.HasValue
-          ? null
-          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
+
       MDPRequest request = MDPRequest.CreateMDPRequest(projectId.Value, null, mdpSettings, liftSettings, filter, -1,
         null, null, null);
       request.Validate();
@@ -268,7 +226,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetPassCountSummary: " + Request.QueryString);
 
-      PassCounts request = GetPassCountRequest(projectId, projectUid, startUtc, endUtc);
+      PassCounts request = GetPassCountRequest(projectId, projectUid, startUtc, endUtc, true);
       request.Validate();
 
       try
@@ -316,21 +274,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
       TemperatureSettings temperatureSettings = TemperatureSettings.CreateTemperatureSettings(0, 175, 65, false);
-      LiftBuildSettings liftSettings;
-      Filter filter;
-      try
-      {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
-        filter = !startUtc.HasValue && !endUtc.HasValue
-          ? null
-          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
+
       TemperatureRequest request = TemperatureRequest.CreateTemperatureRequest(projectId.Value, null, temperatureSettings, liftSettings, filter, -1,
         null, null, null);
       request.Validate();
@@ -378,23 +324,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      LiftBuildSettings liftSettings;
-      Filter filter;
-      try
-      {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>(
-          "{'liftDetectionType': '4', 'machineSpeedTarget': { 'MinTargetMachineSpeed': '333', 'MaxTargetMachineSpeed': '417'}}");
-        //liftDetectionType 4 = None, speeds are cm/sec (12 - 15 km/hr)
-        filter = !startUtc.HasValue && !endUtc.HasValue
-          ? null
-          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
+   
       SummarySpeedRequest request = SummarySpeedRequest.CreateSummarySpeedRequestt(projectId.Value, null, liftSettings, filter, -1);
       request.Validate();
       try
@@ -441,24 +373,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      double[] cmvChangeSummarySettings = new double[] { 5, 20, 50, NO_CCV };
-      LiftBuildSettings liftSettings;
-      Filter filter;
-      try
-      {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
-        filter = !startUtc.HasValue && !endUtc.HasValue
-          ? null
-          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
-      CMVChangeSummaryRequest request = CMVChangeSummaryRequest.CreateCMVChangeSummaryRequest(projectId.Value, null, liftSettings, filter, -1,
-        cmvChangeSummarySettings);
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
+      double[] cmvChangeSummarySettings = CompactionSettings.CompactionCmvPercentChangeSettings;
+      CMVChangeSummaryRequest request = CMVChangeSummaryRequest.CreateCMVChangeSummaryRequest(
+        projectId.Value, null, liftSettings, filter, -1, cmvChangeSummarySettings);
       request.Validate();
       try
       {
@@ -504,7 +423,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
-      CMVRequest request = GetCMVRequest(projectId, projectUid, startUtc, endUtc, 70, 20, 100);
+      CMVRequest request = GetCMVRequest(projectId, projectUid, startUtc, endUtc);
       request.Validate();
 
       try
@@ -549,7 +468,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       log.LogInformation("GetPassCountDetails: " + Request.QueryString);
 
-      PassCounts request = GetPassCountRequest(projectId, projectUid, startUtc, endUtc);
+      PassCounts request = GetPassCountRequest(projectId, projectUid, startUtc, endUtc, false);
       request.Validate();
 
       try
@@ -709,17 +628,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
   {
     request.Validate();
 
-    LiftBuildSettings liftSettings;
-    try
-    {
-      liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
-    }
-    catch (Exception ex)
-    {
-      throw new ServiceException(HttpStatusCode.InternalServerError,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          ex.Message));
-    }
+    LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+ 
     var layerMethod = request.filter == null || !request.filter.layerNumber.HasValue ? (FilterLayerMethod?)null : FilterLayerMethod.TagfileLayerNumber;
 
     Filter filter = request.filter == null ? null : Filter.CreateFilter(null, null, null, request.filter.startUTC, request.filter.endUTC,
@@ -760,21 +670,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      LiftBuildSettings liftSettings;
-      Filter filter;
-      try
-      {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
-        filter = !startUtc.HasValue && !endUtc.HasValue
-          ? null
-          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
+
       ElevationStatisticsRequest statsRequest =
         ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId.Value, null, filter, 0, liftSettings);
       statsRequest.Validate();
@@ -889,6 +787,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       if (tileResult != null)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+        Response.Headers.Add("Cache-Control", "public");
+        Response.Headers.Add("Expires", DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
         return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
       }
  
@@ -902,11 +802,13 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// elevation, compaction, temperature, cut/fill, volumes etc
     /// </summary>
     /// <param name="SERVICE">WMS parameter - value WMS</param>
-    /// <param name="VERSION">WMS parameter - value 1.3</param>
+    /// <param name="VERSION">WMS parameter - value 1.3.0</param>
     /// <param name="REQUEST">WMS parameter - value GetMap</param>
     /// <param name="FORMAT">WMS parameter - value image/png</param>
     /// <param name="TRANSPARENT">WMS parameter - value true</param>
     /// <param name="LAYERS">WMS parameter - value Layers</param>
+    /// <param name="CRS">WMS parameter - value EPSG:4326</param>
+    /// <param name="STYLES">WMS parameter - value null</param>
     /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
@@ -942,6 +844,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       [FromQuery] string FORMAT,
       [FromQuery] string TRANSPARENT,
       [FromQuery] string LAYERS,
+      [FromQuery] string CRS,
+      [FromQuery] string STYLES,
       [FromQuery] int WIDTH,
       [FromQuery] int HEIGHT,
       [FromQuery] string BBOX,
@@ -993,11 +897,13 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// Supplies tiles of rendered overlays for a number of different thematic sets of data held in a project such as elevation, compaction, temperature, cut/fill, volumes etc
     /// </summary>
     /// <param name="SERVICE">WMS parameter - value WMS</param>
-    /// <param name="VERSION">WMS parameter - value 1.3</param>
+    /// <param name="VERSION">WMS parameter - value 1.3.0</param>
     /// <param name="REQUEST">WMS parameter - value GetMap</param>
     /// <param name="FORMAT">WMS parameter - value image/png</param>
     /// <param name="TRANSPARENT">WMS parameter - value true</param>
     /// <param name="LAYERS">WMS parameter - value Layers</param>
+    /// <param name="CRS">WMS parameter - value EPSG:4326</param>
+    /// <param name="STYLES">WMS parameter - value null</param>
     /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
@@ -1038,6 +944,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       [FromQuery] string FORMAT,
       [FromQuery] string TRANSPARENT,
       [FromQuery] string LAYERS,
+      [FromQuery] string CRS,
+      [FromQuery] string STYLES,
       [FromQuery] int WIDTH,
       [FromQuery] int HEIGHT,
       [FromQuery] string BBOX,
@@ -1163,17 +1071,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       request.Validate();
 
-      LiftBuildSettings liftSettings;
-      try
-      {
-        liftSettings = JsonConvert.DeserializeObject<LiftBuildSettings>("{'liftDetectionType': '4'}"); //4 = None
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+
       var layerMethod = request.filter == null || !request.filter.layerNumber.HasValue ? (FilterLayerMethod?)null : FilterLayerMethod.TagfileLayerNumber;
 
       Filter filter = request.filter == null ? null : Filter.CreateFilter(null, null, null, request.filter.startUTC, request.filter.endUTC,
