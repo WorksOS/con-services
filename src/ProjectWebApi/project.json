@@ -22,68 +22,44 @@
         "Microsoft.Extensions.Logging": "1.1.0",
         "Microsoft.Extensions.Logging.Console": "1.1.0",
         "Microsoft.Extensions.Logging.Debug": "1.1.0",
-        "KafkaConsumer.netcore": "1.0.6",
+        "KafkaConsumer.netcore": "*",
         "VSS.Interfaces.netcore": "*",
         "VSS.Authentication.JWT": "*",
-        "MasterDataProxies.netcore": "1.0.10",
-        "MasterDataRepos.netcore": "1.0.52"
+        "MasterDataProxies.netcore": "*",
+        "MasterDataRepos.netcore": "*"
     },
-    "Microsoft.ApplicationInsights.AspNetCore": "1.0.0",
-    "Microsoft.AspNetCore.Mvc": "1.0.1",
-    "Microsoft.AspNetCore.Routing": "1.0.1",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
-    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-    "ConfigurationStore.netcore": "*",
-    "Swashbuckle.SwaggerGen": "6.0.0-beta902",
-    "Swashbuckle.SwaggerUi": "6.0.0-beta902",
-    "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1",
-    "log4net.netcore": "3.0.0",
-    "log4netExtensions.netcore": "1.0.1",
-    "Microsoft.Extensions.Logging": "1.1.0",
-    "Microsoft.Extensions.Logging.Console": "1.1.0",
-    "Microsoft.Extensions.Logging.Debug": "1.1.0",
-    "KafkaConsumer.netcore": "1.0.6",
-    "VSS.Interfaces.netcore": "*",
-    "MasterDataProxies.netcore": "1.0.9",
-    "MasterDataRepos.netcore": "1.0.51",
-    "VSS.Authentication.JWT": "*"
-  },
 
-  "frameworks": {
-    "netcoreapp1.1": {
-      "imports": [
-        "dotnet5.6",
-        "portable-net45+win8"
-      ]
+    "frameworks": {
+        "netcoreapp1.1": {
+            "imports": [
+                "dotnet5.6",
+                "portable-net45+win8"
+            ]
+        }
+    },
+
+    "buildOptions": {
+        "emitEntryPoint": true,
+        "preserveCompilationContext": true,
+        "copyToOutput": [ "appsettings.json" ],
+        "xmlDoc": true
+    },
+
+    "runtimeOptions": {
+        "configProperties": {
+            "System.GC.Server": true
+        }
+    },
+
+    "publishOptions": {
+        "include": [
+            "wwwroot",
+            "**/*.cshtml",
+            "appsettings.json",
+            "web.config",
+            "Dockerfile",
+            "log4net.xml"
+        ]
     }
-  },
-
-  "buildOptions": {
-    "emitEntryPoint": true,
-    "preserveCompilationContext": true,
-    "copyToOutput": [ "appsettings.json" ],
-    "xmlDoc": true
-  },
-
-  "runtimeOptions": {
-    "configProperties": {
-      "System.GC.Server": true
-    }
-  },
-
-  "publishOptions": {
-    "include": [
-      "wwwroot",
-      "**/*.cshtml",
-      "appsettings.json",
-      "web.config",
-      "Dockerfile",
-      "log4net.xml"
-    ]
-  }
 
 }
