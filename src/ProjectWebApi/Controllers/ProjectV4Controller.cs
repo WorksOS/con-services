@@ -57,11 +57,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <returns>A project data</returns>
     [Route("api/v4/project")]
     [HttpGet]
-    public async Task<ProjectV4Descriptor> GetProjectV4([FromQuery] string projectUid)
+    public async Task<ProjectV4DescriptorsSingleResult> GetProjectV4([FromQuery] string projectUid)
     {
       log.LogInformation("GetProjectV4");
       var project =  await GetProject(projectUid).ConfigureAwait(false);
-      return AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project);
+      return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project));
     }
 
 
@@ -97,7 +97,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <response code="400">Bad request</response>
     [Route("api/v4/project")]
     [HttpPost]
-    public async Task<ProjectV4Descriptor> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
+    public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
       if (projectRequest == null)
       {
@@ -157,7 +157,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
           true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
 
       log.LogDebug("CreateProjectV4. completed succesfully");
-      return AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString()).ConfigureAwait(false));
+      return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString()).ConfigureAwait(false)));
     }
 
     // PUT: api/Project
@@ -170,7 +170,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <response code="400">Bad request</response>
     [Route("api/v4/project")]
     [HttpPut]
-    public async Task<ProjectV4Descriptor> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest)
+    public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest)
     {
       if (projectRequest == null)
       {
@@ -208,7 +208,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       await projectService.StoreEvent(project).ConfigureAwait(false);
 
       log.LogInformation("UpdateProjectV4. Completed successfully");
-      return AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString()).ConfigureAwait(false));
+      return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString()).ConfigureAwait(false)));
     }
 
 
@@ -222,7 +222,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <response code="400">Bad request</response>
     [Route("api/v4/project")]
     [HttpDelete]
-    public async Task<ContractExecutionResult> DeleteProjectV4([FromBody] DeleteProjectEvent project)
+    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromBody] DeleteProjectEvent project)
     {
       log.LogInformation("DeleteProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
 
@@ -238,7 +238,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       await projectService.StoreEvent(project).ConfigureAwait(false);
 
       log.LogInformation("DeleteProjectV4. Completed succesfully");
-      return new ContractExecutionResult();
+      return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString()).ConfigureAwait(false)));
+
     }
 
     /// <summary>

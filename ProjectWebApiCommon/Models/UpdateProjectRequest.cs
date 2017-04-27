@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -34,7 +33,7 @@ namespace ProjectWebApi.Models
     /// The description of the project.
     /// Can be up to 2000 characters
     /// </summary>
-    [JsonProperty(PropertyName = "Description", Required = Required.AllowNull)]
+    [JsonProperty(PropertyName = "Description", Required = Required.Default)]
     public string Description { get; set; }
 
     /// <summary>

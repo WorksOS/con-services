@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Google.Protobuf.WellKnownTypes;
 using ProjectWebApi.ResultsHandling;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -7,7 +8,7 @@ namespace ProjectWebApi.Models
 {
 
   /// <summary>
-  /// Describes standard output for the project descriptors
+  /// List of project descriptors
   /// </summary>
   /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
   public class ProjectV4DescriptorsListResult : ContractExecutionResult
@@ -207,5 +208,27 @@ namespace ProjectWebApi.Models
     }
 
     public override int GetHashCode() { return 0; }
+  }
+
+
+  /// <summary>
+  ///   Single project descriptor
+  /// </summary>
+  public class ProjectV4DescriptorsSingleResult : ContractExecutionResult
+  {
+    private ProjectV4Descriptor _projectV4Descriptor;
+
+    public ProjectV4DescriptorsSingleResult(ProjectV4Descriptor projectV4Descriptor)
+    {
+      this._projectV4Descriptor = projectV4Descriptor;
+    }
+
+    /// <summary>
+    /// Gets or sets the project descriptor.
+    /// </summary>
+    /// <value>
+    /// The project descriptor.
+    /// </value>
+    public ProjectV4Descriptor ProjectDescriptor { get { return _projectV4Descriptor; } set { _projectV4Descriptor = value; } }
   }
 }
