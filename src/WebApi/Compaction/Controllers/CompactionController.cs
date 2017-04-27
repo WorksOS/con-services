@@ -1055,6 +1055,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       [FromQuery] bool? isJohnDoe)
     {
       log.LogDebug("GetTileRaw: " + Request.QueryString);
+      log.LogDebug("assetID={0}, machineName={1}, isJohnDoe={2}", assetID, machineName, isJohnDoe);
+
       if (!projectId.HasValue)
       {
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
