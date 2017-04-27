@@ -1065,7 +1065,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       MachineDetails machine = null;
       if (assetID.HasValue || !string.IsNullOrEmpty(machineName) || isJohnDoe.HasValue)
       {
-        if (!assetID.HasValue || string.IsNullOrEmpty(machineName) || !isJohnDoe.Value)
+        if (!assetID.HasValue || string.IsNullOrEmpty(machineName) || !isJohnDoe.HasValue)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
