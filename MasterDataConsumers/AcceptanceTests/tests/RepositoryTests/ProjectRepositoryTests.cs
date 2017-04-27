@@ -16,6 +16,7 @@ namespace RepositoryTests
     IServiceProvider _serviceProvider = null;
     CustomerRepository _customerContext = null;
     ProjectRepository _projectContext = null;
+    SubscriptionRepository _subscriptionRepository = null;
 
     [TestInitialize]
     public void Init()
@@ -36,11 +37,12 @@ namespace RepositoryTests
 
       _customerContext = new CustomerRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
       _projectContext = new ProjectRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
-      new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      _subscriptionRepository = new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
     }
 
 
     #region Projects
+
 
     /// <summary>
     /// Create Project - Happy path i.e. 
@@ -66,14 +68,16 @@ namespace RepositoryTests
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
+        Description = "the Description",
         ProjectType = ProjectType.LandFill,
         ProjectTimezone = projectTimeZone,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
-        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        CoordinateSystemFileContent = new byte[] {0, 1, 2, 3, 4},
         CoordinateSystemFileName = "thisLocation\\this.cs"
       };
 
@@ -104,6 +108,82 @@ namespace RepositoryTests
 
       Project project = CopyModel(createProjectEvent);
       project.CoordinateSystemLastActionedUTC = createProjectEvent.ActionUTC;
+      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
+      project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project.IsDeleted = false;
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
+    }
+
+    /// <summary>
+    /// Create Project - Happy path i.e. 
+    ///   customer and CustomerProject relationship also added
+    ///   project doesn't exist already.
+    /// </summary>
+    [TestMethod]
+    public void CreateProjectWithCustomer_HappyPath_Unicode()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUtc
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = new Random().Next(1, 1999999),
+        ProjectName = "The Project Name(株)城内組　二見地区築堤護岸工事",
+        Description = "the Description(株)城内組　二見地区築堤護岸工事",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ActionUTC = actionUtc,
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        CoordinateSystemFileContent = new byte[] {0, 1, 2, 3, 4},
+        CoordinateSystemFileName = "thisLocation\\this.cs"
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUtc
+      };
+
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Project shouldn't be there yet");
+
+      var s = _projectContext.StoreEvent(createProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not written");
+
+      s = _customerContext.StoreEvent(createCustomerEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Customer event not written");
+
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not written");
+
+      Project project = CopyModel(createProjectEvent);
+      project.CoordinateSystemLastActionedUTC = createProjectEvent.ActionUTC;
+      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
+      project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project.IsDeleted = false;
       g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
@@ -132,22 +212,25 @@ namespace RepositoryTests
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
-        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
       };
 
 
       var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
-      Assert.AreEqual(1, s.Result, "Project event not written"); 
+      Assert.AreEqual(1, s.Result, "Project event not written");
 
       Project project = CopyModel(createProjectEvent);
       var g = _projectContext.GetProjectOnly(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
-      Assert.IsTrue(g.Result.LegacyProjectID >= 2000000, "Project legacyProjectId is incorrect. Actual LegacyProjectID = {0}, should be >2m", g.Result.LegacyProjectID);
+      Assert.IsTrue(g.Result.LegacyProjectID >= 2000000,
+        "Project legacyProjectId is incorrect. Actual LegacyProjectID = {0}, should be >2m", g.Result.LegacyProjectID);
       project.LegacyProjectID = g.Result.LegacyProjectID;
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo.");
     }
+
 
     /// <summary>
     /// Create Project - Happy path i.e. 
@@ -171,7 +254,8 @@ namespace RepositoryTests
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
-        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
       };
 
       var createProjectEvent2 = new CreateProjectEvent()
@@ -185,7 +269,8 @@ namespace RepositoryTests
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
-        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
       };
 
 
@@ -195,7 +280,7 @@ namespace RepositoryTests
 
       var s2 = _projectContext.StoreEvent(createProjectEvent2);
       s2.Wait();
-      Assert.AreEqual(0, s2.Result, "Project event should not have been written");      
+      Assert.AreEqual(0, s2.Result, "Project event should not have been written");
     }
 
     /// <summary>
@@ -228,7 +313,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
       };
 
@@ -258,12 +344,15 @@ namespace RepositoryTests
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
       Project project = CopyModel(createProjectEvent);
+      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
+      project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project.IsDeleted = false;
       g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
     }
-    
+
     /// <summary>
     /// Create Project - RelationShips not setup i.e. 
     ///   customer and CustomerProject relationship NOT added
@@ -274,7 +363,7 @@ namespace RepositoryTests
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
-     
+
       var createProjectEvent = new CreateProjectEvent()
       {
         ProjectUID = Guid.NewGuid(),
@@ -285,7 +374,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
       };
 
@@ -302,7 +392,8 @@ namespace RepositoryTests
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
-      Assert.AreEqual("Pacific/Auckland", g.Result.LandfillTimeZone, "Project landfill timeZone is incorrect from ProjectRepo");
+      Assert.AreEqual("Pacific/Auckland", g.Result.LandfillTimeZone,
+        "Project landfill timeZone is incorrect from ProjectRepo");
 
       // should fail as there is no Customer or CustProject
       g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -339,9 +430,10 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = actionUtc
-      };          
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
+      };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
       {
@@ -373,6 +465,9 @@ namespace RepositoryTests
 
       Project project = CopyModel(createProjectEvent);
       project.LastActionedUTC = actionUtc;
+      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
+      project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project.IsDeleted = false;
       g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
@@ -408,8 +503,9 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = actionUtc
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
       };
 
       var createProjectEventEarlier = new CreateProjectEvent()
@@ -422,8 +518,9 @@ namespace RepositoryTests
 
         ProjectStartDate = createProjectEvent.ProjectStartDate,
         ProjectEndDate = createProjectEvent.ProjectEndDate,
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = createProjectEvent.ActionUTC.AddDays(-1)
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = createProjectEvent.ActionUTC.AddDays(-1)
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -456,12 +553,15 @@ namespace RepositoryTests
       Assert.AreEqual(1, s.Result, "Earlier Project event should have been written");
 
       Project project = CopyModel(createProjectEventEarlier);
+      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
+      project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project.IsDeleted = false;
       g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
     }
-    
+
     /// <summary>
     /// Update Project - Happy path i.e. 
     ///   customer and CustomerProject relationship also added
@@ -491,9 +591,10 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
 
-        CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
+        CoordinateSystemFileContent = new byte[] {0, 1, 2, 3, 4},
         CoordinateSystemFileName = "thisLocation\\this.cs",
         ActionUTC = actionUtc
       };
@@ -580,7 +681,8 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
       };
 
@@ -654,8 +756,9 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = actionUtc
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -699,6 +802,9 @@ namespace RepositoryTests
       Assert.AreEqual(0, s.Result, "Project event not updated");
 
       Project project = CopyModel(createProjectEvent);
+      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
+      project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project.IsDeleted = false;
       g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
@@ -734,8 +840,9 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = actionUtc
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -818,8 +925,9 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = ActionUTC
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = ActionUTC
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -865,7 +973,7 @@ namespace RepositoryTests
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
     }
-    
+
     #endregion Projects
 
 
@@ -900,8 +1008,9 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = actionUtc
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -980,9 +1089,10 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
 
-          ActionUTC = actionUtc
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -1009,6 +1119,9 @@ namespace RepositoryTests
       _projectContext.StoreEvent(updateAssociateCustomerProjectEvent).Wait();
 
       Project project = CopyModel(createProjectEvent);
+      project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
+      project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project.IsDeleted = false;
       var g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
@@ -1019,6 +1132,7 @@ namespace RepositoryTests
 
 
     #region Timezones
+
     /// <summary>
     /// These Timezone conversions need to be done as acceptance tests so they are run on linux - the target platform.
     /// They should behave ok on windows (this will occur if you run a/ts against local containers).
@@ -1050,10 +1164,12 @@ namespace RepositoryTests
       var projectTimeZone = "UTC";
       Assert.AreEqual("Etc/UTC", TimeZone.WindowsToIana(projectTimeZone), "Unable to convert WindowsToIana");
     }
+
     #endregion Timezones
 
 
     #region Private
+
     private CreateProjectEvent CopyModel(Project project)
     {
       return new CreateProjectEvent()
@@ -1061,6 +1177,7 @@ namespace RepositoryTests
         ProjectUID = Guid.Parse(project.ProjectUID),
         ProjectID = project.LegacyProjectID,
         ProjectName = project.Name,
+        Description = project.Description,
         ProjectType = project.ProjectType,
         ProjectTimezone = project.ProjectTimeZone,
 
@@ -1079,6 +1196,7 @@ namespace RepositoryTests
         ProjectUID = kafkaProjectEvent.ProjectUID.ToString(),
         LegacyProjectID = kafkaProjectEvent.ProjectID,
         Name = kafkaProjectEvent.ProjectName,
+        Description = kafkaProjectEvent.Description,
         ProjectType = kafkaProjectEvent.ProjectType,
         // IsDeleted =  N/A
 
@@ -1092,6 +1210,7 @@ namespace RepositoryTests
         CoordinateSystemFileName = kafkaProjectEvent.CoordinateSystemFileName
       };
     }
+
     #endregion Private
 
   }

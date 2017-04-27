@@ -31,6 +31,7 @@ namespace Repositories
         var projectEvent = (CreateProjectEvent)evt;
         var project = new Project();
         project.LegacyProjectID = projectEvent.ProjectID;
+        project.Description = projectEvent.Description;
         project.Name = projectEvent.ProjectName;
         project.ProjectTimeZone = projectEvent.ProjectTimezone;
         project.LandfillTimeZone = TimeZone.WindowsToIana(projectEvent.ProjectTimezone);
@@ -68,6 +69,7 @@ namespace Repositories
         var project = new Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.Name = projectEvent.ProjectName;
+        project.Description = projectEvent.Description;
         project.EndDate = projectEvent.ProjectEndDate.Date;
         project.LastActionedUTC = projectEvent.ActionUTC;
         project.ProjectType = projectEvent.ProjectType;
@@ -166,7 +168,7 @@ namespace Repositories
 
       var existing = (await Connection.QueryAsync<Project>
           (@"SELECT 
-                ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
+                ProjectUID, Description, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
                 ProjectTimeZone, LandfillTimeZone, 
                 LastActionedUTC, StartDate, EndDate, GeometryWKT,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC
@@ -212,16 +214,16 @@ namespace Repositories
         if (project.LegacyProjectID <= 0) // allow db autoincrement on legacyProjectID
           insert = string.Format(
               "INSERT Project " +
-              "    (ProjectUID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
+              "    (ProjectUID, Name, Description, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
               "  VALUES " +
-              "    (@ProjectUID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
+              "    (@ProjectUID, @Name, @Description, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
                 , formattedPolygon);
         else
           insert = string.Format(
               "INSERT Project " +
-              "    (ProjectUID, LegacyProjectID, Name, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC ) " +
+              "    (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID, IsDeleted, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, GeometryWKT, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC ) " +
               "  VALUES " +
-              "    (@ProjectUID, @LegacyProjectID, @Name, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
+              "    (@ProjectUID, @LegacyProjectID, @Name, @Description, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
                 , formattedPolygon);
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
@@ -240,6 +242,7 @@ namespace Repositories
             @"UPDATE Project                
                 SET LegacyProjectID = @LegacyProjectID,
                   Name = @Name,
+                  Description = @Description,
                   fk_ProjectTypeID = @ProjectType,
                   IsDeleted = @IsDeleted,
                   ProjectTimeZone = @ProjectTimeZone,
@@ -263,7 +266,7 @@ namespace Repositories
         log.LogDebug("ProjectRepository/CreateProject: create arrived after an update so inserting project={0}", JsonConvert.SerializeObject(project));
 
         // must be a later update was applied before the create arrived
-        // leave the more recent EndDate, Name, ProjectType and actionUTC alone
+        // leave the more recent EndDate, Name, Description, ProjectType and actionUTC alone
 
         // a more recent cs exists, leave it
         if (!string.IsNullOrEmpty(existing.CoordinateSystemFileName))
@@ -340,6 +343,7 @@ namespace Repositories
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
           project.Name = project.Name == null ? existing.Name : project.Name;
+          project.Description = project.Description == null ? existing.Description : project.Description;
           project.ProjectTimeZone = project.ProjectTimeZone == null ? existing.ProjectTimeZone : project.ProjectTimeZone;
           if (string.IsNullOrEmpty(project.CoordinateSystemFileName))
           {
@@ -351,6 +355,7 @@ namespace Repositories
           const string update =
             @"UPDATE Project                
                 SET Name = @Name,
+                  Description = @Description,
                   LastActionedUTC = @LastActionedUTC,
                   EndDate = @EndDate, 
                   fk_ProjectTypeID = @ProjectType,
@@ -644,7 +649,7 @@ namespace Repositories
 
       var project = (await Connection.QueryAsync<Project>
           (@"SELECT 
-                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
@@ -673,7 +678,7 @@ namespace Repositories
 
       var project = (await Connection.QueryAsync<Project>
           (@"SELECT 
-                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID               
@@ -703,7 +708,7 @@ namespace Repositories
 
       var projectSubList = (await Connection.QueryAsync<Project>
           (@"SELECT 
-                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
@@ -734,7 +739,7 @@ namespace Repositories
 
       var projects = (await Connection.QueryAsync<Project>
           (@"SELECT 
-                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
@@ -765,7 +770,7 @@ namespace Repositories
       await PerhapsOpenConnection();
       var projects = (await Connection.QueryAsync<Project>
           (@"SELECT 
-                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
@@ -798,7 +803,7 @@ namespace Repositories
 
       var projects = (await Connection.QueryAsync<Project>
           (@"SELECT 
-                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
@@ -832,7 +837,7 @@ namespace Repositories
       var projects = (await Connection.QueryAsync<Project>
           (@"SELECT 
                 c.CustomerUID, cp.LegacyCustomerID, 
-                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
@@ -868,7 +873,7 @@ namespace Repositories
 
       var project = (await Connection.QueryAsync<Project>
           (@"SELECT              
-                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC
               FROM Project p 
@@ -931,7 +936,7 @@ namespace Repositories
 
       var project = (await Connection.QueryAsync<Project>
           (@"SELECT 
-                  p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                  p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                   p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                   p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                   cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
@@ -1007,7 +1012,7 @@ namespace Repositories
       string point = string.Format("ST_GeomFromText('POINT({0} {1})')", longitude, latitude);
       string select = string.Format(
         "SELECT DISTINCT " +
-        "        p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
+        "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
         "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
         "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
         "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
@@ -1044,7 +1049,7 @@ namespace Repositories
       string point = string.Format("ST_GeomFromText('POINT({0} {1})')", longitude, latitude);
       string select = string.Format(
         "SELECT DISTINCT " +
-        "        p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
+        "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
         "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
         "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
         "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, " +
@@ -1086,7 +1091,7 @@ namespace Repositories
       string polygonToCheck = string.Format("ST_GeomFromText('{0}')", geometryWKT);
       string select = string.Format(
         "SELECT DISTINCT " +
-        "        p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
+        "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
         "        p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT, " +
         "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
         "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " +
@@ -1111,7 +1116,7 @@ namespace Repositories
 
       var projects = (await Connection.QueryAsync<Project>
           (@"SELECT 
-                p.ProjectUID, p.Name, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 

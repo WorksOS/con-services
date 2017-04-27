@@ -27,6 +27,9 @@ namespace KafkaConsumer.Kafka
 
         public int Port { get; set; }
 
+        public bool IsInitializedProducer { get; private set; } = false;
+        public bool IsInitializedConsumer { get; private set; } = false;
+
         public void Commit()
         {
             rdConsumer?.Commit();
@@ -72,6 +75,7 @@ namespace KafkaConsumer.Kafka
                 EnableAutoCommit = EnableAutoCommit,
                 DefaultTopicConfig = topicConfig
             };
+            IsInitializedConsumer = true;
         }
 
         public void Subscribe(List<string> topics)
@@ -110,6 +114,7 @@ namespace KafkaConsumer.Kafka
 
             //socket.blocking.max.ms=1
             rdProducer = new Producer(config, configurationStore.GetValueString("KAFKA_URI"));
+            IsInitializedProducer = true;
         }
 
         public void Send(string topic, IEnumerable<KeyValuePair<string, string>> messagesToSendWithKeys)
@@ -151,6 +156,9 @@ namespace KafkaConsumer.Kafka
                 rdConsumer?.Dispose();
             }
             rdProducer?.Dispose();
+            IsInitializedProducer = false;
+            IsInitializedConsumer = false;
+
         }
     }
 }
