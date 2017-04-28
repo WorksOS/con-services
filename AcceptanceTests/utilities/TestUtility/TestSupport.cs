@@ -12,8 +12,8 @@ using System.Text;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApi.Models;
-using ProjectWebApi.ResultsHandling;
+using ProjectWebApiCommon.Models;
+using ProjectWebApiCommon.ResultsHandling;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
