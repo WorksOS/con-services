@@ -3,10 +3,11 @@ using System.Net;
 using Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApi.ResultsHandling;
+using ProjectWebApiCommon.ResultsHandling;
 using System.IO;
+using System.Security.Principal;
 
-namespace ProjectWebApi.Models
+namespace ProjectWebApiCommon.Models
 {
   /// <summary>
   /// Validates all project event data sent to the Web API
@@ -32,7 +33,7 @@ namespace ProjectWebApi.Models
     /// </summary>
     /// <param name="evt">The event containing the data to be validated</param>
     /// <param name="repo">Project repository to use in validation</param>
-    public static void Validate(IProjectEvent evt, IRepository<IProjectEvent> repo)
+    public static void Validate(IProjectEvent evt, IRepository<IProjectEvent> repo, string headerCustomerUid)
     {
       var projectRepo = repo as ProjectRepository;
       if (projectRepo == null)
@@ -70,6 +71,12 @@ namespace ProjectWebApi.Models
         if (isCreate)
         {
           var createEvent = evt as CreateProjectEvent;
+          if (createEvent.CustomerUID.ToString() != headerCustomerUid)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "CustomerUid differs to TID. Impersonation not supported."));
+          }
           if (string.IsNullOrEmpty(createEvent.ProjectBoundary))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,

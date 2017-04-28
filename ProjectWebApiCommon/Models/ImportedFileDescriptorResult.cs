@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Immutable;
-using ProjectWebApi.ResultsHandling;
+using ProjectWebApiCommon.ResultsHandling;
 using Repositories.DBModels;
 
-namespace ProjectWebApi.Models
+namespace ProjectWebApiCommon.Models
 {
 
   /// <summary>
-  /// Describes standard output for the ImportedFile descriptors
+  /// List of importedfile descriptors
   /// </summary>
-  /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
+  /// <seealso cref="ProjectWebApiCommon.ResultsHandling.ContractExecutionResult" />
   public class ImportedFileDescriptorListResult : ContractExecutionResult
   {
     /// <summary>
@@ -20,8 +20,30 @@ namespace ProjectWebApi.Models
     /// </value>
     public ImmutableList<ImportedFileDescriptor> ImportedFileDescriptors { get; set; }
   }
-  
-  
+
+  /// <summary>
+  /// Single importedfile descriptor
+  /// </summary>
+  /// <seealso cref="ProjectWebApiCommon.ResultsHandling.ContractExecutionResult" />
+  public class ImportedFileDescriptorSingleResult : ContractExecutionResult
+  {
+    private ImportedFileDescriptor _importedFileDescriptor;
+
+    public ImportedFileDescriptorSingleResult(ImportedFileDescriptor importedFileDescriptor)
+    {
+      this._importedFileDescriptor = importedFileDescriptor;
+    }
+
+    /// <summary>
+    /// Gets or sets the ImportedFile descriptors.
+    /// </summary>
+    /// <value>
+    /// The ImportedFile descriptors.
+    /// </value>
+    public ImportedFileDescriptor ImportedFileDescriptor { get { return _importedFileDescriptor; } set { _importedFileDescriptor = value; } }
+  }
+
+
   /// <summary>
   ///   Describes VL Imported File
   /// </summary>

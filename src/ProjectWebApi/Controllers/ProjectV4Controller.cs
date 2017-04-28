@@ -9,13 +9,13 @@ using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using ProjectWebApi.Models;
+using ProjectWebApiCommon.Models;
+using ProjectWebApiCommon.ResultsHandling;
+using ProjectWebApiCommon.Utilities;
 using Repositories;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApi.ResultsHandling;
-using ProjectWebApiCommon.Utilities;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Utilities;
 
@@ -69,7 +69,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// Create Project
     ///    as of v4 this creates a project AND the association to Customer
     /// </summary>
-    /// <param name="projectRequest">CreateProjectEvent model</param>
+    /// <param name="projectRequest">CreateProjectRequest model</param>
     /// <remarks>Create new project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
@@ -91,7 +91,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
       var project = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
 
       await ValidateCoordSystem(project).ConfigureAwait(false); 
       ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
@@ -119,7 +119,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         ReceivedUTC = project.ReceivedUTC
       };
 
-      ProjectDataValidator.Validate(customerProject, projectService);
+      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       await ValidateAssociateSubscriptions(project).ConfigureAwait(false);
@@ -138,11 +138,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString()).ConfigureAwait(false)));
     }
 
-    // PUT: api/Project
+    // PUT: api/v4/project
     /// <summary>
     /// Update Project
     /// </summary>
-    /// <param name="projectRequest">UpdateProjectEvent model</param>
+    /// <param name="projectRequest">UpdateProjectRequest model</param>
     /// <remarks>Updates existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
@@ -161,7 +161,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
       await ValidateCoordSystem(project).ConfigureAwait(false);
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
@@ -204,7 +204,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     {
       log.LogInformation("DeleteProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
 
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
@@ -244,26 +244,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       };
     }
     #endregion subscriptions
-
-    #region ImportedFiles
-
-    /// <summary>
-    /// Gets a list of imported files for a project. The list includes files of all types.
-    /// </summary>
-    /// <returns>A list of files</returns>
-    [Route("api/v4/importedfiles")]
-    [HttpGet]
-    public async Task<ImportedFileDescriptorListResult> GetImportedFilesV4([FromQuery] string projectUid)
-    {
-      log.LogInformation("GetImportedFilesV4");
-      return new ImportedFileDescriptorListResult()
-      {
-        ImportedFileDescriptors = await GetImportedFileList(projectUid).ConfigureAwait(false)
-      };
-    }
-
-    #endregion ImportedFiles
-
+    
 
     #region private
     /// <summary>

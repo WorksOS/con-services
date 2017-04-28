@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProjectWebApi.Models;
+using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.Utilities;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;

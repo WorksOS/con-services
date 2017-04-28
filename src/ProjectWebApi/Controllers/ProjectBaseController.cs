@@ -9,16 +9,15 @@ using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using ProjectWebApi.Models;
+using ProjectWebApiCommon.Models;
 using Repositories;
 using Repositories.DBModels;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApi.ResultsHandling;
+using ProjectWebApiCommon.ResultsHandling;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Utilities;
-using ProjectWebApiCommon.Utilities;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers
 {
@@ -197,7 +196,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task UpdateProject(UpdateProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
       project.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = project });
@@ -219,7 +218,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected virtual async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
         string databaseProjectBoundary)
     {
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
       if (project.ProjectID <= 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -248,7 +247,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task AssociateProjectCustomer(AssociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService);
+      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = customerProject });
@@ -267,7 +266,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task DissociateProjectCustomer(DissociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService);
+      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { DissociateProjectCustomer = customerProject });
@@ -286,7 +285,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
     {
-      ProjectDataValidator.Validate(geofenceProject, projectService);
+      ProjectDataValidator.Validate(geofenceProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
       geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
@@ -305,7 +304,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task DeleteProject(DeleteProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
       project.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
@@ -316,31 +315,5 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
           });
       await projectService.StoreEvent(project).ConfigureAwait(false);
     }
-
-    /// <summary>
-    /// Gets the imported file list for a project
-    /// </summary>
-    /// <returns></returns>
-    protected async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
-    {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User + " and projectUid=" + projectUid);
-      var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false)).ToImmutableList();
-
-      log.LogInformation($"ImportedFile list contains {importedFiles.Count()} importedFiles");
-
-      var importedFileList = importedFiles.Select(importedFile => new ImportedFileDescriptor()
-      {
-        ProjectUid = importedFile.ProjectUid,
-        ImportedFileUid = importedFile.ImportedFileUid,
-        CustomerUid = importedFile.CustomerUid,
-        ImportedFileType = importedFile.ImportedFileType,
-        Name = importedFile.Name,
-        SurveyedUtc = importedFile.SurveyedUtc
-      }).ToImmutableList();
-
-      return importedFileList;
-    }
-
   }
 }

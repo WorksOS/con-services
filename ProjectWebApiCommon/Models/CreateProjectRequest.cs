@@ -2,7 +2,7 @@
 using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ProjectWebApi.Models
+namespace ProjectWebApiCommon.Models
 {
   /// <summary>
   /// The request representation used to Create a project. 

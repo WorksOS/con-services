@@ -1,16 +1,16 @@
 using System.Collections.Immutable;
 using Google.Protobuf.WellKnownTypes;
-using ProjectWebApi.ResultsHandling;
+using ProjectWebApiCommon.ResultsHandling;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ProjectWebApi.Models
+namespace ProjectWebApiCommon.Models
 {
 
   /// <summary>
   /// List of project descriptors
   /// </summary>
-  /// <seealso cref="ProjectWebApi.ResultsHandling.ContractExecutionResult" />
+  /// <seealso cref="ProjectWebApiCommon.ResultsHandling.ContractExecutionResult" />
   public class ProjectV4DescriptorsListResult : ContractExecutionResult
   {
     /// <summary>
@@ -22,7 +22,28 @@ namespace ProjectWebApi.Models
     public ImmutableList<ProjectV4Descriptor> ProjectDescriptors { get; set; }
   }
 
-  
+  /// <summary>
+  ///   Single project descriptor
+  /// </summary>
+  public class ProjectV4DescriptorsSingleResult : ContractExecutionResult
+  {
+    private ProjectV4Descriptor _projectV4Descriptor;
+
+    public ProjectV4DescriptorsSingleResult(ProjectV4Descriptor projectV4Descriptor)
+    {
+      this._projectV4Descriptor = projectV4Descriptor;
+    }
+
+    /// <summary>
+    /// Gets or sets the project descriptor.
+    /// </summary>
+    /// <value>
+    /// The project descriptor.
+    /// </value>
+    public ProjectV4Descriptor ProjectDescriptor { get { return _projectV4Descriptor; } set { _projectV4Descriptor = value; } }
+  }
+
+
   /// <summary>
   ///   Describes VL project
   /// </summary>
@@ -210,25 +231,4 @@ namespace ProjectWebApi.Models
     public override int GetHashCode() { return 0; }
   }
 
-
-  /// <summary>
-  ///   Single project descriptor
-  /// </summary>
-  public class ProjectV4DescriptorsSingleResult : ContractExecutionResult
-  {
-    private ProjectV4Descriptor _projectV4Descriptor;
-
-    public ProjectV4DescriptorsSingleResult(ProjectV4Descriptor projectV4Descriptor)
-    {
-      this._projectV4Descriptor = projectV4Descriptor;
-    }
-
-    /// <summary>
-    /// Gets or sets the project descriptor.
-    /// </summary>
-    /// <value>
-    /// The project descriptor.
-    /// </value>
-    public ProjectV4Descriptor ProjectDescriptor { get { return _projectV4Descriptor; } set { _projectV4Descriptor = value; } }
-  }
 }

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using ProjectWebApi.Models;
+using ProjectWebApiCommon.ResultsHandling;
 
-namespace ProjectWebApi.ResultsHandling
+namespace ProjectWebApiCommon.ResultsHandling
 {
   public class ExceptionsTrap
   {

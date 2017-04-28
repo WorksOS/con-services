@@ -1,6 +1,6 @@
 ﻿using System;
 using AutoMapper;
-using ProjectWebApi.Models;
+using ProjectWebApiCommon.Models;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

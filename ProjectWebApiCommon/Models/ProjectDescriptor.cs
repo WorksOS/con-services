@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using ProjectWebApi.ResultsHandling;
+using ProjectWebApiCommon.ResultsHandling;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ProjectWebApi.Models
+namespace ProjectWebApiCommon.Models
 {
 
   /// <summary>

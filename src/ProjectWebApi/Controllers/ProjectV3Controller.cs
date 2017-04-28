@@ -1,27 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using ProjectWebApi.Models;
+using ProjectWebApiCommon.Models;
 using Repositories;
-using Repositories.DBModels;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApi.ResultsHandling;
 using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Utilities;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V3
 {
-    public class ProjectV3Controller : ProjectBaseController
+  public class ProjectV3Controller : ProjectBaseController
     {
 
         public ProjectV3Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,

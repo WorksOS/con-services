@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using ProjectWebApi.Models;
+using ProjectWebApiCommon.Models;
 using Repositories;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;

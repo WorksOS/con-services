@@ -9,7 +9,7 @@ using log4netExtensions;
 using KafkaConsumer.Kafka;
 using Repositories;
 using VSS.GenericConfiguration;
-using ProjectWebApi.ResultsHandling;
+using ProjectWebApiCommon.ResultsHandling;
 using Swashbuckle.Swagger.Model;
 using ProjectWebApiCommon.Utilities;
 using VSP.MasterData.Project.WebAPI;
