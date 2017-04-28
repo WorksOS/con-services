@@ -18,7 +18,7 @@
         "ConfigurationStore.netcore": "*",
         "Moq": "4.6.38-alpha",
         "Microsoft.Extensions.Logging.Debug": "1.1.0",
-        "KafkaConsumer.netcore": "1.0.6",
+        "KafkaConsumer.netcore": "*",
         "ProjectWebApiCommon": "1.0.0-*",
         "MasterDataRepos.netcore": "*"
     },

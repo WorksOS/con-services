@@ -12,7 +12,7 @@
         "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
         "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1",
         "AutoMapper": "6.0.2",
-        "MasterDataRepos.netcore": "1.0.53"
+        "MasterDataRepos.netcore": "*"
     },
 
     "frameworks": {
