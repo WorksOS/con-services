@@ -257,7 +257,7 @@ namespace TestUtility
           break;
       }
       Console.WriteLine(response);  
-      var jsonResponse = JsonConvert.DeserializeObject<ContractExecutionResult>(response);
+      var jsonResponse = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
       return jsonResponse.Message;
     }
 
@@ -450,13 +450,12 @@ namespace TestUtility
       var response = CallProjectWebApiV4("api/v4/project?projectUid=" + projectUid , HttpMethod.Get.ToString(), null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
-        var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectDescriptor>(response);
-        var actualProject = new List<ProjectDescriptor>();
-        actualProject.Add(projectDescriptorResult);
-        var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
+        var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
+        var actualProject = new List<ProjectV4Descriptor> {projectDescriptorResult.ProjectDescriptor};
+        var expectedProjects = ConvertArrayToProjectV4DescriptorList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
         msg.DisplayResults("Expected project :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
         Assert.IsTrue(actualProject.Count == 1, " There should be one project");
-        CompareTheActualProjectListWithExpected(actualProject, expectedProjects,ignoreZeros);
+        CompareTheActualProjectListV4WithExpected(actualProject, expectedProjects,ignoreZeros);
       }
     }
 
@@ -467,6 +466,40 @@ namespace TestUtility
     /// <param name="expectedProjects"></param>
     /// <param name="ignoreZeros">Ignore nulls or zeros if expected results</param>
     public void CompareTheActualProjectListWithExpected(List<ProjectDescriptor> actualProjects, List<ProjectDescriptor> expectedProjects, bool ignoreZeros)
+    {
+      for (var cntlist = 0; cntlist < actualProjects.Count; cntlist++)
+      {
+        var oType = actualProjects[cntlist].GetType();
+        foreach (var oProperty in oType.GetProperties())
+        {
+          var expectedValue = oProperty.GetValue(expectedProjects[cntlist], null);
+          var actualValue = oProperty.GetValue(actualProjects[cntlist], null);
+          if (ignoreZeros)
+          {
+            if (expectedValue == null)
+            {
+              continue;
+            }
+            if (expectedValue.ToString() == "0")
+            {
+              continue;
+            }
+          }
+          if (!object.Equals(expectedValue, actualValue))
+          {
+            Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue + " on the " + cntlist + 1 + " element in the list");
+          }
+        }
+      }
+    }
+
+    /// <summary>
+    /// Compare the two lists of projects
+    /// </summary>
+    /// <param name="actualProjects"></param>
+    /// <param name="expectedProjects"></param>
+    /// <param name="ignoreZeros">Ignore nulls or zeros if expected results</param>
+    public void CompareTheActualProjectListV4WithExpected(List<ProjectV4Descriptor> actualProjects, List<ProjectV4Descriptor> expectedProjects, bool ignoreZeros)
     {
       for (var cntlist = 0; cntlist < actualProjects.Count; cntlist++)
       {
@@ -673,7 +706,6 @@ namespace TestUtility
     {
       var jsonString = string.Empty;
       string eventType = eventObject.EventType;
-      #region publish kafka events
       switch (eventType)
       {
         case "CreateAssetEvent":
@@ -984,7 +1016,7 @@ namespace TestUtility
             ProjectTimezone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             ProjectBoundary = eventObject.ProjectBoundary,
-            ProjectUID = new Guid(eventObject.ProjectUID),
+            ProjectUID = new Guid(eventObject.ProjectUID),           
             CustomerUID = new Guid(eventObject.CustomerUID)      
           };
           if (HasProperty(eventObject, "CoordinateSystem"))
@@ -995,6 +1027,10 @@ namespace TestUtility
           if (HasProperty(eventObject, "ProjectID"))
           {
             createProjectEvent.ProjectID = int.Parse(eventObject.ProjectID);
+          }
+          if (HasProperty(eventObject, "Description"))
+          {
+            createProjectEvent.Description = eventObject.Description;
           }
           if (HasProperty(eventObject, "CustomerID"))
           {
@@ -1083,7 +1119,6 @@ namespace TestUtility
           break;
       }
       return jsonString;
-      #endregion
     }
 
     /// <summary>
@@ -1278,6 +1313,68 @@ namespace TestUtility
       }      
     }
 
+
+    /// <summary>
+    /// Convert the expected results into dynamic objects and forma list
+    /// </summary>
+    /// <param name="eventArray"></param>
+    /// <returns></returns>
+    private List<ProjectV4Descriptor> ConvertArrayToProjectV4DescriptorList(string[] eventArray)
+    {
+      var eventList = new List<ProjectV4Descriptor>();
+      try
+      {  
+        var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
+        for (var rowCnt = 1; rowCnt <= eventArray.Length-1; rowCnt++)
+        {
+          var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
+          dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
+
+          var pd = new ProjectV4Descriptor
+          {
+            IsArchived = Boolean.Parse(eventObject.IsArchived),
+            Name = eventObject.ProjectName,
+            ProjectTimeZone = eventObject.ProjectTimezone,
+            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            StartDate = eventObject.ProjectStartDate,
+            EndDate = eventObject.ProjectEndDate,
+            ProjectUid = eventObject.ProjectUID,
+            ProjectGeofenceWKT = eventObject.ProjectBoundary,                                    
+          };
+          if (HasProperty(eventObject, "CoordinateSystem"))
+          {
+            pd.CoordinateSystemFileName = eventObject.CoordinateSystem;
+          }
+          if (HasProperty(eventObject, "ProjectID"))
+          {
+            pd.LegacyProjectId = int.Parse(eventObject.ProjectID);
+          }
+          if (HasProperty(eventObject, "CustomerUID"))
+          {
+            pd.CustomerUid = eventObject.CustomerUID;
+          }
+          if (HasProperty(eventObject, "CustomerID"))
+          {
+            pd.LegacyCustomerId = eventObject.CustomerID;
+          }
+          if (HasProperty(eventObject, "Description"))
+          {
+            pd.Description = eventObject.Description;
+          }
+          //if (HasProperty(eventObject, "ServiceType"))
+          //{
+          //  pd.ServiceType = eventObject.ServiceType.ToSafeString();
+          //}
+          eventList.Add(pd);
+        }
+        return eventList;
+      }
+      catch (Exception ex)
+      {
+        msg.DisplayException(ex.Message);
+        throw;
+      }      
+    }
     /// <summary>
     /// Generate a random number. This is use for the number of days in the past to get a start date from.
     /// </summary>
