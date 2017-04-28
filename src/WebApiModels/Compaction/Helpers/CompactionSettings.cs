@@ -154,6 +154,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
           break;
         case DisplayMode.CutFill:
           //TODO: when cut-fill implemented, need to have CompactionSettings with cut/fill tolerance and use it here for values
+          //Note: cut-fill also requires a design for tile requests (make cut-fill compaction settings ?)
           var cutFillColors = ColorSettings.Default.cutFillColors;
           for (int i = 0; i < cutFillColors.Count; i++)
           {
