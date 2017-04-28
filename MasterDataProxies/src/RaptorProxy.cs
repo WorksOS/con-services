@@ -24,12 +24,20 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// Validates the CoordinateSystem for the project.
     /// </summary>
     /// <param name="coordinateSystemFileContent">The content of the CS file.</param>
-    /// <param name="coordinateSystemFilename">The filename.</param>
+    /// <param name="coordinateSystemFileName">The filename.</param>
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<CoordinateSystemSettings> CoordinateSystemValidate(byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
     {
+      var urlKey = "COORDSYSVALIDATE_API_URL";
+      string url = configurationStore.GetValueString(urlKey);
+      log.LogDebug($"RaptorProxy.CoordinateSystemValidate: urlKey: {urlKey}  url: {url} customHeaders {customHeaders}");
+
+      log.LogDebug($"RaptorProxy.CoordinateSystemValidate: coordinateSystemFileContent: {coordinateSystemFileContent} coordinateSystemFileName: {coordinateSystemFileName}");
       var payLoadToSend = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName );
-      CoordinateSystemSettings response = await SendRequest("COORDSYSVALIDATE_API_URL", JsonConvert.SerializeObject(payLoadToSend), customHeaders);
+      log.LogDebug("RaptorProxy.CoordinateSystemValidate: payLoadToSend: {0}", payLoadToSend == null ? null : JsonConvert.SerializeObject(payLoadToSend));
+
+      CoordinateSystemSettings response = await SendRequest(urlKey, JsonConvert.SerializeObject(payLoadToSend), customHeaders);
+      log.LogDebug("RaptorProxy.CoordinateSystemValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       return response;
     }
 
@@ -38,14 +46,21 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// </summary>
     /// <param name="legacyProjectId">The legacy ProjectId.</param>
     /// <param name="coordinateSystemFileContent">The content of the CS file.</param>
-    /// <param name="coordinateSystemFilename">The filename.</param>
+    /// <param name="coordinateSystemFileName">The filename.</param>
     /// <param name="customHeaders">The custom headers.</param>
     public async Task<CoordinateSystemSettings> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
     {
-      // todo how to refresh Project cache in ProjectProxy of RaptorServices?
-      // todo someone needs to store to TCC
+      var urlKey = "COORDSYSPOST_API_URL";
+      string url = configurationStore.GetValueString(urlKey);
+      log.LogDebug($"RaptorProxy.CoordinateSystemPost: urlKey: {urlKey}  url: {url} customHeaders {customHeaders}");
+
+      log.LogDebug($"RaptorProxy.CoordinateSystemPost: coordinateSystemFileContent: {coordinateSystemFileContent} coordinateSystemFileName: {coordinateSystemFileName}");
       var payLoadToSend = CoordinateSystemFile.CreateCoordinateSystemFile(legacyProjectId, coordinateSystemFileContent, coordinateSystemFileName);
-      CoordinateSystemSettings response = await SendRequest("COORDSYSPOST_API_URL", JsonConvert.SerializeObject(payLoadToSend), customHeaders);
+      log.LogDebug("RaptorProxy.CoordinateSystemPost: payLoadToSend: {0}", payLoadToSend == null ? null : JsonConvert.SerializeObject(payLoadToSend));
+
+      CoordinateSystemSettings response = await SendRequest(urlKey, JsonConvert.SerializeObject(payLoadToSend), customHeaders);
+      log.LogDebug("RaptorProxy.CoordinateSystemPost: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+
       return response;
     }
   }

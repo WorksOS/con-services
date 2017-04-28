@@ -15,9 +15,9 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// <typeparam name="T"></typeparam>
     public class BaseProxy<T> where T : IData
     {
-        private readonly ILogger log;
+        protected readonly ILogger log;
         private readonly ILoggerFactory logger;
-        private readonly IConfigurationStore configurationStore;
+        protected readonly IConfigurationStore configurationStore;
         private readonly IMemoryCache cache;
 
         protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache)
