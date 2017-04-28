@@ -182,7 +182,7 @@ namespace MasterDataProxies.ResultHandling
 
     public string CacheKey
     {
-      get { throw new NotImplementedException(); }
+      get { return ""; }
     }
 
   }
