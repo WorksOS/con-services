@@ -15,6 +15,7 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApi.ResultsHandling;
+using ProjectWebApiCommon.Utilities;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Utilities;
 
@@ -37,12 +38,16 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <returns>A list of projects</returns>
     [Route("api/v4/projects")]
     [HttpGet]
-    public async Task<ProjectDescriptorsListResult> GetProjectsV4()
+    public async Task<ProjectV4DescriptorsListResult> GetProjectsV4()
     {
       log.LogInformation("GetProjectsV4");
-      return new ProjectDescriptorsListResult()
+
+      var projects = await GetProjectList().ConfigureAwait(false);
+      return new ProjectV4DescriptorsListResult()
       {
-        ProjectDescriptors = await GetProjectList().ConfigureAwait(false)
+        ProjectDescriptors = projects.Select(project =>
+            AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project))
+          .ToImmutableList()
       };
     }
 
@@ -52,10 +57,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <returns>A project data</returns>
     [Route("api/v4/project")]
     [HttpGet]
-    public async Task<ProjectDescriptor> GetProjectV4([FromQuery] string projectUid)
+    public async Task<ProjectV4DescriptorsSingleResult> GetProjectV4([FromQuery] string projectUid)
     {
       log.LogInformation("GetProjectV4");
-      return await GetProject(projectUid).ConfigureAwait(false);
+      var project =  await GetProject(projectUid).ConfigureAwait(false);
+      return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project));
     }
 
     // POST: api/project
@@ -63,20 +69,31 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// Create Project
     ///    as of v4 this creates a project AND the association to Customer
     /// </summary>
-    /// <param name="project">CreateProjectEvent model</param>
+    /// <param name="projectRequest">CreateProjectEvent model</param>
     /// <remarks>Create new project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
     [Route("api/v4/project")]
     [HttpPost]
-    public async Task<ContractExecutionResult> CreateProjectV4([FromBody] CreateProjectEvent project)
+    public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
-      log.LogInformation("CreateProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
+      if (projectRequest == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing Project request"));
+      }
 
+      log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
+
+      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = Guid.Parse(((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid();
+
+      var project = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
+      project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
       ProjectDataValidator.Validate(project, projectService);
-      await ValidateCoordSystem(project).ConfigureAwait(false); 
 
-      project.ReceivedUTC = DateTime.UtcNow;
+      await ValidateCoordSystem(project).ConfigureAwait(false); 
       ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
 
       string wktBoundary = project.ProjectBoundary;
@@ -118,32 +135,37 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
           true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
 
       log.LogDebug("CreateProjectV4. completed succesfully");
-      return new ContractExecutionResult();
+      return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString()).ConfigureAwait(false)));
     }
 
     // PUT: api/Project
     /// <summary>
     /// Update Project
     /// </summary>
-    /// <param name="project">UpdateProjectEvent model</param>
+    /// <param name="projectRequest">UpdateProjectEvent model</param>
     /// <remarks>Updates existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
     [Route("api/v4/project")]
     [HttpPut]
-    public async Task<ContractExecutionResult> UpdateProjectV4([FromBody] UpdateProjectEvent project)
+    public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest)
     {
-      log.LogInformation("UpdateProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
+      if (projectRequest == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing Project request"));
+      }
+      log.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
+      var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
+      project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, projectService);
       await ValidateCoordSystem(project).ConfigureAwait(false);
-      project.ReceivedUTC = DateTime.UtcNow;
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
-        // todo how to refresh Project cache in ProjectProxy of RaptorServices?
-        // todo someone needs to store to TCC 
         var projectWithLegacyProjectID = projectService.GetProjectOnly(project.ProjectUID.ToString()).Result;
         var coordinateSystemSettingsResult = await raptorProxy.CoordinateSystemPost(projectWithLegacyProjectID.LegacyProjectID, project.CoordinateSystemFileContent, project.CoordinateSystemFileName, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
         if (coordinateSystemSettingsResult == null || coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
@@ -164,7 +186,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       await projectService.StoreEvent(project).ConfigureAwait(false);
 
       log.LogInformation("UpdateProjectV4. Completed successfully");
-      return new ContractExecutionResult();
+      return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString()).ConfigureAwait(false)));
     }
 
 
@@ -178,12 +200,12 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <response code="400">Bad request</response>
     [Route("api/v4/project")]
     [HttpDelete]
-    public async Task<ContractExecutionResult> DeleteProjectV4([FromBody] DeleteProjectEvent project)
+    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromBody] DeleteProjectEvent project)
     {
       log.LogInformation("DeleteProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
 
       ProjectDataValidator.Validate(project, projectService);
-      project.ReceivedUTC = DateTime.UtcNow;
+      project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
       producer.Send(kafkaTopicName,
@@ -194,7 +216,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       await projectService.StoreEvent(project).ConfigureAwait(false);
 
       log.LogInformation("DeleteProjectV4. Completed succesfully");
-      return new ContractExecutionResult();
+      return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await GetProject(project.ProjectUID.ToString()).ConfigureAwait(false)));
+
     }
     #endregion projects
 
@@ -274,18 +297,24 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
-        // todo how to refresh Project cache in ProjectProxy of RaptorServices?
-        // todo someone needs to store to TCC        
         var coordinateSystemSettingsResult = await raptorProxy.CoordinateSystemPost(project.ProjectID, project.CoordinateSystemFileContent, project.CoordinateSystemFileName, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        log.LogDebug($"Post of CS to RaptorServices returned code: {0} Message {1}.",
+          coordinateSystemSettingsResult?.Code ?? -1,
+          coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
         if (coordinateSystemSettingsResult == null || coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
-          // todo we don't implement 'DeletePermanently', should we? 
           var deleteProjectEvent = new DeleteProjectEvent() { ProjectUID = project.ProjectUID, DeletePermanently = true, ActionUTC = DateTime.UtcNow };
           var isDeleted = await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
-          log.LogError($"Post of CS to RaptorServices failed. Reason: {0} {1}. Set the project to deleted {2}", coordinateSystemSettingsResult.Code, coordinateSystemSettingsResult.Message, isDeleted);
+          log.LogError($"Post of CS to RaptorServices failed. Reason: {0} {1}. Set the project to deleted {2}",
+            coordinateSystemSettingsResult?.Code ?? -1,
+            coordinateSystemSettingsResult?.Message ?? "null", 
+            isDeleted);
           throw new ServiceException(HttpStatusCode.BadRequest,
                         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                  string.Format("Unable to create CoordinateSystem in RaptorServices. Reason: {0} {1}", coordinateSystemSettingsResult.Code, coordinateSystemSettingsResult.Message)));
+                                  string.Format("Unable to create CoordinateSystem in RaptorServices. returned code: {0} Message {1}.",
+                                    coordinateSystemSettingsResult?.Code ?? -1,
+                                    coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"
+                                    )));
         }
       }
 
@@ -342,6 +371,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
           });
       await projectService.StoreEvent(customerProject).ConfigureAwait(false);
     }
+  
     /// <summary>
     /// validate CordinateSystem if provided
     /// </summary>
