@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -49,6 +50,14 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// Used to get list of projects for customer
     /// </summary>
     private readonly IAuthenticatedProjectsStore authProjectsStore;
+    /// <summary>
+    /// Cache for elevation extents, needed for elevation palette
+    /// </summary>
+    private readonly IMemoryCache elevationExtentsCache;
+    /// <summary>
+    /// How long to cache elevation extents
+    /// </summary>
+    private readonly TimeSpan elevationExtentsCacheLife = new TimeSpan(0, 15, 0);//TODO: how long to cache ?
 
 
 
@@ -58,13 +67,15 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="authProjectsStore">Authenticated projects store</param>
+    /// <param name="cache">Elevation extents cache</param>
     public CompactionController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IAuthenticatedProjectsStore authProjectsStore)
+      IAuthenticatedProjectsStore authProjectsStore, IMemoryCache cache)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionController>();
       this.authProjectsStore = authProjectsStore;
+      this.elevationExtentsCache = cache;
     }
 
     /// <summary>
@@ -179,7 +190,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      MDPSettings mdpSettings = MDPSettings.CreateMDPSettings(0, 0, 120, 0, 80, false);
+      MDPSettings mdpSettings = CompactionSettings.CompactionMdpSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
       Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
 
@@ -273,7 +284,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      TemperatureSettings temperatureSettings = TemperatureSettings.CreateTemperatureSettings(0, 175, 65, false);
+      TemperatureSettings temperatureSettings = CompactionSettings.CompactionTemperatureSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
       Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
 
@@ -324,6 +335,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
+      //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
       Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
    
@@ -499,13 +511,21 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     #region Palettes
 
     /// <summary>
-    /// Get color palettes.
+    /// Get color palettes for a project.
     /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="projectUid">Project UID</param>
     /// <returns>Color palettes for all display types</returns>
     [Route("api/v2/compaction/colorpalettes")]
     [HttpGet]
-    public CompactionColorPalettesResult GetColorPalettes()
+    public CompactionColorPalettesResult GetColorPalettes([FromQuery] long? projectId, [FromQuery] Guid? projectUid)
     {
+      log.LogInformation("GetColorPalettes: " + Request.QueryString);
+      if (!projectId.HasValue)
+      {
+        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+      }
       List<DisplayMode> modes = new List<DisplayMode>
       {
         DisplayMode.Height, DisplayMode.CCV, DisplayMode.PassCount, DisplayMode.PassCountSummary, DisplayMode.CutFill, DisplayMode.TemperatureSummary, DisplayMode.CCVPercentSummary, DisplayMode.MDPPercentSummary, DisplayMode.TargetSpeedSummary, DisplayMode.CMVChange
@@ -537,70 +557,70 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           ColorValue.CreateColorValue(0xD57A7C, 150),
           ColorValue.CreateColorValue(0xC13037, 160)
         },
-        Colors.Red, Colors.Black);
+        null, null);
 
 
       foreach (var mode in modes)
       {
         List<ColorValue> colorValues;
-        var raptorPalette = RaptorConverters.convertColorPalettes(null, mode).Transitions;
+        ElevationStatisticsResult elevExtents = mode == DisplayMode.Height ? GetElevationRange(projectId, null, null, null) : null;
+        var compactionPalette = CompactionSettings.CompactionPalette(mode, elevExtents);
         switch (mode)
         {
           case DisplayMode.Height:
             colorValues = new List<ColorValue>();
-            for (int i = 1; i < raptorPalette.Length - 1; i++)
+            for (int i = 1; i < compactionPalette.Count - 1; i++)
             {
-              colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color, compactionPalette[i].value));
             }
-            elevationPalette = DetailPalette.CreateDetailPalette(colorValues, raptorPalette[raptorPalette.Length-1].Colour, raptorPalette[0].Colour);
+            elevationPalette = DetailPalette.CreateDetailPalette(colorValues, compactionPalette[compactionPalette.Count-1].color, compactionPalette[0].color);
             break;
           case DisplayMode.CCV:
             colorValues = new List<ColorValue>();
-            for (int i = 0; i < raptorPalette.Length; i++)
+            for (int i = 0; i < compactionPalette.Count; i++)
             {
-              colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color, compactionPalette[i].value));
             }
-            //above hardcoded in Raptor to RGB 128,128,128. No below required as minimum is 0.
-            cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, Colors.Gray, null);
+            cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
             break;
           case DisplayMode.PassCount:
             colorValues = new List<ColorValue>();
-            for (int i = 0; i < raptorPalette.Length - 1; i++)
+            for (int i = 0; i < compactionPalette.Count - 1; i++)
             {
-              colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color, compactionPalette[i].value));
             }
-            passCountDetailPalette = DetailPalette.CreateDetailPalette(colorValues, raptorPalette[raptorPalette.Length-1].Colour, null);
+            passCountDetailPalette = DetailPalette.CreateDetailPalette(colorValues, compactionPalette[compactionPalette.Count-1].color, null);
             break;
           case DisplayMode.PassCountSummary:
-            passCountSummaryPalette = SummaryPalette.CreateSummaryPalette(raptorPalette[2].Colour, raptorPalette[1].Colour, raptorPalette[0].Colour);
+            passCountSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[2].color, compactionPalette[1].color, compactionPalette[0].color);
             break;
           case DisplayMode.CutFill:
             colorValues = new List<ColorValue>();
-            for (int i = raptorPalette.Length - 1; i >= 0; i--)
+            for (int i = compactionPalette.Count - 1; i >= 0; i--)
             {
-              colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color, compactionPalette[i].value));
             }
             cutFillPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
             break;
           case DisplayMode.TemperatureSummary:
-            temperatureSummaryPalette = SummaryPalette.CreateSummaryPalette(raptorPalette[2].Colour, raptorPalette[1].Colour, raptorPalette[0].Colour);
+            temperatureSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[2].color, compactionPalette[1].color, compactionPalette[0].color);
             break;
           case DisplayMode.CCVPercentSummary:
-            cmvSummaryPalette = SummaryPalette.CreateSummaryPalette(raptorPalette[3].Colour, raptorPalette[0].Colour, raptorPalette[2].Colour);
+            cmvSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[3].color, compactionPalette[0].color, compactionPalette[2].color);
             break;
           case DisplayMode.MDPPercentSummary:
-            mdpSummaryPalette = SummaryPalette.CreateSummaryPalette(raptorPalette[3].Colour, raptorPalette[0].Colour, raptorPalette[2].Colour);
+            mdpSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[3].color, compactionPalette[0].color, compactionPalette[2].color);
             break;
           case DisplayMode.TargetSpeedSummary:
-            speedSummaryPalette = SummaryPalette.CreateSummaryPalette(raptorPalette[2].Colour, raptorPalette[1].Colour, raptorPalette[0].Colour);
+            speedSummaryPalette = SummaryPalette.CreateSummaryPalette(compactionPalette[2].color, compactionPalette[1].color, compactionPalette[0].color);
             break;
           case DisplayMode.CMVChange:
             colorValues = new List<ColorValue>();
-            for (int i = 1; i < raptorPalette.Length - 1; i++)
+            for (int i = 1; i < compactionPalette.Count - 1; i++)
             {
-              colorValues.Add(ColorValue.CreateColorValue(raptorPalette[i].Colour, raptorPalette[i].Value));
+              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color, compactionPalette[i].value));
             }
-            cmvPercentChangePalette = DetailPalette.CreateDetailPalette(colorValues, raptorPalette[raptorPalette.Length - 1].Colour, raptorPalette[0].Colour);
+            cmvPercentChangePalette = DetailPalette.CreateDetailPalette(colorValues, compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
             break;
         }
 
@@ -670,18 +690,35 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
-
-      ElevationStatisticsRequest statsRequest =
-        ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId.Value, null, filter, 0, liftSettings);
-      statsRequest.Validate();
-  
       try
       {
-        var result =
-          RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null).Process(statsRequest)
-            as ElevationStatisticsResult;
+        ElevationStatisticsResult result = null;
+        //Only cache full extents without date restriction
+        bool restrictedRange = startUtc.HasValue || endUtc.HasValue;
+        bool getIt = restrictedRange ||
+                     !this.elevationExtentsCache.TryGetValue(projectId, out result);
+        if (getIt)
+        {
+          LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+          Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
+
+          ElevationStatisticsRequest statsRequest =
+            ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId.Value, null, filter, 0, liftSettings);
+          statsRequest.Validate();
+
+          result =
+            RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null)
+              .Process(statsRequest) as ElevationStatisticsResult;
+
+          if (!restrictedRange)
+          {
+            var opts = new MemoryCacheEntryOptions
+            {
+              SlidingExpiration = elevationExtentsCacheLife
+            };
+            elevationExtentsCache.Set(projectId, result, opts);
+          }
+        }
         log.LogInformation("GetElevationRange result: " + JsonConvert.SerializeObject(result));
         return result;
       }
@@ -699,7 +736,6 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       {
         log.LogInformation("GetElevationRange returned: " + Response.StatusCode);
       }
-
     }
 
     // TEMP v2 copy of v1 until we have a simplified contract for Compaction
@@ -1077,8 +1113,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
       filter?.Validate();
-
-      TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode, CompactionSettings.CompactionPalette(mode),
+      ElevationStatisticsResult elevExtents = mode == DisplayMode.Height ? GetElevationRange(projectId, null, null, null) : null;
+      TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode, CompactionSettings.CompactionPalette(mode, elevExtents),
         liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0, filter == null ? FilterLayerMethod.None :  filter.layerType.Value,
         bbox, null, width, height);
       tileRequest.Validate();

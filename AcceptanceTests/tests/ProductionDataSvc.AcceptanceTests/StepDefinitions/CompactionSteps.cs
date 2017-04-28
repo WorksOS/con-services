@@ -237,7 +237,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I request Palettes")]
     public void WhenIRequestPalettes()
     {
-      paletteRequester = GetIt<CompactionColorPalettesResult>(false);
+      paletteRequester = GetIt<CompactionColorPalettesResult>();
     }
 
     [Then(@"the Palettes result should be")]
@@ -264,12 +264,9 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       CompareIt<CompactionCmvDetailedResult>(multilineText, cmvDetailsRequester);
     }
 
-    private Getter<T> GetIt<T>(bool requiresProjectUid=true)
+    private Getter<T> GetIt<T>()
     {
-      if (requiresProjectUid)
-      {
-        this.url = string.Format("{0}?projectUid={1}", this.url, projectUid);
-      }
+      this.url = string.Format("{0}?projectUid={1}", this.url, projectUid);     
       this.url += this.queryParameters;
       Getter<T> getter = new Getter<T>(this.url);
       getter.DoValidRequest();
