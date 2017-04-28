@@ -129,7 +129,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
           break;
         case DisplayMode.CCV:
           CMVSettings cmvSettings = CompactionCmvSettings;
-          //palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvMinimum.color, 0));
+          palette.Add(ColorPalette.CreateColorPalette(Colors.Gray, 0));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvMinimum.color, cmvSettings.minCMV/10.0));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvTarget.color, cmvSettings.cmvTarget/10.0));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvTarget.color, cmvSettings.cmvTarget/10.0 + 1));

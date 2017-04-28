@@ -423,7 +423,7 @@ Scenario: Compaction Get CMV Summary
         }
       ],
       "aboveLastColor": null,
-      "belowFirstColor": null
+      "belowFirstColor": 8421504
     },
     "passCountDetailPalette": {
       "colorValues": [
