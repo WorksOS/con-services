@@ -128,7 +128,13 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
         [HttpPost]
         public async Task AssociateCustomerProjectV3([FromBody] AssociateProjectCustomer customerProject)
         {
-            await AssociateProjectCustomer(customerProject);
+          if (customerProject.LegacyCustomerID <= 0)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Legacy CustomerID must be provided"));
+          }
+          await AssociateProjectCustomer(customerProject);
         }
 
         /// <summary>
