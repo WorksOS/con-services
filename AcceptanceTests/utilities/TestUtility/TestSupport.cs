@@ -1066,7 +1066,17 @@ namespace TestUtility
           {
             updateProjectEvent.ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
           }
+          if (HasProperty(eventObject, "Description"))
+          {
+            updateProjectEvent.Description = eventObject.Description;
+          }
           jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(updateProjectEvent, jsonSettings ) : JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent}, jsonSettings );
+          break;
+        case "UpdateProjectRequest":
+          var request = UpdateProjectRequest.CreateUpdateProjectRequest(eventObject.ProjectUID, eventObject.ProjectType,
+            eventObject.ProjectName, eventObject.Description, eventObject.ProjectEndDate, eventObject.CoordinateSystem,
+            Encoding.ASCII.GetBytes(tsCfg.coordinateSystem));
+          jsonString = JsonConvert.SerializeObject(request, jsonSettings);
           break;
         case "DeleteProjectEvent":
           var deleteProjectEvent = new DeleteProjectEvent()

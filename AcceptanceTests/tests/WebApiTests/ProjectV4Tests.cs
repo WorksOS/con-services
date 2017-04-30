@@ -520,7 +520,7 @@ namespace WebApiTests
     [TestMethod]
     public void CreateLandfillProjectThenTryUpdateTimeZone()
     {
-      msg.Title("Project v4 test 16", "Create landfill project and customer then try and update time zone");
+      msg.Title("Project v4 test 16", "Create landfill project and customer then try and update project name, end date and description");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
@@ -550,19 +550,19 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
 
       var projectEventArray2 = new[] {
-       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName      | ProjectType | ProjectTimezone       | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
-      $"| UpdateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | Boundary Test 16 | LandFill    | Western European Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
+       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName          | ProjectType | ProjectTimezone            | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
+      $"| UpdateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | Boundary Test chg 16 | LandFill    | New Zealand Standard Time  | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | Change Desc |" };
       var response = ts.PublishEventToWebApi(projectEventArray2);
       Thread.Sleep(3000);
-      Assert.IsTrue(response == "Project timezone cannot be updated", "Response is unexpected. Should be a Project timezone cannot be updated. Response: " + response);
-      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, false);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+     // Assert.IsTrue(response == "Project timezone cannot be updated", "Response is unexpected. Should be a Project timezone cannot be updated. Response: " + response);
+      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, false);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
     }
 
     [TestMethod]
     public void CreateLandfillProjectThenUpdateProjectName()
     {
-      msg.Title("Project v4 test 17", "Create landfill project and customer then update project name");
+      msg.Title("Project v4 test 17", "Create landfill project and customer then update project type and cordinate system file");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
@@ -592,8 +592,8 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
 
       var projectEventArray2 = new[] {
-       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName     | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
-      $"| UpdateProjectEvent | 0d+10:00:00 | {projectUid} | {legacyProjectId} | new name        | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
+       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
+      $"| UpdateProjectEvent | 0d+10:00:00 | {projectUid} | {legacyProjectId} | Boundary Test 17 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | ChangeCordinatesystem |" };
       var response = ts.PublishEventToWebApi(projectEventArray2);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
       Thread.Sleep(3000);
@@ -749,16 +749,16 @@ namespace WebApiTests
       ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived |",
-      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      |"};
+       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | Description                  |",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | Boundary Test 22 description |"};
       ts.PublishEventCollection(projectEventArray);
       Thread.Sleep(3000);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, false);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
 
       var projectEventArray2 = new[] {
-       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName     | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
-      $"| UpdateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | new name        | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
+       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description        |",
+      $"| UpdateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | Change description |"};
       var response = ts.PublishEventToWebApi(projectEventArray2);
       Thread.Sleep(3000);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
@@ -769,7 +769,7 @@ namespace WebApiTests
     [TestMethod]
     public void CreateStandardProjectThenUpdateCoordinateSystemThenDelete()
     {
-      msg.Title("Project v4 test 23", "Create standard project and customer then update coordinate system then archived");
+      msg.Title("Project v4 test 23", "Create standard project and customer then update coordinate system then archive");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
@@ -799,8 +799,8 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
 
       var projectEventArray2 = new[] {
-       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName     | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | ",
-      $"| UpdateProjectEvent | 1d+09:00:00 | {projectUid} | {legacyProjectId} | new name        | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc |" };
+       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | ",
+      $"| UpdateProjectEvent | 1d+09:00:00 | {projectUid} | {legacyProjectId} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc |" };
       ts.PublishEventToWebApi(projectEventArray2);
       Thread.Sleep(3000);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, false);
@@ -808,8 +808,8 @@ namespace WebApiTests
 
       ts.FirstEventDate = DateTime.Now;
       var projectEventArray3 = new[] {
-       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName     | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | ",
-      $"| DeleteProjectEvent | 1d+09:00:00 | {projectUid} | {legacyProjectId} | new name        | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | true       | BootCampDimensions.dc |" };
+       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | ",
+      $"| DeleteProjectEvent | 1d+09:00:00 | {projectUid} | {legacyProjectId} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} | true       | BootCampDimensions.dc |" };
       var response = ts.PublishEventToWebApi(projectEventArray3);
       Thread.Sleep(3000);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
