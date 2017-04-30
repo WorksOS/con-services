@@ -177,12 +177,6 @@ namespace ProjectWebApi.Models
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Missing CustomerUID"));
         }
-        if (associateEvent.LegacyCustomerID != null && associateEvent.LegacyCustomerID < 0)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Legacy CustomerID cannot be negative"));
-        }
         if (projectRepo.CustomerProjectExists(evt.ProjectUID.ToString()).Result)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,

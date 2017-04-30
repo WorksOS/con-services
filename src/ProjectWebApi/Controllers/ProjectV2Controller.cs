@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Repositories;
@@ -7,6 +8,7 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
+using ProjectWebApi.ResultsHandling;
 using VSP.MasterData.Project.WebAPI.Controllers;
 using VSS.Raptor.Service.Common.Interfaces;
 
@@ -33,6 +35,12 @@ namespace ProjectWebApi.Controllers
     [HttpPost]
     public async Task AssociateCustomerProjectV2([FromBody] AssociateProjectCustomer customerProject)
     {
+      if (customerProject.LegacyCustomerID <= 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Legacy CustomerID must be provided"));
+      }
       await AssociateProjectCustomer(customerProject);
     }
   }
