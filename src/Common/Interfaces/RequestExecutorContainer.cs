@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.ResultHandling;
+using TCCFileAccess;
 
 namespace VSS.Raptor.Service.Common.Interfaces
 {
@@ -33,6 +34,12 @@ namespace VSS.Raptor.Service.Common.Interfaces
     /// Where to get environment variables, connection string etc. from
     /// </summary>
     protected IConfigurationStore configStore;
+
+    /// <summary>
+    /// Service provider
+    /// </summary>
+    protected IFileRepository fileAccess;
+
 
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
@@ -98,34 +105,43 @@ namespace VSS.Raptor.Service.Common.Interfaces
         this.log = logger.CreateLogger<RequestExecutorContainer>();
     }
 
-        /// <summary>
-        /// Injected constructor for mocking.
-        /// </summary>
-        protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor) : this()
-        {
-            this.raptorClient = raptorClient;
-            this.tagProcessor = tagProcessor;
-            if (logger != null)
-                this.log = logger.CreateLogger<RequestExecutorContainer>();
-        }
+    /// <summary>
+    /// Injected constructor for mocking.
+    /// </summary>
+    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor) : this()
+    {
+        this.raptorClient = raptorClient;
+        this.tagProcessor = tagProcessor;
+        if (logger != null)
+            this.log = logger.CreateLogger<RequestExecutorContainer>();
+    }
 
-        /// <summary>
-        /// Injected constructor for mocking.
-        /// </summary>
-        protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore) : this()
-        {
-            this.raptorClient = raptorClient;
-            this.tagProcessor = tagProcessor;
-            if (logger != null)
-                this.log = logger.CreateLogger<RequestExecutorContainer>();
-            this.configStore = configStore;
-        }
+    /// <summary>
+    /// Injected constructor for mocking.
+    /// </summary>
+    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore) : this()
+    {
+        this.raptorClient = raptorClient;
+        this.tagProcessor = tagProcessor;
+        if (logger != null)
+            this.log = logger.CreateLogger<RequestExecutorContainer>();
+        this.configStore = configStore;
+    }
 
+    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileAccess) : this()
+    {
+      this.raptorClient = raptorClient;
+      this.tagProcessor = tagProcessor;
+      if (logger != null)
+        this.log = logger.CreateLogger<RequestExecutorContainer>();
+      this.configStore = configStore;
+      this.fileAccess = fileAccess;
+    }
 
-        /// <summary>
-        /// Default constructor which creates all structures necessary for error handling.
-        /// </summary>
-        protected RequestExecutorContainer()
+    /// <summary>
+    /// Default constructor which creates all structures necessary for error handling.
+    /// </summary>
+    protected RequestExecutorContainer()
     {
       ContractExecutionStates = new ContractExecutionStatesEnum();
       ProcessErrorCodes();
@@ -148,10 +164,10 @@ namespace VSS.Raptor.Service.Common.Interfaces
     /// </summary>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor=null, IConfigurationStore configStore=null) 
+    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor=null, IConfigurationStore configStore=null, IFileRepository fileAccess=null) 
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() {raptorClient = raptorClient, tagProcessor = tagProcessor, log = logger.CreateLogger<TExecutor>(), configStore = configStore};
+      var executor = new TExecutor() {raptorClient = raptorClient, tagProcessor = tagProcessor, log = logger.CreateLogger<TExecutor>(), configStore = configStore, fileAccess = fileAccess};
       return executor;
     }
 

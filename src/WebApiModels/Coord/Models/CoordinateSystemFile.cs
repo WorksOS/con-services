@@ -12,7 +12,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Models
   /// <summary>
   /// Coordinate system (CS) definition file domain object. Model represents a coordinate system definition.
   /// </summary>
-  public class CoordinateSystemFile : ProjectID, IValidatable, IIsProjectIDApplicable
+  public class CoordinateSystemFile : ProjectID, IIsProjectIDApplicable
   {
         public const int MAX_FILE_NAME_LENGTH = 256;
 

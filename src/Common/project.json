@@ -17,7 +17,8 @@
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.1",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.1.1",
     "Microsoft.Extensions.Configuration.Json": "1.1.1",
-    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.1"
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.1",
+    "TCCFileAccess.netcore": "*"
   },
 
   "frameworks": {
