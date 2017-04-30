@@ -24,6 +24,7 @@ namespace VSS.Raptor.Service.Common.Proxies
             IDictionary<string, string> customHeaders = null, string payloadData = null)
         {
             var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
+            log.LogDebug(@"GracefulWebRequest.ExecuteRequest() : request{request}");
 
             return await Policy
                 .Handle<Exception>()
@@ -33,11 +34,20 @@ namespace VSS.Raptor.Service.Common.Proxies
                     string responseString = null;
                     using (var response = await request.GetResponseAsync())
                     {
-                        responseString = GetStringFromResponseStream(response);
-                    }
-                    if (!string.IsNullOrEmpty(responseString))
-                        return JsonConvert.DeserializeObject<T>(responseString);
-                    return default(T);
+                      log.LogDebug(@"GracefulWebRequest.ExecuteRequest(). response{response}");
+                      responseString = GetStringFromResponseStream(response);
+                      log.LogDebug(@"GracefulWebRequest.ExecuteRequest() : responseString{responseString}");
+                  }
+                  if (!string.IsNullOrEmpty(responseString))
+                  {
+                    var toReturn = JsonConvert.DeserializeObject<T>(responseString);
+                    log.LogDebug(@"GracefulWebRequest.ExecuteRequest(). toReturn:{JsonConvert.Serialize(toReturn)}");
+                    return toReturn;
+                  }
+                  log.LogDebug(@"GracefulWebRequest.ExecuteRequest(). default(T):{JsonConvert.Serialize(default(T))}");
+                  var defaultToReturn = default(T);
+                  log.LogDebug(@"GracefulWebRequest.ExecuteRequest(). defaultToReturn:{JsonConvert.Serialize(defaultToReturn)}");
+                  return defaultToReturn;
                 })
                 .Result;
         }
