@@ -394,7 +394,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       try
       {
         var result = RequestExecutorContainer.Build<CMVChangeSummaryExecutor>(logger, raptorClient, null).Process(request) as CMVChangeSummaryResult;
-        var returnResult = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(result, cmvChangeSummarySettings);
+        var returnResult = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(result);
         log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
       }
@@ -577,11 +577,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             break;
           case DisplayMode.CCV:
             colorValues = new List<ColorValue>();
-            for (int i = 1; i < compactionPalette.Count; i++)
+            for (int i = 0; i < compactionPalette.Count; i++)
             {
               colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color, compactionPalette[i].value));
             }
-            cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, compactionPalette[0].color);
+            cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
             break;
           case DisplayMode.PassCount:
             colorValues = new List<ColorValue>();

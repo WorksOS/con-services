@@ -95,7 +95,8 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
     {
       get
       {
-        return new double[] { 5, 20, 50, NO_CCV };
+        //return new double[] { 5, 20, 50, NO_CCV };
+        return new double[] { 5, 20, 50 };
       }
     }
 
@@ -133,7 +134,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvMinimum.color, cmvSettings.minCMV/10.0));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvTarget.color, cmvSettings.cmvTarget/10.0));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvTarget.color, cmvSettings.cmvTarget/10.0 + 1));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvMaximum.color, cmvSettings.maxCMV/10.0));
+          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvMaximum.color, cmvSettings.maxCMV/10.0 + 1));
           break;
         case DisplayMode.PassCount:
           PassCountSettings passCountSettings = CompactionPassCountSettings;
@@ -193,7 +194,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
           palette.Add(ColorPalette.CreateColorPalette(Colors.Lime, cmvPercentChangeSettings[0]));
           palette.Add(ColorPalette.CreateColorPalette(Colors.Aqua, cmvPercentChangeSettings[1]));
           palette.Add(ColorPalette.CreateColorPalette(Colors.Red, cmvPercentChangeSettings[2]));
-          palette.Add(ColorPalette.CreateColorPalette(Colors.Yellow, cmvPercentChangeSettings[3]));
+          palette.Add(ColorPalette.CreateColorPalette(Colors.Yellow, NO_CCV));
           break;
       }
       return palette;

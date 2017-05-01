@@ -10,7 +10,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     /// <summary>
     /// The CMV % change data results
     /// </summary>
-    public CmvChangeSummaryData[] cmvChangeData { get; set; }
+    public CmvChangeSummaryData cmvChangeData { get; set; }
     #endregion
 
     #region Constructors
@@ -28,15 +28,8 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
-      if (this.cmvChangeData.Length != other.cmvChangeData.Length)
-        return false;
-
-      for (int i = 0; i < this.cmvChangeData.Length; ++i)
-      {
-        if (this.cmvChangeData[i] != other.cmvChangeData[i])
-          return false;
-      }
-      return this.Code == other.Code && this.Message == other.Message;
+      return this.cmvChangeData.Equals(other.cmvChangeData) &&
+        this.Code == other.Code && this.Message == other.Message;
     }
 
     public static bool operator ==(CompactionCmvPercentChangeResult a, CompactionCmvPercentChangeResult b)
@@ -80,14 +73,13 @@ namespace ProductionDataSvc.AcceptanceTests.Models
     public class CmvChangeSummaryData : IEquatable<CmvChangeSummaryData>
     {
       /// <summary>
-      /// The range that the CMV % change value is for
+      /// The CMV % change values
       /// </summary>
-      public double[] percentRange { get; set; }
-
+      public double[] percents { get; set; }
       /// <summary>
-      /// The CMV % change value
+      /// The total area covered by non-null cells in the request area
       /// </summary>
-      public double percentValue { get; set; }
+      public double totalAreaCoveredSqMeters { get; set; }
 
       #region Equality test
       public static bool operator ==(CmvChangeSummaryData a, CmvChangeSummaryData b)
@@ -108,16 +100,16 @@ namespace ProductionDataSvc.AcceptanceTests.Models
         if (other == null)
           return false;
 
-        if (this.percentRange.Length != other.percentRange.Length)
+        if (this.percents.Length != other.percents.Length)
           return false;
 
-        for (int i = 0; i < this.percentRange.Length; ++i)
+        for (int i = 0; i < this.percents.Length; ++i)
         {
-          if (Math.Round(this.percentRange[i], 1) != Math.Round(other.percentRange[i], 1))
+          if (Math.Round(this.percents[i], 1) != Math.Round(other.percents[i], 1))
             return false;
         }
 
-        return Math.Round(this.percentValue, 2) == Math.Round(other.percentValue, 2);
+        return Math.Round(this.totalAreaCoveredSqMeters, 2) == Math.Round(other.totalAreaCoveredSqMeters, 2);
       }
 
       public override int GetHashCode()

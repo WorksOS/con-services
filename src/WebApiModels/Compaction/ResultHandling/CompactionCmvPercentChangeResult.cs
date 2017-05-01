@@ -15,7 +15,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
     /// The CMV % change data results
     /// </summary>
     [JsonProperty(PropertyName = "cmvChangeData")]
-    public CmvChangeSummaryData[] SummaryData { get; private set; }
+    public CmvChangeSummaryData SummaryData { get; private set; }
 
     /// <summary>
     /// Private constructor
@@ -30,44 +30,33 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
     /// </summary>
     /// <param name="result"></param>
     /// <returns></returns>
-    public static CompactionCmvPercentChangeResult CreateCmvPercentChangeResult(CMVChangeSummaryResult result, double[] cmvChangeSummarySettings)
+    public static CompactionCmvPercentChangeResult CreateCmvPercentChangeResult(CMVChangeSummaryResult result)
     {
-      var summaryData = new CmvChangeSummaryData[cmvChangeSummarySettings.Length];
-      for (int i = 0; i < summaryData.Length; i++)
+      return new CompactionCmvPercentChangeResult
       {
-        summaryData[i] = new CmvChangeSummaryData
+        SummaryData = new CmvChangeSummaryData
         {
-          PercentRange = new double[]
-          {
-            i == 0 ? 0 : cmvChangeSummarySettings[i - 1],
-            i == summaryData.Length - 1 ? 100 : cmvChangeSummarySettings[i]
-          },
-          PercentValue = result.Values[i]
-        };
-      }
-      var cmvPercentChangeResult = new CompactionCmvPercentChangeResult
-      {
-        SummaryData = summaryData
+          Percents = result.Values,
+          TotalAreaCoveredSqMeters = result.CoverageArea
+        }
       };
-      return cmvPercentChangeResult;
     }
 
     /// <summary>
     /// CMV % change summary data returned
     /// </summary>
     public class CmvChangeSummaryData
-    {
+    { 
       /// <summary>
-      /// The range that the CMV % change value is for
+      /// The CMV % change values
       /// </summary>
-      [JsonProperty(PropertyName = "percentRange")]
-      public double[] PercentRange { get; set; }
-
+      [JsonProperty(PropertyName = "percents")]
+      public double[] Percents { get; set; }
       /// <summary>
-      /// The CMV % change value
+      /// The total area covered by non-null cells in the request area
       /// </summary>
-      [JsonProperty(PropertyName = "percentValue")]
-      public double PercentValue { get; set; }
+      [JsonProperty(PropertyName = "totalAreaCoveredSqMeters")]
+      public double TotalAreaCoveredSqMeters { get; set; }
     }
   }
 }

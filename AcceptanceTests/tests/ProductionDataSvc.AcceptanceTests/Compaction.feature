@@ -173,36 +173,15 @@ Scenario: Compaction Get CMV Summary
 	Then the CMV % Change result should be
   """
   {
-    "cmvChangeData": [
-      {
-        "percentRange": [
-          0,
-          5
-        ],
-        "percentValue": 4.9875827814569531
-      },
-      {
-        "percentRange": [
-          5,
-          20
-        ],
-        "percentValue": 12.603476821192054
-      },
-      {
-        "percentRange": [
-          20,
-          50
-        ],
-        "percentValue": 20.695364238410598
-      },
-      {
-        "percentRange": [
-          50,
-          100
-        ],
-        "percentValue": 61.7135761589404
-      }
-    ],
+    "cmvChangeData": {
+      "percents": [
+        4.9875827814569531,
+        12.603476821192054,
+        20.695364238410598,
+        61.7135761589404
+      ],
+      "totalAreaCoveredSqMeters": 558.57920000000013
+    },
     "Code": 0,
     "Message": "success"
   }
@@ -276,7 +255,7 @@ Scenario: Compaction Get CMV Summary
 	When I request Palettes
 	Then the Palettes result should be
   """
-   {
+  {
     "elevationPalette": {
       "colorValues": [
         {
@@ -406,6 +385,10 @@ Scenario: Compaction Get CMV Summary
     "cmvDetailPalette": {
       "colorValues": [
         {
+          "color": 8421504,
+          "value": 0.0
+        },
+        {
           "color": 255,
           "value": 20.0
         },
@@ -419,11 +402,11 @@ Scenario: Compaction Get CMV Summary
         },
         {
           "color": 16711680,
-          "value": 100.0
+          "value": 101.0
         }
       ],
       "aboveLastColor": null,
-      "belowFirstColor": 8421504
+      "belowFirstColor": null
     },
     "passCountDetailPalette": {
       "colorValues": [
@@ -588,7 +571,7 @@ Scenario: Compaction Get CMV Summary
     },
     "Code": 0,
     "Message": "success"
-  } 
+  }
 	"""
 
 
