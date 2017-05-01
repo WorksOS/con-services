@@ -213,6 +213,11 @@ namespace TestUtility
       }
     }
 
+    /// <summary>
+    /// Publish event to web api
+    /// </summary>
+    /// <param name="eventArray"></param>
+    /// <returns></returns>
     public string PublishEventToWebApi(string[] eventArray)
     {
       try
@@ -247,6 +252,7 @@ namespace TestUtility
       switch (eventType)
       {
         case "CreateProjectEvent":
+        case "CreateProjectRequest":
           response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Post.ToString(), jsonString, customerUid);
           break;
         case "UpdateProjectEvent":
@@ -259,6 +265,7 @@ namespace TestUtility
       }
       Console.WriteLine(response);  
       var jsonResponse = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
+      ProjectUid = new Guid(jsonResponse.ProjectDescriptor.ProjectUid);
       return jsonResponse.Message;
     }
 
@@ -1016,8 +1023,7 @@ namespace TestUtility
             ProjectName = eventObject.ProjectName,
             ProjectTimezone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            ProjectBoundary = eventObject.ProjectBoundary,
-            ProjectUID = new Guid(eventObject.ProjectUID),           
+            ProjectBoundary = eventObject.ProjectBoundary,       
             CustomerUID = new Guid(eventObject.CustomerUID)      
           };
           if (HasProperty(eventObject, "CoordinateSystem"))
@@ -1029,6 +1035,10 @@ namespace TestUtility
           {
             createProjectEvent.ProjectID = int.Parse(eventObject.ProjectID);
           }
+          if (HasProperty(eventObject, "ProjectUID"))
+          {
+            createProjectEvent.ProjectUID = new Guid(eventObject.ProjectUID);
+          }
           if (HasProperty(eventObject, "Description"))
           {
             createProjectEvent.Description = eventObject.Description;
@@ -1038,6 +1048,49 @@ namespace TestUtility
             createProjectEvent.CustomerID = int.Parse(eventObject.CustomerID);
           }
           jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(createProjectEvent, jsonSettings) : JsonConvert.SerializeObject(new {CreateProjectEvent = createProjectEvent}, jsonSettings);
+          break;
+        case "CreateProjectRequest":
+          Guid? cpProjectUid = null;
+          var createProjectRequest = new CreateProjectEvent()
+          {
+            ActionUTC = eventObject.EventDate,
+            ReceivedUTC = eventObject.EventDate,
+            ProjectStartDate = DateTime.Parse(eventObject.ProjectStartDate),
+            ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
+            ProjectName = eventObject.ProjectName,
+            ProjectTimezone = eventObject.ProjectTimezone,
+            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectBoundary = eventObject.ProjectBoundary,       
+            CustomerUID = new Guid(eventObject.CustomerUID)      
+          };
+          if (HasProperty(eventObject, "CoordinateSystem"))
+          {
+            createProjectRequest.CoordinateSystemFileName = eventObject.CoordinateSystem;
+            createProjectRequest.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(tsCfg.coordinateSystem);
+          }
+          if (HasProperty(eventObject, "ProjectID"))
+          {
+            createProjectRequest.ProjectID = int.Parse(eventObject.ProjectID);
+          }
+          if (HasProperty(eventObject, "ProjectUID"))
+          {
+            cpProjectUid = new Guid(eventObject.ProjectUID);
+          }
+          if (HasProperty(eventObject, "Description"))
+          {
+            createProjectRequest.Description = eventObject.Description;
+          }
+          if (HasProperty(eventObject, "CustomerID"))
+          {
+            createProjectRequest.CustomerID = int.Parse(eventObject.CustomerID);
+          }
+          var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpProjectUid,
+            createProjectRequest.CustomerUID, createProjectRequest.ProjectID, createProjectRequest.ProjectType,
+            createProjectRequest.ProjectName, createProjectRequest.Description, createProjectRequest.ProjectStartDate,
+            createProjectRequest.ProjectEndDate, createProjectRequest.ProjectTimezone,
+            createProjectRequest.ProjectBoundary, createProjectRequest.CustomerID,
+            createProjectRequest.CoordinateSystemFileName, createProjectRequest.CoordinateSystemFileContent);    
+          jsonString = JsonConvert.SerializeObject(cprequest, jsonSettings);
           break;
         case "UpdateProjectEvent":
           var updateProjectEvent = new UpdateProjectEvent()
@@ -1312,15 +1365,17 @@ namespace TestUtility
 
           var pd = new ProjectDescriptor
           {
-            IsArchived = Boolean.Parse(eventObject.IsArchived),
             Name = eventObject.ProjectName,
             ProjectTimeZone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             StartDate = eventObject.ProjectStartDate,
             EndDate = eventObject.ProjectEndDate,
-            ProjectUid = eventObject.ProjectUID,
             ProjectGeofenceWKT = eventObject.ProjectBoundary,                        
           };
+          if (HasProperty(eventObject, "IsArchived"))
+          {
+            pd.IsArchived = Boolean.Parse(eventObject.IsArchived);
+          }
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
             pd.CoordinateSystemFileName = eventObject.CoordinateSystem;
@@ -1328,6 +1383,10 @@ namespace TestUtility
           if (HasProperty(eventObject, "ProjectID"))
           {
             pd.LegacyProjectId = int.Parse(eventObject.ProjectID);
+          }
+          if (HasProperty(eventObject, "ProjectUID"))
+          {
+            pd.ProjectUid = eventObject.ProjectUID;
           }
           if (HasProperty(eventObject, "CustomerUID"))
           {
@@ -1367,15 +1426,17 @@ namespace TestUtility
 
           var pd = new ProjectV4Descriptor
           {
-            IsArchived = Boolean.Parse(eventObject.IsArchived),
             Name = eventObject.ProjectName,
             ProjectTimeZone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             StartDate = eventObject.ProjectStartDate,
-            EndDate = eventObject.ProjectEndDate,
-            ProjectUid = eventObject.ProjectUID,
+            EndDate = eventObject.ProjectEndDate,            
             ProjectGeofenceWKT = eventObject.ProjectBoundary,                                    
           };
+          if (HasProperty(eventObject, "IsArchived"))
+          {
+            pd.IsArchived = Boolean.Parse(eventObject.IsArchived);
+          }
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
             pd.CoordinateSystemFileName = eventObject.CoordinateSystem;
@@ -1383,6 +1444,10 @@ namespace TestUtility
           if (HasProperty(eventObject, "ProjectID"))
           {
             pd.LegacyProjectId = int.Parse(eventObject.ProjectID);
+          }
+          if (HasProperty(eventObject, "ProjectUID"))
+          {
+            pd.ProjectUid = eventObject.ProjectUID;
           }
           if (HasProperty(eventObject, "CustomerUID"))
           {

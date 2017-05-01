@@ -2,6 +2,8 @@
 using System.Net;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using ProjectWebApi.Models;
 using TestUtility;
 
 namespace WebApiTests
@@ -814,6 +816,29 @@ namespace WebApiTests
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray3, false);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray3, true);
+    }
+
+    [TestMethod]
+    public void CreateStandardProjectWithNoProjectUidAndGetProjectListV4()
+    {
+      msg.Title("Project v4 test 1", "Create standard project and customer then read the project list. No subscription");
+      var ts = new TestSupport(); 
+      var customerUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var customerEventArray = new[] {
+       "| TableName | EventDate   | Name            | fk_CustomerTypeID | CustomerUID   |",
+      $"| Customer  | 0d+09:00:00 | Boundary Test 1 | 1                 | {customerUid} |"};
+      ts.PublishEventCollection(customerEventArray);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | No Project ID | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | " };
+      var response = ts.PublishEventToWebApi(projectEventArray);
+      Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
+      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
     }
   }
 }

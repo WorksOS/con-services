@@ -107,7 +107,7 @@ namespace ProjectWebApi.Models
     /// <summary>
     /// Create instance of CreateProjectRequest
     /// </summary>
-    public static CreateProjectRequest CreateACreateProjectRequest(Guid projectUid, Guid? customerUid, 
+    public static CreateProjectRequest CreateACreateProjectRequest(Guid? projectUid, Guid? customerUid, 
       int? projectId, ProjectType projectType, string projectName, string description,
       DateTime projectStartDate, DateTime projectEndDate, string projectTimezone, string projectBoundary,
       long? customerId, string coordinateSystemFileName, byte[] coordinateSystemFileContent
