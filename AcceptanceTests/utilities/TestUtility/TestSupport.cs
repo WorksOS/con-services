@@ -281,8 +281,11 @@ namespace TestUtility
       }
       Console.WriteLine(response);  
       var jsonResponse = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
-      ProjectUid = new Guid(jsonResponse.ProjectDescriptor.ProjectUid);
-      CustomerUid = new Guid(jsonResponse.ProjectDescriptor.CustomerUid);
+      if (jsonResponse.Code == 0)
+      {
+        ProjectUid = new Guid(jsonResponse.ProjectDescriptor.ProjectUid);
+        CustomerUid = new Guid(jsonResponse.ProjectDescriptor.CustomerUid);
+      }
       return jsonResponse.Message;
     }
 
