@@ -250,6 +250,7 @@ namespace TestUtility
           response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Post.ToString(), jsonString, customerUid);
           break;
         case "UpdateProjectEvent":
+        case "UpdateProjectRequest":
           response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Put.ToString(), jsonString, customerUid);
           break;
         case "DeleteProjectEvent":
@@ -1073,9 +1074,33 @@ namespace TestUtility
           jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(updateProjectEvent, jsonSettings ) : JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent}, jsonSettings );
           break;
         case "UpdateProjectRequest":
-          var request = UpdateProjectRequest.CreateUpdateProjectRequest(eventObject.ProjectUID, eventObject.ProjectType,
-            eventObject.ProjectName, eventObject.Description, eventObject.ProjectEndDate, eventObject.CoordinateSystem,
-            Encoding.ASCII.GetBytes(tsCfg.coordinateSystem));
+          var updateProjectRequest = new UpdateProjectEvent()
+          {
+            ProjectUID = new Guid(eventObject.ProjectUID),  
+          };
+          if (HasProperty(eventObject, "CoordinateSystem"))
+          {
+            updateProjectRequest.CoordinateSystemFileName = eventObject.CoordinateSystem;
+            updateProjectRequest.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(tsCfg.coordinateSystem);
+          }
+          if (HasProperty(eventObject, "ProjectEndDate") && eventObject.ProjectEndDate != null)
+          {
+            updateProjectRequest.ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate);
+          }
+          if (HasProperty(eventObject, "ProjectName"))
+          {
+            updateProjectRequest.ProjectName = eventObject.ProjectName;
+          }
+          if (HasProperty(eventObject, "ProjectType"))
+          {
+            updateProjectRequest.ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
+          }
+          if (HasProperty(eventObject, "Description"))
+          {
+            updateProjectRequest.Description = eventObject.Description;
+          }
+          var request = UpdateProjectRequest.CreateUpdateProjectRequest(updateProjectRequest.ProjectUID, updateProjectRequest.ProjectType, updateProjectRequest.ProjectName,updateProjectRequest.Description,
+                                              updateProjectRequest.ProjectEndDate, updateProjectRequest.CoordinateSystemFileName, updateProjectRequest.CoordinateSystemFileContent);
           jsonString = JsonConvert.SerializeObject(request, jsonSettings);
           break;
         case "DeleteProjectEvent":
