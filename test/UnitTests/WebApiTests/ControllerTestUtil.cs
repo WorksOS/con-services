@@ -1,5 +1,4 @@
-﻿
-using System.IO;
+﻿using System.IO;
 
 namespace VSS.Raptor.Service.WebApiTests
 {
@@ -15,7 +14,7 @@ namespace VSS.Raptor.Service.WebApiTests
     {
       byte[] output = null;
 
-      FileStream sourceFile = new FileStream(input, FileMode.Open, FileAccess.Read); // Open streamer...
+      FileStream sourceFile = new FileStream(input, FileMode.Open, System.IO.FileAccess.Read); // Open streamer...
 
       BinaryReader binReader = new BinaryReader(sourceFile);
       try

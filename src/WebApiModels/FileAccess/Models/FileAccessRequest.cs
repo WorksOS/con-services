@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 
@@ -10,12 +11,14 @@ namespace VSS.Raptor.Service.WebApiModels.FileAccess.Models
     /// The description of where the file is located in TCC.
     /// </summary>
     [JsonProperty(PropertyName = "file", Required = Required.Always)]
+    [Required]
     public FileDescriptor file { get; private set; }
 
     /// <summary>
     /// The description of where to put the copy of the file.
     /// </summary>
     [JsonProperty(PropertyName = "localPath", Required = Required.Always)]
+    [Required]
     public string localPath { get; private set; }
 
     /// <summary>
