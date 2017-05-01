@@ -27,27 +27,39 @@ namespace VSS.Raptor.Service.Common.Proxies
             log.LogDebug("GracefulWebRequest.ExecuteRequest() : request{0}", JsonConvert.SerializeObject(request));
 
             return await Policy
-                .Handle<Exception>()
+                .Handle<Exception>() // ( e => log.LogError("GracefulWebRequest.RetryOnException(){0}", e.ToString()))
                 .Retry(3, (exception, retryCount) => {log.LogError("GracefulWebRequest.RetryOnException(){0}", exception.ToString());})
                 .ExecuteAndCapture(async () =>
                 {
+                  try
+                  {
                     string responseString = null;
                     using (var response = await request.GetResponseAsync())
                     {
-                      log.LogDebug("GracefulWebRequest.ExecuteRequest(). response{0}", JsonConvert.SerializeObject(response));
+                      log.LogDebug("GracefulWebRequest.ExecuteRequest(). response{0}",
+                        JsonConvert.SerializeObject(response));
                       responseString = GetStringFromResponseStream(response);
                       log.LogDebug("GracefulWebRequest.ExecuteRequest() : responseString{0}", responseString);
+                    }
+                    if (!string.IsNullOrEmpty(responseString))
+                    {
+                      var toReturn = JsonConvert.DeserializeObject<T>(responseString);
+                      log.LogDebug("GracefulWebRequest.ExecuteRequest(). toReturn:{0}",
+                        JsonConvert.SerializeObject(toReturn));
+                      return toReturn;
+                    }
+                    log.LogDebug("GracefulWebRequest.ExecuteRequest(). default(T):{0}",
+                      JsonConvert.SerializeObject(default(T)));
+                    var defaultToReturn = default(T);
+                    log.LogDebug("GracefulWebRequest.ExecuteRequest(). defaultToReturn:{0}",
+                      JsonConvert.SerializeObject(defaultToReturn));
+                    return defaultToReturn;
                   }
-                  if (!string.IsNullOrEmpty(responseString))
+                  catch (Exception e)
                   {
-                    var toReturn = JsonConvert.DeserializeObject<T>(responseString);
-                    log.LogDebug("GracefulWebRequest.ExecuteRequest(). toReturn:{0}", JsonConvert.SerializeObject(toReturn));
-                    return toReturn;
+                    log.LogDebug("GracefulWebRequest.ExecuteRequest(). exception:{0}", e.ToString());
                   }
-                  log.LogDebug("GracefulWebRequest.ExecuteRequest(). default(T):{0}", JsonConvert.SerializeObject(default(T)));
-                  var defaultToReturn = default(T);
-                  log.LogDebug("GracefulWebRequest.ExecuteRequest(). defaultToReturn:{0}", JsonConvert.SerializeObject(defaultToReturn));
-                  return defaultToReturn;
+                  return default(T);
                 })
                 .Result;
         }
