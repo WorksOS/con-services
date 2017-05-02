@@ -385,7 +385,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
           throw new ServiceException(HttpStatusCode.BadRequest,
                         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                  string.Format("Invalid CoordinateSystem. esult returned = null")));
+                                  string.Format("Invalid CoordinateSystem. result returned = null")));
         }
         if (coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {

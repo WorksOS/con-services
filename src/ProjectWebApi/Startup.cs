@@ -61,15 +61,15 @@ namespace ProjectWebApi
           .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
       });
 
-            // Add framework services.
-            services.AddApplicationInsightsTelemetry(Configuration);
-            services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
-            services.AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
-            services.AddSingleton<IKafka, RdKafkaDriver>();
-            services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-            services.AddSingleton<ISubscriptionProxy, SubscriptionProxy>();
-            services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
-            services.AddSingleton<IRaptorProxy, RaptorProxy>();
+      // Add framework services.
+      services.AddApplicationInsightsTelemetry(Configuration);
+      services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
+      services.AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
+      services.AddTransient<IKafka, RdKafkaDriver>();
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
+      services.AddTransient<IGeofenceProxy, GeofenceProxy>();
+      services.AddTransient<IRaptorProxy, RaptorProxy>();
 
       services.AddMvc(
         config =>
