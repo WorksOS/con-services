@@ -8,6 +8,8 @@ services:
       - ./artifacts/logs:/app/logs 
     depends_on:
       - schema
+    ports:
+      - 7001:80
   masterdataconsumercustomer:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
