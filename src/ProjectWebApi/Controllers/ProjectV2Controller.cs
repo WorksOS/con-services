@@ -3,12 +3,11 @@ using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Repositories;
-using VSP.MasterData.Project.WebAPI.Controllers.V3;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
-using ProjectWebApi.ResultsHandling;
+using ProjectWebApiCommon.ResultsHandling;
 using VSP.MasterData.Project.WebAPI.Controllers;
 using VSS.Raptor.Service.Common.Interfaces;
 

@@ -2,8 +2,6 @@
 using System.Net;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using ProjectWebApi.Models;
 using TestUtility;
 
 namespace WebApiTests
