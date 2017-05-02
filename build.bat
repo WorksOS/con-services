@@ -10,6 +10,7 @@ copy src\WebApi\Dockerfile Artifacts\WebApi\
 copy src\WebApi\SetupWebAPI.ps1 Artifacts\WebApi\
 copy src\WebApi\Velociraptor.Config.Xml Artifacts\WebApi\
 copy src\WebApi\web.config Artifacts\WebApi\
+copy src\WebApi\log4net.xml Artifacts\WebApi\
 
 
 mkdir Artifacts\Logs
