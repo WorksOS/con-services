@@ -819,6 +819,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/tiles/png")]
     [HttpPost]
+    [ResponseCache(Duration = 180)]
     public FileResult PostTileRaw([FromBody] CompactionTileRequest request)
     {
       log.LogDebug("PostTileRaw: " + JsonConvert.SerializeObject(request));
