@@ -67,9 +67,9 @@ namespace ProjectWebApi
       services.AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       services.AddTransient<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddSingleton<ISubscriptionProxy, SubscriptionProxy>();
-      services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
-      services.AddSingleton<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
+      services.AddTransient<IGeofenceProxy, GeofenceProxy>();
+      services.AddTransient<IRaptorProxy, RaptorProxy>();
 
       services.AddMvc(
         config =>
