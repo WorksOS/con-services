@@ -1,5 +1,4 @@
-﻿using System;
-using MockProjectWebApi.Utils;
+﻿using MockProjectWebApi.Utils;
 
 namespace MockProjectWebApi.ResultHandling
 {
@@ -13,125 +12,92 @@ namespace MockProjectWebApi.ResultHandling
     /// The coordinate system file name.
     /// </summary>
     /// 
-    public string csName { get; private set; }
+    public string csName { get; set; }
 
     /// <summary>
     /// The name of the coordinate system group.
     /// </summary>
     /// 
-    public string csGroup { get; private set; }
+    public string csGroup { get; set; }
 
     /// <summary>
     /// The coordinate system definition as an array of bytes.
     /// </summary>
     /// 
-    public byte[] csib { get; private set; }
+    public byte[] csib { get; set; }
 
     /// <summary>
     /// The coordinate system datum name.
     /// </summary>
     /// 
-    public string datumName { get; private set; }
+    public string datumName { get; set; }
 
     /// <summary>
     /// The flag indicates whether or not there are site calibration data in a coordinate system definition.
     /// </summary>
     /// 
-    public bool siteCalibration { get; private set; }
+    public bool siteCalibration { get; set; }
 
     /// <summary>
     /// The coordinate system geoid model file name.
     /// </summary>
     /// 
-    public string geoidFileName { get; private set; }
+    public string geoidFileName { get; set; }
 
     /// <summary>
     /// The coordinate system geoid model name.
     /// </summary>
     /// 
-    public string geoidName { get; private set; }
+    public string geoidName { get; set; }
 
     /// <summary>
     /// The flag indicates whether or not there are datum grid data in a coordinate system definition.
     /// </summary>
     /// 
-    public bool isDatumGrid { get; private set; }
+    public bool isDatumGrid { get; set; }
 
     /// <summary>
     /// The flag indicates whether or not an assigned coordinate system projection is supported by the application.
     /// </summary>
     /// 
-    public bool unsupportedProjection { get; private set; }
+    public bool unsupportedProjection { get; set; }
 
     /// <summary>
     /// The coordinate system latitude datum grid file name.
     /// </summary>
     /// 
-    public string latitudeDatumGridFileName { get; private set; }
+    public string latitudeDatumGridFileName { get; set; }
 
     /// <summary>
     /// The coordinate system longitude datum grid file name.
     /// </summary>
     /// 
-    public string longitudeDatumGridFileName { get; private set; }
+    public string longitudeDatumGridFileName { get; set; }
 
     /// <summary>
     /// The coordinate system height datum grid file name.
     /// </summary>
     /// 
-    public string heightDatumGridFileName { get; private set; }
+    public string heightDatumGridFileName { get; set; }
 
     /// <summary>
     /// The coordinate system shift grid file name.
     /// </summary>
     /// 
-    public string shiftGridName { get; private set; }
+    public string shiftGridName { get; set; }
 
     /// <summary>
     /// The coordinate system snake grid file name.
     /// </summary>
     /// 
-    public string snakeGridName { get; private set; }
+    public string snakeGridName { get; set; }
 
     /// <summary>
     /// The coordinate system vertical datum name.
     /// </summary>
     /// 
-    public string verticalDatumName { get; private set; }
+    public string verticalDatumName { get; set; }
 
-    /// <summary>
-    /// Private constructor
-    /// </summary>
-    private CoordinateSystemSettings()
-    {
-    }
-
-    /// <summary>
-    /// Create an instance of the CoordinaeSystemSettings class.
-    /// </summary>
-    public static CoordinateSystemSettings HelpSample
-    {
-      get
-      {
-        return new CoordinateSystemSettings()
-        {
-          csName = "DatumGrid and Geoid.cal",
-          csGroup = "Projection from Data Collector",
-          csib = new byte[] {0, 1, 2, 3, 4, 5, 6, 7},
-          datumName = "Datum Grid",
-          siteCalibration = false,
-          geoidFileName = "NZ2009.GGF",
-          geoidName = "New Zealand Geoid 2009",
-          isDatumGrid = true,
-          latitudeDatumGridFileName = "NZNATlat.DGF",
-          longitudeDatumGridFileName = "NZNATlon.DGF",
-          heightDatumGridFileName = null,
-          shiftGridName = null,
-          snakeGridName = null,
-          verticalDatumName = null
-        };
-      }
-    }
 
     public static CoordinateSystemSettings CreateCoordinateSystemSettings
     (
@@ -172,17 +138,9 @@ namespace MockProjectWebApi.ResultHandling
       };
     }
 
-    /// <summary>
-    /// Validation method.
-    /// </summary>
-    public override string ToString()
+    public string CacheKey
     {
-      return String.Format(
-        "csName:{0}, csGroup:{1}, csib:{2}, datumName:{3}, siteCalibration:{4}, geoidFileName:{5}, geoidName:{6}, isDatumGrid:{7}, latitudeDatumGridFileName:{8}, longitudeDatumGridFileName:{9}, heightDatumGridFileName:{10}, shiftGridName:{11}, snakeGridName:{12}, verticalDatumName:{13}, unsupportedProjection:{14}",
-        this.csName, this.csGroup, this.csib.ToString(), this.datumName, this.siteCalibration, this.geoidFileName,
-        this.geoidName, this.isDatumGrid, this.latitudeDatumGridFileName, this.longitudeDatumGridFileName,
-        this.heightDatumGridFileName, this.shiftGridName, this.snakeGridName, this.verticalDatumName,
-        this.unsupportedProjection);
+      get { return ""; }
     }
 
   }

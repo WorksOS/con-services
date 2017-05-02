@@ -26,53 +26,47 @@ namespace VSS.Raptor.Service.Common.Proxies
       var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
       log.LogDebug("GracefulWebRequest.ExecuteRequest() : request{0}", JsonConvert.SerializeObject(request));
 
-      //try
-      //{
-      return await Policy
-        .Handle<Exception>()
-        .Retry(3)
-        .ExecuteAndCapture(async () =>
-        {
-          try
-          {
-            string responseString = null;
 
-            using (var response = await request.GetResponseAsync())
-            {
-              log.LogDebug("GracefulWebRequest.ExecuteRequest2(). response{0}",
-                JsonConvert.SerializeObject(response));
-              responseString = GetStringFromResponseStream(response);
-              log.LogDebug("GracefulWebRequest.ExecuteRequest2() : responseString{0}", responseString);
-            }
-            if (!string.IsNullOrEmpty(responseString))
-            {
-              var toReturn = JsonConvert.DeserializeObject<T>(responseString);
-              log.LogDebug("GracefulWebRequest.ExecuteRequest2(). toReturn:{0}",
-                JsonConvert.SerializeObject(toReturn));
-              return toReturn;
-            }
-            log.LogDebug("GracefulWebRequest.ExecuteRequest2(). default(T):{0}",
-              JsonConvert.SerializeObject(default(T)));
-            var defaultToReturn = default(T);
-            log.LogDebug("GracefulWebRequest.ExecuteRequest2(). defaultToReturn:{0}",
-              JsonConvert.SerializeObject(defaultToReturn));
-            return defaultToReturn;
-          }
-          catch (Exception e)
+      var policyResult = await Policy
+        .Handle<Exception>()
+        .RetryAsync(3)
+        .ExecuteAndCaptureAsync(async () =>
+        {
+          string responseString = null;
+
+          using (var response = await request.GetResponseAsync())
           {
-            log.LogDebug("GracefulWebRequest.ExecuteRequest(). exceptionToRethrow2:{0} endpoint: {1} method: {2}",
-              e.ToString(), endpoint, method);
+            log.LogDebug("GracefulWebRequest.ExecuteRequest6(). response{0}",
+              JsonConvert.SerializeObject(response));
+            responseString = GetStringFromResponseStream(response);
+            log.LogDebug("GracefulWebRequest.ExecuteRequest() : responseString{0}", responseString);
           }
-          return default(T);
-        })
-        .Result;
-      //}
-      //catch (Exception e)
-      //{
-      //  log.LogDebug("GracefulWebRequest.ExecuteRequest(). exceptionToRethrow2:{0} endpoint: {1} method: {2}",
-      //    e.ToString(), endpoint, method);
-      //}
-      //return default(T);
+          if (!string.IsNullOrEmpty(responseString))
+          {
+            var toReturn = JsonConvert.DeserializeObject<T>(responseString);
+            log.LogDebug("GracefulWebRequest.ExecuteRequest(). toReturn:{0}",
+              JsonConvert.SerializeObject(toReturn));
+            return toReturn;
+          }
+          log.LogDebug("GracefulWebRequest.ExecuteRequest(). default(T):{0}",
+            JsonConvert.SerializeObject(default(T)));
+          var defaultToReturn = default(T);
+          log.LogDebug("GracefulWebRequest.ExecuteRequest(). defaultToReturn:{0}",
+            JsonConvert.SerializeObject(defaultToReturn));
+          return defaultToReturn;
+        }).ConfigureAwait(false);
+
+      if (policyResult.FinalException != null)
+      {
+        log.LogDebug("GracefulWebRequest.ExecuteRequest(). exceptionToRethrow:{0} endpoint: {1} method: {2}",
+          policyResult.FinalException.ToString(), endpoint, method);
+        throw policyResult.FinalException;
+      }
+      if (policyResult.Outcome == OutcomeType.Successful)
+      {
+        return policyResult.Result;
+      }
+      return default(T);
     }
 
 
@@ -139,12 +133,10 @@ namespace VSS.Raptor.Service.Common.Proxies
     {
       using (var readStream = response.GetResponseStream())
       {
-        log.LogDebug("GracefulWebRequest.GetStringFromResponseStream1(). readStream{0}", readStream == null ? null : JsonConvert.SerializeObject(readStream));
         if (readStream != null)
         {
           using (var reader = new StreamReader(readStream, Encoding.UTF8))
           {
-            log.LogDebug("GracefulWebRequest.GetStringFromResponseStream2(). reader{0}", JsonConvert.SerializeObject(reader));
             var responseString = reader.ReadToEnd();
             log.LogDebug("Response: {0}", responseString);
             return responseString;
