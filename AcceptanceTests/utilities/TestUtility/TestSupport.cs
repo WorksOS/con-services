@@ -9,6 +9,7 @@ using System.Dynamic;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
+using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -43,6 +44,7 @@ namespace TestUtility
 
     public bool IsPublishToKafka { get; set; }
     public bool IsPublishToWebApi { get; set; }
+
     public readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
     {
       DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
@@ -50,6 +52,7 @@ namespace TestUtility
     };
 
     public readonly TestConfig tsCfg = new TestConfig();
+
     #endregion
 
     #region Private Properties
@@ -84,9 +87,11 @@ namespace TestUtility
       var query = "SELECT max(LegacyAssetID) FROM Asset;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
-         { return 1000; }
+      {
+        return 1000;
+      }
       var legacyAssetId = Convert.ToInt64(result);
-      return legacyAssetId+1;
+      return legacyAssetId + 1;
     }
 
     /// <summary>
@@ -99,10 +104,13 @@ namespace TestUtility
       var query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
       var result = mysql.ExecuteMySqlQueryAndReturnRecordCountResult(tsCfg.DbConnectionString, query);
       if (string.IsNullOrEmpty(result))
-         { return 1000; }
+      {
+        return 1000;
+      }
       var legacyProjectId = Convert.ToInt32(result);
-      return legacyProjectId+1;
+      return legacyProjectId + 1;
     }
+
     /// <summary>
     /// Set up the first event date for the events to go in. Also used as project start date for project tests.
     /// </summary>
@@ -176,13 +184,13 @@ namespace TestUtility
     {
       try
       {
-        msg.DisplayEventsToConsole(eventArray);      
+        msg.DisplayEventsToConsole(eventArray);
         var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
         var kafkaDriver = new RdKafkaDriver();
-        for (var rowCnt = 1; rowCnt <= eventArray.Length-1; rowCnt++)
+        for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
         {
           var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
-          dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);        
+          dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
           var eventDate = eventObject.EventDate;
           LastEventDate = eventDate;
           if (IsPublishToKafka || IsPublishToWebApi)
@@ -201,8 +209,8 @@ namespace TestUtility
           }
           else
           {
-            IsNotSameAsset(true); 
-            BuildMySqlInsertStringAndWriteToDatabase(eventObject);          
+            IsNotSameAsset(true);
+            BuildMySqlInsertStringAndWriteToDatabase(eventObject);
           }
         }
       }
@@ -222,14 +230,22 @@ namespace TestUtility
     {
       try
       {
-        msg.DisplayEventsToConsole(eventArray);      
+        msg.DisplayEventsToConsole(eventArray);
         var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
         var eventRow = eventArray.ElementAt(1).Split(SEPARATOR);
-        dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);        
+        dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
         var eventDate = eventObject.EventDate;
         LastEventDate = eventDate;
         var jsonString = BuildEventIntoObject(eventObject);
-        var response = CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID);
+        var response = string.Empty;
+        try
+        {
+           response = CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID);
+        }
+        catch (RuntimeBinderException)
+        {          
+           response = CallWebApiWithProject(jsonString, eventObject.EventType, CustomerUid.ToString());
+        }
         return response;
       }
       catch (Exception ex)
@@ -265,7 +281,11 @@ namespace TestUtility
       }
       Console.WriteLine(response);  
       var jsonResponse = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
-      ProjectUid = new Guid(jsonResponse.ProjectDescriptor.ProjectUid);
+      if (jsonResponse.Code == 0)
+      {
+        ProjectUid = new Guid(jsonResponse.ProjectDescriptor.ProjectUid);
+        CustomerUid = new Guid(jsonResponse.ProjectDescriptor.CustomerUid);
+      }
       return jsonResponse.Message;
     }
 
@@ -1023,8 +1043,7 @@ namespace TestUtility
             ProjectName = eventObject.ProjectName,
             ProjectTimezone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            ProjectBoundary = eventObject.ProjectBoundary,       
-            CustomerUID = new Guid(eventObject.CustomerUID)      
+            ProjectBoundary = eventObject.ProjectBoundary                        
           };
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
@@ -1039,6 +1058,10 @@ namespace TestUtility
           {
             createProjectEvent.ProjectUID = new Guid(eventObject.ProjectUID);
           }
+          if (HasProperty(eventObject, "CustomerUID"))
+          {
+            createProjectEvent.CustomerUID = new Guid(eventObject.CustomerUID);
+          }
           if (HasProperty(eventObject, "Description"))
           {
             createProjectEvent.Description = eventObject.Description;
@@ -1051,6 +1074,7 @@ namespace TestUtility
           break;
         case "CreateProjectRequest":
           Guid? cpProjectUid = null;
+          Guid? cpCustomerUID = null;
           var createProjectRequest = new CreateProjectEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -1060,8 +1084,7 @@ namespace TestUtility
             ProjectName = eventObject.ProjectName,
             ProjectTimezone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            ProjectBoundary = eventObject.ProjectBoundary,       
-            CustomerUID = new Guid(eventObject.CustomerUID)      
+            ProjectBoundary = eventObject.ProjectBoundary                       
           };
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
@@ -1076,6 +1099,10 @@ namespace TestUtility
           {
             cpProjectUid = new Guid(eventObject.ProjectUID);
           }
+          if (HasProperty(eventObject, "ProjectUID"))
+          {
+            cpCustomerUID = new Guid(eventObject.CustomerUID);
+          }
           if (HasProperty(eventObject, "Description"))
           {
             createProjectRequest.Description = eventObject.Description;
@@ -1085,7 +1112,7 @@ namespace TestUtility
             createProjectRequest.CustomerID = int.Parse(eventObject.CustomerID);
           }
           var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpProjectUid,
-            createProjectRequest.CustomerUID, createProjectRequest.ProjectID, createProjectRequest.ProjectType,
+            cpCustomerUID, createProjectRequest.ProjectID, createProjectRequest.ProjectType,
             createProjectRequest.ProjectName, createProjectRequest.Description, createProjectRequest.ProjectStartDate,
             createProjectRequest.ProjectEndDate, createProjectRequest.ProjectTimezone,
             createProjectRequest.ProjectBoundary, createProjectRequest.CustomerID,
