@@ -19,8 +19,6 @@ namespace VSS.VisionLink.Raptor.Storage
     /// </summary>
     public class StorageProxy_Ignite : IStorageProxy
     {
-//        private static IStorageProxy _instance = null;
-
         private static IIgnite ignite = null;
 
         private static ICache<String, MemoryStream> cache = null; 
@@ -31,72 +29,11 @@ namespace VSS.VisionLink.Raptor.Storage
         {
             if (ignite == null)
             {
-                /*
-                IgniteConfiguration cfg = new IgniteConfiguration()
-                {
-                    GridName = "Raptor",
-
-                    // Register custom class for Ignite serialization
-                    BinaryConfiguration = new Apache.Ignite.Core.Binary.BinaryConfiguration(typeof(MemoryStream)),
-
-                    JvmMaxMemoryMb = 6000,
-                    ClientMode = true
-                    //Assemblies = null
-
-                   // Localhost = "127.0.0.1"
-                };
-
-                ignite = Ignition.Start(cfg);
-                */
-
                 ignite = Ignition.TryGetIgnite("Raptor");
 
-//                if (ignite == null)
-//                {
-//                    ignite = Ignition.GetIgnite();
-//                }
-
                 cache = ignite.GetCache<String, MemoryStream>("DataModels");
-
-                // Add a cache to Ignite
-                /*
-                cache = ignite.GetOrCreateCache<String, MemoryStream>
-                    (new CacheConfiguration()
-                    {
-                        Name = "DataModels",
-                        CopyOnRead = false,
-                        KeepBinaryInStore = false,
-                        MemoryMode = CacheMemoryMode.OnheapTiered,
-                        CacheStoreFactory = new RaptorCacheStoreFactory(),
-                        ReadThrough = true,
-                        WriteThrough = true,
-                        WriteBehindFlushFrequency = new TimeSpan(0, 0, 30), // 30 seconds 
-                            EvictionPolicy = new LruEvictionPolicy()
-                        {
-                            MaxMemorySize = 2000000000,
-                        },
-                    });
-                */
             }
         }
-
-        /*
-        public static IStorageProxy Instance()
-        {
-            if (_instance == null)
-            {
-                lock (LockObj)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new StorageProxy_Ignite();
-                    }
-                }
-            }
-
-            return _instance;
-        }
-        */
 
         private static string ComputeNamedStreamCacheKey(long DataModelID, string Name)
         {

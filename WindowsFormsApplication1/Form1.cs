@@ -32,7 +32,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
 
             // Pull the sitemodel extents using the ProjectExtents executor which will use the Ignite instance created by the generic application service server above
-            extents = ProjectExtents.ProductionDataOnly(ID);
+            // extents = ProjectExtents.ProductionDataOnly(ID);
 
             try
             {
@@ -78,6 +78,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         public Form1()
         {
             InitializeComponent();
+
+            extents = ProjectExtents.ProductionDataOnly(ID);
         }
 
         private void Form1_Load(object sender, EventArgs e)
