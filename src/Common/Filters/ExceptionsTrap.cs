@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -30,7 +31,11 @@ namespace VSS.Raptor.Service.Common.Filters
       {
         log.LogInformation("SERVICEEXCEPTION: {0}, {1}", ex.Response, ex.GetContent);
         context.Response.StatusCode = (int)ex.Response.StatusCode;
-        await context.Response.WriteAsync(ex.GetContent);
+        //Don't write any body for 204
+        if (ex.Response.StatusCode != HttpStatusCode.NoContent)
+        {
+          await context.Response.WriteAsync(ex.GetContent);
+        }
       }
       catch (Exception ex)
       {
