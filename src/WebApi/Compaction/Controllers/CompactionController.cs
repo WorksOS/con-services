@@ -819,7 +819,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/tiles/png")]
     [HttpPost]
-    [ResponseCache(Duration = 180)]
+
     public FileResult PostTileRaw([FromBody] CompactionTileRequest request)
     {
       log.LogDebug("PostTileRaw: " + JsonConvert.SerializeObject(request));
@@ -882,7 +882,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/tiles")]
     [HttpGet]
-    public TileResult GetTile(
+    [ResponseCache(Duration = 180)]
+        public TileResult GetTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
       [FromQuery] string REQUEST,
@@ -968,7 +969,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/tiles/png")]
     [HttpGet]
-    public FileResult GetTileRaw(
+    [ResponseCache(Duration = 180)]
+        public FileResult GetTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
       [FromQuery] string REQUEST,
