@@ -8,9 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using log4netExtensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Contracts;
@@ -70,6 +72,7 @@ namespace VSS.Raptor.Service.WebApi
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddMemoryCache();
+            services.AddCustomResponseCaching();
             services.AddMvc(
                 config =>
                 {
@@ -116,22 +119,23 @@ namespace VSS.Raptor.Service.WebApi
             serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
             var serviceProvider =serviceCollection.BuildServiceProvider();
             app.UseExceptionTrap();
-      		  //Enable CORS before TID so OPTIONS works without authentication
-      		  app.UseCors("VSS");
+      		//Enable CORS before TID so OPTIONS works without authentication
+      		app.UseCors("VSS");
             //Enable TID here
             app.UseTIDAuthentication();
-  
+
             //For now don't use application insights as it clogs the log with lots of stuff.
             //app.UseApplicationInsightsRequestTelemetry();
             //app.UseApplicationInsightsExceptionTelemetry();
 
+            app.UseResponseCaching();
             app.UseMvc();
 
             app.UseSwagger();
             app.UseSwaggerUi();
 
-            //Check if the configuration is correct and we are able to connect to Raptor
 
+            //Check if the configuration is correct and we are able to connect to Raptor
             string config = String.Empty;
             var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
             log.LogInformation("Testing Raptor configuration with sending config request");

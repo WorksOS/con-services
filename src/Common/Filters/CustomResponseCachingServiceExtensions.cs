@@ -1,0 +1,53 @@
+﻿using System;
+using Microsoft.AspNetCore.ResponseCaching;
+using Microsoft.AspNetCore.ResponseCaching.Internal;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace Microsoft.Extensions.DependencyInjection
+{
+    public static class CustomResponseCachingServiceExtensions
+    {
+        /// <summary>
+        /// Add response caching services.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> for adding services.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddCustomResponseCaching(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddMemoryCache();
+            services.TryAdd(ServiceDescriptor.Singleton<IResponseCachingPolicyProvider, CustomCachingPolicyProvider>());
+            services.TryAdd(ServiceDescriptor.Singleton<IResponseCachingKeyProvider, ResponseCachingKeyProvider>());
+            services.TryAdd(ServiceDescriptor.Singleton<IResponseCache, MemoryResponseCache>());
+
+            return services;
+        }
+
+        /// <summary>
+        /// Add response caching services and configure the related options.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> for adding services.</param>
+        /// <param name="configureOptions">A delegate to configure the <see cref="ResponseCachingOptions"/>.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddCustomResponseCaching(this IServiceCollection services, Action<ResponseCachingOptions> configureOptions)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+            if (configureOptions == null)
+            {
+                throw new ArgumentNullException(nameof(configureOptions));
+            }
+
+            services.Configure(configureOptions);
+            services.AddCustomResponseCaching();
+
+            return services;
+        }
+    }
+}
