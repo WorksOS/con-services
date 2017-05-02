@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
-using VSS.Raptor.Service.Common.Proxies.Models;
+using MockProjectWebApi.Models;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -15,7 +14,8 @@ namespace MockProjectWebApi.Controllers
       [HttpPost]
       void DummyPost()
       {
-          return;
+        Console.WriteLine("DummyPost");
+      return;
       }
 
 

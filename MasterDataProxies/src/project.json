@@ -4,7 +4,7 @@
   "title": "Shared lib to access masterdata aspects through http",
   "description": "Shared across Merino apps, source code is availble under MerinoSandbox repo",
 
-  "version": "1.0.6",
+  "version": "1.0.24",
 
   "dependencies": {
     "Microsoft.Extensions.Logging": "1.1.0",
@@ -14,15 +14,15 @@
     "log4net.netcore": "3.0.0",
     "log4netExtensions.netcore": "1.0.1",
     "Microsoft.Extensions.Caching.Memory": "1.0.0",
-    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.1.0",
     "Microsoft.Extensions.Configuration": "1.0.0",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "ConfigurationStore.netcore": "*",
     "Polly": "4.5.0-beta-netstandar-0001",
-    "Newtonsoft.Json": "9.0.2-beta1",
-    "VSS.Interfaces.netcore": "1.0.3"
+    "Newtonsoft.Json": "9.0.1",
+    "VSS.Interfaces.netcore": "*"
   },
 
   "frameworks": {
