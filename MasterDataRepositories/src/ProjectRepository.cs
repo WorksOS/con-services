@@ -112,6 +112,43 @@ namespace Repositories
       {
         throw new NotImplementedException("Dissociating projects from customers is not supported");
       }
+      else if (evt is CreateImportedFileEvent)
+      {
+        var projectEvent = (CreateImportedFileEvent)evt;
+        var importedFile = new ImportedFile
+        {
+          ProjectUid = projectEvent.ProjectUID.ToString(),
+          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
+          CustomerUid = projectEvent.CustomerUID.ToString(),
+          LastActionedUtc = projectEvent.ActionUTC,
+          ImportedFileType = projectEvent.ImportedFileType,
+          Name = projectEvent.Name,
+          SurveyedUtc = projectEvent.SurveyedUTC
+        };
+        upsertedCount = await UpsertImportedFile(importedFile, "CreateImportedFileEvent");
+      }
+      else if (evt is UpdateImportedFileEvent)
+      {
+        var projectEvent = (UpdateImportedFileEvent)evt;
+        var importedFile = new ImportedFile
+        {
+          ProjectUid = projectEvent.ProjectUID.ToString(),
+          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
+          LastActionedUtc = projectEvent.ActionUTC
+        };
+        upsertedCount = await UpsertImportedFile(importedFile, "UpdateImportedFileEvent");
+      }
+      else if (evt is DeleteImportedFileEvent)
+      {
+        var projectEvent = (DeleteImportedFileEvent)evt;
+        var importedFile = new ImportedFile
+        {
+          ProjectUid = projectEvent.ProjectUID.ToString(),
+          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
+          LastActionedUtc = projectEvent.ActionUTC
+        };
+        upsertedCount = await UpsertImportedFile(importedFile, "DeleteImportedFileEvent");
+      }
       return upsertedCount;
     }
 
@@ -450,6 +487,153 @@ namespace Repositories
     #endregion associate
 
 
+    #region importedFiles
+    private async Task<int> UpsertImportedFile(ImportedFile importedFile, string eventType)
+    {
+      int upsertedCount = 0;
+
+      await PerhapsOpenConnection();
+
+      var existing = (await Connection.QueryAsync<ImportedFile>
+      (@"SELECT 
+              fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, Name, SurveyedUTC, 
+              LastActionedUTC
+            FROM ImportedFile
+            WHERE ImportedFileUID = @importedFileUid", new { importedFileUid = importedFile.ImportedFileUid }
+      )).FirstOrDefault();
+
+      if (eventType == "CreateImportedFileEvent")
+      {
+        upsertedCount = await CreateImportedFile(importedFile, existing);
+      }
+
+      if (eventType == "UpdateImportedFileEvent")
+      {
+        upsertedCount = await UpdateImportedFile(importedFile, existing);
+      }
+
+      if (eventType == "DeleteImportedFileEvent")
+      {
+        upsertedCount = await DeleteImportedFile(importedFile, existing);
+      }
+
+      PerhapsCloseConnection();
+      return upsertedCount;
+    }
+
+    private async Task<int> CreateImportedFile(ImportedFile importedFile, ImportedFile existing)
+    {
+      var upsertedCount = 0;
+
+      if (existing == null)
+      {
+        log.LogDebug("ProjectRepository/CreateImportedFile: going to create importedFile={0}))')", JsonConvert.SerializeObject(importedFile));
+        
+        string insert = string.Format(
+            "INSERT ImportedFile " +
+            "    (fk_ProjectUID, ImportedFileUID, fk_CustomerUID, fk_ImportedFileTypeID, Name, SurveyedUTC, LastActionedUTC) " +
+            "  VALUES " +
+            "    (@ProjectUid, @ImportedFileUid, @CustomerUid, @ImportedFileType, @Name, @SurveyedUtc, @LastActionedUtc)");
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(insert, importedFile);
+          log.LogDebug("ProjectRepository/CreateImportedFile: (insert): upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}", upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
+      }
+      else if (existing.LastActionedUtc >= importedFile.LastActionedUtc)
+      {
+        log.LogDebug("ProjectRepository/CreateImportedFile: create arrived after an update so inserting importedFile={0}", JsonConvert.SerializeObject(importedFile));
+
+        // must be a later update was applied before the create arrived.
+        // The only thing which can be updated is a) the file content, and the LastActionedUtc. A file cannot be moved between projects/customers.
+        // We don't store (a), and leave actionUTC as the more recent. 
+        const string update =
+          @"UPDATE ImportedFile                
+                SET fk_ProjectUID = @projectUID,                  
+                  fk_CustomerUID = @customerUID,
+                  fk_ImportedFileTypeID = @importedFileType,
+                  Name = @name,
+                  SurveyedUTC = @surveyedUTC
+                WHERE ImportedFileUID = @ImportedFileUid";
+        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        {
+          upsertedCount = await Connection.ExecuteAsync(update, importedFile);
+          log.LogDebug("ProjectRepository/CreateImportedFile: (updateExisting): upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}", upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
+          return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        });
+      }
+
+      log.LogDebug("ProjectRepository/CreateImportedFile: can't create as already exists importedFile {0}.", JsonConvert.SerializeObject(importedFile));
+      return upsertedCount;
+    }
+
+    private async Task<int> UpdateImportedFile(ImportedFile importedFile, ImportedFile existing)
+    {
+      // The only thing which can be updated is a) the file content, and the LastActionedUtc. A file cannot be moved between projects/customers.
+      // We don't store (a), and leave actionUTC as the more recent. 
+      var upsertedCount = 0;
+      if (existing != null)
+      {
+        if (importedFile.LastActionedUtc > existing.LastActionedUtc)
+        {
+          const string update =
+            @"UPDATE ImportedFile                
+                SET LastActionedUTC = @LastActionedUTC
+                WHERE ImportedFileUID = @ImportedFileUid";
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(update, importedFile);
+            log.LogDebug("ProjectRepository/UpdateImportedFile: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}", upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          });
+        }
+        else
+        {
+          log.LogDebug("ProjectRepository/UpdateImportedFile: old update event ignored importedFile {0}", JsonConvert.SerializeObject(importedFile));
+        }
+      }
+      else
+      {
+        log.LogDebug("ProjectRepository/UpdateImportedFile: can't update as none existing importedFile {0}", JsonConvert.SerializeObject(importedFile));
+      }
+      return upsertedCount;
+    }
+
+    private async Task<int> DeleteImportedFile(ImportedFile importedFile, ImportedFile existing)
+    {
+      var upsertedCount = 0;
+      if (existing != null)
+      {
+        if (importedFile.LastActionedUtc >= existing.LastActionedUtc)
+        {
+          log.LogDebug("ProjectRepository/DeleteImportedFile: deleting importedFile {0}", JsonConvert.SerializeObject(importedFile));
+
+          const string update =
+            @"DELETE FROM ImportedFile                               
+                WHERE ImportedFileUID = @ImportedFileUid";
+          return await dbAsyncPolicy.ExecuteAsync(async () =>
+          {
+            upsertedCount = await Connection.ExecuteAsync(update, importedFile);
+            log.LogDebug("ProjectRepository/DeleteImportedFile: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}", upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          });
+        }
+        else
+        {
+          log.LogDebug("ProjectRepository/DeleteImportedFile: old delete event ignored importedFile={0}", JsonConvert.SerializeObject(importedFile));
+        }
+      }
+      else
+      {
+        log.LogDebug("ProjectRepository/DeleteImportedFile: can't delete as none existing ignored importedFile={0}", JsonConvert.SerializeObject(importedFile));
+      }
+      return upsertedCount;
+    }
+
+    #endregion importedFiles
+
+
     #region getters
 
     /// <summary>
@@ -773,7 +957,45 @@ namespace Repositories
     #endregion getters
 
 
-    #region spatialGetters
+    #region gettersImportedFiles
+
+    public async Task<IEnumerable<ImportedFile>> GetImportedFiles(string projectUid)
+    {
+      await PerhapsOpenConnection();
+
+      var importedFileList = (await Connection.QueryAsync<ImportedFile>
+      (@"SELECT 
+              fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, Name, SurveyedUTC, 
+              LastActionedUTC
+            FROM ImportedFile
+              WHERE fk_ProjectUID = @projectUid",
+        new { projectUid }
+      ));
+
+      PerhapsCloseConnection();
+      return importedFileList;
+    }
+
+    public async Task<ImportedFile> GetImportedFile(string importedFileUid)
+    {
+      await PerhapsOpenConnection();
+
+      var importedFile = (await Connection.QueryAsync<ImportedFile>
+      (@"SELECT 
+              fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, Name, SurveyedUTC, 
+              LastActionedUTC
+            FROM ImportedFile
+              WHERE importedFileUID = @importedFileUid",
+        new { importedFileUid }
+      )).FirstOrDefault();
+
+      PerhapsCloseConnection();
+      return importedFile;
+    }
+    #endregion gettersImportedFiles
+
+
+    #region gettersSpatial
     /// <summary>
     /// Gets any standard project which the lat/long is within,
     ///     which satisfies all conditions for the asset
@@ -910,7 +1132,7 @@ namespace Repositories
       PerhapsCloseConnection();
       return projects;
     }
-    #endregion spatialGetters
+    #endregion gettersSpatial
 
   }
 }

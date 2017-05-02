@@ -7,17 +7,16 @@ using log4netExtensions;
 using VSS.GenericConfiguration;
 using Repositories;
 using Repositories.DBModels;
-using System.Linq;
 
 namespace RepositoryTests
 {
   [TestClass]
   public class ProjectRepositoryTests
   {
-    IServiceProvider serviceProvider = null;
-    CustomerRepository customerContext = null;
-    ProjectRepository projectContext = null;
-    SubscriptionRepository subscriptionContext = null;
+    IServiceProvider _serviceProvider = null;
+    CustomerRepository _customerContext = null;
+    ProjectRepository _projectContext = null;
+    SubscriptionRepository _subscriptionRepository = null;
 
     [TestInitialize]
     public void Init()
@@ -30,18 +29,15 @@ namespace RepositoryTests
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
-      serviceProvider = new ServiceCollection()
+      _serviceProvider = new ServiceCollection()
         .AddLogging()
         .AddSingleton<ILoggerFactory>(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .BuildServiceProvider();
 
-      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>(),
-        serviceProvider.GetService<ILoggerFactory>());
-      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(),
-        serviceProvider.GetService<ILoggerFactory>());
-      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>(),
-        serviceProvider.GetService<ILoggerFactory>());
+      _customerContext = new CustomerRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      _projectContext = new ProjectRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      _subscriptionRepository = new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
     }
 
 
@@ -94,19 +90,19 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = customerContext.StoreEvent(createCustomerEvent);
+      s = _customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
-      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
@@ -115,7 +111,7 @@ namespace RepositoryTests
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -167,19 +163,19 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = customerContext.StoreEvent(createCustomerEvent);
+      s = _customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
-      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
@@ -188,7 +184,7 @@ namespace RepositoryTests
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -202,7 +198,7 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateProjectWithCustomer_HappyPath_NoLegacyProjectId()
     {
-      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createProjectEvent = new CreateProjectEvent()
@@ -215,18 +211,18 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUTC,
+        ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
       };
 
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
       Project project = CopyModel(createProjectEvent);
-      var g = projectContext.GetProjectOnly(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProjectOnly(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.IsTrue(g.Result.LegacyProjectID >= 2000000,
@@ -244,7 +240,7 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateProjectWithCustomer_HappyPath_DuplicateLegacyProjectId()
     {
-      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createProjectEvent1 = new CreateProjectEvent()
@@ -257,7 +253,7 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUTC,
+        ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
       };
@@ -272,17 +268,17 @@ namespace RepositoryTests
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-        ActionUTC = actionUTC,
+        ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
       };
 
 
-      var s1 = projectContext.StoreEvent(createProjectEvent1);
+      var s1 = _projectContext.StoreEvent(createProjectEvent1);
       s1.Wait();
       Assert.AreEqual(1, s1.Result, "Project event 1 not written");
 
-      var s2 = projectContext.StoreEvent(createProjectEvent2);
+      var s2 = _projectContext.StoreEvent(createProjectEvent2);
       s2.Wait();
       Assert.AreEqual(0, s2.Result, "Project event should not have been written");
     }
@@ -296,7 +292,7 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateProjectWithCustomer_HappyPathButOutOfOrder()
     {
-      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -304,7 +300,7 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent()
@@ -319,7 +315,7 @@ namespace RepositoryTests
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -328,22 +324,22 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      var s = _projectContext.StoreEvent(associateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = projectContext.StoreEvent(createProjectEvent);
+      s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = customerContext.StoreEvent(createCustomerEvent);
+      s = _customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
@@ -351,7 +347,7 @@ namespace RepositoryTests
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -365,7 +361,7 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateProject_NoCustomer()
     {
-      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createProjectEvent = new CreateProjectEvent()
@@ -380,19 +376,19 @@ namespace RepositoryTests
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
       Project project = CopyModel(createProjectEvent);
-      g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -400,7 +396,7 @@ namespace RepositoryTests
         "Project landfill timeZone is incorrect from ProjectRepo");
 
       // should fail as there is no Customer or CustProject
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project should not be available from ProjectRepo");
     }
@@ -413,7 +409,7 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateProjectWithCustomer_ProjectExists()
     {
-      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -421,7 +417,7 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent()
@@ -436,7 +432,7 @@ namespace RepositoryTests
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -445,34 +441,34 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = customerContext.StoreEvent(createCustomerEvent);
+      s = _customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
-      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
       createProjectEvent.ActionUTC = createProjectEvent.ActionUTC.AddMinutes(-2);
-      projectContext.StoreEvent(createProjectEvent).Wait();
+      _projectContext.StoreEvent(createProjectEvent).Wait();
 
       Project project = CopyModel(createProjectEvent);
-      project.LastActionedUTC = ActionUTC;
+      project.LastActionedUTC = actionUtc;
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -486,7 +482,7 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateProjectWithCustomer_ProjectExistsButIsDummy()
     {
-      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -494,7 +490,7 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent()
@@ -509,7 +505,7 @@ namespace RepositoryTests
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEventEarlier = new CreateProjectEvent()
@@ -533,26 +529,26 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = customerContext.StoreEvent(createCustomerEvent);
+      s = _customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
-      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = projectContext.StoreEvent(createProjectEventEarlier);
+      s = _projectContext.StoreEvent(createProjectEventEarlier);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Earlier Project event should have been written");
 
@@ -560,7 +556,7 @@ namespace RepositoryTests
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -574,7 +570,7 @@ namespace RepositoryTests
     [TestMethod]
     public void UpdateProject_HappyPath()
     {
-      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -582,7 +578,7 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent()
@@ -600,7 +596,7 @@ namespace RepositoryTests
 
         CoordinateSystemFileContent = new byte[] {0, 1, 2, 3, 4},
         CoordinateSystemFileName = "thisLocation\\this.cs",
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -609,7 +605,7 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var updateProjectEvent = new UpdateProjectEvent()
@@ -621,26 +617,26 @@ namespace RepositoryTests
 
         ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
         CoordinateSystemFileName = "thatLocation\\that.cs",
-        ActionUTC = ActionUTC.AddHours(1)
+        ActionUTC = actionUtc.AddHours(1)
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = customerContext.StoreEvent(createCustomerEvent);
+      s = _customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
-      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = projectContext.StoreEvent(updateProjectEvent);
+      s = _projectContext.StoreEvent(updateProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not updated");
 
@@ -652,7 +648,7 @@ namespace RepositoryTests
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.CoordinateSystemFileName = updateProjectEvent.CoordinateSystemFileName;
       project.CoordinateSystemLastActionedUTC = updateProjectEvent.ActionUTC;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -664,7 +660,7 @@ namespace RepositoryTests
     [TestMethod]
     public void UpdateProject_IgnoreNulls()
     {
-      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -672,7 +668,7 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent()
@@ -687,7 +683,7 @@ namespace RepositoryTests
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -696,7 +692,7 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var updateProjectEvent = new UpdateProjectEvent()
@@ -704,17 +700,17 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         ProjectType = createProjectEvent.ProjectType,
         ProjectEndDate = createProjectEvent.ProjectEndDate,
-        ActionUTC = ActionUTC.AddHours(1)
+        ActionUTC = actionUtc.AddHours(1)
       };
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      customerContext.StoreEvent(createCustomerEvent).Wait();
-      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+      _customerContext.StoreEvent(createCustomerEvent).Wait();
+      _projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
 
-      s = projectContext.StoreEvent(updateProjectEvent);
+      s = _projectContext.StoreEvent(updateProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not updated");
 
@@ -725,7 +721,7 @@ namespace RepositoryTests
       //project.ProjectTimeZone = createProjectEvent.ProjectTimezone;
       project.LastActionedUTC = updateProjectEvent.ActionUTC;
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
-      var g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -739,7 +735,7 @@ namespace RepositoryTests
     [TestMethod]
     public void UpdateProject_OldUpdate()
     {
-      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -747,7 +743,7 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent()
@@ -762,7 +758,7 @@ namespace RepositoryTests
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -771,7 +767,7 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var updateProjectEvent = new UpdateProjectEvent()
@@ -782,26 +778,26 @@ namespace RepositoryTests
         ProjectTimezone = createProjectEvent.ProjectTimezone,
 
         ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
-        ActionUTC = ActionUTC.AddHours(-1)
+        ActionUTC = actionUtc.AddHours(-1)
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = customerContext.StoreEvent(createCustomerEvent);
+      s = _customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
-      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = projectContext.StoreEvent(updateProjectEvent);
+      s = _projectContext.StoreEvent(updateProjectEvent);
       s.Wait();
       Assert.AreEqual(0, s.Result, "Project event not updated");
 
@@ -809,7 +805,7 @@ namespace RepositoryTests
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -823,7 +819,7 @@ namespace RepositoryTests
     [TestMethod]
     public void DeleteProject_HappyPath()
     {
-      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -831,7 +827,7 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent()
@@ -846,7 +842,7 @@ namespace RepositoryTests
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -855,32 +851,32 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var deleteProjectEvent = new DeleteProjectEvent()
       {
         ProjectUID = createProjectEvent.ProjectUID,
-        ActionUTC = ActionUTC.AddHours(1)
+        ActionUTC = actionUtc.AddHours(1)
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = customerContext.StoreEvent(createCustomerEvent);
+      s = _customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
-      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = projectContext.StoreEvent(deleteProjectEvent);
+      s = _projectContext.StoreEvent(deleteProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not deleted");
 
@@ -889,12 +885,12 @@ namespace RepositoryTests
       project.IsDeleted = true;
       project.LastActionedUTC = deleteProjectEvent.ActionUTC;
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Should not be able to retrieve Project from ProjectRepo");
 
       // this one ignores the IsDeleted flag in DB
-      g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -949,30 +945,30 @@ namespace RepositoryTests
         ActionUTC = ActionUTC.AddHours(-1)
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = customerContext.StoreEvent(createCustomerEvent);
+      s = _customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
-      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = projectContext.StoreEvent(deleteProjectEvent);
+      s = _projectContext.StoreEvent(deleteProjectEvent);
       s.Wait();
       Assert.AreEqual(0, s.Result, "Project event should not be deleted");
 
       Project project = CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -991,7 +987,7 @@ namespace RepositoryTests
     [TestMethod]
     public void AssociateProjectWithCustomer_HappyPath()
     {
-      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -999,7 +995,7 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent()
@@ -1014,7 +1010,7 @@ namespace RepositoryTests
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -1023,7 +1019,7 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var updateAssociateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -1032,33 +1028,33 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 999,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC.AddDays(1)
+        ActionUTC = actionUtc.AddDays(1)
       };
 
-      var g = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Project shouldn't be there yet");
 
-      var s = projectContext.StoreEvent(createProjectEvent);
+      var s = _projectContext.StoreEvent(createProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = customerContext.StoreEvent(createCustomerEvent);
+      s = _customerContext.StoreEvent(createCustomerEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
-      s = projectContext.StoreEvent(associateCustomerProjectEvent);
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      s = projectContext.StoreEvent(updateAssociateCustomerProjectEvent);
+      s = _projectContext.StoreEvent(updateAssociateCustomerProjectEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "CustomerProject not updated");
 
       Project project = CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = updateAssociateCustomerProjectEvent.LegacyCustomerID;
-      g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
@@ -1072,7 +1068,7 @@ namespace RepositoryTests
     [TestMethod]
     public void AssociateProjectWithCustomer_ChangeIsEarlier()
     {
-      DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -1080,7 +1076,7 @@ namespace RepositoryTests
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
         CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var createProjectEvent = new CreateProjectEvent()
@@ -1096,7 +1092,7 @@ namespace RepositoryTests
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
 
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -1105,7 +1101,7 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 1234,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC
+        ActionUTC = actionUtc
       };
 
       var updateAssociateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -1114,19 +1110,19 @@ namespace RepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         LegacyCustomerID = 999,
         RelationType = RelationType.Customer,
-        ActionUTC = ActionUTC.AddDays(-1)
+        ActionUTC = actionUtc.AddDays(-1)
       };
 
-      projectContext.StoreEvent(createProjectEvent).Wait();
-      customerContext.StoreEvent(createCustomerEvent).Wait();
-      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
-      projectContext.StoreEvent(updateAssociateCustomerProjectEvent).Wait();
+      _projectContext.StoreEvent(createProjectEvent).Wait();
+      _customerContext.StoreEvent(createCustomerEvent).Wait();
+      _projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+      _projectContext.StoreEvent(updateAssociateCustomerProjectEvent).Wait();
 
       Project project = CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
-      var g = projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
+      var g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
