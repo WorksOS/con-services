@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,15 +22,15 @@ namespace VSS.Raptor.Service.Common.Proxies
     public async Task<T> ExecuteRequest<T>(string endpoint, string method,
       IDictionary<string, string> customHeaders = null, string payloadData = null)
     {
-      var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
-      log.LogDebug("GracefulWebRequest.ExecuteRequest() : request{0}", JsonConvert.SerializeObject(request));
-
 
       var policyResult = await Policy
         .Handle<Exception>()
         .RetryAsync(3)
         .ExecuteAndCaptureAsync(async () =>
         {
+          var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
+          log.LogDebug("GracefulWebRequest.ExecuteRequest() : request{0}", JsonConvert.SerializeObject(request));
+
           string responseString = null;
 
           using (var response = await request.GetResponseAsync())
@@ -54,12 +53,12 @@ namespace VSS.Raptor.Service.Common.Proxies
           log.LogDebug("GracefulWebRequest.ExecuteRequest(). defaultToReturn:{0}",
             JsonConvert.SerializeObject(defaultToReturn));
           return defaultToReturn;
-        }).ConfigureAwait(false);
+        });
 
       if (policyResult.FinalException != null)
       {
-        log.LogDebug("GracefulWebRequest.ExecuteRequest(). exceptionToRethrow:{0} endpoint: {1} method: {2}",
-          policyResult.FinalException.ToString(), endpoint, method);
+        log.LogDebug("GracefulWebRequest.ExecuteRequest(). exceptionToRethrow:{0} endpoint: {1} method: {2}, customHeaders: {3} payloadData: {4}",
+          policyResult.FinalException.ToString(), endpoint, method, customHeaders, payloadData);
         throw policyResult.FinalException;
       }
       if (policyResult.Outcome == OutcomeType.Successful)
@@ -73,19 +72,32 @@ namespace VSS.Raptor.Service.Common.Proxies
     public async Task<Stream> ExecuteRequest(string endpoint, string method,
       IDictionary<string, string> customHeaders = null, string payloadData = null)
     {
-      var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
-
-      return await Policy
+      var policyResult = await Policy
         .Handle<Exception>()
-        .Retry(3)
-        .ExecuteAndCapture(async () =>
+        .RetryAsync(3)
+        .ExecuteAndCaptureAsync(async () =>
         {
+          var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
+
+          Stream responseStream = null;
           using (var response = await request.GetResponseAsync())
           {
-            return GetStreamFromResponse(response);
+            responseStream = GetStreamFromResponse(response);
           }
-        })
-        .Result;
+          return responseStream;
+        });
+
+      if (policyResult.FinalException != null)
+      {
+        log.LogDebug("GracefulWebRequest.ExecuteRequest_stream(). exceptionToRethrow:{0} endpoint: {1} method: {2}, customHeaders: {3} payloadData: {4}",
+          policyResult.FinalException.ToString(), endpoint, method, customHeaders, payloadData);
+        throw policyResult.FinalException;
+      }
+      if (policyResult.Outcome == OutcomeType.Successful)
+      {
+        return policyResult.Result;
+      }
+      return null;
     }
 
     private async Task<WebRequest> PrepareWebRequest(string endpoint, string method,
@@ -175,30 +187,51 @@ namespace VSS.Raptor.Service.Common.Proxies
         }
       }
 
-      var request = WebRequest.Create(endpoint);
-      request.Method = "POST";
-      if (request is HttpWebRequest)
-      {
-        var httpRequest = request as HttpWebRequest;
-        httpRequest.Accept = "*/*";
-        //Add custom headers e.g. JWT, CustomerUid, UserUid
-        if (customHeaders != null)
-        {
-          foreach (var key in customHeaders.Keys)
-          {
-            httpRequest.Headers[key] = customHeaders[key];
-          }
-        }
-      }
-      using (var writeStream = await request.GetRequestStreamAsync())
-      {
-        await payload.CopyToAsync(writeStream);
-      }
-      return await Policy
+      //var request = WebRequest.Create(endpoint);
+      //request.Method = "POST";
+      //if (request is HttpWebRequest)
+      //{
+      //  var httpRequest = request as HttpWebRequest;
+      //  httpRequest.Accept = "*/*";
+      //  //Add custom headers e.g. JWT, CustomerUid, UserUid
+      //  if (customHeaders != null)
+      //  {
+      //    foreach (var key in customHeaders.Keys)
+      //    {
+      //      httpRequest.Headers[key] = customHeaders[key];
+      //    }
+      //  }
+      //}
+      //using (var writeStream = await request.GetRequestStreamAsync())
+      //{
+      //  await payload.CopyToAsync(writeStream);
+      //}
+
+      var policyResult = await Policy
         .Handle<Exception>()
-        .Retry(3)
-        .ExecuteAndCapture(async () =>
+        .RetryAsync(3)
+        .ExecuteAndCaptureAsync(async () =>
         {
+          var request = WebRequest.Create(endpoint);
+          request.Method = "POST";
+          if (request is HttpWebRequest)
+          {
+            var httpRequest = request as HttpWebRequest;
+            httpRequest.Accept = "*/*";
+            //Add custom headers e.g. JWT, CustomerUid, UserUid
+            if (customHeaders != null)
+            {
+              foreach (var key in customHeaders.Keys)
+              {
+                httpRequest.Headers[key] = customHeaders[key];
+              }
+            }
+          }
+          using (var writeStream = await request.GetRequestStreamAsync())
+          {
+            await payload.CopyToAsync(writeStream);
+          }
+
           string responseString = null;
           using (var response = await request.GetResponseAsync())
           {
@@ -207,8 +240,19 @@ namespace VSS.Raptor.Service.Common.Proxies
           if (!string.IsNullOrEmpty(responseString))
             return JsonConvert.DeserializeObject<T>(responseString);
           return default(T);
-        })
-        .Result;
+        });
+
+      if (policyResult.FinalException != null)
+      {
+        log.LogDebug("GracefulWebRequest.ExecuteRequest_multi(). exceptionToRethrow:{0} endpoint: {1} customHeaders: {2}",
+          policyResult.FinalException.ToString(), endpoint, customHeaders);
+        throw policyResult.FinalException;
+      }
+      if (policyResult.Outcome == OutcomeType.Successful)
+      {
+        return policyResult.Result;
+      }
+      return default(T);
     }
 
   }
