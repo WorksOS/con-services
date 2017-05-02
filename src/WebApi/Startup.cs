@@ -8,6 +8,7 @@ using Swashbuckle.Swagger.Model;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using Repositories;
+using VSS.TagFileAuth.Service.Filters;
 using WebApiModels.ResultHandling;
 
 namespace WebApi

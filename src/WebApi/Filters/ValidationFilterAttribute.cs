@@ -3,6 +3,8 @@ using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
+using WebApiModels.Models;
+using WebApiModels.ResultHandling;
 
 namespace VSS.TagFileAuth.Service.Filters
 {
