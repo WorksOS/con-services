@@ -24,6 +24,9 @@
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "KafkaConsumer.netcore": "*",
     "VSS.Interfaces.netcore": "*",
+    "VSS.Authentication.JWT": "*",
+    "AutoMapper": "6.0.2",
+    "ProjectWebApiCommon": "1.0.0-*",
     "MasterDataProxies.netcore": "*",
     "MasterDataRepos.netcore": "*",
     "VSS.Authentication.JWT": "*"

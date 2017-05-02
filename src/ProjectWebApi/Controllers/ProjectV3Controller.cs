@@ -32,20 +32,38 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
         }
 
 
-        /// <summary>
-        /// Gets a list of projects for a customer. The list includes projects of all project types
-        /// and both active and archived projects.
-        /// </summary>
-        /// <returns>A list of projects</returns>
-        [Route("api/v3/project")]
-        [HttpGet]
-        public async Task<ImmutableList<ProjectDescriptor>> GetProjectsV3()
-        {
-            log.LogInformation("GetProjectsV3");
-            return await GetProjectList();
-        }
+      /// <summary>
+      /// Gets a list of projects for a customer. The list includes projects of all project types
+      /// and both active and archived projects.
+      /// </summary>
+      /// <returns>A list of projects</returns>
+      [Route("api/v3/project")]
+      [HttpGet]
+      public async Task<ImmutableList<ProjectDescriptor>> GetProjectsV3()
+      {
+        log.LogInformation("GetProjectsV3");
+        var projects = (await GetProjectList());
+        return projects.Select(project =>
+            new ProjectDescriptor()
+            {
+              ProjectType = project.ProjectType,
+              Name = project.Name,
+              ProjectTimeZone = project.ProjectTimeZone,
+              IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
+              StartDate = project.StartDate.ToString("O"),
+              EndDate = project.EndDate.ToString("O"),
+              ProjectUid = project.ProjectUID,
+              LegacyProjectId = project.LegacyProjectID,
+              ProjectGeofenceWKT = project.GeometryWKT,
+              CustomerUID = project.CustomerUID,
+              LegacyCustomerId = project.LegacyCustomerID.ToString(),
+              CoordinateSystemFileName = project.CoordinateSystemFileName
+            }
+          )
+          .ToImmutableList();
+      }
 
-        // POST: api/project
+      // POST: api/project
         /// <summary>
         /// Create Project
         /// </summary>
@@ -110,7 +128,13 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
         [HttpPost]
         public async Task AssociateCustomerProjectV3([FromBody] AssociateProjectCustomer customerProject)
         {
-            await AssociateProjectCustomer(customerProject);
+          if (customerProject.LegacyCustomerID <= 0)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Legacy CustomerID must be provided"));
+          }
+          await AssociateProjectCustomer(customerProject);
         }
 
         /// <summary>

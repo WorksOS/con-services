@@ -38,20 +38,20 @@ namespace ProjectWebApi.Models
       if (projectRepo == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
-           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing Project Repository in ProjectDataValidator.Validate"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing Project Repository in ProjectDataValidator.Validate"));
       }
       if (evt.ActionUTC == DateTime.MinValue)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing ActionUTC"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing ActionUTC"));
       }
       if (evt.ProjectUID == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing ProjectUID"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing ProjectUID"));
       }
       //Note: don't check if project exists for associate events.
       //We don't know the workflow for NG so associate may come before project creation.
@@ -64,8 +64,8 @@ namespace ProjectWebApi.Models
         {
           string message = isCreate ? "Project already exists" : "Project does not exist";
           throw new ServiceException(HttpStatusCode.BadRequest,
-             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          message));
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              message));
         }
         if (isCreate)
         {
@@ -73,44 +73,56 @@ namespace ProjectWebApi.Models
           if (string.IsNullOrEmpty(createEvent.ProjectBoundary))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing ProjectBoundary"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Missing ProjectBoundary"));
           }
           if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing ProjectTimezone"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Missing ProjectTimezone"));
           }
           if (string.IsNullOrEmpty(createEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing ProjectName"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Missing ProjectName"));
+          }
+          if (createEvent.ProjectName.Length > 255)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "ProjectName is longer than the 255 characters allowed"));
+          }
+          if (!string.IsNullOrEmpty(createEvent.Description) && createEvent.Description.Length > 2000)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Description is longer than the 2000 characters allowed"));
           }
           if (createEvent.ProjectStartDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing ProjectStartDate"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Missing ProjectStartDate"));
           }
           if (createEvent.ProjectEndDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing ProjectEndDate"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Missing ProjectEndDate"));
           }
           if (createEvent.ProjectEndDate < DateTime.UtcNow)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, 
-                                          "ProjectEndDate must be in the future"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "ProjectEndDate must be in the future"));
           }
           if (createEvent.ProjectStartDate > createEvent.ProjectEndDate)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Start date must be earlier than end date"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Start date must be earlier than end date"));
           }
         }
         else if (evt is UpdateProjectEvent)
@@ -119,27 +131,39 @@ namespace ProjectWebApi.Models
           if (string.IsNullOrEmpty(updateEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "ProjectName cannot be empty"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "ProjectName cannot be empty"));
+          }
+          if (updateEvent.ProjectName.Length > 255)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "ProjectName is longer than the 255 characters allowed"));
+          }
+          if (!string.IsNullOrEmpty(updateEvent.Description) && updateEvent.Description.Length > 2000)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Description is longer than the 2000 characters allowed"));
           }
           if (updateEvent.ProjectEndDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "ProjectEndDate cannot be empty"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "ProjectEndDate cannot be empty"));
           }
           var project = projectRepo.GetProjectOnly(evt.ProjectUID.ToString()).Result;
           if (project.StartDate > updateEvent.ProjectEndDate)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "ProjectEndDate must be later than start date"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "ProjectEndDate must be later than start date"));
           }
-          if (!project.ProjectTimeZone.Equals(updateEvent.ProjectTimezone))
+          if (!string.IsNullOrEmpty(updateEvent.ProjectTimezone) && !project.ProjectTimeZone.Equals(updateEvent.ProjectTimezone))
           {
             throw new ServiceException(HttpStatusCode.Forbidden,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Project timezone cannot be updated"));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Project timezone cannot be updated"));
           }
         }
         //Nothing else to check for DeleteProjectEvent
@@ -150,27 +174,21 @@ namespace ProjectWebApi.Models
         if (associateEvent.CustomerUID == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing CustomerUID"));
-        }
-        if (associateEvent.LegacyCustomerID <= 0)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing legacy CustomerID"));
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Missing CustomerUID"));
         }
         if (projectRepo.CustomerProjectExists(evt.ProjectUID.ToString()).Result)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Project already associated with a customer"));
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Project already associated with a customer"));
         }
       }
       else if (evt is DissociateProjectCustomer)
       {
         throw new ServiceException(HttpStatusCode.NotImplemented,
-           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Dissociating projects from customers is not supported"));
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Dissociating projects from customers is not supported"));
       }
       else if (evt is AssociateProjectGeofence)
       {
@@ -178,10 +196,11 @@ namespace ProjectWebApi.Models
         if (associateEvent.GeofenceUID == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-                new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing GeofenceUID"));
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Missing GeofenceUID"));
         }
       }
     }
+    
   }
 }
