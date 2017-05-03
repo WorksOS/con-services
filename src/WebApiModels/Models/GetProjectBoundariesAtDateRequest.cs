@@ -15,14 +15,12 @@ namespace WebApiModels.Models
     /// <summary>
     /// The id of the asset owned by the customer whose active project boundaries are returned. 
     /// </summary>
-    [Required]
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
     public long assetId { get; set; }
 
     /// <summary>
     /// The date time from the tag file which must be within the active project date range. 
     /// </summary>
-    [Required]
     [JsonProperty(PropertyName = "tagFileUTC", Required = Required.Always)]
     public DateTime tagFileUTC { get; set; }
 
