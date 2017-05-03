@@ -1,8 +1,10 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Runtime.Remoting.Messaging;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -85,8 +87,17 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid"></param>
     /// <param name="startUtc"></param>
     /// <param name="endUtc"></param>
+    /// <param name="vibeStateOn"></param>
+    /// <param name="elevationType"></param>
+    /// <param name="layerNumber"></param>
+    /// <param name="onMachineDesignId"></param>
+    /// <param name="assetID"></param>
+    /// <param name="machineName"></param>
+    /// <param name="isJohnDoe"></param>
     /// <returns>An instance of the CMVRequest class.</returns>
-    private CMVRequest GetCMVRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc)
+    private CMVRequest GetCMVRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc,
+      bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
+      string machineName, bool? isJohnDoe)
     {
       if (!projectId.HasValue)
       {
@@ -95,7 +106,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
       CMVSettings cmvSettings = CompactionSettings.CompactionCmvSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
+      Filter filter = CompactionSettings.CompactionFilter(
+        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, GetMachines(assetID, machineName, isJohnDoe));
 
       return CMVRequest.CreateCMVRequest(projectId.Value, null, cmvSettings, liftSettings, filter, -1, null, null, null);
     }
@@ -107,9 +119,18 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid"></param>
     /// <param name="startUtc"></param>
     /// <param name="endUtc"></param>
+    /// <param name="vibeStateOn"></param>
+    /// <param name="elevationType"></param>
+    /// <param name="layerNumber"></param>
+    /// <param name="onMachineDesignId"></param>
+    /// <param name="assetID"></param>
+    /// <param name="machineName"></param>
+    /// <param name="isJohnDoe"></param>
     /// <param name="isSummary"></param>
     /// <returns>An instance of the PassCounts class.</returns>
-    private PassCounts GetPassCountRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc, bool isSummary)
+    private PassCounts GetPassCountRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc,
+      bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
+      string machineName, bool? isJohnDoe, bool isSummary)
     {
       if (!projectId.HasValue)
       {
@@ -118,7 +139,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
       PassCountSettings passCountSettings = isSummary ? null : CompactionSettings.CompactionPassCountSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
+      Filter filter = CompactionSettings.CompactionFilter(
+        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, GetMachines(assetID, machineName, isJohnDoe));
 
       return PassCounts.CreatePassCountsRequest(projectId.Value, null, passCountSettings, liftSettings, filter, -1, null, null, null);
     }
@@ -131,17 +153,41 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>CMV summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/cmv/summary")]
     [HttpGet]
-    public CompactionCmvSummaryResult GetCmvSummary([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
-      [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    public CompactionCmvSummaryResult GetCmvSummary(
+      [FromQuery] long? projectId, 
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, 
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetCmvSummary: " + Request.QueryString);
 
-      CMVRequest request = GetCMVRequest(projectId, projectUid, startUtc, endUtc);
+      CMVRequest request = GetCMVRequest(projectId, projectUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
       request.Validate();
 
       try
@@ -176,13 +222,37 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>MDP summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/mdp/summary")]
     [HttpGet]
-    public CompactionMdpSummaryResult GetMdpSummary([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
-      [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    public CompactionMdpSummaryResult GetMdpSummary(
+      [FromQuery] long? projectId, 
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, 
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -192,8 +262,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
       MDPSettings mdpSettings = CompactionSettings.CompactionMdpSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
-
+      Filter filter = CompactionSettings.CompactionFilter(
+        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, GetMachines(assetID, machineName, isJohnDoe));
       MDPRequest request = MDPRequest.CreateMDPRequest(projectId.Value, null, mdpSettings, liftSettings, filter, -1,
         null, null, null);
       request.Validate();
@@ -227,17 +297,41 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>Pass count summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/passcounts/summary")]
     [HttpGet]
-    public CompactionPassCountSummaryResult GetPassCountSummary([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
-      [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    public CompactionPassCountSummaryResult GetPassCountSummary(
+      [FromQuery] long? projectId, 
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, 
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetPassCountSummary: " + Request.QueryString);
 
-      PassCounts request = GetPassCountRequest(projectId, projectUid, startUtc, endUtc, true);
+      PassCounts request = GetPassCountRequest(projectId, projectUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, true);
       request.Validate();
 
       try
@@ -270,13 +364,37 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>Temperature summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/temperature/summary")]
     [HttpGet]
-    public CompactionTemperatureSummaryResult GetTemperatureSummary([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
-      [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    public CompactionTemperatureSummaryResult GetTemperatureSummary(
+      [FromQuery] long? projectId, 
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, 
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -286,7 +404,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
       TemperatureSettings temperatureSettings = CompactionSettings.CompactionTemperatureSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
+      Filter filter = CompactionSettings.CompactionFilter(
+        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, GetMachines(assetID, machineName, isJohnDoe));
 
       TemperatureRequest request = TemperatureRequest.CreateTemperatureRequest(projectId.Value, null, temperatureSettings, liftSettings, filter, -1,
         null, null, null);
@@ -321,13 +440,37 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>Speed summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/speed/summary")]
     [HttpGet]
-    public CompactionSpeedSummaryResult GetSpeedSummary([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
-      [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    public CompactionSpeedSummaryResult GetSpeedSummary(
+      [FromQuery] long? projectId, 
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, 
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -337,8 +480,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
-   
+      Filter filter = CompactionSettings.CompactionFilter(
+        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, GetMachines(assetID, machineName, isJohnDoe));
+
       SummarySpeedRequest request = SummarySpeedRequest.CreateSummarySpeedRequestt(projectId.Value, null, liftSettings, filter, -1);
       request.Validate();
       try
@@ -371,13 +515,37 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>CMV % change</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/cmv/percentchange")]
     [HttpGet]
-    public CompactionCmvPercentChangeResult GetCmvPercentChange([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
-      [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    public CompactionCmvPercentChangeResult GetCmvPercentChange(
+      [FromQuery] long? projectId, 
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, 
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -386,7 +554,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
+      Filter filter = CompactionSettings.CompactionFilter(
+        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, GetMachines(assetID, machineName, isJohnDoe));
       double[] cmvChangeSummarySettings = CompactionSettings.CompactionCmvPercentChangeSettings;
       CMVChangeSummaryRequest request = CMVChangeSummaryRequest.CreateCMVChangeSummaryRequest(
         projectId.Value, null, liftSettings, filter, -1, cmvChangeSummarySettings);
@@ -415,7 +584,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
     }
 
-        #endregion
+    #endregion
 
     #region Detailed Data for the map
     /// <summary>
@@ -425,17 +594,41 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>CMV details</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/cmv/details")]
     [HttpGet]
-    public CompactionCmvDetailedResult GetCmvDetails([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
-        [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    public CompactionCmvDetailedResult GetCmvDetails(
+      [FromQuery] long? projectId, 
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, 
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
-      CMVRequest request = GetCMVRequest(projectId, projectUid, startUtc, endUtc);
+      CMVRequest request = GetCMVRequest(projectId, projectUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
       request.Validate();
 
       try
@@ -470,17 +663,41 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>Pass count details</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/passcounts/details")]
     [HttpGet]
-    public CompactionPassCountDetailedResult GetPassCountDetails([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
-      [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    public CompactionPassCountDetailedResult GetPassCountDetails(
+      [FromQuery] long? projectId, 
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, 
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetPassCountDetails: " + Request.QueryString);
 
-      PassCounts request = GetPassCountRequest(projectId, projectUid, startUtc, endUtc, false);
+      PassCounts request = GetPassCountRequest(projectId, projectUid, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, false);
       request.Validate();
 
       try
@@ -563,7 +780,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       foreach (var mode in modes)
       {
         List<ColorValue> colorValues;
-        ElevationStatisticsResult elevExtents = mode == DisplayMode.Height ? GetElevationRange(projectId, null, null, null) : null;
+        ElevationStatisticsResult elevExtents = mode == DisplayMode.Height ? GetElevationRange(projectId.Value, null) : null;
         var compactionPalette = CompactionSettings.CompactionPalette(mode, elevExtents);
         switch (mode)
         {
@@ -632,42 +849,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 
     #endregion
 
-
-    /* COMMENTED OUT UNTIL OTHER FILTERS REQUIRED - simplified version below as a GET
-  /// <summary>
-  /// Gets elevation statistics from Raptor.
-  /// </summary>
-  /// <param name="request">The request for elevation statistics request to Raptor</param>
-  /// <returns></returns>
-  /// <executor>ElevationStatisticsExecutor</executor>
-  [ProjectIdVerifier]
-  [ProjectUidVerifier]
-  [Route("api/v2/compaction/elevationrange")]
-  [HttpPost]
-  public ElevationStatisticsResult PostElevationRange([FromBody] CompactionElevationRangeRequest request)
-  {
-    request.Validate();
-
-    LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
- 
-    var layerMethod = request.filter == null || !request.filter.layerNumber.HasValue ? (FilterLayerMethod?)null : FilterLayerMethod.TagfileLayerNumber;
-
-    Filter filter = request.filter == null ? null : Filter.CreateFilter(null, null, null, request.filter.startUTC, request.filter.endUTC,
-      request.filter.onMachineDesignID, null, request.filter.vibeStateOn, null, request.filter.elevationType,
-      null, null, null, null, null, null, null, null, null, layerMethod, null, null,
-      request.filter.layerNumber, null, request.filter.contributingMachines, null, null, null, null, null, null, null);
-    filter?.Validate();
-
-    ElevationStatisticsRequest statsRequest =
-      ElevationStatisticsRequest.CreateElevationStatisticsRequest(request.projectId.Value, null, filter, 0,
-        liftSettings);
-    statsRequest.Validate();
-    return
-        RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null).Process(statsRequest)
-            as ElevationStatisticsResult;
-  }
-  */
-
+    #region Elevation Range
 
     /// <summary>
     /// Get elevation range from Raptor for the specified project and date range. Either legacy project ID or project UID must be provided.
@@ -676,13 +858,37 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="startUtc">Start UTC.</param>
     /// <param name="endUtc">End UTC. </param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetIDL</param>
     /// <returns>Elevation statistics</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/elevationrange")]
     [HttpGet]
-    public ElevationStatisticsResult GetElevationRange([FromQuery] long? projectId, [FromQuery] Guid? projectUid,
-      [FromQuery] DateTime? startUtc, [FromQuery] DateTime? endUtc)
+    public ElevationStatisticsResult GetElevationRange(
+      [FromQuery] long? projectId, 
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc, 
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] bool? vibeStateOn,
+      [FromQuery] ElevationType? elevationType,
+      [FromQuery] int? layerNumber,
+      [FromQuery] long? onMachineDesignId,
+      [FromQuery] long? assetID,
+      [FromQuery] string machineName,
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetElevationRange: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -692,33 +898,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
       try
       {
-        ElevationStatisticsResult result = null;
-        //Only cache full extents without date restriction
-        bool restrictedRange = startUtc.HasValue || endUtc.HasValue;
-        bool getIt = restrictedRange ||
-                     !this.elevationExtentsCache.TryGetValue(projectId, out result);
-        if (getIt)
-        {
-          LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-          Filter filter = CompactionSettings.CompactionDateFilter(startUtc, endUtc);
-
-          ElevationStatisticsRequest statsRequest =
-            ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId.Value, null, filter, 0, liftSettings);
-          statsRequest.Validate();
-
-          result =
-            RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null)
-              .Process(statsRequest) as ElevationStatisticsResult;
-
-          if (!restrictedRange)
-          {
-            var opts = new MemoryCacheEntryOptions
-            {
-              SlidingExpiration = elevationExtentsCacheLife
-            };
-            elevationExtentsCache.Set(projectId, result, opts);
-          }
-        }
+        Filter filter = CompactionSettings.CompactionFilter(
+         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, GetMachines(assetID, machineName, isJohnDoe));
+        ElevationStatisticsResult result = GetElevationRange(projectId.Value, filter);
         log.LogInformation("GetElevationRange result: " + JsonConvert.SerializeObject(result));
         return result;
       }
@@ -737,6 +919,78 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         log.LogInformation("GetElevationRange returned: " + Response.StatusCode);
       }
     }
+
+    /// <summary>
+    /// Gets the elevation statistics for the given filter
+    /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="filter">Compaction filter</param>
+    /// <param name="cacheKey">Elevation extents cache key</param>
+    /// <returns>Elevation statistics</returns>
+    private ElevationStatisticsResult GetElevationRange(long projectId, Filter filter)
+    {
+      ElevationStatisticsResult result = null;
+      string cacheKey = ElevationCacheKey(projectId, filter);
+      if (!this.elevationExtentsCache.TryGetValue(cacheKey, out result))
+      {
+        LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+
+        ElevationStatisticsRequest statsRequest =
+          ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0, liftSettings);
+        statsRequest.Validate();
+
+        result =
+          RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null)
+            .Process(statsRequest) as ElevationStatisticsResult;
+
+        var opts = new MemoryCacheEntryOptions
+        {
+          SlidingExpiration = elevationExtentsCacheLife
+        };
+        elevationExtentsCache.Set(cacheKey, result, opts);
+      }
+      return result;
+    }
+
+    /// <summary>
+    /// Gets the key for the elevation extents cache
+    /// </summary>
+    /// <param name="projectId">project ID</param>
+    /// <param name="filter">Compaction filter</param>
+    /// <returns>Cache key</returns>
+    private string ElevationCacheKey(long projectId, Filter filter)
+    {
+      return
+        filter == null
+          ? ElevationCacheKey(projectId, null, null, null, null, null, null, null, null, null)
+          : ElevationCacheKey(projectId, filter.startUTC, filter.endUTC, filter.vibeStateOn, filter.elevationType, filter.layerNumber, filter.onMachineDesignID,
+          filter.contributingMachines == null || filter.contributingMachines.Count == 0 ? (long?)null : filter.contributingMachines[0].assetID,
+          //Can only filter by one machine at present
+          filter.contributingMachines == null || filter.contributingMachines.Count == 0 ? null : filter.contributingMachines[0].machineName,
+          filter.contributingMachines == null || filter.contributingMachines.Count == 0 ? (bool?)null : filter.contributingMachines[0].isJohnDoe);
+    }
+
+    /// <summary>
+    /// Gets the key for the elevation extents cache
+    /// </summary>
+    /// <param name="projectId"></param>
+    /// <param name="startUtc"></param>
+    /// <param name="endUtc"></param>
+    /// <param name="vibeStateOn"></param>
+    /// <param name="elevationType"></param>
+    /// <param name="layerNumber"></param>
+    /// <param name="onMachineDesignId"></param>
+    /// <param name="assetID"></param>
+    /// <param name="machineName"></param>
+    /// <param name="isJohnDoe"></param>
+    /// <returns>Cache key</returns>
+    private string ElevationCacheKey(long projectId, DateTime? startUtc, DateTime? endUtc,
+      bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
+      string machineName, bool? isJohnDoe)
+    {
+      return string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}", projectId, startUtc, endUtc, vibeStateOn, elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+    }
+    #endregion
 
     // TEMP v2 copy of v1 until we have a simplified contract for Compaction
     /// <summary>
@@ -795,7 +1049,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       log.LogDebug("PostTile: " + JsonConvert.SerializeObject(request));
       request.Validate();
 
-      Filter filter = request.filter == null ? null : CompactionSettings.CompactionTileFilter(
+      Filter filter = request.filter == null ? null : CompactionSettings.CompactionFilter(
         request.filter.startUTC, request.filter.endUTC, request.filter.onMachineDesignID, request.filter.vibeStateOn, 
         request.filter.elevationType, request.filter.layerNumber, request.filter.contributingMachines);
       var tileResult = GetTile(filter, request.projectId.Value, request.mode, request.width, request.height, request.boundBoxLL);
@@ -825,14 +1079,17 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       log.LogDebug("PostTileRaw: " + JsonConvert.SerializeObject(request));
       request.Validate();
 
-      Filter filter = request.filter == null ? null : CompactionSettings.CompactionTileFilter(
+      Filter filter = request.filter == null ? null : CompactionSettings.CompactionFilter(
         request.filter.startUTC, request.filter.endUTC, request.filter.onMachineDesignID, request.filter.vibeStateOn, 
         request.filter.elevationType, request.filter.layerNumber, request.filter.contributingMachines);
       var tileResult = GetTile(filter, request.projectId.Value, request.mode, request.width, request.height, request.boundBoxLL);
       if (tileResult != null)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-        Response.Headers.Add("Cache-Control", "public");
+        if (!Response.Headers.ContainsKey("Cache-Control"))
+        {
+          Response.Headers.Add("Cache-Control", "public");
+        }
         Response.Headers.Add("Expires", DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
         return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
       }
@@ -914,11 +1171,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }
-      List<MachineDetails> machines = GetMachines(assetID, machineName, isJohnDoe);
-      bool haveFilter = startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue ||
-                        vibeStateOn.HasValue || elevationType.HasValue || layerNumber.HasValue || machines != null;
-      Filter filter = haveFilter ? CompactionSettings.CompactionTileFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, machines) : null;
+      Filter filter = CompactionSettings.CompactionFilter(
+        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, GetMachines(assetID, machineName, isJohnDoe));
       var tileResult = GetTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       return tileResult;
     }
@@ -1001,16 +1255,16 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
         projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
       }   
-      List<MachineDetails> machines = GetMachines(assetID, machineName, isJohnDoe);   
-      bool haveFilter = startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue ||
-                        vibeStateOn.HasValue || elevationType.HasValue || layerNumber.HasValue || machines != null;
-      Filter filter = haveFilter ? CompactionSettings.CompactionTileFilter(
-        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, machines) : null;
+      Filter filter = CompactionSettings.CompactionFilter(
+        startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber, GetMachines(assetID, machineName, isJohnDoe));
       var tileResult = GetTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       if (tileResult != null)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-        Response.Headers.Add("Cache-Control", "public");
+        if (!Response.Headers.ContainsKey("Cache-Control"))
+        {
+          Response.Headers.Add("Cache-Control", "public");
+        }
         Response.Headers.Add("Expires", DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
         return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
       }
@@ -1116,7 +1370,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
       filter?.Validate();
-      ElevationStatisticsResult elevExtents = mode == DisplayMode.Height ? GetElevationRange(projectId, null, null, null) : null;
+      ElevationStatisticsResult elevExtents = mode == DisplayMode.Height ? GetElevationRange(projectId, filter) : null;
       TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode, CompactionSettings.CompactionPalette(mode, elevExtents),
         liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0, filter == null ? FilterLayerMethod.None :  filter.layerType.Value,
         bbox, null, width, height);
@@ -1124,6 +1378,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(tileRequest) as TileResult;
       return tileResult;
     }
+
+  
     #endregion
 
   }

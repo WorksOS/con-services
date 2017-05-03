@@ -37,31 +37,18 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
       }
     }
 
-    public static Filter CompactionDateFilter(DateTime? startUtc, DateTime? endUtc)
-    { 
-      Filter filter;
-      try
-      {
-        filter = !startUtc.HasValue && !endUtc.HasValue
-          ? null
-          : JsonConvert.DeserializeObject<Filter>(string.Format("{{'startUTC': '{0}', 'endUTC': '{1}'}}", startUtc, endUtc));
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            ex.Message));
-      }
-      return filter;
-    }
-
-    public static Filter CompactionTileFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, List<MachineDetails> machines)
+    public static Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, List<MachineDetails> machines)
     {
+      bool haveFilter = startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue ||
+                  vibeStateOn.HasValue || elevationType.HasValue || layerNumber.HasValue || (machines != null && machines.Count > 0);
+
       var layerMethod = layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
-      return Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
+      return haveFilter ? 
+        Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
          null, null, null, null, null, null, null, null, null, layerMethod, null, null, layerNumber, null, machines, 
-         null, null, null, null, null, null, null);
+         null, null, null, null, null, null, null) 
+         : null;
     }
 
     public static CMVSettings CompactionCmvSettings
