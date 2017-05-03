@@ -5,6 +5,7 @@ using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Validation;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.ResultHandling;
+using System;
 
 namespace VSS.Raptor.Service.Common.Models
 {
@@ -96,6 +97,15 @@ namespace VSS.Raptor.Service.Common.Models
       }
         
     }
+
+    /// <summary>
+    /// A string representation of a class instance.
+    /// </summary>
+    public override string ToString()
+    {
+      return String.Format("fileName:{0}, filespaceId:{1}, path:{2}", fileName, filespaceId, path);
+    }
+
 
     private const int MAX_FILE_NAME = 1024;
     private const int MAX_PATH = 2048;

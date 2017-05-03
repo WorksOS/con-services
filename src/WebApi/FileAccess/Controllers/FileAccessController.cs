@@ -76,7 +76,7 @@ namespace VSS.Raptor.Service.WebApi.FileAccess.Controllers
     [HttpPost]
     public FileAccessResult Post([FromBody]FileAccessRequest request)
     {
-      log.LogInformation("Get file from TCC: " + Request.QueryString);
+      log.LogInformation("Get file from TCC: " + request.ToString());
       try
       {
         request.Validate();
@@ -98,7 +98,7 @@ namespace VSS.Raptor.Service.WebApi.FileAccess.Controllers
     [Route("api/v1/rawfiles")]
     public RawFileContainer PostRaw([FromBody]FileDescriptor request)
     {
-      log.LogInformation("Get file from TCC as an array of bytes: " + Request.QueryString);
+      log.LogInformation("Get file from TCC as an array of bytes: " + request.ToString());
       try
       {
         request.Validate();

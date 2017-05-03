@@ -17,14 +17,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Given(@"the FileAccess service URI ""(.*)""")]
         public void GivenTheFileAccessServiceURI(string uri)
         {
-            fileRequester = new Poster<FileAccessRequest, DummyRequestResult>(RaptorClientConfig.ProjectSvcBaseUri + uri);
+            fileRequester = new Poster<FileAccessRequest, DummyRequestResult>(RaptorClientConfig.FileAccessSvcBaseUri + uri);
         }
 
         [Given(@"""(.*)"" does not already exist")]
         public void GivenDoesNotAlreadyExist(string localPath)
         {
-            if (!Directory.Exists("D:\\"))
-                ScenarioContext.Current.Pending();
+            //if (!Directory.Exists("D:\\"))
+            //    ScenarioContext.Current.Pending();
 
             localPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), localPath);
             if(File.Exists(localPath))
@@ -40,8 +40,8 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         [Given(@"""(.*)"" already exists")]
         public void GivenAlreadyExists(string localPath)
         {
-            if (!Directory.Exists("D:\\"))
-                ScenarioContext.Current.Pending();
+            //if (!Directory.Exists("D:\\"))
+            //    ScenarioContext.Current.Pending();
 
             localPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), localPath);
             if(!File.Exists(localPath))

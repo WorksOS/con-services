@@ -17,10 +17,9 @@ namespace VSS.Raptor.Service.WebApiModels.FileAccess.Helpers
     /// <param name="request">An instance of FileAccessRequest class.</param>
     public static void DownloadFile(IFileRepository fileAccess, FileAccessRequest request)
     {
-      var orgs = fileAccess.ListOrganizations().Result;
-      var downloadFileResult = fileAccess.GetFile(orgs.First(), fullName(request.file.path, request.file.fileName)).Result;
+      var downloadFileResult = fileAccess.GetFile(request.file.filespaceId, fullName(request.file.path, request.file.fileName)).Result;
 
-      if (downloadFileResult.Length > 0)
+      if ((downloadFileResult != null) && (downloadFileResult.Length > 0))
       {
         var fileStream = File.Create(request.localPath);
         downloadFileResult.Seek(0, SeekOrigin.Begin);
@@ -31,10 +30,9 @@ namespace VSS.Raptor.Service.WebApiModels.FileAccess.Helpers
 
     public static void DownloadFile(IFileRepository fileAccess, FileDescriptor file, Stream stream)
     {
-      var orgs = fileAccess.ListOrganizations().Result;
-      var downloadFileResult = fileAccess.GetFile(orgs.First(), fullName(file.path, file.fileName)).Result;
+      var downloadFileResult = fileAccess.GetFile(file.filespaceId, fullName(file.path, file.fileName)).Result;
 
-      if (downloadFileResult.Length > 0)
+      if ((downloadFileResult != null) && (downloadFileResult.Length > 0))
       {
         downloadFileResult.Seek(0, SeekOrigin.Begin);
         downloadFileResult.CopyTo(stream);

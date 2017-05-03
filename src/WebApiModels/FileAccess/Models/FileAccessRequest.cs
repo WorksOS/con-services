@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
@@ -63,6 +64,14 @@ namespace VSS.Raptor.Service.WebApiModels.FileAccess.Models
     public void Validate()
     {
       // ...
+    }
+
+    /// <summary>
+    /// A string representation of a class instance.
+    /// </summary>
+    public override string ToString()
+    {
+      return String.Format("fileName:{0}, filespaceId:{1}, path:{2}, localPath:{3}", file.fileName, file.filespaceId, file.path, localPath);
     }
   }
 }
