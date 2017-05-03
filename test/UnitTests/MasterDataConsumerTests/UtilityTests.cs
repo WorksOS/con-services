@@ -128,5 +128,33 @@ namespace VSS.Visionlink.Project.UnitTests
       Assert.AreEqual(project.ProjectUID, copyOfProject.ProjectUID, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(project.LegacyProjectID, copyOfProject.LegacyProjectID, "LegacyProjectID has not been mapped correctly");
     }
+
+    //[TestMethod]
+    //public void CanCreateFileAccessService()
+    //{
+    //  public IServiceProvider serviceProvider = null;
+
+    //  [TestInitialize]
+    //  public virtual void InitTest()
+    //  {
+    //    var serviceCollection = new ServiceCollection();
+
+    //    string loggerRepoName = "UnitTestLogTest";
+    //    var logPath = System.IO.Directory.GetCurrentDirectory();
+    //    Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+
+    //    ILoggerFactory loggerFactory = new LoggerFactory();
+    //    loggerFactory.AddDebug();
+    //    loggerFactory.AddLog4Net(loggerRepoName);
+
+    //    serviceCollection.AddLogging();
+    //    serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+    //    serviceCollection.AddSingleton<IConfigurationStore, VSS.GenericConfiguration.GenericConfiguration>();
+    //    serviceCollection.AddSingleton<IFileRepository, FileRepository>();
+    //    serviceProvider = serviceCollection.BuildServiceProvider();
+
+    //    var fileAccess = serviceProvider.GetRequiredService<IFileRepository>();
+    //    Assert.IsNotNull(fileAccess);
+    //}
   }
 }

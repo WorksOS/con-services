@@ -12,6 +12,7 @@ using VSS.GenericConfiguration;
 using ProjectWebApiCommon.ResultsHandling;
 using Swashbuckle.Swagger.Model;
 using ProjectWebApiCommon.Utilities;
+using TCCFileAccess;
 using VSP.MasterData.Project.WebAPI;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
@@ -70,6 +71,7 @@ namespace ProjectWebApi
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
       services.AddTransient<IGeofenceProxy, GeofenceProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<IFileRepository, FileRepository>();
 
       services.AddMvc(
         config =>

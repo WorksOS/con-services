@@ -12,6 +12,7 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
+using TCCFileAccess;
 using VSS.Raptor.Service.Common.Interfaces;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V1
@@ -21,9 +22,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
 
         public ProjectV1Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
             IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-            IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
+            IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
             : base(producer, projectRepo, subscriptionsRepo, store,
-                subsProxy, geofenceProxy, raptorProxy, logger)
+                subsProxy, geofenceProxy, raptorProxy, fileRepo, logger)
         {
         }
 

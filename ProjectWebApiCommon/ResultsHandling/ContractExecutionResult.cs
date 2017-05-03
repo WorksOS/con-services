@@ -104,6 +104,10 @@ namespace ProjectWebApiCommon.ResultsHandling
     /// </summary>
     public static readonly int NoValidSubscription = -5;
 
+    /// <summary>
+    ///   Supplied data didn't pass validation
+    /// </summary>
+    public static readonly int TCCConfigurationError = -6;
 
     /// <summary>
     /// Dynamically adds new error messages addwith offset.
