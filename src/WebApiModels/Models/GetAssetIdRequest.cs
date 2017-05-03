@@ -33,8 +33,8 @@ namespace WebApiModels.Models
     /// The radio serial number of the machine from the tagfile.
     /// </summary>
     [Required]
-    [JsonProperty(PropertyName = "radioSerial", Required = Required.Always)]
-    public string radioSerial { get; set; }
+    [JsonProperty(PropertyName = "radioSerial", Required = Required.Default)]
+    public string radioSerial { get; set; } = string.Empty;
 
     /// <summary>
     /// Private constructor
