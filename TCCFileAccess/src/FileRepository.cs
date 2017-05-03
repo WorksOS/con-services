@@ -161,9 +161,28 @@ namespace TCCFileAccess
         public async Task<Stream> GetFile(Organization org, string fullName)
         {
             Log.LogDebug("GetFile: org={0} {1}, fullName={2}", org.shortName, org.filespaceId, fullName);
+
+            return await GetFileEx(org.filespaceId, fullName);
+        }
+
+        /// <summary>
+        /// Gets the file. The resulting stream should be disposed after read completed
+        /// </summary>
+        /// <param name="filespaceId">The file space ID.</param>
+        /// <param name="fullName">The full name.</param>
+        /// <returns></returns>
+        public async Task<Stream> GetFile(string filespaceId, string fullName)
+        {
+            Log.LogDebug("GetFile: filespaceId={0} {1}, fullName={2}", filespaceId, fullName);
+
+            return await GetFileEx(filespaceId, fullName);
+        }
+
+        private async Task<Stream> GetFileEx(string filespaceId, string fullName)
+        {
             GetFileParams getFileParams = new GetFileParams
             {
-                filespaceid = org.filespaceId,
+                filespaceid = filespaceId,
                 path = fullName
             };
 
