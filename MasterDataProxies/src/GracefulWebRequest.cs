@@ -123,7 +123,14 @@ namespace VSS.Raptor.Service.Common.Proxies
         {
           foreach (var key in customHeaders.Keys)
           {
-            httpRequest.Headers[key] = customHeaders[key];
+            if (key == "Content-Type")
+            {
+              httpRequest.ContentType = customHeaders[key];
+            }
+            else
+            {
+              httpRequest.Headers[key] = customHeaders[key];
+            }
           }
         }
       }
@@ -223,7 +230,14 @@ namespace VSS.Raptor.Service.Common.Proxies
             {
               foreach (var key in customHeaders.Keys)
               {
-                httpRequest.Headers[key] = customHeaders[key];
+            if (key == "Content-Type")
+            {
+              httpRequest.ContentType = customHeaders[key];
+            }
+            else
+            {
+            httpRequest.Headers[key] = customHeaders[key];
+            }
               }
             }
           }
