@@ -7,7 +7,13 @@ How to build local docker containers for database and kafka, to enable you to de
 
     If you have really bad problems then in Git Bash window
 		docker rmi $(docker images -q) --force
+		
+		or super-duper :  		docker kill $(docker ps -q)  then docker rm $(docker ps -qa)
+		
        which will remove all images and force them to be downloaded again when you next run docker-compose
+	   
+	   
+	   1.1. to rebuild crazy solution: dotnet build --no-incremental (updates everything incl pdbs etc etc)
 
 2. setup the database and kafka (also zookeeper) containers
     From the VSS.VisionLink.Project directory run: 

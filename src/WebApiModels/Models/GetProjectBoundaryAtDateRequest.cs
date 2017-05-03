@@ -14,14 +14,12 @@ namespace WebApiModels.Models
     /// <summary>
     /// The id of the project to get the boundary of. 
     /// </summary>
-    [Required]
     [JsonProperty(PropertyName = "projectId", Required = Required.Always)]
     public long projectId { get; set; }
 
     /// <summary>
     /// The date time from the tag file which must be within the active project date range. 
     /// </summary>
-    [Required]
     [JsonProperty(PropertyName = "tagFileUTC", Required = Required.Always)]
     public DateTime tagFileUTC { get; set; }
 

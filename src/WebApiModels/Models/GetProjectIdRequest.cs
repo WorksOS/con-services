@@ -14,42 +14,36 @@ namespace WebApiModels.Models
     /// <summary>
     /// The id of the asset whose tagfile is to be processed. A value of -1 indicates 'none' so all assets are considered (depending on tccOrgId). 
     /// </summary>
-    [Required]
     [JsonProperty(PropertyName = "assetId", Required = Required.Always)]
     public long assetId { get; set; }
 
     /// <summary>
     /// WGS84 latitude in decimal degrees. 
     /// </summary>
-    [Required]
     [JsonProperty(PropertyName = "latitude", Required = Required.Always)]
     public double latitude { get; set; }
 
     /// <summary>
     /// WGS84 longitude in decimal degrees. 
     /// </summary>    
-    [Required]
     [JsonProperty(PropertyName = "longitude", Required = Required.Always)]
     public double longitude { get; set; }
 
     /// <summary>
     /// Elevation in meters. 
     /// </summary>
-    [Required]
     [JsonProperty(PropertyName = "height", Required = Required.Always)]
     public double height { get; set; }
 
     /// <summary>
     /// Date and time the asset was at the given location. 
     /// </summary>
-    [Required]
     [JsonProperty(PropertyName = "timeOfPosition", Required = Required.Always)]
     public DateTime timeOfPosition { get; set; }
 
     /// <summary>
     /// Date and time the asset was at the given location. 
     /// </summary>
-    [Required]
     [JsonProperty(PropertyName = "tccOrgUid", Required = Required.Always)]
     public string tccOrgUid { get; set; }
 
