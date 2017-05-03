@@ -173,7 +173,7 @@ namespace TCCFileAccess
         /// <returns></returns>
         public async Task<Stream> GetFile(string filespaceId, string fullName)
         {
-            Log.LogDebug("GetFile: filespaceId={0} {1}, fullName={2}", filespaceId, fullName);
+            Log.LogDebug("GetFile: filespaceId={0}, fullName={1}", filespaceId, fullName);
 
             return await GetFileEx(filespaceId, fullName);
         }

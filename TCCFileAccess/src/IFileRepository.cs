@@ -16,6 +16,13 @@ namespace TCCFileAccess
         /// <param name="fullName">The full name.</param>
         /// <returns></returns>
         Task<Stream> GetFile(Organization org, string fullName);
+        /// <summary>
+        /// Gets the file. The resulting stream should be disposed after read completed
+        /// </summary>
+        /// <param name="filespaceId">The file space ID.</param>
+        /// <param name="fullName">The full name.</param>
+        /// <returns></returns>
+        Task<Stream> GetFile(string filespaceId, string fullName);
         Task<bool> MoveFile(Organization org, string srcFullName, string dstFullName);
         Task<DirResult> GetFolders(Organization org, DateTime lastModifiedUTC, string path);
         Task<DateTime> GetLastChangedTime(string filespaceId, string path);
