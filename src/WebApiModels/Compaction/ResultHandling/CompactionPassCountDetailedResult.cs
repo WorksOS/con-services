@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Linq;
+using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
@@ -32,7 +33,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
       {
         DetailedData = new PassCountDetailsData
         {
-          Percents = result.percents,
+          Percents = result.percents.Skip(1).ToArray(),//don't return the pass count 0 value (see PassCountSettings)
           PassCountTarget = new PassCountTargetData
           {
             MinPassCountMachineTarget = result.constantTargetPassCountRange.min,

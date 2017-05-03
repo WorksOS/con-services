@@ -34,11 +34,11 @@ Scenario: Compaction Get CMV Summary
 		"""
 		{
 			"percents": [
-				0.42069835927639881,
-				38.767353807320148,
-				1.5986537652503154,
-				28.83887252839714,
-				30.374421539755996
+	      95.47749263777871,
+        4.5225073622212877,
+        0.0,
+        0.0,
+        0.0
 			],
 			"Code": 0,
 			"Message": "success"
@@ -173,36 +173,15 @@ Scenario: Compaction Get CMV Summary
 	Then the CMV % Change result should be
   """
   {
-    "cmvChangeData": [
-      {
-        "percentRange": [
-          0,
-          5
-        ],
-        "percentValue": 4.9875827814569531
-      },
-      {
-        "percentRange": [
-          5,
-          20
-        ],
-        "percentValue": 12.603476821192054
-      },
-      {
-        "percentRange": [
-          20,
-          50
-        ],
-        "percentValue": 20.695364238410598
-      },
-      {
-        "percentRange": [
-          50,
-          100
-        ],
-        "percentValue": 61.7135761589404
-      }
-    ],
+    "cmvChangeData": {
+      "percents": [
+        4.9875827814569531,
+        12.603476821192054,
+        20.695364238410598,
+        61.7135761589404
+      ],
+      "totalAreaCoveredSqMeters": 558.57920000000013
+    },
     "Code": 0,
     "Message": "success"
   }
@@ -263,15 +242,16 @@ Scenario: Compaction Get CMV Summary
 	Then the Tile result should be
   """
   {
-    "tileData": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAACm0lEQVR42u3TQQEAMAgAIe1f0fdyLMhBB/beQNYKQJkApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlAmgCkCUCaAKQJQJoApAlA2gcVQcMQ9LN5NwAAAABJRU5ErkJggg==",
-    "tileOutsideProjectExtents": false,
+    "TileData": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAADi0lEQVR42u3TQU0FARQEQdYNmpCD8Y8FLpPNS1cp6Es/n58vJr7fDuAfHgOsGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4ILn8/t2ArzHAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFI+wPL4oIQ8iSaXgAAAABJRU5ErkJggg==",
+    "TileOutsideProjectExtents": false,
     "Code": 0,
     "Message": "success"
   }
 	"""
-
+   
   Scenario: Compaction Get Palettes 
 	Given the Compaction Palettes service URI "/api/v2/compaction/colorpalettes"
+  And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
 	When I request Palettes
 	Then the Palettes result should be
   """
@@ -280,123 +260,123 @@ Scenario: Compaction Get CMV Summary
       "colorValues": [
         {
           "color": 16711680,
-          "value": 0
+          "value": 591.9539794921875
         },
         {
           "color": 14760960,
-          "value": 68.965517241379317
+          "value": 593.062394766972
         },
         {
           "color": 16734720,
-          "value": 137.93103448275863
+          "value": 594.17081004175645
         },
         {
           "color": 16744960,
-          "value": 206.89655172413796
+          "value": 595.279225316541
         },
         {
           "color": 16755200,
-          "value": 275.86206896551727
+          "value": 596.38764059132541
         },
         {
           "color": 16762880,
-          "value": 344.82758620689657
+          "value": 597.49605586610994
         },
         {
           "color": 16768000,
-          "value": 413.79310344827593
+          "value": 598.60447114089436
         },
         {
           "color": 16442880,
-          "value": 482.75862068965523
+          "value": 599.7128864156789
         },
         {
           "color": 14476800,
-          "value": 551.72413793103453
+          "value": 600.82130169046332
         },
         {
           "color": 13821440,
-          "value": 620.68965517241384
+          "value": 601.92971696524785
         },
         {
           "color": 13166080,
-          "value": 689.65517241379314
+          "value": 603.03813224003238
         },
         {
           "color": 11855360,
-          "value": 758.62068965517244
+          "value": 604.1465475148168
         },
         {
           "color": 9889280,
-          "value": 827.58620689655186
+          "value": 605.25496278960134
         },
         {
           "color": 8578560,
-          "value": 896.55172413793116
+          "value": 606.36337806438576
         },
         {
           "color": 6615040,
-          "value": 965.51724137931046
+          "value": 607.47179333917029
         },
         {
           "color": 65280,
-          "value": 1034.4827586206898
+          "value": 608.58020861395471
         },
         {
           "color": 61540,
-          "value": 1103.4482758620691
+          "value": 609.68862388873924
         },
         {
           "color": 59010,
-          "value": 1172.4137931034484
+          "value": 610.79703916352366
         },
         {
           "color": 59030,
-          "value": 1241.3793103448277
+          "value": 611.9054544383082
         },
         {
           "color": 59060,
-          "value": 1310.344827586207
+          "value": 613.01386971309262
         },
         {
           "color": 59080,
-          "value": 1379.3103448275863
+          "value": 614.12228498787715
         },
         {
           "color": 59090,
-          "value": 1448.2758620689656
+          "value": 615.23070026266168
         },
         {
           "color": 56540,
-          "value": 1517.2413793103449
+          "value": 616.3391155374461
         },
         {
           "color": 51430,
-          "value": 1586.2068965517242
+          "value": 617.44753081223064
         },
         {
           "color": 46320,
-          "value": 1655.1724137931037
+          "value": 618.55594608701506
         },
         {
           "color": 38645,
-          "value": 1724.137931034483
+          "value": 619.66436136179959
         },
         {
           "color": 30970,
-          "value": 1793.1034482758623
+          "value": 620.772776636584
         },
         {
           "color": 23295,
-          "value": 1862.0689655172416
+          "value": 621.88119191136855
         },
         {
           "color": 18175,
-          "value": 1931.0344827586209
+          "value": 622.989607186153
         },
         {
           "color": 255,
-          "value": 2000.0000000000002
+          "value": 624.0980224609375
         }
       ],
       "aboveLastColor": 8388736,
@@ -405,58 +385,62 @@ Scenario: Compaction Get CMV Summary
     "cmvDetailPalette": {
       "colorValues": [
         {
+          "color": 8421504,
+          "value": 0.0
+        },
+        {
           "color": 255,
-          "value": 0
+          "value": 20.0
         },
         {
           "color": 65280,
-          "value": 36
+          "value": 70.0
         },
         {
           "color": 65280,
-          "value": 44
+          "value": 71.0
         },
         {
           "color": 16711680,
-          "value": 80
+          "value": 101.0
         }
       ],
-      "aboveLastColor": 8421504,
+      "aboveLastColor": null,
       "belowFirstColor": null
     },
     "passCountDetailPalette": {
       "colorValues": [
         {
           "color": 16763955,
-          "value": 1
+          "value": 1.0
         },
         {
           "color": 16776960,
-          "value": 2
+          "value": 2.0
         },
         {
           "color": 65535,
-          "value": 3
+          "value": 3.0
         },
         {
           "color": 39423,
-          "value": 4
+          "value": 4.0
         },
         {
           "color": 13434624,
-          "value": 5
+          "value": 5.0
         },
         {
           "color": 16711935,
-          "value": 6
+          "value": 6.0
         },
         {
           "color": 6684825,
-          "value": 7
+          "value": 7.0
         },
         {
           "color": 6697728,
-          "value": 8
+          "value": 8.0
         }
       ],
       "aboveLastColor": 3355392,
@@ -483,7 +467,7 @@ Scenario: Compaction Get CMV Summary
         },
         {
           "color": 65280,
-          "value": 0
+          "value": 0.0
         },
         {
           "color": 16744576,
@@ -520,23 +504,19 @@ Scenario: Compaction Get CMV Summary
       "colorValues": [
         {
           "color": 65280,
-          "value": 10
+          "value": 5.0
         },
         {
-          "color": 16776960,
-          "value": 20
+          "color": 65535,
+          "value": 20.0
         },
         {
-          "color": 16744192,
-          "value": 40
-        },
-        {
-          "color": 16711935,
-          "value": 80
+          "color": 16711680,
+          "value": 50.0
         }
       ],
-      "aboveLastColor": 16711680,
-      "belowFirstColor": 0
+      "aboveLastColor": 16776960,
+      "belowFirstColor": 33554431
     },
     "speedSummaryPalette": {
       "aboveTargetColor": 8388736,
@@ -547,51 +527,51 @@ Scenario: Compaction Get CMV Summary
       "colorValues": [
         {
           "color": 2971523,
-          "value": 70
+          "value": 70.0
         },
         {
           "color": 4430812,
-          "value": 80
+          "value": 80.0
         },
         {
           "color": 12509169,
-          "value": 90
+          "value": 90.0
         },
         {
           "color": 14479047,
-          "value": 100
+          "value": 100.0
         },
         {
           "color": 10341991,
-          "value": 110
+          "value": 110.0
         },
         {
           "color": 7053374,
-          "value": 120
+          "value": 120.0
         },
         {
           "color": 3828517,
-          "value": 130
+          "value": 130.0
         },
         {
           "color": 16174803,
-          "value": 140
+          "value": 140.0
         },
         {
           "color": 13990524,
-          "value": 150
+          "value": 150.0
         },
         {
           "color": 12660791,
-          "value": 160
+          "value": 160.0
         }
       ],
-      "aboveLastColor": 16711680,
-      "belowFirstColor": 0
+      "aboveLastColor": null,
+      "belowFirstColor": null
     },
     "Code": 0,
     "Message": "success"
-  } 
+  }
 	"""
 
 

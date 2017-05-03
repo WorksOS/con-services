@@ -89,7 +89,9 @@ namespace VSS.Raptor.Service.Common.Utilities
 
         for (int i = 1; i < palettes.Count; i++)
         {
-          var invalid = mode == DisplayMode.CutFill
+          //Special case of above color for elevation
+          var invalid = (mode == DisplayMode.Height && i == palettes.Count - 1 && palettes[i].value == -1) ? false : 
+            mode == DisplayMode.CutFill
               ? palettes[i].value > palettes[i - 1].value
               : palettes[i].value < palettes[i - 1].value;
           

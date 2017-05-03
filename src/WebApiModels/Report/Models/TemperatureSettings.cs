@@ -45,7 +45,6 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     /// Create instance of TemperatureSettings
     /// </summary>
     public static TemperatureSettings CreateTemperatureSettings(
-        short temperatureTarget,
         short maxTemperature,
         short minTemperature, 
         bool overrideTemperatureRange
