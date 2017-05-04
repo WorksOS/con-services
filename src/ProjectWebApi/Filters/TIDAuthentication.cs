@@ -23,7 +23,7 @@ namespace VSS.Project.Service.WebApiModels.Filters
 
         bool requiresCustomerUid = true; //context.Request.Method.ToUpper() == "GET"; Actually we do need to have customerUId regardless request
 
-                string authorization = context.Request.Headers["X-Jwt-Assertion"];
+        string authorization = context.Request.Headers["X-Jwt-Assertion"];
         string customerUID = context.Request.Headers["X-VisionLink-CustomerUID"];
 
         // If no authorization header found, nothing to process further
