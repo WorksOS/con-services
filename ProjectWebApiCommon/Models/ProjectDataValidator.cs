@@ -71,12 +71,7 @@ namespace ProjectWebApiCommon.Models
         if (isCreate)
         {
           var createEvent = evt as CreateProjectEvent;
-          if (createEvent.CustomerUID.ToString() != headerCustomerUid)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "CustomerUid differs to TID. Impersonation not supported."));
-          }
+
           if (string.IsNullOrEmpty(createEvent.ProjectBoundary))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
@@ -178,6 +173,12 @@ namespace ProjectWebApiCommon.Models
       else if (evt is AssociateProjectCustomer)
       {
         var associateEvent = evt as AssociateProjectCustomer;
+        if (associateEvent.CustomerUID.ToString() != headerCustomerUid)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "CustomerUid differs to requesting CustomerUid. Impersonation not supported."));
+        }
         if (associateEvent.CustomerUID == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
