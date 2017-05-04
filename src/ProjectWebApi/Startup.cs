@@ -77,7 +77,8 @@ namespace ProjectWebApi
         config =>
         {
           config.Filters.Add(new ValidationFilterAttribute());
-        });      
+        }
+        );      
       //Configure swagger
       services.AddSwaggerGen();
 

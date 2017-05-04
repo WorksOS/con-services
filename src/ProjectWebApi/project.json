@@ -27,8 +27,8 @@
         "ProjectWebApiCommon": "1.0.0-*",
         "MasterDataProxies.netcore": "*",
         "MasterDataRepos.netcore": "*",
-        "FlowJSHandler.netcore": "*",
-        "TCCFileAccess.netcore": "1.0.0"
+        "TCCFileAccess.netcore": "1.0.0",
+        "FlowJSHandler.netcore": "1.0.0"
     },
 
     "frameworks": {

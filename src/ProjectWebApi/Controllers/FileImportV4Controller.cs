@@ -13,14 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
-using ProjectWebApiCommon.Utilities;
 using Repositories;
 using Repositories.DBModels;
 using TCCFileAccess;
-using TCCFileAccess.Models;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Raptor.Service.Common.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 {
@@ -34,16 +33,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     {
     }
 
-    /// <summary>
-    /// Used as a callback by Flow.JS
-    /// </summary>
-    /// <returns></returns>
-    [Route("api/v4/importedfiles")]
-    [HttpGet]
-    public ActionResult Upload()
-    {
-      return new NoContentResult();
-    }
 
     // GET: api/v4/importedfiles
     /// <summary>
@@ -60,6 +49,19 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         ImportedFileDescriptors = await GetImportedFileList(projectUid).ConfigureAwait(false)
       };
     }
+
+
+    /// <summary>
+    /// Used as a callback by Flow.JS
+    /// </summary>
+    /// <returns></returns>
+    [Route("api/v4/importedfile")]
+    [HttpGet]
+    public ActionResult Upload()
+    {
+      return new NoContentResult();
+    }
+
 
     // POST: api/v4/importedfile
     /// <summary>
@@ -78,29 +80,30 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     [ActionName("Upload")]
     [FlowUpload("svl")]
     public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(FlowFile file,
-      [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType, [FromUri] DateTime? surveyedSurfaceUtc = null)
+        [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType, [FromUri] DateTime? surveyedSurfaceUtc = null)
     {
+    
+      if (file == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Missing imported file request"));
+      }
+      log.LogInformation(
+        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedSurfaceUtc {(surveyedSurfaceUtc == null ? "N/A" : surveyedSurfaceUtc.ToString())}");
 
-      //if (file == null)
-      //{
-      //  throw new ServiceException(HttpStatusCode.InternalServerError,
-      //    new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-      //      "Missing imported file request"));
-      //}
-      //log.LogInformation(
-      //  $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedSurfaceUtc {surveyedSurfaceUtc}");
+      
+      // by the time we are here, the file has been uploaded and location is in file. Some validation:
+      if (!System.IO.File.Exists(file.path))
+      {
+        var errorMsg = @"The uploaded file {file.path} is not available.";
+        log.LogError(errorMsg);
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData, errorMsg));
+      }
 
-      //// by the time the file arrives here, the file exists locally as follows. todo validate?
-
-      //// validate customer-project relationship
+      // validate customer-project relationship. if it fails, exception will be thrown from within the method
       //var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
-      //if (project == null)
-      //{
-      //  log.LogError($"Customer doesn't have access to {projectUid.ToString()}");
-      //  throw new ServiceException(HttpStatusCode.Forbidden,
-      //    new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
-      //      @"No access to the project or project {projectUid.Tostring()} does not exist."));
-      //}
 
       //// get the TCC super users filePath
       //var fileSpaceId = store.GetValueString("TCC_SUPER_FILESPACEID");
@@ -152,54 +155,59 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       ////      $"CreateImportedFileV4. completed succesfully. Response: {JsonConvert.SerializeObject(response)}");
       ////  return response;
 
-      throw new ServiceException(HttpStatusCode.NotImplemented,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          "CreateImportedFileV4 not implemented yet"));
+      //var fileImported = new CreateImportedFileEvent() { }
+
+      var importedFile = new ImportedFileDescriptorSingleResult(new ImportedFileDescriptor());
+      log.LogInformation(
+        $"CreateImportedFileV4. completed: {JsonConvert.SerializeObject(importedFile)}");
+
+      return importedFile;
     }
 
-    //// PUT: api/v4/importedfile
-    ///// <summary>
-    ///// Update imported file
-    ///// </summary>
-    ///// <param name="importedFileRequest">UpdateImportedFileRequest model</param>
-    ///// <remarks>Updates existing imported file</remarks>
-    ///// <response code="200">Ok</response>
-    ///// <response code="400">Bad request</response>
-    //[Route("api/v4/importedfile")]
-    //[HttpPut]
-    //public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(
-    //    [FromBody] UpdateImportedFileRequest importedFileRequest)
-    //{
-    //    if (importedFileRequest == null)
-    //    {
-    //        throw new ServiceException(HttpStatusCode.InternalServerError,
-    //            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-    //                "Missing imported file request"));
-    //    }
-    //    log.LogInformation(
-    //        $"UpdateImportedFileV4. importedFileRequest: {JsonConvert.SerializeObject(importedFileRequest)}");
 
-    //    // todo
+  //// PUT: api/v4/importedfile
+  ///// <summary>
+  ///// Update imported file
+  ///// </summary>
+  ///// <param name="importedFileRequest">UpdateImportedFileRequest model</param>
+  ///// <remarks>Updates existing imported file</remarks>
+  ///// <response code="200">Ok</response>
+  ///// <response code="400">Bad request</response>
+  //[Route("api/v4/importedfile")]
+  //[HttpPut]
+  //public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(
+  //    [FromBody] UpdateImportedFileRequest importedFileRequest)
+  //{
+  //    if (importedFileRequest == null)
+  //    {
+  //        throw new ServiceException(HttpStatusCode.InternalServerError,
+  //            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+  //                "Missing imported file request"));
+  //    }
+  //    log.LogInformation(
+  //        $"UpdateImportedFileV4. importedFileRequest: {JsonConvert.SerializeObject(importedFileRequest)}");
 
-    //    var response = new ImportedFileDescriptorSingleResult(
-    //        AutoMapperUtility.Automapper.Map<ImportedFileDescriptor>
-    //            (await GetImportedFileList(importedFileRequest.ProjectUID.ToString()).ConfigureAwait(false))
-    //        //.ToImmutableList()
-    //        //.FirstOrDefault(p => p.Name == importedFileRequest.Name)
-    //    );
-    //    log.LogInformation(
-    //        $"CreateImportedFileV4. completed succesfully. Response: {JsonConvert.SerializeObject(response)}");
-    //    return response;
-    //}
+  //    // todo
+
+  //    var response = new ImportedFileDescriptorSingleResult(
+  //        AutoMapperUtility.Automapper.Map<ImportedFileDescriptor>
+  //            (await GetImportedFileList(importedFileRequest.ProjectUID.ToString()).ConfigureAwait(false))
+  //        //.ToImmutableList()
+  //        //.FirstOrDefault(p => p.Name == importedFileRequest.Name)
+  //    );
+  //    log.LogInformation(
+  //        $"CreateImportedFileV4. completed succesfully. Response: {JsonConvert.SerializeObject(response)}");
+  //    return response;
+  //}
 
 
-    #region private
+  #region private
 
-    /// <summary>
-    /// Gets the imported file list for a project
-    /// </summary>
-    /// <returns></returns>
-    private async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
+  /// <summary>
+  /// Gets the imported file list for a project
+  /// </summary>
+  /// <returns></returns>
+  private async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
     {
       var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User + " and projectUid=" + projectUid);
@@ -221,7 +229,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
       return importedFileList;
     }
-
+    
     #endregion private
   }
 }

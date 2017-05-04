@@ -187,7 +187,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         throw new ServiceException(HttpStatusCode.Forbidden,
             new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
                 "No access to the project for a customer or project does not exist."));
-
       }
 
       log.LogInformation($"Project {projectUid} retrieved");
