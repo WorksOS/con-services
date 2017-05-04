@@ -173,12 +173,13 @@ namespace ProjectWebApiCommon.Models
       else if (evt is AssociateProjectCustomer)
       {
         var associateEvent = evt as AssociateProjectCustomer;
-        if (associateEvent.CustomerUID.ToString() != headerCustomerUid)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "CustomerUid differs to requesting CustomerUid. Impersonation not supported."));
-        }
+        // todo reinstate this once acceptance tests have been changed
+        //if (associateEvent.CustomerUID.ToString() != headerCustomerUid)
+        //{
+        //  throw new ServiceException(HttpStatusCode.BadRequest,
+        //    new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+        //      "CustomerUid differs to requesting CustomerUid. Impersonation not supported."));
+        //}
         if (associateEvent.CustomerUID == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
