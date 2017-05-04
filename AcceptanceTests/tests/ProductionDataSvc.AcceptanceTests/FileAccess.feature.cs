@@ -68,26 +68,18 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        public virtual void FeatureBackground()
-        {
-#line 4
-#line 5
- testRunner.Given("the FileAccess service URI \"/api/v1/files\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-        }
-        
         public virtual void FileAccess_DownloadAFileToCurrentDirectory(string fileName, string path, string filespaceId, string localPath, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a file to current directory", exampleTags);
-#line 7
-this.ScenarioSetup(scenarioInfo);
 #line 4
-this.FeatureBackground();
-#line 8
- testRunner.Given(string.Format("\"{0}\" does not already exist", localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 9
+this.ScenarioSetup(scenarioInfo);
+#line 5
+ testRunner.Given("the FileAccess service URI \"/api/v1/files\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 6
+ testRunner.And(string.Format("\"{0}\" does not already exist", localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 7
  testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" to \"{3}\"", fileName, path, filespaceId, localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 10
+#line 8
  testRunner.Then(string.Format("\"{0}\" should be present", localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -109,15 +101,15 @@ this.FeatureBackground();
         public virtual void FileAccess_DownloadAFileThatAlreadyExists(string fileName, string path, string filespaceId, string localPath, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a file that already exists", exampleTags);
-#line 15
+#line 13
 this.ScenarioSetup(scenarioInfo);
-#line 4
-this.FeatureBackground();
+#line 14
+ testRunner.Given("the FileAccess service URI \"/api/v1/files\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 15
+ testRunner.And(string.Format("\"{0}\" already exists", localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 16
- testRunner.Given(string.Format("\"{0}\" already exists", localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 17
  testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" to \"{3}\"", fileName, path, filespaceId, localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 18
+#line 17
  testRunner.Then("the response should have Code 0 and Message \"success\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -139,10 +131,10 @@ this.FeatureBackground();
         public virtual void FileAccess_DownloadANon_ExistentFile(string fileName, string path, string filespaceId, string localPath, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a non-existent file", exampleTags);
-#line 23
+#line 22
 this.ScenarioSetup(scenarioInfo);
-#line 4
-this.FeatureBackground();
+#line 23
+ testRunner.Given("the FileAccess service URI \"/api/v1/files\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 24
  testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" to \"{3}\" expecting BadRequest response", fileName, path, filespaceId, localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 25
@@ -169,11 +161,11 @@ this.FeatureBackground();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a file to invalid directory", exampleTags);
 #line 30
 this.ScenarioSetup(scenarioInfo);
-#line 4
-this.FeatureBackground();
 #line 31
- testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" to \"{3}\" expecting BadRequest response", fileName, path, filespaceId, localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("the FileAccess service URI \"/api/v1/files\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 32
+ testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" to \"{3}\" expecting BadRequest response", fileName, path, filespaceId, localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 33
  testRunner.Then("the response should have Code -3 and Message \"Failed to download file from TCC\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -190,6 +182,63 @@ this.FeatureBackground();
         public virtual void FileAccess_DownloadAFileToInvalidDirectory_LargeSitesRoad_TrimbleRoad_Ttm()
         {
             this.FileAccess_DownloadAFileToInvalidDirectory("Large Sites Road - Trimble Road.ttm", "/77561/1158", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", "IDontExist\\Large Sites Road - Trimble Road.ttm", ((string[])(null)));
+        }
+        
+        public virtual void FileAccess_DownloadAFileAndExtractItsContentsToBytes(string fileName, string path, string filespaceId, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a file and extract its contents to bytes", exampleTags);
+#line 38
+this.ScenarioSetup(scenarioInfo);
+#line 39
+ testRunner.Given("the FileAccess service for file content URI \"/api/v1/rawfiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 40
+ testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" expecting the downloaded file", fileName, path, filespaceId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 41
+ testRunner.Then("the response should have Code 0 and Message \"success\" and the file contents shoul" +
+                    "d be present", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("FileAccess - Download a file and extract its contents to bytes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "FileAccess")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Large Sites Road - Trimble Road.ttm")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:fileName", "Large Sites Road - Trimble Road.ttm")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:path", "/77561/1158")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filespaceId", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01")]
+        public virtual void FileAccess_DownloadAFileAndExtractItsContentsToBytes_LargeSitesRoad_TrimbleRoad_Ttm()
+        {
+            this.FileAccess_DownloadAFileAndExtractItsContentsToBytes("Large Sites Road - Trimble Road.ttm", "/77561/1158", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", ((string[])(null)));
+        }
+        
+        public virtual void FileAccess_DownloadANon_ExistentFileToExtractItsContentsToBytes(string fileName, string path, string filespaceId, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a non-existent file to extract its contents to bytes", exampleTags);
+#line 46
+this.ScenarioSetup(scenarioInfo);
+#line 47
+ testRunner.Given("the FileAccess service for file content URI \"/api/v1/rawfiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 48
+ testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" expecting no downloaded file and BadRequest " +
+                        "response", fileName, path, filespaceId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 49
+ testRunner.Then("the response should have Code -3 and Message \"Failed to download file from TCC\" a" +
+                    "nd no file contents should be present", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("FileAccess - Download a non-existent file to extract its contents to bytes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "FileAccess")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "IDontExist.ttm")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:fileName", "IDontExist.ttm")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:path", "/77561/1158")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filespaceId", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01")]
+        public virtual void FileAccess_DownloadANon_ExistentFileToExtractItsContentsToBytes_IDontExist_Ttm()
+        {
+            this.FileAccess_DownloadANon_ExistentFileToExtractItsContentsToBytes("IDontExist.ttm", "/77561/1158", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", ((string[])(null)));
         }
     }
 }
