@@ -97,6 +97,10 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
 
     public static List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents)
     {
+      const uint OVER_COLOR = 0xD500000;
+      const uint ON_COLOR = 0x8BC34A;
+      const uint UNDER_COLOR = 0x1579B;
+
       List<ColorPalette> palette = new List<ColorPalette>();
       switch (mode)
       {
@@ -125,63 +129,64 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
           break;
         case DisplayMode.PassCount:
           PassCountSettings passCountSettings = CompactionPassCountSettings;
-          var passCountDetailColors = ColorSettings.Default.passCountDetailColors;//These are reversed from 9 - 1
+          List<uint> passCountDetailColors = new List<uint>  { 0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DCE67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037 };         
           for (int i = 0; i < passCountSettings.passCounts.Length; i++)
           {
             //The colors and values for 1-8
-            palette.Add(ColorPalette.CreateColorPalette(passCountDetailColors[passCountDetailColors.Count - 1 - i].color, passCountSettings.passCounts[i]));
+            palette.Add(ColorPalette.CreateColorPalette(passCountDetailColors[i], passCountSettings.passCounts[i]));
           }
           //The 9th color and value (for above)
-          palette.Add(ColorPalette.CreateColorPalette(passCountDetailColors[0].color, passCountSettings.passCounts[7]+1));
+          palette.Add(ColorPalette.CreateColorPalette(passCountDetailColors[8], passCountSettings.passCounts[7]+1));         
           break;
         case DisplayMode.PassCountSummary:
           //Values don't matter here as no machine override for compaction
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.passCountMinimum.color, ColorSettings.Default.passCountMinimum.value));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.passCountTarget.color, ColorSettings.Default.passCountTarget.value));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.passCountMaximum.color, ColorSettings.Default.passCountMaximum.value));
+          palette.Add(ColorPalette.CreateColorPalette(UNDER_COLOR, ColorSettings.Default.passCountMinimum.value));
+          palette.Add(ColorPalette.CreateColorPalette(ON_COLOR, ColorSettings.Default.passCountTarget.value));
+          palette.Add(ColorPalette.CreateColorPalette(OVER_COLOR, ColorSettings.Default.passCountMaximum.value));
           break;
         case DisplayMode.CutFill:
           //TODO: when cut-fill implemented, need to have CompactionSettings with cut/fill tolerance and use it here for values
           //Note: cut-fill also requires a design for tile requests (make cut-fill compaction settings ?)
-          var cutFillColors = ColorSettings.Default.cutFillColors;
+          var cutFillDefaults = ColorSettings.Default.cutFillColors;
+          List<uint> cutFillColors = new List<uint> { 0xD50000, 0xE57373, 0xFFCDD2, 0x8BC34A, 0x01579B, 0x039BE5, 0xB3E5FC };
           for (int i = 0; i < cutFillColors.Count; i++)
           {
-            palette.Add(ColorPalette.CreateColorPalette(cutFillColors[i].color, cutFillColors[i].value));
+            palette.Add(ColorPalette.CreateColorPalette(cutFillColors[i], cutFillDefaults[i].value));
           }
           break;
         case DisplayMode.TemperatureSummary:
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.temperatureMinimumColor, 0));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.temperatureTargetColor, 1));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.temperatureMaximumColor, 2));
+          palette.Add(ColorPalette.CreateColorPalette(UNDER_COLOR, 0));
+          palette.Add(ColorPalette.CreateColorPalette(ON_COLOR, 1));
+          palette.Add(ColorPalette.CreateColorPalette(OVER_COLOR, 2));
           break;
         case DisplayMode.CCVPercentSummary:
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.ccvSummaryCompleteLayerColor, 0));
+          palette.Add(ColorPalette.CreateColorPalette(ON_COLOR, 0));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.ccvSummaryWorkInProgressLayerColor, 1));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.ccvSummaryUndercompactedLayerColor, 2));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.ccvSummaryOvercompactedLayerColor, 3));
+          palette.Add(ColorPalette.CreateColorPalette(UNDER_COLOR, 2));
+          palette.Add(ColorPalette.CreateColorPalette(OVER_COLOR, 3));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.ccvSummaryTooThickLayerColor, 4));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.ccvSummaryApprovedLayerColor, 5));
           break;
         case DisplayMode.MDPPercentSummary:
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.mdpSummaryCompleteLayerColor, 0));
+          palette.Add(ColorPalette.CreateColorPalette(ON_COLOR, 0));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.mdpSummaryWorkInProgressLayerColor, 1));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.mdpSummaryUndercompactedLayerColor, 2));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.mdpSummaryOvercompactedLayerColor, 3));
+          palette.Add(ColorPalette.CreateColorPalette(UNDER_COLOR, 2));
+          palette.Add(ColorPalette.CreateColorPalette(OVER_COLOR, 3));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.mdpSummaryTooThickLayerColor, 4));
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.mdpSummaryApprovedLayerColor, 5));
           break;
         case DisplayMode.TargetSpeedSummary:
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.machineSpeedMinimumColor, 0));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.machineSpeedTargetColor, 1));
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.machineSpeedMaximumColor, 2));
+          palette.Add(ColorPalette.CreateColorPalette(UNDER_COLOR, 0));
+          palette.Add(ColorPalette.CreateColorPalette(ON_COLOR, 1));
+          palette.Add(ColorPalette.CreateColorPalette(OVER_COLOR, 2));
           break;
         case DisplayMode.CMVChange:
           var cmvPercentChangeSettings = CompactionCmvPercentChangeSettings;
           palette.Add(ColorPalette.CreateColorPalette(Colors.None, 0));
-          palette.Add(ColorPalette.CreateColorPalette(Colors.Lime, cmvPercentChangeSettings[0]));
-          palette.Add(ColorPalette.CreateColorPalette(Colors.Aqua, cmvPercentChangeSettings[1]));
-          palette.Add(ColorPalette.CreateColorPalette(Colors.Red, cmvPercentChangeSettings[2]));
-          palette.Add(ColorPalette.CreateColorPalette(Colors.Yellow, NO_CCV));
+          palette.Add(ColorPalette.CreateColorPalette(0x8BC34A, cmvPercentChangeSettings[0]));
+          palette.Add(ColorPalette.CreateColorPalette(0xFFCDD2, cmvPercentChangeSettings[1]));
+          palette.Add(ColorPalette.CreateColorPalette(0xE57373, cmvPercentChangeSettings[2]));
+          palette.Add(ColorPalette.CreateColorPalette(0xD50000, NO_CCV));
           break;
       }
       return palette;
