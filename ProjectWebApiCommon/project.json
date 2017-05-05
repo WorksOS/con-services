@@ -12,7 +12,9 @@
         "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
         "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1",
         "AutoMapper": "6.0.2",
-        "MasterDataRepos.netcore": "*"
+        "MasterDataRepos.netcore": "*",
+        "TCCFileAccess.netcore": "1.0.0",
+        "FlowJSHandler.netcore": "1.0.0"
     },
 
     "frameworks": {
