@@ -447,7 +447,7 @@ Scenario: Compaction Get CMV Summary
       "belowFirstColor": null
     },
     "passCountSummaryPalette": {
-      "aboveTargetColor": 223346688,
+      "aboveTargetColor": 13959168,
       "onTargetColor": 9159498,
       "belowTargetColor": 87963
     },
@@ -486,17 +486,17 @@ Scenario: Compaction Get CMV Summary
       "belowFirstColor": null
     },
     "temperatureSummaryPalette": {
-      "aboveTargetColor": 223346688,
+      "aboveTargetColor": 13959168,
       "onTargetColor": 9159498,
       "belowTargetColor": 87963
     },
     "cmvSummaryPalette": {
-      "aboveTargetColor": 223346688,
+      "aboveTargetColor": 13959168,
       "onTargetColor": 9159498,
       "belowTargetColor": 87963
     },
     "mdpSummaryPalette": {
-      "aboveTargetColor": 223346688,
+      "aboveTargetColor": 13959168,
       "onTargetColor": 9159498,
       "belowTargetColor": 87963
     },
@@ -519,7 +519,7 @@ Scenario: Compaction Get CMV Summary
       "belowFirstColor": 33554431
     },
     "speedSummaryPalette": {
-      "aboveTargetColor": 223346688,
+      "aboveTargetColor": 13959168,
       "onTargetColor": 9159498,
       "belowTargetColor": 87963
     },

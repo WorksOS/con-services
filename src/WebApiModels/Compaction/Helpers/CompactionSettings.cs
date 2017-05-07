@@ -97,7 +97,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
 
     public static List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents)
     {
-      const uint OVER_COLOR = 0xD500000;
+      const uint OVER_COLOR = 0xD50000;
       const uint ON_COLOR = 0x8BC34A;
       const uint UNDER_COLOR = 0x1579B;
 
