@@ -47,6 +47,24 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
             this.configStore = configStore;
         }
 
+        #region CSVExport
+        /// <summary>
+        /// Produces a CSV format export for the set of production data identified by tegh request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [ProjectIdVerifier]
+        [NotLandFillProjectVerifier]
+        [ProjectUidVerifier]
+        [NotLandFillProjectWithUIDVerifier]
+        [Route("api/v1/export/gridded/csv")]
+        public ExportResult PostExportCSVReport([FromBody] ExportGridCSV request)
+        {
+            request.Validate();
+            return RequestExecutorContainer.Build<ExportGridCSVExecutor>().Process(request) as ExportResult;
+        }
+        #endregion
+
 
         #region PassCounts reports
 
