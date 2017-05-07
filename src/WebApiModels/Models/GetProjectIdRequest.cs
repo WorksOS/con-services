@@ -44,7 +44,7 @@ namespace WebApiModels.Models
     /// <summary>
     /// Date and time the asset was at the given location. 
     /// </summary>
-    [JsonProperty(PropertyName = "tccOrgUid", Required = Required.Always)]
+    [JsonProperty(PropertyName = "tccOrgUid", Required = Required.Default)]
     public string tccOrgUid { get; set; }
 
 
