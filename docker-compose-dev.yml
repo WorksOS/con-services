@@ -8,6 +8,10 @@ services:
      - ASNODEIP=10.97.96.134
      - IONODEIP=10.97.96.92
      - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
+	 - TCCBASEURL=https://www.myconnectedsite.com
+	 - TCCUSERNAME=vldevadmin
+	 - TCCPWD=vss
+	 - TCCORG=vldev	 
     ports:
      - "5001:80"
     restart: always
