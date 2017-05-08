@@ -1,21 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
+using log4net.Appender;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using ProjectWebApiCommon.Models;
 using Repositories;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using ProjectWebApiCommon.ResultsHandling;
+using Repositories.DBModels;
 using TCCFileAccess;
+using TCCFileAccess.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using ProjectWebApiCommon.Utilities;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers
 {
@@ -118,17 +125,187 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <param name="importFile">The create imported file event</param>
     /// <returns></returns>
-    protected virtual async Task<int> CreateImportedFile(CreateImportedFileEvent importFile)
+    protected virtual async Task<CreateImportedFileEvent> CreateImportedFile(Guid customerUid, Guid projectUid,
+      ImportedFileType importedFileType, string filename, DateTime? surveyedSurfaceUtc,
+      string fileDescriptor, DateTime createdUserDate, string importedBy)
     {
-      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = importFile });
+      var nowUtc = DateTime.UtcNow;
+      var createImportedFileEvent = new CreateImportedFileEvent()
+      {
+        CustomerUID = customerUid,
+        ProjectUID = projectUid,
+        ImportedFileUID = Guid.NewGuid(),
+        ImportedFileType = importedFileType,
+        Name = filename,
+        SurveyedUTC = surveyedSurfaceUtc,
+        // todo
+        //FileDescription = fileDescriptor,
+        //CreatedUserDate = createdUserDate, // endpoint param UI obtains from File properties
+        //ImportedBy = importedBy, // free form name entered by user
+        //ImportedDate = nowUtc,
+        //FileUpdated = nowUtc, // API to touch on update
+        ActionUTC = nowUtc,
+        ReceivedUTC = nowUtc
+      };
+
+      var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
-          new KeyValuePair<string, string>(importFile.ImportedFileUID.ToString(), messagePayload)
+          new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
 
-      return await projectService.StoreEvent(importFile).ConfigureAwait(false);
+      if (await projectService.StoreEvent(createImportedFileEvent).ConfigureAwait(false) == 1)
+        return createImportedFileEvent;
+
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          @"CreateImportedFileV4. Unable to store Imported File event to database: {JsonConvert.SerializeObject(importFile)}."));
+      return null;
     }
 
+    /// <summary>
+    /// Creates an imported file. Writes to Db and creates the Kafka event.
+    /// only thing which should change here is a) FileUpdatedUtc/ActionUtc
+    ///       file Descriptor???
+    /// </summary>
+    /// <param name="importFile">The create imported file event</param>
+    /// <returns></returns>
+    protected virtual async Task<UpdateImportedFileEvent> UpdateImportedFile(ImportedFileDescriptor importedFileDescriptor,
+      string fileDescriptor)
+    {
+      var nowUtc = DateTime.UtcNow;
+      var updateImportedFileEvent = new UpdateImportedFileEvent()
+      {
+        ProjectUID = Guid.Parse(importedFileDescriptor.ProjectUid),
+        ImportedFileUID = Guid.NewGuid(),
+        // todo
+        //FileDescription = fileDescriptor,
+        //FileUpdated = nowUtc, // API to touch on update
+        ActionUTC = nowUtc,
+        ReceivedUTC = nowUtc
+      };
+
+      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = updateImportedFileEvent });
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
+        });
+
+      if (await projectService.StoreEvent(updateImportedFileEvent).ConfigureAwait(false) == 1)
+        return updateImportedFileEvent;
+
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          @"CreateImportedFileV4. Unable to store updated Imported File event to database: {JsonConvert.SerializeObject(importFile)}."));
+      return null;
+    }
+
+    /// <summary>
+    /// Writes the importedFile to TCC
+    /// </summary>
+    /// <returns></returns>
+    protected async Task<FileDescriptor> WriteFileToRepository(string customerUid, string projectUid, string pathAndFileName, ImportedFileType importedFileType, DateTime? surveyedSurfaceUtc)
+    {
+      // todo move these, need to be environment variables
+      var fileSpaceId = store.GetValueString("TCCFILESPACEID");   // "u72003136-d859-4be8-86de-c559c841bf10" todo this is not real
+
+      var fileStream = new FileStream(pathAndFileName, FileMode.Open);
+      var tccPath = string.Format("/{0}/{1}", customerUid, projectUid); // trailing slash etc
+      string tccFileName = Path.GetFileName(pathAndFileName);
+
+      if (importedFileType == ImportedFileType.SurveyedSurface)
+        if (surveyedSurfaceUtc != null) // validation should prevent this
+          tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedSurfaceUtc.Value),
+            Path.GetExtension(tccFileName));
+      //else if (importedFileType == ImportedFileType.SiteBoundary)
+      //  tccFileName = GeneratedFileName(tccFileName, "_sites$", ".DXF");
+
+      var superUserOrg = new Organization() {filespaceId = fileSpaceId};
+
+      // todo check that the file doesn't already exists? no method to check, only returns file. 
+      // todo temp use the customer-based putFile until developer one is available.
+      var org = new Organization() {filespaceId = fileSpaceId};
+      //var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, filename, fileStream, fileStream.Length).ConfigureAwait(false);
+
+      var ccPutFileResult = await fileRepo.PutFile(org, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
+      if (ccPutFileResult == null || ccPutFileResult.success == $@"false")
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
+            "@Unable to put file to TCC"));
+      }
+
+      // todo is ccPutFileResult.path == tccPath?
+      return FileDescriptor.CreateFileDescriptor(fileSpaceId, ccPutFileResult.path, tccFileName);
+    }
+
+
+    /// <summary>
+    /// Notify raptor of new file
+    ///     if it already knows about it, it will just update and re-notify raptor and return success.
+    /// </summary>
+    /// <returns></returns>
+    protected async Task NotifyRaptorAddFile(string projectUid, FileDescriptor fileDescriptor)
+    {
+      var notificationResult = new ContractExecutionResult();
+      // todo = await raptorProxy.AddFile(projectUid, fileDescriptor).ConfigureAwait(false);
+      log.LogDebug($"FileImport AddFile in RaptorServices returned code: {0} Message {1}.",
+        notificationResult?.Code ?? -1,
+        notificationResult?.Message ?? "notificationResult == null");
+      if (notificationResult == null || notificationResult.Code != 0)
+      {
+        log.LogError($"FileImport AddFile in RaptorServices failed. Reason: {0} {1}. ",
+          notificationResult?.Code ?? -1,
+          notificationResult?.Message ?? "null");
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            string.Format("Unable to complete FileImport AddFile in  RaptorServices. returned code: {0} Message {1}.",
+              notificationResult?.Code ?? -1,
+              notificationResult?.Message ?? "notificationResult == null"
+            )));
+      }
+    }
+
+    /// <summary>
+    /// Notify raptor of delete file
+    ///  if it doesn't know about it then it do nothing and return success
+    /// </summary>
+    /// <returns></returns>
+    protected async Task NotifyRaptorDeleteFile(string projectUid, FileDescriptor fileDescriptor)
+    {
+      var notificationResult = new ContractExecutionResult();
+      // todo = await raptorProxy.DeleteFile(projectUid, fileDescriptor).ConfigureAwait(false);}
+      log.LogDebug($"FileImport DeleteFile in RaptorServices returned code: {0} Message {1}.",
+        notificationResult?.Code ?? -1,
+        notificationResult?.Message ?? "notificationResult == null");
+      if (notificationResult == null || notificationResult.Code != 0)
+      {
+        log.LogError($"FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}. ",
+          notificationResult?.Code ?? -1,
+          notificationResult?.Message ?? "null");
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            string.Format(
+              "Unable to complete FileImport DeleteFile in  RaptorServices. returned code: {0} Message {1}.",
+              notificationResult?.Code ?? -1,
+              notificationResult?.Message ?? "notificationResult == null"
+            )));
+      }
+    }
+
+    #region private
+    private static string GeneratedFileName(string fileName, string suffix, string extension)
+    {
+      return Path.GetFileNameWithoutExtension(fileName) + suffix + extension;
+    }
+    private static string GeneratedSuffix(DateTime surveyedUtc)
+    {
+      //Note: ':' is an invalid character for filenames in Windows so get rid of them
+      return "_" + surveyedUtc.ToIso8601DateTimeString().Replace(":", string.Empty);
+    }
+    #endregion
+    
   }
 }

@@ -2,7 +2,6 @@
 using System.Net;
 using ProjectWebApiCommon.ResultsHandling;
 using System.IO;
-using System.Threading.Tasks;
 using FlowUploadFilter;
 using Repositories.DBModels;
 
@@ -22,7 +21,7 @@ namespace ProjectWebApiCommon.Models
     /// <param name="projectUid"></param>
     /// <param name="importedFileType"></param>
     /// <param name="surveyedSurfaceUtc"></param>
-    public static void ValidateCreateImportedFileRequest(FlowFile file, Guid projectUid,
+    public static void ValidateImportedFileRequest(FlowFile file, Guid projectUid,
       ImportedFileType importedFileType, DateTime? surveyedSurfaceUtc)
     {
       // by the time we are here, the file has been uploaded and location is in file. Some validation:
@@ -62,7 +61,7 @@ namespace ProjectWebApiCommon.Models
       if (!Enum.IsDefined(typeof(ImportedFileType), importedFileType))
       {
         var error = string.Format(
-          "CreateImportedFileV4. ImportedFileType: {0}, is invalid. Only Alignment file types are supported at present",
+          "CreateImportedFileV4. ImportedFileType: {0}, is an unrecognized type.",
           importedFileType.ToString());
 
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -72,8 +71,8 @@ namespace ProjectWebApiCommon.Models
       if (importedFileType != ImportedFileType.Alignment)
       {
         var error = string.Format(
-          "CreateImportedFileV4. ImportedFileType {0} does not match the file extension received {1}.",
-          importedFileType.ToString(), Path.GetExtension(file.flowFilename));
+          "CreateImportedFileV4. ImportedFileType: {0}, is invalid. Only Alignment file types are supported at present",
+          importedFileType.ToString());
 
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
@@ -82,10 +81,10 @@ namespace ProjectWebApiCommon.Models
 
       var fileExtension = Path.GetExtension(file.flowFilename);
       if (!(
-        (importedFileType == ImportedFileType.Linework && fileExtension == "dxf") ||
-        (importedFileType == ImportedFileType.DesignSurface && fileExtension == "ttm") ||
-        (importedFileType == ImportedFileType.SurveyedSurface && fileExtension == "ttm") ||
-        (importedFileType == ImportedFileType.Alignment && fileExtension == "svl")
+        (importedFileType == ImportedFileType.Linework && fileExtension == ".dxf") ||
+        (importedFileType == ImportedFileType.DesignSurface && fileExtension == ".ttm") ||
+        (importedFileType == ImportedFileType.SurveyedSurface && fileExtension == ".ttm") ||
+        (importedFileType == ImportedFileType.Alignment && fileExtension == ".svl")
       ))
       {
         var error = string.Format(
@@ -103,14 +102,6 @@ namespace ProjectWebApiCommon.Models
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
       }
-
-      if (!System.IO.File.Exists(file.path))
-      {
-        var error = string.Format("The uploaded file {0} is not accessible.", file.path);
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
-      }
-     
     }
   }
 }

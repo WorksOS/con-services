@@ -169,12 +169,20 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       {
         var projectWithLegacyProjectID = projectService.GetProjectOnly(project.ProjectUID.ToString()).Result;
         var coordinateSystemSettingsResult = await raptorProxy.CoordinateSystemPost(projectWithLegacyProjectID.LegacyProjectID, project.CoordinateSystemFileContent, project.CoordinateSystemFileName, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        log.LogDebug($"Post of CS update to RaptorServices returned code: {0} Message {1}.",
+          coordinateSystemSettingsResult?.Code ?? -1,
+          coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
         if (coordinateSystemSettingsResult == null || coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
-        {       
-          log.LogError($"Post of CS to RaptorServices failed. Reason: {0} {1}", coordinateSystemSettingsResult.Code, coordinateSystemSettingsResult.Message);
-          throw new ServiceException(HttpStatusCode.BadRequest,
-                        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                  string.Format("Unable to update CoordinateSystem in RaptorServices. Reason: {0} {1}", coordinateSystemSettingsResult.Code, coordinateSystemSettingsResult.Message)));
+        {
+           log.LogError($"Post of CS update to RaptorServices failed. Reason: {0} {1}.",
+            coordinateSystemSettingsResult?.Code ?? -1,
+            coordinateSystemSettingsResult?.Message ?? "null");
+           throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              string.Format("Unable to update CoordinateSystem in RaptorServices. returned code: {0} Message {1}.",
+                coordinateSystemSettingsResult?.Code ?? -1,
+                coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"
+              )));
         }
       }
 
@@ -280,14 +288,14 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var coordinateSystemSettingsResult = await raptorProxy.CoordinateSystemPost(project.ProjectID, project.CoordinateSystemFileContent, project.CoordinateSystemFileName, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
-        log.LogDebug($"Post of CS to RaptorServices returned code: {0} Message {1}.",
+        log.LogDebug($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
           coordinateSystemSettingsResult?.Code ?? -1,
           coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
         if (coordinateSystemSettingsResult == null || coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
           var deleteProjectEvent = new DeleteProjectEvent() { ProjectUID = project.ProjectUID, DeletePermanently = true, ActionUTC = DateTime.UtcNow };
           var isDeleted = await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
-          log.LogError($"Post of CS to RaptorServices failed. Reason: {0} {1}. Set the project to deleted {2}",
+          log.LogError($"Post of CS create to RaptorServices failed. Reason: {0} {1}. Set the project to deleted {2}",
             coordinateSystemSettingsResult?.Code ?? -1,
             coordinateSystemSettingsResult?.Message ?? "null", 
             isDeleted);
