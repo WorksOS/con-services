@@ -3,18 +3,15 @@ using VSS.Raptor.Service.Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.WebApiModels.FileAccess.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.FileAccess.Models;
 using VSS.Raptor.Service.WebApiModels.FileAccess.Executors;
-using VSS.Raptor.Service.Common.ResultHandling;
-using System.Net;
-using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters;
 using VSS.Raptor.Service.Common.Models;
-using System;
 using TCCFileAccess;
-
-
-// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+using System.IO;
+using VSS.Raptor.Service.Common.ResultHandling;
+using Newtonsoft.Json;
+using System.Net;
+using VSS.Raptor.Service.Common.Contracts;
 
 namespace VSS.Raptor.Service.WebApi.FileAccess.Controllers
 {
@@ -66,55 +63,33 @@ namespace VSS.Raptor.Service.WebApi.FileAccess.Controllers
     }
 
     /// <summary>
-    /// Gets requested file for Raptor from TCC and stores in the specified location. 
+    /// Gets requested file for Raptor from TCC and returns it as an image/png. 
     /// </summary>
     /// <param name="request">Details of the requested file</param>
-    /// <returns>Returns JSON structure wtih operation result. {"Code":0,"Message":"User-friendly"}
-    /// </returns>
-    /// <executor>FileAccessExecutor</executor>
-    [Route("api/v1/files")]
-    [HttpPost]
-    public FileAccessResult Post([FromBody]FileAccessRequest request)
-    {
-      log.LogInformation("Get file from TCC: " + request.ToString());
-      try
-      {
-        request.Validate();
-        return RequestExecutorContainer.Build<FileAccessExecutor>(logger, raptorClient, null, null, fileAccess).Process(request) as FileAccessResult;
-      }
-      finally
-      {
-        log.LogInformation("Get file from TCC returned: " + Response.StatusCode);
-      }
-    }
-
-    /// <summary>
-    /// Gets requested file for Raptor from TCC and returns it as a raw array of bytes. 
-    /// </summary>
-    /// <param name="request">Details of the requested file</param>
-    /// <returns>File content as a bytes array.
+    /// <returns>File contents as an image/png.
     /// </returns>
     /// <executor>RawFileAccessExecutor</executor>
     [Route("api/v1/rawfiles")]
-    public RawFileContainer PostRaw([FromBody]FileDescriptor request)
+    public FileResult PostRaw([FromBody]FileDescriptor request)
     {
-      log.LogInformation("Get file from TCC as an array of bytes: " + request.ToString());
+      log.LogInformation("Get file from TCC as an image/png: " + JsonConvert.SerializeObject(request));
       try
       {
         request.Validate();
         RawFileAccessResult result = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, raptorClient, null, null, fileAccess).Process(request) as RawFileAccessResult;
         if (result != null)
         {
-          return new RawFileContainer
-          {
-            fileContents = result.fileContents
-          };
+          return new FileStreamResult(new MemoryStream(result.fileContents), "image/png");
         }
-        return null;
+
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+            "Raptor failed to return a file"));
+
       }
       finally
       {
-        log.LogInformation("Get file from TCC as an array of bytes: " + Response.StatusCode);
+        log.LogInformation("Get file from TCC as an image/png: " + Response.StatusCode);
       }
     }
   }

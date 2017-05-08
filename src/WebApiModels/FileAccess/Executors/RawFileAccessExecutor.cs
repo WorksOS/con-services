@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Interfaces;
@@ -12,7 +9,6 @@ using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.FileAccess.ResultHandling;
 using TCCFileAccess;
-using VSS.Raptor.Service.WebApiModels.FileAccess.Helpers;
 
 namespace VSS.Raptor.Service.WebApiModels.FileAccess.Executors
 {
@@ -57,7 +53,7 @@ namespace VSS.Raptor.Service.WebApiModels.FileAccess.Executors
         if (fileAccess != null)
         {
           MemoryStream stream = new MemoryStream();
-          FileAccessHelper.DownloadFile(fileAccess, request, stream);
+          DownloadFile(fileAccess, request, stream);
 
           if (stream.Length > 0)
           {
@@ -101,6 +97,21 @@ namespace VSS.Raptor.Service.WebApiModels.FileAccess.Executors
     {
       //Nothing to do
     }
+
+    private void DownloadFile(IFileRepository fileAccess, FileDescriptor file, Stream stream)
+    {
+      string fullName = string.IsNullOrEmpty(file.fileName) ? file.path : Path.Combine(file.path, file.fileName);
+      fullName = fullName.Replace(Path.DirectorySeparatorChar, '/');
+
+      var downloadFileResult = fileAccess.GetFile(file.filespaceId, fullName).Result;
+
+      if ((downloadFileResult != null) && (downloadFileResult.Length > 0))
+      {
+        downloadFileResult.Seek(0, SeekOrigin.Begin);
+        downloadFileResult.CopyTo(stream);
+      }
+    }
+
   }
 }
 
