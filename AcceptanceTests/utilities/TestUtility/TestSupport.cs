@@ -519,7 +519,7 @@ namespace TestUtility
     {
       //var response = CallProjectWebApiV4("api/v4/project?projectUid=" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
       var response = CallProjectWebApiV4($"api/v4/importedfiles?projectUid={projectUid}", HttpMethod.Get.ToString(), null, customerUid.ToString());
-      var response = CallProjectWebApiV4($"api/v4/importedfile", HttpMethod.Post, )
+      //var response = CallProjectWebApiV4($"api/v4/importedfile", HttpMethod.Post, )
       if (statusCode == HttpStatusCode.OK)
       {
         //var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
