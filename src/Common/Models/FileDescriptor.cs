@@ -103,7 +103,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     public override string ToString()
     {
-      return String.Format("fileName:{0}, filespaceId:{1}, path:{2}", fileName, filespaceId, path);
+      return String.Format("{0}: {1}, {2}", fileName, filespaceId, path);
     }
 
 
