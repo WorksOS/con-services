@@ -2,10 +2,13 @@
 {
   public enum ImportedFileType
   {
-    Unknown = 0,
-    Linework = 1,
-    DesignSurface = 2,
-    SurveyedSurface = 3,
-    Alignment = 4
+    Linework = 0,
+    DesignSurface = 1,
+    SurveyedSurface = 2,
+    Alignment = 3,
+    MobileLinework = 4,
+    SiteBoundary = 5,
+    ReferenceSurface = 6,
+    MassHaulPlan = 7
   }
 }

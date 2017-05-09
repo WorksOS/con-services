@@ -10,6 +10,11 @@ namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
   {
     public Guid ProjectUID { get; set; }
     public Guid ImportedFileUID { get; set; }
+    public string FileDescriptor { get; set; }
+    public DateTime FileCreatedUtc { get; set; }
+    public DateTime FileUpdatedUtc { get; set; }
+    public string ImportedBy { get; set; }
+    public DateTime? SurveyedUtc { get; set; }
     public DateTime ActionUTC { get; set; }
     public DateTime ReceivedUTC { get; set; }
   }

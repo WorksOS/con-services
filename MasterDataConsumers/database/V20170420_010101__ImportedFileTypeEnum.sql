@@ -8,23 +8,21 @@ CREATE TABLE IF NOT EXISTS ImportedFileTypeEnum (
 /* The Ids are offset by 1 from CGen e.g. Linework==0 in cg.
   Also not all CG types are included. */
 INSERT IGNORE ImportedFileTypeEnum
-  (ID,Description) VALUES (0, 'Unknown');
+  (ID,Description) VALUES (0, 'Linework');
 INSERT IGNORE ImportedFileTypeEnum
-  (ID,Description) VALUES (1, 'Linework');
+  (ID,Description) VALUES (1, 'DesignSurface');
 INSERT IGNORE ImportedFileTypeEnum
-	(ID,Description) VALUES (2, 'Design Surface');
+	(ID,Description) VALUES (2, 'SurveyedSurface');
 INSERT IGNORE ImportedFileTypeEnum
-	(ID,Description) VALUES (3, 'Surveyed Surface');
-INSERT IGNORE ImportedFileTypeEnum
-	(ID,Description) VALUES (4, 'Alignment');
+	(ID,Description) VALUES (3, 'Alignment');
 
 /* 
 INSERT IGNORE ImportedFileTypeEnum
-	(ID,Description) VALUES (5, 'Mobile Linework');
+	(ID,Description) VALUES (4, 'MobileLinework');
+INSERT IGNORE ImportedFileTypeEnum
+	(ID,Description) VALUES (5, 'SiteBoundary');
   INSERT IGNORE ImportedFileTypeEnum
-	(ID,Description) VALUES (6, 'Site Boundary');
+	(ID,Description) VALUES (6, 'ReferenceSurface');
   INSERT IGNORE ImportedFileTypeEnum
-	(ID,Description) VALUES (7, 'Reference Surface');
-  INSERT IGNORE ImportedFileTypeEnum
-	(ID,Description) VALUES (8, 'Mass Haul Plan');
+	(ID,Description) VALUES (7, 'MassHaulPlan');
 */

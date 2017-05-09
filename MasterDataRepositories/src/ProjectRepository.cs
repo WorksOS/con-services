@@ -120,10 +120,15 @@ namespace Repositories
           ProjectUid = projectEvent.ProjectUID.ToString(),
           ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
           CustomerUid = projectEvent.CustomerUID.ToString(),
-          LastActionedUtc = projectEvent.ActionUTC,
           ImportedFileType = projectEvent.ImportedFileType,
           Name = projectEvent.Name,
-          SurveyedUtc = projectEvent.SurveyedUTC
+          FileDescriptor = projectEvent.FileDescriptor,
+          FileCreatedUtc = projectEvent.FileCreatedUtc,
+          FileUpdatedUtc = projectEvent.FileUpdatedUtc,
+          ImportedBy = projectEvent.ImportedBy,
+          SurveyedUtc = projectEvent.SurveyedUTC,
+          IsDeleted = false,
+          LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "CreateImportedFileEvent");
       }
@@ -134,6 +139,11 @@ namespace Repositories
         {
           ProjectUid = projectEvent.ProjectUID.ToString(),
           ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
+          FileDescriptor = projectEvent.FileDescriptor,
+          FileCreatedUtc = projectEvent.FileCreatedUtc,
+          FileUpdatedUtc = projectEvent.FileUpdatedUtc,
+          ImportedBy = projectEvent.ImportedBy,
+          SurveyedUtc = projectEvent.SurveyedUtc,
           LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "UpdateImportedFileEvent");
@@ -496,7 +506,9 @@ namespace Repositories
 
       var existing = (await Connection.QueryAsync<ImportedFile>
       (@"SELECT 
-              fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, Name, SurveyedUTC, 
+              fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, 
+              fk_ImportedFileTypeID as ImportedFileType, Name, 
+              FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted,
               LastActionedUTC
             FROM ImportedFile
             WHERE ImportedFileUID = @importedFileUid", new { importedFileUid = importedFile.ImportedFileUid }
@@ -531,9 +543,9 @@ namespace Repositories
         
         string insert = string.Format(
             "INSERT ImportedFile " +
-            "    (fk_ProjectUID, ImportedFileUID, fk_CustomerUID, fk_ImportedFileTypeID, Name, SurveyedUTC, LastActionedUTC) " +
+            "    (fk_ProjectUID, ImportedFileUID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, LastActionedUTC) " +
             "  VALUES " +
-            "    (@ProjectUid, @ImportedFileUid, @CustomerUid, @ImportedFileType, @Name, @SurveyedUtc, @LastActionedUtc)");
+            "    (@ProjectUid, @ImportedFileUid, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, 0, @LastActionedUtc)");
         return await dbAsyncPolicy.ExecuteAsync(async () =>
         {
           upsertedCount = await Connection.ExecuteAsync(insert, importedFile);
@@ -554,6 +566,10 @@ namespace Repositories
                   fk_CustomerUID = @customerUID,
                   fk_ImportedFileTypeID = @importedFileType,
                   Name = @name,
+                  FileDescriptor = @fileDescriptor,
+                  FileCreatedUTC = @fileCreatedUTC,
+                  FileUpdatedUTC = @fileUpdatedUTC,
+                  ImportedBy = @importedBy, 
                   SurveyedUTC = @surveyedUTC
                 WHERE ImportedFileUID = @ImportedFileUid";
         return await dbAsyncPolicy.ExecuteAsync(async () =>
@@ -579,7 +595,13 @@ namespace Repositories
         {
           const string update =
             @"UPDATE ImportedFile                
-                SET LastActionedUTC = @LastActionedUTC
+                SET 
+                  FileDescriptor = @fileDescriptor,
+                  FileCreatedUTC = @fileCreatedUtc,
+                  FileUpdatedUTC = @fileUpdatedUtc,
+                  ImportedBy = @importedBy, 
+                  SurveyedUTC = @surveyedUTC,
+                  LastActionedUTC = @LastActionedUTC
                 WHERE ImportedFileUID = @ImportedFileUid";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
@@ -610,7 +632,9 @@ namespace Repositories
           log.LogDebug("ProjectRepository/DeleteImportedFile: deleting importedFile {0}", JsonConvert.SerializeObject(importedFile));
 
           const string update =
-            @"DELETE FROM ImportedFile                               
+            @"Update ImportedFile                               
+                SET IsDeleted = 1,
+                    LastActionedUTC = @LastActionedUTC
                 WHERE ImportedFileUID = @ImportedFileUid";
           return await dbAsyncPolicy.ExecuteAsync(async () =>
           {
@@ -965,10 +989,12 @@ namespace Repositories
 
       var importedFileList = (await Connection.QueryAsync<ImportedFile>
       (@"SELECT 
-              fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, Name, SurveyedUTC, 
+              fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
+              Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted,
               LastActionedUTC
             FROM ImportedFile
-              WHERE fk_ProjectUID = @projectUid",
+              WHERE fk_ProjectUID = @projectUid
+                AND IsDeleted = 0",
         new { projectUid }
       ));
 
@@ -982,7 +1008,8 @@ namespace Repositories
 
       var importedFile = (await Connection.QueryAsync<ImportedFile>
       (@"SELECT 
-              fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, Name, SurveyedUTC, 
+              fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
+              Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted,
               LastActionedUTC
             FROM ImportedFile
               WHERE importedFileUID = @importedFileUid",

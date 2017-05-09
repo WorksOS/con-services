@@ -22,6 +22,10 @@ namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
     public Guid CustomerUID { get; set; }
     public ImportedFileType ImportedFileType { get; set; }
     public string Name { get; set; }
+    public string FileDescriptor { get; set; }
+    public DateTime FileCreatedUtc { get; set; }
+    public DateTime FileUpdatedUtc { get; set; }
+    public string ImportedBy { get; set; }
     public DateTime? SurveyedUTC { get; set; }
     public DateTime ActionUTC { get; set; }
     public DateTime ReceivedUTC { get; set; }
