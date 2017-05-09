@@ -98,6 +98,30 @@ namespace ProjectWebApiCommon.Models
     public string Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the timestamp at which the file was created on users file system.
+    /// </summary>
+    /// <value>
+    /// The name.
+    /// </value>
+    public DateTime FileCreatedUtc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the timestamp at which the file was updated on users file system.
+    /// </summary>
+    /// <value>
+    /// The name.
+    /// </value>
+    public DateTime FileUpdatedUtc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ImportedBy email address from authentication
+    /// </summary>
+    /// <value>
+    /// The name.
+    /// </value>
+    public string ImportedBy { get; set; }
+
+    /// <summary>
     /// Gets or sets the Surveyed Utc. 
     /// This only applies to a file type of SurveyedSurface, else null.
     /// </summary>
@@ -116,6 +140,9 @@ namespace ProjectWebApiCommon.Models
              && otherImportedFile.ProjectUid == this.ProjectUid
              && otherImportedFile.ImportedFileType == this.ImportedFileType
              && otherImportedFile.Name == this.Name
+             && otherImportedFile.FileCreatedUtc == this.FileCreatedUtc
+             && otherImportedFile.FileUpdatedUtc == this.FileUpdatedUtc
+             && otherImportedFile.ImportedBy == this.ImportedBy
              && otherImportedFile.SurveyedUtc == this.SurveyedUtc
           ;
     }

@@ -71,7 +71,8 @@ namespace ProjectWebApi
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
       services.AddTransient<IGeofenceProxy, GeofenceProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
-      services.AddTransient<IFileRepository, FileRepository>();
+      // todo services.AddTransient<IFileRepository, FileRepository>();
+      services.AddTransient<IFileRepository, MockFileRepository>();
 
       services.AddMvc(
         config =>

@@ -71,7 +71,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <param name="file"></param>
     /// <param name="projectUid"></param>
     /// <param name="importedFileType"></param>
-    /// <param name="surveyedSurfaceUtc"></param>
+    /// <param name="fileUpdatedUtc"></param>
+    /// <param name="fileCreatedUtc"></param>
+    /// <param name="surveyedUtc"></param>
     /// <remarks>Import a design file for a project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
@@ -81,14 +83,15 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     [FlowUpload("svl")]
     public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(FlowFile file,
       [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
-      [FromUri] DateTime? surveyedSurfaceUtc = null)
+      [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc, 
+      [FromUri] DateTime? surveyedUtc = null)
     {
-      // todo change ImportedFileType to same as nhOPEnums
       var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      string importedBy = "todo get email from jwt"; // ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
 
-      FileImportDataValidator.ValidateImportedFileRequest(file, projectUid, importedFileType, surveyedSurfaceUtc);
+      FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc, fileUpdatedUtc, importedBy, surveyedUtc);
       log.LogInformation(
-        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedSurfaceUtc {(surveyedSurfaceUtc == null ? "N/A" : surveyedSurfaceUtc.ToString())}");
+        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {
@@ -105,7 +108,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
                                                  && f.ImportedFileType == importedFileType
                                                  && (
                                                    (importedFileType == ImportedFileType.SurveyedSurface &&
-                                                    f.SurveyedUtc == surveyedSurfaceUtc) ||
+                                                    f.SurveyedUtc == surveyedUtc) ||
                                                    (importedFileType != ImportedFileType.SurveyedSurface)
                                                  ));
       if (existing != null)
@@ -115,19 +118,17 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
-      var fileDescriptor = await WriteFileToRepository(customerUid, projectUid.ToString(), file.path, importedFileType,
-        surveyedSurfaceUtc);
+      var fileDescriptor = await WriteFileToRepository(1, customerUid, projectUid.ToString(), file.path, importedFileType,
+        surveyedUtc);
 
       await NotifyRaptorAddFile(projectUid.ToString(), fileDescriptor);
 
       // only if all succeeds then 
       //   write to Db and 
       //   write new CreateImportedFileEvent to kafka que
-      DateTime createdUserDate = DateTime.UtcNow; // endpoint param UI obtains from File properties // todo
-      string importedBy = "whoever"; // free form name entered by user // todo
       CreateImportedFileEvent createImportedFileEvent = await CreateImportedFile(Guid.Parse(customerUid), projectUid,
-          importedFileType, file.flowFilename, surveyedSurfaceUtc, JsonConvert.SerializeObject(fileDescriptor),
-          createdUserDate, importedBy)
+          importedFileType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
+          fileCreatedUtc, fileUpdatedUtc, importedBy)
         .ConfigureAwait(false);
 
       var importedFile = new ImportedFileDescriptorSingleResult(
@@ -160,12 +161,13 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// Update imported file
     ///   this updates database AND updates file in TCC.
     ///   no need to notify RaptorWebAPI.
-    /// note that a changed to the surveyedSurfaceUtc would come via a CreateImportedFile as it changes the filename etc.
+    /// note that a changed to the surveyedUtc would come via a CreateImportedFile as it changes the filename etc.
     /// </summary>
     /// <param name="file"></param>
     /// <param name="projectUid"></param>
     /// <param name="importedFileType"></param>
-    /// <param name="surveyedSurfaceUtc"></param>
+    /// <param name="fileUpdatedUtc"></param>
+    /// <param name="surveyedUtc"></param>
     /// <remarks>Updates and Imported design file for a project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
@@ -175,14 +177,14 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     [FlowUpload("svl")]
     public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(FlowFile file,
       [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
-      [FromUri] DateTime? surveyedSurfaceUtc = null)
+      [FromUri] DateTime fileUpdatedUtc, [FromUri] DateTime? surveyedUtc = null)
     {
-      // todo change ImportedFileType to same as nhOPEnums
       var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      string importedBy = "todo get email from jwt"; // ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
 
-      FileImportDataValidator.ValidateImportedFileRequest(file, projectUid, importedFileType, surveyedSurfaceUtc);
+      FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType, DateTime.UtcNow, fileUpdatedUtc, importedBy, surveyedUtc);
       log.LogInformation(
-        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedSurfaceUtc {(surveyedSurfaceUtc == null ? "N/A" : surveyedSurfaceUtc.ToString())}");
+        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {
@@ -192,14 +194,14 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       }
 
       //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
+      await GetProject(projectUid.ToString()).ConfigureAwait(false);
 
       var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
       var existing = importedFileList.First(f => f.Name == file.flowFilename
                                                  && f.ImportedFileType == importedFileType
                                                  && (
                                                    (importedFileType == ImportedFileType.SurveyedSurface &&
-                                                    f.SurveyedUtc == surveyedSurfaceUtc) ||
+                                                    f.SurveyedUtc == surveyedUtc) ||
                                                    (importedFileType != ImportedFileType.SurveyedSurface)
                                                  ));
       if (existing == null)
@@ -209,15 +211,13 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
 
       // update file in TCC 
-      // todo will this method be changed to a) do exists check and b) us a seperate updateFile method or parameter?
-      var fileDescriptor = await WriteFileToRepository(customerUid, projectUid.ToString(), file.path, importedFileType,
-        surveyedSurfaceUtc);
+      var fileDescriptor = await WriteFileToRepository(2, customerUid, projectUid.ToString(), file.path, importedFileType, surveyedUtc);
 
       // only if all succeeds then 
       //   update Db and 
       //   write new UpdateImportedFileEvent to kafka que
       UpdateImportedFileEvent updateImportedFileEvent =
-        await UpdateImportedFile(existing, JsonConvert.SerializeObject(fileDescriptor)).ConfigureAwait(false);
+        await UpdateImportedFile(existing, JsonConvert.SerializeObject(fileDescriptor), surveyedUtc, fileUpdatedUtc, importedBy).ConfigureAwait(false);
 
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
@@ -230,6 +230,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       //System.IO.File.Delete(file.path); todo should/can we delete temp file?
       return importedFile;
     }
+
+    // todo delete
   }
 }
 

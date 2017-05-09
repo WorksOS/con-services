@@ -26,9 +26,9 @@
         "AutoMapper": "6.0.2",
         "ProjectWebApiCommon": "1.0.0-*",
         "MasterDataProxies.netcore": "*",
-        "MasterDataRepos.netcore": "*",
-        "TCCFileAccess.netcore": "1.0.0",
-        "FlowJSHandler.netcore": "1.0.0"
+        "FlowJSHandler.netcore": "1.0.0",
+        "TCCFileAccess.netcore": "1.0.4",
+        "MasterDataRepos.netcore": "1.0.57"
     },
 
     "frameworks": {

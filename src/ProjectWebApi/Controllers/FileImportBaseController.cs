@@ -113,6 +113,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
           CustomerUid = importedFile.CustomerUid,
           ImportedFileType = importedFile.ImportedFileType,
           Name = importedFile.Name,
+          FileCreatedUtc = importedFile.FileCreatedUtc,
+          FileUpdatedUtc = importedFile.FileUpdatedUtc,
+          ImportedBy = importedFile.ImportedBy,
           SurveyedUtc = importedFile.SurveyedUtc
         })
         .ToImmutableList();
@@ -126,8 +129,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <param name="importFile">The create imported file event</param>
     /// <returns></returns>
     protected virtual async Task<CreateImportedFileEvent> CreateImportedFile(Guid customerUid, Guid projectUid,
-      ImportedFileType importedFileType, string filename, DateTime? surveyedSurfaceUtc,
-      string fileDescriptor, DateTime createdUserDate, string importedBy)
+      ImportedFileType importedFileType, string filename, DateTime? surveyedUtc,
+      string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy)
     {
       var nowUtc = DateTime.UtcNow;
       var createImportedFileEvent = new CreateImportedFileEvent()
@@ -137,14 +140,12 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         ImportedFileUID = Guid.NewGuid(),
         ImportedFileType = importedFileType,
         Name = filename,
-        SurveyedUTC = surveyedSurfaceUtc,
-        // todo
-        //FileDescription = fileDescriptor,
-        //CreatedUserDate = createdUserDate, // endpoint param UI obtains from File properties
-        //ImportedBy = importedBy, // free form name entered by user
-        //ImportedDate = nowUtc,
-        //FileUpdated = nowUtc, // API to touch on update
-        ActionUTC = nowUtc,
+        FileDescriptor = fileDescriptor,
+        FileCreatedUtc = fileCreatedUtc,
+        FileUpdatedUtc = fileUpdatedUtc,
+        ImportedBy = importedBy,
+        SurveyedUTC = surveyedUtc,
+        ActionUTC = nowUtc, // aka importedDate
         ReceivedUTC = nowUtc
       };
 
@@ -169,24 +170,32 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// only thing which should change here is a) FileUpdatedUtc/ActionUtc
     ///       file Descriptor???
     /// </summary>
-    /// <param name="importFile">The create imported file event</param>
+    /// <param name="importedFileDescriptor">The existing imported file event</param>
+    /// <param name="fileDescriptor"></param>
+    /// <param name="surveyedUtc"></param>
+    /// <param name="fileCreatedUtc"></param>
+    /// <param name="fileUpdatedUtc"></param>
+    /// <param name="importedBy"></param>
     /// <returns></returns>
     protected virtual async Task<UpdateImportedFileEvent> UpdateImportedFile(ImportedFileDescriptor importedFileDescriptor,
-      string fileDescriptor)
+      string fileDescriptor, DateTime? surveyedUtc,
+      DateTime fileUpdatedUtc, string importedBy)
     {
       var nowUtc = DateTime.UtcNow;
       var updateImportedFileEvent = new UpdateImportedFileEvent()
       {
         ProjectUID = Guid.Parse(importedFileDescriptor.ProjectUid),
         ImportedFileUID = Guid.NewGuid(),
-        // todo
-        //FileDescription = fileDescriptor,
-        //FileUpdated = nowUtc, // API to touch on update
+        FileDescriptor = fileDescriptor,
+        FileCreatedUtc = importedFileDescriptor.FileCreatedUtc,
+        FileUpdatedUtc = fileUpdatedUtc,
+        ImportedBy = importedBy,
+        SurveyedUtc = surveyedUtc,
         ActionUTC = nowUtc,
         ReceivedUTC = nowUtc
       };
 
-      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = updateImportedFileEvent });
+      var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
@@ -206,29 +215,27 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// Writes the importedFile to TCC
     /// </summary>
     /// <returns></returns>
-    protected async Task<FileDescriptor> WriteFileToRepository(string customerUid, string projectUid, string pathAndFileName, ImportedFileType importedFileType, DateTime? surveyedSurfaceUtc)
+    protected async Task<FileDescriptor> WriteFileToRepository(int actionType, string customerUid, string projectUid, string pathAndFileName, ImportedFileType importedFileType, DateTime? surveyedUtc)
     {
-      // todo move these, need to be environment variables
-      var fileSpaceId = store.GetValueString("TCCFILESPACEID");   // "u72003136-d859-4be8-86de-c559c841bf10" todo this is not real
+      var fileSpaceId = store.GetValueString("TCCFILESPACEID");   // "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"
 
       var fileStream = new FileStream(pathAndFileName, FileMode.Open);
       var tccPath = string.Format("/{0}/{1}", customerUid, projectUid); // trailing slash etc
       string tccFileName = Path.GetFileName(pathAndFileName);
 
       if (importedFileType == ImportedFileType.SurveyedSurface)
-        if (surveyedSurfaceUtc != null) // validation should prevent this
-          tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedSurfaceUtc.Value),
+        if (surveyedUtc != null) // validation should prevent this
+          tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
             Path.GetExtension(tccFileName));
-      //else if (importedFileType == ImportedFileType.SiteBoundary)
-      //  tccFileName = GeneratedFileName(tccFileName, "_sites$", ".DXF");
 
-      var superUserOrg = new Organization() {filespaceId = fileSpaceId};
-
-      // todo check that the file doesn't already exists? no method to check, only returns file. 
-      // todo temp use the customer-based putFile until developer one is available.
-      var org = new Organization() {filespaceId = fileSpaceId};
+      //var fileDetails = await fileRepo.FileExists(fileSpaceId, tccPath, filename).ConfigureAwait(false);
+      // if (actionType = 1/* create */ && fileExists != null) throw except
+      // if (actionType = 2/* update */ && fileExists == null) throw except
       //var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, filename, fileStream, fileStream.Length).ConfigureAwait(false);
 
+      // todo temp until tcc interface is changed use the customer-based putFile
+      var superUserOrg = new Organization() {filespaceId = fileSpaceId};
+      var org = new Organization() {filespaceId = fileSpaceId};
       var ccPutFileResult = await fileRepo.PutFile(org, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
       if (ccPutFileResult == null || ccPutFileResult.success == $@"false")
       {
@@ -237,8 +244,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
             "@Unable to put file to TCC"));
       }
 
-      // todo is ccPutFileResult.path == tccPath?
-      return FileDescriptor.CreateFileDescriptor(fileSpaceId, ccPutFileResult.path, tccFileName);
+      // is ccPutFileResult.path == tccPath?
+      return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 
 

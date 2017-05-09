@@ -20,6 +20,11 @@ namespace ProjectWebApiCommon.Utilities
         throw new NotImplementedException();
       }
 
+      public async Task<Stream> GetFile(string filespaceId, string fullName)
+      {
+        throw new NotImplementedException();
+      }
+
       public async Task<bool> MoveFile(Organization org, string srcFullName, string dstFullName)
       {
         throw new NotImplementedException();

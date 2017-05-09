@@ -15,14 +15,18 @@ namespace ProjectWebApiCommon.Models
     private const int MaxFileNameLength = 256;
 
     /// <summary>
-    /// Validate the request e.g that the file has been uploaded and project is as expected.
+    /// Validate the Create request e.g that the file has been uploaded and parameters are as expected.
     /// </summary>
     /// <param name="file"></param>
     /// <param name="projectUid"></param>
     /// <param name="importedFileType"></param>
-    /// <param name="surveyedSurfaceUtc"></param>
-    public static void ValidateImportedFileRequest(FlowFile file, Guid projectUid,
-      ImportedFileType importedFileType, DateTime? surveyedSurfaceUtc)
+    /// <param name="importedBy"></param>
+    /// <param name="surveyedUtc"></param>
+    /// <param name="fileCreatedUtc"></param>
+    /// <param name="fileUpdatedUtc"></param>
+    public static void ValidateCreateImportedFileRequest(FlowFile file, Guid projectUid,
+      ImportedFileType importedFileType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, 
+      string importedBy, DateTime? surveyedUtc )
     {
       // by the time we are here, the file has been uploaded and location is in file. Some validation:
       if (file == null)
@@ -95,9 +99,32 @@ namespace ProjectWebApiCommon.Models
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
       }
 
-      if (importedFileType == ImportedFileType.SurveyedSurface && surveyedSurfaceUtc == null)
+      if (fileCreatedUtc < DateTime.UtcNow.AddYears(-30) || fileCreatedUtc > DateTime.UtcNow.AddDays(2))
       {
-        var error = string.Format("The SurveyedSurfaceUtc {0} is not available.", (surveyedSurfaceUtc == null ? "n/A" : surveyedSurfaceUtc.ToString()));
+        var error = string.Format("The fileCreatedUtc {0} is over 30 years old or >2 days in the future (utc).", fileCreatedUtc);
+
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+      }
+
+      if (fileUpdatedUtc < DateTime.UtcNow.AddYears(-30) || fileUpdatedUtc > DateTime.UtcNow.AddDays(2))
+      {
+        var error = string.Format("The fileUpdatedUtc {0} is over 30 years old or >2 days in the future (utc).", fileUpdatedUtc);
+
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+      }
+
+      if (string.IsNullOrEmpty(importedBy))
+      {
+        var error = string.Format($"The ImportedBy is not available {importedBy}.");
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+      }
+
+      if (importedFileType == ImportedFileType.SurveyedSurface && surveyedUtc == null)
+      {
+        var error = string.Format("The SurveyedUtc {0} is not available.", (surveyedUtc == null ? "n/A" : surveyedUtc.ToString()));
 
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
