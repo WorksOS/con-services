@@ -213,7 +213,6 @@
     <Compile Include="Models\DesignNames.cs" />
     <Compile Include="Models\ElevationStatistics.cs" />
     <Compile Include="Models\ExportReport.cs" />
-    <Compile Include="Models\FileAccessRequest.cs" />
     <Compile Include="Models\FiltersResult.cs" />
     <Compile Include="Models\GetMachineDesignResult.cs" />
     <Compile Include="Models\GetEditDataRequest.cs" />

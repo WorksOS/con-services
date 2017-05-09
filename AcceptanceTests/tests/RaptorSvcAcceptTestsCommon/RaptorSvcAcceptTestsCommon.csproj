@@ -84,6 +84,7 @@
     <Compile Include="Models\Point.cs" />
     <Compile Include="Models\ProductionDataType.cs" />
     <Compile Include="Models\ProjectMonitoringMachine.cs" />
+    <Compile Include="Models\RawFileAccessResult.cs" />
     <Compile Include="Models\TargetPassCountRange.cs" />
     <Compile Include="Models\TemperatureWarningLevels.cs" />
     <Compile Include="Models\VolumesType.cs" />
