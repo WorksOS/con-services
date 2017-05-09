@@ -7,15 +7,15 @@ using ASNode.UserPreferences;
 using ASNodeDecls;
 using SVOICFilterSettings;
 using VLPDDecls;
-using VSS.Nighthawk.RaptorServicesCommon.Contracts;
-using VSS.Nighthawk.RaptorServicesCommon.Interfaces;
-using VSS.Nighthawk.RaptorServicesCommon.Proxies;
-using VSS.Nighthawk.RaptorServicesCommon.ResultHandling;
-using VSS.Nighthawk.ReportSvc.WebApi.Models;
-using VSS.Nighthawk.ReportSvc.WebApi.ResultHandling;
 using ASNodeRaptorReports;
 using System.Globalization;
 using System.Text;
+using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Raptor.Service.Common.Proxies;
+using VSS.Raptor.Service.Common.Contracts;
+using VSS.Raptor.Service.WebApiModels.Report.Models;
+using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Raptor.Service.Common.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 {
@@ -203,7 +203,6 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                 try
                 {
                     result = ExportResult.CreateExportDataResult(OutputStream.GetBuffer(), (short)Result);
-                    // result = ExportResult.CreateExportDataResult(File.ReadAllBytes(BuildFilePath(request.projectId ?? -1, request.callerId, request.filename, true)), dataexport.ReturnCode);
                 }
                 catch
                 {
@@ -217,18 +216,6 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                 //ContractExecutionStates.ClearDynamic();
             }
             return result;
-        }
-
-    private string BuildFilePath(long projectid, string callerid, string filename, bool zipped)
-    {
-      string prodFolder = ConfigurationManager.AppSettings["RaptorProductionDataFolder"];
-      return String.Format("{0}\\DataModels\\{1}\\Exports\\{2}\\{3}", prodFolder, projectid, callerid,
-          Path.GetFileNameWithoutExtension(filename) + (zipped ? ".zip" : ".csv"));
-    }
-
-        protected override void ProcessErrorCodes()
-        {
-         //   throw new NotImplementedException();
         }
     }
 }

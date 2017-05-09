@@ -61,7 +61,7 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
         public ExportResult PostExportCSVReport([FromBody] ExportGridCSV request)
         {
             request.Validate();
-            return RequestExecutorContainer.Build<ExportGridCSVExecutor>().Process(request) as ExportResult;
+            return RequestExecutorContainer.Build<ExportGridCSVExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
         }
         #endregion
 

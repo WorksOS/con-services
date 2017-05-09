@@ -226,5 +226,26 @@ namespace VSS.Raptor.Service.Common.Interfaces
 
     bool GetMachineCCAColourPalettes(long dataModelId, long machineId, DateTime? startUtc, DateTime? endUtc, int? liftId, out TColourPalettes palettes);
 
-  }
+        int GetGriddedOrAlignmentCSVExport(long DataModelID,
+                                           int ReportType,
+                                           TASNodeRequestDescriptor ExternalDescriptor,
+                                           TVLPDDesignDescriptor DesignFile, // cutfill profile
+                                           double Interval,
+                                           bool ElevationReport,
+                                           bool CutFillReport,
+                                           bool CMVReport,
+                                           bool MDPReport,
+                                           bool PassCountReport,
+                                           bool TemperatureReport,
+                                           int ReportOption,
+                                           double StartNorthing,
+                                           double StartEasting,
+                                           double EndNorthing,
+                                           double EndEasting,
+                                           double Direction,
+                                           TICFilterSettings Filter,
+                                           TICLiftBuildSettings LiftBuildSettings,
+                                           TSVOICOptions ICOptions,
+                                           out MemoryStream DataExport);
+    }
 }

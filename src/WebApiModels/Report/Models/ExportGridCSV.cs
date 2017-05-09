@@ -3,10 +3,9 @@ using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.UserPreferences;
 using BoundingExtents;
 using Newtonsoft.Json;
-using OnlineHelp;
 using VLPDDecls;
-using VSS.Nighthawk.RaptorServicesCommon.Interfaces;
-using VSS.Nighthawk.RaptorServicesCommon.Models;
+using VSS.Raptor.Service.Common.Models;
+using VSS.Raptor.Service.Common.Interfaces;
 
 namespace VSS.Raptor.Service.WebApiModels.Report.Models
 {
@@ -26,7 +25,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     /// <summary>
     /// The representation of a pass counts request
     /// </summary>
-    public class ExportGridCSV : ProjectID, IValidatable, IHelpSample
+    public class ExportGridCSV : ProjectID, IValidatable //, IHelpSample
     {
 
         /// <summary>
@@ -149,7 +148,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
         /// <summary>
         /// Create example instance of PassCounts to display in Help documentation.
         /// </summary>
-        public static ExportGridCSV HelpSample
+        public ExportGridCSV HelpSample
         {
             get
             {
@@ -170,7 +169,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
         /// <summary>
         /// Validates all properties
         /// </summary>
-        public void Validate()
+        public override void Validate()
         {
             translations = new TTranslation[6];
             translations[0].ID = 0;

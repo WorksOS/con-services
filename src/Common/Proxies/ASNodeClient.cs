@@ -399,5 +399,34 @@ namespace VSS.Raptor.Service.Common.Proxies
       return client.GetMachineCCAColourPalettes(dataModelId, machineId, startUtc ?? DateTime.MinValue, endUtc ?? DateTime.MinValue, liftId ?? 0, out palettes) == 1/*icsrrNoError*/;
     }
 
-  }
+        /// <summary>
+        /// Gets a gridded CSV export of the production data from Raptor
+        /// </summary>
+        /// <param name="DataModelID"></param>
+        /// <param name="ReportType"></param>
+        /// <param name="ExternalDescriptor"></param>
+        /// <param name="DesignFile"></param>
+        /// <param name="Interval"></param>
+        /// <param name="ElevationReport"></param>
+        /// <param name="CutFillReport"></param>
+        /// <param name="CMVReport"></param>
+        /// <param name="MDPReport"></param>
+        /// <param name="PassCountReport"></param>
+        /// <param name="TemperatureReport"></param>
+        /// <param name="ReportOption"></param>
+        /// <param name="StartNorthing"></param>
+        /// <param name="StartEasting"></param>
+        /// <param name="EndNorthing"></param>
+        /// <param name="EndEasting"></param>
+        /// <param name="Direction"></param>
+        /// <param name="Filter"></param>
+        /// <param name="LiftBuildSettings"></param>
+        /// <param name="ICOptions"></param>
+        /// <param name="DataExport"></param>
+        /// <returns></returns>
+        public int GetGriddedOrAlignmentCSVExport(long DataModelID, int ReportType, TASNodeRequestDescriptor ExternalDescriptor, TVLPDDesignDescriptor DesignFile, double Interval, bool ElevationReport, bool CutFillReport, bool CMVReport, bool MDPReport, bool PassCountReport, bool TemperatureReport, int ReportOption, double StartNorthing, double StartEasting, double EndNorthing, double EndEasting, double Direction, TICFilterSettings Filter, TICLiftBuildSettings LiftBuildSettings, TSVOICOptions ICOptions, out MemoryStream DataExport)
+        {
+            return client.GetGriddedOrAlignmentCSVExport(DataModelID, ReportType, ExternalDescriptor, DesignFile, Interval, ElevationReport, CutFillReport, CMVReport, MDPReport, PassCountReport, TemperatureReport, ReportOption, StartNorthing, StartEasting, EndNorthing, EndEasting, Direction, Filter, LiftBuildSettings, ICOptions, out DataExport);
+        }
+    }
 }
