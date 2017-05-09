@@ -12,6 +12,7 @@ using VSS.Raptor.Service.WebApiModels.Report.Contracts;
 using VSS.Raptor.Service.WebApiModels.Report.Executors;
 using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Nighthawk.ReportSvc.WebApi.Models;
 
 namespace VSS.Raptor.Service.WebApi.Report.Controllers
 {
@@ -49,7 +50,7 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
 
         #region CSVExport
         /// <summary>
-        /// Produces a CSV format export for the set of production data identified by tegh request
+        /// Produces a CSV formatted export of production data identified by gridded sampling
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>

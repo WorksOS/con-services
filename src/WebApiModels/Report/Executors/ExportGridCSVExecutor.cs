@@ -16,6 +16,7 @@ using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Nighthawk.ReportSvc.WebApi.Models;
 
 namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 {
@@ -132,35 +133,42 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                     StringBuilder sb = new StringBuilder();
 
-                    sb.Append("Northing, Easting");
-                    if (ReportPackager.GridReport.ElevationReport) sb.Append(", Elevation");
-                    if (ReportPackager.GridReport.CutFillReport) sb.Append(", Cut/Fill");
-                    if (ReportPackager.GridReport.CMVReport) sb.Append(", CMV");
-                    if (ReportPackager.GridReport.MDPReport) sb.Append(", MDP");
-                    if (ReportPackager.GridReport.PassCountReport) sb.Append(", PassCount");
-                    if (ReportPackager.GridReport.TemperatureReport) sb.Append(", Temperature");
-                    sb.Append("\n");
-
-                    // Write a header
-                    byte[] bytes = System.Text.Encoding.ASCII.GetBytes(sb.ToString());
-                    OutputStream.Write(bytes, 0, bytes.Length);
-
-                    // Write a series of CSV records from the data
-                    foreach (TGridRow row in ReportPackager.GridReport.Rows)
+                    if (request.reportType == GriddedCSVReportType.Gridded)
                     {
-                        sb.Clear();
-
-                        sb.Append(String.Format(CultureInfo.InvariantCulture, "{0:F3}, {1:F3}", row.Northing, row.Easting));
-                        if (ReportPackager.GridReport.ElevationReport) sb.Append(String.Format(CultureInfo.InvariantCulture, ", {0:F3}", row.Elevation));
-                        if (ReportPackager.GridReport.CutFillReport) sb.Append(row.CutFill == NULL_SINGLE ? ", " : String.Format(CultureInfo.InvariantCulture, ", {0:F3}", row.CutFill));
-                        if (ReportPackager.GridReport.CMVReport) sb.Append(row.CMV == NO_CCV ? ", " : String.Format(CultureInfo.InvariantCulture, ", {0}", row.CMV));
-                        if (ReportPackager.GridReport.MDPReport) sb.Append(row.MDP == NO_MDP ? ", " : String.Format(CultureInfo.InvariantCulture, ", {0}", row.MDP));
-                        if (ReportPackager.GridReport.PassCountReport) sb.Append(row.PassCount == NO_PASSCOUNT ? ", " : String.Format(CultureInfo.InvariantCulture, ", {0}", row.PassCount));
-                        if (ReportPackager.GridReport.TemperatureReport) sb.Append(row.Temperature == NO_TEMPERATURE ? ", " : String.Format(CultureInfo.InvariantCulture, ", {0}", row.Temperature));
+                        sb.Append("Northing, Easting");
+                        if (ReportPackager.GridReport.ElevationReport) sb.Append(", Elevation");
+                        if (ReportPackager.GridReport.CutFillReport) sb.Append(", Cut/Fill");
+                        if (ReportPackager.GridReport.CMVReport) sb.Append(", CMV");
+                        if (ReportPackager.GridReport.MDPReport) sb.Append(", MDP");
+                        if (ReportPackager.GridReport.PassCountReport) sb.Append(", PassCount");
+                        if (ReportPackager.GridReport.TemperatureReport) sb.Append(", Temperature");
                         sb.Append("\n");
 
-                        bytes = System.Text.Encoding.ASCII.GetBytes(sb.ToString());
+                        // Write a header
+                        byte[] bytes = System.Text.Encoding.ASCII.GetBytes(sb.ToString());
                         OutputStream.Write(bytes, 0, bytes.Length);
+
+                        // Write a series of CSV records from the data
+                        foreach (TGridRow row in ReportPackager.GridReport.Rows)
+                        {
+                            sb.Clear();
+
+                            sb.Append(String.Format(CultureInfo.InvariantCulture, "{0:F3}, {1:F3}", row.Northing, row.Easting));
+                            if (ReportPackager.GridReport.ElevationReport) sb.Append(String.Format(CultureInfo.InvariantCulture, ", {0:F3}", row.Elevation));
+                            if (ReportPackager.GridReport.CutFillReport) sb.Append(row.CutFill == NULL_SINGLE ? ", " : String.Format(CultureInfo.InvariantCulture, ", {0:F3}", row.CutFill));
+                            if (ReportPackager.GridReport.CMVReport) sb.Append(row.CMV == NO_CCV ? ", " : String.Format(CultureInfo.InvariantCulture, ", {0}", row.CMV));
+                            if (ReportPackager.GridReport.MDPReport) sb.Append(row.MDP == NO_MDP ? ", " : String.Format(CultureInfo.InvariantCulture, ", {0}", row.MDP));
+                            if (ReportPackager.GridReport.PassCountReport) sb.Append(row.PassCount == NO_PASSCOUNT ? ", " : String.Format(CultureInfo.InvariantCulture, ", {0}", row.PassCount));
+                            if (ReportPackager.GridReport.TemperatureReport) sb.Append(row.Temperature == NO_TEMPERATURE ? ", " : String.Format(CultureInfo.InvariantCulture, ", {0}", row.Temperature));
+                            sb.Append("\n");
+
+                            bytes = System.Text.Encoding.ASCII.GetBytes(sb.ToString());
+                            OutputStream.Write(bytes, 0, bytes.Length);
+                        }
+                    }
+                    else if (request.reportType == GriddedCSVReportType.Alignment)
+                    {
+                        throw new NotImplementedException("Conversion of export data to CSV for alignment export is not yet implemented");
                     }
                 }
 

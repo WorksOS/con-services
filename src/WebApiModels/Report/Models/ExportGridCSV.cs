@@ -7,7 +7,7 @@ using VLPDDecls;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Models
+namespace VSS.Nighthawk.ReportSvc.WebApi.Models
 {
     public enum GriddedCSVReportType
     {
@@ -25,9 +25,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     /// <summary>
     /// The representation of a pass counts request
     /// </summary>
-    public class ExportGridCSV : ProjectID, IValidatable //, IHelpSample
+    public class ExportGridCSV : ProjectID, IValidatable
     {
-
         /// <summary>
         /// An identifier from the caller. 
         /// </summary>
@@ -35,6 +34,10 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
         [JsonProperty(PropertyName = "callId", Required = Required.Default)]
         public Guid? callId { get; protected set; }
 
+        /// <summary>
+        /// Determines if the coordinates of the points in the emitted CSV file are in Northing and Easting coordinates or 
+        /// in Station and Offset coordinates with respect to a road design centerline supplied as a part of the request.
+        /// </summary>
         [JsonProperty(PropertyName = "reportType", Required = Required.Default)]
         public GriddedCSVReportType reportType { get; protected set; }
 
@@ -48,7 +51,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
         /// Sets the design file to be used for cut/fill or station/offset calculations
         /// </summary>
         [JsonProperty(PropertyName = "designFile", Required = Required.Default)]
-        public TVLPDDesignDescriptor designFile { get; protected set; }        
+        public TVLPDDesignDescriptor designFile { get; protected set; }
 
         /// <summary>
         /// The filter instance to use in the request
@@ -70,55 +73,85 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
         [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
         public LiftBuildSettings liftBuildSettings { get; protected set; }
 
+        /// <summary>
+        /// The spacing interval for the sampled points. Setting to 1.0m will cause points to be spaced 1.0 meters apart.
+        /// </summary>
         [JsonProperty(PropertyName = "interval", Required = Required.Default)]
         public double interval { get; protected set; }
 
-
+        /// <summary>
+        /// Include the measured elevation at the sampled location
+        /// </summary>
         [JsonProperty(PropertyName = "reportElevation", Required = Required.Default)]
         public bool reportElevation { get; protected set; }
 
+        /// <summary>
+        /// Include the calculated cut-fill between the elevation at the sampled location and the design elevation at the same location
+        /// </summary>
         [JsonProperty(PropertyName = "reportCutFill", Required = Required.Default)]
         public bool reportCutFill { get; protected set; }
 
+        /// <summary>
+        /// Include the measured CMV at the sampled location
+        /// </summary>
         [JsonProperty(PropertyName = "reportCMV", Required = Required.Default)]
         public bool reportCMV { get; protected set; }
 
+        /// <summary>
+        /// Include the measured MDP at the sampled location
+        /// </summary>
         [JsonProperty(PropertyName = "reportMDP", Required = Required.Default)]
         public bool reportMDP { get; protected set; }
 
+        /// <summary>
+        /// Include the calculated pass count at the sampled location
+        /// </summary>
         [JsonProperty(PropertyName = "reportPassCount", Required = Required.Default)]
         public bool reportPassCount { get; protected set; }
 
+        /// <summary>
+        /// Include the measured temperature at the sampled location
+        /// </summary>
         [JsonProperty(PropertyName = "reportTemperature", Required = Required.Default)]
         public bool reportTemperature { get; protected set; }
 
+        /// <summary>
+        /// *** Currently unclear, related to alignment based gridded CSV exports
+        /// </summary>
         [JsonProperty(PropertyName = "reportOption", Required = Required.Default)]
         public GriddedCSVReportOption reportOption { get; protected set; }
 
+        /// <summary>
+        /// The Northing ordinate of the location to start gridding from
+        /// </summary>
         [JsonProperty(PropertyName = "startNorthing", Required = Required.Default)]
         public double startNorthing { get; protected set; }
 
+        /// <summary>
+        /// The Easting ordinate of the location to start gridding from
+        /// </summary>
         [JsonProperty(PropertyName = "startEasting", Required = Required.Default)]
         public double startEasting { get; protected set; }
 
+        /// <summary>
+        /// The Northing ordinate of the location to end gridding at
+        /// </summary>
         [JsonProperty(PropertyName = "endNorthing", Required = Required.Default)]
         public double endNorthing { get; protected set; }
 
+        /// <summary>
+        /// The Easting ordinate of the location to end gridding at
+        /// </summary>
         [JsonProperty(PropertyName = "endEasting", Required = Required.Default)]
         public double endEasting { get; protected set; }
 
+        /// <summary>
+        /// The orientation of the grid, expressed in radians
+        /// </summary>
         [JsonProperty(PropertyName = "direction", Required = Required.Default)]
         public double direction { get; protected set; }
 
-        //        [JsonProperty(PropertyName = "zipFile", Required = Required.Default)]
-        //        public bool zipFile { get; protected set; }
-
-        [JsonProperty(PropertyName = "filename", Required = Required.Default)]
-        public string filename { get; protected set; }
-
         public TTranslation[] translations { get; private set; }
-
-        public TASNodeUserPreferences userPrefs { get; private set; }
 
         protected ExportGridCSV()
         {
@@ -148,7 +181,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
         /// <summary>
         /// Create example instance of PassCounts to display in Help documentation.
         /// </summary>
-        public ExportGridCSV HelpSample
+        public new ExportGridCSV HelpSample
         {
             get
             {
@@ -158,7 +191,6 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
                     liftBuildSettings = LiftBuildSettings.HelpSample,
                     filter = Filter.HelpSample,
                     filterID = 0,
-                    filename = "GoToSomwhere.csv",
                     callId = new Guid(),
                     callerId = "Myself"
                 };
@@ -184,9 +216,6 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
             translations[4].Translation = "Request Canceled";
             translations[5].ID = 5;
             translations[5].Translation = "Maxmium records reached";
-
-            userPrefs =
-                   ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences("NZ", "/", ":", ",", ".", 0.0, 0, 1, 0, 0, 1, 3);
         }
     }
 }
