@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
+using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Interfaces;
@@ -105,6 +106,7 @@ namespace VSS.Raptor.Service.WebApi
             services.AddScoped<ITagProcessor, TagProcessor>();
             services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
             services.AddSingleton<IProjectListProxy, ProjectListProxy>();
+            services.AddSingleton<IFileRepository, FileRepository>();
 
             serviceCollection = services;
         }

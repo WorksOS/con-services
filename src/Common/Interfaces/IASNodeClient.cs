@@ -10,6 +10,7 @@ using ASNode.Volumes.RPC;
 using ASNodeDecls;
 using ASNodeRPC;
 using BoundingExtents;
+using DesignProfiler.ComputeDesignBoundary.RPC;
 using DesignProfilerDecls;
 using ShineOn.Rtl;
 using SVOICDecls;
@@ -225,6 +226,10 @@ namespace VSS.Raptor.Service.Common.Interfaces
      TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings, out TCCASummary ccaSummary);
 
     bool GetMachineCCAColourPalettes(long dataModelId, long machineId, DateTime? startUtc, DateTime? endUtc, int? liftId, out TColourPalettes palettes);
+
+    TASNodeErrorStatus GetCoordinateSystemProjectionFile(long DataModelID, TVLPDDistanceUnits RequestedUnits, out string prjFile);
+    TASNodeErrorStatus GetCoordinateSystemHorizontalAdjustmentFile(string CSFileName, long DataModelID, TVLPDDistanceUnits RequestedUnits, out string haFile);
+    bool GetDesignBoundaryAsDXFFile(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args Args, out MemoryStream DXFContents, out TDesignProfilerRequestResult DesignProfilerResult);
 
   }
 }

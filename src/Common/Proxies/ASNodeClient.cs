@@ -11,6 +11,7 @@ using ASNode.Volumes.RPC;
 using ASNodeDecls;
 using ASNodeRPC;
 using BoundingExtents;
+using DesignProfiler.ComputeDesignBoundary.RPC;
 using DesignProfilerDecls;
 using ShineOn.Rtl;
 using SubGridTreesDecls;
@@ -397,6 +398,45 @@ namespace VSS.Raptor.Service.Common.Proxies
     public bool GetMachineCCAColourPalettes(long dataModelId, long machineId, DateTime? startUtc, DateTime? endUtc, int? liftId, out TColourPalettes palettes)
     {
       return client.GetMachineCCAColourPalettes(dataModelId, machineId, startUtc ?? DateTime.MinValue, endUtc ?? DateTime.MinValue, liftId ?? 0, out palettes) == 1/*icsrrNoError*/;
+    }
+
+    /// <summary>
+    /// Gets PRJ file contents from Raptor for a project using the project coordinate system.
+    /// </summary>
+    /// <param name="dataModelID">Project ID</param>
+    /// <param name="requestedUnits">Metric or US units for the file contents</param>
+    /// <param name="prjFile">Projection file contents</param>
+    /// <returns></returns>
+    public TASNodeErrorStatus GetCoordinateSystemProjectionFile(long dataModelID, TVLPDDistanceUnits requestedUnits,
+      out string prjFile)
+    {
+      return client.GetCoordinateSystemProjectionFile(dataModelID, requestedUnits, out prjFile);
+    }
+    /// <summary>
+    /// Gets GM_XFORM file contents from Raptor for a project using the project coordinate system.
+    /// </summary>
+    /// <param name="csFileName">Coordinate system file name</param>
+    /// <param name="dataModelID">Project ID</param>
+    /// <param name="requestedUnits">Metric or US units for the file contents</param>
+    /// <param name="haFile">Horizontal adjustment file contents</param>
+    /// <returns></returns>
+    public TASNodeErrorStatus GetCoordinateSystemHorizontalAdjustmentFile(string csFileName, long dataModelID, TVLPDDistanceUnits requestedUnits, out string haFile)
+    {
+      return client.GetCoordinateSystemHorizontalAdjustmentFile(csFileName, dataModelID, requestedUnits, out haFile);
+    }
+
+    /// <summary>
+    /// Gets the boundary of a surface as a DXF file.
+    /// </summary>
+    /// <param name="args">Design boundary arguments: The project ID, design surface file design descriptor, type of boundary (DXF),
+    /// units and interval to use</param>
+    /// <param name="dxfContents">The DXF file contents</param>
+    /// <param name="designProfilerResult">The result code (0=success)</param>
+    /// <returns></returns>
+    public bool GetDesignBoundaryAsDXFFile(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args args,
+      out MemoryStream dxfContents, out TDesignProfilerRequestResult designProfilerResult)
+    {
+      return client.GetDesignBoundaryAsDXFFile(args, out dxfContents, out designProfilerResult);
     }
 
   }
