@@ -177,7 +177,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
        };
     }
     */
-
+    /*
         /// <summary>
         /// Create example instance of PassCounts to display in Help documentation.
         /// </summary>
@@ -196,7 +196,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
                 };
             }
         }
-
+*/
 
         /// <summary>
         /// Validates all properties
