@@ -4,8 +4,6 @@ services:
     build: ./artifacts/WebApi
     env_file:
      - docker-compose.env
-    depends_on:
-      - schema
   accepttest:
     build: ./AcceptanceTests/deploy
     env_file:
