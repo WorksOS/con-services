@@ -26,7 +26,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.1" />
     <PackageReference Include="TCCFileAccess.netcore" Version="*" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="1.1.1" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' ">

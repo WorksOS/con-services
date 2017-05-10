@@ -29,10 +29,10 @@ namespace VSS.Raptor.Service.Common.Filters
       }
       catch (ServiceException ex)
       {
-        log.LogInformation("SERVICEEXCEPTION: {0}, {1}", ex.Response, ex.GetContent);
-        context.Response.StatusCode = (int)ex.Response.StatusCode;
+        log.LogInformation("SERVICEEXCEPTION: {0}, {1}", ex.GetContent, ex.GetContent);
+        context.Response.StatusCode = (int)ex.Code;
         //Don't write any body for 204
-        if (ex.Response.StatusCode != HttpStatusCode.NoContent)
+        if (ex.Code != HttpStatusCode.NoContent)
         {
           await context.Response.WriteAsync(ex.GetContent);
         }
