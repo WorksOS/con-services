@@ -158,11 +158,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="FileAccess.feature.cs">
-      <DependentUpon>FileAccess.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="GetLifts.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -397,10 +392,6 @@
     <None Include="ExportReport.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ExportReport.feature.cs</LastGenOutput>
-    </None>
-    <None Include="FileAccess.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>FileAccess.feature.cs</LastGenOutput>
     </None>
     <None Include="FilterServices.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
