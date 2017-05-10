@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Shared across Merino apps, source code is availble under MerinoSandbox repo</Description>
     <AssemblyTitle>Shared lib to access masterdata aspects through http</AssemblyTitle>
-    <VersionPrefix>1.0.9</VersionPrefix>
+    <VersionPrefix>1.0.25</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net46;net462</TargetFrameworks>
     <AssemblyName>MasterDataProxies.netcore</AssemblyName>
     <PackageId>src</PackageId>
@@ -30,7 +30,7 @@
     <PackageReference Include="ConfigurationStore.netcore" Version="*" />
     <PackageReference Include="Polly" Version="4.5.0-beta-netstandar-0001" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.0.3" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">

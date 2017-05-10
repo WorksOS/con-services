@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Shared across Merino apps, source code is availble under MerinoSandbox repo</Description>
+    <AssemblyTitle>Shared lib to access RDKafka library with .net core</AssemblyTitle>
+    <VersionPrefix>1.0.7</VersionPrefix>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <AssemblyName>KafkaConsumer.netcore</AssemblyName>
+    <PackageId>KafkaConsumer</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="RdKafka" Version="0.9.2-ci-170" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+    <PackageReference Include="ConfigurationStore.netcore" Version="*" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="*" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="*" />
+  </ItemGroup>
+
+</Project>
