@@ -59,6 +59,7 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
         [ProjectUidVerifier]
         [NotLandFillProjectWithUIDVerifier]
         [Route("api/v1/export/gridded/csv")]
+        [HttpPost]
         public ExportResult PostExportCSVReport([FromBody] ExportGridCSV request)
         {
             request.Validate();
