@@ -25,7 +25,7 @@ namespace TestUtility
     /// <param name="mediaType">This is the mediaType of the HTTP request which can be json or xml </param>    
     /// <param name="customerUid">This is the customer UID for the header</param>
     /// <returns></returns>
-    public string DoHttpRequest(string resourceUri, string httpMethod, string payloadData, HttpStatusCode httpResponseCode = HttpStatusCode.OK, string mediaType = "application/json", string customerUid = null)
+    public (bool,string) DoHttpRequest(string resourceUri, string httpMethod, string payloadData, HttpStatusCode httpResponseCode = HttpStatusCode.OK, string mediaType = "application/json", string customerUid = null)
     {
       Log.Info(resourceUri, Log.ContentType.ApiSend);
       var msg = new Msg();
@@ -49,7 +49,7 @@ namespace TestUtility
           msg.DisplayWebApi(httpMethod, resourceUri, responseString, payloadData);
           Assert.AreEqual(httpResponseCode, response.StatusCode, "Expected this response code, " + httpResponseCode + ", but the actual response code was this instead, " + response.StatusCode);
         }
-        return responseString;
+        return (true,responseString);
       }
       catch (AggregateException ex)
       {
@@ -61,10 +61,10 @@ namespace TestUtility
           if (response == null) continue;
           var resp = GetStringFromResponseStream(response);    
           msg.DisplayWebApi(httpMethod, resourceUri, resp, payloadData);      
-          return resp;
+          return (false,resp);
         }
         msg.DisplayException(ex.Message);
-        return string.Empty;
+        return (false,string.Empty);
       }
     }
 
@@ -79,7 +79,7 @@ namespace TestUtility
 
         if (readStream != null)
         {
-            var reader = new StreamReader(readStream, Encoding.UTF8);
+            var reader = new StreamReader(readStream, Encoding.ASCII);
             var responseString = reader.ReadToEnd();
             return responseString;
         }
