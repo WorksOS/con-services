@@ -1,0 +1,50 @@
+version: '2'
+services:
+  webapi:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-[WVERSION]
+    env_file:
+     - docker-compose-alpha.env
+    ports:
+     - "3001:80"
+    depends_on:
+      - schema
+  schema:
+    build: ./database 
+    env_file:
+     - docker-compose-alpha.env
+    depends_on:
+     - masterdataschema
+  masterdataschema:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest-release-[MVERSION]    
+    env_file:
+     - docker-compose-alpha.env
+  masterdataconsumercustomer:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
+    env_file:
+     - docker-compose-alpha.env
+    environment:
+    - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ICustomerEvent
+    volumes:
+      - ./artifacts/logs:/app/logs
+    depends_on:
+      - schema
+  masterdataconsumergeofence:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
+    env_file:
+     - docker-compose-alpha.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.IGeofenceEvent
+    volumes:
+      - ./artifacts/logs:/app/logs
+    depends_on:
+      - schema
+  masterdataconsumersubscription:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest-release-[MVERSION]
+    env_file:
+     - docker-compose-alpha.env
+    environment:
+     - KAFKA_TOPICS=VSS.Interfaces.Events.MasterData.ISubscriptionEvent
+    volumes:
+      - ./artifacts/logs:/app/logs
+    depends_on:
+      - schema

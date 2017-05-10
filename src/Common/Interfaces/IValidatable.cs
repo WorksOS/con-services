@@ -1,0 +1,16 @@
+﻿
+using VSS.Raptor.Service.Common.ResultHandling;
+
+namespace VSS.Raptor.Service.Common.Interfaces
+{
+    /// <summary>
+    /// Defines if a domain object can have business validation
+    /// </summary>
+    public interface IValidatable 
+    {
+        /// <summary>
+        /// Validate domain object. If validation is not successful throw <see cref="ServiceException" />
+        /// </summary>
+        void Validate();
+    }
+}
