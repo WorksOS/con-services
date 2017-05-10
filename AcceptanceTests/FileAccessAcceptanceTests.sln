@@ -6,7 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{07ECB0F2-14A8-4854-80A6-3B281DCA5413}"
 	ProjectSection(SolutionItems) = preProject
 		Dockerfile = Dockerfile
-		global.json = global.json
 		readme.md = readme.md
 	EndProjectSection
 EndProject
@@ -25,9 +24,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtility", "utilities\TestUtility\TestUtility.csproj", "{D507DD23-5D34-4D35-B855-5A3888CE5146}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "tests\IntegrationTests\IntegrationTests.csproj", "{41E4D9C8-742F-45FC-B459-0A4C261B8B84}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D507DD23-5D34-4D35-B855-5A3888CE5146} = {D507DD23-5D34-4D35-B855-5A3888CE5146}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRun", "utilities\TestRun\TestRun.csproj", "{0B6CA6B4-5690-4DE5-8FF0-F4927D9DA723}"
 EndProject
