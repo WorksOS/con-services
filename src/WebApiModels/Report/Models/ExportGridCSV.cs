@@ -181,7 +181,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         /// <summary>
         /// Create example instance of PassCounts to display in Help documentation.
         /// </summary>
-        public new static ExportGridCSV HelpSample
+        public static ExportGridCSV HelpSample
         {
             get
             {
