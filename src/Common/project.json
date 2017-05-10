@@ -18,7 +18,6 @@
     "Microsoft.Extensions.Configuration.FileExtensions": "1.1.1",
     "Microsoft.Extensions.Configuration.Json": "1.1.1",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.1",
-    "TCCFileAccess.netcore": "*",
     "Microsoft.AspNetCore.ResponseCaching": "1.1.1"
   },
 
