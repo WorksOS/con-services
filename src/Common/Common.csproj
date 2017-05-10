@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.2-beta1" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.1" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.0.6" />
     <PackageReference Include="ConfigurationStore.netcore" Version="*" />
     <PackageReference Include="MasterDataProxies.netcore" Version="*" />
