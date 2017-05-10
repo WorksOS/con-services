@@ -288,7 +288,7 @@ Scenario: Compaction Get CMV Summary
         },
         {
           "color": 16442880,
-          "value": 599.7128864156789
+          "value": 599.71288641567889
         },
         {
           "color": 14476800,
@@ -348,7 +348,7 @@ Scenario: Compaction Get CMV Summary
         },
         {
           "color": 56540,
-          "value": 616.3391155374461
+          "value": 616.33911553744611
         },
         {
           "color": 51430,
@@ -386,23 +386,23 @@ Scenario: Compaction Get CMV Summary
       "colorValues": [
         {
           "color": 8421504,
-          "value": 0.0
+          "value": 0
         },
         {
           "color": 255,
-          "value": 20.0
+          "value": 20
         },
         {
           "color": 65280,
-          "value": 70.0
+          "value": 70
         },
         {
           "color": 65280,
-          "value": 71.0
+          "value": 71
         },
         {
           "color": 16711680,
-          "value": 101.0
+          "value": 101
         }
       ],
       "aboveLastColor": null,
@@ -411,74 +411,74 @@ Scenario: Compaction Get CMV Summary
     "passCountDetailPalette": {
       "colorValues": [
         {
-          "color": 16763955,
-          "value": 1.0
+          "color": 2971523,
+          "value": 1
         },
         {
-          "color": 16776960,
-          "value": 2.0
+          "color": 4430812,
+          "value": 2
         },
         {
-          "color": 65535,
-          "value": 3.0
+          "color": 12509169,
+          "value": 3
         },
         {
-          "color": 39423,
-          "value": 4.0
+          "color": 10341991,
+          "value": 4
         },
         {
-          "color": 13434624,
-          "value": 5.0
+          "color": 7053374,
+          "value": 5
         },
         {
-          "color": 16711935,
-          "value": 6.0
+          "color": 3828517,
+          "value": 6
         },
         {
-          "color": 6684825,
-          "value": 7.0
+          "color": 16174803,
+          "value": 7
         },
         {
-          "color": 6697728,
-          "value": 8.0
+          "color": 13990524,
+          "value": 8
         }
       ],
-      "aboveLastColor": 3355392,
+      "aboveLastColor": 12660791,
       "belowFirstColor": null
     },
     "passCountSummaryPalette": {
-      "aboveTargetColor": 16711680,
-      "onTargetColor": 65280,
-      "belowTargetColor": 255
+      "aboveTargetColor": 13959168,
+      "onTargetColor": 9159498,
+      "belowTargetColor": 87963
     },
     "cutFillPalette": {
       "colorValues": [
         {
-          "color": 128,
+          "color": 11789820,
           "value": -0.2
         },
         {
-          "color": 255,
+          "color": 236517,
           "value": -0.1
         },
         {
-          "color": 8421631,
+          "color": 87963,
           "value": -0.05
         },
         {
-          "color": 65280,
-          "value": 0.0
+          "color": 9159498,
+          "value": 0
         },
         {
-          "color": 16744576,
+          "color": 16764370,
           "value": 0.05
         },
         {
-          "color": 16711680,
+          "color": 15037299,
           "value": 0.1
         },
         {
-          "color": 8388608,
+          "color": 13959168,
           "value": 0.2
         }
       ],
@@ -486,84 +486,84 @@ Scenario: Compaction Get CMV Summary
       "belowFirstColor": null
     },
     "temperatureSummaryPalette": {
-      "aboveTargetColor": 16711680,
-      "onTargetColor": 65280,
-      "belowTargetColor": 255
+      "aboveTargetColor": 13959168,
+      "onTargetColor": 9159498,
+      "belowTargetColor": 87963
     },
     "cmvSummaryPalette": {
-      "aboveTargetColor": 16711680,
-      "onTargetColor": 65280,
-      "belowTargetColor": 255
+      "aboveTargetColor": 13959168,
+      "onTargetColor": 9159498,
+      "belowTargetColor": 87963
     },
     "mdpSummaryPalette": {
-      "aboveTargetColor": 16711680,
-      "onTargetColor": 65280,
-      "belowTargetColor": 255
+      "aboveTargetColor": 13959168,
+      "onTargetColor": 9159498,
+      "belowTargetColor": 87963
     },
     "cmvPercentChangePalette": {
       "colorValues": [
         {
-          "color": 65280,
-          "value": 5.0
+          "color": 9159498,
+          "value": 5
         },
         {
-          "color": 65535,
-          "value": 20.0
+          "color": 16764370,
+          "value": 20
         },
         {
-          "color": 16711680,
-          "value": 50.0
+          "color": 15037299,
+          "value": 50
         }
       ],
-      "aboveLastColor": 16776960,
+      "aboveLastColor": 13959168,
       "belowFirstColor": 33554431
     },
     "speedSummaryPalette": {
-      "aboveTargetColor": 8388736,
-      "onTargetColor": 65280,
-      "belowTargetColor": 65535
+      "aboveTargetColor": 13959168,
+      "onTargetColor": 9159498,
+      "belowTargetColor": 87963
     },
     "temperatureDetailPalette": {
       "colorValues": [
         {
           "color": 2971523,
-          "value": 70.0
+          "value": 70
         },
         {
           "color": 4430812,
-          "value": 80.0
+          "value": 80
         },
         {
           "color": 12509169,
-          "value": 90.0
+          "value": 90
         },
         {
           "color": 14479047,
-          "value": 100.0
+          "value": 100
         },
         {
           "color": 10341991,
-          "value": 110.0
+          "value": 110
         },
         {
           "color": 7053374,
-          "value": 120.0
+          "value": 120
         },
         {
           "color": 3828517,
-          "value": 130.0
+          "value": 130
         },
         {
           "color": 16174803,
-          "value": 140.0
+          "value": 140
         },
         {
           "color": 13990524,
-          "value": 150.0
+          "value": 150
         },
         {
           "color": 12660791,
-          "value": 160.0
+          "value": 160
         }
       ],
       "aboveLastColor": null,

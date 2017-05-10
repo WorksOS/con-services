@@ -25,7 +25,7 @@ using VSS.Raptor.Service.Common.Filters.Validation;
 using VSS.Raptor.Service.Common.JsonConverters;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
-
+using TCCFileAccess;
 
 namespace VSS.Raptor.Service.WebApi
 {
@@ -105,6 +105,7 @@ namespace VSS.Raptor.Service.WebApi
             services.AddScoped<ITagProcessor, TagProcessor>();
             services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
             services.AddSingleton<IProjectListProxy, ProjectListProxy>();
+            services.AddSingleton<IFileRepository, FileRepository>();
 
             serviceCollection = services;
         }
@@ -128,7 +129,7 @@ namespace VSS.Raptor.Service.WebApi
             //app.UseApplicationInsightsRequestTelemetry();
             //app.UseApplicationInsightsExceptionTelemetry();
 
-            app.UseResponseCaching();
+            //app.UseResponseCaching();//Disable for now
             app.UseMvc();
 
             app.UseSwagger();

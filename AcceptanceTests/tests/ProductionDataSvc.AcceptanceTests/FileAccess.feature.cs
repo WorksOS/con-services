@@ -72,152 +72,64 @@ namespace ProductionDataSvc.AcceptanceTests
         {
 #line 4
 #line 5
- testRunner.Given("the FileAccess service URI \"/api/v1/files\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the FileAccess service for file contents URI \"/api/v1/rawfiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
         }
         
-        public virtual void FileAccess_DownloadAFileToCurrentDirectory(string fileName, string path, string filespaceId, string localPath, string[] exampleTags)
+        public virtual void FileAccess_DownloadAFileAndExtractItsContentsToBytes(string fileName, string path, string filespaceId, string[] exampleTags)
         {
-            string[] @__tags = new string[] {
-                    "ignore"};
-            if ((exampleTags != null))
-            {
-                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
-            }
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a file to current directory", @__tags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a file and extract its contents to bytes", exampleTags);
+#line 7
+this.ScenarioSetup(scenarioInfo);
+#line 4
+this.FeatureBackground();
 #line 8
-this.ScenarioSetup(scenarioInfo);
-#line 4
-this.FeatureBackground();
+ testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" expecting the downloaded file", fileName, path, filespaceId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 9
- testRunner.Given(string.Format("\"{0}\" does not already exist", localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 10
- testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" to \"{3}\"", fileName, path, filespaceId, localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 11
- testRunner.Then(string.Format("\"{0}\" should be present", localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the file contents should be present", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("FileAccess - Download a file to current directory")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("FileAccess - Download a file and extract its contents to bytes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "FileAccess")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Large Sites Road - Trimble Road.ttm")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:fileName", "Large Sites Road - Trimble Road.ttm")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:path", "/77561/1158")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filespaceId", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:localPath", "Large Sites Road - Trimble Road.ttm")]
-        public virtual void FileAccess_DownloadAFileToCurrentDirectory_LargeSitesRoad_TrimbleRoad_Ttm()
+        public virtual void FileAccess_DownloadAFileAndExtractItsContentsToBytes_LargeSitesRoad_TrimbleRoad_Ttm()
         {
-            this.FileAccess_DownloadAFileToCurrentDirectory("Large Sites Road - Trimble Road.ttm", "/77561/1158", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", "Large Sites Road - Trimble Road.ttm", ((string[])(null)));
+            this.FileAccess_DownloadAFileAndExtractItsContentsToBytes("Large Sites Road - Trimble Road.ttm", "/77561/1158", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", ((string[])(null)));
         }
         
-        public virtual void FileAccess_DownloadAFileThatAlreadyExists(string fileName, string path, string filespaceId, string localPath, string[] exampleTags)
+        public virtual void FileAccess_DownloadANon_ExistentFileToExtractItsContentsToBytes(string fileName, string path, string filespaceId, string[] exampleTags)
         {
-            string[] @__tags = new string[] {
-                    "ignore"};
-            if ((exampleTags != null))
-            {
-                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
-            }
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a file that already exists", @__tags);
-#line 17
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a non-existent file to extract its contents to bytes", exampleTags);
+#line 14
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 18
- testRunner.Given(string.Format("\"{0}\" already exists", localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 19
- testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" to \"{3}\"", fileName, path, filespaceId, localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 20
- testRunner.Then("the response should have Code 0 and Message \"success\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 15
+ testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" expecting no downloaded file and BadRequest " +
+                        "response", fileName, path, filespaceId), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 16
+ testRunner.Then("the response should have Code -3 and Message \"Failed to download file from TCC\" a" +
+                    "nd no file contents should be present", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("FileAccess - Download a file that already exists")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("FileAccess - Download a non-existent file to extract its contents to bytes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "FileAccess")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Large Sites Road - Trimble Road.ttm")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:fileName", "Large Sites Road - Trimble Road.ttm")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:path", "/77561/1158")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filespaceId", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:localPath", "Large Sites Road - Trimble Road.ttm")]
-        public virtual void FileAccess_DownloadAFileThatAlreadyExists_LargeSitesRoad_TrimbleRoad_Ttm()
-        {
-            this.FileAccess_DownloadAFileThatAlreadyExists("Large Sites Road - Trimble Road.ttm", "/77561/1158", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", "Large Sites Road - Trimble Road.ttm", ((string[])(null)));
-        }
-        
-        public virtual void FileAccess_DownloadANon_ExistentFile(string fileName, string path, string filespaceId, string localPath, string[] exampleTags)
-        {
-            string[] @__tags = new string[] {
-                    "ignore"};
-            if ((exampleTags != null))
-            {
-                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
-            }
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a non-existent file", @__tags);
-#line 26
-this.ScenarioSetup(scenarioInfo);
-#line 4
-this.FeatureBackground();
-#line 27
- testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" to \"{3}\" expecting BadRequest response", fileName, path, filespaceId, localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 28
- testRunner.Then("the response should have Code -3 and Message \"Failed to download file from TCC\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("FileAccess - Download a non-existent file")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "FileAccess")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "IDontExist.ttm")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:fileName", "IDontExist.ttm")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:path", "/77561/1158")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filespaceId", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:localPath", "Random")]
-        public virtual void FileAccess_DownloadANon_ExistentFile_IDontExist_Ttm()
+        public virtual void FileAccess_DownloadANon_ExistentFileToExtractItsContentsToBytes_IDontExist_Ttm()
         {
-            this.FileAccess_DownloadANon_ExistentFile("IDontExist.ttm", "/77561/1158", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", "Random", ((string[])(null)));
-        }
-        
-        public virtual void FileAccess_DownloadAFileToInvalidDirectory(string fileName, string path, string filespaceId, string localPath, string[] exampleTags)
-        {
-            string[] @__tags = new string[] {
-                    "ignore"};
-            if ((exampleTags != null))
-            {
-                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
-            }
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("FileAccess - Download a file to invalid directory", @__tags);
-#line 34
-this.ScenarioSetup(scenarioInfo);
-#line 4
-this.FeatureBackground();
-#line 35
- testRunner.When(string.Format("I download \"{0}\" at \"{1}\" from \"{2}\" to \"{3}\" expecting BadRequest response", fileName, path, filespaceId, localPath), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 36
- testRunner.Then("the response should have Code -3 and Message \"Failed to download file from TCC\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("FileAccess - Download a file to invalid directory")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "FileAccess")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Large Sites Road - Trimble Road.ttm")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:fileName", "Large Sites Road - Trimble Road.ttm")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:path", "/77561/1158")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:filespaceId", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:localPath", "IDontExist\\Large Sites Road - Trimble Road.ttm")]
-        public virtual void FileAccess_DownloadAFileToInvalidDirectory_LargeSitesRoad_TrimbleRoad_Ttm()
-        {
-            this.FileAccess_DownloadAFileToInvalidDirectory("Large Sites Road - Trimble Road.ttm", "/77561/1158", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", "IDontExist\\Large Sites Road - Trimble Road.ttm", ((string[])(null)));
+            this.FileAccess_DownloadANon_ExistentFileToExtractItsContentsToBytes("IDontExist.ttm", "/77561/1158", "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01", ((string[])(null)));
         }
     }
 }

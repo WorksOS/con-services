@@ -4,9 +4,9 @@
   "dependencies": {
     "Microsoft.AspNet.WebApi.Core": "5.2.3",
     "Newtonsoft.Json": "9.0.2-beta1",
-    "VSS.Interfaces.netcore": "1.0.3",
+    "VSS.Interfaces.netcore": "1.0.6",
     "ConfigurationStore.netcore": "*",
-    "MasterDataProxies.netcore": "1.0.6",
+    "MasterDataProxies.netcore": "*",
     "VSS.Velociraptor.Interfaces": "1.0.*",
     "VSS.Authentication.JWT": "*",
     "Microsoft.AspNetCore.Mvc": "1.1.2",
@@ -18,8 +18,9 @@
     "Microsoft.Extensions.Configuration.FileExtensions": "1.1.1",
     "Microsoft.Extensions.Configuration.Json": "1.1.1",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.1",
+    "TCCFileAccess.netcore": "*",
     "Microsoft.AspNetCore.ResponseCaching": "1.1.1"
-   },
+  },
 
   "frameworks": {
     "net462": {
