@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Accept tests are starting .... "
-echo "Wait for 60 seconds"
-sleep 60s
+echo "Wait for 10 seconds"
+sleep 10s
 # Run the component tests
 echo "Run the component tests"
 echo "Run Integration tests starting...."
