@@ -17,6 +17,9 @@ using VSS.Raptor.Service.Common.Interfaces;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V3
 {
+  /// <summary>
+  /// Project controller v3
+  /// </summary>
   public class ProjectV3Controller : ProjectBaseController
     {
 

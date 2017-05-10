@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -12,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
-using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
 using Repositories.DBModels;
 using TCCFileAccess;
@@ -23,9 +21,21 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 {
+  /// <summary>
+  /// File Import controller v4
+  /// </summary>
   public class FileImportV4Controller : FileImportBaseController
   {
 
+    /// <summary>
+    /// File import controller v4
+    /// </summary>
+    /// <param name="producer"></param>
+    /// <param name="projectRepo"></param>
+    /// <param name="store"></param>
+    /// <param name="raptorProxy"></param>
+    /// <param name="fileRepo"></param>
+    /// <param name="logger"></param>
     public FileImportV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
       : base(producer, projectRepo, store, raptorProxy, fileRepo, logger)
@@ -171,7 +181,37 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       return importedFile;
     }
 
-    // todo delete
+    // DELETE: api/Project/
+    /// <summary>
+    /// Delete Project
+    /// </summary>
+    /// <param name="importedfile">DeleteProjectEvent model</param>
+    /// <remarks>Deletes existing project</remarks>
+    /// <response code="200">Ok</response>
+    /// <response code="400">Bad request</response>
+    [Route("api/v4/importedfile")]
+    [HttpDelete]
+    public async Task<ImportedFileDescriptorSingleResult> DeleteImportedFileV4([FromUri]Guid projectUid, [FromUri] Guid importedFileUid)
+    {
+      log.LogInformation("DeleteImportedFileV4. projejctUid {0} importedFileUid: {1}", projectUid, importedFileUid);
+      var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
+
+      // todo delete from TCC
+      // todo notify RaptorServices
+
+      // todo do version of GetImportedFileList which gets deleted i.e. by iportedFileUid?
+      var deletedFile = new ImportedFileDescriptorSingleResult(
+        (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
+        .ToImmutableList()
+        .First(f => f.ImportedFileUid == importedFileUid.ToString())
+      );
+      log.LogInformation(
+        $"DeleteImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(deletedFile)}");
+
+      //System.IO.File.Delete(file.path); todo should/can we delete temp file?
+      return deletedFile;
+    }
   }
 }
 

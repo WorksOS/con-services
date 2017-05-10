@@ -7,6 +7,9 @@ using VSS.Authentication.JWT;
 
 namespace ProjectWebApi.Filters
 {
+  /// <summary>
+  /// authentication
+  /// </summary>
   public class TIDAuthentication
   {
     private readonly RequestDelegate _next;

@@ -22,6 +22,9 @@ using VSS.Raptor.Service.Common.Utilities;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers
 {
+  /// <summary>
+  /// Project Base for all Project controllers
+  /// </summary>
   public class ProjectBaseController : Controller
   {
     protected readonly IKafka producer;

@@ -18,6 +18,9 @@ using VSS.Raptor.Service.Common.Proxies;
 
 namespace ProjectWebApi
 {
+  /// <summary>
+  /// 
+  /// </summary>
   public class Startup
   {
     private readonly string loggerRepoName = "WebApi";

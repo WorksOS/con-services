@@ -20,6 +20,18 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V1
   public class ProjectV1Controller : ProjectBaseController
     {
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="producer"></param>
+        /// <param name="projectRepo"></param>
+        /// <param name="subscriptionsRepo"></param>
+        /// <param name="store"></param>
+        /// <param name="subsProxy"></param>
+        /// <param name="geofenceProxy"></param>
+        /// <param name="raptorProxy"></param>
+        /// <param name="fileRepo"></param>
+        /// <param name="logger"></param>
         public ProjectV1Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
             IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
             IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)

@@ -25,6 +25,9 @@ using ProjectWebApiCommon.Utilities;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers
 {
+  /// <summary>
+  /// FileImporter controller
+  /// </summary>
   public class FileImportBaseController : Controller
   {
     protected readonly IKafka producer;
@@ -44,7 +47,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <param name="producer">The producer.</param>
     /// <param name="projectRepo">The project repo.</param>
     /// <param name="store">The store.</param>
-    /// <param name="subsProxy">The subs proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="fileRepo">For TCC file transfer</param>
@@ -78,7 +80,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="surveyedUtc"></param>
-    /// <param name="fileImportExistsInDb"></param>
     /// <returns></returns>
     protected async Task<FileDescriptor> UpsertImportedFile(int actionType, FlowFile file,
       string customerUid, Guid projectUid, ImportedFileType importedFileType,
@@ -130,9 +131,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
       var fileDescriptor = await WriteFileToRepository(customerUid, projectUid.ToString(), file.path,
         importedFileType,
-        surveyedUtc);
+        surveyedUtc).ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(projectUid.ToString(), fileDescriptor);
+      await NotifyRaptorAddFile(projectUid.ToString(), fileDescriptor).ConfigureAwait(false);
       return fileDescriptor;
     }
 
@@ -187,8 +188,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Creates an imported file. Writes to Db and creates the Kafka event.
     /// </summary>
-    /// <param name="importFile">The create imported file event</param>
-    /// <returns></returns>
+    /// <returns />
     protected virtual async Task<CreateImportedFileEvent> CreateImportedFile(Guid customerUid, Guid projectUid,
       ImportedFileType importedFileType, string filename, DateTime? surveyedUtc,
       string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy)
@@ -227,13 +227,42 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
 
     /// <summary>
     /// Creates an imported file. Writes to Db and creates the Kafka event.
+    /// </summary>
+    /// <returns />
+    protected virtual async Task DeleteImportedFile(Guid projejctUid, Guid importedFileUid)
+    {
+      var nowUtc = DateTime.UtcNow;
+      var deleteImportedFileEvent = new DeleteImportedFileEvent()
+      {
+        ProjectUID = projejctUid,
+        ImportedFileUID = importedFileUid,
+        ActionUTC = nowUtc, // aka importedDate
+        ReceivedUTC = nowUtc
+      };
+
+      var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(deleteImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
+        });
+
+      if (await projectService.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
+        return;
+
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          @"DeleteImportedFileV4. Unable to set Imported File event to deleted: {JsonConvert.SerializeObject(deleteImportedFileEvent)}."));
+    }
+
+    /// <summary>
+    /// Creates an imported file. Writes to Db and creates the Kafka event.
     /// only thing which should change here is a) FileUpdatedUtc/ActionUtc
     ///       file Descriptor???
     /// </summary>
     /// <param name="importedFileDescriptor">The existing imported file event</param>
     /// <param name="fileDescriptor"></param>
     /// <param name="surveyedUtc"></param>
-    /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="importedBy"></param>
     /// <returns></returns>
@@ -268,7 +297,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
           @"CreateImportedFileV4. Unable to store updated Imported File event to database: {JsonConvert.SerializeObject(importFile)}."));
-      return null;
     }
 
     /// <summary>

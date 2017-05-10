@@ -14,6 +14,9 @@ using VSS.Raptor.Service.Common.Interfaces;
 
 namespace ProjectWebApi.Controllers
 {
+  /// <summary>
+  /// 
+  /// </summary>
   public class ProjectV2Controller : ProjectBaseController
     {
     public ProjectV2Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,

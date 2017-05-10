@@ -22,6 +22,9 @@ using VSS.Raptor.Service.Common.Utilities;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 {
+  /// <summary>
+  /// Project controller v4
+  /// </summary>
   public class ProjectV4Controller : ProjectBaseController
   {
     public ProjectV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
