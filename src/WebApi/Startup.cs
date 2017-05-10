@@ -55,6 +55,8 @@ namespace VSS.Raptor.Service.WebApi
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging();
+
             //Configure CORS
             services.AddCors(options =>
             {
@@ -65,7 +67,6 @@ namespace VSS.Raptor.Service.WebApi
             });
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
-            services.AddMemoryCache();
             //Configure swagger
             services.AddSwaggerGen();
 
@@ -74,21 +75,22 @@ namespace VSS.Raptor.Service.WebApi
                 options.SingleApiVersion(new Info
                 {
                     Version = "v1",
-                    Title = "Raptor API",
-                    Description = "API for 3D compaction and volume data",
+                    Title = "File Access API",
                     TermsOfService = "None"
                 });
-                string path = isDevEnv ? "bin/Debug/net462/" : string.Empty;
+                string path = isDevEnv ? "bin/Debug/netcoreapp1.1/" : string.Empty;
                 options.IncludeXmlComments(path + "WebApi.xml");
                 options.IgnoreObsoleteProperties();
                 options.DescribeAllEnumsAsStrings();
+
             });
             //Swagger documentation can be viewed with http://localhost:5000/swagger/ui/index.html   
 
             //Configure application services
             services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
-            services.AddSingleton<IProjectListProxy, ProjectListProxy>();
             services.AddSingleton<IFileRepository, FileRepository>();
+            services.AddMvc();
+
 
             serviceCollection = services;
         }
@@ -100,11 +102,9 @@ namespace VSS.Raptor.Service.WebApi
             loggerFactory.AddDebug();
             loggerFactory.AddLog4Net(loggerRepoName);
 
-            serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-            var serviceProvider =serviceCollection.BuildServiceProvider();
             app.UseExceptionTrap();
-      		//Enable CORS before TID so OPTIONS works without authentication
-      		app.UseCors("VSS");
+            //Enable CORS before TID so OPTIONS works without authentication
+            app.UseCors("VSS");
 
             //For now don't use application insights as it clogs the log with lots of stuff.
             //app.UseApplicationInsightsRequestTelemetry();
@@ -115,6 +115,6 @@ namespace VSS.Raptor.Service.WebApi
 
             app.UseSwagger();
             app.UseSwaggerUi();
-      }
+        }
     }
 }
