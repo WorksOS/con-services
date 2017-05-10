@@ -24,7 +24,7 @@ namespace VSS.Visionlink.Project.UnitTests
 
       var error = "CreateImportedFileV4.The file was not imported successfully";
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(error));
     }
@@ -43,7 +43,7 @@ namespace VSS.Visionlink.Project.UnitTests
       var error =
         "CreateImportedFileV4.Supplied filename is not valid. Either exceeds the length limit of 256 is empty or contains illegal characters.";
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(error, StringComparison.Ordinal));
     }
@@ -63,7 +63,7 @@ namespace VSS.Visionlink.Project.UnitTests
         $"CreateImportedFileV4.Supplied path {0} is not valid.Either is empty or contains illegal characters.",
         file.path);
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(error, StringComparison.Ordinal));
     }
@@ -81,7 +81,7 @@ namespace VSS.Visionlink.Project.UnitTests
 
       var error = string.Format($"The projectUid is invalid {0}.", projectUid);
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(error));
     }
@@ -101,7 +101,7 @@ namespace VSS.Visionlink.Project.UnitTests
         "CreateImportedFileV4. ImportedFileType: {0}, is invalid. Only Alignment file types are supported at present",
         importedFileType.ToString());
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(error, StringComparison.Ordinal));
     }
@@ -121,7 +121,7 @@ namespace VSS.Visionlink.Project.UnitTests
         "CreateImportedFileV4. ImportedFileType {0} does not match the file extension received {1}.",
         importedFileType.ToString(), Path.GetExtension(file.flowFilename));
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(error, StringComparison.Ordinal));
     }
@@ -140,7 +140,7 @@ namespace VSS.Visionlink.Project.UnitTests
       var error = string.Format(
         "The fileCreatedUtc {0} is over 30 years old or >2 days in the future (utc).", fileCreatedUtc);
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(error, StringComparison.Ordinal));
     }
@@ -159,7 +159,7 @@ namespace VSS.Visionlink.Project.UnitTests
       var error = string.Format(
         "The fileUpdatedUtc {0} is over 30 years old or >2 days in the future (utc).", fileUpdatedUtc);
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(error, StringComparison.Ordinal));
     }
@@ -177,7 +177,7 @@ namespace VSS.Visionlink.Project.UnitTests
 
       var error = string.Format($"The ImportedBy is not available {importedBy}.");
       var ex = Assert.ThrowsException<ServiceException>(
-        () => FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType,
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
           fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf(error, StringComparison.Ordinal));
     }
@@ -193,7 +193,7 @@ namespace VSS.Visionlink.Project.UnitTests
       DateTime fileUpdatedUtc = DateTime.UtcNow;
       string importedBy = "JoeSmoe";
 
-      FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType,
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
         fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
     }
   }

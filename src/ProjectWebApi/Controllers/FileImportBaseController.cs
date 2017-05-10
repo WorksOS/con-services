@@ -6,11 +6,10 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using FlowUploadFilter;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
-using log4net.Appender;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using ProjectWebApiCommon.Models;
 using Repositories;
@@ -36,6 +35,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected readonly ProjectRepository projectService;
     protected readonly IConfigurationStore store;
     protected readonly string kafkaTopicName;
+    protected string userEmailAddress;
+    protected ImportedFileDescriptor importedFileDescriptor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
@@ -66,6 +67,75 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
                        store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
+    /// <summary>
+    /// Upserts an imported file. Writes to Tcc and notifies Raptor
+    /// </summary>
+    /// <param name="actionType"></param>
+    /// <param name="file">The create imported file event</param>
+    /// <param name="customerUid"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="importedFileType"></param>
+    /// <param name="fileCreatedUtc"></param>
+    /// <param name="fileUpdatedUtc"></param>
+    /// <param name="surveyedUtc"></param>
+    /// <param name="fileImportExistsInDb"></param>
+    /// <returns></returns>
+    protected async Task<FileDescriptor> UpsertImportedFile(int actionType, FlowFile file,
+      string customerUid, Guid projectUid, ImportedFileType importedFileType,
+      DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DateTime? surveyedUtc)
+    {
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
+        fileUpdatedUtc, userEmailAddress, surveyedUtc);
+      log.LogInformation(
+        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+
+      if (!System.IO.File.Exists(file.path))
+      {
+        var error = string.Format("CreateImportedFileV4. The uploaded file {0} is not accessible.", file.path);
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+      }
+
+      ////validate customer-project relationship. if it fails, exception will be thrown from within the method
+      //var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
+      //if (project == null)
+      //{
+      //  log.LogError($"User doesn't have access to {projectUid}");
+      //  throw new ServiceException(HttpStatusCode.Forbidden,
+      //    new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
+      //      "No access to the project for a customer or project does not exist."));
+      //}
+
+      //log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
+
+      var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
+      if (importedFileList.Count > 0)
+      {
+        importedFileDescriptor = importedFileList.First(f => f.Name == file.flowFilename
+                                                   && f.ImportedFileType == importedFileType
+                                                   && (
+                                                     (importedFileType == ImportedFileType.SurveyedSurface &&
+                                                      f.SurveyedUtc == surveyedUtc) ||
+                                                     (importedFileType != ImportedFileType.SurveyedSurface)
+                                                   ));
+        if (importedFileDescriptor != null)
+        {
+          if (actionType == 1 /* create */)
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                @"CreateImportedFileV4. File: {file.flowName} has already been imported."));
+        }
+      }
+
+      // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
+      var fileDescriptor = await WriteFileToRepository(customerUid, projectUid.ToString(), file.path,
+        importedFileType,
+        surveyedUtc);
+
+      await NotifyRaptorAddFile(projectUid.ToString(), fileDescriptor);
+      return fileDescriptor;
+    }
+
 
     /// <summary>
     /// Gets the project.
@@ -80,15 +150,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => p.ProjectUID == projectUid);
 
-      if (project == null)
-      {
-        log.LogWarning($"User doesn't have access to {projectUid}");
-        throw new ServiceException(HttpStatusCode.Forbidden,
-          new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
-            "No access to the project for a customer or project does not exist."));
-      }
-
-      log.LogInformation($"Project {projectUid} retrieved");
       return project;
     }
 
@@ -162,7 +223,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
           @"CreateImportedFileV4. Unable to store Imported File event to database: {JsonConvert.SerializeObject(importFile)}."));
-      return null;
     }
 
     /// <summary>
@@ -185,7 +245,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       var updateImportedFileEvent = new UpdateImportedFileEvent()
       {
         ProjectUID = Guid.Parse(importedFileDescriptor.ProjectUid),
-        ImportedFileUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.Parse(importedFileDescriptor.ImportedFileUid),
         FileDescriptor = fileDescriptor,
         FileCreatedUtc = importedFileDescriptor.FileCreatedUtc,
         FileUpdatedUtc = fileUpdatedUtc,
@@ -215,9 +275,13 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// Writes the importedFile to TCC
     /// </summary>
     /// <returns></returns>
-    protected async Task<FileDescriptor> WriteFileToRepository(int actionType, string customerUid, string projectUid, string pathAndFileName, ImportedFileType importedFileType, DateTime? surveyedUtc)
+    protected async Task<FileDescriptor> WriteFileToRepository(string customerUid, string projectUid, string pathAndFileName, ImportedFileType importedFileType, DateTime? surveyedUtc)
     {
-      var fileSpaceId = store.GetValueString("TCCFILESPACEID");   // "u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01"
+      var fileSpaceId = store.GetValueString("TCCFILESPACEID");   
+      if (string.IsNullOrEmpty(fileSpaceId))
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
+            "@Unable to obtain TCC fileSpaceId"));
 
       var fileStream = new FileStream(pathAndFileName, FileMode.Open);
       var tccPath = string.Format("/{0}/{1}", customerUid, projectUid); // trailing slash etc
@@ -228,9 +292,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
           tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
             Path.GetExtension(tccFileName));
 
-      //var fileDetails = await fileRepo.FileExists(fileSpaceId, tccPath, filename).ConfigureAwait(false);
-      // if (actionType = 1/* create */ && fileExists != null) throw except
-      // if (actionType = 2/* update */ && fileExists == null) throw except
       //var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, filename, fileStream, fileStream.Length).ConfigureAwait(false);
 
       // todo temp until tcc interface is changed use the customer-based putFile
@@ -261,7 +322,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       log.LogDebug($"FileImport AddFile in RaptorServices returned code: {0} Message {1}.",
         notificationResult?.Code ?? -1,
         notificationResult?.Message ?? "notificationResult == null");
-      if (notificationResult == null || notificationResult.Code != 0)
+      if (notificationResult.Code != 0)
       {
         log.LogError($"FileImport AddFile in RaptorServices failed. Reason: {0} {1}. ",
           notificationResult?.Code ?? -1,

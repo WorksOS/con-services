@@ -78,6 +78,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
+      var customerUid = Guid.Parse(((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       if (projectRequest == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -87,21 +88,21 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
-      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = Guid.Parse(((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = customerUid;
       if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid();
 
       var project = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(project, projectService, customerUid.ToString());
 
-      await ValidateCoordSystem(project).ConfigureAwait(false); 
+      await ValidateCoordSystem(project).ConfigureAwait(false);
       ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
 
       string wktBoundary = project.ProjectBoundary;
       log.LogDebug($"Testing if there are overlapping projects for project {project.ProjectName}");
       await DoesProjectOverlap(project, wktBoundary);
 
-      //Convert to old format for Kafka for consistency on kakfa queue
+      ////Convert to old format for Kafka for consistency on kakfa queue
       string kafkaBoundary = project.ProjectBoundary
           .Replace(ProjectBoundaryValidator.POLYGON_WKT, string.Empty)
           .Replace("))", string.Empty)
@@ -120,7 +121,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         ReceivedUTC = project.ReceivedUTC
       };
 
-      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(customerProject, projectService, customerUid.ToString());
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       await ValidateAssociateSubscriptions(project).ConfigureAwait(false);
@@ -162,7 +163,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       await ValidateCoordSystem(project).ConfigureAwait(false);
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
@@ -213,7 +214,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     {
       log.LogInformation("DeleteProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
 
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });

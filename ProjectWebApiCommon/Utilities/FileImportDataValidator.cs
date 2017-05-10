@@ -24,7 +24,7 @@ namespace ProjectWebApiCommon.Models
     /// <param name="surveyedUtc"></param>
     /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
-    public static void ValidateCreateImportedFileRequest(FlowFile file, Guid projectUid,
+    public static void ValidateUpsertImportedFileRequest(FlowFile file, Guid projectUid,
       ImportedFileType importedFileType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, 
       string importedBy, DateTime? surveyedUtc )
     {

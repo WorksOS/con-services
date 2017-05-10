@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using VSS.Authentication.JWT;
 
-namespace VSS.Project.Service.WebApiModels.Filters
+namespace ProjectWebApi.Filters
 {
   public class TIDAuthentication
   {
     private readonly RequestDelegate _next;
+    public static string EmailAddress;
 
     public TIDAuthentication(RequestDelegate next)
     {
@@ -20,7 +21,6 @@ namespace VSS.Project.Service.WebApiModels.Filters
     {
       if (!context.Request.Path.Value.Contains("swagger"))
       {
-
         bool requiresCustomerUid = true; //context.Request.Method.ToUpper() == "GET"; Actually we do need to have customerUId regardless request
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
@@ -32,12 +32,6 @@ namespace VSS.Project.Service.WebApiModels.Filters
           await SetResult("No account selected", context);
           return;
         }
-        // If no token found, no further work possible
-        if (string.IsNullOrEmpty(authorization))
-        {
-          await SetResult("No authentication token", context);
-          return;
-        }
 
         try
         {
@@ -46,6 +40,7 @@ namespace VSS.Project.Service.WebApiModels.Filters
             ? new GenericIdentity(jwtToken.UserUid.ToString())
             : new GenericIdentity(jwtToken.UserUid.ToString(), customerUID);
           context.User = new GenericPrincipal(identity, new string[] { });
+          EmailAddress = jwtToken.EmailAddress;
         }
         catch (Exception e)
         {

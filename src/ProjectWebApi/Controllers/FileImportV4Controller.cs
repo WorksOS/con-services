@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
@@ -29,6 +30,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
       : base(producer, projectRepo, store, raptorProxy, fileRepo, logger)
     {
+      this.userEmailAddress = TIDAuthentication.EmailAddress;
     }
 
 
@@ -55,7 +57,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <returns></returns>
     [Route("api/v4/importedfile")]
     [HttpGet]
-    public ActionResult CreateUpload()
+    public ActionResult Upload()
     {
       return new NoContentResult();
     }
@@ -79,57 +81,25 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <response code="400">Bad request</response>
     [Route("api/v4/importedfile")]
     [HttpPost]
-    [ActionName("CreateUpload")]
+    [ActionName("Upload")]
     [FlowUpload("svl")]
     public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(FlowFile file,
       [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
-      [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc, 
+      [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
       var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      string importedBy = "todo get email from jwt"; // ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
 
-      FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc, fileUpdatedUtc, importedBy, surveyedUtc);
-      log.LogInformation(
-        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
-
-      if (!System.IO.File.Exists(file.path))
-      {
-        var error = string.Format("CreateImportedFileV4. The uploaded file {0} is not accessible.", file.path);
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
-      }
-
-      //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
-
-      var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
-      var existing = importedFileList.First(f => f.Name == file.flowFilename
-                                                 && f.ImportedFileType == importedFileType
-                                                 && (
-                                                   (importedFileType == ImportedFileType.SurveyedSurface &&
-                                                    f.SurveyedUtc == surveyedUtc) ||
-                                                   (importedFileType != ImportedFileType.SurveyedSurface)
-                                                 ));
-      if (existing != null)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            @"CreateImportedFileV4. File: {file.flowName} has already been imported."));
-
-
-      // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
-      var fileDescriptor = await WriteFileToRepository(1, customerUid, projectUid.ToString(), file.path, importedFileType,
-        surveyedUtc);
-
-      await NotifyRaptorAddFile(projectUid.ToString(), fileDescriptor);
+      var fileDescriptor = UpsertImportedFile(1 /* create */, file, customerUid.ToString(), projectUid,
+        importedFileType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
 
       // only if all succeeds then 
       //   write to Db and 
       //   write new CreateImportedFileEvent to kafka que
       CreateImportedFileEvent createImportedFileEvent = await CreateImportedFile(Guid.Parse(customerUid), projectUid,
-          importedFileType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
-          fileCreatedUtc, fileUpdatedUtc, importedBy)
-        .ConfigureAwait(false);
+            importedFileType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
+            fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
+          .ConfigureAwait(false);
 
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
@@ -143,25 +113,12 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       return importedFile;
     }
 
-
-
-    /// <summary>
-    /// Used as a callback by Flow.JS
-    /// </summary>
-    /// <returns></returns>
-    [Route("api/v4/importedfile")]
-    [HttpGet]
-    public ActionResult UpdateUpload()
-    {
-      return new NoContentResult();
-    }
-
+   
     // PUT: api/v4/importedfile
     /// <summary>
-    /// Update imported file
-    ///   this updates database AND updates file in TCC.
-    ///   no need to notify RaptorWebAPI.
-    /// note that a changed to the surveyedUtc would come via a CreateImportedFile as it changes the filename etc.
+    /// Upsert imported file
+    ///   this creates/updates database AND creates/updates file in TCC.
+    ///   notify RaptorWebAPI.
     /// </summary>
     /// <param name="file"></param>
     /// <param name="projectUid"></param>
@@ -173,56 +130,39 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <response code="400">Bad request</response>
     [Route("api/v4/importedfile")]
     [HttpPut]
-    [ActionName("UpdateUpload")]
+    [ActionName("Upload")]
     [FlowUpload("svl")]
     public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(FlowFile file,
       [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
-      [FromUri] DateTime fileUpdatedUtc, [FromUri] DateTime? surveyedUtc = null)
+      [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
+      [FromUri] DateTime? surveyedUtc = null)
     {
       var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      string importedBy = "todo get email from jwt"; // ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
 
-      FileImportDataValidator.ValidateCreateImportedFileRequest(file, projectUid, importedFileType, DateTime.UtcNow, fileUpdatedUtc, importedBy, surveyedUtc);
-      log.LogInformation(
-        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
-
-      if (!System.IO.File.Exists(file.path))
-      {
-        var error = string.Format("UpdateImportedFileV4. The uploaded file {0} is not accessible.", file.path);
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
-      }
-
-      //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      await GetProject(projectUid.ToString()).ConfigureAwait(false);
-
-      var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
-      var existing = importedFileList.First(f => f.Name == file.flowFilename
-                                                 && f.ImportedFileType == importedFileType
-                                                 && (
-                                                   (importedFileType == ImportedFileType.SurveyedSurface &&
-                                                    f.SurveyedUtc == surveyedUtc) ||
-                                                   (importedFileType != ImportedFileType.SurveyedSurface)
-                                                 ));
-      if (existing == null)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            @"UpdateImportedFileV4. File: {file.flowName} is not known to ProjectMDM."));
-
-
-      // update file in TCC 
-      var fileDescriptor = await WriteFileToRepository(2, customerUid, projectUid.ToString(), file.path, importedFileType, surveyedUtc);
+      var fileDescriptor = UpsertImportedFile(2 /* upsert */, file, customerUid.ToString(), projectUid,
+        importedFileType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
 
       // only if all succeeds then 
-      //   update Db and 
-      //   write new UpdateImportedFileEvent to kafka que
-      UpdateImportedFileEvent updateImportedFileEvent =
-        await UpdateImportedFile(existing, JsonConvert.SerializeObject(fileDescriptor), surveyedUtc, fileUpdatedUtc, importedBy).ConfigureAwait(false);
+      //   write to Db and 
+      //   write new CreateImportedFileEvent to kafka que
+      var importedFileUid = importedFileDescriptor?.ImportedFileUid;
+      if (importedFileDescriptor == null)
+      {
+        var createImportedFileEvent = await CreateImportedFile(Guid.Parse(customerUid), projectUid,
+            importedFileType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
+            fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
+          .ConfigureAwait(false);
+        importedFileUid = createImportedFileEvent.ImportedFileUID.ToString();
+      }
+      else
+        await UpdateImportedFile(importedFileDescriptor, JsonConvert.SerializeObject(fileDescriptor), surveyedUtc,
+            fileUpdatedUtc, userEmailAddress)
+          .ConfigureAwait(false);
 
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
         .ToImmutableList()
-        .First(f => f.ImportedFileUid == existing.ImportedFileUid.ToString())
+        .First(f => f.ImportedFileUid == importedFileUid)
       );
       log.LogInformation(
         $"UpdateImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");

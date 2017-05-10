@@ -5,7 +5,6 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using System.IO;
-using System.Security.Principal;
 
 namespace ProjectWebApiCommon.Models
 {
@@ -176,9 +175,9 @@ namespace ProjectWebApiCommon.Models
 
         if (associateEvent.CustomerUID.ToString() != headerCustomerUid)
         {
+          var error = $"CustomerUid {associateEvent.CustomerUID.ToString()} differs to the requesting CustomerUid {headerCustomerUid}. Impersonation not supported.";
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "CustomerUid differs to the requesting CustomerUid. Impersonation not supported."));
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
         }
         if (associateEvent.CustomerUID == Guid.Empty)
         {
