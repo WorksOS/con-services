@@ -40,7 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E54618D0-7ED
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ProjectWebApi", "..\src\ProjectWebApi\ProjectWebApi.xproj", "{5CEF0F77-FDD0-4798-951F-8317529B4779}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ProjectWebApiCommon", "..\ProjectWebApiCommon\ProjectWebApiCommon.xproj", "{961836FE-F672-445C-8B18-A843995D634E}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ProjectWebApiCommon", "..\src\ProjectWebApiCommon\ProjectWebApiCommon.xproj", "{961836FE-F672-445C-8B18-A843995D634E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
