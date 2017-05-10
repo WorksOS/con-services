@@ -23,17 +23,17 @@ namespace IntegrationTests
             Assert.IsTrue(success);
         }
 
-        /*[TestMethod]
+        [TestMethod]
         void FailToGetnonExistentFile()
         {
             var configuration = new TestConfig();
             var requestModel = FileDescriptor.CreateFileDescriptor("u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
                 "/77561/1158", "IDontExist.ttm");
             var request = new RestClientUtil();
-            var result = request.DoHttpRequest(configuration.webApiUri, "POST", JsonConvert.SerializeObject(requestModel),HSC);
-            Assert.IsTrue(!String.IsNullOrEmpty(result));
+            var(success, result) = request.DoHttpRequest(configuration.webApiUri, "POST", JsonConvert.SerializeObject(requestModel));
+            Assert.IsFalse(success);
 
-        }*/
+        }
 
 
     }
