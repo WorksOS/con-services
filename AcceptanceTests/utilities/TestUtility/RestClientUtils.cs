@@ -46,7 +46,7 @@ namespace TestUtility
         using (var response = (HttpWebResponse) request.GetResponseAsync().Result)
         {
           responseString = GetStringFromResponseStream(response);
-          msg.DisplayWebApi(httpMethod, resourceUri, responseString, payloadData);
+          msg.DisplayWebApi(httpMethod, resourceUri,"","");
           Assert.AreEqual(httpResponseCode, response.StatusCode, "Expected this response code, " + httpResponseCode + ", but the actual response code was this instead, " + response.StatusCode);
         }
         return (true,responseString);
