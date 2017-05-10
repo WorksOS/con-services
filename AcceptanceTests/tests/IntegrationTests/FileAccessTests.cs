@@ -24,7 +24,7 @@ namespace IntegrationTests
         }
 
         [TestMethod]
-        void FailToGetnonExistentFile()
+        public void FailToGetnonExistentFile()
         {
             var configuration = new TestConfig();
             var requestModel = FileDescriptor.CreateFileDescriptor("u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01",
