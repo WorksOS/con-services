@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -60,6 +61,54 @@ namespace VSS.Raptor.Service.Common.Proxies
 
       CoordinateSystemSettings response = await SendRequest<CoordinateSystemSettings>(urlKey, JsonConvert.SerializeObject(payLoadToSend), customHeaders);
       log.LogDebug("RaptorProxy.CoordinateSystemPost: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+
+      return response;
+    }
+
+    /// <summary>
+    /// Notifies Raptor that a file has been added to a project
+    /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
+    /// <returns></returns>
+    public async Task<ContractExecutionResult> AddFile(long? projectId, Guid? projectUid, string fileDescriptor, IDictionary<string, string> customHeaders = null)
+    {
+      var urlKey = "RAPTORADDFILE_API_URL";
+      string url = configurationStore.GetValueString(urlKey);
+      log.LogDebug($"RaptorProxy.AddFile: urlKey: {urlKey}  url: {url} customHeaders {customHeaders}");
+
+      log.LogDebug($"RaptorProxy.AddFile: projectId: {projectId} projectUid: {projectUid} fileDescriptor {fileDescriptor}");
+      var queryParams = $"?projectId={projectId}&projectUid={projectUid}&fileDescriptor={fileDescriptor}";
+      log.LogDebug($"RaptorProxy.AddFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
+
+      ContractExecutionResult response = await GetItem<ContractExecutionResult>(urlKey, customHeaders, queryParams);
+      var message = string.Format("RaptorProxy.AddFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug(message);
+
+      return response;
+    }
+
+    /// <summary>
+    /// Notifies Raptor that a file has been deleted from a project
+    /// </summary>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
+    /// <returns></returns>
+    public async Task<ContractExecutionResult> DeleteFile(long? projectId, Guid? projectUid, string fileDescriptor, IDictionary<string, string> customHeaders = null)
+    {
+      var urlKey = "RAPTORDELETEFILE_API_URL";
+      string url = configurationStore.GetValueString(urlKey);
+      log.LogDebug($"RaptorProxy.DeleteFile: urlKey: {urlKey}  url: {url} customHeaders {customHeaders}");
+
+      log.LogDebug($"RaptorProxy.DeleteFile: projectId: {projectId} projectUid: {projectUid} fileDescriptor {fileDescriptor}");
+      var queryParams = $"?projectId={projectId}&projectUid={projectUid}&fileDescriptor={fileDescriptor}";
+      log.LogDebug($"RaptorProxy.DeleteFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
+
+      ContractExecutionResult response = await GetItem<ContractExecutionResult>(urlKey, customHeaders, queryParams);
+      var message = string.Format("RaptorProxy.DeleteFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      log.LogDebug(message);
 
       return response;
     }

@@ -102,7 +102,7 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="queryParams">Query parameters for the request (optional)</param>
     /// <returns>List of items</returns>
-    private async Task<T> GetItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams=null)
+    protected async Task<T> GetItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams=null)
     {
       var url = ExtractUrl(urlKey);
       if (!string.IsNullOrEmpty(queryParams))
