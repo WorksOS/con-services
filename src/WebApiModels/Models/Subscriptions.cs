@@ -1,5 +1,5 @@
 ﻿using System;
-using TestUtility;
+using WebApiModels.Utilities;
 
 namespace WebApiModels.Models
 {

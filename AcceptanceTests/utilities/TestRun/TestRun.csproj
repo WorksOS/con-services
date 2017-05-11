@@ -19,20 +19,19 @@
   <ItemGroup>
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Framework.Runtime" Version="1.0.0-beta6" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.0.8-rc" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="7.0.5-IR21" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
-    <PackageReference Include="WebApiModels" Version="1.0.0-*" />
-    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.6" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="*" />
+    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.7" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.57" />
   </ItemGroup>
 
 </Project>
