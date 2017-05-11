@@ -1,2 +1,3 @@
 dotnet restore ./test/UnitTests/WebApiTests  
-dotnet test ./test/UnitTests/WebApiTests -f net462 
+cd test/UnitTests/WebApiTests
+dotnet test -f net462 
