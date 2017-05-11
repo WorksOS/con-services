@@ -27,6 +27,11 @@ namespace TCCFileAccess
         Task<DirResult> GetFolders(Organization org, DateTime lastModifiedUTC, string path);
         Task<DateTime> GetLastChangedTime(string filespaceId, string path);
         Task<bool> FolderExists(string filespaceId, string folder);
+        Task<bool> FileExists(string filespaceId, string filename);
         Task<PutFileResponse> PutFile(Organization org, string path, string filename, Stream contents, long sizeOfContents);
+        Task<bool> PutFile(string filespaceId, string path, string filename, Stream contents, long sizeOfContents);
+        Task<bool> DeleteFolder(string filespaceId, string path);
+        Task<bool> DeleteFile(string filespaceId, string fullName);
+        Task<bool> MakeFolder(string filespaceId, string path);
     }
 }
