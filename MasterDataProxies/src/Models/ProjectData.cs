@@ -1,4 +1,4 @@
-﻿//using Repositories.DBModels;
+﻿
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Raptor.Service.Common.Proxies.Models
@@ -126,8 +126,8 @@ namespace VSS.Raptor.Service.Common.Proxies.Models
     /// <value>
     /// The type of the subscription.
     /// </value>
-    public /*ServiceTypeEnum*/int ServiceType { get; set; }
-
+    public /*ServiceTypeEnum*/ int ServiceType { get; set; }
+    //TODO: .netstandard 2 supports referencing dot net standard projects from 4.6
     /// <summary>
     /// Gets the name of the subscription type.
     /// </summary>

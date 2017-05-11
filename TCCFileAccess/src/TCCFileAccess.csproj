@@ -15,11 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nito.AsyncEx.Coordination" Version="5.0.0-pre-02" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="Nito.AsyncEx.Coordination" Version="1.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="ConfigurationStore.netcore" Version="*" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0-preview1-25305-02" />
+	<PackageReference Include="System.ValueTuple" Version="4.3.0" />
     <PackageReference Include="MasterDataProxies.netcore" Version="*" />
   </ItemGroup>
 
