@@ -17,6 +17,7 @@ using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Nighthawk.ReportSvc.WebApi.Models;
+using System.IO.Compression;
 
 namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 {
@@ -210,7 +211,24 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 try
                 {
-                    result = ExportResult.CreateExportDataResult(OutputStream.GetBuffer(), (short)Result);
+                    if (request.compress)
+                    {
+                        // Compress the result
+                        using (var compressStream = new MemoryStream())
+                        {
+                            using (var compressor = new DeflateStream(compressStream, CompressionMode.Compress))
+                            {
+                                OutputStream.Position = 0;
+                                OutputStream.CopyTo(compressor);
+                                compressor.Close();
+                                result = ExportResult.CreateExportDataResult(compressStream.ToArray(), (short)Result);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        result = ExportResult.CreateExportDataResult(OutputStream.ToArray(), (short)Result);
+                    }
                 }
                 catch
                 {

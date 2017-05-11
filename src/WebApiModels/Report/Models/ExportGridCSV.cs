@@ -151,6 +151,12 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         [JsonProperty(PropertyName = "direction", Required = Required.Default)]
         public double direction { get; protected set; }
 
+        /// <summary>
+        /// Compress the result
+        /// </summary>
+        [JsonProperty(PropertyName = "compress", Required = Required.Default)]
+        public bool compress { get; protected set; }
+
         public TTranslation[] translations { get; private set; }
 
         protected ExportGridCSV()
