@@ -13,7 +13,6 @@ using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using ProjectWebApiCommon.Utilities;
 using Repositories;
-using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -29,8 +28,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
   {
     public ProjectV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
         IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-        IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
-        : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, fileRepo, logger)
+        IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
+        : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger)
     {
     }
 
@@ -82,6 +81,29 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
       var customerUid = Guid.Parse(((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      
+      /*****/
+      var fileDescriptor = FileDescriptor.CreateFileDescriptor("fsID234234", "theFileName", "/custUID123123/projUid");
+      var notificationResult = await raptorProxy.AddFile(null, projectRequest.ProjectUID, JsonConvert.SerializeObject(fileDescriptor)).ConfigureAwait(false);
+      if (notificationResult == null)
+      {
+        var error = $"Notification of File Imported into project has failed. result returned = null";
+        log.LogError(error);
+
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+      }
+      if (notificationResult.Code != 0)
+      {
+        var error =
+          $"Notification of File Imported into project has failed. Reason: {notificationResult.Code} {notificationResult.Message}";
+        log.LogError(error);
+
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+      }
+      /****/
+
       if (projectRequest == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,

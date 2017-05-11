@@ -1,21 +1,18 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using ProjectWebApiCommon.ResultsHandling;
-using TCCFileAccess.Models;
 
 namespace ProjectWebApiCommon.Models
 {
-    /// <summary>
-    /// Description to identify a file by its location in TCC.
-    /// </summary>
-    public class FileDescriptor 
+  /// <summary>
+  /// Description to identify a file by its location in TCC.
+  /// </summary>
+  public class FileDescriptor 
     {
       /// <summary>
       /// The id of the filespace in TCC where the file is located.
       /// </summary>
       [JsonProperty(PropertyName = "filespaceId", Required = Required.Always)]
-      [Required]
       public string filespaceId { get; private set; }
 
       /// <summary>
@@ -69,7 +66,7 @@ namespace ProjectWebApiCommon.Models
           return new FileDescriptor()
           {
             filespaceId = "u72003136-d859-4be8-86de-c559c841bf10",
-            path = "BC Data/Sites/Integration10/Designs",
+            path = "/customerUIDLoc/ProjectUidLoc",
             fileName = "Cycleway.ttm"
           };
         }

@@ -14,8 +14,8 @@
         "AutoMapper": "6.0.2",
         "FlowJSHandler.netcore": "1.0.0",
         "KafkaConsumer.netcore": "1.0.7",
-        "TCCFileAccess.netcore": "1.0.4",
-        "MasterDataRepos.netcore": "1.0.57"
+        "MasterDataRepos.netcore": "1.0.57",
+        "TCCFileAccess.netcore": "1.1.0"
     },
 
     "frameworks": {

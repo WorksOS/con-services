@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
+using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
 using Repositories.DBModels;
 using TCCFileAccess;
@@ -41,6 +43,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       : base(producer, projectRepo, store, raptorProxy, fileRepo, logger)
     {
       this.userEmailAddress = TIDAuthentication.EmailAddress;
+      fileSpaceId = store.GetValueString("TCCFILESPACEID");
+      if (string.IsNullOrEmpty(fileSpaceId))
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
+            "Unable to obtain TCC fileSpaceId"));
     }
 
 
@@ -100,16 +107,51 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     {
       var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
 
-      var fileDescriptor = UpsertImportedFile(1 /* create */, file, customerUid.ToString(), projectUid,
-        importedFileType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
+        fileUpdatedUtc, userEmailAddress, surveyedUtc);
+      log.LogInformation(
+        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
-      // only if all succeeds then 
-      //   write to Db and 
-      //   write new CreateImportedFileEvent to kafka que
+      if (!System.IO.File.Exists(file.path))
+      {
+        var error = $"CreateImportedFileV4. The uploaded file {file.path} is not accessible.";
+        log.LogError(error);
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+      }
+
+      //validate customer-project relationship. if it fails, exception will be thrown from within the method
+      await GetProject(projectUid.ToString()).ConfigureAwait(false);
+
+      var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
+      ImportedFileDescriptor importedFileDescriptor = null;
+      if (importedFileList.Count > 0)
+        importedFileDescriptor = importedFileList.First(f => f.Name == file.flowFilename
+                                                             && f.ImportedFileType == importedFileType
+                                                             && (
+                                                               (importedFileType == ImportedFileType.SurveyedSurface &&
+                                                                f.SurveyedUtc == surveyedUtc) ||
+                                                               (importedFileType != ImportedFileType.SurveyedSurface)
+                                                             ));
+      if (importedFileDescriptor != null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            $"CreateImportedFileV4. File: {file.flowFilename} has already been imported."));
+      }
+
+      // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
+      var fileDescriptor = await WriteFileToRepository(customerUid, projectUid.ToString(), file.path,
+          importedFileType, surveyedUtc)
+        .ConfigureAwait(false);
+
+      await NotifyRaptorAddFile(projectUid, fileDescriptor).ConfigureAwait(false);
+
+      // if all succeeds, write to Db and kafka que
       CreateImportedFileEvent createImportedFileEvent = await CreateImportedFile(Guid.Parse(customerUid), projectUid,
-            importedFileType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
-            fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
-          .ConfigureAwait(false);
+          importedFileType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
+          fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
+        .ConfigureAwait(false);
 
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
@@ -119,11 +161,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       log.LogInformation(
         $"CreateImportedFileV4. completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
 
-      //System.IO.File.Delete(file.path); todo should/can we delete temp file?
+      System.IO.File.Delete(file.path); 
       return importedFile;
     }
 
-   
+
     // PUT: api/v4/importedfile
     /// <summary>
     /// Upsert imported file
@@ -133,6 +175,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// <param name="file"></param>
     /// <param name="projectUid"></param>
     /// <param name="importedFileType"></param>
+    /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="surveyedUtc"></param>
     /// <remarks>Updates and Imported design file for a project</remarks>
@@ -148,13 +191,43 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       [FromUri] DateTime? surveyedUtc = null)
     {
       var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
+        fileUpdatedUtc, userEmailAddress, surveyedUtc);
+      log.LogInformation(
+        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
-      var fileDescriptor = UpsertImportedFile(2 /* upsert */, file, customerUid.ToString(), projectUid,
-        importedFileType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc);
+      if (!System.IO.File.Exists(file.path))
+      {
+        var error = $"CreateImportedFileV4. The uploaded file {file.path} is not accessible.";
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+      }
 
-      // only if all succeeds then 
-      //   write to Db and 
-      //   write new CreateImportedFileEvent to kafka que
+      //validate customer-project relationship. if it fails, exception will be thrown from within the method
+      await GetProject(projectUid.ToString()).ConfigureAwait(false);
+
+      var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
+      ImportedFileDescriptor importedFileDescriptor = null;
+      if (importedFileList.Count > 0)
+      {
+        importedFileDescriptor = importedFileList.First(f => f.Name == file.flowFilename
+                                                             && f.ImportedFileType == importedFileType
+                                                             && (
+                                                               (importedFileType == ImportedFileType.SurveyedSurface &&
+                                                                f.SurveyedUtc == surveyedUtc) ||
+                                                               (importedFileType != ImportedFileType.SurveyedSurface)
+                                                             ));
+      }
+
+      // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
+      var fileDescriptor = await WriteFileToRepository(customerUid, projectUid.ToString(), file.path,
+          importedFileType,
+          surveyedUtc)
+        .ConfigureAwait(false);
+
+      await NotifyRaptorAddFile(projectUid, fileDescriptor).ConfigureAwait(false);
+
+      // if all succeeds, write to Db and kafka que
       var importedFileUid = importedFileDescriptor?.ImportedFileUid;
       if (importedFileDescriptor == null)
       {
@@ -177,40 +250,47 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       log.LogInformation(
         $"UpdateImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
 
-      //System.IO.File.Delete(file.path); todo should/can we delete temp file?
+      System.IO.File.Delete(file.path); 
       return importedFile;
     }
 
-    // DELETE: api/Project/
+    // DELETE: api/v4/importedfile
     /// <summary>
-    /// Delete Project
+    /// Delete imported file
     /// </summary>
-    /// <param name="importedfile">DeleteProjectEvent model</param>
-    /// <remarks>Deletes existing project</remarks>
+    /// <remarks>Deletes existing imported file</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
     [Route("api/v4/importedfile")]
     [HttpDelete]
-    public async Task<ImportedFileDescriptorSingleResult> DeleteImportedFileV4([FromUri]Guid projectUid, [FromUri] Guid importedFileUid)
+    public async Task<ContractExecutionResult> DeleteImportedFileV4([FromUri] Guid projectUid,
+      [FromUri] Guid importedFileUid)
     {
-      log.LogInformation("DeleteImportedFileV4. projejctUid {0} importedFileUid: {1}", projectUid, importedFileUid);
+      log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
       var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+
+      var importedFiles = await GetImportedFiles(projectUid.ToString()).ConfigureAwait(false);
+      ImportedFile importedFile = null;
+      if (importedFiles.Count > 0)
+        importedFile = importedFiles.First(f => f.ImportedFileUid == importedFileUid.ToString());
+      if (importedFile == null)
+      {
+        var error = $"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid} doesn't exist";
+        log.LogError(error);
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+      }
+
+      await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))
+        .ConfigureAwait(false);
+      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor)
+        .ConfigureAwait(false);
+
       await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
 
-      // todo delete from TCC
-      // todo notify RaptorServices
-
-      // todo do version of GetImportedFileList which gets deleted i.e. by iportedFileUid?
-      var deletedFile = new ImportedFileDescriptorSingleResult(
-        (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
-        .ToImmutableList()
-        .First(f => f.ImportedFileUid == importedFileUid.ToString())
-      );
       log.LogInformation(
-        $"DeleteImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(deletedFile)}");
-
-      //System.IO.File.Delete(file.path); todo should/can we delete temp file?
-      return deletedFile;
+        $"DeleteImportedFileV4. Completed succesfully. ProjectUid {projectUid} importedFileUid: {importedFileUid}");
+      return new ContractExecutionResult();
     }
   }
 }

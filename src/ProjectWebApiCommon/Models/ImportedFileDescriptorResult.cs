@@ -40,7 +40,11 @@ namespace ProjectWebApiCommon.Models
     /// <value>
     /// The ImportedFile descriptors.
     /// </value>
-    public ImportedFileDescriptor ImportedFileDescriptor { get { return _importedFileDescriptor; } set { _importedFileDescriptor = value; } }
+    public ImportedFileDescriptor ImportedFileDescriptor
+    {
+      get { return _importedFileDescriptor; }
+      set { _importedFileDescriptor = value; }
+    }
   }
 
 
@@ -129,8 +133,8 @@ namespace ProjectWebApiCommon.Models
     /// The start date.
     /// </value>
     public DateTime? SurveyedUtc { get; set; }
-    
-    
+
+
     public override bool Equals(object obj)
     {
       var otherImportedFile = obj as ImportedFileDescriptor;
@@ -144,7 +148,7 @@ namespace ProjectWebApiCommon.Models
              && otherImportedFile.FileUpdatedUtc == this.FileUpdatedUtc
              && otherImportedFile.ImportedBy == this.ImportedBy
              && otherImportedFile.SurveyedUtc == this.SurveyedUtc
-          ;
+        ;
     }
   }
 }

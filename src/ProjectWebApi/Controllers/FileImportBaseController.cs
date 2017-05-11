@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using FlowUploadFilter;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +17,6 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using ProjectWebApiCommon.ResultsHandling;
 using Repositories.DBModels;
 using TCCFileAccess;
-using TCCFileAccess.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.Utilities;
@@ -39,7 +37,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected readonly IConfigurationStore store;
     protected readonly string kafkaTopicName;
     protected string userEmailAddress;
-    protected ImportedFileDescriptor importedFileDescriptor;
+    protected string fileSpaceId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
@@ -51,12 +49,11 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <param name="logger">The logger.</param>
     /// <param name="fileRepo">For TCC file transfer</param>
     public FileImportBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
-      IConfigurationStore store, IRaptorProxy raptorProxy, 
+      IConfigurationStore store, IRaptorProxy raptorProxy,
       IFileRepository fileRepo, ILoggerFactory logger)
     {
       log = logger.CreateLogger<ProjectBaseController>();
       this.producer = producer;
-      //We probably want to make this thing singleton?
       if (!this.producer.IsInitializedProducer)
         this.producer.InitProducer(store);
       //TODO change this pattern, make it safer
@@ -69,74 +66,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
                        store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
-    /// <summary>
-    /// Upserts an imported file. Writes to Tcc and notifies Raptor
-    /// </summary>
-    /// <param name="actionType"></param>
-    /// <param name="file">The create imported file event</param>
-    /// <param name="customerUid"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileType"></param>
-    /// <param name="fileCreatedUtc"></param>
-    /// <param name="fileUpdatedUtc"></param>
-    /// <param name="surveyedUtc"></param>
-    /// <returns></returns>
-    protected async Task<FileDescriptor> UpsertImportedFile(int actionType, FlowFile file,
-      string customerUid, Guid projectUid, ImportedFileType importedFileType,
-      DateTime fileCreatedUtc, DateTime fileUpdatedUtc, DateTime? surveyedUtc)
-    {
-      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
-        fileUpdatedUtc, userEmailAddress, surveyedUtc);
-      log.LogInformation(
-        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
-
-      if (!System.IO.File.Exists(file.path))
-      {
-        var error = string.Format("CreateImportedFileV4. The uploaded file {0} is not accessible.", file.path);
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
-      }
-
-      ////validate customer-project relationship. if it fails, exception will be thrown from within the method
-      //var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
-      //if (project == null)
-      //{
-      //  log.LogError($"User doesn't have access to {projectUid}");
-      //  throw new ServiceException(HttpStatusCode.Forbidden,
-      //    new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
-      //      "No access to the project for a customer or project does not exist."));
-      //}
-
-      //log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
-
-      var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
-      if (importedFileList.Count > 0)
-      {
-        importedFileDescriptor = importedFileList.First(f => f.Name == file.flowFilename
-                                                   && f.ImportedFileType == importedFileType
-                                                   && (
-                                                     (importedFileType == ImportedFileType.SurveyedSurface &&
-                                                      f.SurveyedUtc == surveyedUtc) ||
-                                                     (importedFileType != ImportedFileType.SurveyedSurface)
-                                                   ));
-        if (importedFileDescriptor != null)
-        {
-          if (actionType == 1 /* create */)
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                @"CreateImportedFileV4. File: {file.flowName} has already been imported."));
-        }
-      }
-
-      // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
-      var fileDescriptor = await WriteFileToRepository(customerUid, projectUid.ToString(), file.path,
-        importedFileType,
-        surveyedUtc).ConfigureAwait(false);
-
-      await NotifyRaptorAddFile(projectUid.ToString(), fileDescriptor).ConfigureAwait(false);
-      return fileDescriptor;
-    }
-
 
     /// <summary>
     /// Gets the project.
@@ -146,11 +75,19 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
       var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      log.LogInformation($"GetProject: CustomerUID={customerUid} and projectUid={projectUid}");
       var project =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => p.ProjectUID == projectUid);
+      if (project == null)
+      {
+        var error = $"No access to the project {projectUid} for customer {customerUid} or project does not exist.";
+        log.LogError(error);
+        throw new ServiceException(HttpStatusCode.Forbidden,
+          new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData, error));
+      }
 
+      log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
       return project;
     }
 
@@ -159,10 +96,25 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// Gets the imported file list for a project
     /// </summary>
     /// <returns></returns>
+    protected async Task<ImmutableList<ImportedFile>> GetImportedFiles(string projectUid)
+    {
+      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      log.LogInformation($"GetImportedFiles: CustomerUID={customerUid} and projectUid={projectUid}");
+      var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
+        .ToImmutableList();
+
+      log.LogInformation($"ImportedFile list contains {importedFiles.Count()} importedFiles");
+      return importedFiles;
+    }
+
+    /// <summary>
+    /// Gets the imported file list for a project in Response
+    /// </summary>
+    /// <returns></returns>
     protected async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
     {
       var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User + " and projectUid=" + projectUid);
+      log.LogInformation($"GetImportedFileList: CustomerUID={customerUid} and projectUid={projectUid}");
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
 
@@ -222,7 +174,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
 
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          @"CreateImportedFileV4. Unable to store Imported File event to database: {JsonConvert.SerializeObject(importFile)}."));
+          $"CreateImportedFileV4. Unable to store Imported File event to database: {JsonConvert.SerializeObject(createImportedFileEvent)}."));
     }
 
     /// <summary>
@@ -240,7 +192,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         ReceivedUTC = nowUtc
       };
 
-      var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
+      var messagePayload = JsonConvert.SerializeObject(new {DeleteImportedFileEvent = deleteImportedFileEvent});
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
@@ -252,7 +204,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
 
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          @"DeleteImportedFileV4. Unable to set Imported File event to deleted: {JsonConvert.SerializeObject(deleteImportedFileEvent)}."));
+          $"DeleteImportedFileV4. Unable to set Imported File event to deleted: {JsonConvert.SerializeObject(deleteImportedFileEvent)}."));
     }
 
     /// <summary>
@@ -266,7 +218,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="importedBy"></param>
     /// <returns></returns>
-    protected virtual async Task<UpdateImportedFileEvent> UpdateImportedFile(ImportedFileDescriptor importedFileDescriptor,
+    protected virtual async Task<UpdateImportedFileEvent> UpdateImportedFile(
+      ImportedFileDescriptor importedFileDescriptor,
       string fileDescriptor, DateTime? surveyedUtc,
       DateTime fileUpdatedUtc, string importedBy)
     {
@@ -284,7 +237,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         ReceivedUTC = nowUtc
       };
 
-      var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
+      var messagePayload = JsonConvert.SerializeObject(new {UpdateImportedFileEvent = updateImportedFileEvent});
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
@@ -296,71 +249,77 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
 
       throw new ServiceException(HttpStatusCode.BadRequest,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          @"CreateImportedFileV4. Unable to store updated Imported File event to database: {JsonConvert.SerializeObject(importFile)}."));
+          $"CreateImportedFileV4. Unable to store updated Imported File event to database: {JsonConvert.SerializeObject(updateImportedFileEvent)}."));
     }
 
     /// <summary>
     /// Writes the importedFile to TCC
     /// </summary>
     /// <returns></returns>
-    protected async Task<FileDescriptor> WriteFileToRepository(string customerUid, string projectUid, string pathAndFileName, ImportedFileType importedFileType, DateTime? surveyedUtc)
+    protected async Task<FileDescriptor> WriteFileToRepository(string customerUid, string projectUid,
+      string pathAndFileName, ImportedFileType importedFileType, DateTime? surveyedUtc)
     {
-      var fileSpaceId = store.GetValueString("TCCFILESPACEID");   
-      if (string.IsNullOrEmpty(fileSpaceId))
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
-            "@Unable to obtain TCC fileSpaceId"));
+        var fileStream = new FileStream(pathAndFileName, FileMode.Open);
+        var tccPath = $"/{customerUid}/{projectUid}";
+        string tccFileName = Path.GetFileName(pathAndFileName);
 
-      var fileStream = new FileStream(pathAndFileName, FileMode.Open);
-      var tccPath = string.Format("/{0}/{1}", customerUid, projectUid); // trailing slash etc
-      string tccFileName = Path.GetFileName(pathAndFileName);
+        if (importedFileType == ImportedFileType.SurveyedSurface)
+          if (surveyedUtc != null) // validation should prevent this
+            tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
+              Path.GetExtension(tccFileName));
 
-      if (importedFileType == ImportedFileType.SurveyedSurface)
-        if (surveyedUtc != null) // validation should prevent this
-          tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
-            Path.GetExtension(tccFileName));
+        var ccMakeFolderResult = await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
+        if (ccMakeFolderResult == false)
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
+              "Unable to create folder in TCC"));
+        }
 
-      //var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, filename, fileStream, fileStream.Length).ConfigureAwait(false);
+        var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
+        if (ccPutFileResult == false)
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
+              "Unable to put file to TCC"));
+        }
 
-      // todo temp until tcc interface is changed use the customer-based putFile
-      var superUserOrg = new Organization() {filespaceId = fileSpaceId};
-      var org = new Organization() {filespaceId = fileSpaceId};
-      var ccPutFileResult = await fileRepo.PutFile(org, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
-      if (ccPutFileResult == null || ccPutFileResult.success == $@"false")
+        // is ccPutFileResult.path == tccPath?
+        return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
+    }
+
+    /// <summary>
+    /// Deletes the importedFile from TCC
+    /// </summary>
+    /// <returns></returns>
+    protected async Task DeleteFileFromRepository(FileDescriptor fileDescriptor)
+    {
+      var ccPutFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName).ConfigureAwait(false);
+      if (ccPutFileResult == false)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
-            "@Unable to put file to TCC"));
+            "@Unable to put delete from TCC"));
       }
-
-      // is ccPutFileResult.path == tccPath?
-      return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
-
 
     /// <summary>
     /// Notify raptor of new file
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorAddFile(string projectUid, FileDescriptor fileDescriptor)
+    protected async Task NotifyRaptorAddFile(Guid projectUid, FileDescriptor fileDescriptor)
     {
-      var notificationResult = new ContractExecutionResult();
-      // todo = await raptorProxy.AddFile(projectUid, fileDescriptor).ConfigureAwait(false);
-      log.LogDebug($"FileImport AddFile in RaptorServices returned code: {0} Message {1}.",
-        notificationResult?.Code ?? -1,
-        notificationResult?.Message ?? "notificationResult == null");
-      if (notificationResult.Code != 0)
+      var notificationResult = await raptorProxy.AddFile(null, projectUid, JsonConvert.SerializeObject(fileDescriptor)).ConfigureAwait(false);
+      log.LogDebug(
+        $"FileImport AddFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+      if (notificationResult != null && notificationResult.Code != 0)
       {
-        log.LogError($"FileImport AddFile in RaptorServices failed. Reason: {0} {1}. ",
-          notificationResult?.Code ?? -1,
-          notificationResult?.Message ?? "null");
+        var error =
+          $"FileImport AddFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}. ";
+        log.LogError(error);
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            string.Format("Unable to complete FileImport AddFile in  RaptorServices. returned code: {0} Message {1}.",
-              notificationResult?.Code ?? -1,
-              notificationResult?.Message ?? "notificationResult == null"
-            )));
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
       }
     }
 
@@ -369,39 +328,35 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     ///  if it doesn't know about it then it do nothing and return success
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorDeleteFile(string projectUid, FileDescriptor fileDescriptor)
+    protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor)
     {
-      var notificationResult = new ContractExecutionResult();
-      // todo = await raptorProxy.DeleteFile(projectUid, fileDescriptor).ConfigureAwait(false);}
-      log.LogDebug($"FileImport DeleteFile in RaptorServices returned code: {0} Message {1}.",
-        notificationResult?.Code ?? -1,
-        notificationResult?.Message ?? "notificationResult == null");
-      if (notificationResult == null || notificationResult.Code != 0)
+      var notificationResult = await raptorProxy.DeleteFile(null, projectUid, fileDescriptor).ConfigureAwait(false);
+      log.LogDebug(
+        $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+      if (notificationResult != null && notificationResult.Code != 0)
       {
-        log.LogError($"FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}. ",
-          notificationResult?.Code ?? -1,
-          notificationResult?.Message ?? "null");
+        var error =
+          $"FileImport DeleteFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}. ";
+        log.LogError(error);
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            string.Format(
-              "Unable to complete FileImport DeleteFile in  RaptorServices. returned code: {0} Message {1}.",
-              notificationResult?.Code ?? -1,
-              notificationResult?.Message ?? "notificationResult == null"
-            )));
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
       }
     }
 
     #region private
+
     private static string GeneratedFileName(string fileName, string suffix, string extension)
     {
       return Path.GetFileNameWithoutExtension(fileName) + suffix + extension;
     }
+
     private static string GeneratedSuffix(DateTime surveyedUtc)
     {
       //Note: ':' is an invalid character for filenames in Windows so get rid of them
       return "_" + surveyedUtc.ToIso8601DateTimeString().Replace(":", string.Empty);
     }
+
     #endregion
-    
+
   }
 }

@@ -16,7 +16,6 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.ResultsHandling;
-using TCCFileAccess;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Utilities;
 
@@ -32,7 +31,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected readonly ISubscriptionProxy subsProxy;
     protected readonly IGeofenceProxy geofenceProxy;
     protected readonly IRaptorProxy raptorProxy;
-    protected readonly IFileRepository fileRepo;
 
     protected readonly ProjectRepository projectService;
     protected readonly IConfigurationStore store;
@@ -53,7 +51,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <param name="fileRepo">For TCC file transfer</param>
     public ProjectBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
         IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-        IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
+        IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
     {
       log = logger.CreateLogger<ProjectBaseController>();
       this.producer = producer;
@@ -66,7 +64,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       this.subsProxy = subsProxy;
       this.geofenceProxy = geofenceProxy;
       this.raptorProxy = raptorProxy;
-      this.fileRepo = fileRepo;
       this.store = store;
 
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +

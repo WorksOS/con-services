@@ -25,10 +25,10 @@
         "VSS.Authentication.JWT": "*",
         "AutoMapper": "6.0.2",
         "ProjectWebApiCommon": "1.0.0-*",
-        "MasterDataProxies.netcore": "*",
         "FlowJSHandler.netcore": "1.0.0",
-        "TCCFileAccess.netcore": "1.0.4",
-        "MasterDataRepos.netcore": "1.0.57"
+        "MasterDataRepos.netcore": "1.0.57",
+        "TCCFileAccess.netcore": "1.1.0",
+        "MasterDataProxies.netcore": "1.0.26"
     },
 
     "frameworks": {
