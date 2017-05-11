@@ -11,7 +11,7 @@ using VSS.Raptor.Service.Common.Proxies.Models;
 
 namespace VSS.Raptor.Service.Common.Proxies
 {
-    public class SubscriptionProxy : BaseProxy<SubscriptionData>, ISubscriptionProxy
+    public class SubscriptionProxy : BaseProxy, ISubscriptionProxy
     {
         public SubscriptionProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(configurationStore, logger, cache)
         {
@@ -26,7 +26,7 @@ namespace VSS.Raptor.Service.Common.Proxies
         public async Task AssociateProjectSubscription(Guid subscriptionUid, Guid projectUid, IDictionary<string, string> customHeaders = null)
         {
             var payLoadToSend = new AssociateProjectSubscriptionData() {EffectiveDate = DateTime.UtcNow.Date, ProjectUID = projectUid, SubscriptionUID = subscriptionUid};
-            await SendRequest("ASSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend), customHeaders);
+            await SendRequest<SubscriptionData>("ASSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend), customHeaders);
         }
     }
 }

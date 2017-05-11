@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Models;
 using MockProjectWebApi.ResultHandling;
+using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
 
 namespace MockProjectWebApi.Controllers
@@ -69,6 +70,38 @@ namespace MockProjectWebApi.Controllers
       Console.WriteLine("DummyCoordsystemPost: CoordinateSystemFile {0}. CoordinateSystemSettings {1}",
         JsonConvert.SerializeObject(request), JsonConvert.SerializeObject(cs));
       return cs;
+    }
+
+    /// <summary>
+    /// Dummies the get.
+    /// </summary>
+    [Route("api/v2/notification/addfile")]
+    [HttpGet]
+    public ContractExecutionResult DummyAddFileGet(
+      [FromQuery] long? projectId,
+      [FromQuery] Guid? projectUid,
+      [FromQuery] string fileDescriptor)
+    {
+      var res = new ContractExecutionResult();
+      var message = $"DummyAddFileGet: res {res}. projectId {projectId} projectUid {projectUid} fileDescriptor {fileDescriptor}";
+      Console.WriteLine(message);
+      return res;
+    }
+
+    /// <summary>
+    /// Dummies the get.
+    /// </summary>
+    [Route("api/v2/notification/deletefile")]
+    [HttpGet]
+    public ContractExecutionResult DummyDeleteFileGet(
+      [FromQuery] long? projectId,
+      [FromQuery] Guid? projectUid,
+      [FromQuery] string fileDescriptor)
+    {
+      var res = new ContractExecutionResult();
+      var message = $"DummyDeleteFileGet: res {res}. projectId {projectId} projectUid {projectUid} fileDescriptor {fileDescriptor}";
+      Console.WriteLine(message);
+      return res;
     }
   }
 }

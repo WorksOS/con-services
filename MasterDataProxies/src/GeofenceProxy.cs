@@ -13,7 +13,7 @@ namespace VSS.Raptor.Service.Common.Proxies
   /// <summary>
   /// Proxy to get geofence data from master data service.
   /// </summary>
-  public class GeofenceProxy : BaseProxy<GeofenceData>, IGeofenceProxy
+  public class GeofenceProxy : BaseProxy, IGeofenceProxy
   {
     private static TimeSpan geofenceCacheLife = new TimeSpan(0, 15, 0);//TODO: how long to cache ?
 
@@ -29,7 +29,7 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// <returns></returns>
     public async Task<string> GetGeofenceBoundary(string geofenceUid, IDictionary<string, string> customHeaders = null)
     {
-      GeofenceData cacheData = await GetItem(geofenceUid, geofenceCacheLife, "GEOFENCE_API_URL", customHeaders);
+      GeofenceData cacheData = await GetItem<GeofenceData>(geofenceUid, geofenceCacheLife, "GEOFENCE_API_URL", customHeaders);
       return cacheData == null ? null : cacheData.GeometryWKT;
     }
 
@@ -47,7 +47,7 @@ namespace VSS.Raptor.Service.Common.Proxies
                 IsTransparent = isTransparent,
                 GeofenceUID = geofenceGuid
             };
-            await SendRequest("CREATEGEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend), customHeaders);
+            await SendRequest<GeofenceData>("CREATEGEOFENCE_API_URL", JsonConvert.SerializeObject(payLoadToSend), customHeaders);
             return geofenceGuid;
         }
     }

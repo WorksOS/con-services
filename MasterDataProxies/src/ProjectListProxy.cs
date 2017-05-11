@@ -9,7 +9,7 @@ using VSS.Raptor.Service.Common.Proxies.Models;
 
 namespace VSS.Raptor.Service.Common.Proxies
 {
-  public class ProjectListProxy : BaseProxy<ProjectData>, IProjectListProxy
+  public class ProjectListProxy : BaseProxy, IProjectListProxy
   {
     private static TimeSpan projectListCacheLife = new TimeSpan(0, 15, 0);//TODO: how long to cache ?
 
@@ -19,7 +19,7 @@ namespace VSS.Raptor.Service.Common.Proxies
 
     public async Task<List<ProjectData>> GetProjects(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      return await GetList(customerUid, projectListCacheLife, "PROJECT_API_URL", customHeaders);
+      return await GetList<ProjectData>(customerUid, projectListCacheLife, "PROJECT_API_URL", customHeaders);
     }
   }
 }
