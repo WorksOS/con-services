@@ -28,5 +28,9 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication.Models
     /// Gets or sets a unique project identifier's value from legacy VisionLink.
     /// </summary>
     public long projectId { get; set; }
+    /// <summary>
+    /// Gets or sets the CoordinateSystem FileName which the project is associated with
+    /// </summary>
+    public string coordinateSystemFileName { get; set; }
   }
 }

@@ -106,7 +106,7 @@ namespace VSS.Raptor.Service.WebApi
             services.AddScoped<ITagProcessor, TagProcessor>();
             services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
             services.AddSingleton<IProjectListProxy, ProjectListProxy>();
-            services.AddSingleton<IFileRepository, FileRepository>();
+            services.AddTransient<IFileRepository, FileRepository>();
 
             serviceCollection = services;
         }

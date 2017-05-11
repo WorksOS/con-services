@@ -55,6 +55,7 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
                 try
                 {
                     var jwtToken = new TPaaSJWT(authorization);
+          //TODO: GetProjectsV4
                     var customerProjects = await projectListProxy.GetProjects(customerUID,
                         context.Request.Headers.GetCustomHeaders());
                     var authProjects = new List<ProjectDescriptor>();
@@ -67,7 +68,9 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
                                 isLandFill = project.ProjectType == ProjectType.LandFill,
                                 isArchived = project.IsArchived,
                                 projectUid = project.ProjectUid,
-                                projectId = project.LegacyProjectId
+                                projectId = project.LegacyProjectId,
+                                //TODO: update nuget package of MasterDataProxies to get V4 which has coored sys file name
+                                //coordinateSystemFileName = project.c
                             };
                             authProjects.Add(projectDesc);
                         }

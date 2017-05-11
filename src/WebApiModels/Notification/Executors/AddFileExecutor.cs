@@ -171,8 +171,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       using (MemoryStream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(fileData)))
       {
         //TODO: do we want this async?
-        var response = fileRepo.PutFile(null, fileDescr.path, GeneratedFileName(fileDescr.fileName, suffix, extension), memoryStream, fileData.Length).Result;
-        success = response.success == "success";//TODO: check if this is correct.
+        success = fileRepo.PutFile(fileDescr.filespaceId, fileDescr.path, GeneratedFileName(fileDescr.fileName, suffix, extension), memoryStream, fileData.Length).Result;
       }
       return success;
     }
@@ -184,7 +183,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     
 
     public const string GENERATED_SURFACE_FILE_SUFFIX = "_Boundary$";
-    public const string GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX = "_AlignmentCenterline$";
+    private const string GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX = "_AlignmentCenterline$";
     private const string DESIGN_SUBGRID_INDEX_FILE_EXT = ".$DesignSubgridIndex$";
 
 
