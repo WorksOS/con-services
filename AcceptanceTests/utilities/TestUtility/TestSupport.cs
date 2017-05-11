@@ -475,6 +475,14 @@ namespace TestUtility
       }
     }
 
+    /// <summary>
+    /// Get project details for one project
+    /// </summary>
+    /// <param name="statusCode"></param>
+    /// <param name="customerUid"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="expectedResultsArray"></param>
+    /// <param name="ignoreZeros"></param>
     public void GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
     {
       var response = CallProjectWebApiV4("api/v4/project?projectUid=" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
@@ -489,50 +497,6 @@ namespace TestUtility
       }
     }
 
-    /// <summary>
-    /// Gets a list of imported files for a project. The list includes files of all types.
-    /// </summary>
-    /// <param name="statusCode"></param>
-    /// <param name="customerUid"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="expectedResultsArray"></param>
-    /// <param name="ignoreZeros"></param>
-    public void GetProjectFilesViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
-    {
-      //var response = CallProjectWebApiV4("api/v4/project?projectUid=" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
-      var response = CallProjectWebApiV4($"api/v4/importedfiles?projectUid={projectUid}", HttpMethod.Get.ToString(), null, customerUid.ToString());
-      if (statusCode == HttpStatusCode.OK)
-      {
-        //var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
-        //var actualProject = new List<ProjectV4Descriptor> { projectDescriptorResult.ProjectDescriptor };
-        //var expectedProjects = ConvertArrayToProjectV4DescriptorList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-        //msg.DisplayResults("Expected project :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
-        //Assert.IsTrue(actualProject.Count == 1, " There should be one project");
-        //CompareTheActualProjectListV4WithExpected(actualProject, expectedProjects, ignoreZeros);
-        var filesResult = JsonConvert.DeserializeObject<ImportedFileDescriptorListResult>(response);
-        Assert.AreEqual(expectedResultsArray, filesResult);
-
-      }
-    }
-
-    public void PostProjectFilesViaWebApiV4(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
-    {
-      //var response = CallProjectWebApiV4("api/v4/project?projectUid=" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
-      var response = CallProjectWebApiV4($"api/v4/importedfiles?projectUid={projectUid}", HttpMethod.Get.ToString(), null, customerUid.ToString());
-      //var response = CallProjectWebApiV4($"api/v4/importedfile", HttpMethod.Post, )
-      if (statusCode == HttpStatusCode.OK)
-      {
-        //var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
-        //var actualProject = new List<ProjectV4Descriptor> { projectDescriptorResult.ProjectDescriptor };
-        //var expectedProjects = ConvertArrayToProjectV4DescriptorList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-        //msg.DisplayResults("Expected project :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
-        //Assert.IsTrue(actualProject.Count == 1, " There should be one project");
-        //CompareTheActualProjectListV4WithExpected(actualProject, expectedProjects, ignoreZeros);
-        var filesResult = JsonConvert.DeserializeObject<ImportedFileDescriptorListResult>(response);
-        Assert.AreEqual(expectedResultsArray, filesResult);
-
-      }
-    }
 
     /// <summary>
     /// Compare the two lists of projects
