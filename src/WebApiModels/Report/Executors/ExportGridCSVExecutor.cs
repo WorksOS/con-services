@@ -69,8 +69,11 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                 ExportGridCSV request = item as ExportGridCSV;
 
                 TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
-                MemoryStream OutputStream = new MemoryStream();
-                MemoryStream ResponseData;
+                MemoryStream outputStream = null;
+                DeflateStream compressorStream = null;
+                Stream writerStream = null;
+
+                MemoryStream ResponseData = null;
 
                 int Result = client.GetGriddedOrAlignmentCSVExport
                    (request.projectId ?? -1,
@@ -99,6 +102,18 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 if (success)
                 {
+                    outputStream = new MemoryStream();
+
+                    if (request.compress)
+                    {
+                        compressorStream = new DeflateStream(outputStream, CompressionMode.Compress);
+                        writerStream = compressorStream;
+                    }
+                    else
+                    {
+                        writerStream = outputStream;
+                    }
+
                     // Unpack the data for the report and construct a stream containing the result
                     TRaptorReportsPackager ReportPackager = new TRaptorReportsPackager(TRaptorReportType.rrtGridReport);
 
@@ -147,7 +162,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                         // Write a header
                         byte[] bytes = System.Text.Encoding.ASCII.GetBytes(sb.ToString());
-                        OutputStream.Write(bytes, 0, bytes.Length);
+                        writerStream.Write(bytes, 0, bytes.Length);
 
                         // Write a series of CSV records from the data
                         foreach (TGridRow row in ReportPackager.GridReport.Rows)
@@ -164,7 +179,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                             sb.Append("\n");
 
                             bytes = System.Text.Encoding.ASCII.GetBytes(sb.ToString());
-                            OutputStream.Write(bytes, 0, bytes.Length);
+                            writerStream.Write(bytes, 0, bytes.Length);
                         }
                     }
                     else if (request.reportType == GriddedCSVReportType.Alignment)
@@ -211,24 +226,13 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 try
                 {
-                    if (request.compress)
+                    if (compressorStream != null)
                     {
-                        // Compress the result
-                        using (var compressStream = new MemoryStream())
-                        {
-                            using (var compressor = new DeflateStream(compressStream, CompressionMode.Compress))
-                            {
-                                OutputStream.Position = 0;
-                                OutputStream.CopyTo(compressor);
-                                compressor.Close();
-                                result = ExportResult.CreateExportDataResult(compressStream.ToArray(), (short)Result);
-                            }
-                        }
+                        // Close the compression stream to allow the compression activities to be finalised
+                        compressorStream.Close();
                     }
-                    else
-                    {
-                        result = ExportResult.CreateExportDataResult(OutputStream.ToArray(), (short)Result);
-                    }
+
+                    result = ExportResult.CreateExportDataResult(outputStream.ToArray(), (short)Result);
                 }
                 catch
                 {
