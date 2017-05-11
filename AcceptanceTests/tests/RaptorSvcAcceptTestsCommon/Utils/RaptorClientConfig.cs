@@ -115,16 +115,16 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                     return ConstructUri("/ProdData");
             }
         }
-        public static string ProjectSvcBaseUri
+        public static string FileAccessSvcBaseUri
         {
             get
             {
                 if (TestEnvironment == "Tc")
                     return ConstructUri(":3004");
                 else if (TestEnvironment == "Local")
-                    return ConstructUri(":37609");
+                    return ConstructUri(":5000");
                 else
-                    return ConstructUri("/Project");
+                    return ConstructUri("/FileAccess");
             }
         }
 

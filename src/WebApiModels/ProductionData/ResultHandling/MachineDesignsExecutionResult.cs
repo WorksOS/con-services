@@ -2,43 +2,45 @@
 using VLPDDecls;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
 using VSS.Raptor.Service.Common.Contracts;
+using Newtonsoft.Json;
 
 namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
 {
     public class MachineDesignsExecutionResult : ContractExecutionResult
     {
-      /// <summary>
-      /// The list of the on-machine designs available for the project.
-      /// </summary>
-      /// <value>
-      /// The designs.
-      /// </value>
-        public List<DesignNames> designs { get; private set; }
+    /// <summary>
+    /// The list of the on-machine designs available for the project.
+    /// </summary>
+    /// <value>
+    /// The designs.
+    /// </value>
+    [JsonProperty(PropertyName = "designs")]
+    public List<DesignNames> Designs { get; private set; }
 
         
-        public static ContractExecutionResult CreateMachineExecutionResult(IEnumerable<TDesignName> designNames)
+    public static ContractExecutionResult CreateMachineExecutionResult(IEnumerable<TDesignName> designNames)
+    {
+        var result  = new MachineDesignsExecutionResult() { Designs = new List<DesignNames>()};
+        foreach (var name in designNames)
         {
-            var result  = new MachineDesignsExecutionResult() {designs = new List<DesignNames>()};
-            foreach (var name in designNames)
-            {
-                result.designs.Add(DesignNames.CreateDesignNames(name.FName, name.FID));
-            }
-            return result;
+            result.Designs.Add(DesignNames.CreateDesignNames(name.FName, name.FID));
         }
+        return result;
+    }
 
 
-        /// <summary>
-        /// Create example instance of MachineDesignsExecutionResult to display in Help documentation.
-        /// </summary>
-        public static MachineDesignsExecutionResult HelpSample
+    /// <summary>
+    /// Create example instance of MachineDesignsExecutionResult to display in Help documentation.
+    /// </summary>
+    public static MachineDesignsExecutionResult HelpSample
+    {
+        get
         {
-            get
+            return new MachineDesignsExecutionResult()
             {
-                return new MachineDesignsExecutionResult()
-                {
-                    designs = new List<DesignNames>() {DesignNames.HelpSample, DesignNames.HelpSample}
-                };
-            }
+              Designs = new List<DesignNames>() {DesignNames.HelpSample, DesignNames.HelpSample}
+            };
         }
     }
+  }
 }

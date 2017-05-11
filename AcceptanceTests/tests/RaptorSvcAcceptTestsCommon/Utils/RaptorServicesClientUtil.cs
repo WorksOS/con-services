@@ -333,7 +333,15 @@ namespace RaptorSvcAcceptTestsCommon.Utils
                 Assert.AreEqual(expectedHttpCode, this.CurrentServiceResponse.HttpCode,
                     String.Format("Expected {0}, but got {1} instead.", expectedHttpCode, this.CurrentServiceResponse.HttpCode));
 
-                this.CurrentResponse = JsonConvert.DeserializeObject<TResponse>(this.CurrentServiceResponse.ResponseBody);
+                //if (CurrentServiceResponse.ResponseHeader["Content-Type"] == "image/png")
+                //{
+                //  byte[] byteArray = Encoding.UTF8.GetBytes(this.CurrentServiceResponse.ResponseBody);
+                //}
+                //else                
+                //{
+                  this.CurrentResponse = JsonConvert.DeserializeObject<TResponse>(this.CurrentServiceResponse.ResponseBody);
+                //}
+
                 return this.CurrentResponse;
             }
             else

@@ -225,11 +225,33 @@ namespace VSS.Raptor.Service.Common.Interfaces
     bool GetCCASummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
      TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings, out TCCASummary ccaSummary);
 
-    bool GetMachineCCAColourPalettes(long dataModelId, long machineId, DateTime? startUtc, DateTime? endUtc, int? liftId, out TColourPalettes palettes);
-
     TASNodeErrorStatus GetCoordinateSystemProjectionFile(long DataModelID, TVLPDDistanceUnits RequestedUnits, out string prjFile);
     TASNodeErrorStatus GetCoordinateSystemHorizontalAdjustmentFile(string CSFileName, long DataModelID, TVLPDDistanceUnits RequestedUnits, out string haFile);
     bool GetDesignBoundaryAsDXFFile(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args Args, out MemoryStream DXFContents, out TDesignProfilerRequestResult DesignProfilerResult);
 
-  }
+    bool GetMachineCCAColourPalettes(long dataModelId, long machineId, DateTime? startUtc, DateTime? endUtc, int? liftId, out TColourPalettes palettes);
+
+        int GetGriddedOrAlignmentCSVExport(long DataModelID,
+                                           int ReportType,
+                                           TASNodeRequestDescriptor ExternalDescriptor,
+                                           TVLPDDesignDescriptor DesignFile, // cutfill profile
+                                           double Interval,
+                                           bool ElevationReport,
+                                           bool CutFillReport,
+                                           bool CMVReport,
+                                           bool MDPReport,
+                                           bool PassCountReport,
+                                           bool TemperatureReport,
+                                           int ReportOption,
+                                           double StartNorthing,
+                                           double StartEasting,
+                                           double EndNorthing,
+                                           double EndEasting,
+                                           double Direction,
+                                           TICFilterSettings Filter,
+                                           TICLiftBuildSettings LiftBuildSettings,
+                                           TSVOICOptions ICOptions,
+                                           out MemoryStream DataExport);
+ 
+    }
 }

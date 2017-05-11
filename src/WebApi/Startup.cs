@@ -27,7 +27,6 @@ using VSS.Raptor.Service.Common.JsonConverters;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 
-
 namespace VSS.Raptor.Service.WebApi
 {
     public class Startup

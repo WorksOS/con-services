@@ -1,11 +1,12 @@
 ﻿using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
 using VSS.Raptor.Service.Common.Contracts;
+using Newtonsoft.Json;
 
 namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
 {
   public class MachineLayerIdsExecutionResult : ContractExecutionResult
   {
-
+    [JsonProperty(PropertyName = "machineLiftDetails")]
     public MachineLiftDetails[] MachineLiftDetails { get; private set; }
 
     /// <summary>

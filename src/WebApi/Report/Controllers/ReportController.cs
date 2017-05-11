@@ -12,6 +12,7 @@ using VSS.Raptor.Service.WebApiModels.Report.Contracts;
 using VSS.Raptor.Service.WebApiModels.Report.Executors;
 using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Nighthawk.ReportSvc.WebApi.Models;
 
 namespace VSS.Raptor.Service.WebApi.Report.Controllers
 {
@@ -46,6 +47,25 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
             this.log = logger.CreateLogger<ReportController>();
             this.configStore = configStore;
         }
+
+        #region CSVExport
+        /// <summary>
+        /// Produces a CSV formatted export of production data identified by gridded sampling
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [ProjectIdVerifier]
+        [NotLandFillProjectVerifier]
+        [ProjectUidVerifier]
+        [NotLandFillProjectWithUIDVerifier]
+        [Route("api/v1/export/gridded/csv")]
+        [HttpPost]
+        public ExportResult PostExportCSVReport([FromBody] ExportGridCSV request)
+        {
+            request.Validate();
+            return RequestExecutorContainer.Build<ExportGridCSVExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
+        }
+        #endregion
 
 
         #region PassCounts reports

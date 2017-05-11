@@ -109,10 +109,10 @@ namespace VSS.Raptor.Service.Common.Interfaces
     /// </summary>
     protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor) : this()
     {
-        this.raptorClient = raptorClient;
-        this.tagProcessor = tagProcessor;
-        if (logger != null)
-            this.log = logger.CreateLogger<RequestExecutorContainer>();
+      this.raptorClient = raptorClient;
+      this.tagProcessor = tagProcessor;
+      if (logger != null)
+        this.log = logger.CreateLogger<RequestExecutorContainer>();
     }
 
     /// <summary>
@@ -139,7 +139,6 @@ namespace VSS.Raptor.Service.Common.Interfaces
       this.configStore = configStore;
       this.fileRepo = fileRepo;
     }
-
 
     /// <summary>
     /// Default constructor which creates all structures necessary for error handling.
