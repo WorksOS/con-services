@@ -106,8 +106,13 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                     if (request.compress)
                     {
-                        compressorStream = new DeflateStream(outputStream, CompressionMode.Compress);
-                        writerStream = compressorStream;
+                        var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, true);
+                        writerStream = archive.CreateEntry("data").Open();
+                        //                    var demoFile = archive.CreateEntry("data");
+                        //                    using (var entryStream = demoFile.Open())
+
+//                        compressorStream = new DeflateStream(outputStream, CompressionMode.Compress);
+//                        writerStream = compressorStream;
                     }
                     else
                     {
