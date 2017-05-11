@@ -8,7 +8,7 @@ namespace TCCFileAccess.Models
     public string filespaceid;
     [JsonProperty(PropertyName = "path", Required = Required.Always)]
     public string path;
-    [JsonProperty(PropertyName = "newfilespaceid", Required = Required.Always)]
+    [JsonProperty(PropertyName = "force", Required = Required.Always)]
     public bool force;
   }
 }

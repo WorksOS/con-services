@@ -113,14 +113,32 @@ namespace TCCFileAccess
 
         public async Task<PutFileResponse> PutFile(Organization org, string path, string filename, Stream contents, long sizeOfContents)
         {
-            Log.LogDebug("PutFile: org={0} {1}, fullName={2} {3}", org.shortName, org.filespaceId, path, filename);
+          Log.LogDebug("PutFile: org={0}", org.shortName);
+          return await PutFileEx(org.filespaceId, path, filename, contents, sizeOfContents);
+        }
+
+        public async Task<bool> PutFile(string filespaceId, string path, string filename, Stream contents, long sizeOfContents)
+        {
+          var result = await PutFileEx(filespaceId, path, filename, contents, sizeOfContents);
+          if (!result.success)
+          {
+            CheckForInvalidTicket(result, "PutFile");
+          }
+          return result.success;
+        }
+
+        public async Task<PutFileResponse> PutFileEx(string filespaceId, string path, string filename, Stream contents, long sizeOfContents)
+        {
+            Log.LogDebug("PutFileEx: filespaceId={0}, fullName={1} {2}", filespaceId, path, filename);
+
+            //NOTE: for this to work in TCC the path must exist otherwise TCC either gives an error or creates the file as the folder name
             PutFileRequest sendFileParams = new PutFileRequest()
             {
-                filespaceid = org.filespaceId,
+                filespaceid = filespaceId,
                 path = path,
                 replace = true,
-                commitUpload = true,
-                upfile = filename
+                commitUpload = true, 
+                filename = filename
             };
             if (String.IsNullOrEmpty(tccBaseUrl))
                 throw new Exception("Configuration Error - no TCC url specified");
@@ -211,39 +229,21 @@ namespace TCCFileAccess
             return null;
         }
 
-        private (string,Dictionary<string,string>) FormRequest(object request,string endpoint, string token = null)
-        {
-            var requestString = $"{tccBaseUrl}/tcc/{endpoint}?ticket={token??Ticket}";
-            var headers = new Dictionary<string, string>();
-            var properties = from p in request.GetType().GetRuntimeFields()
-                where p.GetValue(request) != null
-                select new {p.Name, Value = p.GetValue(request) };
-            foreach (var p in properties)
-            {
-                requestString += $"&{p.Name}={p.Value.ToString()}";
-            }
-            return (requestString, headers);
-        }
-
+   
         public async Task<bool> MoveFile(Organization org, string srcFullName, string dstFullName)
         {
             Log.LogDebug("MoveFile: org={0} {1}, srcFullName={2}, dstFullName={3}", org.shortName, org.filespaceId,
                 srcFullName, dstFullName);
             try
             {
-                if (!await FolderExists(org.filespaceId, dstFullName.Substring(0, dstFullName.LastIndexOf("/")) + "/"))
+                var dstPath = dstFullName.Substring(0, dstFullName.LastIndexOf("/")) + "/";
+                if (!await FolderExists(org.filespaceId, dstPath))
                 {
-                    MkDir mkdirParams = new MkDir()
-                    {
-                        filespaceid = org.filespaceId,
-                        force = true,
-                        path = dstFullName.Substring(0, dstFullName.LastIndexOf("/")) + "/"
-                    };
-                    var resultCreate = await ExecuteRequest<RenResult>(Ticket, "MkDir", mkdirParams);
-                    if (resultCreate == null)
+                    var resultCreate = await MakeFolder(org.filespaceId, dstPath);  
+                    if (!resultCreate)
                     {
                         Log.LogError("Can not create folder for org {0} folder {1}", org.shortName,
-                            dstFullName.Substring(0, dstFullName.LastIndexOf("/")) + "/");
+                            dstPath);
                         return false;
                     }
                 }
@@ -345,85 +345,178 @@ namespace TCCFileAccess
 
         public async Task<bool> FolderExists(string filespaceId, string folder)
         {
-            Log.LogDebug("Searching for folder {0}", folder);
-            try
+          return await PathExists(filespaceId, folder);
+        }
+        public async Task<bool> FileExists(string filespaceId, string filename)
+        {
+          return await PathExists(filespaceId, filename);
+        }
+
+        private async Task<bool> PathExists(string filespaceId, string path)
+        {
+          Log.LogDebug("Searching for file or folder {0}", path);
+          try
+          {
+            GetFileAttributesParams getFileAttrParams = new GetFileAttributesParams
             {
-                GetFileAttributesParams getFileAttrParams = new GetFileAttributesParams
-                {
-                    filespaceid = filespaceId,
-                    path = folder
-                };
-                var getFileAttrResult = await ExecuteRequest<GetFileAttributesResult>(Ticket, "GetFileAttributes", getFileAttrParams);
-                if (getFileAttrResult != null)
-                {
-                    if (getFileAttrResult.success)
-                    {
-                        return true;
-                    }
-                    CheckForInvalidTicket(getFileAttrResult, "FolderExists");
-                    return getFileAttrResult.success;
-                }
-            }
-            catch (Exception ex)
+              filespaceid = filespaceId,
+              path = path
+            };
+            var getFileAttrResult = await ExecuteRequest<GetFileAttributesResult>(Ticket, "GetFileAttributes", getFileAttrParams);
+            if (getFileAttrResult != null)
             {
-                Log.LogError("Failed to get TCC file attributes: {0}", ex.Message);
+              if (getFileAttrResult.success)
+              {
+                return true;
+              }
+              CheckForInvalidTicket(getFileAttrResult, "PathExists");
+              return getFileAttrResult.success;
             }
-            return false;
+          }
+          catch (Exception ex)
+          {
+            Log.LogError("Failed to get TCC file attributes: {0}", ex.Message);
+          }
+          return false;
+        }
+
+
+        public async Task<bool> DeleteFolder(string filespaceId, string path)
+        {
+          return await DeleteFileEx(filespaceId, path);
+        }
+
+        public async Task<bool> DeleteFile(string filespaceId, string fullName)
+        {
+          return await DeleteFileEx(filespaceId, fullName);
+        }
+
+        public async Task<bool> DeleteFileEx(string filespaceId, string fullName)
+        {
+          Log.LogDebug("DeleteFileEx: filespaceId={0}, fullName={1}", filespaceId, fullName);
+          try
+          {
+            DeleteFileParams deleteParams = new DeleteFileParams
+            {
+              filespaceid = filespaceId,
+              path = fullName,
+              recursive = false
+            };
+            var deleteResult = await ExecuteRequest<DeleteFileResult>(Ticket, "Del", deleteParams);
+            if (deleteResult != null)
+            {
+              if (deleteResult.success)
+              {
+                return true;
+              }
+              CheckForInvalidTicket(deleteResult, "DeleteFile");
+              return deleteResult.success;
+            }
+          }
+          catch (Exception ex)
+          {
+            Log.LogError("Failed to delete file: {0}", ex.Message);
+          }
+          return false;
+        }
+
+        public async Task<bool> MakeFolder(string filespaceId, string path)
+        {
+          Log.LogDebug("MakeFolder: filespaceId={0}, path={1}", filespaceId, path);
+          try
+          {
+            MkDir mkDirParams = new MkDir
+            {
+              filespaceid = filespaceId,
+              path = path,
+              force = true
+            };
+            var mkDirResult = await ExecuteRequest<MkDirResult>(Ticket, "MkDir", mkDirParams);
+            if (mkDirResult != null)
+            {
+              if (mkDirResult.success)
+              {
+                return true;
+              }
+              CheckForInvalidTicket(mkDirResult, "MakeFolder");
+              return mkDirResult.success;
+            }
+          }
+          catch (Exception ex)
+          {
+            Log.LogError("Failed to make directory: {0}", ex.Message);
+          }
+          return false;
         }
 
         private async Task<string> Login()
         {
-            Log.LogInformation("Logging in to TCC: user={0}, org={1}", tccUserName, tccOrganization);
-            try
+          Log.LogInformation("Logging in to TCC: user={0}, org={1}", tccUserName, tccOrganization);
+          try
+          {
+            LoginParams loginParams = new LoginParams
             {
-                LoginParams loginParams = new LoginParams
-                {
-                    username = tccUserName,
-                    orgname = tccOrganization,
-                    password = tccPassword,
-                    mode = "noredirect",
-                    forcegmt = true
-                };
-                var loginResult = await ExecuteRequest<LoginResult>(ticket,"Login", loginParams);
-                if (loginResult != null)
-                {
-                    if (loginResult.success)
-                    {
-                        return loginResult.ticket;
-                    }
-                    Log.LogError("Failed to login to TCC: errorId={0}, reason={1}", loginResult.errorid,
-                        loginResult.reason);
-                }
-                else
-                {
-                    Log.LogError("Null result from Login");
-                }
-                return string.Empty;
-            }
-            catch (Exception ex)
+              username = tccUserName,
+              orgname = tccOrganization,
+              password = tccPassword,
+              mode = "noredirect",
+              forcegmt = true
+            };
+            var loginResult = await ExecuteRequest<LoginResult>(ticket, "Login", loginParams);
+            if (loginResult != null)
             {
-                Log.LogError("Failed to login to TCC: {0}", ex.Message);
-                return string.Empty;
+              if (loginResult.success)
+              {
+                return loginResult.ticket;
+              }
+              Log.LogError("Failed to login to TCC: errorId={0}, reason={1}", loginResult.errorid,
+                  loginResult.reason);
             }
+            else
+            {
+              Log.LogError("Null result from Login");
+            }
+            return string.Empty;
+          }
+          catch (Exception ex)
+          {
+            Log.LogError("Failed to login to TCC: {0}", ex.Message);
+            return string.Empty;
+          }
         }
 
         private void CheckForInvalidTicket(ApiResult result, string what)
         {
-            //Check for expired/invalid ticket
-            if (!result.success)
+          //Check for expired/invalid ticket
+          if (!result.success)
+          {
+            if (result.errorid == INVALID_TICKET_ERRORID && result.message == INVALID_TICKET_MESSAGE)
             {
-                if (result.errorid == INVALID_TICKET_ERRORID && result.message == INVALID_TICKET_MESSAGE)
-                {
-                    ticket = null;
-                }
-                else
-                {
-                    Log.LogWarning("{0} failed: errorid={1}, message={2}", what, result.errorid, result.message);
-                }
+              ticket = null;
             }
+            else
+            {
+              Log.LogWarning("{0} failed: errorid={1}, message={2}", what, result.errorid, result.message);
+            }
+          }
         }
 
-        private async Task<T> ExecuteRequest<T>(string token, string contractPath, object requestData)
+
+        private (string, Dictionary<string, string>) FormRequest(object request, string endpoint, string token = null)
+        {
+          var requestString = $"{tccBaseUrl}/tcc/{endpoint}?ticket={token ?? Ticket}";
+          var headers = new Dictionary<string, string>();
+          var properties = from p in request.GetType().GetRuntimeFields()
+                           where p.GetValue(request) != null
+                           select new { p.Name, Value = p.GetValue(request) };
+          foreach (var p in properties)
+          {
+            requestString += $"&{p.Name}={p.Value.ToString()}";
+          }
+          return (requestString, headers);
+        }
+
+    private async Task<T> ExecuteRequest<T>(string token, string contractPath, object requestData)
         {
             if (String.IsNullOrEmpty(tccBaseUrl))
                 throw new Exception("Configuration Error - no TCC url specified");

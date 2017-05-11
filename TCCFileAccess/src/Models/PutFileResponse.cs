@@ -1,10 +1,9 @@
 namespace TCCFileAccess.Models
 {
-    public class PutFileResponse
+    public class PutFileResponse : ApiResult
     {
         public string entryId;
         public string path;
         public string md5hash;
-        public string success;
     }
 }

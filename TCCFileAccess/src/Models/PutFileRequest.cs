@@ -6,6 +6,6 @@ namespace TCCFileAccess.Models
         public string path;
         public bool replace;
         public bool commitUpload;
-        public string upfile;
-    }
+        public string filename;
+  }
 }
