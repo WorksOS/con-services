@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Collections.Immutable;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
 using System.Net;
+using ProjectWebApiCommon.Models;
 
 namespace WebApiTests
 {
   [TestClass]
   public class FileImportTests
   {
-
     private readonly Msg msg = new Msg();
+
     [TestMethod]
-    public void TestNoUploads()
+    public void TestNoFileUploads()
     {
-      var testName = "File Import 1";
+      const string testName = "File Import 1";
       msg.Title(testName, "Create standard project and customer then get imported files - There should be none.");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
@@ -39,32 +38,21 @@ namespace WebApiTests
 
       var projectsArray = new[] {
          "| TableName           | EventDate   | ProjectUID   | LegacyProjectID   | Name       | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone          | StartDate   | EndDate   | GeometryWKT   |",
-        $"| Project             | 0d+09:10:00 | {projectUid} | {legacyProjectId} | {testName} | 0               | New Zealand Standard Time | New Zealand Standard Time | {startDate} | {endDate} | {geometryWkt} |"};
+        $"| Project             | 0d+09:10:00 | {projectUid} | {legacyProjectId} | {testName} | 0                | New Zealand Standard Time | New Zealand Standard Time | {startDate} | {endDate} | {geometryWkt} |"};
       ts.PublishEventCollection(projectsArray);
-
-      ts.GetProjectFilesViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, null , true);
-
-
-      //var customerEventArray = new[] {
-      // "| TableName | EventDate   | Name       | fk_CustomerTypeID | CustomerUID   |",
-      //$"| Customer  | 0d+09:00:00 | {testName} | 1                 | {customerUid} |"};
-      //ts.PublishEventCollection(customerEventArray);
-      //ts.IsPublishToWebApi = true;
-      //var projectEventArray = new[] {
-      // "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | ",
-      //$"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      |" };
-      //ts.PublishEventCollection(projectEventArray);
-      //ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, false);
-      //ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      var importFile = new ImportFile();
+      var expectedResults = importFile.expectedImportFileDescriptorsListResult;
+      var uri = ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}";
+      var filesResult = importFile.GetImportedFilesFromWebApi(uri, customerUid, projectUid);
+      Assert.IsTrue(filesResult.ImportedFileDescriptors.Count == expectedResults.ImportedFileDescriptors.Count, " Expected number of fields does not match actual");
+      CollectionAssert.AreEqual(expectedResults.ImportedFileDescriptors, filesResult.ImportedFileDescriptors);
     }
 
-
-
-    [TestMethod]
-    public void TestOneUpload()
+    [TestMethod] [Ignore]
+    public void TestImportFileUpload()
     {
-      var testName = "File Import 2";
-      msg.Title(testName, "Create standard project and customer then get imported files - There should be none.");
+      const string testName = "File Import 2";
+      msg.Title(testName, "Create standard project and customer then upload file");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
@@ -85,31 +73,15 @@ namespace WebApiTests
       ts.PublishEventCollection(eventsArray);
 
       var projectsArray = new[] {
-         "| TableName           | EventDate   | ProjectUID   | LegacyProjectID   | Name       | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone          | StartDate   | EndDate   | GeometryWKT   |",
-        $"| Project             | 0d+09:10:00 | {projectUid} | {legacyProjectId} | {testName} | 0               | New Zealand Standard Time | New Zealand Standard Time | {startDate} | {endDate} | {geometryWkt} |"};
+       "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name       | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone          | StartDate   | EndDate   | GeometryWKT   |",
+      $"| Project   | 0d+09:10:00 | {projectUid} | {legacyProjectId} | {testName} | 0                | New Zealand Standard Time | New Zealand Standard Time | {startDate} | {endDate} | {geometryWkt} |"};
       ts.PublishEventCollection(projectsArray);
 
-      //Lets upload a file!
-
-
-      //ts.GetProjectFilesViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, null, true);
-
-
-
-      //var customerEventArray = new[] {
-      // "| TableName | EventDate   | Name       | fk_CustomerTypeID | CustomerUID   |",
-      //$"| Customer  | 0d+09:00:00 | {testName} | 1                 | {customerUid} |"};
-      //ts.PublishEventCollection(customerEventArray);
-      //ts.IsPublishToWebApi = true;
-      //var projectEventArray = new[] {
-      // "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | ",
-      //$"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      |" };
-      //ts.PublishEventCollection(projectEventArray);
-      //ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, false);
-      //ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      ImportFile importFile = new ImportFile();
+      var expectedResults = importFile.expectedImportFileDescriptorSingleResult;
+      var uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={projectUid}&importedFileType=Alignment&fileCreatedUtc=2017-05-01T23:24:26.222Z&fileUpdatedUtc=2017-05-03T01:02:03.111Z";
+      var filesResult = importFile.PostImportedFilesToWebApi(uri, customerUid, projectUid);
+      Assert.AreEqual(filesResult.ImportedFileDescriptor, expectedResults.ImportedFileDescriptor, " Expected number of fields does not match actual");
     }
-
-
-
   }
 }
