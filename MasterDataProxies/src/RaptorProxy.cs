@@ -14,7 +14,7 @@ namespace VSS.Raptor.Service.Common.Proxies
   /// <summary>
   /// Proxy to validate and post a CoordinateSystem with Raptor.
   /// </summary>
-  public class RaptorProxy : BaseProxy<CoordinateSystemSettings>, IRaptorProxy
+  public class RaptorProxy : BaseProxy, IRaptorProxy
   {
     public RaptorProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(configurationStore, logger, cache)
     {
@@ -36,7 +36,7 @@ namespace VSS.Raptor.Service.Common.Proxies
       var payLoadToSend = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName );
       log.LogDebug("RaptorProxy.CoordinateSystemValidate: payLoadToSend: {0}", payLoadToSend == null ? null : JsonConvert.SerializeObject(payLoadToSend));
 
-      CoordinateSystemSettings response = await SendRequest(urlKey, JsonConvert.SerializeObject(payLoadToSend), customHeaders);
+      CoordinateSystemSettings response = await SendRequest<CoordinateSystemSettings>(urlKey, JsonConvert.SerializeObject(payLoadToSend), customHeaders);
       log.LogDebug("RaptorProxy.CoordinateSystemValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       return response;
     }
@@ -58,7 +58,7 @@ namespace VSS.Raptor.Service.Common.Proxies
       var payLoadToSend = CoordinateSystemFile.CreateCoordinateSystemFile(legacyProjectId, coordinateSystemFileContent, coordinateSystemFileName);
       log.LogDebug("RaptorProxy.CoordinateSystemPost: payLoadToSend: {0}", payLoadToSend == null ? null : JsonConvert.SerializeObject(payLoadToSend));
 
-      CoordinateSystemSettings response = await SendRequest(urlKey, JsonConvert.SerializeObject(payLoadToSend), customHeaders);
+      CoordinateSystemSettings response = await SendRequest<CoordinateSystemSettings>(urlKey, JsonConvert.SerializeObject(payLoadToSend), customHeaders);
       log.LogDebug("RaptorProxy.CoordinateSystemPost: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
