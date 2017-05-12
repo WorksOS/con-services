@@ -5,7 +5,7 @@ using MasterDataProxies.Models;
 
 namespace MasterDataProxies.Interfaces
 {
-  interface IPreferenceProxy
+  public interface IPreferenceProxy
   {
     Task<UserPreferenceData> GetUserPreferences(IDictionary<string, string> customHeaders = null);
   }
