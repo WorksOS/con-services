@@ -11,10 +11,22 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
   public class ProjectFileDescriptor : ProjectID, IValidatable
   {
     /// <summary>
-    /// THe file details
+    /// The file details
     /// </summary>
     [JsonProperty(PropertyName = "file", Required = Required.Always)]
     public FileDescriptor File { get; private set; }
+
+    /// <summary>
+    /// Project coordinate system file name
+    /// </summary>
+    [JsonProperty(PropertyName = "coordSystemFileName", Required = Required.Default)]
+    public string CoordSystemFileName { get; private set; }
+
+    /// <summary>
+    /// User units preference
+    /// </summary>
+    [JsonProperty(PropertyName = "userPreferenceUnits", Required = Required.Default)]
+    public string UserPreferenceUnits { get; private set; }
 
     /// <summary>
     /// Private constructor
@@ -30,14 +42,18 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
     (
       long? projectId,
       Guid? projectUId,
-      FileDescriptor file
+      FileDescriptor file,
+      string coordSystemFileName,
+      string userUnits
     )
     {
       return new ProjectFileDescriptor
       {
         projectId = projectId,
         projectUid = projectUId,
-        File = file
+        File = file,
+        CoordSystemFileName = coordSystemFileName,
+        UserPreferenceUnits = userUnits
       };
     }
 

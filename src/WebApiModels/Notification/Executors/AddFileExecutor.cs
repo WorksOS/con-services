@@ -85,7 +85,8 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
 
         //Get GM_XFORM file contents from Raptor
         string haFile;
-        var result3 = raptorClient.GetCoordinateSystemHorizontalAdjustmentFile("TODO: from Project MDM V4",
+        //TODO: coord system file name returned in V4 Project MDM - need to update project proxy
+        var result3 = raptorClient.GetCoordinateSystemHorizontalAdjustmentFile(request.CoordSystemFileName,
           request.projectId.Value, TVLPDDistanceUnits.vduMeters, out haFile);
         if (result3 != TASNodeErrorStatus.asneOK)
         {
@@ -102,14 +103,19 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
         }
 
         //Get alignment boundary as DXF file from Raptor
+        success = CreateDxfFile(request.projectId.Value, request.File, GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX, request.UserPreferenceUnits);
+        if (!success)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+                 "Failed to create DXF file"));
+        }
 
-        //TODO: coord system file name returned in V4 Project MDM - need to update project proxy
 
-        //Save these files to TCC
 
         //Generate DXF tiles
 
- 
+
         return null;
       }
       finally
@@ -168,13 +174,82 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Empty transform file contents"));
       }
       bool success = false;
-      using (MemoryStream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(fileData)))
+      using (MemoryStream memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(fileData)))
       {
         //TODO: do we want this async?
         success = fileRepo.PutFile(fileDescr.filespaceId, fileDescr.path, GeneratedFileName(fileDescr.fileName, suffix, extension), memoryStream, fileData.Length).Result;
       }
       return success;
     }
+
+    private bool CreateDxfFile(long projectId, FileDescriptor fileDescr, string suffix, string userUnits)
+    {
+      const double ImperialFeetToMetres = 0.3048;
+      const double USFeetToMetres = 0.304800609601;
+
+      bool success = false;
+      //NOTE: For alignment files only (not surfaces), there are labels generated as part of the DXF file.
+      //They need to be in the user units.
+      double interval;
+      TVLPDDistanceUnits raptorUnits;
+      //TODO: make an enum for user units?
+      switch (userUnits)
+      {
+        case "Imperial":
+          raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduImperialFeet;
+          interval = 300 * ImperialFeetToMetres;
+          break;
+
+        case "Metric":
+          raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduMeters;
+          interval = 100;
+          break;
+        case "US":
+        default:
+          raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduUSSurveyFeet;
+          interval = 300 * USFeetToMetres;
+          break;
+      }
+
+      MemoryStream memoryStream;
+      TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiUnknownError;
+
+      raptorClient.GetDesignBoundaryAsDXFFile(
+        DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args
+        (projectId,
+          DesignDescriptor(0, fileDescr.path, fileDescr.fileName, 0),
+          DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtDXF,
+          interval, raptorUnits), out memoryStream, out designProfilerResult);
+
+      if (memoryStream != null)
+      {
+        //TODO: do we want this async?
+        success =
+          fileRepo.PutFile(fileDescr.filespaceId, fileDescr.path, GeneratedFileName(fileDescr.fileName, suffix, ".DXF"),
+            memoryStream, memoryStream.Length).Result;
+      }
+      else
+      {
+        //TODO: do we want to throw a 'bad request' exeption here i.e. do we care if this fails?
+        log.LogWarning("Failed to generate DXF boundary for file {0} for project {1}. Raptor error {2)", fileDescr.fileName, projectId, designProfilerResult);
+      }
+      return success;
+    }
+
+    private TVLPDDesignDescriptor DesignDescriptor(long designID, string path, string fileName, double offset)
+    {
+      string filespaceId = configStore.GetValueString("TCCFILESPACEID");
+      string filespaceName = configStore.GetValueString("TCCFILESPACENAME");
+
+      if (string.IsNullOrEmpty(filespaceId) || string.IsNullOrEmpty(filespaceName))
+      {
+        var errorString = "Your application is missing an environment variable TCCFILESPACEID or TCCFILESPACENAME";
+        log.LogError(errorString);
+        throw new InvalidOperationException(errorString);
+      }
+      return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designID, filespaceName, filespaceId, path, fileName, offset);
+    }
+
 
     private string GeneratedFileName(string fileName, string suffix, string extension)
     {

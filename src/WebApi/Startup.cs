@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using log4netExtensions;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -106,6 +108,7 @@ namespace VSS.Raptor.Service.WebApi
             services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
             services.AddSingleton<IProjectListProxy, ProjectListProxy>();
             services.AddTransient<IFileRepository, FileRepository>();
+            services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
 
             serviceCollection = services;
         }
