@@ -135,18 +135,18 @@ namespace VSS.Raptor.Service.Common.Proxies
     }
 
     private string ExtractUrl(string urlKey)
-        {
-            string url = configurationStore.GetValueString(urlKey);
-            log.LogInformation(string.Format("{0}: {1}", urlKey, url));
+    {
+        string url = configurationStore.GetValueString(urlKey);
+        log.LogInformation(string.Format("{0}: {1}", urlKey, url));
 
-            if (url == null)
-            {
-                var errorString = string.Format("Your application is missing an environment variable {0}", urlKey);
-                log.LogError(errorString);
-                throw new InvalidOperationException(errorString);
-            }
-            return url;
+        if (url == null)
+        {
+            var errorString = string.Format("Your application is missing an environment variable {0}", urlKey);
+            log.LogError(errorString);
+            throw new InvalidOperationException(errorString);
         }
+        return url;
+    }
 
         /// <summary>
         /// Gets a master data item. If the item is not in the cache then requests items from the relevant service and adds them to the cache.
