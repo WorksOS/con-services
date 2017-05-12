@@ -49,7 +49,7 @@ namespace WebApiModels.Models
     {
       if (projectId <= 0)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
+        throw new ServiceException(HttpStatusCode.OK,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             String.Format("Must have projectID {0}", projectId)));
       }

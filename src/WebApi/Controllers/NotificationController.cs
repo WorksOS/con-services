@@ -8,33 +8,48 @@ using WebApiModels.ResultHandling;
 
 namespace WebApi.Controllers
 {
-  public class NotificationController : Controller
-  {
-    private readonly IRepositoryFactory factory;    
-    private readonly ILogger log;
-
-    public NotificationController(IRepositoryFactory factory, ILogger<NotificationController> logger)
+    public class NotificationController : Controller
     {
-      this.factory = factory;
-      this.log = logger;
-    }
+        private readonly IRepositoryFactory factory;
+        private readonly ILogger log;
 
-    /// <summary>
-    /// Writes to the log for the given tag file processing error. 
-    /// </summary>
-    /// <param name="request">Details of the error including the asset id, the tag file and the type of error</param>
-    /// <returns>
-    /// True for success and false for failure.
-    /// </returns>
-    /// <executor>TagFileProcessingErrorExecutor</executor>
-    [Route("api/v1/notification/tagFileProcessingError")]
-    [HttpPost]
-    public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody]TagFileProcessingErrorRequest request)
-    {
-      log.LogDebug("PostTagFileProcessingError: request:{0}", JsonConvert.SerializeObject(request));
-      request.Validate();
+        public NotificationController(IRepositoryFactory factory, ILogger<NotificationController> logger)
+        {
+            this.factory = factory;
+            this.log = logger;
+        }
 
-      return RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, log).Process(request) as TagFileProcessingErrorResult;
+        /// <summary>
+        /// Writes to the log for the given tag file processing error. 
+        /// </summary>
+        /// <param name="request">Details of the error including the asset id, the tag file and the type of error</param>
+        /// <returns>
+        /// True for success and false for failure.
+        /// </returns>
+        /// <executor>TagFileProcessingErrorExecutor</executor>
+        [Route("api/v1/notification/tagFileProcessingError")]
+        [HttpPost]
+        public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody] TagFileProcessingErrorRequest request)
+        {
+            log.LogDebug("PostTagFileProcessingError: request:{0}", JsonConvert.SerializeObject(request));
+            request.Validate();
+
+            return RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, log)
+                .Process(request) as TagFileProcessingErrorResult;
+        }
+
+        /// <summary>
+        /// Posts the application alarm.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        [Route("api/v1/notification/appAlarm")]
+        [HttpPost]
+        public ContractExecutionResult PostAppAlarm([FromBody] AppAlarmMessage request)
+        {
+            log.LogWarning("PostAppAlarm: request:{0}", JsonConvert.SerializeObject(request));
+            request.Validate();
+            return new ContractExecutionResult();
+        }
     }
-  }
 }
