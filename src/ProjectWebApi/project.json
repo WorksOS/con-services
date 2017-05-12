@@ -27,7 +27,7 @@
         "MasterDataProxies.netcore": "*",
         "MasterDataRepos.netcore": "*",
         "FlowJSHandler.netcore": "1.0.0",
-      "KafkaConsumer.netcore": "1.0.8",
+      "KafkaConsumer.netcore": "1.0.9",
       "TCCFileAccess.netcore": "1.1.0"
     },
 
