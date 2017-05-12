@@ -12,8 +12,7 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// <summary>
     /// Base class for proxies getting master data from services.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class BaseProxy<T> where T : IData
+    public class BaseProxy 
     {
         protected readonly ILogger log;
         private readonly ILoggerFactory logger;
@@ -22,7 +21,7 @@ namespace VSS.Raptor.Service.Common.Proxies
 
         protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache)
         {
-            log = logger.CreateLogger<BaseProxy<T>>();
+            log = logger.CreateLogger<BaseProxy>();
             this.logger = logger;
             this.configurationStore = configurationStore;
             this.cache = cache;
@@ -35,7 +34,7 @@ namespace VSS.Raptor.Service.Common.Proxies
         /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
         /// <param name="payload">The payload of the request</param>
         /// <returns>The item</returns>
-        protected async Task<T> SendRequest(string urlKey, string payload, IDictionary<string, string> customHeaders)
+        protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders)
         {
             var url = ExtractUrl(urlKey);
             T result = default(T);
@@ -68,7 +67,7 @@ namespace VSS.Raptor.Service.Common.Proxies
         /// <param name="urlKey">The configuration store key for the URL</param>
         /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
         /// <returns>List of items</returns>
-        private async Task<List<T>> GetList(string urlKey, IDictionary<string, string> customHeaders)
+        private async Task<List<T>> GetList<T>(string urlKey, IDictionary<string, string> customHeaders) where T : IData
         {
             var url = ExtractUrl(urlKey);
 
@@ -96,7 +95,46 @@ namespace VSS.Raptor.Service.Common.Proxies
             return result;
         }
 
-        private string ExtractUrl(string urlKey)
+    /// <summary>
+    /// Gets an item from the specified service.
+    /// </summary>
+    /// <param name="urlKey">The configuration store key for the URL</param>
+    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="queryParams">Query parameters for the request (optional)</param>
+    /// <returns>List of items</returns>
+    protected async Task<T> GetItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams=null)
+    {
+      var url = ExtractUrl(urlKey);
+      if (!string.IsNullOrEmpty(queryParams))
+      {
+        url += queryParams;
+      }
+
+      T result = default(T);
+      try
+      {
+        GracefulWebRequest request = new GracefulWebRequest(logger);
+        result = await request.ExecuteRequest<T>(url, "GET", customHeaders);
+        log.LogDebug("Result of get master data item request: {0} items", result);
+      }
+      catch (Exception ex)
+      {
+        string message = ex.Message;
+        string stacktrace = ex.StackTrace;
+        //Check for 400 and 500 errors which come through as an inner exception
+        if (ex.InnerException != null)
+        {
+          message = ex.InnerException.Message;
+          stacktrace = ex.InnerException.StackTrace;
+        }
+        log.LogWarning("Error getting data from master data: ", message);
+        log.LogWarning("Stacktrace: ", stacktrace);
+        throw;
+      }
+      return result;
+    }
+
+    private string ExtractUrl(string urlKey)
         {
             string url = configurationStore.GetValueString(urlKey);
             log.LogInformation(string.Format("{0}: {1}", urlKey, url));
@@ -118,8 +156,8 @@ namespace VSS.Raptor.Service.Common.Proxies
         /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
         /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
         /// <returns>Master data item</returns>
-        protected async Task<T> GetItem(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders)
-        {
+        protected async Task<T> GetItem<T>(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders) where T : IData
+    {
             T cacheData;
             if (!cache.TryGetValue(uid, out cacheData))
             {
@@ -128,7 +166,7 @@ namespace VSS.Raptor.Service.Common.Proxies
                     SlidingExpiration = cacheLife
                 };
 
-                var list = await GetList(urlKey, customHeaders);
+                var list = await GetList<T>(urlKey, customHeaders);
                 foreach (var item in list)
                 {
                     var data = item as IData;
@@ -147,10 +185,10 @@ namespace VSS.Raptor.Service.Common.Proxies
         /// <param name="cacheLife">How long to cache the list</param>
         /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
         /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
-        /// <returns>Master data item</returns>
-        protected async Task<List<T>> GetList(string customerUid, TimeSpan cacheLife, string urlKey,
-            IDictionary<string, string> customHeaders)
-        {
+        /// <returns>List of Master data items</returns>
+        protected async Task<List<T>> GetList<T>(string customerUid, TimeSpan cacheLife, string urlKey,
+            IDictionary<string, string> customHeaders) where T : IData
+    {
             List<T> cacheData;
             if (!cache.TryGetValue(customerUid, out cacheData))
             {
@@ -158,10 +196,36 @@ namespace VSS.Raptor.Service.Common.Proxies
                 {
                     SlidingExpiration = cacheLife
                 };
-                cacheData = await GetList(urlKey, customHeaders);
+                cacheData = await GetList<T>(urlKey, customHeaders);
                 cache.Set(customerUid, cacheData, opts);
             }
             return cacheData;
         }
-    }
+
+        /// <summary>
+        /// Gets a list of master data items for a customer. 
+        /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
+        /// </summary>
+        /// <param name="customerUid">The customer UID for the list to retrieve</param>
+        /// <param name="cacheLife">How long to cache the list</param>
+        /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
+        /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+        /// <returns>List of Master data items</returns>
+        protected async Task<T> GetContainedList<T>(string customerUid, TimeSpan cacheLife, string urlKey,
+                IDictionary<string, string> customHeaders)
+        {
+          T cacheData;
+          if (!cache.TryGetValue(customerUid, out cacheData))
+          {
+            var opts = new MemoryCacheEntryOptions()
+            {
+              SlidingExpiration = cacheLife
+            };
+
+            cacheData = await GetItem<T>(urlKey, customHeaders);
+            cache.Set(customerUid, cacheData, opts);
+          }
+          return cacheData;
+        }
+  }
 }
