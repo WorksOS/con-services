@@ -83,14 +83,6 @@ namespace WebApiModels.Models
                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                         "A manual/unknown deviceType must have a projectID"));
             }
-
-            if (string.IsNullOrEmpty(radioSerial))
-            {
-                throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-                    new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                        "Must have nonEmpty radioSerial"));
-            }
-
         }
     }
 }
