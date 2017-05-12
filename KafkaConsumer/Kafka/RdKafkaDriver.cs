@@ -119,7 +119,6 @@ namespace KafkaConsumer.Kafka
 
         public void Send(string topic, IEnumerable<KeyValuePair<string, string>> messagesToSendWithKeys)
         {
-            Console.WriteLine();
             List<Task> tasks = new List<Task>();
             using (Topic myTopic = rdProducer.Topic(topic))
             {
@@ -133,6 +132,15 @@ namespace KafkaConsumer.Kafka
             Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(4));
         }
 
+        public async Task Send(string topic, KeyValuePair<string, string> messageToSendWithKey)
+        {
+            using (Topic myTopic = rdProducer.Topic(topic))
+            {
+                    byte[] data = Encoding.UTF8.GetBytes(messageToSendWithKey.Value);
+                    byte[] key = Encoding.UTF8.GetBytes(messageToSendWithKey.Key);
+                    await myTopic.Produce(data, key);
+            }
+        }
 
         public void Send(IEnumerable<KeyValuePair<string, KeyValuePair<string, string>>> topicMessagesToSendWithKeys)
         {
