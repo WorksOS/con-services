@@ -34,7 +34,7 @@ namespace WebApiTests.Models
     [TestMethod]
     public void ValidateGetProjectIdRequest_ValidatorCase4()
     {
-      GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(345345, -89, 179, 0, DateTime.UtcNow.AddYears(-5).AddMonths(-1), "");
+      GetProjectIdRequest projectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(345345, -89, 179, 0, DateTime.UtcNow.AddYears(-25).AddMonths(-1), "");
       var ex = Assert.ThrowsException<ServiceException>(() => projectIdRequest.Validate());
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("timeOfPosition must have occured"));
     }

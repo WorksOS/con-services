@@ -97,11 +97,11 @@ namespace WebApiModels.Models
             String.Format("Longitude value of {0} should be between -180 degrees and 180 degrees", longitude)));
       }
 
-      if (!(timeOfPosition > DateTime.UtcNow.AddYears(-5) && timeOfPosition <= DateTime.UtcNow))
+      if (!(timeOfPosition > DateTime.UtcNow.AddYears(-20) && timeOfPosition <= DateTime.UtcNow.AddDays(2)))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            String.Format("timeOfPosition must have occured within last 5 years {0}", timeOfPosition)));
+            String.Format("timeOfPosition must have occured within last 20 years {0}", timeOfPosition)));
       }
 
     }

@@ -55,11 +55,11 @@ namespace WebApiModels.Models
             String.Format("Must have assetId {0}", assetId)));
       }
 
-      if (!(tagFileUTC > DateTime.UtcNow.AddYears(-5) && tagFileUTC <= DateTime.UtcNow))
+      if (!(tagFileUTC > DateTime.UtcNow.AddYears(-20) && tagFileUTC <= DateTime.UtcNow.AddDays(2)))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            String.Format("tagFileUTC must have occured within last 5 years {0}", tagFileUTC)));
+            String.Format("tagFileUTC must have occured within last 20 years {0}", tagFileUTC)));
       }
     }
   }
