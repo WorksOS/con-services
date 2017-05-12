@@ -9,47 +9,47 @@ namespace ProjectWebApiCommon.Utilities
 {
   public class MockFileRepository : IFileRepository
   {
-    public Task<List<Organization>> ListOrganizations()
+    public async Task<List<Organization>> ListOrganizations()
     {
       throw new NotImplementedException();
     }
 
-    public Task<Stream> GetFile(Organization org, string fullName)
+    public async Task<Stream> GetFile(Organization org, string fullName)
     {
       throw new NotImplementedException();
     }
 
-    public Task<Stream> GetFile(string filespaceId, string fullName)
+    public async Task<Stream> GetFile(string filespaceId, string fullName)
     {
       throw new NotImplementedException();
     }
 
-    public Task<bool> MoveFile(Organization org, string srcFullName, string dstFullName)
+    public async Task<bool> MoveFile(Organization org, string srcFullName, string dstFullName)
     {
       throw new NotImplementedException();
     }
 
-    public Task<DirResult> GetFolders(Organization org, DateTime lastModifiedUTC, string path)
+    public async Task<DirResult> GetFolders(Organization org, DateTime lastModifiedUTC, string path)
     {
       throw new NotImplementedException();
     }
 
-    public Task<DateTime> GetLastChangedTime(string filespaceId, string path)
+    public async Task<DateTime> GetLastChangedTime(string filespaceId, string path)
     {
       throw new NotImplementedException();
     }
 
-    public Task<bool> FolderExists(string filespaceId, string folder)
+    public async Task<bool> FolderExists(string filespaceId, string folder)
     {
       throw new NotImplementedException();
     }
 
     public async Task<bool> FileExists(string filespaceId, string filename)
     {
-      throw new NotImplementedException();
+      return false;
     }
 
-    public Task<PutFileResponse> PutFile(Organization org, string path, string filename, Stream contents, long sizeOfContents)
+    public async Task<PutFileResponse> PutFile(Organization org, string path, string filename, Stream contents, long sizeOfContents)
     {
       throw new NotImplementedException();
     }

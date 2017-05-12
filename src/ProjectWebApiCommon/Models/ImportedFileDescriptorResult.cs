@@ -54,6 +54,14 @@ namespace ProjectWebApiCommon.Models
   public class ImportedFileDescriptor
   {
     /// <summary>
+    /// Gets or sets the Project uid.
+    /// </summary>
+    /// <value>
+    /// The Project uid.
+    /// </value>
+    public string ProjectUid { get; set; }
+    
+    /// <summary>
     /// Gets or sets the file uid.
     /// </summary>
     /// <value>
@@ -68,14 +76,6 @@ namespace ProjectWebApiCommon.Models
     /// The customer uid.
     /// </value>
     public string CustomerUid { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Project uid.
-    /// </summary>
-    /// <value>
-    /// The Project uid.
-    /// </value>
-    public string ProjectUid { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the file.
@@ -121,7 +121,7 @@ namespace ProjectWebApiCommon.Models
     /// Gets or sets the ImportedBy email address from authentication
     /// </summary>
     /// <value>
-    /// The name.
+    /// The users email address.
     /// </value>
     public string ImportedBy { get; set; }
 
@@ -134,6 +134,13 @@ namespace ProjectWebApiCommon.Models
     /// </value>
     public DateTime? SurveyedUtc { get; set; }
 
+    /// <summary>
+    /// The Utc when the file was last imported
+    /// </summary>
+    /// <value>
+    /// Utc date
+    /// </value>
+    public DateTime ImportedUtc { get; set; }
 
     public override bool Equals(object obj)
     {
@@ -148,6 +155,7 @@ namespace ProjectWebApiCommon.Models
              && otherImportedFile.FileUpdatedUtc == this.FileUpdatedUtc
              && otherImportedFile.ImportedBy == this.ImportedBy
              && otherImportedFile.SurveyedUtc == this.SurveyedUtc
+             && otherImportedFile.ImportedUtc == this.ImportedUtc
         ;
     }
   }
