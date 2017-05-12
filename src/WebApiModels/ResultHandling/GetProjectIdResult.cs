@@ -18,7 +18,7 @@ namespace WebApiModels.ResultHandling
     {
       return new GetProjectIdResult
       {
-        result = result,
+        Result = result,
         projectId = projectId
       };
     }

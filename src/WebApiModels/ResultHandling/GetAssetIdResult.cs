@@ -23,7 +23,7 @@
     {
       return new GetAssetIdResult
       {
-        result = result,
+        Result = result,
         assetId = assetId,
         machineLevel = machineLevel
       };

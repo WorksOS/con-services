@@ -20,7 +20,7 @@ namespace WebApiModels.ResultHandling
     {
       return new GetProjectBoundariesAtDateResult
       {
-        result = result,
+        Result = result,
         projectBoundaries = projectBoundaries
       };
     }

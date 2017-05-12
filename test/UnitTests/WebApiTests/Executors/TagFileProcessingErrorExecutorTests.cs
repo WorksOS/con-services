@@ -24,7 +24,7 @@ namespace WebApiTests.Executors
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsFalse(result.result, "executor processed TagFileProcessingError");
+      Assert.IsFalse(result.Result, "executor processed TagFileProcessingError");
     }
 
     [TestMethod]
@@ -37,7 +37,7 @@ namespace WebApiTests.Executors
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(TagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsTrue(result.result, "executor process TagFileProcessingError without error");
+      Assert.IsTrue(result.Result, "executor process TagFileProcessingError without error");
     }
 
     [TestMethod]
@@ -50,7 +50,7 @@ namespace WebApiTests.Executors
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(TagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsTrue(result.result, "executor didn't process TagFileProcessingError with error");
+      Assert.IsTrue(result.Result, "executor didn't process TagFileProcessingError with error");
     }
 
     [TestMethod]
@@ -68,7 +68,7 @@ namespace WebApiTests.Executors
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, loggerFactory.CreateLogger<TagFileProcessingErrorExecutorTests>()).Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.IsTrue(result.result, "executor didn't process TagFileProcessingError");
+      Assert.IsTrue(result.Result, "executor didn't process TagFileProcessingError");
     }
   }
 }
