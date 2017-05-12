@@ -14,7 +14,15 @@ namespace WebApiTests.Models
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have assetId and/or projectID"));
     }
 
-    [TestMethod]
+        [TestMethod]
+        public void ValidateGetAssetIdRequest_ValidatorCase15()
+        {
+            GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(31, 0, "");
+            var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
+            Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have nonEmpty radioSerial"));
+        }
+
+        [TestMethod]
     public void ValidateGetAssetIdRequest_ValidatorCase2()
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "ASerial5");
@@ -33,7 +41,7 @@ namespace WebApiTests.Models
     [TestMethod]
     public void ValidateGetAssetIdRequest_ValidatorCase4()
     {
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(456661, 0, "");
+      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(456661, 0, "ASerial5");
       assetIdRequest.Validate();
     }
 
