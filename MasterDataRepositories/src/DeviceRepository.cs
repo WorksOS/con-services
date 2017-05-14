@@ -15,7 +15,7 @@ namespace Repositories
   {
     private readonly ILogger log;
 
-    public DeviceRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString)
+    public DeviceRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString, logger)
     {
       log = logger.CreateLogger<DeviceRepository>();
     }

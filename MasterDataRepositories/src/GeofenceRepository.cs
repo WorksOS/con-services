@@ -16,7 +16,7 @@ namespace Repositories
   {
     private readonly ILogger log;
 
-    public GeofenceRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString)
+    public GeofenceRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString, logger)
     {
       log = logger.CreateLogger<GeofenceRepository>();
     }

@@ -16,7 +16,7 @@ namespace Repositories
   {
     private readonly ILogger log;
 
-    public ProjectRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString)
+    public ProjectRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString, logger)
     {
       log = logger.CreateLogger<ProjectRepository>();
     }
@@ -691,17 +691,14 @@ namespace Repositories
       return project;
     }
 
-    /// <summary>
-    /// Gets by legacyProjectID. No subs
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <returns></returns>
-    public async Task<Project> GetProject(long legacyProjectID)
-    {
-      await PerhapsOpenConnection();
-
-      var project = (await Connection.QueryAsync<Project>
-          (@"SELECT 
+      /// <summary>
+      /// Gets by legacyProjectID. No subs
+      /// </summary>
+      /// <param name="projectUid"></param>
+      /// <returns></returns>
+      public async Task<Project> GetProject(long legacyProjectID)
+      {
+          var project = await ExecuteWithAsyncPolicy<Project>(@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
@@ -711,15 +708,12 @@ namespace Repositories
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID                
               WHERE p.LegacyProjectID = @legacyProjectID 
                 AND p.IsDeleted = 0",
-            new { legacyProjectID }
-          )).FirstOrDefault();
-
-      PerhapsCloseConnection();
-      return project;
-    }
+              new {legacyProjectID});
+          return project.FirstOrDefault();
+      }
 
 
-    /// <summary>
+      /// <summary>
     /// There may be 0 or n subscriptions for this project. None/many may be current. 
     /// This method just gets ANY one of these or no subs (SubscriptionUID == null)
     /// We don't care, up to the calling code to decipher.

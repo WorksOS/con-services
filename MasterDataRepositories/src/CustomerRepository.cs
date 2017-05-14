@@ -16,7 +16,7 @@ namespace Repositories
   {
     private readonly ILogger log;
 
-    public CustomerRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString)
+    public CustomerRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString, logger)
     {
       log = logger.CreateLogger<CustomerRepository>();
     }

@@ -16,7 +16,7 @@ namespace Repositories
   public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>
   {
     private readonly ILogger log;
-    public SubscriptionRepository(IConfigurationStore connectionString, ILoggerFactory logger)  : base(connectionString)
+    public SubscriptionRepository(IConfigurationStore connectionString, ILoggerFactory logger)  : base(connectionString, logger)
     {
       log = logger.CreateLogger<SubscriptionRepository>();
     }
