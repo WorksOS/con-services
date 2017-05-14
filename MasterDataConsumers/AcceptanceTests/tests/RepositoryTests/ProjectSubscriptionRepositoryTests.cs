@@ -409,8 +409,8 @@ namespace RepositoryTests
         ProjectTimezone = projectTimeZone,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = actionUtc
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -446,8 +446,11 @@ namespace RepositoryTests
       Project project = CopyModel(createProjectEvent);
       project.CustomerUID = associateCustomerProjectEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project.ServiceTypeID = subscriptionContext._serviceTypes[createProjectSubscriptionEvent.SubscriptionType].ID;
+      project.SubscriptionStartDate = createProjectSubscriptionEvent.StartDate;
       project.SubscriptionEndDate = createProjectSubscriptionEvent.EndDate;
       project.SubscriptionUID = createProjectSubscriptionEvent.SubscriptionUID.ToString();
+      project.IsDeleted = false;
       var g = projectContext.GetProjectBySubcription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve 1 project/sub from projectRepo");
@@ -552,8 +555,11 @@ namespace RepositoryTests
       Project project1 = CopyModel(createProjectEvent);
       project1.CustomerUID = associateCustomerProjectEvent.CustomerUID.ToString();
       project1.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project1.ServiceTypeID = subscriptionContext._serviceTypes[createProjectSubscriptionEvent1.SubscriptionType].ID;
+      project1.SubscriptionStartDate = createProjectSubscriptionEvent1.StartDate;
       project1.SubscriptionEndDate = createProjectSubscriptionEvent1.EndDate;
       project1.SubscriptionUID = createProjectSubscriptionEvent1.SubscriptionUID.ToString();
+      project1.IsDeleted = false;
 
       // can't gaurantee any order as none provided
       if (createProjectSubscriptionEvent1.SubscriptionUID.ToString() == projects[0].SubscriptionUID)
@@ -564,8 +570,11 @@ namespace RepositoryTests
       Project project2 = CopyModel(createProjectEvent);
       project2.CustomerUID = associateCustomerProjectEvent.CustomerUID.ToString();
       project2.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
+      project2.ServiceTypeID = subscriptionContext._serviceTypes[createProjectSubscriptionEvent2.SubscriptionType].ID;
+      project2.SubscriptionStartDate = createProjectSubscriptionEvent2.StartDate;
       project2.SubscriptionEndDate = createProjectSubscriptionEvent2.EndDate;
       project2.SubscriptionUID = createProjectSubscriptionEvent2.SubscriptionUID.ToString();
+      project2.IsDeleted = false;
 
       // can't gaurantee any order as none provided
       if (createProjectSubscriptionEvent2.SubscriptionUID.ToString() == projects[0].SubscriptionUID)

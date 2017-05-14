@@ -7,7 +7,7 @@ using VSS.Project.Service.Utils;
 
 namespace KafkaConsumer.Kafka
 {
-    public interface IKafka
+    public interface IKafka : IDisposable
     {
         string ConsumerGroup { get; set; }
         string OffsetReset { get; set; }
@@ -22,7 +22,9 @@ namespace KafkaConsumer.Kafka
         void Send(IEnumerable<KeyValuePair<string, KeyValuePair<string, string>>> topicMessagesToSendWithKeys);
         Message Consume(TimeSpan timeout);
         void Dispose();
-
+        bool IsInitializedProducer { get; }
+        bool IsInitializedConsumer { get; }
+        Task Send(string topic, KeyValuePair<string, string> messageToSendWithKey);
     }
 
     public class Message

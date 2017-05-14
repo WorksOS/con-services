@@ -4,7 +4,6 @@ using System.Linq;
 using Dapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
-using Microsoft.Extensions.Configuration;
 using log4netExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -101,7 +100,7 @@ namespace RepositoryTests
       const string tableName = "Project";
       List<string> columnNames = new List<string>
           {
-            "ProjectUID", "LegacyProjectID", "Name", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC", "PolygonST"
+            "ProjectUID", "LegacyProjectID", "Name", "Description", "fk_ProjectTypeID", "IsDeleted", "ProjectTimeZone", "LandfillTimeZone", "StartDate", "EndDate", "GeometryWKT", "LastActionedUTC", "InsertUTC", "UpdateUTC", "PolygonST", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -125,6 +124,17 @@ namespace RepositoryTests
           {
             "CustomerUID", "TCCOrgID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
+    public void ImportedFileSchemaExists()
+    {
+      const string tableName = "ImportedFile";
+      List<string> columnNames = new List<string>
+      {
+        "fk_ProjectUID", "ImportedFileUID", "fk_CustomerUID", "fk_ImportedFileTypeID", "Name", "FileDescriptor", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "SurveyedUTC", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+      };
       CheckSchema(tableName, columnNames);
     }
 

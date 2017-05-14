@@ -27,6 +27,9 @@ namespace KafkaConsumer.Kafka
 
         public int Port { get; set; }
 
+        public bool IsInitializedProducer { get; private set; } = false;
+        public bool IsInitializedConsumer { get; private set; } = false;
+
         public void Commit()
         {
             rdConsumer?.Commit();
@@ -72,6 +75,7 @@ namespace KafkaConsumer.Kafka
                 EnableAutoCommit = EnableAutoCommit,
                 DefaultTopicConfig = topicConfig
             };
+            IsInitializedConsumer = true;
         }
 
         public void Subscribe(List<string> topics)
@@ -110,11 +114,11 @@ namespace KafkaConsumer.Kafka
 
             //socket.blocking.max.ms=1
             rdProducer = new Producer(config, configurationStore.GetValueString("KAFKA_URI"));
+            IsInitializedProducer = true;
         }
 
         public void Send(string topic, IEnumerable<KeyValuePair<string, string>> messagesToSendWithKeys)
         {
-            Console.WriteLine();
             List<Task> tasks = new List<Task>();
             using (Topic myTopic = rdProducer.Topic(topic))
             {
@@ -128,6 +132,15 @@ namespace KafkaConsumer.Kafka
             Task.WaitAll(tasks.ToArray(), TimeSpan.FromSeconds(4));
         }
 
+        public async Task Send(string topic, KeyValuePair<string, string> messageToSendWithKey)
+        {
+            using (Topic myTopic = rdProducer.Topic(topic))
+            {
+                    byte[] data = Encoding.UTF8.GetBytes(messageToSendWithKey.Value);
+                    byte[] key = Encoding.UTF8.GetBytes(messageToSendWithKey.Key);
+                    await myTopic.Produce(data, key);
+            }
+        }
 
         public void Send(IEnumerable<KeyValuePair<string, KeyValuePair<string, string>>> topicMessagesToSendWithKeys)
         {
@@ -151,6 +164,9 @@ namespace KafkaConsumer.Kafka
                 rdConsumer?.Dispose();
             }
             rdProducer?.Dispose();
+            IsInitializedProducer = false;
+            IsInitializedConsumer = false;
+
         }
     }
 }

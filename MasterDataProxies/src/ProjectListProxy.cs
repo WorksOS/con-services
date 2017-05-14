@@ -9,7 +9,7 @@ using VSS.Raptor.Service.Common.Proxies.Models;
 
 namespace VSS.Raptor.Service.Common.Proxies
 {
-  public class ProjectListProxy : BaseProxy<ProjectData>, IProjectListProxy
+  public class ProjectListProxy : BaseProxy, IProjectListProxy
   {
     private static TimeSpan projectListCacheLife = new TimeSpan(0, 15, 0);//TODO: how long to cache ?
 
@@ -19,7 +19,21 @@ namespace VSS.Raptor.Service.Common.Proxies
 
     public async Task<List<ProjectData>> GetProjects(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      return await GetList(customerUid, projectListCacheLife, "PROJECT_API_URL", customHeaders);
+      return await GetList<ProjectData>(customerUid, projectListCacheLife, "PROJECT_API_URL", customHeaders);
+    }
+
+    public async Task<List<ProjectData>> GetProjectsV4(string customerUid, IDictionary<string, string> customHeaders = null)
+    {
+      var result = await GetContainedList<ProjectDataResult>(customerUid, projectListCacheLife, "PROJECT_API_URL", customHeaders);
+      if (result.Code == 0)
+      {
+        return result.ProjectDescriptors;
+      }
+      else
+      {
+        log.LogDebug("Failed to get list of projects: {0}, {1}", result.Code, result.Message);
+        return null;
+      }
     }
   }
 }
