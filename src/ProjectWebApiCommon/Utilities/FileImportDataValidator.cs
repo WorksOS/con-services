@@ -83,7 +83,7 @@ namespace ProjectWebApiCommon.Models
       }
 
 
-      var fileExtension = Path.GetExtension(file.flowFilename);
+      var fileExtension = Path.GetExtension(file.flowFilename).ToLower();
       if (!(
         (importedFileType == ImportedFileType.Linework && fileExtension == ".dxf") ||
         (importedFileType == ImportedFileType.DesignSurface && fileExtension == ".ttm") ||
