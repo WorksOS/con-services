@@ -49,7 +49,7 @@ namespace WebApiTests
       CollectionAssert.AreEqual(expectedResults.ImportedFileDescriptors, filesResult.ImportedFileDescriptors);
     }
 
-    [TestMethod] 
+    [TestMethod] [Ignore]
     public void TestImportFileUpload()
     {
       const string testName = "File Import 2";
