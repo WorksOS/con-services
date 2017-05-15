@@ -90,20 +90,17 @@ namespace RepositoryTests
         LastActionedUtc = assetEvent.ActionUTC
       };
 
-      assetContext.InRollbackTransactionAsync<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var g = assetContext.GetAsset(asset.AssetUID);
-        g.Wait();
-        Assert.IsNull(g.Result, "Asset shouldn't be there yet");
+        var g = await assetContext.GetAsset(asset.AssetUID);
+        Assert.IsNull(g, "Asset shouldn't be there yet");
 
-        var s = assetContext.StoreEvent(assetEvent);
-        s.Wait();
-        Assert.AreEqual(1, s.Result, "Asset event not written");
+        var s = await assetContext.StoreEvent(assetEvent);
+        Assert.AreEqual(1, s, "Asset event not written");
 
-        g = assetContext.GetAsset(asset.AssetUID);
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(asset, g.Result, "Asset details are incorrect from AssetRepo");
+        g = await assetContext.GetAsset(asset.AssetUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(asset, g, "Asset details are incorrect from AssetRepo");
         return null;
       }).Wait();
     }
