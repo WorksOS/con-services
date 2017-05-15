@@ -170,23 +170,19 @@ namespace RepositoryTests
         LastActionedUtc = assetEvent2.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEvent1);
-        s.Wait();
-        Assert.AreEqual(1, s.Result, "Asset event not written");
+        var s = await assetContext.StoreEvent(assetEvent1);
+        Assert.AreEqual(1, s, "Asset event not written");
 
-        s = assetContext.StoreEvent(assetEvent2);
-        s.Wait();
-        Assert.AreEqual(1, s.Result, "Asset event not written");
+        s = await assetContext.StoreEvent(assetEvent2);
+        Assert.AreEqual(1, s, "Asset event not written");
 
-
-        var g = assetContext.GetAssets(new[] { "DRUM TYPE TRACTORS" });
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(asset2, g.Result.FirstOrDefault(), "Asset details are incorrect from AssetRepo");
+        var g = await assetContext.GetAssets(new[] { "DRUM TYPE TRACTORS" });
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(asset2, g.FirstOrDefault(), "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     [TestMethod]
@@ -248,24 +244,21 @@ namespace RepositoryTests
         LastActionedUtc = assetEvent2.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
 
-        var s = assetContext.StoreEvent(assetEvent1);
-        s.Wait();
-        Assert.AreEqual(1, s.Result, "Asset event not written");
+        var s = await assetContext.StoreEvent(assetEvent1);
+        Assert.AreEqual(1, s, "Asset event not written");
 
-        s = assetContext.StoreEvent(assetEvent2);
-        s.Wait();
-        Assert.AreEqual(1, s.Result, "Asset event not written");
+        s = await assetContext.StoreEvent(assetEvent2);
+        Assert.AreEqual(1, s, "Asset event not written");
 
 
-        var g = assetContext.GetAssets(new[] { "DRUM TYPE TRACTORS1", "TRACK TYPE TRACTORS1" });
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(2, g.Result.Count(), "Asset details are incorrect from AssetRepo");
+        var g = await assetContext.GetAssets(new[] { "DRUM TYPE TRACTORS1", "TRACK TYPE TRACTORS1" });
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(2, g.Count(), "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     [TestMethod]
@@ -277,17 +270,16 @@ namespace RepositoryTests
       var assetEvent2 = new CreateAssetEvent()
       { AssetUID = Guid.NewGuid(), AssetType = "DRUM TYPE TRACTORS1" };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEvent1).Result;
-        s = assetContext.StoreEvent(assetEvent2).Result;
+        var s = await assetContext.StoreEvent(assetEvent1);
+        s = await assetContext.StoreEvent(assetEvent2);
 
-        var g = assetContext.GetAssets(new[] { "DRUM TYPE Tractors1", "track type Tractors1" });
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(2, g.Result.Count(), "Asset count is incorrect from AssetRepo");
+        var g = await assetContext.GetAssets(new[] { "DRUM TYPE Tractors1", "track type Tractors1" });
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(2, g.Count(), "Asset count is incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     [TestMethod]
@@ -299,17 +291,16 @@ namespace RepositoryTests
       var assetEvent2 = new CreateAssetEvent()
       { AssetUID = Guid.NewGuid(), AssetType = "DRUM TYPE Tractors1" };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEvent1).Result;
-        s = assetContext.StoreEvent(assetEvent2).Result;
+        var s = await assetContext.StoreEvent(assetEvent1);
+        s = await assetContext.StoreEvent(assetEvent2);
 
-        var g = assetContext.GetAssets(new[] { "DRUM TYPE TRACTORS1", "TRACK TYPE TRACTORS1" });
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(2, g.Result.Count(), "Asset count is incorrect from AssetRepo");
+        var g = await assetContext.GetAssets(new[] { "DRUM TYPE TRACTORS1", "TRACK TYPE TRACTORS1" });
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(2, g.Count(), "Asset count is incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     [TestMethod]
@@ -322,18 +313,17 @@ namespace RepositoryTests
       var assetEvent3 = new CreateAssetEvent()
       { AssetUID = Guid.NewGuid(), AssetType = null };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEvent1).Result;
-        s = assetContext.StoreEvent(assetEvent2).Result;
-        s = assetContext.StoreEvent(assetEvent3).Result;
+        var s = await assetContext.StoreEvent(assetEvent1);
+        s = await assetContext.StoreEvent(assetEvent2);
+        s = await assetContext.StoreEvent(assetEvent3);
 
-        var g = assetContext.GetAssets(new[] { "UNASSIGNED" });
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.IsTrue((g.Result.Count() >= 3), "Asset count is incorrect from AssetRepo");
+        var g = await assetContext.GetAssets(new[] { "UNASSIGNED" });
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.IsTrue((g.Count() >= 3), "Asset count is incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     [TestMethod]
@@ -342,19 +332,18 @@ namespace RepositoryTests
       var assetEvent = new CreateAssetEvent()
       { AssetUID = Guid.NewGuid(), AssetType = "Track type tractor2" };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEvent).Result;
+        var s = await assetContext.StoreEvent(assetEvent);
         assetEvent.AssetType = "Track type tractor3";
-        s = assetContext.StoreEvent(assetEvent).Result;
+        s = await assetContext.StoreEvent(assetEvent);
 
-        var g = assetContext.GetAssets(new[] { "Track type tractor3" });
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
+        var g = await assetContext.GetAssets(new[] { "Track type tractor3" });
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
         // can't do == 1 until we can filter by e.g. customer
-        Assert.IsTrue((g.Result.Count() >= 1), "Asset count is incorrect from AssetRepo");
+        Assert.IsTrue((g.Any()), "Asset count is incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     // again happy path but most columns are blank. Should we store "" or null?
@@ -395,18 +384,16 @@ namespace RepositoryTests
         LastActionedUtc = assetEvent.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEvent);
-        s.Wait();
-        Assert.AreEqual(1, s.Result, "Asset event not written");
+        var s = await assetContext.StoreEvent(assetEvent);
+        Assert.AreEqual(1, s, "Asset event not written");
 
-        var g = assetContext.GetAsset(asset.AssetUID);
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(asset, g.Result, "Asset details are incorrect from AssetRepo");
+        var g = await assetContext.GetAsset(asset.AssetUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(asset, g, "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     /// <summary>
@@ -464,26 +451,22 @@ namespace RepositoryTests
         LastActionedUtc = assetEventLater.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEventOriginal);
-        s.Wait();
-        var g = assetContext.GetAsset(asset.AssetUID);
-        g.Wait();
-        Assert.AreEqual(asset, g.Result, "Unable to retrieve Asset from AssetRepo");
+        var s = await assetContext.StoreEvent(assetEventOriginal);
+        var g = await assetContext.GetAsset(asset.AssetUID);
+        Assert.AreEqual(asset, g, "Unable to retrieve Asset from AssetRepo");
 
-        s = assetContext.StoreEvent(assetEventLater);
-        s.Wait();
+        s = await assetContext.StoreEvent(assetEventLater);
 
         // these should be updated now
         asset.ModelYear = assetEventLater.ModelYear;
         asset.Name = assetEventLater.AssetName; 
-        g = assetContext.GetAsset(asset.AssetUID);
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(asset, g.Result, "Asset details are incorrect from AssetRepo");
+        g = await assetContext.GetAsset(asset.AssetUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(asset, g, "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     /// <summary>
@@ -536,19 +519,16 @@ namespace RepositoryTests
         LastActionedUtc = assetEventUpdate.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEventCreate);
-        s.Wait();
-        s = assetContext.StoreEvent(assetEventUpdate);
-        s.Wait();
+        var s = await assetContext.StoreEvent(assetEventCreate);
+        s = await assetContext.StoreEvent(assetEventUpdate);
 
-        var g = assetContext.GetAsset(assetFinal.AssetUID);
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(assetFinal, g.Result, "Asset details are incorrect from AssetRepo");
+        var g = await assetContext.GetAsset(assetFinal.AssetUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(assetFinal, g, "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
 
@@ -606,19 +586,16 @@ namespace RepositoryTests
         LastActionedUtc = assetEventUpdate.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEventCreate);
-        s.Wait();
-        s = assetContext.StoreEvent(assetEventUpdate);
-        s.Wait();
+        var s = await assetContext.StoreEvent(assetEventCreate);
+        s = await assetContext.StoreEvent(assetEventUpdate);
 
-        var g = assetContext.GetAsset(assetFinal.AssetUID);
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(assetFinal, g.Result, "Asset details are incorrect from AssetRepo");
+        var g = await assetContext.GetAsset(assetFinal.AssetUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(assetFinal, g, "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
 
@@ -679,21 +656,17 @@ namespace RepositoryTests
         LastActionedUtc = assetEventUpdateLater.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEventCreate);
-        s.Wait();
-        s = assetContext.StoreEvent(assetEventUpdateLater);
-        s.Wait();
-        s = assetContext.StoreEvent(assetEventUpdateEarlier);
-        s.Wait();
+        var s = await assetContext.StoreEvent(assetEventCreate);
+        s = await assetContext.StoreEvent(assetEventUpdateLater);
+        s = await assetContext.StoreEvent(assetEventUpdateEarlier);
 
-        var g = assetContext.GetAsset(assetFinal.AssetUID);
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(assetFinal, g.Result, "Asset details are incorrect from AssetRepo");
+        var g = await assetContext.GetAsset(assetFinal.AssetUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(assetFinal, g, "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     /// <summary>
@@ -748,19 +721,16 @@ namespace RepositoryTests
         LastActionedUtc = assetEventUpdate.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEventUpdate);
-        s.Wait();
-        s = assetContext.StoreEvent(assetEventCreate);
-        s.Wait();
+        var s = await assetContext.StoreEvent(assetEventUpdate);
+        s = await assetContext.StoreEvent(assetEventCreate);
 
-        var g = assetContext.GetAsset(assetFinal.AssetUID);
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(assetFinal, g.Result, "Asset details are incorrect from AssetRepo");
+        var g = await assetContext.GetAsset(assetFinal.AssetUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(assetFinal, g, "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     /// <summary>
@@ -803,23 +773,19 @@ namespace RepositoryTests
         LastActionedUtc = assetEventDelete.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEventCreate);
-        s.Wait();
-        s = assetContext.StoreEvent(assetEventDelete);
-        s.Wait();
+        var s = await assetContext.StoreEvent(assetEventCreate);
+        s = await assetContext.StoreEvent(assetEventDelete);
 
-        var g = assetContext.GetAsset(assetFinal.AssetUID);
-        g.Wait();
-        Assert.IsNull(g.Result, "Should not be able to retrieve a deleted Asset");
+        var g = await assetContext.GetAsset(assetFinal.AssetUID);
+        Assert.IsNull(g, "Should not be able to retrieve a deleted Asset");
 
-        var l = assetContext.GetAllAssetsInternal();
-        l.Wait();
-        Assert.IsNotNull(l.Result, "Unable to retrieve any Assets from AssetRepo");
-        Assert.IsTrue(((List<Asset>)l.Result).Contains(assetFinal), "Unable to retrieve Asset from AssetRepo");
+        var l = await assetContext.GetAllAssetsInternal();
+        Assert.IsNotNull(l, "Unable to retrieve any Assets from AssetRepo");
+        Assert.IsTrue(((List<Asset>)l).Contains(assetFinal), "Unable to retrieve Asset from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     /// <summary>
@@ -851,22 +817,19 @@ namespace RepositoryTests
         LastActionedUtc = assetEventDelete.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEventDelete);
-        s.Wait();
-        Assert.AreEqual(1, s.Result, "Asset event not written");
+        var s = await assetContext.StoreEvent(assetEventDelete);
+        Assert.AreEqual(1, s, "Asset event not written");
 
-        var g = assetContext.GetAsset(assetFinal.AssetUID);
-        g.Wait();
-        Assert.IsNull(g.Result, "Should not be able to retrieve a deleted Asset");
+        var g = await assetContext.GetAsset(assetFinal.AssetUID);
+        Assert.IsNull(g, "Should not be able to retrieve a deleted Asset");
 
-        var l = assetContext.GetAllAssetsInternal();
-        l.Wait();
-        Assert.IsNotNull(l.Result, "Unable to retrieve any Assets from AssetRepo");
-        Assert.IsTrue(((List<Asset>)l.Result).Contains(assetFinal), "Unable to retrieve Asset from AssetRepo");
+        var l = await assetContext.GetAllAssetsInternal();
+        Assert.IsNotNull(l, "Unable to retrieve any Assets from AssetRepo");
+        Assert.IsTrue(((List<Asset>)l).Contains(assetFinal), "Unable to retrieve Asset from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     /// <summary>
@@ -912,23 +875,19 @@ namespace RepositoryTests
         LastActionedUtc = assetEventDelete.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEventDelete);
-        s.Wait();
-        s = assetContext.StoreEvent(assetEventCreate);
-        s.Wait();
+        var s = await assetContext.StoreEvent(assetEventDelete);
+        s = await assetContext.StoreEvent(assetEventCreate);
 
-        var g = assetContext.GetAsset(assetFinal.AssetUID);
-        g.Wait();
-        Assert.IsNull(g.Result, "Should not be able to retrieve a deleted Asset");
+        var g = await assetContext.GetAsset(assetFinal.AssetUID);
+        Assert.IsNull(g, "Should not be able to retrieve a deleted Asset");
 
-        var l = assetContext.GetAllAssetsInternal();
-        l.Wait();
-        Assert.IsNotNull(l.Result, "Unable to retrieve any Assets from AssetRepo");
-        Assert.IsTrue(((List<Asset>)l.Result).Contains(assetFinal), "Unable to retrieve Asset from AssetRepo");
+        var l = await assetContext.GetAllAssetsInternal();
+        Assert.IsNotNull(l, "Unable to retrieve any Assets from AssetRepo");
+        Assert.IsTrue(((List<Asset>)l).Contains(assetFinal), "Unable to retrieve Asset from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
 
@@ -973,23 +932,19 @@ namespace RepositoryTests
         LastActionedUtc = assetEventDelete.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = assetContext.StoreEvent(assetEventDelete);
-        s.Wait();
-        s = assetContext.StoreEvent(assetEventUpdate);
-        s.Wait();
+        var s = await assetContext.StoreEvent(assetEventDelete);
+        s = await assetContext.StoreEvent(assetEventUpdate);
 
-        var g = assetContext.GetAsset(assetFinal.AssetUID);
-        g.Wait();
-        Assert.IsNull(g.Result, "Should not be able to retrieve a deleted Asset");
+        var g = await assetContext.GetAsset(assetFinal.AssetUID);
+        Assert.IsNull(g, "Should not be able to retrieve a deleted Asset");
 
-        var l = assetContext.GetAllAssetsInternal();
-        l.Wait();
-        Assert.IsNotNull(l.Result, "Unable to retrieve any Assets from AssetRepo");
-        Assert.IsTrue(((List<Asset>)l.Result).Contains(assetFinal), "Unable to retrieve Asset from AssetRepo");
+        var l = await assetContext.GetAllAssetsInternal();
+        Assert.IsNotNull(l, "Unable to retrieve any Assets from AssetRepo");
+        Assert.IsTrue(((List<Asset>)l).Contains(assetFinal), "Unable to retrieve Asset from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
 
