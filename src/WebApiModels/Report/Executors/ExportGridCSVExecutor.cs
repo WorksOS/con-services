@@ -74,6 +74,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                 Stream writerStream = null;
 
                 MemoryStream ResponseData = null;
+                ZipArchive archive = null;
 
                 int Result = client.GetGriddedOrAlignmentCSVExport
                    (request.projectId ?? -1,
@@ -106,8 +107,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                     if (request.compress)
                     {
-                        var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, true);
-                        writerStream = archive.CreateEntry("data").Open();
+                        archive = new ZipArchive(outputStream, ZipArchiveMode.Create, true);
+                        writerStream = archive.CreateEntry("asbuilt.csv", CompressionLevel.Optimal).Open();
                         //                    var demoFile = archive.CreateEntry("data");
                         //                    using (var entryStream = demoFile.Open())
 
@@ -231,13 +232,19 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 try
                 {
-/* if (compressorStream != null)
-                    {
-                        // Close the compression stream to allow the compression activities to be finalised
-                        compressorStream.Close();
-                    }
-*/
+                    /* if (compressorStream != null)
+                                        {
+                                            // Close the compression stream to allow the compression activities to be finalised
+                                            compressorStream.Close();
+                                        }
+                    */
+
                     writerStream.Close();
+                    if (request.compress)
+                    {
+                        archive.Dispose(); // Force ZIPArchive to emit all data to the stream
+                    }
+
                     result = ExportResult.CreateExportDataResult(outputStream.ToArray(), (short)Result);
                 }
                 catch
