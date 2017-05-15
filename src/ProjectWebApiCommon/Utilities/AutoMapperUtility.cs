@@ -57,11 +57,20 @@ namespace ProjectWebApiCommon.Utilities
           cfg.CreateMap<Project, ProjectV4Descriptor>()
             .ForMember(x => x.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
             .ForMember(x => x.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
-            .ForMember(x => x.IsArchived, opt => opt.MapFrom(src => (src.IsDeleted || src.SubscriptionEndDate < DateTime.UtcNow)))
+            .ForMember(x => x.IsArchived,
+              opt => opt.MapFrom(src => (src.IsDeleted || src.SubscriptionEndDate < DateTime.UtcNow)))
             .ForMember(x => x.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
             .ForMember(x => x.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")))
-            .ForMember(x => x.SubscriptionStartDate, opt => opt.MapFrom(src => (src.SubscriptionStartDate.HasValue ? src.SubscriptionStartDate.Value.ToString("O") : string.Empty)))
-            .ForMember(x => x.SubscriptionEndDate, opt => opt.MapFrom(src => src.SubscriptionEndDate.HasValue ? src.SubscriptionEndDate.Value.ToString("O") : string.Empty))
+            .ForMember(x => x.SubscriptionStartDate,
+              opt => opt.MapFrom(src => (src.SubscriptionStartDate.HasValue
+                ? src.SubscriptionStartDate.Value.ToString("O")
+                : string.Empty)))
+            .ForMember(x => x.SubscriptionEndDate,
+              opt => opt.MapFrom(src => src.SubscriptionEndDate.HasValue
+                ? src.SubscriptionEndDate.Value.ToString("O")
+                : string.Empty));
+          cfg.CreateMap<ImportedFile, ImportedFileDescriptor>()
+            .ForMember(x => x.ImportedUtc, opt => opt.MapFrom(src => src.LastActionedUtc))
           ;
         }
       );

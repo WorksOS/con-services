@@ -20,15 +20,15 @@
         "Swashbuckle.SwaggerUi": "6.0.0-beta902",
         "log4net.netcore": "3.0.0",
         "log4netExtensions.netcore": "1.0.1",
-        "KafkaConsumer.netcore": "*",
         "VSS.Interfaces.netcore": "*",
         "VSS.Authentication.JWT": "*",
         "AutoMapper": "6.0.2",
         "ProjectWebApiCommon": "1.0.0-*",
-        "FlowJSHandler.netcore": "1.0.0",
-        "MasterDataRepos.netcore": "1.0.57",
-        "TCCFileAccess.netcore": "1.1.0",
-        "MasterDataProxies.netcore": "1.0.26"
+        "FlowJSHandler.netcore": "*",
+        "MasterDataRepos.netcore": "*",
+        "TCCFileAccess.netcore": "*",
+        "MasterDataProxies.netcore": "*",
+        "KafkaConsumer.netcore": "*"
     },
 
     "frameworks": {

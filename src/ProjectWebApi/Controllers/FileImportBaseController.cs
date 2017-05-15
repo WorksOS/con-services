@@ -81,10 +81,10 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
           p => p.ProjectUID == projectUid);
       if (project == null)
       {
-        var error = $"No access to the project {projectUid} for customer {customerUid} or project does not exist.";
-        log.LogError(error);
-        throw new ServiceException(HttpStatusCode.Forbidden,
-          new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData, error));
+        var message = $"No access to the project {projectUid} for customer {customerUid} or project does not exist.";
+        log.LogError(message);
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData, message));
       }
 
       log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
@@ -120,18 +120,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
 
       log.LogInformation($"ImportedFile list contains {importedFiles.Count()} importedFiles");
 
-      var importedFileList = importedFiles.Select(importedFile => new ImportedFileDescriptor()
-        {
-          ProjectUid = importedFile.ProjectUid,
-          ImportedFileUid = importedFile.ImportedFileUid,
-          CustomerUid = importedFile.CustomerUid,
-          ImportedFileType = importedFile.ImportedFileType,
-          Name = importedFile.Name,
-          FileCreatedUtc = importedFile.FileCreatedUtc,
-          FileUpdatedUtc = importedFile.FileUpdatedUtc,
-          ImportedBy = importedFile.ImportedBy,
-          SurveyedUtc = importedFile.SurveyedUtc
-        })
+      var importedFileList = importedFiles.Select(importedFile =>
+          AutoMapperUtility.Automapper.Map<ImportedFileDescriptor>(importedFile))
         .ToImmutableList();
 
       return importedFileList;
@@ -268,23 +258,20 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
             tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
               Path.GetExtension(tccFileName));
 
+        log.LogInformation($"WriteFileToRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
+        // ignore any failure as dir may already exist
         var ccMakeFolderResult = await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
-        if (ccMakeFolderResult == false)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
-              "Unable to create folder in TCC"));
-        }
-
+       
+        // this does an upsert
         var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
         if (ccPutFileResult == false)
         {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
-              "Unable to put file to TCC"));
+        var error = $"WriteFileToRepository: Unable to put file to TCC. TCCfileSpaceId { fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}";
+        log.LogError(error);
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.TCCReturnFailure, error));
         }
 
-        // is ccPutFileResult.path == tccPath?
         return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 
@@ -294,32 +281,45 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task DeleteFileFromRepository(FileDescriptor fileDescriptor)
     {
-      var ccPutFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName).ConfigureAwait(false);
-      if (ccPutFileResult == false)
+      log.LogInformation($"DeleteFileFromRepository: fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)}");
+
+      var ccFileExistsResult = await fileRepo.FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName).ConfigureAwait(false);
+      if (ccFileExistsResult == true)
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
-            "@Unable to put delete from TCC"));
+        var ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId,
+            fileDescriptor.path + '/' + fileDescriptor.fileName)
+          .ConfigureAwait(false);
+        if (ccDeleteFileResult == false)
+        {
+          var error = $"Unable to put delete fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)} from TCC";
+          log.LogError(error);
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.TCCReturnFailure, error));
+        }
       }
+      else
+        log.LogInformation(
+          $"Unable to put delete fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)} from TCC, as it doesn't exist");
     }
+    
 
     /// <summary>
     /// Notify raptor of new file
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorAddFile(Guid projectUid, FileDescriptor fileDescriptor)
+    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor)
     {
-      var notificationResult = await raptorProxy.AddFile(null, projectUid, JsonConvert.SerializeObject(fileDescriptor)).ConfigureAwait(false);
+      var notificationResult = await raptorProxy.AddFile(projectId, projectUid, JsonConvert.SerializeObject(fileDescriptor)).ConfigureAwait(false);
       log.LogDebug(
-        $"FileImport AddFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+        $"NotifyRaptorAddFile: projectId: {projectId} projectUid: {projectUid}, FileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
       {
         var error =
-          $"FileImport AddFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}. ";
+          $"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}. ";
         log.LogError(error);
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(notificationResult.Code, notificationResult.Message));
       }
     }
 

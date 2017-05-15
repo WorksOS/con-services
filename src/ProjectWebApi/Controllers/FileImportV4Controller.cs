@@ -114,14 +114,14 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
       if (!System.IO.File.Exists(file.path))
       {
-        var error = $"CreateImportedFileV4. The uploaded file {file.path} is not accessible.";
-        log.LogError(error);
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+        var message = $"CreateImportedFileV4. The uploaded file {file.path} is not accessible.";
+        log.LogError(message);
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message));
       }
 
       //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      await GetProject(projectUid.ToString()).ConfigureAwait(false);
+      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
 
       var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
       ImportedFileDescriptor importedFileDescriptor = null;
@@ -135,9 +135,10 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
                                                              ));
       if (importedFileDescriptor != null)
       {
+        var message = $"CreateImportedFileV4. File: {file.flowFilename} has already been imported.";
+        log.LogError(message);
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"CreateImportedFileV4. File: {file.flowFilename} has already been imported."));
+          new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData, message));
       }
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
@@ -145,7 +146,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
           importedFileType, surveyedUtc)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(projectUid, fileDescriptor).ConfigureAwait(false);
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor).ConfigureAwait(false);
 
       // if all succeeds, write to Db and kafka que
       CreateImportedFileEvent createImportedFileEvent = await CreateImportedFile(Guid.Parse(customerUid), projectUid,
@@ -161,7 +162,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       log.LogInformation(
         $"CreateImportedFileV4. completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
 
-      System.IO.File.Delete(file.path); 
+      // todo? System.IO.File.Delete(file.path); 
       return importedFile;
     }
 
@@ -204,7 +205,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       }
 
       //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      await GetProject(projectUid.ToString()).ConfigureAwait(false);
+      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
 
       var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
       ImportedFileDescriptor importedFileDescriptor = null;
@@ -225,7 +226,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
           surveyedUtc)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(projectUid, fileDescriptor).ConfigureAwait(false);
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor).ConfigureAwait(false);
 
       // if all succeeds, write to Db and kafka que
       var importedFileUid = importedFileDescriptor?.ImportedFileUid;
@@ -250,7 +251,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       log.LogInformation(
         $"UpdateImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
 
-      System.IO.File.Delete(file.path); 
       return importedFile;
     }
 
@@ -267,7 +267,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       [FromUri] Guid importedFileUid)
     {
       log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
-      var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+
+      //validate customer-project relationship. if it fails, exception will be thrown from within the method
+      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
 
       var importedFiles = await GetImportedFiles(projectUid.ToString()).ConfigureAwait(false);
       ImportedFile importedFile = null;

@@ -235,11 +235,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       //Send boundary as old format on kafka queue
       project.ProjectBoundary = kafkaProjectBoundary;
       var messagePayload = JsonConvert.SerializeObject(new { CreateProjectEvent = project });
-      producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
-          {
-            new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-          });
+      await producer.Send(kafkaTopicName,new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload));
       //Save boundary as WKT
       project.ProjectBoundary = databaseProjectBoundary;
       await projectService.StoreEvent(project).ConfigureAwait(false);

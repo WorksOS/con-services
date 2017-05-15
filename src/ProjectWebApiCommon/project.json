@@ -12,10 +12,10 @@
         "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
         "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "1.0.1",
         "AutoMapper": "6.0.2",
-        "FlowJSHandler.netcore": "1.0.0",
-        "KafkaConsumer.netcore": "1.0.7",
-        "MasterDataRepos.netcore": "1.0.57",
-        "TCCFileAccess.netcore": "1.1.0"
+        "FlowJSHandler.netcore": "*",
+        "KafkaConsumer.netcore": "*",
+        "MasterDataRepos.netcore": "*",
+        "TCCFileAccess.netcore": "*"
     },
 
     "frameworks": {
