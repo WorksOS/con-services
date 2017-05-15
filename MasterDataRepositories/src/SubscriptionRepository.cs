@@ -2,28 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dapper;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.GenericConfiguration;
 using Repositories.DBModels;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Repositories
 {
-
     public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>
     {
         private readonly ILogger log;
+
+        public Dictionary<string, ServiceType> _serviceTypes;
 
         public SubscriptionRepository(IConfigurationStore connectionString, ILoggerFactory logger) : base(
             connectionString, logger)
         {
             log = logger.CreateLogger<SubscriptionRepository>();
         }
-
-        public Dictionary<string, ServiceType> _serviceTypes = null;
 
         #region store
 
@@ -138,7 +136,6 @@ namespace Repositories
                     assetSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
                     upsertedCount = await UpsertAssetSubscriptionDetail(assetSubscription);
                 }
-
             }
             else if (evt is UpdateAssetSubscriptionEvent)
             {
@@ -168,15 +165,15 @@ namespace Repositories
 
 
         /// <summary>
-        /// All detail-related columns can be inserted, 
-        ///    but only certain columns can be updated.
+        ///     All detail-related columns can be inserted,
+        ///     but only certain columns can be updated.
         /// </summary>
         /// <param name="subscription"></param>
         /// <param name="eventType"></param>
         /// <returns>Number of upserted records</returns>
         private async Task<int> UpsertSubscriptionDetail(Subscription subscription, string eventType)
         {
-            int upsertedCount = 0;
+            var upsertedCount = 0;
 
             var existing = (await QueryWithAsyncPolicy<Subscription>
             (@"SELECT 
@@ -188,16 +185,11 @@ namespace Repositories
 
             if (eventType == "CreateProjectSubscriptionEvent" || eventType == "CreateCustomerSubscriptionEvent" ||
                 eventType == "CreateAssetSubscriptionEvent")
-            {
                 upsertedCount = await CreateSubscription(subscription, existing);
-            }
 
             if (eventType == "UpdateProjectSubscriptionEvent" || eventType == "UpdateCustomerSubscriptionEvent" ||
                 eventType == "UpdateAssetSubscriptionEvent")
-            {
                 upsertedCount = await UpdateSubscription(subscription, existing);
-            }
-
 
 
             return upsertedCount;
@@ -239,7 +231,6 @@ namespace Repositories
 
             var upsertedCount = 0;
             if (existing != null)
-            {
                 if (subscription.LastActionedUTC >= existing.LastActionedUTC)
                 {
                     log.LogDebug("SubscriptionRepository/UpdateSubscription: going to create subscription={0}",
@@ -278,7 +269,6 @@ namespace Repositories
                     log.LogDebug("SubscriptionRepository/UpdateSubscription: old update event ignored subscription={0}",
                         JsonConvert.SerializeObject(subscription));
                 }
-            }
             log.LogDebug("SubscriptionRepository/UpdateSubscription: can't update as none existing subscription={0}",
                 JsonConvert.SerializeObject(subscription));
             return upsertedCount;
@@ -288,7 +278,7 @@ namespace Repositories
         private async Task<int> UpsertProjectSubscriptionDetail(ProjectSubscription projectSubscription,
             string eventType)
         {
-            int upsertedCount = 0;
+            var upsertedCount = 0;
 
             var existing = (await QueryWithAsyncPolicy<ProjectSubscription>
             (@"SELECT 
@@ -299,9 +289,7 @@ namespace Repositories
             )).FirstOrDefault();
 
             if (eventType == "AssociateProjectSubscriptionEvent")
-            {
                 upsertedCount = await AssociateProjectSubscription(projectSubscription, existing);
-            }
 
             return upsertedCount;
         }
@@ -343,7 +331,7 @@ namespace Repositories
 
         private async Task<int> UpsertAssetSubscriptionDetail(AssetSubscription assetSubscription)
         {
-            int upsertedCount = 0;
+            var upsertedCount = 0;
 
             var existing = (await QueryWithAsyncPolicy<AssetSubscription>
             (@"SELECT 
@@ -395,12 +383,11 @@ namespace Repositories
 
         private async Task<IEnumerable<ServiceType>> GetServiceTypes()
         {
-
-            var serviceTypes = (await QueryWithAsyncPolicy<ServiceType>
+            var serviceTypes = await QueryWithAsyncPolicy<ServiceType>
             (@"SELECT 
                 s.ID, s.Description AS Name, sf.ID AS ServiceTypeFamilyID, sf.Description AS ServiceTypeFamilyName
               FROM ServiceTypeEnum s JOIN ServiceTypeFamilyEnum sf on s.fk_ServiceTypeFamilyID = sf.ID"
-            ));
+            );
 
             return serviceTypes;
         }
@@ -427,14 +414,14 @@ namespace Repositories
         public async Task<IEnumerable<Subscription>> GetSubscriptionsByCustomer(string customerUid,
             DateTime validAtDate)
         {
-            var subscription = (await QueryWithAsyncPolicy<Subscription>
+            var subscription = await QueryWithAsyncPolicy<Subscription>
             (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
               WHERE fk_CustomerUID = @customerUid
                 AND @validAtDate BETWEEN StartDate AND EndDate"
                 , new {customerUid, validAtDate}
-            ));
+            );
 
 
             return subscription;
@@ -442,7 +429,7 @@ namespace Repositories
 
         public async Task<IEnumerable<Subscription>> GetSubscriptionsByAsset(string assetUid, DateTime validAtDate)
         {
-            var subscription = (await QueryWithAsyncPolicy<Subscription>
+            var subscription = await QueryWithAsyncPolicy<Subscription>
             (@"SELECT 
                 s.SubscriptionUID, s.fk_CustomerUID as CustomerUID, s.fk_ServiceTypeID as ServiceTypeID, s.StartDate, s.EndDate, s.LastActionedUTC
               FROM AssetSubscription aSub
@@ -450,7 +437,7 @@ namespace Repositories
               WHERE aSub.fk_AssetUID = @assetUid
                 AND @validAtDate BETWEEN s.StartDate AND s.EndDate"
                 , new {assetUid, validAtDate}
-            ));
+            );
 
 
             return subscription;
@@ -458,13 +445,13 @@ namespace Repositories
 
         public async Task<IEnumerable<Subscription>> GetSubscriptions_UnitTest(string subscriptionUid)
         {
-            var subscriptions = (await QueryWithAsyncPolicy<Subscription>
+            var subscriptions = await QueryWithAsyncPolicy<Subscription>
             (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUid"
                 , new {subscriptionUid}
-            ));
+            );
 
 
             return subscriptions;
@@ -472,20 +459,18 @@ namespace Repositories
 
         public async Task<IEnumerable<ProjectSubscription>> GetProjectSubscriptions_UnitTest(string subscriptionUid)
         {
-
-            var projectSubscriptions = (await QueryWithAsyncPolicy<ProjectSubscription>
+            var projectSubscriptions = await QueryWithAsyncPolicy<ProjectSubscription>
             (@"SELECT 
                 fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
               FROM ProjectSubscription
               WHERE fk_SubscriptionUID = @subscriptionUID"
                 , new {subscriptionUid}
-            ));
+            );
 
 
             return projectSubscriptions;
         }
 
         #endregion
-
     }
 }

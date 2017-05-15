@@ -1,4 +1,3 @@
-using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Repositories.DBModels
@@ -25,11 +24,11 @@ namespace Repositories.DBModels
         AdvancedProductivity = 18,
         Landfill = 19,
         ProjectMonitoring = 20,
-        OperatorIdManageOperators = 21,
+        OperatorIdManageOperators = 21
     }
 
     public static class Extensions
-    {        
+    {
         public static ProjectType MatchProjectType(this ServiceTypeEnum serviceType)
         {
             switch (serviceType)
@@ -55,7 +54,6 @@ namespace Repositories.DBModels
     {
         Asset = 1,
         Customer = 2,
-        Project = 3,
+        Project = 3
     }
-
 }

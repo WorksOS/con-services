@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Dapper;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.GenericConfiguration;
 using Repositories.DBModels;
 using Repositories.ExtendedModels;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Repositories
 {
@@ -24,7 +23,7 @@ namespace Repositories
         public async Task<int> StoreEvent(IDeviceEvent evt)
         {
             var upsertedCount = 0;
-            string eventType = "Unknown";
+            var eventType = "Unknown";
             if (evt is CreateDeviceEvent)
             {
                 var device = new Device();
@@ -93,16 +92,15 @@ namespace Repositories
         #region device
 
         /// <summary>
-        /// All detail-related columns can be inserted, 
-        ///    but only certain columns can be updated.
-        ///    on deletion, a flag will be set.
+        ///     All detail-related columns can be inserted,
+        ///     but only certain columns can be updated.
+        ///     on deletion, a flag will be set.
         /// </summary>
         /// <param name="device"></param>
         /// <param name="eventType"></param>
         /// <returns></returns>
         private async Task<int> UpsertDeviceDetail(Device device, string eventType)
         {
-
             log.LogDebug("DeviceRepository: Upserting eventType{0} deviceUid={1}", eventType, device.DeviceUID);
             var upsertedCount = 0;
 
@@ -117,20 +115,15 @@ namespace Repositories
 
 
             if (eventType == "CreateDeviceEvent")
-            {
                 upsertedCount = await CreateDevice(device, existing);
-            }
 
             if (eventType == "UpdateDeviceEvent")
-            {
                 upsertedCount = await UpdateDevice(device, existing);
-            }
 
             log.LogDebug("DeviceRepository: upserted {0} rows", upsertedCount);
             log.LogInformation("Event storage {0}, {1}, success: {2}", eventType, JsonConvert.SerializeObject(device),
                 upsertedCount);
             return upsertedCount;
-
         }
 
         private async Task<int> CreateDevice(Device device, Device existing)
@@ -148,7 +141,7 @@ namespace Repositories
                     return await ExecuteWithAsyncPolicy(upsert, device);
                 }
             }
-            else if (device.LastActionedUtc >= existing.LastActionedUtc)
+            if (device.LastActionedUtc >= existing.LastActionedUtc)
             {
                 device.DeviceSerialNumber = device.DeviceSerialNumber == null
                     ? existing.DeviceSerialNumber
@@ -244,12 +237,9 @@ namespace Repositories
                         return await ExecuteWithAsyncPolicy(update, device);
                     }
                 }
-                else
-                {
-                    log.LogDebug(
-                        "DeviceRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
-                        existing.LastActionedUtc, device.LastActionedUtc);
-                }
+                log.LogDebug(
+                    "DeviceRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
+                    existing.LastActionedUtc, device.LastActionedUtc);
             }
             else // doesn't exist already
             {
@@ -276,16 +266,15 @@ namespace Repositories
         #region AssociateDeviceAsset
 
         /// <summary>
-        /// All detail-related columns can be inserted, 
-        ///    but only certain columns can be updated.
-        ///    on deletion, a flag will be set.
+        ///     All detail-related columns can be inserted,
+        ///     but only certain columns can be updated.
+        ///     on deletion, a flag will be set.
         /// </summary>
         /// <param name="device"></param>
         /// <param name="eventType"></param>
         /// <returns></returns>
         private async Task<int> UpsertDeviceAssetDetail(AssetDevice assetDevice, string eventType)
         {
-
             log.LogDebug("DeviceRepository: Upserting eventType{0} deviceUid={1}", eventType, assetDevice.DeviceUID);
             var upsertedCount = 0;
 
@@ -297,21 +286,16 @@ namespace Repositories
             )).FirstOrDefault();
 
             if (eventType == "AssociateDeviceAssetEvent")
-            {
                 upsertedCount = await AssociateDeviceAsset(assetDevice, existing);
-            }
 
             if (eventType == "DissociateDeviceAssetEvent")
-            {
                 upsertedCount = await DissociateDeviceAsset(assetDevice, existing);
-            }
 
             log.LogDebug("DeviceRepository: upserted {0} rows", upsertedCount);
             log.LogInformation("Event storage: {0}, {1}, success{2}", eventType,
                 JsonConvert.SerializeObject(assetDevice), upsertedCount);
             return upsertedCount;
         }
-
 
 
         private async Task<int> AssociateDeviceAsset(AssetDevice assetDevice, AssetDevice existing)
@@ -329,7 +313,7 @@ namespace Repositories
                     return await ExecuteWithAsyncPolicy(upsert, assetDevice);
                 }
             }
-            else if (assetDevice.LastActionedUtc >= existing.LastActionedUtc)
+            if (assetDevice.LastActionedUtc >= existing.LastActionedUtc)
             {
                 const string update =
                     @"UPDATE AssetDevice                
@@ -351,7 +335,6 @@ namespace Repositories
         {
             // this is disastrous for the timing: Associate then Dissociate, then Associate received again - as it will be left as associated.
             if (existing != null)
-            {
                 if (assetDevice.LastActionedUtc >= existing.LastActionedUtc)
                 {
                     const string update =
@@ -369,7 +352,6 @@ namespace Repositories
                         "DeviceRepository: old delete event ignored as a newer one exists currentActionedUTC{0} newActionedUTC{1}",
                         existing.LastActionedUtc, assetDevice.LastActionedUtc);
                 }
-            }
             // else doesn't exist already, do nothing
 
             return await Task.FromResult(0);
@@ -382,7 +364,6 @@ namespace Repositories
 
         public async Task<Device> GetDevice(string deviceUid)
         {
-
             {
                 return (await QueryWithAsyncPolicy<Device>
                 (@"SELECT 
@@ -396,11 +377,9 @@ namespace Repositories
         }
 
 
-
         // for TFAS
         public async Task<AssetDeviceIds> GetAssociatedAsset(string radioSerial, string deviceType)
         {
-
             {
                 return (await QueryWithAsyncPolicy<AssetDeviceIds>
                 (@"SELECT 
