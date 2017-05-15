@@ -66,22 +66,19 @@ namespace RepositoryTests
         LastActionedUtc = deviceEvent.ActionUTC
       };
 
-      deviceContext.InRollbackTransaction<object>(o =>
+      deviceContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var g = deviceContext.GetDevice(device.DeviceUID);
-        g.Wait();
-        Assert.IsNull(g.Result, "Device shouldn't be there yet");
+        var g = await deviceContext.GetDevice(device.DeviceUID);
+        Assert.IsNull(g, "Device shouldn't be there yet");
 
-        var s = deviceContext.StoreEvent(deviceEvent);
-        s.Wait();
-        Assert.AreEqual(1, s.Result, "Device event not written");
+        var s = await deviceContext.StoreEvent(deviceEvent);
+        Assert.AreEqual(1, s, "Device event not written");
 
-        g = deviceContext.GetDevice(device.DeviceUID);
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Device from DeviceRepo");
-        Assert.AreEqual(device, g.Result, "Device details are incorrect from DeviceRepo");
+        g = await deviceContext.GetDevice(device.DeviceUID);
+        Assert.IsNotNull(g, "Unable to retrieve Device from DeviceRepo");
+        Assert.AreEqual(device, g, "Device details are incorrect from DeviceRepo");
         return null;
-      });
+      }).Wait();
     }
         
     
@@ -123,15 +120,15 @@ namespace RepositoryTests
         LastActionedUtc = deviceEventUpdate.ActionUTC
       };
 
-      deviceContext.InRollbackTransaction<object>(o =>
+      deviceContext.InRollbackTransactionAsync<object>(async o =>
       {
-        deviceContext.StoreEvent(deviceEventCreate).Wait();
-        deviceContext.StoreEvent(deviceEventUpdate).Wait();
-        var g = deviceContext.GetDevice(deviceFinal.DeviceUID);  g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(deviceFinal, g.Result, "Asset details are incorrect from AssetRepo");
+        await deviceContext.StoreEvent(deviceEventCreate);
+        await deviceContext.StoreEvent(deviceEventUpdate);
+        var g = await deviceContext.GetDevice(deviceFinal.DeviceUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(deviceFinal, g, "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
 
@@ -187,15 +184,15 @@ namespace RepositoryTests
         LastActionedUtc = deviceEventUpdate.ActionUTC
       };
 
-      deviceContext.InRollbackTransaction<object>(o =>
+      deviceContext.InRollbackTransactionAsync<object>(async o =>
       {
-        deviceContext.StoreEvent(deviceEventCreate).Wait();
-        deviceContext.StoreEvent(deviceEventUpdate).Wait();
-        var g = deviceContext.GetDevice(deviceFinal.DeviceUID); g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(deviceFinal, g.Result, "Asset details are incorrect from AssetRepo");
+        await deviceContext.StoreEvent(deviceEventCreate);
+        await deviceContext.StoreEvent(deviceEventUpdate);
+        var g = await deviceContext.GetDevice(deviceFinal.DeviceUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(deviceFinal, g, "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
 
@@ -243,21 +240,17 @@ namespace RepositoryTests
         LastActionedUtc = deviceEventUpdateLater.ActionUTC
       };
 
-      deviceContext.InRollbackTransaction<object>(o =>
+      deviceContext.InRollbackTransactionAsync<object>(async o =>
       {
-        var s = deviceContext.StoreEvent(deviceEventCreate);
-        s.Wait();
-        s = deviceContext.StoreEvent(deviceEventUpdateLater);
-        s.Wait();
-        s = deviceContext.StoreEvent(deviceEventUpdateEarlier);
-        s.Wait();
+        var s = await deviceContext.StoreEvent(deviceEventCreate);
+        s = await deviceContext.StoreEvent(deviceEventUpdateLater);
+        s = await deviceContext.StoreEvent(deviceEventUpdateEarlier);
 
-        var g = deviceContext.GetDevice(deviceFinal.DeviceUID);
-        g.Wait();
-        Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
-        Assert.AreEqual(deviceFinal, g.Result, "Asset details are incorrect from AssetRepo");
+        var g = await deviceContext.GetDevice(deviceFinal.DeviceUID);
+        Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
+        Assert.AreEqual(deviceFinal, g, "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
 
