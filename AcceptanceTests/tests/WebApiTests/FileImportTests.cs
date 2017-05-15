@@ -43,12 +43,13 @@ namespace WebApiTests
       var importFile = new ImportFile();
       var expectedResults = importFile.expectedImportFileDescriptorsListResult;
       var uri = ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}";
+
       var filesResult = importFile.GetImportedFilesFromWebApi(uri, customerUid, projectUid);
       Assert.IsTrue(filesResult.ImportedFileDescriptors.Count == expectedResults.ImportedFileDescriptors.Count, " Expected number of fields does not match actual");
       CollectionAssert.AreEqual(expectedResults.ImportedFileDescriptors, filesResult.ImportedFileDescriptors);
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod] 
     public void TestImportFileUpload()
     {
       const string testName = "File Import 2";
@@ -80,7 +81,8 @@ namespace WebApiTests
       ImportFile importFile = new ImportFile();
       var expectedResults = importFile.expectedImportFileDescriptorSingleResult;
       var uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={projectUid}&importedFileType=Alignment&fileCreatedUtc=2017-05-01T23:24:26.222Z&fileUpdatedUtc=2017-05-03T01:02:03.111Z";
-      var filesResult = importFile.PostImportedFilesToWebApi(uri, customerUid, projectUid);
+     // var uri =  $"http://localhost:20979/api/v4/importedfile?projectUid={projectUid}&importedFileType=Alignment&fileCreatedUtc=2017-05-01T23:24:26.222Z&fileUpdatedUtc=2017-05-03T01:02:03.111Z";
+      var filesResult = importFile.PostImportedFilesToWebApi(uri, customerUid, projectUid,"FileImportFiles\\Boundarys.txt");
       Assert.AreEqual(filesResult.ImportedFileDescriptor, expectedResults.ImportedFileDescriptor, " Expected number of fields does not match actual");
     }
   }
