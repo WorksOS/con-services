@@ -33,7 +33,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="WebApiModels" Version="1.0.0-*" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.57" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.63" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">

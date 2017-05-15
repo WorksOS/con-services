@@ -40,7 +40,6 @@
     <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
     <PackageReference Include="ConfigurationStore.netcore" Version="*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="*" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="*" />
   </ItemGroup>
 
 </Project>
