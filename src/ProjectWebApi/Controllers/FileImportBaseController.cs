@@ -78,7 +78,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       log.LogInformation($"GetProject: CustomerUID={customerUid} and projectUid={projectUid}");
       var project =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
-          p => p.ProjectUID == projectUid);
+          p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
       if (project == null)
       {
         var message = $"No access to the project {projectUid} for customer {customerUid} or project does not exist.";
