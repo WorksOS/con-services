@@ -177,9 +177,6 @@ namespace Repositories
 
         private async Task<int> DeleteAsset(Asset asset, Asset existing)
         {
-            try
-            {
-                await PerhapsOpenConnection();
                 if (existing != null)
                 {
                     if (asset.LastActionedUtc >= existing.LastActionedUtc)
@@ -189,10 +186,7 @@ namespace Repositories
                     SET IsDeleted = 1,
                       LastActionedUTC = @LastActionedUtc
                     WHERE AssetUID = @AssetUid";
-                        return await dbAsyncPolicy.ExecuteAsync(async () =>
-                        {
-                            return await Connection.ExecuteAsync(update, asset);
-                        });
+                        return await ExecuteWithAsyncPolicy(update, asset);
                     }
                     else
                     {
@@ -211,17 +205,9 @@ namespace Repositories
                         "    (AssetUID, IsDeleted, LastActionedUTC, AssetType) " +
                         "  VALUES " +
                         "   (@AssetUid, @IsDeleted, @LastActionedUtc, \"Unassigned\")");
-                    return await dbAsyncPolicy.ExecuteAsync(async () =>
-                    {
-                        return await Connection.ExecuteAsync(@upsert, asset);
-                    });
+                    return await ExecuteWithAsyncPolicy(upsert, asset);
                 }
                 return await Task.FromResult(0);
-            }
-            finally
-            {
-                PerhapsCloseConnection();
-            }
         }
 
         private async Task<int> UpdateAsset(Asset asset, Asset existing)
@@ -279,72 +265,35 @@ namespace Repositories
 
         public async Task<Asset> GetAsset(string assetUid)
         {
-            try
-            {
-                await PerhapsOpenConnection();
-                return await dbAsyncPolicy.ExecuteAsync(async () =>
-                {
-                    return (await Connection.QueryAsync<Asset>
-                    (@"SELECT 
+            return (await QueryWithAsyncPolicy<Asset>(@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE AssetUID = @assetUid 
-                        AND IsDeleted = 0"
-                        , new {assetUid}
-                    )).FirstOrDefault();
-                });
-            }
-            finally
-            {
-                PerhapsCloseConnection();
-            }
+                        AND IsDeleted = 0", new {assetUid})).FirstOrDefault();
         }
 
         public async Task<Asset> GetAsset(long legacyAssetId)
         {
-            try
-            {
-                await PerhapsOpenConnection();
-                return await dbAsyncPolicy.ExecuteAsync(async () =>
-                {
-                    return (await Connection.QueryAsync<Asset>
-                    (@"SELECT 
+            return (await QueryWithAsyncPolicy<Asset>(@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE LegacyAssetId = @legacyAssetId 
                         AND IsDeleted = 0"
-                        , new {legacyAssetId}
-                    )).FirstOrDefault();
-                });
-            }
-            finally
-            {
-                PerhapsCloseConnection();
-            }
+                , new {legacyAssetId}
+            )).FirstOrDefault();
         }
 
         public async Task<IEnumerable<Asset>> GetAssets()
         {
-            try
-            {
-                await PerhapsOpenConnection();
-                return await dbAsyncPolicy.ExecuteAsync(async () =>
-                {
-                    return (await Connection.QueryAsync<Asset>
+            return (await QueryWithAsyncPolicy<Asset>
                     (@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE IsDeleted = 0"
                     )).ToList();
-                });
-            }
-            finally
-            {
-                PerhapsCloseConnection();
-            }
         }
 
         /// <summary>
@@ -353,45 +302,23 @@ namespace Repositories
         /// <returns></returns>
         public async Task<IEnumerable<Asset>> GetAllAssetsInternal()
         {
-            try
-            {
-                await PerhapsOpenConnection();
-                return await dbAsyncPolicy.ExecuteAsync(async () =>
-                {
-                    return (await Connection.QueryAsync<Asset>
+            return (await QueryWithAsyncPolicy<Asset>
                     (@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset"
                     )).ToList();
-                });
-            }
-            finally
-            {
-                PerhapsCloseConnection();
-            }
         }
 
         public async Task<IEnumerable<Asset>> GetAssets(string[] productFamily)
         {
-            try
-            {
-                await PerhapsOpenConnection();
-                return await dbAsyncPolicy.ExecuteAsync(async () =>
-                {
-                    return (await Connection.QueryAsync<Asset>
+            return (await QueryWithAsyncPolicy<Asset>
                     (@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset 
                       WHERE AssetType IN @families
                         AND IsDeleted = 0", new {families = productFamily})).ToList();
-                });
-            }
-            finally
-            {
-                PerhapsCloseConnection();
-            }
         }
 
         #endregion getters

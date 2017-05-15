@@ -669,10 +669,7 @@ namespace Repositories
     /// <returns></returns>
     public async Task<Project> GetProject(string projectUid)
     {
-      await PerhapsOpenConnection();
-
-      var project = (await Connection.QueryAsync<Project>
-          (@"SELECT 
+        var project = (await QueryWithAsyncPolicy<Project>(@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
@@ -684,10 +681,7 @@ namespace Repositories
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE p.ProjectUID = @projectUid AND p.IsDeleted = 0",
-            new { projectUid }
-          )).FirstOrDefault();
-
-      PerhapsCloseConnection();
+            new {projectUid})).FirstOrDefault();
       return project;
     }
 
@@ -698,7 +692,7 @@ namespace Repositories
       /// <returns></returns>
       public async Task<Project> GetProject(long legacyProjectID)
       {
-          var project = await ExecuteWithAsyncPolicy<Project>(@"SELECT 
+          var project = await QueryWithAsyncPolicy<Project>(@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,

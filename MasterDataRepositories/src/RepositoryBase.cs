@@ -67,30 +67,75 @@ namespace Repositories
         {
             using (var connection = new MySqlConnection(connectionString))
             {
-                    dbAsyncPolicy.Execute(async () =>
+                    dbAsyncPolicy.Execute(() =>
                     {
-                        await connection.OpenAsync();
+                        connection.Open();
                         log.LogTrace("Repository: db open (with connection reuse) was successfull");
                     });
-                Connection = connection;
                 var res = body(connection);
                 connection.Close();
                 return res;
             }
         }
 
+        private async Task<T> WithConnectionAsync<T>(Func<MySqlConnection, Task<T>> body)
+        {
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                await dbAsyncPolicy.ExecuteAsync(async () =>
+                {
+                    await connection.OpenAsync();
+                    log.LogTrace("Repository: db open (with connection reuse) was successfull");
+                });
+                var res =  await body(connection);
+                connection.Close();
+                return res;
+            }
+        }
+
+
         protected async Task<IEnumerable<T>> QueryWithAsyncPolicy<T>(string statement, object param = null)
         {
-            return await dbAsyncPolicy.ExecuteAsync(() =>
-                WithConnection(async (conn) => await conn.QueryAsync<T>(statement, param)));
+            if (!isInTransaction)
+                return await dbAsyncPolicy.ExecuteAsync(async () =>
+                    await WithConnectionAsync(async (conn) => await conn.QueryAsync<T>(statement, param)));
+            return await Connection.QueryAsync<T>(statement, param);
         }
 
         protected async Task<int> ExecuteWithAsyncPolicy(string statement, object param = null)
         {
-            return await dbAsyncPolicy.ExecuteAsync(() =>
-                WithConnection(async (conn) => await conn.ExecuteAsync(statement, param)));
+            if (!isInTransaction)
+                return await dbAsyncPolicy.ExecuteAsync(async () =>
+                    await WithConnectionAsync(async (conn) => await conn.ExecuteAsync(statement, param)));
+            return await Connection.ExecuteAsync(statement, param);
+
         }
 
+
+        //For unit tests
+        public async Task<T> InRollbackTransactionAsync<T>(Func<object, Task<T>> body)
+        {
+
+            return await WithConnectionAsync(async conn =>
+            {
+                MySqlTransaction transaction = null;
+
+                try
+                {
+                    isInTransaction = true;
+                    transaction = conn.BeginTransaction();
+                    Connection = conn;
+                    var result = await body(conn);
+                    return result;
+                }
+                finally
+                {
+                    if (transaction != null && Connection.State == ConnectionState.Open)
+                        transaction.Rollback();
+                    isInTransaction = false;
+                }
+            });
+        }
 
         //For unit tests
         public T InRollbackTransaction<T>(Func<object, T> body)
