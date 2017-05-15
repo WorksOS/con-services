@@ -4,7 +4,7 @@
   "title": "Shared lib to access RDKafka library with .net core",
   "description": "Shared across Merino apps, source code is availble under MerinoSandbox repo",
 
-  "version": "1.0.13",
+  "version": "1.0.14",
 
     "dependencies": {
         "NETStandard.Library": "1.6.1",
