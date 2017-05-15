@@ -31,7 +31,7 @@
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="KafkaConsumer.netcore" Version="1.0.7" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.57" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.63" />
   </ItemGroup>
 
 </Project>
