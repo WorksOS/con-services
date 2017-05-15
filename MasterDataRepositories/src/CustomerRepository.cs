@@ -96,9 +96,8 @@ namespace Repositories
     {
       int upsertedCount = 0;
 
-      await PerhapsOpenConnection();
 
-      var existing = (await Connection.QueryAsync<Customer>
+      var existing = (await QueryWithAsyncPolicy<Customer>
         (@"SELECT 
                 CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC
               FROM Customer
@@ -127,7 +126,7 @@ namespace Repositories
         upsertedCount = await DeleteCustomer(customer, existing);
       }
 
-      PerhapsCloseConnection();
+       
       return upsertedCount;
     }
 
@@ -144,12 +143,12 @@ namespace Repositories
               VALUES
                 (@CustomerUID, @Name, @CustomerType, @IsDeleted, @LastActionedUTC)";
 
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(insert, customer);
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, customer);
           log.LogDebug("CustomerRepository/CreateCustomer (Create/insert): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
       else if (existing.LastActionedUTC >= customer.LastActionedUTC)
       {
@@ -162,12 +161,12 @@ namespace Repositories
                 SET fk_CustomerTypeID = @CustomerType
                 WHERE CustomerUID = @CustomerUID";
 
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(update, customer);
+          upsertedCount = await ExecuteWithAsyncPolicy(update, customer);
           log.LogDebug("CustomerRepository/CreateCustomer: (Create/update): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
 
       log.LogDebug("CustomerRepository/CreateCustomer: can't create as already exists customer={0}", JsonConvert.SerializeObject(customer));
@@ -187,12 +186,12 @@ namespace Repositories
                 SET Name = @Name,
                   LastActionedUTC = @LastActionedUTC
                 WHERE CustomerUID = @CustomerUID";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
+           
           {
-            upsertedCount = await Connection.ExecuteAsync(update, customer);
+            upsertedCount = await ExecuteWithAsyncPolicy(update, customer);
             log.LogDebug("CustomerRepository/UpdateCustomer: (update): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-          });
+          }
         }
         else
         {
@@ -208,12 +207,12 @@ namespace Repositories
                 (CustomerUID, Name, fk_CustomerTypeID, LastActionedUTC)
               VALUES
                 (@CustomerUID, @Name, @CustomerType, @LastActionedUTC)";
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(insert, customer);
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, customer);
           log.LogDebug("CustomerRepository/UpdateCustomer (insert): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
 
       return upsertedCount;
@@ -234,12 +233,12 @@ namespace Repositories
                 (CustomerUID, Name, fk_CustomerTypeID, IsDeleted, LastActionedUTC)
               VALUES
                 (@CustomerUID, @Name, @CustomerType, @IsDeleted, @LastActionedUTC)";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
+           
           {
-            upsertedCount = await Connection.ExecuteAsync(insert, customer);
+            upsertedCount = await ExecuteWithAsyncPolicy(insert, customer);
             log.LogDebug("CustomerRepository/DeleteCustomer: (insert): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
       else
       {
@@ -252,12 +251,12 @@ namespace Repositories
                 SET IsDeleted = 1,
                   LastActionedUTC = @LastActionedUTC                
                 WHERE CustomerUID = @CustomerUID";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
+           
           {
-            upsertedCount = await Connection.ExecuteAsync(update, customer);
+            upsertedCount = await ExecuteWithAsyncPolicy(update, customer);
             log.LogDebug("CustomerRepository/DeleteCustomer: (update): upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customer.CustomerUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-          });
+          }
         }
         else
         {
@@ -281,9 +280,7 @@ namespace Repositories
     {
       int upsertedCount = 0;
 
-      await PerhapsOpenConnection();
-
-      var existing = (await Connection.QueryAsync<CustomerUser>
+      var existing = (await QueryWithAsyncPolicy<CustomerUser>
         (@"SELECT 
                 UserUID, fk_CustomerUID AS CustomerUID, LastActionedUTC
               FROM CustomerUser
@@ -301,7 +298,7 @@ namespace Repositories
         upsertedCount = await DissociateCustomerUser(customerUser, existing);
       }
 
-      PerhapsCloseConnection();
+       
       return upsertedCount;
     }
 
@@ -317,12 +314,12 @@ namespace Repositories
             VALUES
               (@UserUID, @CustomerUID, @LastActionedUTC)";
 
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(insert, customerUser);
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, customerUser);
           log.LogDebug("CustomerRepository/AssociateCustomerUser: upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customerUser.CustomerUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
 
       //      Log.DebugFormat("CustomerRepository: can't create as already exists newActionedUTC={0}", customerUser.LastActionedUTC);
@@ -341,12 +338,12 @@ namespace Repositories
             @"DELETE 
                 FROM CustomerUser               
                 WHERE fk_CustomerUID = @CustomerUID AND UserUID = @UserUID";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
+           
           {
-            upsertedCount = await Connection.ExecuteAsync(delete, customerUser);
+            upsertedCount = await ExecuteWithAsyncPolicy(delete, customerUser);
             log.LogDebug("CustomerRepository/DissociateCustomerUser: upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customerUser.CustomerUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-          });
+          }
         }
 
         // may have been associated again since, so don't delete
@@ -370,9 +367,7 @@ namespace Repositories
     {
       int upsertedCount = 0;
 
-      await PerhapsOpenConnection();
-
-      var existing = (await Connection.QueryAsync<CustomerUser>
+      var existing = (await QueryWithAsyncPolicy<CustomerUser>
         (@"SELECT 
                CustomerUID, TCCOrgID, LastActionedUTC
               FROM CustomerTccOrg
@@ -385,7 +380,7 @@ namespace Repositories
         upsertedCount = await CreateCustomerTccOrg(customerTccOrg, existing);
       }
 
-      PerhapsCloseConnection();
+       
       return upsertedCount;
     }
 
@@ -401,12 +396,12 @@ namespace Repositories
             VALUES
               (@CustomerUID, @TCCOrgID, @LastActionedUTC)";
 
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(insert, customerTccOrg);
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, customerTccOrg);
           log.LogDebug("CustomerRepository/CreateCustomerTccOrg: upserted {0} rows (1=insert, 2=update) for: customerUid:{1}", upsertedCount, customerTccOrg.CustomerUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
 
       return upsertedCount;
@@ -420,9 +415,7 @@ namespace Repositories
     #region getters
     public async Task<Customer> GetAssociatedCustomerbyUserUid(System.Guid userUid)
     {
-      await PerhapsOpenConnection();
-
-      var customer = (await Connection.QueryAsync<Customer>
+      var customer = (await QueryWithAsyncPolicy<Customer>
           (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, c.LastActionedUTC 
                 FROM Customer c 
                 JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID 
@@ -430,32 +423,29 @@ namespace Repositories
             new { userUid = userUid.ToString() }
             )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
 
       return customer;
     }
 
     public async Task<Customer> GetCustomer(System.Guid customerUid)
     {
-      await PerhapsOpenConnection();
-
-      var customer = (await Connection.QueryAsync<Customer>
+      var customer = (await QueryWithAsyncPolicy<Customer>
           (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
                 FROM Customer 
                 WHERE CustomerUID = @customerUid AND IsDeleted = 0",
              new { customerUid = customerUid.ToString() }
              )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
 
       return customer;
     }
 
     public async Task<CustomerTccOrg> GetCustomerWithTccOrg(System.Guid customerUid)
     {
-      await PerhapsOpenConnection();
 
-      var customer = (await Connection.QueryAsync<CustomerTccOrg>
+      var customer = (await QueryWithAsyncPolicy<CustomerTccOrg>
           (@"SELECT c.CustomerUID, c.Name, c.fk_CustomerTypeID AS CustomerType, c.IsDeleted, c.LastActionedUTC, cto.TCCOrgID
                 FROM Customer c
                   LEFT OUTER JOIN CustomerTccOrg cto ON cto.CustomerUID = c.CustomerUID
@@ -463,16 +453,15 @@ namespace Repositories
              new { customerUid = customerUid.ToString() }
              )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
 
       return customer;
     }
 
     public async Task<CustomerTccOrg> GetCustomerWithTccOrg(string tccOrgUid)
     {
-      await PerhapsOpenConnection();
 
-      var customer = (await Connection.QueryAsync<CustomerTccOrg>
+      var customer = (await QueryWithAsyncPolicy<CustomerTccOrg>
           (@"SELECT c.CustomerUID, c.Name, c.fk_CustomerTypeID AS CustomerType, c.IsDeleted, c.LastActionedUTC, cto.TCCOrgID 
                 FROM CustomerTccOrg cto 
                   INNER JOIN Customer c ON c.CustomerUID = cto.CustomerUID  
@@ -480,39 +469,37 @@ namespace Repositories
              new { tccOrgUid }
              )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
 
       return customer;
     }
     
     public async Task<Customer> GetCustomer_UnitTest(System.Guid customerUid)
     {
-      await PerhapsOpenConnection();
 
-      var customer = (await Connection.QueryAsync<Customer>
+      var customer = (await QueryWithAsyncPolicy<Customer>
           (@"SELECT CustomerUID, Name, fk_CustomerTypeID AS CustomerType, IsDeleted, LastActionedUTC 
                 FROM Customer 
                 WHERE CustomerUID = @customerUid",
              new { customerUid = customerUid.ToString() }
              )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
 
       return customer;
     }
 
     public async Task<CustomerUser> GetAssociatedCustomerbyUserUid_UnitTest(System.Guid userUid)
     {
-      await PerhapsOpenConnection();
 
-      var customer = (await Connection.QueryAsync<CustomerUser>
+      var customer = (await QueryWithAsyncPolicy<CustomerUser>
           (@"SELECT fk_CustomerUID AS CustomerUID, UserUID, LastActionedUTC 
                 FROM CustomerUser
                 WHERE UserUID = @userUid",
             new { userUid = userUid.ToString() }
             )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
 
       return customer;
     }

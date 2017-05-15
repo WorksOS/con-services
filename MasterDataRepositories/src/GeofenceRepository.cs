@@ -105,10 +105,7 @@ namespace Repositories
     private async Task<int> UpsertGeofenceDetail(Geofence geofence, string eventType)
     {
       int upsertedCount = 0;
-
-      await PerhapsOpenConnection();
-
-      var existing = (await Connection.QueryAsync<Geofence>
+      var existing = (await QueryWithAsyncPolicy<Geofence>
         (@"SELECT 
                 GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
@@ -133,7 +130,7 @@ namespace Repositories
         upsertedCount = await DeleteGeofence(geofence, existing);
       }
       
-      PerhapsCloseConnection();
+       
       return upsertedCount;
     }
 
@@ -149,12 +146,12 @@ namespace Repositories
                 (GeofenceUID, Name, Description, GeometryWKT, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID)
             VALUES
                 (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType)";
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(insert, geofence);
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
           log.LogDebug("GeofenceRepository/CreateGeofence upserted {0} rows (1=insert, 2=update) for: geofenceUid:{1}", upsertedCount, geofence.GeofenceUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
 
       log.LogDebug("GeofenceRepository/CreateGeofence: can't create as already exists geofence={0}", JsonConvert.SerializeObject(geofence));
@@ -175,12 +172,12 @@ namespace Repositories
                 SET IsDeleted = 1,
                   LastActionedUTC = @LastActionedUTC
                 WHERE GeofenceUID = @GeofenceUID";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
+           
           {
-            upsertedCount = await Connection.ExecuteAsync(update, geofence);
+            upsertedCount = await ExecuteWithAsyncPolicy(update, geofence);
             log.LogDebug("GeofenceRepository/DeleteGeofence: (update): upserted {0} rows (1=insert, 2=update) for: geofenceUid:{1}", upsertedCount, geofence.GeofenceUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-          });
+          }
         }
         else
         {
@@ -208,12 +205,12 @@ namespace Repositories
             VALUES
                 (@GeofenceUID, @Name, @Description, @GeometryWKT, @FillColor, IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType)";
 
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(insert, geofence);
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
           log.LogDebug("DeleteGeofence (insert): upserted {0} rows (1=insert, 2=update) for: geofenceUid:{1}", upsertedCount, geofence.GeofenceUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
       return upsertedCount;
     }
@@ -238,12 +235,12 @@ namespace Repositories
             @"UPDATE Geofence                
                 SET Name = @Name, FillColor = @FillColor, IsTransparent = @IsTransparent, LastActionedUTC = @LastActionedUTC                  
               WHERE GeofenceUID = @GeofenceUID";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
+           
           {
-            upsertedCount = await Connection.ExecuteAsync(update, geofence);
+            upsertedCount = await ExecuteWithAsyncPolicy(update, geofence);
             log.LogDebug("UpdateGeofence (update): upserted {0} rows (1=insert, 2=update) for: geofenceUid:{1}", upsertedCount, geofence.GeofenceUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-          });
+          }
         }
         else
         {
@@ -265,9 +262,7 @@ namespace Repositories
     /// <returns></returns>
     public async Task<IEnumerable<Geofence>> GetProjectGeofences(string customerUid)
     {
-      await PerhapsOpenConnection();
-
-      var projectGeofences = (await Connection.QueryAsync<Geofence>
+      var projectGeofences = (await QueryWithAsyncPolicy<Geofence>
          (@"SELECT 
                 GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
@@ -277,7 +272,7 @@ namespace Repositories
           new { customerUid }
          ));
 
-      PerhapsCloseConnection();
+       
       return projectGeofences;
     }
 
@@ -288,9 +283,7 @@ namespace Repositories
     /// <returns></returns>
     public async Task<IEnumerable<Geofence>> GetProjectGeofencesByProjectUID(string projectUid)
     {
-      await PerhapsOpenConnection();
-
-      var projectGeofences = (await Connection.QueryAsync<Geofence>
+      var projectGeofences = (await QueryWithAsyncPolicy<Geofence>
          (@"SELECT 
                 GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
@@ -301,15 +294,13 @@ namespace Repositories
           new { projectUid }
          ));
 
-      PerhapsCloseConnection();      
+             
       return projectGeofences;
     }
 
     public async Task<Geofence> GetGeofence_UnitTest(string geofenceUid)
     {
-      await PerhapsOpenConnection();
-
-      var geofence = (await Connection.QueryAsync<Geofence>
+     var geofence = (await QueryWithAsyncPolicy<Geofence>
           (@"SELECT 
                GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, GeometryWKT, FillColor, IsTransparent,
                 IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID,
@@ -319,7 +310,7 @@ namespace Repositories
           , new { geofenceUid }
         )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
 
       return geofence;
     }

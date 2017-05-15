@@ -174,9 +174,7 @@ namespace Repositories
     {
       int upsertedCount = 0;
 
-      await PerhapsOpenConnection();
-
-      var existing = (await Connection.QueryAsync<Project>
+      var existing = (await QueryWithAsyncPolicy<Project>
           (@"SELECT 
                 ProjectUID, Description, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
                 ProjectTimeZone, LandfillTimeZone, 
@@ -202,7 +200,7 @@ namespace Repositories
         upsertedCount = await DeleteProject(project, existing);
       }
 
-      PerhapsCloseConnection();
+       
       return upsertedCount;
     }
 
@@ -235,12 +233,12 @@ namespace Repositories
               "  VALUES " +
               "    (@ProjectUID, @LegacyProjectID, @Name, @Description, @ProjectType, @IsDeleted, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, @GeometryWKT, {0}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)"
                 , formattedPolygon);
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(insert, project);
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, project);
           log.LogDebug("ProjectRepository/CreateProject: (insert): upserted {0} rows (1=insert, 2=update) for: projectUid:{1}", upsertedCount, project.ProjectUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
       else if (string.IsNullOrEmpty(existing.Name))
       {
@@ -264,12 +262,12 @@ namespace Repositories
                   CoordinateSystemFileName = @CoordinateSystemFileName,
                   CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC
                 WHERE ProjectUID = @ProjectUID";
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(update, project);
+          upsertedCount = await ExecuteWithAsyncPolicy(update, project);
           log.LogDebug("ProjectRepository/CreateProject: (update): upserted {0} rows (1=insert, 2=update) for: projectUid:{1}", upsertedCount, project.ProjectUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
       else if (existing.LastActionedUTC >= project.LastActionedUTC)
       {
@@ -295,12 +293,12 @@ namespace Repositories
                   CoordinateSystemFileName = @CoordinateSystemFileName,
                   CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC
                 WHERE ProjectUID = @ProjectUID";
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(update, project);
+          upsertedCount = await ExecuteWithAsyncPolicy(update, project);
           log.LogDebug("ProjectRepository/CreateProject: (updateExisting): upserted {0} rows (1=insert, 2=update) for: projectUid:{1}", upsertedCount, project.ProjectUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
 
       log.LogDebug("ProjectRepository/CreateProject: can't create as already exists project {0}.", JsonConvert.SerializeObject(project));
@@ -321,12 +319,12 @@ namespace Repositories
                 SET IsDeleted = 1,
                   LastActionedUTC = @LastActionedUTC
                 WHERE ProjectUID = @ProjectUID";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
+           
           {
-            upsertedCount = await Connection.ExecuteAsync(update, project);
+            upsertedCount = await ExecuteWithAsyncPolicy(update, project);
             log.LogDebug("ProjectRepository/DeleteProject: upserted {0} rows (1=insert, 2=update) for: projectUid:{1}", upsertedCount, project.ProjectUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-          });
+          }
         }
         else
         {
@@ -372,12 +370,12 @@ namespace Repositories
                   CoordinateSystemFileName = @CoordinateSystemFileName,
                   CoordinateSystemLastActionedUTC = @CoordinateSystemLastActionedUTC
                 WHERE ProjectUID = @ProjectUID";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
+           
           {
-            upsertedCount = await Connection.ExecuteAsync(update, project);
+            upsertedCount = await ExecuteWithAsyncPolicy(update, project);
             log.LogDebug("ProjectRepository/UpdateProject: upserted {0} rows (1=insert, 2=update) for: projectUid:{1}", upsertedCount, project.ProjectUID);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-          });
+          }
         }
         else
         {
@@ -395,9 +393,7 @@ namespace Repositories
     {
       int upsertedCount = 0;
 
-      await PerhapsOpenConnection();
-
-      var existing = (await Connection.QueryAsync<CustomerProject>
+      var existing = (await QueryWithAsyncPolicy<CustomerProject>
           (@"SELECT 
                 fk_CustomerUID AS CustomerUID, LegacyCustomerID, fk_ProjectUID AS ProjectUID, LastActionedUTC
               FROM CustomerProject
@@ -410,7 +406,7 @@ namespace Repositories
         upsertedCount = await AssociateProjectCustomer(customerProject, existing);
       }
 
-      PerhapsCloseConnection();
+       
       return upsertedCount;
     }
 
@@ -435,12 +431,12 @@ namespace Repositories
               LegacyCustomerID =
                 IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
                     VALUES(LegacyCustomerID), LegacyCustomerID)";
-      return await dbAsyncPolicy.ExecuteAsync(async () =>
+       
       {
-        upsertedCount = await Connection.ExecuteAsync(insert, customerProject);
+        upsertedCount = await ExecuteWithAsyncPolicy(insert, customerProject);
         log.LogDebug("ProjectRepository/AssociateProjectCustomer: upserted {0} rows (1=insert, 2=update) for: customerProjectUid:{1}", upsertedCount, customerProject.CustomerUID);
         return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-      });
+      }
 
     }
 
@@ -448,12 +444,10 @@ namespace Repositories
     {
       int upsertedCount = 0;
 
-      await PerhapsOpenConnection();
-
       //    Log.DebugFormat("ProjectRepository: Upserting eventType={0} ProjectUid={1}, GeofenceUid={2}",
       //        eventType, projectGeofence.ProjectUID, projectGeofence.GeofenceUID);
 
-      var existing = (await Connection.QueryAsync<ProjectGeofence>
+      var existing = (await QueryWithAsyncPolicy<ProjectGeofence>
         (@"SELECT 
               fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
             FROM ProjectGeofence
@@ -466,7 +460,7 @@ namespace Repositories
         upsertedCount = await AssociateProjectGeofence(projectGeofence, existing);
       }
 
-      PerhapsCloseConnection();
+       
       return upsertedCount;
     }
 
@@ -483,12 +477,12 @@ namespace Repositories
               VALUES
                 (@GeofenceUID, @ProjectUID, @LastActionedUTC)";
 
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(insert, projectGeofence);
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, projectGeofence);
           log.LogDebug("ProjectRepository/AssociateProjectGeofence: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} geofenceUid:{2}", upsertedCount, projectGeofence.ProjectUID, projectGeofence.GeofenceUID);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
 
       log.LogDebug("ProjectRepository/AssociateProjectGeofence: can't create as already exists projectGeofence={0}", JsonConvert.SerializeObject(projectGeofence));
@@ -502,9 +496,8 @@ namespace Repositories
     {
       int upsertedCount = 0;
 
-      await PerhapsOpenConnection();
 
-      var existing = (await Connection.QueryAsync<ImportedFile>
+      var existing = (await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
               fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, 
               fk_ImportedFileTypeID as ImportedFileType, Name, 
@@ -529,7 +522,7 @@ namespace Repositories
         upsertedCount = await DeleteImportedFile(importedFile, existing);
       }
 
-      PerhapsCloseConnection();
+       
       return upsertedCount;
     }
 
@@ -546,12 +539,12 @@ namespace Repositories
             "    (fk_ProjectUID, ImportedFileUID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, LastActionedUTC) " +
             "  VALUES " +
             "    (@ProjectUid, @ImportedFileUid, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, 0, @LastActionedUtc)");
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(insert, importedFile);
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
           log.LogDebug("ProjectRepository/CreateImportedFile: (insert): upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}", upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
       else if (existing.LastActionedUtc >= importedFile.LastActionedUtc)
       {
@@ -572,12 +565,12 @@ namespace Repositories
                   ImportedBy = @importedBy, 
                   SurveyedUTC = @surveyedUTC
                 WHERE ImportedFileUID = @ImportedFileUid";
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+         
         {
-          upsertedCount = await Connection.ExecuteAsync(update, importedFile);
+          upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
           log.LogDebug("ProjectRepository/CreateImportedFile: (updateExisting): upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}", upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
           return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-        });
+        }
       }
 
       log.LogDebug("ProjectRepository/CreateImportedFile: can't create as already exists importedFile {0}.", JsonConvert.SerializeObject(importedFile));
@@ -603,13 +596,13 @@ namespace Repositories
                   SurveyedUTC = @surveyedUTC,
                   LastActionedUTC = @LastActionedUTC
                 WHERE ImportedFileUID = @ImportedFileUid";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
+           
           {
-            upsertedCount = await Connection.ExecuteAsync(update, importedFile);
+            upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
             log.LogDebug("ProjectRepository/UpdateImportedFile: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}", upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-          });
-        }
+          }
+                }
         else
         {
           log.LogDebug("ProjectRepository/UpdateImportedFile: old update event ignored importedFile {0}", JsonConvert.SerializeObject(importedFile));
@@ -636,12 +629,12 @@ namespace Repositories
                 SET IsDeleted = 1,
                     LastActionedUTC = @LastActionedUTC
                 WHERE ImportedFileUID = @ImportedFileUid";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
+           
           {
-            upsertedCount = await Connection.ExecuteAsync(update, importedFile);
+            upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
             log.LogDebug("ProjectRepository/DeleteImportedFile: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}", upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
             return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-          });
+          }
         }
         else
         {
@@ -716,9 +709,7 @@ namespace Repositories
     /// <returns></returns>
     public async Task<IEnumerable<Project>> GetProjectAndSubscriptions(long legacyProjectID, DateTime validAtDate)
     {
-      await PerhapsOpenConnection();
-
-      var projectSubList = (await Connection.QueryAsync<Project>
+      var projectSubList = (await QueryWithAsyncPolicy<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -736,7 +727,7 @@ namespace Repositories
             new { legacyProjectID, validAtDate = validAtDate.Date }
           ));
 
-      PerhapsCloseConnection();
+       
       return projectSubList;
     }
 
@@ -747,9 +738,7 @@ namespace Repositories
     /// <returns></returns>
     public async Task<Project> GetProjectBySubcription(string subscriptionUid)
     {
-      await PerhapsOpenConnection();
-
-      var projects = (await Connection.QueryAsync<Project>
+      var projects = (await QueryWithAsyncPolicy<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -765,7 +754,7 @@ namespace Repositories
               new { subscriptionUid }
           )).FirstOrDefault(); ;
 
-      PerhapsCloseConnection();
+       
       return projects;
     }
 
@@ -779,8 +768,7 @@ namespace Repositories
     /// <returns></returns>
     public async Task<IEnumerable<Project>> GetProjectsForUser(string userUid)
     {
-      await PerhapsOpenConnection();
-      var projects = (await Connection.QueryAsync<Project>
+      var projects = (await QueryWithAsyncPolicy<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -797,7 +785,7 @@ namespace Repositories
             new { userUid }
           ));
 
-      PerhapsCloseConnection();
+       
       return projects;
     }
 
@@ -811,9 +799,8 @@ namespace Repositories
     /// <returns></returns>
     public async Task<IEnumerable<Project>> GetProjectsForCustomerUser(string customerUid, string userUid)
     {
-      await PerhapsOpenConnection();
 
-      var projects = (await Connection.QueryAsync<Project>
+      var projects = (await QueryWithAsyncPolicy<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -830,7 +817,7 @@ namespace Repositories
             new { customerUid, userUid }
           ));
 
-      PerhapsCloseConnection();
+       
       return projects;
     }
 
@@ -844,9 +831,9 @@ namespace Repositories
     /// <returns></returns>
     public async Task<IEnumerable<Project>> GetProjectsForCustomer(string customerUid)
     {
-      await PerhapsOpenConnection();
+
       // mysql doesn't have any nice mssql features like rowNumber/paritionBy, so quicker to do in c#
-      var projects = (await Connection.QueryAsync<Project>
+      var projects = (await QueryWithAsyncPolicy<Project>
           (@"SELECT 
                 c.CustomerUID, cp.LegacyCustomerID, 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
@@ -867,7 +854,7 @@ namespace Repositories
             new { customerUid }
           ));
 
-      PerhapsCloseConnection();
+       
 
       // need to get the row with the later SubscriptionEndDate if there are duplicates
       // Also if there are >1 projectGeofences.. hmm.. it will just return either
@@ -881,9 +868,8 @@ namespace Repositories
     /// <returns>The project</returns>
     public async Task<Project> GetProjectOnly(string projectUid)
     {
-      await PerhapsOpenConnection();
 
-      var project = (await Connection.QueryAsync<Project>
+      var project = (await QueryWithAsyncPolicy<Project>
           (@"SELECT              
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -893,7 +879,7 @@ namespace Repositories
             new { projectUid }
           )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
       return project;
     }
 
@@ -904,16 +890,15 @@ namespace Repositories
     /// <returns>true if project exists or false otherwise</returns>
     public async Task<bool> ProjectExists(string projectUid)
     {
-      await PerhapsOpenConnection();
 
-      var uid = (await Connection.QueryAsync<string>
+      var uid = (await QueryWithAsyncPolicy<string>
           (@"SELECT p.ProjectUID             
               FROM Project p 
               WHERE p.ProjectUID = @projectUid",
             new { projectUid }
           )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
       return !string.IsNullOrEmpty(uid);
     }
 
@@ -924,16 +909,14 @@ namespace Repositories
     /// <returns>true if project is associated with a customer or false otherwise</returns>
     public async Task<bool> CustomerProjectExists(string projectUid)
     {
-      await PerhapsOpenConnection();
-
-      var uid = (await Connection.QueryAsync<string>
+      var uid = (await QueryWithAsyncPolicy<string>
           (@"SELECT cp.fk_ProjectUID             
               FROM CustomerProject cp 
               WHERE cp.fk_ProjectUID = @projectUid",
             new { projectUid }
           )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
       return !string.IsNullOrEmpty(uid);
     }
 
@@ -944,9 +927,7 @@ namespace Repositories
     /// <returns></returns>
     public async Task<Project> GetProject_UnitTest(string projectUid)
     {
-      await PerhapsOpenConnection();
-
-      var project = (await Connection.QueryAsync<Project>
+      var project = (await QueryWithAsyncPolicy<Project>
           (@"SELECT 
                   p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                   p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -962,7 +943,7 @@ namespace Repositories
             new { projectUid }
           )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
       return project;
     }
 
@@ -973,9 +954,7 @@ namespace Repositories
 
     public async Task<IEnumerable<ImportedFile>> GetImportedFiles(string projectUid)
     {
-      await PerhapsOpenConnection();
-
-      var importedFileList = (await Connection.QueryAsync<ImportedFile>
+      var importedFileList = (await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
               fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
               Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted,
@@ -986,15 +965,15 @@ namespace Repositories
         new { projectUid }
       ));
 
-      PerhapsCloseConnection();
+       
       return importedFileList;
     }
 
     public async Task<ImportedFile> GetImportedFile(string importedFileUid)
     {
-      await PerhapsOpenConnection();
 
-      var importedFile = (await Connection.QueryAsync<ImportedFile>
+
+      var importedFile = (await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
               fk_ProjectUID as ProjectUID, ImportedFileUID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
               Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted,
@@ -1004,7 +983,7 @@ namespace Repositories
         new { importedFileUid }
       )).FirstOrDefault();
 
-      PerhapsCloseConnection();
+       
       return importedFile;
     }
     #endregion gettersImportedFiles
@@ -1022,8 +1001,6 @@ namespace Repositories
     /// <returns>The project</returns>
     public async Task<IEnumerable<Project>> GetStandardProject(string customerUID, double latitude, double longitude, DateTime timeOfPosition)
     {
-      await PerhapsOpenConnection();
-
       string point = string.Format("ST_GeomFromText('POINT({0} {1})')", longitude, latitude);
       string select = string.Format(
         "SELECT DISTINCT " +
@@ -1040,9 +1017,9 @@ namespace Repositories
         "        AND st_Intersects({0}, PolygonST) = 1"
             , point);
 
-      var projects = (await Connection.QueryAsync<Project>(select,  new { customerUID, timeOfPosition = timeOfPosition.Date } ));
+      var projects = (await QueryWithAsyncPolicy<Project>(select,  new { customerUID, timeOfPosition = timeOfPosition.Date } ));
      
-      PerhapsCloseConnection();
+       
       return projects;
     }
 
@@ -1059,8 +1036,6 @@ namespace Repositories
     public async Task<IEnumerable<Project>> GetProjectMonitoringProject(string customerUID, 
       double latitude, double longitude, DateTime timeOfPosition, int projectType, int serviceType)
     {
-      await PerhapsOpenConnection();
-
       string point = string.Format("ST_GeomFromText('POINT({0} {1})')", longitude, latitude);
       string select = string.Format(
         "SELECT DISTINCT " +
@@ -1082,9 +1057,9 @@ namespace Repositories
         "        AND st_Intersects({0}, PolygonST) = 1"
             , point);
      
-      var projects = (await Connection.QueryAsync<Project>(select, new { customerUID, timeOfPosition = timeOfPosition.Date, projectType, serviceType }));
+      var projects = (await QueryWithAsyncPolicy<Project>(select, new { customerUID, timeOfPosition = timeOfPosition.Date, projectType, serviceType }));
       
-      PerhapsCloseConnection();
+       
       return projects;
     }
 
@@ -1100,9 +1075,6 @@ namespace Repositories
     /// <returns>The project</returns>
     public async Task<bool> DoesPolygonOverlap(string customerUID, string geometryWKT, DateTime startDate, DateTime endDate)
     {
-      // todo does st_intersects detect inside/onpoint/online/overlap/etc?
-      await PerhapsOpenConnection();
-
       string polygonToCheck = string.Format("ST_GeomFromText('{0}')", geometryWKT);
       string select = string.Format(
         "SELECT DISTINCT " +
@@ -1119,17 +1091,15 @@ namespace Repositories
         "        AND st_Intersects({0}, PolygonST) = 1"
             , polygonToCheck);
 
-      var projects = (await Connection.QueryAsync<Project>(select, new { customerUID, startDate = startDate.Date, endDate = endDate.Date }));
+      var projects = (await QueryWithAsyncPolicy<Project>(select, new { customerUID, startDate = startDate.Date, endDate = endDate.Date }));
 
-      PerhapsCloseConnection();
+       
       return projects.Count() > 0;
     }
 
     public async Task<IEnumerable<Project>> GetProjects_UnitTests()
     {
-      await PerhapsOpenConnection();
-
-      var projects = (await Connection.QueryAsync<Project>
+      var projects = (await QueryWithAsyncPolicy<Project>
           (@"SELECT 
                 p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
@@ -1144,7 +1114,7 @@ namespace Repositories
               WHERE p.IsDeleted = 0"
           ));
 
-      PerhapsCloseConnection();
+       
       return projects;
     }
     #endregion gettersSpatial
