@@ -30,8 +30,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
-    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.7" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.63" />
+    <PackageReference Include="KafkaConsumer.netcore" Version="*" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="*" />
   </ItemGroup>
 
 </Project>
