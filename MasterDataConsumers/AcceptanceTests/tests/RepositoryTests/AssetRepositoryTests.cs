@@ -90,7 +90,7 @@ namespace RepositoryTests
         LastActionedUtc = assetEvent.ActionUTC
       };
 
-      assetContext.InRollbackTransaction<object>(o =>
+      assetContext.InRollbackTransactionAsync<object>(o =>
       {
         var g = assetContext.GetAsset(asset.AssetUID);
         g.Wait();
@@ -105,7 +105,7 @@ namespace RepositoryTests
         Assert.IsNotNull(g.Result, "Unable to retrieve Asset from AssetRepo");
         Assert.AreEqual(asset, g.Result, "Asset details are incorrect from AssetRepo");
         return null;
-      });
+      }).Wait();
     }
 
     /// <summary>
