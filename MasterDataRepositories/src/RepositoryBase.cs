@@ -10,7 +10,7 @@ using VSS.GenericConfiguration;
 
 namespace Repositories
 {
-    public class RepositoryBase : IDisposable
+    public class RepositoryBase
     {
         // this is used by the unit tests only 
         private static readonly int dbSyncRetryCount = 3;
