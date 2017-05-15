@@ -59,7 +59,7 @@ namespace WebApiTests
       {
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }     
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -113,7 +113,7 @@ namespace WebApiTests
       {
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }      
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -178,7 +178,7 @@ namespace WebApiTests
       {
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }      
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -226,7 +226,7 @@ namespace WebApiTests
       {
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }     
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -274,7 +274,7 @@ namespace WebApiTests
       {
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }     
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -322,7 +322,7 @@ namespace WebApiTests
       {
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }     
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
 
@@ -371,7 +371,7 @@ namespace WebApiTests
       {
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }     
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
 

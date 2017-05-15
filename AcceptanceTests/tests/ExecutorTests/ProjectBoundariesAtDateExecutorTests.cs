@@ -23,7 +23,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect points result");
     }
@@ -48,7 +48,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect points result");
     }
@@ -74,7 +74,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect points result");
     }
@@ -104,7 +104,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(1, result.projectBoundaries.Length, "executor returned incorrect points result");
       Assert.AreEqual(legacyProjectId, result.projectBoundaries[0].ProjectID, "executor returned incorrect legacyProjectId");
@@ -136,7 +136,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(1, result.projectBoundaries.Length, "executor returned incorrect points result");
       Assert.AreEqual(legacyProjectId, result.projectBoundaries[0].ProjectID, "executor returned incorrect legacyProjectId");
@@ -172,7 +172,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(2, result.projectBoundaries.Length, "executor returned incorrect points result");
 
@@ -219,7 +219,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect points result");
     }
@@ -250,7 +250,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect points result");
     }
@@ -280,7 +280,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect points result");
     }
@@ -310,7 +310,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect points result");
     }
@@ -342,7 +342,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(factory, logger).Process(projectBoundariesAtDateExecutorRequest) as GetProjectBoundariesAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect projectBoundary result");
       Assert.AreEqual(0, result.projectBoundaries.Length, "executor returned incorrect points result");
     }

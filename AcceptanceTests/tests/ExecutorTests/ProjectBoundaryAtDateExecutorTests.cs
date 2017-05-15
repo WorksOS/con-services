@@ -24,7 +24,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, logger).Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary result");
       Assert.IsNull(result.projectBoundary.FencePoints, "executor returned incorrect points result");
     }
@@ -45,7 +45,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, logger).Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary result");
       Assert.IsNotNull(result.projectBoundary.FencePoints, "executor returned incorrect points result");
       Assert.AreEqual(5, result.projectBoundary.FencePoints.Length, "executor returned incorrect point count");
@@ -73,7 +73,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, logger).Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary result");
       Assert.IsNotNull(result.projectBoundary.FencePoints, "executor returned incorrect points result");
       Assert.AreEqual(0, result.projectBoundary.FencePoints.Length, "executor returned incorrect point count");

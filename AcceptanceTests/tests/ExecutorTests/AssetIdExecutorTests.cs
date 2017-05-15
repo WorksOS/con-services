@@ -24,7 +24,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -46,7 +46,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "successful");
+      Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -72,7 +72,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "successful");
+      Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -99,7 +99,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "successful");
+      Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -124,7 +124,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "successful");
+      Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(16, result.machineLevel, "executor returned incorrect serviceType, should be 16 3dPM.");
     }
@@ -152,7 +152,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "successful");
+      Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(16, result.machineLevel, "executor returned incorrect serviceType, should be 16 3dPM.");
     }
@@ -168,7 +168,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -189,7 +189,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
@@ -213,7 +213,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "successful");
+      Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
     }
@@ -245,7 +245,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "successful");
+      Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
     }
@@ -277,7 +277,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "successful");
+      Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(16, result.machineLevel, "executor returned incorrect serviceType, should be 3dPM (CG==16)");
     }
@@ -310,7 +310,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "successful");
+      Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(legacyAssetId, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
     }
@@ -343,7 +343,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<AssetIdExecutor>(factory, logger).Process(assetIdRequest) as GetAssetIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "successful");
+      Assert.IsTrue(result.Result, "successful");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect LegacyAssetId");
       Assert.AreEqual(18, result.machineLevel, "executor returned incorrect serviceType, should be Man 3d pm (CG==18)");
     }

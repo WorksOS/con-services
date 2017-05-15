@@ -66,7 +66,7 @@ namespace IntegrationTests
 
       var actualResult = CallWebApiGetProjectId(ts, legacyAssetId, 38.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
       Assert.AreEqual(legacyProjectId, actualResult.projectId, " Legacy asset id's do not match");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -176,7 +176,7 @@ namespace IntegrationTests
 
       var actualResult = CallWebApiGetProjectId(ts, legacyAssetId, 38.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
       Assert.AreEqual(legacyProjectId, actualResult.projectId, " Legacy asset id's do not match");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
 
@@ -232,7 +232,7 @@ namespace IntegrationTests
 
       var actualResult = CallWebApiGetProjectId(ts, legacyAssetId, 38.837, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
       Assert.AreEqual(legacyProjectId, actualResult.projectId, " Legacy asset id's do not match");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
