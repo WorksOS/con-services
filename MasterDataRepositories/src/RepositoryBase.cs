@@ -90,14 +90,14 @@ namespace Repositories
         protected async Task<IEnumerable<T>> QueryWithAsyncPolicy<T>(string statement, object param = null)
         {
             if (!isInTransaction)
-                await WithConnectionAsync(async conn => await conn.QueryAsync<T>(statement, param));
-            return await QueryWithAsyncPolicy<T>(statement, param);
+                return await WithConnectionAsync(async conn => await conn.QueryAsync<T>(statement, param));
+            return await Connection.QueryAsync<T>(statement, param);
         }
 
         protected async Task<int> ExecuteWithAsyncPolicy(string statement, object param = null)
         {
             if (!isInTransaction)
-                await WithConnectionAsync(async conn => await conn.ExecuteAsync(statement, param));
+                return await WithConnectionAsync(async conn => await conn.ExecuteAsync(statement, param));
             return await Connection.ExecuteAsync(statement, param);
         }
 
