@@ -17,6 +17,7 @@ using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Nighthawk.ReportSvc.WebApi.Models;
+using System.IO.Compression;
 
 namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 {
@@ -68,8 +69,12 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                 ExportGridCSV request = item as ExportGridCSV;
 
                 TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
-                MemoryStream OutputStream = new MemoryStream();
-                MemoryStream ResponseData;
+                MemoryStream outputStream = null;
+//                DeflateStream compressorStream = null;
+                Stream writerStream = null;
+
+                MemoryStream ResponseData = null;
+                ZipArchive archive = null;
 
                 int Result = client.GetGriddedOrAlignmentCSVExport
                    (request.projectId ?? -1,
@@ -98,6 +103,23 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 if (success)
                 {
+                    outputStream = new MemoryStream();
+
+                    if (request.compress)
+                    {
+                        archive = new ZipArchive(outputStream, ZipArchiveMode.Create, true);
+                        writerStream = archive.CreateEntry("asbuilt.csv", CompressionLevel.Optimal).Open();
+                        //                    var demoFile = archive.CreateEntry("data");
+                        //                    using (var entryStream = demoFile.Open())
+
+//                        compressorStream = new DeflateStream(outputStream, CompressionMode.Compress);
+//                        writerStream = compressorStream;
+                    }
+                    else
+                    {
+                        writerStream = outputStream;
+                    }
+
                     // Unpack the data for the report and construct a stream containing the result
                     TRaptorReportsPackager ReportPackager = new TRaptorReportsPackager(TRaptorReportType.rrtGridReport);
 
@@ -146,7 +168,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                         // Write a header
                         byte[] bytes = System.Text.Encoding.ASCII.GetBytes(sb.ToString());
-                        OutputStream.Write(bytes, 0, bytes.Length);
+                        writerStream.Write(bytes, 0, bytes.Length);
 
                         // Write a series of CSV records from the data
                         foreach (TGridRow row in ReportPackager.GridReport.Rows)
@@ -163,7 +185,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                             sb.Append("\n");
 
                             bytes = System.Text.Encoding.ASCII.GetBytes(sb.ToString());
-                            OutputStream.Write(bytes, 0, bytes.Length);
+                            writerStream.Write(bytes, 0, bytes.Length);
                         }
                     }
                     else if (request.reportType == GriddedCSVReportType.Alignment)
@@ -210,7 +232,20 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 try
                 {
-                    result = ExportResult.CreateExportDataResult(OutputStream.GetBuffer(), (short)Result);
+                    /* if (compressorStream != null)
+                                        {
+                                            // Close the compression stream to allow the compression activities to be finalised
+                                            compressorStream.Close();
+                                        }
+                    */
+
+                    writerStream.Close();
+                    if (request.compress)
+                    {
+                        archive.Dispose(); // Force ZIPArchive to emit all data to the stream
+                    }
+
+                    result = ExportResult.CreateExportDataResult(outputStream.ToArray(), (short)Result);
                 }
                 catch
                 {
