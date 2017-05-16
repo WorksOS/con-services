@@ -127,7 +127,7 @@ namespace VSS.Raptor.Service.WebApi
             //app.UseApplicationInsightsRequestTelemetry();
             //app.UseApplicationInsightsExceptionTelemetry();
 
-            //app.UseResponseCaching();//Disable for now
+            app.UseResponseCaching();//Disable for now
             app.UseMvc();
 
             app.UseSwagger();
