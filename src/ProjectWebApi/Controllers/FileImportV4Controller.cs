@@ -146,7 +146,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
           importedFileType, surveyedUtc)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor).ConfigureAwait(false);
+      // todo await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor).ConfigureAwait(false);
 
       // if all succeeds, write to Db and kafka que
       CreateImportedFileEvent createImportedFileEvent = await CreateImportedFile(Guid.Parse(customerUid), projectUid,
@@ -226,7 +226,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
           surveyedUtc)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor).ConfigureAwait(false);
+      // todo await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor).ConfigureAwait(false);
 
       // if all succeeds, write to Db and kafka que
       var importedFileUid = importedFileDescriptor?.ImportedFileUid;
@@ -283,10 +283,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
       }
 
-      await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))
-        .ConfigureAwait(false);
-      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor)
-        .ConfigureAwait(false);
+      await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor)).ConfigureAwait(false);
+      
+      // todo await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor).ConfigureAwait(false);
 
       await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
 
