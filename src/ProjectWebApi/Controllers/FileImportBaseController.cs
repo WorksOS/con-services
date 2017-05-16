@@ -20,6 +20,7 @@ using TCCFileAccess;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.Utilities;
+using VSS.Raptor.Service.Common.Utilities;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers
 {
@@ -310,7 +311,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor)
     {
-      var notificationResult = await raptorProxy.AddFile(projectId, projectUid, JsonConvert.SerializeObject(fileDescriptor)).ConfigureAwait(false);
+      var notificationResult = await raptorProxy.AddFile(projectId, projectUid, JsonConvert.SerializeObject(fileDescriptor), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       log.LogDebug(
         $"NotifyRaptorAddFile: projectId: {projectId} projectUid: {projectUid}, FileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
@@ -330,7 +331,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor)
     {
-      var notificationResult = await raptorProxy.DeleteFile(null, projectUid, fileDescriptor).ConfigureAwait(false);
+      var notificationResult = await raptorProxy.DeleteFile(null, projectUid, fileDescriptor, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       log.LogDebug(
         $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
