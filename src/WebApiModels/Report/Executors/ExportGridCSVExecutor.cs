@@ -70,7 +70,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
                 MemoryStream outputStream = null;
-//                DeflateStream compressorStream = null;
+
                 Stream writerStream = null;
 
                 MemoryStream ResponseData = null;
@@ -109,11 +109,6 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                     {
                         archive = new ZipArchive(outputStream, ZipArchiveMode.Create, true);
                         writerStream = archive.CreateEntry("asbuilt.csv", CompressionLevel.Optimal).Open();
-                        //                    var demoFile = archive.CreateEntry("data");
-                        //                    using (var entryStream = demoFile.Open())
-
-//                        compressorStream = new DeflateStream(outputStream, CompressionMode.Compress);
-//                        writerStream = compressorStream;
                     }
                     else
                     {
@@ -232,13 +227,6 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 try
                 {
-                    /* if (compressorStream != null)
-                                        {
-                                            // Close the compression stream to allow the compression activities to be finalised
-                                            compressorStream.Close();
-                                        }
-                    */
-
                     writerStream.Close();
                     if (request.compress)
                     {
