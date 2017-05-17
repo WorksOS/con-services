@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Xml;
+using Common.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using log4netExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
@@ -126,8 +128,8 @@ namespace VSS.Raptor.Service.WebApi
             //For now don't use application insights as it clogs the log with lots of stuff.
             //app.UseApplicationInsightsRequestTelemetry();
             //app.UseApplicationInsightsExceptionTelemetry();
-
-            app.UseResponseCaching();//Disable for now
+            app.UseResponseCaching();
+            app.UseReponseCacheQueryFeature();
             app.UseMvc();
 
             app.UseSwagger();
