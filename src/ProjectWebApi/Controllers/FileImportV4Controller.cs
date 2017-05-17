@@ -105,6 +105,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
+
       var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
 
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
@@ -126,7 +127,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
       ImportedFileDescriptor importedFileDescriptor = null;
       if (importedFileList.Count > 0)
-        importedFileDescriptor = importedFileList.First(f => f.Name == file.flowFilename
+        importedFileDescriptor = importedFileList.FirstOrDefault(f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
                                                              && f.ImportedFileType == importedFileType
                                                              && (
                                                                (importedFileType == ImportedFileType.SurveyedSurface &&
@@ -211,7 +212,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       ImportedFileDescriptor importedFileDescriptor = null;
       if (importedFileList.Count > 0)
       {
-        importedFileDescriptor = importedFileList.First(f => f.Name == file.flowFilename
+        importedFileDescriptor = importedFileList.FirstOrDefault(f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
                                                              && f.ImportedFileType == importedFileType
                                                              && (
                                                                (importedFileType == ImportedFileType.SurveyedSurface &&
@@ -221,6 +222,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       }
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
+      // this may be a create or update, so ok if it already exists in our DB
       var fileDescriptor = await WriteFileToRepository(customerUid, projectUid.ToString(), file.path,
           importedFileType,
           surveyedUtc)
@@ -246,7 +248,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
         .ToImmutableList()
-        .First(f => f.ImportedFileUid == importedFileUid)
+        .FirstOrDefault(f => f.ImportedFileUid == importedFileUid)
       );
       log.LogInformation(
         $"UpdateImportedFileV4. Completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
@@ -274,7 +276,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       var importedFiles = await GetImportedFiles(projectUid.ToString()).ConfigureAwait(false);
       ImportedFile importedFile = null;
       if (importedFiles.Count > 0)
-        importedFile = importedFiles.First(f => f.ImportedFileUid == importedFileUid.ToString());
+        importedFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
       if (importedFile == null)
       {
         var error = $"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid} doesn't exist";

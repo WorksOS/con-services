@@ -53,7 +53,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       IConfigurationStore store, IRaptorProxy raptorProxy,
       IFileRepository fileRepo, ILoggerFactory logger)
     {
-      log = logger.CreateLogger<ProjectBaseController>();
+      log = logger.CreateLogger<FileImportBaseController>();
       this.producer = producer;
       if (!this.producer.IsInitializedProducer)
         this.producer.InitProducer(store);
