@@ -1211,7 +1211,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             [FromQuery] string machineName,
             [FromQuery] bool? isJohnDoe)
         {
-          /*  log.LogDebug("GetTile: " + Request.QueryString);
+           log.LogDebug("GetTile: " + Request.QueryString);
             if (!projectId.HasValue)
             {
                 var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
@@ -1223,8 +1223,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             var tileResult = GetTile(filter, projectId.Value, mode, (ushort) WIDTH, (ushort) HEIGHT,
                 GetBoundingBox(BBOX));
             return tileResult;
-*/
-return TileResult.HelpSample;
+
         }
 
 
