@@ -48,6 +48,20 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
             this.configStore = configStore;
         }
 
+        #region ExportPing
+        /// <summary>
+        /// Pings the export service root
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route("api/v1/export/ping")]
+        [HttpPost]
+        public string PostExportCSVReport()
+        {
+            return "Ping!";
+        }
+        #endregion
+
         #region CSVExport
         /// <summary>
         /// Produces a CSV formatted export of production data identified by gridded sampling
