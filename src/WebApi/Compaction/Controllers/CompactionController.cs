@@ -31,6 +31,8 @@ using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.Co
 
 namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 {
+
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public class CompactionController : Controller
     {
         /// <summary>
@@ -1184,7 +1186,6 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         [ProjectUidVerifier]
         [Route("api/v2/compaction/tiles")]
         [HttpGet]
-        [ResponseCache(Duration = 180)]
         public TileResult GetTile(
             [FromQuery] string SERVICE,
             [FromQuery] string VERSION,
@@ -1210,18 +1211,19 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             [FromQuery] string machineName,
             [FromQuery] bool? isJohnDoe)
         {
-            log.LogDebug("GetTile: " + Request.QueryString);
-            if (!projectId.HasValue)
-            {
-                var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-                projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
-            }
-            Filter filter = CompactionSettings.CompactionFilter(
-                startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-                GetMachines(assetID, machineName, isJohnDoe));
-            var tileResult = GetTile(filter, projectId.Value, mode, (ushort) WIDTH, (ushort) HEIGHT,
-                GetBoundingBox(BBOX));
-            return tileResult;
+                     log.LogDebug("GetTile: " + Request.QueryString);
+                      if (!projectId.HasValue)
+                      {
+                          var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+                          projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+                      }
+                      Filter filter = CompactionSettings.CompactionFilter(
+                          startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
+                          GetMachines(assetID, machineName, isJohnDoe));
+                      var tileResult = GetTile(filter, projectId.Value, mode, (ushort) WIDTH, (ushort) HEIGHT,
+                          GetBoundingBox(BBOX));
+                      return tileResult;
+                      
         }
 
 
@@ -1270,7 +1272,6 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         [ProjectUidVerifier]
         [Route("api/v2/compaction/tiles/png")]
         [HttpGet]
-        [ResponseCache(Duration = 180)]
         public FileResult GetTileRaw(
             [FromQuery] string SERVICE,
             [FromQuery] string VERSION,

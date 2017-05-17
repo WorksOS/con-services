@@ -7,7 +7,8 @@ using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApi.Report.Controllers
 {
-  public class ConfigController : Controller
+    [ResponseCache(NoStore = true)]
+    public class ConfigController : Controller
   {
     /// <summary>
     /// Raptor client for use by executor

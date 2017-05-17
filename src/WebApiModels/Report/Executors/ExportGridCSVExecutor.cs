@@ -70,10 +70,11 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
                 MemoryStream outputStream = null;
-                DeflateStream compressorStream = null;
+
                 Stream writerStream = null;
 
                 MemoryStream ResponseData = null;
+                ZipArchive archive = null;
 
                 int Result = client.GetGriddedOrAlignmentCSVExport
                    (request.projectId ?? -1,
@@ -106,8 +107,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                     if (request.compress)
                     {
-                        compressorStream = new DeflateStream(outputStream, CompressionMode.Compress);
-                        writerStream = compressorStream;
+                        archive = new ZipArchive(outputStream, ZipArchiveMode.Create, true);
+                        writerStream = archive.CreateEntry("asbuilt.csv", CompressionLevel.Optimal).Open();
                     }
                     else
                     {
@@ -226,10 +227,10 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 try
                 {
-                    if (compressorStream != null)
+                    writerStream.Close();
+                    if (request.compress)
                     {
-                        // Close the compression stream to allow the compression activities to be finalised
-                        compressorStream.Close();
+                        archive.Dispose(); // Force ZIPArchive to emit all data to the stream
                     }
 
                     result = ExportResult.CreateExportDataResult(outputStream.ToArray(), (short)Result);

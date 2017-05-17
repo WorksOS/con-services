@@ -16,6 +16,7 @@ using VSS.Nighthawk.ReportSvc.WebApi.Models;
 
 namespace VSS.Raptor.Service.WebApi.Report.Controllers
 {
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public class ReportController : Controller, IReportSvc
     {
         /// <summary>
@@ -47,6 +48,20 @@ namespace VSS.Raptor.Service.WebApi.Report.Controllers
             this.log = logger.CreateLogger<ReportController>();
             this.configStore = configStore;
         }
+
+        #region ExportPing
+        /// <summary>
+        /// Pings the export service root
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route("api/v1/export/ping")]
+        [HttpPost]
+        public string PostExportCSVReport()
+        {
+            return "Ping!";
+        }
+        #endregion
 
         #region CSVExport
         /// <summary>

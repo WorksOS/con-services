@@ -21,11 +21,12 @@ using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 {
-  /// <summary>
-  /// Controller for supplying CCA data tiles.
-  /// </summary>
-  /// 
-  public class CCATileController : Controller, ICCATileContract
+    /// <summary>
+    /// Controller for supplying CCA data tiles.
+    /// </summary>
+    /// 
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+    public class CCATileController : Controller, ICCATileContract
   {
     /// <summary>
     /// Raptor client for use by executor

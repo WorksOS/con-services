@@ -14,6 +14,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// Controller for the ProfileProductionData resource.
     /// </summary>
     /// 
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public class ProfileProductionDataController : Controller, IProfileProductionDataContract
     {
       /// <summary>
