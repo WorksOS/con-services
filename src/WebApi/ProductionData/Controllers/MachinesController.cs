@@ -20,7 +20,8 @@ using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 {
-  public class MachinesController : Controller, IMachinesContract
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+    public class MachinesController : Controller, IMachinesContract
   {
     /// <summary>
     /// Raptor client for use by executor

@@ -13,6 +13,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <summary>
     /// CellController
     /// </summary>
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public class CellController : Controller
     {
       /// <summary>

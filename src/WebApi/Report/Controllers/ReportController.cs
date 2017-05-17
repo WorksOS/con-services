@@ -16,6 +16,7 @@ using VSS.Nighthawk.ReportSvc.WebApi.Models;
 
 namespace VSS.Raptor.Service.WebApi.Report.Controllers
 {
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public class ReportController : Controller, IReportSvc
     {
         /// <summary>

@@ -18,6 +18,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
   /// Controller for CCA data colour palettes resource.
   /// </summary>
   /// 
+  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class CCAColorPaletteController : Controller, ICCAColorPaletteContract
   {
     /// <summary>
