@@ -454,7 +454,7 @@ namespace TestUtility
     /// <param name="ignoreZeros"></param>
     public void GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
     {
-      var response = CallProjectWebApiV4("api/v4/projects/", HttpMethod.Get.ToString(), null, customerUid.ToString());
+      var response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Get.ToString(), null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         if (expectedResultsArray.Length == 0)
