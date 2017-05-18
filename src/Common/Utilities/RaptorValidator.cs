@@ -92,8 +92,8 @@ namespace VSS.Raptor.Service.Common.Utilities
           //Special case of below/above colors for elevation
           var invalid = (mode == DisplayMode.Height && ((i == 1 && palettes[0].value == -1) || (i == palettes.Count - 1 && palettes[i].value == -1))) ? false : 
             mode == DisplayMode.CutFill
-              ? palettes[i].value >= palettes[i - 1].value
-              : palettes[i].value <= palettes[i - 1].value;
+              ? palettes[i].value > palettes[i - 1].value
+              : palettes[i].value < palettes[i - 1].value;
           
           if (invalid)
           {

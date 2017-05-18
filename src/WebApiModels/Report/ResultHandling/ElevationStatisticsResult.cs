@@ -20,6 +20,17 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     private ElevationStatisticsResult()
     {
     }
+
+      public void SwapElevationsIfRequired()
+      {
+          if (MinElevation > MaxElevation)
+          {
+              var tempVar = MinElevation;
+              MinElevation = MaxElevation;
+              MaxElevation = tempVar;
+          }
+      }
+
     /// <summary>
     /// Zone boundaries
     /// </summary>

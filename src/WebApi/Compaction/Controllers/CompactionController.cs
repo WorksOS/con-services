@@ -1434,6 +1434,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             filter?.Validate();
             ElevationStatisticsResult elevExtents =
                 mode == DisplayMode.Height ? GetElevationRange(projectId, filter) : null;
+            //Fix bug in Raptor - swap elevations if required
+            elevExtents.SwapElevationsIfRequired();
             TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode,
                 CompactionSettings.CompactionPalette(mode, elevExtents),
                 liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0,
