@@ -58,9 +58,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// Gets a project for a customer. 
     /// </summary>
     /// <returns>A project data</returns>
-    [Route("api/v4/project")]
+    [Route("api/v4/project/{projectUid}")]
     [HttpGet]
-    public async Task<ProjectV4DescriptorsSingleResult> GetProjectV4([FromQuery] string projectUid)
+    public async Task<ProjectV4DescriptorsSingleResult> GetProjectV4(string projectUid)
     {
       log.LogInformation("GetProjectV4");
       var project =  await GetProject(projectUid).ConfigureAwait(false);
