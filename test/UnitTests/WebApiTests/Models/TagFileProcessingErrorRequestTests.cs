@@ -12,7 +12,7 @@ namespace WebApiTests.Models
     {
       TagFileProcessingErrorRequest request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(-1, "", 0);
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(String.Format("Must have assetId {0}", -1)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have assetId", StringComparison.Ordinal));
     }
 
     [TestMethod]
@@ -20,7 +20,7 @@ namespace WebApiTests.Models
     {
       TagFileProcessingErrorRequest request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(34345, "", 0);
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have filename"));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have filename", StringComparison.Ordinal));
     }
 
     [TestMethod]
@@ -28,7 +28,7 @@ namespace WebApiTests.Models
     {
       TagFileProcessingErrorRequest request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(34345, "aFilename", 0);
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have valid error number"));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have valid error number", StringComparison.Ordinal));
     }
 
     [TestMethod]
@@ -36,7 +36,7 @@ namespace WebApiTests.Models
     {
       TagFileProcessingErrorRequest request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(34345, "aFilename", -3);
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have valid error number"));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have valid error number", StringComparison.Ordinal));
     }
 
     [TestMethod]

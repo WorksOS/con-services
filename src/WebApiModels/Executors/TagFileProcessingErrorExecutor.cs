@@ -22,17 +22,22 @@ namespace WebApiModels.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       TagFileProcessingErrorRequest request = item as TagFileProcessingErrorRequest;
-      log.LogDebug("TagFileProcessingErrorExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
+      log.LogDebug("TagFileProcessingErrorExecutor: Going to process request {0}",
+        JsonConvert.SerializeObject(request));
 
       bool result = false;
 
       // if it got past the validation, it is complete.ok, check again
-      if (request.assetId > 0 && !string.IsNullOrEmpty(request.tagFileName) && Enum.IsDefined(typeof(TagFileErrorsEnum), request.error) == true)
-        result = true; 
-          
+      if (request.assetId > 0 && !string.IsNullOrEmpty(request.tagFileName) &&
+          Enum.IsDefined(typeof(TagFileErrorsEnum), request.error) == true)
+        result = true;
+
       if (result)
       {
-        var errorMessage = string.Format("OnTagFileProcessingError: assetID = {0}, tagFileName = {1}, errorNumber = {2}, error = {3}", request.assetId, request.tagFileName, (int)request.error, Enum.GetName(typeof(TagFileErrorsEnum), request.error));
+        var errorMessage =
+          string.Format("OnTagFileProcessingError: assetID = {0}, tagFileName = {1}, errorNumber = {2}, error = {3}",
+            request.assetId, request.tagFileName, (int) request.error,
+            Enum.GetName(typeof(TagFileErrorsEnum), request.error));
         log.LogDebug(errorMessage);
       }
 
@@ -43,7 +48,9 @@ namespace WebApiModels.Executors
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to create an alert for tag file processing error"));
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError,
+            "Failed to create an alert for tag file processing error"));
       }
 
     }

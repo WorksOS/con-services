@@ -65,6 +65,7 @@ namespace WebApi
       services.AddMvc(
         config =>
         {
+          // for jsonProperty validation
           config.Filters.Add(new ValidationFilterAttribute());
         });
       services.AddSwaggerGen();

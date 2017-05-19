@@ -9,7 +9,7 @@ namespace WebApiModels.Models
   /// <summary>
   /// The request representation used to request the project Id that a specified asset is inside at a given location and date time.
   /// </summary>
-  public class GetProjectIdRequest: ContractRequest
+  public class GetProjectIdRequest : ContractRequest
   {
     /// <summary>
     /// The id of the asset whose tagfile is to be processed. A value of -1 indicates 'none' so all assets are considered (depending on tccOrgId). 
@@ -52,12 +52,14 @@ namespace WebApiModels.Models
     /// Private constructor
     /// </summary>
     private GetProjectIdRequest()
-    { }
+    {
+    }
 
     /// <summary>
     /// Create instance of GetProjectIdRequest
     /// </summary>
-    public static GetProjectIdRequest CreateGetProjectIdRequest( long assetId, double latitude, double longitude, double height, DateTime timeOfPosition, string tccOrgUid)
+    public static GetProjectIdRequest CreateGetProjectIdRequest(long assetId, double latitude, double longitude,
+      double height, DateTime timeOfPosition, string tccOrgUid)
     {
       return new GetProjectIdRequest
       {
@@ -70,7 +72,7 @@ namespace WebApiModels.Models
       };
     }
 
-    
+
     /// <summary>
     /// Validates all properties
     /// </summary>
@@ -78,30 +80,30 @@ namespace WebApiModels.Models
     {
       if (assetId <= 0 && string.IsNullOrEmpty(tccOrgUid))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            String.Format("Must contain one or more of assetId {0} or tccOrgId {1}", assetId, tccOrgUid)));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ContractExecutionStatesEnum.ValidationError,
+            "Must contain one or more of assetId or tccOrgId"));
       }
 
       if (latitude < -90 || latitude > 90)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            String.Format("Latitude value of {0} should be between -90 degrees and 90 degrees", latitude)));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ContractExecutionStatesEnum.ValidationError,
+            "Latitude should be between -90 degrees and 90 degrees"));
       }
 
       if (longitude < -180 || longitude > 180)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            String.Format("Longitude value of {0} should be between -180 degrees and 180 degrees", longitude)));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ContractExecutionStatesEnum.ValidationError,
+            "Longitude should be between -180 degrees and 180 degrees"));
       }
 
-      if (!(timeOfPosition > DateTime.UtcNow.AddYears(-5) && timeOfPosition <= DateTime.UtcNow))
+      if (!(timeOfPosition > DateTime.UtcNow.AddYears(-50) && timeOfPosition <= DateTime.UtcNow.AddDays(30)))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            String.Format("timeOfPosition must have occured within last 5 years {0}", timeOfPosition)));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ContractExecutionStatesEnum.ValidationError,
+            "timeOfPosition must have occured within last 50 years"));
       }
 
     }

@@ -34,10 +34,11 @@ namespace WebApiModels.Executors
       {
         if (project.StartDate <= request.tagFileUTC.Date && request.tagFileUTC.Date <= project.EndDate &&
             !string.IsNullOrEmpty(project.GeometryWKT)
-            )
+        )
         {
           projectBoundary.FencePoints = dataRepository.ParseBoundaryData(project.GeometryWKT);
-          log.LogDebug("ProjectBoundaryAtDateExecutor: Loaded projectBoundary.FencePoints? {0}", JsonConvert.SerializeObject(projectBoundary.FencePoints));
+          log.LogDebug("ProjectBoundaryAtDateExecutor: Loaded projectBoundary.FencePoints? {0}",
+            JsonConvert.SerializeObject(projectBoundary.FencePoints));
 
           if (projectBoundary.FencePoints.Length > 0)
             result = true;
@@ -51,11 +52,11 @@ namespace WebApiModels.Executors
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to get project boundary"));
+          GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(false, new TWGS84FenceContainer(),
+            ContractExecutionStatesEnum.InternalProcessingError,
+            "Failed to get project boundary"));
       }
-
     }
-
   }
 }
   

@@ -11,7 +11,7 @@ namespace WebApiModels.Models
   /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project  is known 
   /// which is when a tagfile is being manually imported by a user.
   /// </summary>
-  public class GetAssetIdRequest: ContractRequest
+  public class GetAssetIdRequest : ContractRequest
   {
     /// <summary>
     /// The id of the project into which the tagfile data should be processed. A value of -1 indicates 'unknown' 
@@ -37,7 +37,8 @@ namespace WebApiModels.Models
     /// Private constructor
     /// </summary>
     private GetAssetIdRequest()
-    { }
+    {
+    }
 
     /// <summary>
     /// Create instance of GetAssetIdRequest
@@ -52,7 +53,7 @@ namespace WebApiModels.Models
       };
     }
 
-   
+
     /// <summary>
     /// Validates assetID And/or projectID is provided
     /// </summary>
@@ -61,25 +62,25 @@ namespace WebApiModels.Models
       if (string.IsNullOrEmpty(radioSerial) && projectId <= 0)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                   "Must have assetId and/or projectID"));
+          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ContractExecutionStatesEnum.ValidationError,
+            "Must have assetId and/or projectID"));
       }
 
       // if the number is not in enum then it returns the number
-      var isDeviceTypeValid = (((DeviceTypeEnum)deviceType).ToString() != deviceType.ToString());
+      var isDeviceTypeValid = (((DeviceTypeEnum) deviceType).ToString() != deviceType.ToString());
 
       if (!string.IsNullOrEmpty(radioSerial) && (deviceType < 1 || !isDeviceTypeValid))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                   "AssetId must have valid deviceType"));
+          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ContractExecutionStatesEnum.ValidationError,
+            "AssetId must have valid deviceType"));
       }
 
       if (deviceType == 0 && projectId <= 0)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
-                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                   "A manual/unknown deviceType must have a projectID"));
+          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ContractExecutionStatesEnum.ValidationError,
+            "A manual/unknown deviceType must have a projectID"));
       }
 
     }

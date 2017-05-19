@@ -9,7 +9,7 @@ namespace WebApiModels.Models
   /// <summary>
   /// The request representation used to request the boundary of a project that is active at a specified date time.
   /// </summary>
-  public class GetProjectBoundaryAtDateRequest: ContractRequest 
+  public class GetProjectBoundaryAtDateRequest : ContractRequest
   {
     /// <summary>
     /// The id of the project to get the boundary of. 
@@ -27,12 +27,14 @@ namespace WebApiModels.Models
     /// Private constructor
     /// </summary>
     private GetProjectBoundaryAtDateRequest()
-    { }
+    {
+    }
 
     /// <summary>
     /// Create instance of GetProjectBoundaryAtDateRequest
     /// </summary>
-    public static GetProjectBoundaryAtDateRequest CreateGetProjectBoundaryAtDateRequest(long projectId, DateTime tagFileUTC)
+    public static GetProjectBoundaryAtDateRequest CreateGetProjectBoundaryAtDateRequest(long projectId,
+      DateTime tagFileUTC)
     {
       return new GetProjectBoundaryAtDateRequest
       {
@@ -40,7 +42,7 @@ namespace WebApiModels.Models
         tagFileUTC = tagFileUTC
       };
     }
-    
+
 
     /// <summary>
     /// Validates all properties
@@ -50,15 +52,17 @@ namespace WebApiModels.Models
       if (projectId <= 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            String.Format("Must have projectID {0}", projectId)));
+          GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(false, new TWGS84FenceContainer(),
+            ContractExecutionStatesEnum.ValidationError,
+            "Must have projectId"));
       }
 
-      if (!(tagFileUTC > DateTime.UtcNow.AddYears(-5) && tagFileUTC <= DateTime.UtcNow))
+      if (!(tagFileUTC > DateTime.UtcNow.AddYears(-50) && tagFileUTC <= DateTime.UtcNow.AddDays(30)))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            String.Format("tagFileUTC must have occured within last 5 years {0}", tagFileUTC)));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
+          GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(false, new TWGS84FenceContainer(),
+            ContractExecutionStatesEnum.ValidationError,
+            "tagFileUTC must have occured within last 50 years"));
       }
     }
   }

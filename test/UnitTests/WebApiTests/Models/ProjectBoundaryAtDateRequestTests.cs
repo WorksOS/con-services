@@ -12,7 +12,7 @@ namespace WebApiTests.Models
     {
       GetProjectBoundaryAtDateRequest projectBoundaryAtDateRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(-1, DateTime.UtcNow);
       var ex = Assert.ThrowsException<ServiceException>(() => projectBoundaryAtDateRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(String.Format("Must have projectID {0}", -1)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have projectId", StringComparison.Ordinal));
     }
 
     [TestMethod]
@@ -20,16 +20,16 @@ namespace WebApiTests.Models
     {
       GetProjectBoundaryAtDateRequest projectBoundaryAtDateRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(-1, DateTime.UtcNow.AddYears(-1));
       var ex = Assert.ThrowsException<ServiceException>(() => projectBoundaryAtDateRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(String.Format("Must have projectID {0}", -1)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have projectId", StringComparison.Ordinal));
     }
 
     [TestMethod]
     public void ValidateGetAssetIdRequest_ValidatorCase3()
     {
-      DateTime now = DateTime.UtcNow.AddYears(-5).AddMonths(-1);
+      DateTime now = DateTime.UtcNow.AddYears(-50).AddMonths(-1);
       GetProjectBoundaryAtDateRequest projectBoundaryAtDateRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(1233, now);
       var ex = Assert.ThrowsException<ServiceException>(() => projectBoundaryAtDateRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(string.Format("tagFileUTC must have occured within last 5 years {0}", now)));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("tagFileUTC must have occured within last 50 years", StringComparison.Ordinal));
     }
 
     [TestMethod]

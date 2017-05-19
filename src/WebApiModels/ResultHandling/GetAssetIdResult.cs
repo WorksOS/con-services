@@ -19,13 +19,17 @@
     /// <summary>
     /// Create instance of GetAssetIdResult
     /// </summary>
-    public static GetAssetIdResult CreateGetAssetIdResult(bool result, long assetId, int machineLevel)
+    public static GetAssetIdResult CreateGetAssetIdResult(bool result, long assetId, int machineLevel,
+      ContractExecutionStatesEnum code = ContractExecutionStatesEnum.ExecutedSuccessfully,
+      string message = "success")
     {
       return new GetAssetIdResult
       {
         result = result,
         assetId = assetId,
-        machineLevel = machineLevel
+        machineLevel = machineLevel,
+        Code = code,
+        Message = message
       };
     }
   }

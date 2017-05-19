@@ -23,7 +23,8 @@ namespace WebApiModels.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       GetProjectBoundariesAtDateRequest request = item as GetProjectBoundariesAtDateRequest;
-      log.LogDebug("ProjectBoundariesAtDateExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
+      log.LogDebug("ProjectBoundariesAtDateExecutor: Going to process request {0}",
+        JsonConvert.SerializeObject(request));
 
       bool result = false;
       ProjectBoundaryPackage[] boundaries = new ProjectBoundaryPackage[0];
@@ -35,7 +36,8 @@ namespace WebApiModels.Executors
       {
         // loading customer checks that it is of the correct type
         Customer assetOwningCustomer = dataRepository.LoadCustomer(asset.OwningCustomerUID);
-        log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theAssetsCustomer? {0}", JsonConvert.SerializeObject(assetOwningCustomer));
+        log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theAssetsCustomer? {0}",
+          JsonConvert.SerializeObject(assetOwningCustomer));
 
         if (assetOwningCustomer != null)
         {
@@ -43,24 +45,28 @@ namespace WebApiModels.Executors
           // i.e. will be 0 or 1 customer
           IEnumerable<Subscriptions> subs = null;
           subs = dataRepository.LoadAssetSubs(asset.AssetUID, request.tagFileUTC.Date)
-                .Where(x => x.customerUid == assetOwningCustomer.CustomerUID);
+            .Where(x => x.customerUid == assetOwningCustomer.CustomerUID);
           log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theAssetsSubs? {0}", JsonConvert.SerializeObject(subs));
 
           // we need only 1 sub.
           if (subs == null || subs.Count() == 0)
           {
-            subs = dataRepository.LoadManual3DCustomerBasedSubs(assetOwningCustomer.CustomerUID, request.tagFileUTC.Date);
-            log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theCustomersSubs? {0}", JsonConvert.SerializeObject(subs));
+            subs = dataRepository.LoadManual3DCustomerBasedSubs(assetOwningCustomer.CustomerUID,
+              request.tagFileUTC.Date);
+            log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded theCustomersSubs? {0}",
+              JsonConvert.SerializeObject(subs));
           }
-          
+
           if (subs != null && subs.Count() > 0)
           {
             //Look for projects which are active at date time request.tagFileUTC
             //i.e. tagFileUTC is between project start and end dates
             //and which belong to the asset owner and get their boundary points
 
-            IEnumerable<Project> projects = dataRepository.LoadProjects(asset.OwningCustomerUID, request.tagFileUTC.Date);
-            log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded Projects {0} for customer", JsonConvert.SerializeObject(projects));
+            IEnumerable<Project> projects =
+              dataRepository.LoadProjects(asset.OwningCustomerUID, request.tagFileUTC.Date);
+            log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded Projects {0} for customer",
+              JsonConvert.SerializeObject(projects));
 
             if (projects != null && projects.Count() > 0)
             {
@@ -79,13 +85,14 @@ namespace WebApiModels.Executors
                 }
               }
               boundaries = list.ToArray();
-              log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded boundaries {0} for projects", JsonConvert.SerializeObject(boundaries));
+              log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded boundaries {0} for projects",
+                JsonConvert.SerializeObject(boundaries));
 
               if (boundaries.Count() > 0) result = true;
             }
           }
         }
-      }      
+      }
 
       try
       {
@@ -94,8 +101,9 @@ namespace WebApiModels.Executors
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to get project boundaries"));
+          GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(false, new ProjectBoundaryPackage[0],
+            ContractExecutionStatesEnum.InternalProcessingError, "Failed to get project boundaries"));
       }
-    }    
+    }
   }
 }

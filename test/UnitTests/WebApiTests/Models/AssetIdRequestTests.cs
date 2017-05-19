@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApiModels.Models;
 
 namespace WebApiTests.Models
@@ -11,7 +12,7 @@ namespace WebApiTests.Models
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
       var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have assetId and/or projectID"));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("Must have assetId and/or projectID", StringComparison.Ordinal));
     }
 
     [TestMethod]
@@ -19,7 +20,7 @@ namespace WebApiTests.Models
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "ASerial5");
       var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("AssetId must have valid deviceType"));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("AssetId must have valid deviceType", StringComparison.Ordinal));
     }
 
     [TestMethod]
@@ -27,7 +28,7 @@ namespace WebApiTests.Models
     {
       GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 100, "ASerial5");
       var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
-      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("AssetId must have valid deviceType"));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf("AssetId must have valid deviceType", StringComparison.Ordinal));
     }
 
     [TestMethod]

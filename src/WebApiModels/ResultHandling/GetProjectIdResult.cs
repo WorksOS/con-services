@@ -14,14 +14,18 @@ namespace WebApiModels.ResultHandling
     /// <summary>
     /// Create instance of GetProjectIdResult
     /// </summary>
-    public static GetProjectIdResult CreateGetProjectIdResult(bool result, long projectId)
+    public static GetProjectIdResult CreateGetProjectIdResult(bool result, long projectId,
+      ContractExecutionStatesEnum code = ContractExecutionStatesEnum.ExecutedSuccessfully,
+      string message = "success")
     {
       return new GetProjectIdResult
       {
         result = result,
-        projectId = projectId
+        projectId = projectId,
+        Code = code,
+        Message = message
       };
     }
-    
+
   }
 }

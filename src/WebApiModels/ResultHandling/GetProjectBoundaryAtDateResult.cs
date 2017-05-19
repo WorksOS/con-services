@@ -16,12 +16,17 @@ namespace WebApiModels.ResultHandling
     /// <summary>
     /// Create instance of GetProjectBoundaryAtDateResult
     /// </summary>
-    public static GetProjectBoundaryAtDateResult CreateGetProjectBoundaryAtDateResult(bool result, TWGS84FenceContainer projectBoundary)
+    public static GetProjectBoundaryAtDateResult CreateGetProjectBoundaryAtDateResult(bool result,
+      TWGS84FenceContainer projectBoundary,
+      ContractExecutionStatesEnum code = ContractExecutionStatesEnum.ExecutedSuccessfully,
+      string message = "success")
     {
       return new GetProjectBoundaryAtDateResult
       {
         result = result,
-        projectBoundary = projectBoundary
+        projectBoundary = projectBoundary,
+        Code = code,
+        Message = message
       };
     }
   }

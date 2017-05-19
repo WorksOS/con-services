@@ -51,7 +51,7 @@ namespace WebApiModels.Executors
       GetProjectIdRequest request = item as GetProjectIdRequest;
       log.LogDebug("ProjectIdExecutor: Going to process request {0}", JsonConvert.SerializeObject(request));
 
-      long projectId = -1; 
+      long projectId = -1;
       IEnumerable<Project> potentialProjects = null;
 
       Asset asset = null;
@@ -75,7 +75,8 @@ namespace WebApiModels.Executors
         if (asset != null && !string.IsNullOrEmpty(asset.OwningCustomerUID))
         {
           customerAssetOwner = dataRepository.LoadCustomerByCustomerUID(asset.OwningCustomerUID);
-          log.LogDebug("ProjectIdExecutor: Loaded assetsCustomer? {0}", JsonConvert.SerializeObject(customerAssetOwner));
+          log.LogDebug("ProjectIdExecutor: Loaded assetsCustomer? {0}",
+            JsonConvert.SerializeObject(customerAssetOwner));
 
           assetSubs = dataRepository.LoadAssetSubs(asset.AssetUID, request.timeOfPosition);
           log.LogDebug("ProjectIdExecutor: Loaded assetSubs? {0}", JsonConvert.SerializeObject(assetSubs));
@@ -97,11 +98,13 @@ namespace WebApiModels.Executors
         //    must have valid assetID, which must have a 3d sub.
         if (customerAssetOwner != null && assetSubs != null && assetSubs.Count() > 0)
         {
-          var p = projectRepo.GetStandardProject(customerAssetOwner.CustomerUID, request.latitude, request.longitude, request.timeOfPosition);
+          var p = projectRepo.GetStandardProject(customerAssetOwner.CustomerUID, request.latitude, request.longitude,
+            request.timeOfPosition);
           if (p.Result != null && p.Result.Count() > 0)
           {
             potentialProjects = potentialProjects == null ? p.Result : potentialProjects.Concat(p.Result);
-            log.LogDebug("ProjectIdExecutor: Loaded standardProjects which lat/long is within {0}", JsonConvert.SerializeObject(p.Result));
+            log.LogDebug("ProjectIdExecutor: Loaded standardProjects which lat/long is within {0}",
+              JsonConvert.SerializeObject(p.Result));
           }
           else
           {
@@ -116,12 +119,14 @@ namespace WebApiModels.Executors
         if (customerTCCOrg != null && request.assetId != -2)
         {
           var p = projectRepo.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
-                      request.latitude, request.longitude, request.timeOfPosition,
-                      (int) ProjectType.ProjectMonitoring, (serviceTypeMappings.serviceTypes.Find(st => st.name == "Project Monitoring").NGEnum));
+            request.latitude, request.longitude, request.timeOfPosition,
+            (int) ProjectType.ProjectMonitoring,
+            (serviceTypeMappings.serviceTypes.Find(st => st.name == "Project Monitoring").NGEnum));
           if (p.Result != null && p.Result.Count() > 0)
           {
             potentialProjects = potentialProjects == null ? p.Result : potentialProjects.Concat(p.Result);
-            log.LogDebug("ProjectIdExecutor: Loaded pmProjects which lat/long is within {0}", JsonConvert.SerializeObject(p.Result));
+            log.LogDebug("ProjectIdExecutor: Loaded pmProjects which lat/long is within {0}",
+              JsonConvert.SerializeObject(p.Result));
           }
           else
           {
@@ -136,12 +141,13 @@ namespace WebApiModels.Executors
         if (customerTCCOrg != null)
         {
           var p = projectRepo.GetProjectMonitoringProject(customerTCCOrg.CustomerUID,
-          request.latitude, request.longitude, request.timeOfPosition,
-          (int)ProjectType.LandFill, (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum));
+            request.latitude, request.longitude, request.timeOfPosition,
+            (int) ProjectType.LandFill, (serviceTypeMappings.serviceTypes.Find(st => st.name == "Landfill").NGEnum));
           if (p.Result != null && p.Result.Count() > 0)
-          { 
+          {
             potentialProjects = potentialProjects == null ? p.Result : potentialProjects.Concat(p.Result);
-            log.LogDebug("ProjectIdExecutor: Loaded landfillProjects which lat/long is within {0}", JsonConvert.SerializeObject(p.Result));
+            log.LogDebug("ProjectIdExecutor: Loaded landfillProjects which lat/long is within {0}",
+              JsonConvert.SerializeObject(p.Result));
           }
           else
           {
@@ -155,8 +161,7 @@ namespace WebApiModels.Executors
         //If > 1 found then returns -2
         if (potentialProjects == null || potentialProjects.Count() == 0)
           projectId = -1;
-        else
-          if (potentialProjects.Distinct().Count() > 1)
+        else if (potentialProjects.Distinct().Count() > 1)
           projectId = -2;
         else
           projectId = potentialProjects.ToList()[0].LegacyProjectID;
@@ -172,9 +177,9 @@ namespace WebApiModels.Executors
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to get project id"));
+          GetProjectIdResult.CreateGetProjectIdResult(false, -1, ContractExecutionStatesEnum.InternalProcessingError,
+            "Failed to get project id"));
       }
-
     }
   }
 }

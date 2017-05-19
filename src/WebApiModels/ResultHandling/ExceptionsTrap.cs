@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using WebApiModels.Models;
 
 namespace WebApiModels.ResultHandling
@@ -32,7 +34,10 @@ namespace WebApiModels.ResultHandling
       }
       catch (ServiceException ex)
       {
-        context.Response.StatusCode = (int)ex.Response.StatusCode;
+        log.LogWarning($"Service exception: {ex.GetContent}");
+        context.Response.StatusCode = (ex.Response.StatusCode == HttpStatusCode.BadRequest)
+          ? (int) HttpStatusCode.OK
+          : (int) ex.Response.StatusCode;
         await context.Response.WriteAsync(ex.GetContent);
       }
       catch (Exception ex)
@@ -49,9 +54,9 @@ namespace WebApiModels.ResultHandling
           {
             var exception = ex as AggregateException;
             log.LogCritical("EXCEPTION AGGREGATED: {0}, {1}, {2}",
-                exception.InnerExceptions.Select(i => i.Message).Aggregate((i, j) => i + j),
-                exception.InnerExceptions.Select(i => i.Source).Aggregate((i, j) => i + j),
-                exception.InnerExceptions.Select(i => i.StackTrace).Aggregate((i, j) => i + j));
+              exception.InnerExceptions.Select(i => i.Message).Aggregate((i, j) => i + j),
+              exception.InnerExceptions.Select(i => i.Source).Aggregate((i, j) => i + j),
+              exception.InnerExceptions.Select(i => i.StackTrace).Aggregate((i, j) => i + j));
 
           }
         }

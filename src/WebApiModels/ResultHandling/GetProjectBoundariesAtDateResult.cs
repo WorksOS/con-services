@@ -6,7 +6,7 @@ namespace WebApiModels.ResultHandling
   /// <summary>
   /// The result representation of a get project boundaries request.
   /// </summary>
-  public class GetProjectBoundariesAtDateResult : ContractExecutionResult 
+  public class GetProjectBoundariesAtDateResult : ContractExecutionResult
   {
     /// <summary>
     /// The boundaries of the projects. Empty if none.
@@ -16,14 +16,19 @@ namespace WebApiModels.ResultHandling
     /// <summary>
     /// Create instance of GetProjectBoundariesAtDateResult
     /// </summary>
-    public static GetProjectBoundariesAtDateResult CreateGetProjectBoundariesAtDateResult(bool result, ProjectBoundaryPackage[] projectBoundaries)
+    public static GetProjectBoundariesAtDateResult CreateGetProjectBoundariesAtDateResult(bool result,
+      ProjectBoundaryPackage[] projectBoundaries,
+      ContractExecutionStatesEnum code = ContractExecutionStatesEnum.ExecutedSuccessfully,
+      string message = "success")
     {
       return new GetProjectBoundariesAtDateResult
       {
         result = result,
-        projectBoundaries = projectBoundaries
+        projectBoundaries = projectBoundaries,
+        Code = code,
+        Message = message
       };
     }
-    
+
   }
 }

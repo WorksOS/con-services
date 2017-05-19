@@ -1,7 +1,7 @@
 RMDIR /S /Q artifacts
 dotnet restore
 rem dotnet publish ./src/Repositories -o artifacts/Repositories -f netcoreapp1.1 -c Docker
-dotnet publish ./src/WebApi -o ../..artifacts/WebApi -f netcoreapp1.1 -c Docker
+dotnet publish ./src/WebApi -o ../../artifacts/WebApi -f netcoreapp1.1 -c Docker
 
 rem dotnet build ./test/UnitTests/\WebApiTests
 

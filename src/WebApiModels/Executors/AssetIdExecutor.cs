@@ -17,7 +17,7 @@ namespace WebApiModels.Executors
   /// The executor which gets a legacyAssetId and/or serviceType for the requested radioSerial and/or legacyProjectId.
   /// </summary>
   public class AssetIdExecutor : RequestExecutorContainer
-  {    
+  {
 
     /// <summary>
     /// Processes the get asset request and finds the id of the asset corresponding to the given tagfile radio serial number.
@@ -55,22 +55,24 @@ namespace WebApiModels.Executors
       //Special case: Allow manual import of tag file if user has manual 3D subscription.
       //ProjectID is -1 for auto processing of tag files and non-zero for manual processing.
       //Radio serial may not be present in the tag file. The logic below replaces the 'john doe' handling in Raptor for these tag files.
-      if (string.IsNullOrEmpty(request.radioSerial) || request.deviceType == (int)DeviceTypeEnum.MANUALDEVICE)
+      if (string.IsNullOrEmpty(request.radioSerial) || request.deviceType == (int) DeviceTypeEnum.MANUALDEVICE)
       {
         //Check for manual 3D subscription for the projects customer, Only allowed to process tag file if legacyProjectId is > 0.
         //If ok then set asset Id to -1 so Raptor knows it's a John Doe machine and set serviceType machineLevel to 18 "Manual 3D PM"
         if (project != null)
         {
-          CheckForManual3DCustomerBasedSub(request.projectId, customerSubs, assetSubs, out legacyAssetId, out serviceType);
+          CheckForManual3DCustomerBasedSub(request.projectId, customerSubs, assetSubs, out legacyAssetId,
+            out serviceType);
         }
       }
       else
       {
         //Radio serial in tag file. Use it to map to asset in VL.
-        AssetDeviceIds assetDevice = dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum)request.deviceType).ToString());
+        AssetDeviceIds assetDevice =
+          dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum) request.deviceType).ToString());
 
         // special case in CGen US36833 If fails on DT SNM940 try as again SNM941 
-        if (assetDevice == null && (DeviceTypeEnum)request.deviceType == DeviceTypeEnum.SNM940)
+        if (assetDevice == null && (DeviceTypeEnum) request.deviceType == DeviceTypeEnum.SNM940)
         {
           log.LogDebug("AssetIdExecutor: Failed for SNM940 trying again as Device Type SNM941");
           assetDevice = dataRepository.LoadAssetDevice(request.radioSerial, DeviceTypeEnum.SNM941.ToString());
@@ -88,17 +90,21 @@ namespace WebApiModels.Executors
           log.LogDebug("AssetIdExecutor: Loaded assetsCustomerSubs? {0}", JsonConvert.SerializeObject(customerSubs));
 
           serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project, customerSubs, assetSubs);
-          log.LogDebug("AssetIdExecutor: after GetMostSignificantServiceType(). AssetUID {0} project{1} custSubs {2} assetSubs {3}",
-            assetDevice.AssetUID, JsonConvert.SerializeObject(project), JsonConvert.SerializeObject(customerSubs), JsonConvert.SerializeObject(assetSubs));
+          log.LogDebug(
+            "AssetIdExecutor: after GetMostSignificantServiceType(). AssetUID {0} project{1} custSubs {2} assetSubs {3}",
+            assetDevice.AssetUID, JsonConvert.SerializeObject(project), JsonConvert.SerializeObject(customerSubs),
+            JsonConvert.SerializeObject(assetSubs));
         }
         else
         {
-          CheckForManual3DCustomerBasedSub(request.projectId, customerSubs, assetSubs, out legacyAssetId, out serviceType);
+          CheckForManual3DCustomerBasedSub(request.projectId, customerSubs, assetSubs, out legacyAssetId,
+            out serviceType);
         }
       }
 
       result = !((legacyAssetId == -1) && (serviceType == 0));
-      log.LogDebug("AssetIdExecutor: All done. result {0} legacyAssetId {1} serviceType {2}", result, legacyAssetId, serviceType);
+      log.LogDebug("AssetIdExecutor: All done. result {0} legacyAssetId {1} serviceType {2}", result, legacyAssetId,
+        serviceType);
 
       try
       {
@@ -107,9 +113,9 @@ namespace WebApiModels.Executors
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to get legacy asset id"));
+          GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, ContractExecutionStatesEnum.InternalProcessingError,
+            "Failed to get legacy asset id"));
       }
-
     }
 
 
