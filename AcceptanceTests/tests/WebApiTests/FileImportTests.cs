@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Immutable;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
-using System.Net;
-using ProjectWebApiCommon.Models;
 
 namespace WebApiTests
 {
@@ -50,10 +47,10 @@ namespace WebApiTests
     }
 
     [TestMethod] [Ignore]
-    public void TestImportFileUpload()
+    public void TestImportSvlFile()
     {
       const string testName = "File Import 2";
-      msg.Title(testName, "Create standard project and customer then upload file");
+      msg.Title(testName, "Create standard project and customer then upload svl file");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
@@ -73,17 +70,18 @@ namespace WebApiTests
       $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
       ts.PublishEventCollection(eventsArray);
 
-      var projectsArray = new[] {
-       "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name       | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone          | StartDate   | EndDate   | GeometryWKT   |",
-      $"| Project   | 0d+09:10:00 | {projectUid} | {legacyProjectId} | {testName} | 0                | New Zealand Standard Time | New Zealand Standard Time | {startDate} | {endDate} | {geometryWkt} |"};
-      ts.PublishEventCollection(projectsArray);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+       "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
+      ts.PublishEventCollection(projectEventArray);
 
       ImportFile importFile = new ImportFile();
       var expectedResults = importFile.expectedImportFileDescriptorSingleResult;
       var uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={projectUid}&importedFileType=Alignment&fileCreatedUtc=2017-05-01T23:24:26.222Z&fileUpdatedUtc=2017-05-03T01:02:03.111Z";
-     // var uri =  $"http://localhost:20979/api/v4/importedfile?projectUid={projectUid}&importedFileType=Alignment&fileCreatedUtc=2017-05-01T23:24:26.222Z&fileUpdatedUtc=2017-05-03T01:02:03.111Z";
-      var filesResult = importFile.PostImportedFilesToWebApi(uri, customerUid, projectUid,"FileImportFiles\\Boundarys.txt");
-      Assert.AreEqual(filesResult.ImportedFileDescriptor, expectedResults.ImportedFileDescriptor, " Expected number of fields does not match actual");
+      //var uri =  $"https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfile?projectUid={projectUid}&importedFileType=Alignment&fileCreatedUtc=2017-05-01T23:24:26.222Z&fileUpdatedUtc=2017-05-03T01:02:03.111Z";
+      var filesResult = importFile.PostImportedFilesToWebApi(uri, customerUid, projectUid,"FileImportFiles\\Link-Can.SVL");
+      Assert.AreEqual(filesResult.ImportedFileDescriptor.ImportedFileTypeName, "Link-Can.SVL", " File name does not match actual");
     }
   }
 }
