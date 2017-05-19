@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Net;
 using Newtonsoft.Json;
+using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
+using VSS.Raptor.Service.Common.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApiModels.Notification.Models
 {
@@ -29,6 +32,12 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
     public string UserPreferenceUnits { get; private set; }
 
     /// <summary>
+    /// A unique file identifier
+    /// </summary>
+    [JsonProperty(PropertyName = "fileId", Required = Required.Always)]
+    public long FileId { get; private set; }
+
+    /// <summary>
     /// Private constructor
     /// </summary>
     private ProjectFileDescriptor()
@@ -44,7 +53,8 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
       Guid? projectUId,
       FileDescriptor file,
       string coordSystemFileName,
-      string userUnits
+      string userUnits,
+      long fileId
     )
     {
       return new ProjectFileDescriptor
@@ -53,7 +63,8 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
         projectUid = projectUId,
         File = file,
         CoordSystemFileName = coordSystemFileName,
-        UserPreferenceUnits = userUnits
+        UserPreferenceUnits = userUnits,
+        FileId = fileId
       };
     }
 
@@ -64,6 +75,13 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
     {
       base.Validate();
       this.File.Validate();
+
+      if (FileId <= 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "File Id is required"));
+      }
     }
   }
 }

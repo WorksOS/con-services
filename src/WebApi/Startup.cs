@@ -29,6 +29,8 @@ using VSS.Raptor.Service.Common.Filters.Validation;
 using VSS.Raptor.Service.Common.JsonConverters;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using WebApiModels.Interfaces;
+using WebApiModels.Notification.Helpers;
 
 namespace VSS.Raptor.Service.WebApi
 {
@@ -110,6 +112,7 @@ namespace VSS.Raptor.Service.WebApi
             services.AddSingleton<IProjectListProxy, ProjectListProxy>();
             services.AddTransient<IFileRepository, FileRepository>();
             services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
+            services.AddTransient<ITileGenerator, TileGenerator>();
 
             serviceCollection = services;
         }

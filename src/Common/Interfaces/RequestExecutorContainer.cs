@@ -6,6 +6,7 @@ using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.ResultHandling;
+using WebApiModels.Interfaces;
 
 namespace VSS.Raptor.Service.Common.Interfaces
 {
@@ -39,6 +40,11 @@ namespace VSS.Raptor.Service.Common.Interfaces
     /// To talk to TCC with
     /// </summary>
     protected IFileRepository fileRepo;
+
+    /// <summary>
+    /// For handling DXF tiles
+    /// </summary>
+    protected ITileGenerator tileGenerator;
 
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
@@ -130,7 +136,7 @@ namespace VSS.Raptor.Service.Common.Interfaces
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo) : this()
+    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator) : this()
     {
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
@@ -138,6 +144,7 @@ namespace VSS.Raptor.Service.Common.Interfaces
         this.log = logger.CreateLogger<RequestExecutorContainer>();
       this.configStore = configStore;
       this.fileRepo = fileRepo;
+      this.tileGenerator = tileGenerator;
     }
 
     /// <summary>
@@ -166,10 +173,10 @@ namespace VSS.Raptor.Service.Common.Interfaces
     /// </summary>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor=null, IConfigurationStore configStore=null, IFileRepository fileRepo=null) 
+    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor=null, IConfigurationStore configStore=null, IFileRepository fileRepo=null, ITileGenerator tileGenerator=null) 
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() {raptorClient = raptorClient, tagProcessor = tagProcessor, log = logger.CreateLogger<TExecutor>(), configStore = configStore, fileRepo = fileRepo};
+      var executor = new TExecutor() {raptorClient = raptorClient, tagProcessor = tagProcessor, log = logger.CreateLogger<TExecutor>(), configStore = configStore, fileRepo = fileRepo, tileGenerator = tileGenerator};
       return executor;
     }
 

@@ -21,6 +21,7 @@ using VSS.Raptor.Service.WebApiModels.Notification.Models;
 
 namespace VSS.Raptor.Service.WebApi.Notification
 {
+  [ResponseCache(NoStore = true)]
   public class NotificationController : Controller
   {
     /// <summary>
@@ -83,6 +84,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
+    /// <param name="fileId">A unique file identifier</param>
     /// <returns></returns>
     /// <executor>AddFileExecutor</executor> 
     [ProjectIdVerifier]
@@ -92,7 +94,8 @@ namespace VSS.Raptor.Service.WebApi.Notification
     public ContractExecutionResult GetAddFile(
       [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid,
-      [FromQuery] string fileDescriptor)
+      [FromQuery] string fileDescriptor,
+      [FromQuery] long fileId)
     {
       log.LogDebug("GetAddFile: " + Request.QueryString);
       var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
@@ -121,7 +124,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
             ex.Message));
       }
 
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId.Value, projectUid, fileDes, coordSystem, userUnits);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId.Value, projectUid, fileDes, coordSystem, userUnits, fileId);
       request.Validate();
       var result =
         RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo).Process(request);
@@ -135,6 +138,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>    /// <returns></returns>
+    /// <param name="fileId">A unique file identifier</param>
     /// <executor>DeleteFileExecutor</executor> 
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -143,7 +147,8 @@ namespace VSS.Raptor.Service.WebApi.Notification
     public ContractExecutionResult GetDeleteFile(
       [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid,
-      [FromQuery] string fileDescriptor)
+      [FromQuery] string fileDescriptor,
+      [FromQuery] long fileId)
     {
       log.LogDebug("GetDeleteFile: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -162,7 +167,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             ex.Message));
       }
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId.Value, projectUid, fileDes, null, null);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId.Value, projectUid, fileDes, null, null, fileId);
       request.Validate();
       var result =
         RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo).Process(request);
