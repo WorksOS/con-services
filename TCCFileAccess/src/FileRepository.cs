@@ -641,11 +641,11 @@ namespace TCCFileAccess
       return null;
     }
 
-      public async Task<string> ExportToWebFormat(string srcFilespaceId, string srcOrgShortName, string srcPath,
-        string dstFilespaceId, string dstOrgShortName, string dstPath, int zoomLevel)
+      public async Task<string> ExportToWebFormat(string srcFilespaceId, string srcPath,
+        string dstFilespaceId, string dstPath, int zoomLevel)
       {
-        Log.LogDebug("ExportToWebFormat: srcFilespaceId={0}, srcOrgShortName={1}, srcPath={2}, dstFilespaceId={3}, dstOrgShortName={4}, dstPath={5}, zoomLevel={6}", 
-          srcFilespaceId, srcOrgShortName, srcPath, dstFilespaceId, dstOrgShortName, dstPath, zoomLevel);
+        Log.LogDebug("ExportToWebFormat: srcFilespaceId={0}, srcPath={1}, dstFilespaceId={2}, dstPath={3}, zoomLevel={4}", 
+          srcFilespaceId, srcPath, dstFilespaceId, dstPath, zoomLevel);
         try
         {
           ExportToWebFormatParams exportParams = new ExportToWebFormatParams
