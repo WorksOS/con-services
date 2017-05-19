@@ -415,87 +415,87 @@ namespace WebApiTests
       ts = CreateTestDataForProjectTest(ts, legacyAssetId, tccOrg);
 
       var actualResult = CallWebApiGetProjectIdBadresponse(ts, 0, 38.837, -121.348, ts.FirstEventDate.AddDays(1), string.Empty);
-      Assert.AreEqual("Must contain one or more of assetId 0 or tccOrgId ", actualResult.Message, " result message from web api does not match expected");
+      Assert.AreEqual("Must contain one or more of assetId or tccOrgId", actualResult.Message, " result message from web api does not match expected");
       Assert.AreEqual(ContractExecutionStatesEnum.ValidationError, actualResult.Code, "code from web api does not match expected");
     }
 
     [TestMethod]
     public void ValidateProjectGetIdMessage3()
     {
-      msg.Title("Project Validate 3", "Validate error message : Latitude value of should be between -90 degrees and 90 degrees");
+      msg.Title("Project Validate 3", "Validate error message : Latitude should be between -90 degrees and 90 degrees");
       var ts = new TestSupport {IsPublishToKafka = false};
       var legacyAssetId = ts.SetLegacyAssetId();
       var tccOrg = Guid.NewGuid();
       ts = CreateTestDataForProjectTest(ts, legacyAssetId, tccOrg);
       var actualResult = CallWebApiGetProjectIdBadresponse(ts, legacyAssetId, 138, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
-      Assert.AreEqual("Latitude value of 138 should be between -90 degrees and 90 degrees", actualResult.Message, " result message from web api does not match expected");
+      Assert.AreEqual("Latitude should be between -90 degrees and 90 degrees", actualResult.Message, " result message from web api does not match expected");
       Assert.AreEqual(ContractExecutionStatesEnum.ValidationError, actualResult.Code, "code from web api does not match expected");
 }
     [TestMethod]
     public void ValidateProjectGetIdMessage4()
     {
-      msg.Title("Project Validate 4", "Validate error message : Latitude value of should be between -90 degrees and 90 degrees");
+      msg.Title("Project Validate 4", "Validate error message : Latitude should be between -90 degrees and 90 degrees");
       var ts = new TestSupport {IsPublishToKafka = false};
       var legacyAssetId = ts.SetLegacyAssetId();
       var tccOrg = Guid.NewGuid();
       ts = CreateTestDataForProjectTest(ts, legacyAssetId, tccOrg);
 
       var actualResult = CallWebApiGetProjectIdBadresponse(ts, legacyAssetId, -138, -121.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
-      Assert.AreEqual("Latitude value of -138 should be between -90 degrees and 90 degrees", actualResult.Message, " result message from web api does not match expected");
+      Assert.AreEqual("Latitude should be between -90 degrees and 90 degrees", actualResult.Message, " result message from web api does not match expected");
       Assert.AreEqual(ContractExecutionStatesEnum.ValidationError, actualResult.Code, "code from web api does not match expected");
     }
 
     [TestMethod]
     public void ValidateProjectGetIdMessage5()
     {
-      msg.Title("Project Validate 5", "Validate error message : Longitude value of should be between -180 degrees and 180 degrees");
+      msg.Title("Project Validate 5", "Validate error message : Longitude should be between -180 degrees and 180 degrees");
       var ts = new TestSupport {IsPublishToKafka = false};
       var legacyAssetId = ts.SetLegacyAssetId();
       var tccOrg = Guid.NewGuid();
       ts = CreateTestDataForProjectTest(ts, legacyAssetId, tccOrg);
       var actualResult = CallWebApiGetProjectIdBadresponse(ts, legacyAssetId, 38.837, -221.348, ts.FirstEventDate.AddDays(1), tccOrg.ToString());
-      Assert.AreEqual("Longitude value of -221.348 should be between -180 degrees and 180 degrees", actualResult.Message, " result message from web api does not match expected");
+      Assert.AreEqual("Longitude should be between -180 degrees and 180 degrees", actualResult.Message, " result message from web api does not match expected");
       Assert.AreEqual(ContractExecutionStatesEnum.ValidationError, actualResult.Code, "code from web api does not match expected");
     }
  
     [TestMethod]
     public void ValidateProjectGetIdMessage6()
     {
-      msg.Title("Project Validate 6", "Validate error message : Longitude value of should be between -180 degrees and 180 degrees");
+      msg.Title("Project Validate 6", "Validate error message : Longitude should be between -180 degrees and 180 degrees");
       var ts = new TestSupport {IsPublishToKafka = false};
       var legacyAssetId = ts.SetLegacyAssetId();
       var tccOrg = Guid.NewGuid();
       ts = CreateTestDataForProjectTest(ts, legacyAssetId, tccOrg);
 
       var actualResult =CallWebApiGetProjectIdBadresponse(ts, legacyAssetId, 38.837, 221.348, ts.FirstEventDate.AddDays(1),tccOrg.ToString());
-      Assert.AreEqual("Longitude value of 221.348 should be between -180 degrees and 180 degrees",actualResult.Message, " result message from web api does not match expected");
+      Assert.AreEqual("Longitude should be between -180 degrees and 180 degrees", actualResult.Message, " result message from web api does not match expected");
       Assert.AreEqual(ContractExecutionStatesEnum.ValidationError, actualResult.Code, "code from web api does not match expected");
     }
 
     [TestMethod]
     public void ValidateProjectGetIdMessage7()
     {
-      msg.Title("Project Validate 7", "Validate error message : timeOfPosition must have occured within last 5 years");
+      msg.Title("Project Validate 7", "Validate error message : timeOfPosition must have occured within last 50 years");
       var ts = new TestSupport {IsPublishToKafka = false};
       var legacyAssetId = ts.SetLegacyAssetId();
       var tccOrg = Guid.NewGuid();
       ts = CreateTestDataForProjectTest(ts, legacyAssetId, tccOrg);
 
-      var actualResult = CallWebApiGetProjectIdBadresponse(ts, legacyAssetId, 38.837, -121.348, new DateTime(2012, 1, 1),tccOrg.ToString());
-      Assert.AreEqual("timeOfPosition must have occured within last 5 years 01/01/2012 00:00:00", actualResult.Message," result message from web api does not match expected");
+      var actualResult = CallWebApiGetProjectIdBadresponse(ts, legacyAssetId, 38.837, -121.348, new DateTime(1960, 1, 1),tccOrg.ToString());
+      Assert.AreEqual("timeOfPosition must have occured within last 50 years", actualResult.Message," result message from web api does not match expected");
       Assert.AreEqual(ContractExecutionStatesEnum.ValidationError, actualResult.Code, "code from web api does not match expected");
     }
 
     [TestMethod]
     public void ValidateProjectGetIdMessage8()
     {
-      msg.Title("Project Validate 8", "Validate error message : timeOfPosition must have occured within last 5 years");
+      msg.Title("Project Validate 8", "Validate error message : timeOfPosition must have occured within last 50 years");
       var ts = new TestSupport {IsPublishToKafka = false};
       var legacyAssetId = ts.SetLegacyAssetId();
       var tccOrg = Guid.NewGuid();
       ts = CreateTestDataForProjectTest(ts, legacyAssetId, tccOrg);
       var actualResult = CallWebApiGetProjectIdBadresponse(ts, legacyAssetId, 38.837, -121.348, new DateTime(9999,1,1), tccOrg.ToString());
-      Assert.AreEqual("timeOfPosition must have occured within last 5 years 01/01/9999 00:00:00", actualResult.Message, " result message from web api does not match expected");
+      Assert.AreEqual("timeOfPosition must have occured within last 50 years", actualResult.Message, " result message from web api does not match expected");
       Assert.AreEqual(ContractExecutionStatesEnum.ValidationError, actualResult.Code, "code from web api does not match expected");   
     }
 
