@@ -476,12 +476,12 @@ namespace TCCFileAccess
             {
               Log.LogError("Null result from Login");
             }
-            return string.Empty;
+            return null;
           }
           catch (Exception ex)
           {
             Log.LogError("Failed to login to TCC: {0}", ex.Message);
-            return string.Empty;
+            return null;
           }
         }
 
@@ -582,14 +582,14 @@ namespace TCCFileAccess
               return jobResult.jobId;
             }
             CheckForInvalidTicket(jobResult, "CreateFileJob");
-            return string.Empty;
+            return null;
           }
         }
         catch (Exception ex)
         {
           Log.LogError("Failed to create file job: {0}", ex.Message);
         }
-        return string.Empty;
+        return null;
     }
 
       public async Task<CheckFileJobStatusResult> CheckFileJobStatus(string jobId)
@@ -637,6 +637,69 @@ namespace TCCFileAccess
       catch (Exception ex)
         {
           Log.LogError("Failed to get file job result: {0}", ex.Message);
+        }
+      return null;
+    }
+
+      public async Task<string> ExportToWebFormat(string srcFilespaceId, string srcOrgShortName, string srcPath,
+        string dstFilespaceId, string dstOrgShortName, string dstPath, int zoomLevel)
+      {
+        Log.LogDebug("ExportToWebFormat: srcFilespaceId={0}, srcOrgShortName={1}, srcPath={2}, dstFilespaceId={3}, dstOrgShortName={4}, dstPath={5}, zoomLevel={6}", 
+          srcFilespaceId, srcOrgShortName, srcPath, dstFilespaceId, dstOrgShortName, dstPath, zoomLevel);
+        try
+        {
+          ExportToWebFormatParams exportParams = new ExportToWebFormatParams
+          {
+            sourcefilespaceid = srcFilespaceId,
+            sourcepath = srcPath,
+            destfilespaceid = dstFilespaceId,
+            destpath = dstPath,
+            format = "GoogleMaps",
+            numzoomlevels = 1,
+            maxzoomlevel = zoomLevel,
+            imageformat = "png"
+          };
+          var exportResult = await ExecuteRequest<ExportToWebFormatResult>(Ticket, "ExportToWebFormat", exportParams);
+          if (exportResult != null)
+          {
+            if (exportResult.success)
+            {
+              return exportResult.jobId;
+            }
+            CheckForInvalidTicket(exportResult, "ExportToWebFormat");
+            return null;
+          }
+        }
+        catch (Exception ex)
+        {
+          Log.LogError("Failed to export to web format: {0}", ex.Message);
+        }
+        return null;
+      }
+
+      public async Task<string> CheckExportJob(string jobId)
+      {
+        Log.LogDebug("CheckExportJob: jobId={0}", jobId);
+        try
+        {
+          CheckExportJobParams checkParams = new CheckExportJobParams
+          {
+            jobid = jobId
+          };
+          var checkResult = await ExecuteRequest<CheckExportJobResult>(Ticket, "CheckExportJob", checkParams);
+          if (checkResult != null)
+          {
+            if (checkResult.success)
+            {
+              return checkResult.status;
+            }
+            CheckForInvalidTicket(checkResult, "CheckExportJob");
+            return null;
+          }
+        }
+        catch (Exception ex)
+        {
+          Log.LogError("Failed to check export job status: {0}", ex.Message);
         }
       return null;
     }
