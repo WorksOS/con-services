@@ -559,5 +559,87 @@ namespace TCCFileAccess
                 return string.Empty;
             }
         }
+
+    #region Tile Rendering
+
+     public async Task<string> CreateFileJob(string filespaceId, string path)
+     {
+        Log.LogDebug("CreateFileJob: filespaceId={0}, path={1}", filespaceId, path);
+        try
+        {
+          CreateFileJobParams jobParams = new CreateFileJobParams
+          {
+            filespaceid = filespaceId,
+            path = path,
+            type = "GEOFILEINFO",
+            forcerender = false
+          };
+          var jobResult = await ExecuteRequest<CreateFileJobResult>(Ticket, "CreateFileJob", jobParams);
+          if (jobResult != null)
+          {
+            if (jobResult.success)
+            {
+              return jobResult.jobId;
+            }
+            CheckForInvalidTicket(jobResult, "CreateFileJob");
+            return string.Empty;
+          }
+        }
+        catch (Exception ex)
+        {
+          Log.LogError("Failed to create file job: {0}", ex.Message);
+        }
+        return string.Empty;
     }
+
+      public async Task<CheckFileJobStatusResult> CheckFileJobStatus(string jobId)
+      {
+        Log.LogDebug("CheckFileJobStatus: jobId={0}", jobId);
+        try
+        {
+          CheckFileJobStatusParams statusParams = new CheckFileJobStatusParams
+          {
+            jobid = jobId
+          };
+          var statusResult = await ExecuteRequest<CheckFileJobStatusResult>(Ticket, "CheckFileJobStatus", statusParams);
+          if (statusResult != null)
+          {
+            if (statusResult.success)
+            {
+              return statusResult;
+            }
+            CheckForInvalidTicket(statusResult, "CheckFileJobStatus");
+            return null;
+          }
+        }
+        catch (Exception ex)
+        {
+          Log.LogError("Failed to check file job status: {0}", ex.Message);
+        }
+        return null;
+      }
+
+      public async Task<GetFileJobResultResult> GetFileJobResult(string fileId)
+      {
+        Log.LogDebug("GetFileJobResult: fileId={0}", fileId);
+        try
+        {
+          GetFileJobResultParams resultParams = new GetFileJobResultParams
+          {
+            fileid = fileId
+          };
+          var resultResult = await ExecuteRequest<GetFileJobResultResult>(Ticket, "GetFileJobResult", resultParams);
+        //TODO: Check if graceful request works here. It's a stream of bytes returned which we want to process as text
+        //(see ApiCallBase.ProcessResponseAsText)
+        return resultResult;
+          
+      }
+      catch (Exception ex)
+        {
+          Log.LogError("Failed to get file job result: {0}", ex.Message);
+        }
+      return null;
+    }
+    #endregion
+  }
 }

@@ -33,5 +33,8 @@ namespace TCCFileAccess
         Task<bool> DeleteFolder(string filespaceId, string path);
         Task<bool> DeleteFile(string filespaceId, string fullName);
         Task<bool> MakeFolder(string filespaceId, string path);
+        Task<string> CreateFileJob(string filespaceId, string path);
+        Task<CheckFileJobStatusResult> CheckFileJobStatus(string jobId);
+        Task<GetFileJobResultResult> GetFileJobResult(string fileId);
     }
 }
