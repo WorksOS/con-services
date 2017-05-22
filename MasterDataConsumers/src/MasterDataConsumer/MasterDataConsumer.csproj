@@ -28,9 +28,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="*" />
-    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.6" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="*" />
+    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.10" />
+    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.16" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.68" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">

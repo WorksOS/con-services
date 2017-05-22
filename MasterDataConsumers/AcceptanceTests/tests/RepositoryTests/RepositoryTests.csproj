@@ -24,13 +24,13 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.0.8-rc" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.1" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="*" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="*" />
+    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.10" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.68" />
   </ItemGroup>
 
 </Project>
