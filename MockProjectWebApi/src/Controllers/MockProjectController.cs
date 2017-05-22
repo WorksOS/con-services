@@ -7,17 +7,6 @@ namespace MockProjectWebApi.Controllers
 {
   public class MockProjectController : Controller
   {
-      /// <summary>
-      /// Dummies the post.
-      /// </summary>
-      [Route("")]
-      [HttpPost]
-      void DummyPost()
-      {
-        Console.WriteLine("DummyPost");
-        return;
-      }
-
 
     /// <summary>
     /// Gets the list of projects used in the Raptor service acceptance tests.
