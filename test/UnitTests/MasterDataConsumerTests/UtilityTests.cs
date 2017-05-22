@@ -18,7 +18,7 @@ namespace VSS.Visionlink.Project.UnitTests
 
       var request = CreateProjectRequest.CreateACreateProjectRequest
       (Guid.NewGuid(), Guid.NewGuid(),
-        123, ProjectType.Standard, "projectName", "this is the description",
+        ProjectType.Standard, "projectName", "this is the description",
         new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
         456, null, null);
@@ -33,7 +33,6 @@ namespace VSS.Visionlink.Project.UnitTests
       Assert.AreEqual(request.ProjectEndDate, kafkaEvent.ProjectEndDate, "ProjectEndDate has not been mapped correctly");
       Assert.AreEqual(request.ProjectTimezone, kafkaEvent.ProjectTimezone, "ProjectTimezone has not been mapped correctly");
       Assert.AreEqual(request.ProjectBoundary, kafkaEvent.ProjectBoundary, "ProjectBoundary has not been mapped correctly");
-      Assert.AreEqual(request.ProjectID, kafkaEvent.ProjectID, "ProjectID has not been mapped correctly");
       Assert.AreEqual(request.CoordinateSystemFileName, kafkaEvent.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
       Assert.AreEqual(request.CoordinateSystemFileContent, kafkaEvent.CoordinateSystemFileContent, "CoordinateSystemFileContent has not been mapped correctly");
 

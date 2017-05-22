@@ -5,9 +5,8 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace ProjectWebApiCommon.Models
 {
   /// <summary>
-  /// The request representation used to Create a project. 
-  /// If CustomerUI, ProjectUID and ProjectID are null, then they will be populated via other means.
-  /// This handles create of project, association to the customer and notification to raptor.
+  /// The request representation used to Upsert a project. 
+  /// If CustomerUI, ProjectUID are null, then they will be populated via other means.
   /// </summary>
   public class UpdateProjectRequest 
   {

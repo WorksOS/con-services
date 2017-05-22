@@ -49,7 +49,8 @@ namespace ProjectWebApiCommon.Utilities
           cfg.CreateMap<CreateProjectRequest, CreateProjectEvent>()
             .ForMember(x => x.CustomerID, opt => opt.MapFrom(src => src.CustomerID ?? 0))
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
-            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore());
+            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
+            .ForMember(x => x.ProjectID, opt => opt.Ignore());
           cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
             .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())

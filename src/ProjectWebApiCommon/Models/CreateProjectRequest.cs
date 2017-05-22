@@ -26,14 +26,6 @@ namespace ProjectWebApiCommon.Models
     public Guid? CustomerUID { get; set; } = null;
 
     /// <summary>
-    /// The legacy ID of the project.
-    /// This long/int is required by Raptor as it can't handle Guids. 
-    /// if null, then we generate it from the next available in the ProjectMDM database.
-    /// </summary>
-    [JsonProperty(PropertyName = "ProjectID", Required = Required.Default)]
-    public int? ProjectID { get; set; } = null;
-
-    /// <summary>
     /// The type of the project.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectType", Required = Required.Always)]
@@ -108,7 +100,7 @@ namespace ProjectWebApiCommon.Models
     /// Create instance of CreateProjectRequest
     /// </summary>
     public static CreateProjectRequest CreateACreateProjectRequest(Guid? projectUid, Guid? customerUid, 
-      int? projectId, ProjectType projectType, string projectName, string description,
+      ProjectType projectType, string projectName, string description,
       DateTime projectStartDate, DateTime projectEndDate, string projectTimezone, string projectBoundary,
       long? customerId, string coordinateSystemFileName, byte[] coordinateSystemFileContent
       )
@@ -117,7 +109,6 @@ namespace ProjectWebApiCommon.Models
       {
         ProjectUID = projectUid,
         CustomerUID = customerUid,
-        ProjectID = projectId,
         ProjectType = projectType,
         ProjectName = projectName,
         Description = description,
