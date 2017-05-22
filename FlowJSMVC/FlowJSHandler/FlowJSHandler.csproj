@@ -6,6 +6,7 @@
     <Company>VSS</Company>
     <Product>FlowJSHandler.netcore</Product>
     <Description>MVC5 action filter to support Angular flow.js directive (multipart file upload, chunks, progress etc.)</Description>
+    <VersionPrefix>1.0.1</VersionPrefix>
 
     <TargetFrameworks>netstandard1.6;net46;net451</TargetFrameworks>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
