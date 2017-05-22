@@ -4,6 +4,7 @@ using ProjectWebApiCommon.ResultsHandling;
 using System.IO;
 using FlowUploadFilter;
 using Repositories.DBModels;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ProjectWebApiCommon.Models
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 using ProjectWebApiCommon.ResultsHandling;
-using Repositories.DBModels;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ProjectWebApiCommon.Models
 {

@@ -4,7 +4,7 @@ using FlowUploadFilter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
-using Repositories.DBModels;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Visionlink.Project.UnitTests
 {
