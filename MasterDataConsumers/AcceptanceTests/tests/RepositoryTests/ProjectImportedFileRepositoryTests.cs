@@ -115,7 +115,7 @@ namespace RepositoryTests
       {
         ProjectUID = project1,
         ImportedFileUID = Guid.NewGuid(),
-        ImportedFileID = new Random().Next(1, 1999999),
+        ImportedFileID = new Random().Next(1, 1999999) + 1,
         CustomerUID = customerUid,
         ImportedFileType = ImportedFileType.Alignment,
         Name = "Test alginment type.svl",
@@ -131,7 +131,7 @@ namespace RepositoryTests
       {
         ProjectUID = project2,
         ImportedFileUID = Guid.NewGuid(),
-        ImportedFileID = new Random().Next(1, 1999999),
+        ImportedFileID = new Random().Next(1, 1999999) + 2,
         CustomerUID = customerUid,
         ImportedFileType = ImportedFileType.SurveyedSurface,
         Name = "Test SS type.ttm",
