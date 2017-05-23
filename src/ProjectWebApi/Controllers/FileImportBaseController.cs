@@ -136,6 +136,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       ImportedFileType importedFileType, string filename, DateTime? surveyedUtc,
       string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy)
     {
+      log.LogDebug($"Creating the ImportedFile {filename} for project {projectUid}.");
       var nowUtc = DateTime.UtcNow;
       var createImportedFileEvent = new CreateImportedFileEvent()
       {
@@ -153,19 +154,33 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         ReceivedUTC = nowUtc
       };
 
-      var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
+      var isCreated = await projectService.StoreEvent(createImportedFileEvent).ConfigureAwait(false);
+      if (isCreated == 0)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          $"CreateImportedFileV4. Unable to store Imported File event to database: {JsonConvert.SerializeObject(createImportedFileEvent)}."));
+
+      log.LogDebug($"Created the ImportedFile in DB. ImportedFile {filename} for project {projectUid}.");
+
+      // plug the legacyID back into the struct to be injected into kafka
+      var existing = await projectService.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString()).ConfigureAwait(false);
+      if (existing != null && existing.ImportedFileId > 0)
+        createImportedFileEvent.ImportedFileID = existing.ImportedFileId;
+      else
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+                $"LegacyImportedFileId has not been generated {JsonConvert.SerializeObject(createImportedFileEvent)}"));
+
+      log.LogDebug($"Using Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
+
+      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
           new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
 
-      if (await projectService.StoreEvent(createImportedFileEvent).ConfigureAwait(false) == 1)
-        return createImportedFileEvent;
-
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"CreateImportedFileV4. Unable to store Imported File event to database: {JsonConvert.SerializeObject(createImportedFileEvent)}."));
+      return createImportedFileEvent;
     }
 
     /// <summary>
@@ -203,30 +218,21 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// only thing which should change here is a) FileUpdatedUtc/ActionUtc
     ///       file Descriptor???
     /// </summary>
-    /// <param name="importedFileDescriptor">The existing imported file event</param>
+    /// <param name="existing">The existing imported file event from the database</param>
     /// <param name="fileDescriptor"></param>
     /// <param name="surveyedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="importedBy"></param>
     /// <returns></returns>
     protected virtual async Task<UpdateImportedFileEvent> UpdateImportedFile(
-      ImportedFileDescriptor importedFileDescriptor,
+      ImportedFile existing,
       string fileDescriptor, DateTime? surveyedUtc,
       DateTime fileUpdatedUtc, string importedBy)
     {
       var nowUtc = DateTime.UtcNow;
-      var updateImportedFileEvent = new UpdateImportedFileEvent()
-      {
-        ProjectUID = Guid.Parse(importedFileDescriptor.ProjectUid),
-        ImportedFileUID = Guid.Parse(importedFileDescriptor.ImportedFileUid),
-        FileDescriptor = fileDescriptor,
-        FileCreatedUtc = importedFileDescriptor.FileCreatedUtc,
-        FileUpdatedUtc = fileUpdatedUtc,
-        ImportedBy = importedBy,
-        SurveyedUtc = surveyedUtc,
-        ActionUTC = nowUtc,
-        ReceivedUTC = nowUtc
-      };
+      var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(existing);
+      updateImportedFileEvent.ActionUTC = nowUtc;
+      updateImportedFileEvent.ReceivedUTC = nowUtc;
 
       var messagePayload = JsonConvert.SerializeObject(new {UpdateImportedFileEvent = updateImportedFileEvent});
       producer.Send(kafkaTopicName,
