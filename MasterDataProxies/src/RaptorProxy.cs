@@ -72,14 +72,14 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
     /// <returns></returns>
-    public async Task<ContractExecutionResult> AddFile(long? projectId, Guid? projectUid, string fileDescriptor, IDictionary<string, string> customHeaders = null)
+    public async Task<ContractExecutionResult> AddFile(long? projectId, Guid? projectUid, string fileDescriptor, long importedFileId, IDictionary<string, string> customHeaders = null)
     {
       var urlKey = "RAPTORADDFILE_API_URL";
       string url = configurationStore.GetValueString(urlKey);
       log.LogDebug($"RaptorProxy.AddFile: urlKey: {urlKey}  url: {url} customHeaders {customHeaders}");
 
-      log.LogDebug($"RaptorProxy.AddFile: projectId: {projectId} projectUid: {projectUid} fileDescriptor {fileDescriptor}");
-      var queryParams = $"?projectId={projectId}&projectUid={projectUid}&fileDescriptor={fileDescriptor}";
+      log.LogDebug($"RaptorProxy.AddFile: projectId: {projectId} projectUid: {projectUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}");
+      var queryParams = $"?projectId={projectId}&projectUid={projectUid}&fileDescriptor={fileDescriptor}&importedFileId={importedFileId}";
       log.LogDebug($"RaptorProxy.AddFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
 
       ContractExecutionResult response = await GetItem<ContractExecutionResult>(urlKey, customHeaders, queryParams);
@@ -96,14 +96,14 @@ namespace VSS.Raptor.Service.Common.Proxies
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
     /// <returns></returns>
-    public async Task<ContractExecutionResult> DeleteFile(long? projectId, Guid? projectUid, string fileDescriptor, IDictionary<string, string> customHeaders = null)
+    public async Task<ContractExecutionResult> DeleteFile(long? projectId, Guid? projectUid, string fileDescriptor, long importedFileId, IDictionary<string, string> customHeaders = null)
     {
       var urlKey = "RAPTORDELETEFILE_API_URL";
       string url = configurationStore.GetValueString(urlKey);
       log.LogDebug($"RaptorProxy.DeleteFile: urlKey: {urlKey}  url: {url} customHeaders {customHeaders}");
 
-      log.LogDebug($"RaptorProxy.DeleteFile: projectId: {projectId} projectUid: {projectUid} fileDescriptor {fileDescriptor}");
-      var queryParams = $"?projectId={projectId}&projectUid={projectUid}&fileDescriptor={fileDescriptor}";
+      log.LogDebug($"RaptorProxy.DeleteFile: projectId: {projectId} projectUid: {projectUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}");
+      var queryParams = $"?projectId={projectId}&projectUid={projectUid}&fileDescriptor={fileDescriptor}&importedFileId={importedFileId}";
       log.LogDebug($"RaptorProxy.DeleteFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
 
       ContractExecutionResult response = await GetItem<ContractExecutionResult>(urlKey, customHeaders, queryParams);

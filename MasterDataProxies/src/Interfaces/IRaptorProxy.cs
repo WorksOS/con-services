@@ -13,9 +13,9 @@ namespace VSS.Raptor.Service.Common.Interfaces
     Task<CoordinateSystemSettings> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFilename,
             IDictionary<string, string> customHeaders = null);
 
-    Task<ContractExecutionResult> AddFile(long? projectId, Guid? projectUid, string fileDescriptor, IDictionary<string, string> customHeaders = null);
+    Task<ContractExecutionResult> AddFile(long? projectId, Guid? projectUid, string fileDescriptor, long importedFileId, IDictionary<string, string> customHeaders = null);
 
-    Task<ContractExecutionResult> DeleteFile(long? projectId, Guid? projectUid, string fileDescriptor, IDictionary<string, string> customHeaders = null);
+    Task<ContractExecutionResult> DeleteFile(long? projectId, Guid? projectUid, string fileDescriptor, long importedFileId, IDictionary<string, string> customHeaders = null);
 
   }
 }

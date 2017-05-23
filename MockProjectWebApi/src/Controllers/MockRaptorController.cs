@@ -80,26 +80,28 @@ namespace MockProjectWebApi.Controllers
     public ContractExecutionResult DummyAddFileGet(
       [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid,
-      [FromQuery] string fileDescriptor)
+      [FromQuery] string fileDescriptor,
+      [FromQuery] long importedFileId)
     {
       var res = new ContractExecutionResult();
-      var message = $"DummyAddFileGet: res {res}. projectId {projectId} projectUid {projectUid} fileDescriptor {fileDescriptor}";
+      var message = $"DummyAddFileGet: res {res}. projectId {projectId} projectUid {projectUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}";
       Console.WriteLine(message);
       return res;
     }
 
     /// <summary>
-    /// Dummies the get.
+    /// Dummies the delete.
     /// </summary>
     [Route("api/v2/notification/deletefile")]
     [HttpGet]
     public ContractExecutionResult DummyDeleteFileGet(
       [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid,
-      [FromQuery] string fileDescriptor)
+      [FromQuery] string fileDescriptor,
+      [FromQuery] long importedFileId)
     {
       var res = new ContractExecutionResult();
-      var message = $"DummyDeleteFileGet: res {res}. projectId {projectId} projectUid {projectUid} fileDescriptor {fileDescriptor}";
+      var message = $"DummyDeleteFileGet: res {res}. projectId {projectId} projectUid {projectUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}";
       Console.WriteLine(message);
       return res;
     }
