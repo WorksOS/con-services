@@ -29,7 +29,7 @@ namespace ProjectWebApi.Filters
             if (!context.Request.Path.Value.Contains("swagger"))
             {
                 bool requiresCustomerUid =
-                    true; //context.Request.Method.ToUpper() == "GET"; Actually we do need to have customerUId regardless request
+                    !(context.Request.Path.Value.Contains("v3") && context.Request.Method.ToUpper() != "GET");
 
                 string authorization = context.Request.Headers["X-Jwt-Assertion"];
                 string customerUID = context.Request.Headers["X-VisionLink-CustomerUID"];
