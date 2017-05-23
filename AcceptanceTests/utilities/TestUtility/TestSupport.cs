@@ -237,7 +237,7 @@ namespace TestUtility
         var eventDate = eventObject.EventDate;
         LastEventDate = eventDate;
         var jsonString = BuildEventIntoObject(eventObject);
-        var response = string.Empty;
+        string response;
         try
         {
           response = CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID);
@@ -255,6 +255,17 @@ namespace TestUtility
       }
     }
 
+
+    public ImportedFileDescriptor ConvertImportFileArrayToObject(string[] importFileArray)
+    {
+        msg.DisplayEventsToConsole(importFileArray);
+        var allColumnNames = importFileArray.ElementAt(0).Split(SEPARATOR);
+        var eventRow = importFileArray.ElementAt(1).Split(SEPARATOR);
+        dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
+        var jsonString = BuildEventIntoObject(eventObject);
+        var expectedResults = JsonConvert.DeserializeObject<ImportedFileDescriptor>(jsonString);
+        return expectedResults;
+    }
 
     /// <summary>
     /// Call the version 4 of the project master data
@@ -1123,7 +1134,7 @@ namespace TestUtility
             createProjectRequest.CustomerID = int.Parse(eventObject.CustomerID);
           }
           var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpProjectUid,
-            cpCustomerUID, createProjectRequest.ProjectID, createProjectRequest.ProjectType,
+            cpCustomerUID, createProjectRequest.ProjectType,
             createProjectRequest.ProjectName, createProjectRequest.Description, createProjectRequest.ProjectStartDate,
             createProjectRequest.ProjectEndDate, createProjectRequest.ProjectTimezone,
             createProjectRequest.ProjectBoundary, createProjectRequest.CustomerID,
@@ -1243,6 +1254,19 @@ namespace TestUtility
           };
           jsonString = JsonConvert.SerializeObject(new { CreateGeofenceEvent = createGeofenceEvent }, jsonSettings);
           break;
+
+        case "ImportedFileDescriptor":
+          var importedFileDescriptor = new ImportedFileDescriptor()
+          {
+            CustomerUid = eventObject.CustomerUid,
+            FileCreatedUtc = DateTime.Parse(eventObject.FileCreatedUtc),
+            FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUtc),
+            ImportedBy = eventObject.ImportedBy,
+            ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Alignment,
+            Name = eventObject.Name 
+          };
+          jsonString = JsonConvert.SerializeObject(importedFileDescriptor, jsonSettings);
+          break;          
       }
       return jsonString;
     }

@@ -46,7 +46,7 @@ namespace WebApiTests
       CollectionAssert.AreEqual(expectedResults.ImportedFileDescriptors, filesResult.ImportedFileDescriptors);
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod] // [Ignore]
     public void TestImportSvlFile()
     {
       const string testName = "File Import 2";
@@ -77,10 +77,10 @@ namespace WebApiTests
       ts.PublishEventCollection(projectEventArray);
 
       ImportFile importFile = new ImportFile();
-      var expectedResults = importFile.expectedImportFileDescriptorSingleResult;
-      var uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={projectUid}&importedFileType=Alignment&fileCreatedUtc=2017-05-01T23:24:26.222Z&fileUpdatedUtc=2017-05-03T01:02:03.111Z";
-      //var uri =  $"https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfile?projectUid={projectUid}&importedFileType=Alignment&fileCreatedUtc=2017-05-01T23:24:26.222Z&fileUpdatedUtc=2017-05-03T01:02:03.111Z";
-      var filesResult = importFile.PostImportedFilesToWebApi(uri, customerUid, projectUid,"FileImportFiles\\Link-Can.SVL");
+      var importFileArray = new[] {
+      "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 |",
+     $"| ImportedFileDescriptor | {projectUid} | {customerUid} | FileImportFiles\\Link-Can.SVL | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com |"};
+      var filesResult = importFile.PostImportedFilesToWebApi(ts, importFileArray);
       Assert.AreEqual(filesResult.ImportedFileDescriptor.ImportedFileTypeName, "Link-Can.SVL", " File name does not match actual");
     }
   }
