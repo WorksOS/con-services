@@ -72,7 +72,6 @@ namespace VSS.Visionlink.Project.UnitTests
       Assert.AreEqual(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
     }
 
-
     [TestMethod]
     public void MapProjectToResult()
     {
@@ -166,6 +165,44 @@ namespace VSS.Visionlink.Project.UnitTests
       Assert.AreEqual(request.SurveyedUtc, importedFileDescriptor.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
       Assert.AreEqual(request.LastActionedUtc, importedFileDescriptor.ImportedUtc, "ImportedUtc has not been mapped correctly");
 
+      // just make a copy file descriptor is only in the source file, not the destination
+      var copyOfRequest = AutoMapperUtility.Automapper.Map<ImportedFile>(request);
+      Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");
+      Assert.AreEqual(request.FileDescriptor, copyOfRequest.FileDescriptor, "FileDescriptor has not been mapped correctly");
+    }
+
+    [TestMethod]
+    public void MapImportedFileRepoToUpdateEvent()
+    {
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
+
+      var request = new ImportedFile()
+      {
+        ProjectUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        CustomerUid = Guid.NewGuid().ToString(),
+        ImportedFileType = ImportedFileType.Alignment,
+        Name = "this is the filename.svl",
+        FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(Guid.NewGuid().ToString(), "/customerUID/projectUID", "this is the filename.svl")),
+        FileCreatedUtc = DateTime.UtcNow.AddDays(-2),
+        FileUpdatedUtc = DateTime.UtcNow.AddDays(-1),
+        ImportedBy = "joeSmoe@trimble.com",
+        SurveyedUtc = null,
+        IsDeleted = false,
+        LastActionedUtc = DateTime.UtcNow
+      };
+
+      var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(request);
+      Assert.AreEqual(request.LastActionedUtc, updateImportedFileEvent.ActionUTC, "ActionUTC has not been mapped correctly");
+      Assert.AreEqual(request.FileCreatedUtc, updateImportedFileEvent.FileCreatedUtc, "FileCreatedUtc has not been mapped correctly");
+      Assert.AreEqual(request.FileDescriptor, updateImportedFileEvent.FileDescriptor, "FileDescriptor has not been mapped correctly");
+      Assert.AreEqual(request.FileUpdatedUtc, updateImportedFileEvent.FileUpdatedUtc, "FileUpdatedUtc has not been mapped correctly");
+      Assert.AreEqual(request.ImportedBy, updateImportedFileEvent.ImportedBy, "ImportedBy has not been mapped correctly");
+      Assert.AreEqual(request.ImportedFileUid, updateImportedFileEvent.ImportedFileUID.ToString(), "ImportedFileUID has not been mapped correctly");
+      Assert.AreEqual(request.ProjectUid, updateImportedFileEvent.ProjectUID.ToString(), "ProjectUID has not been mapped correctly");
+      Assert.AreEqual(request.LastActionedUtc, updateImportedFileEvent.ReceivedUTC, "ReceivedUTC has not been mapped correctly");
+      Assert.AreEqual(request.SurveyedUtc, updateImportedFileEvent.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
+     
       // just make a copy file descriptor is only in the source file, not the destination
       var copyOfRequest = AutoMapperUtility.Automapper.Map<ImportedFile>(request);
       Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");

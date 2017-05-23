@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
@@ -41,7 +42,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
       {
         log.LogInformation("GetProjectsV3");
         var projects = (await GetProjectList());
-        return projects.Select(project =>
+          var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+          log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+            return projects.Select(project =>
             new ProjectDescriptor()
             {
               ProjectType = project.ProjectType,
@@ -57,7 +60,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
               LegacyCustomerId = project.LegacyCustomerID.ToString(),
               CoordinateSystemFileName = project.CoordinateSystemFileName
             }
-          )
+          ).Where(p=>p.CustomerUID==customerUid)
           .ToImmutableList();
       }
 
