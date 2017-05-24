@@ -7,7 +7,7 @@ services:
     depends_on:
       - schema
   mockprojectwebapi:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-latest
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
     env_file:
      - docker-compose.env
   masterdataconsumercustomer:
