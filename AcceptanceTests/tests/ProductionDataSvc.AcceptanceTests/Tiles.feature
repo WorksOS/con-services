@@ -4,6 +4,7 @@
 Background: 
 	Given the Tile service URI "/api/v1/tiles", request repo "TileRequest.json" and result repo "TileResponse.json"
 
+@ignore
 Scenario Outline: Tiles - Serialized
 	When I request Tiles supplying "<ParameterName>" paramters from the repository
 	Then the Tiles response should match "<ResultName>" result from the repository
@@ -89,6 +90,7 @@ Scenario Outline: Tiles - Serialized
 	#| CCVChangeNoneLiftDetection              | CCVChangeNoneLiftDetection              |
 	#| CCVChangeNoChange                       | CCVChangeNoChange                       |
 
+@ignore
 Scenario Outline: Tiles - Raw PNG
 	Given the PNG Tile service URI "/api/v1/tiles/png"
 	When I request PNG Tiles supplying "<ParameterName>" paramters from the repository
