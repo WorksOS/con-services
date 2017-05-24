@@ -180,7 +180,7 @@ namespace WebApiTests
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID    | ProjectName       | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | Boundary Test 6-1 | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" ,
-      $"| CreateProjectEvent | 1d+09:00:00 | {projectUid2} | Boundary Test 6-2 | LandFill    | Western European Time     | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
+      $"| CreateProjectEvent | 1d+09:00:00 | {projectUid2} | Boundary Test 6-2 | LandFill    | W. Europe Standard Time   | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       ts.PublishEventCollection(projectEventArray);
       Thread.Sleep(6000);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
@@ -469,7 +469,7 @@ namespace WebApiTests
 
       var projectEventArray2 = new[] {
        "| EventType          | EventDate   | ProjectUID    | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      | ",
-      $"| CreateProjectEvent | 1d+09:00:00 | {projectUid2} | Boundary Test 14 | LandFill    | Western European Time     | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
+      $"| CreateProjectEvent | 1d+09:00:00 | {projectUid2} | Boundary Test 14 | LandFill    | W. Europe Standard Time   | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       var response2 = ts.PublishEventToWebApi(projectEventArray2);
       Assert.IsTrue(response2 == "Project boundary overlaps another project, for this customer and time span", "Response is unexpected. Should be a Project boundary overlaps another project, for this customer and time span. Response: " + response2);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray1, true);
