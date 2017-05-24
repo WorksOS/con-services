@@ -13,7 +13,7 @@ namespace ProjectWebApiCommon.Models
   /// </summary>
   public class ProjectDataValidator
   {
-    private const int MAX_FILE_NAME_LENGTH = 256;
+    private const int MAX_FILE_NAME_LENGTH = 256;    
 
     /// <summary>
     /// Validate the coordinateSystem filename
@@ -83,6 +83,13 @@ namespace ProjectWebApiCommon.Models
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Missing ProjectTimezone"));
           }
+          ProjectTimezone projectTimezone = new ProjectTimezone();
+          if (projectTimezone.timeZone.Contains(createEvent.ProjectTimezone) == false)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Invalid ProjectTimezone"));
+          }
           if (string.IsNullOrEmpty(createEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
@@ -112,12 +119,6 @@ namespace ProjectWebApiCommon.Models
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Missing ProjectEndDate"));
-          }
-          if (createEvent.ProjectEndDate < DateTime.UtcNow)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "ProjectEndDate must be in the future"));
           }
           if (createEvent.ProjectStartDate > createEvent.ProjectEndDate)
           {
