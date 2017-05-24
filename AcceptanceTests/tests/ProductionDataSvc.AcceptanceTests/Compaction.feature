@@ -385,25 +385,49 @@ Scenario: Compaction Get CMV Summary
     "cmvDetailPalette": {
       "colorValues": [
         {
-          "color": 8421504,
-          "value": 0
-        },
-        {
-          "color": 255,
-          "value": 20
-        },
-        {
-          "color": 65280,
-          "value": 70
-        },
-        {
-          "color": 65280,
-          "value": 71
-        },
-        {
-          "color": 16711680,
-          "value": 101
-        }
+        "color": 2971523,
+        "value": 0.0
+				},
+				{
+					"color": 4430812,
+					"value": 10.0
+				},
+				{
+					"color": 12509169,
+					"value": 20.0
+				},
+				{
+					"color": 10341991,
+					"value": 30.0
+				},
+				{
+					"color": 7053374,
+					"value": 40.0
+				},
+				{
+					"color": 3828517,
+					"value": 50.0
+				},
+				{
+					"color": 16174803,
+					"value": 60.0
+				},
+				{
+					"color": 13990524,
+					"value": 70.0
+				},
+				{
+					"color": 12660791,
+					"value": 80.0
+				},
+				{
+					"color": 15105570,
+					"value": 90.0
+				},
+				{
+					"color": 7091331,
+					"value": 100.0
+				}
       ],
       "aboveLastColor": null,
       "belowFirstColor": null
