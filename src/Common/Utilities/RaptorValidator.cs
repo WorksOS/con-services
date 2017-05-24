@@ -23,6 +23,8 @@ namespace VSS.Raptor.Service.Common.Utilities
             //count = 30;
             break;
           case DisplayMode.CCV:
+            count = 11;
+            break;
           case DisplayMode.CCVPercentChange:
           case DisplayMode.CCVPercent:
             count = 5;
