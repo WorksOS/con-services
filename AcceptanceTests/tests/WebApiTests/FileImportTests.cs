@@ -46,7 +46,7 @@ namespace WebApiTests
       CollectionAssert.AreEqual(expectedResults.ImportedFileDescriptors, filesResult.ImportedFileDescriptors);
     }
 
-    [TestMethod] // [Ignore]
+    [TestMethod] [Ignore]
     public void TestImportSvlFile()
     {
       const string testName = "File Import 2";
