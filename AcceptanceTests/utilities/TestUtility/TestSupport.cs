@@ -237,14 +237,14 @@ namespace TestUtility
         var eventDate = eventObject.EventDate;
         LastEventDate = eventDate;
         var jsonString = BuildEventIntoObject(eventObject);
-        var response = string.Empty;
+        string response;
         try
         {
-           response = CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID);
+          response = CallWebApiWithProject(jsonString, eventObject.EventType, eventObject.CustomerUID);
         }
         catch (RuntimeBinderException)
-        {          
-           response = CallWebApiWithProject(jsonString, eventObject.EventType, CustomerUid.ToString());
+        {
+          response = CallWebApiWithProject(jsonString, eventObject.EventType, CustomerUid.ToString());
         }
         return response;
       }
@@ -255,6 +255,17 @@ namespace TestUtility
       }
     }
 
+
+    public ImportedFileDescriptor ConvertImportFileArrayToObject(string[] importFileArray)
+    {
+        msg.DisplayEventsToConsole(importFileArray);
+        var allColumnNames = importFileArray.ElementAt(0).Split(SEPARATOR);
+        var eventRow = importFileArray.ElementAt(1).Split(SEPARATOR);
+        dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
+        var jsonString = BuildEventIntoObject(eventObject);
+        var expectedResults = JsonConvert.DeserializeObject<ImportedFileDescriptor>(jsonString);
+        return expectedResults;
+    }
 
     /// <summary>
     /// Call the version 4 of the project master data
@@ -281,7 +292,7 @@ namespace TestUtility
           break;
       }
       Thread.Sleep(2000);
-      Console.WriteLine(response);  
+      Console.WriteLine(response);
       var jsonResponse = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
       if (jsonResponse.Code == 0)
       {
@@ -318,7 +329,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(CreateProjectEvt, "", statusCode, "Create",HttpMethod.Post.ToString() ,CustomerUid.ToString());      
+      CallProjectWebApi(CreateProjectEvt, "", statusCode, "Create", HttpMethod.Post.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -342,7 +353,7 @@ namespace TestUtility
         ProjectTimezone = timezone,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(UpdateProjectEvt, "", statusCode, "Update", HttpMethod.Put.ToString() ,CustomerUid.ToString());
+      CallProjectWebApi(UpdateProjectEvt, "", statusCode, "Update", HttpMethod.Put.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -358,7 +369,7 @@ namespace TestUtility
         ProjectUID = projectUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(DeleteProjectEvt, "", statusCode, "Delete", HttpMethod.Delete.ToString() ,CustomerUid.ToString());
+      CallProjectWebApi(DeleteProjectEvt, "", statusCode, "Delete", HttpMethod.Delete.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -379,7 +390,7 @@ namespace TestUtility
         RelationType = RelationType.Customer,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(AssociateCustomerProjectEvt, "AssociateCustomer", statusCode, "Associate customer", HttpMethod.Post.ToString() ,CustomerUid.ToString());
+      CallProjectWebApi(AssociateCustomerProjectEvt, "AssociateCustomer", statusCode, "Associate customer", HttpMethod.Post.ToString(), customerUid.ToString());
     }
 
     /// <summary>
@@ -397,7 +408,7 @@ namespace TestUtility
         CustomerUID = customerUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(DissociateCustomerProjectEvt, "DissociateCustomer", statusCode, "Dissociate customer", HttpMethod.Post.ToString() ,CustomerUid.ToString());
+      CallProjectWebApi(DissociateCustomerProjectEvt, "DissociateCustomer", statusCode, "Dissociate customer", HttpMethod.Post.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -415,7 +426,7 @@ namespace TestUtility
         GeofenceUID = geofenceUid,
         ActionUTC = actionUtc
       };
-      CallProjectWebApi(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence", HttpMethod.Post.ToString() ,CustomerUid.ToString());
+      CallProjectWebApi(AssociateProjectGeofenceEvt, "AssociateGeofence", statusCode, "Associate geofence", HttpMethod.Post.ToString(), CustomerUid.ToString());
     }
 
     /// <summary>
@@ -438,9 +449,9 @@ namespace TestUtility
         {
           var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
           var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-          msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
+          msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
           Assert.IsFalse(expectedResultsArray.Length == actualProjects.Count, " Number of projects return do not match expected");
-          CompareTheActualProjectListWithExpected(actualProjects, expectedProjects,true);
+          CompareTheActualProjectListWithExpected(actualProjects, expectedProjects, true);
         }
       }
     }
@@ -454,7 +465,7 @@ namespace TestUtility
     /// <param name="ignoreZeros"></param>
     public void GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
     {
-      var response = CallProjectWebApiV4("api/v4/projects/", HttpMethod.Get.ToString(), null, customerUid.ToString());
+      var response = CallProjectWebApiV4("api/v4/project/", HttpMethod.Get.ToString(), null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         if (expectedResultsArray.Length == 0)
@@ -468,26 +479,35 @@ namespace TestUtility
           var projectDescriptorsListResult = JsonConvert.DeserializeObject<ProjectDescriptorsListResult>(response);
           var actualProjects = projectDescriptorsListResult.ProjectDescriptors.OrderBy(p => p.ProjectUid).ToList();
           var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-          msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
-          Assert.IsTrue(expectedResultsArray.Length-1 == actualProjects.Count, " Number of projects return do not match expected");
-          CompareTheActualProjectListWithExpected(actualProjects, expectedProjects,ignoreZeros);
+          msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
+          Assert.IsTrue(expectedResultsArray.Length - 1 == actualProjects.Count, " Number of projects return do not match expected");
+          CompareTheActualProjectListWithExpected(actualProjects, expectedProjects, ignoreZeros);
         }
       }
     }
 
+    /// <summary>
+    /// Get project details for one project
+    /// </summary>
+    /// <param name="statusCode"></param>
+    /// <param name="customerUid"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="expectedResultsArray"></param>
+    /// <param name="ignoreZeros"></param>
     public void GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
     {
-      var response = CallProjectWebApiV4("api/v4/project?projectUid=" + projectUid , HttpMethod.Get.ToString(), null, customerUid.ToString());
+      var response = CallProjectWebApiV4("api/v4/project/" + projectUid, HttpMethod.Get.ToString(), null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         var projectDescriptorResult = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
-        var actualProject = new List<ProjectV4Descriptor> {projectDescriptorResult.ProjectDescriptor};
+        var actualProject = new List<ProjectV4Descriptor> { projectDescriptorResult.ProjectDescriptor };
         var expectedProjects = ConvertArrayToProjectV4DescriptorList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
-        msg.DisplayResults("Expected project :" + JsonConvert.SerializeObject(expectedProjects),"Actual from WebApi: " + response);
+        msg.DisplayResults("Expected project :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
         Assert.IsTrue(actualProject.Count == 1, " There should be one project");
-        CompareTheActualProjectListV4WithExpected(actualProject, expectedProjects,ignoreZeros);
+        CompareTheActualProjectListV4WithExpected(actualProject, expectedProjects, ignoreZeros);
       }
     }
+
 
     /// <summary>
     /// Compare the two lists of projects
@@ -642,7 +662,7 @@ namespace TestUtility
     /// <param name="timeStampAndDayOffSet">Date day off set and timestamp from first event date</param>
     /// <param name="startEventDateTime"></param>
     /// <returns>Datetime</returns>
-    public DateTime ConvertTimeStampAndDayOffSetToDateTime(string timeStampAndDayOffSet,DateTime startEventDateTime)
+    public DateTime ConvertTimeStampAndDayOffSetToDateTime(string timeStampAndDayOffSet, DateTime startEventDateTime)
     {
       var components = Regex.Split(timeStampAndDayOffSet, @"d+\+");
       var offset = double.Parse(components[0].Trim());
@@ -663,7 +683,7 @@ namespace TestUtility
       return topicName;
     }
 
-    
+
     /// <summary>
     /// Set the full topic name from the event type
     /// </summary>
@@ -748,7 +768,7 @@ namespace TestUtility
             SerialNumber = eventObject.SerialNumber,
             MakeCode = eventObject.Make,
             Model = eventObject.Model,
-            IconKey = Convert.ToInt32(eventObject.IconKey)            
+            IconKey = Convert.ToInt32(eventObject.IconKey)
           };
           if (HasProperty(eventObject, "OwningCustomerUID"))
           {
@@ -763,7 +783,7 @@ namespace TestUtility
             createAssetEvent.EquipmentVIN = eventObject.EquipmentVIN;
           }
 
-          jsonString = JsonConvert.SerializeObject(new {CreateAssetEvent = createAssetEvent}, jsonSettings );          
+          jsonString = JsonConvert.SerializeObject(new { CreateAssetEvent = createAssetEvent }, jsonSettings);
           break;
         case "UpdateAssetEvent":
           var updateAssetEvent = new UpdateAssetEvent()
@@ -800,25 +820,25 @@ namespace TestUtility
             updateAssetEvent.EquipmentVIN = eventObject.EquipmentVIN;
           }
 
-          jsonString = JsonConvert.SerializeObject(new {UpdateAssetEvent = updateAssetEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { UpdateAssetEvent = updateAssetEvent }, jsonSettings);
           break;
         case "DeleteAssetEvent":
           var deleteAssetEvent = new DeleteAssetEvent()
           {
             ActionUTC = eventObject.EventDate,
-            AssetUID = new Guid(AssetUid)     
+            AssetUID = new Guid(AssetUid)
           };
-          jsonString = JsonConvert.SerializeObject(new {DeleteAssetEvent = deleteAssetEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { DeleteAssetEvent = deleteAssetEvent }, jsonSettings);
           break;
         case "CreateDeviceEvent":
           var createDeviceEvent = new CreateDeviceEvent()
           {
             ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate, 
+            ReceivedUTC = eventObject.EventDate,
             DeviceSerialNumber = eventObject.DeviceSerialNumber,
             DeviceState = eventObject.DeviceState,
             DeviceType = eventObject.DeviceType,
-            DeviceUID = new Guid(eventObject.DeviceUID)          
+            DeviceUID = new Guid(eventObject.DeviceUID)
           };
           if (HasProperty(eventObject, "DeregisteredUTC"))
           {
@@ -850,7 +870,7 @@ namespace TestUtility
           var updateDeviceEvent = new UpdateDeviceEvent()
           {
             ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate, 
+            ReceivedUTC = eventObject.EventDate,
             DeviceSerialNumber = eventObject.DeviceSerialNumber,
             DeviceState = eventObject.DeviceState,
             DeviceType = eventObject.DeviceType,
@@ -897,7 +917,7 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            AssetUID =  new Guid(eventObject.AssetUID),
+            AssetUID = new Guid(eventObject.AssetUID),
             DeviceUID = new Guid(eventObject.DeviceUID),
           };
           jsonString = JsonConvert.SerializeObject(new { DissociateDeviceAssetEvent = dissociateDeviceEvent }, jsonSettings);
@@ -912,20 +932,20 @@ namespace TestUtility
             CustomerType = eventObject.CustomerType,
             CustomerUID = new Guid(eventObject.CustomerUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateCustomerEvent = createCustomerEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { CreateCustomerEvent = createCustomerEvent }, jsonSettings);
           break;
         case "UpdateCustomerEvent":
           var updateCustomerEvent = new UpdateCustomerEvent()
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            CustomerUID = new Guid(eventObject.CustomerUID)            
+            CustomerUID = new Guid(eventObject.CustomerUID)
           };
           if (HasProperty(eventObject, "CustomerName"))
           {
-            updateCustomerEvent.CustomerName = eventObject.CustomerName; 
+            updateCustomerEvent.CustomerName = eventObject.CustomerName;
           }
-          jsonString = JsonConvert.SerializeObject(new {UpdateCustomerEvent = updateCustomerEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { UpdateCustomerEvent = updateCustomerEvent }, jsonSettings);
           break;
         case "DeleteCustomerEvent":
           var deleteCustomerEvent = new DeleteCustomerEvent()
@@ -934,7 +954,7 @@ namespace TestUtility
             ReceivedUTC = eventObject.EventDate,
             CustomerUID = new Guid(eventObject.CustomerUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {DeleteCustomerEvent = deleteCustomerEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { DeleteCustomerEvent = deleteCustomerEvent }, jsonSettings);
           break;
         case "AssociateCustomerUserEvent":
           var associateCustomerUserEvent = new AssociateCustomerUserEvent()
@@ -944,7 +964,7 @@ namespace TestUtility
             CustomerUID = new Guid(eventObject.CustomerUID),
             UserUID = new Guid(eventObject.UserUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {AssociateCustomerUserEvent = associateCustomerUserEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { AssociateCustomerUserEvent = associateCustomerUserEvent }, jsonSettings);
           break;
         case "DissociateCustomerUserEvent":
           var dissociateCustomerUserEvent = new DissociateCustomerUserEvent()
@@ -954,7 +974,7 @@ namespace TestUtility
             CustomerUID = new Guid(eventObject.CustomerUID),
             UserUID = new Guid(eventObject.UserUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {DissociateCustomerUserEvent = dissociateCustomerUserEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { DissociateCustomerUserEvent = dissociateCustomerUserEvent }, jsonSettings);
           break;
         case "CreateAssetSubscriptionEvent":
           var createAssetSubscriptionEvent = new CreateAssetSubscriptionEvent()
@@ -969,7 +989,7 @@ namespace TestUtility
             SubscriptionType = eventObject.SubscriptionType,
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateAssetSubscriptionEvent = createAssetSubscriptionEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { CreateAssetSubscriptionEvent = createAssetSubscriptionEvent }, jsonSettings);
           break;
         case "UpdateAssetSubscriptionEvent":
           var updateAssetSubscriptionEvent = new UpdateAssetSubscriptionEvent()
@@ -984,7 +1004,7 @@ namespace TestUtility
             SubscriptionType = eventObject.SubscriptionType,
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {UpdateAssetSubscriptionEvent = updateAssetSubscriptionEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { UpdateAssetSubscriptionEvent = updateAssetSubscriptionEvent }, jsonSettings);
           break;
         case "CreateCustomerSubscriptionEvent":
           var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
@@ -993,11 +1013,11 @@ namespace TestUtility
             SubscriptionUID = new Guid(eventObject.SubscriptionUID),
             EndDate = DateTime.Parse(eventObject.EndDate),
             SubscriptionType = eventObject.SubscriptionType,
-            StartDate = DateTime.Parse(eventObject.StartDate),   
+            StartDate = DateTime.Parse(eventObject.StartDate),
             ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate                     
+            ReceivedUTC = eventObject.EventDate
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateCustomerSubscriptionEvent  = createCustomerSubscriptionEvent }, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { CreateCustomerSubscriptionEvent = createCustomerSubscriptionEvent }, jsonSettings);
           break;
         case "CreateProjectSubscriptionEvent":
           var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
@@ -1010,7 +1030,7 @@ namespace TestUtility
             SubscriptionType = eventObject.SubscriptionType,
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateProjectSubscriptionEvent = createProjectSubscriptionEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { CreateProjectSubscriptionEvent = createProjectSubscriptionEvent }, jsonSettings);
           break;
         case "UpdateProjectSubscriptionEvent":
           var updateProjectSubscriptionEvent = new UpdateProjectSubscriptionEvent()
@@ -1022,18 +1042,18 @@ namespace TestUtility
             SubscriptionType = eventObject.SubscriptionType,
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {UpdateProjectSubscriptionEvent = updateProjectSubscriptionEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { UpdateProjectSubscriptionEvent = updateProjectSubscriptionEvent }, jsonSettings);
           break;
         case "AssociateProjectSubscriptionEvent":
           var associateProjectSubscriptionEvent = new AssociateProjectSubscriptionEvent()
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            EffectiveDate = eventObject.EventDate, 
+            EffectiveDate = eventObject.EventDate,
             ProjectUID = new Guid(eventObject.ProjectUID),
             SubscriptionUID = new Guid(eventObject.SubscriptionUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {AssociateProjectSubscriptionEvent = associateProjectSubscriptionEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { AssociateProjectSubscriptionEvent = associateProjectSubscriptionEvent }, jsonSettings);
           break;
         case "CreateProjectEvent":
           var createProjectEvent = new CreateProjectEvent()
@@ -1044,8 +1064,8 @@ namespace TestUtility
             ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
             ProjectName = eventObject.ProjectName,
             ProjectTimezone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            ProjectBoundary = eventObject.ProjectBoundary                        
+            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectBoundary = eventObject.ProjectBoundary
           };
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
@@ -1072,7 +1092,7 @@ namespace TestUtility
           {
             createProjectEvent.CustomerID = int.Parse(eventObject.CustomerID);
           }
-          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(createProjectEvent, jsonSettings) : JsonConvert.SerializeObject(new {CreateProjectEvent = createProjectEvent}, jsonSettings);
+          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(createProjectEvent, jsonSettings) : JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent }, jsonSettings);
           break;
         case "CreateProjectRequest":
           Guid? cpProjectUid = null;
@@ -1085,8 +1105,8 @@ namespace TestUtility
             ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
             ProjectName = eventObject.ProjectName,
             ProjectTimezone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            ProjectBoundary = eventObject.ProjectBoundary                       
+            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectBoundary = eventObject.ProjectBoundary
           };
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
@@ -1114,11 +1134,11 @@ namespace TestUtility
             createProjectRequest.CustomerID = int.Parse(eventObject.CustomerID);
           }
           var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpProjectUid,
-            cpCustomerUID, createProjectRequest.ProjectID, createProjectRequest.ProjectType,
+            cpCustomerUID, createProjectRequest.ProjectType,
             createProjectRequest.ProjectName, createProjectRequest.Description, createProjectRequest.ProjectStartDate,
             createProjectRequest.ProjectEndDate, createProjectRequest.ProjectTimezone,
             createProjectRequest.ProjectBoundary, createProjectRequest.CustomerID,
-            createProjectRequest.CoordinateSystemFileName, createProjectRequest.CoordinateSystemFileContent);    
+            createProjectRequest.CoordinateSystemFileName, createProjectRequest.CoordinateSystemFileContent);
           jsonString = JsonConvert.SerializeObject(cprequest, jsonSettings);
           break;
         case "UpdateProjectEvent":
@@ -1126,7 +1146,7 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            ProjectUID = new Guid(eventObject.ProjectUID),  
+            ProjectUID = new Guid(eventObject.ProjectUID),
           };
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
@@ -1147,18 +1167,18 @@ namespace TestUtility
           }
           if (HasProperty(eventObject, "ProjectType"))
           {
-            updateProjectEvent.ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
+            updateProjectEvent.ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
           }
           if (HasProperty(eventObject, "Description"))
           {
             updateProjectEvent.Description = eventObject.Description;
           }
-          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(updateProjectEvent, jsonSettings ) : JsonConvert.SerializeObject(new {UpdateProjectEvent = updateProjectEvent}, jsonSettings );
+          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(updateProjectEvent, jsonSettings) : JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent }, jsonSettings);
           break;
         case "UpdateProjectRequest":
           var updateProjectRequest = new UpdateProjectEvent()
           {
-            ProjectUID = new Guid(eventObject.ProjectUID),  
+            ProjectUID = new Guid(eventObject.ProjectUID),
           };
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
@@ -1175,13 +1195,13 @@ namespace TestUtility
           }
           if (HasProperty(eventObject, "ProjectType"))
           {
-            updateProjectRequest.ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
+            updateProjectRequest.ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
           }
           if (HasProperty(eventObject, "Description"))
           {
             updateProjectRequest.Description = eventObject.Description;
           }
-          var request = UpdateProjectRequest.CreateUpdateProjectRequest(updateProjectRequest.ProjectUID, updateProjectRequest.ProjectType, updateProjectRequest.ProjectName,updateProjectRequest.Description,
+          var request = UpdateProjectRequest.CreateUpdateProjectRequest(updateProjectRequest.ProjectUID, updateProjectRequest.ProjectType, updateProjectRequest.ProjectName, updateProjectRequest.Description,
                                               updateProjectRequest.ProjectEndDate, updateProjectRequest.CoordinateSystemFileName, updateProjectRequest.CoordinateSystemFileContent);
           jsonString = JsonConvert.SerializeObject(request, jsonSettings);
           break;
@@ -1192,7 +1212,7 @@ namespace TestUtility
             ReceivedUTC = eventObject.EventDate,
             ProjectUID = new Guid(eventObject.ProjectUID)
           };
-          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(deleteProjectEvent, jsonSettings ) : JsonConvert.SerializeObject(new {DeleteProjectEvent = deleteProjectEvent}, jsonSettings );
+          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(deleteProjectEvent, jsonSettings) : JsonConvert.SerializeObject(new { DeleteProjectEvent = deleteProjectEvent }, jsonSettings);
           break;
         case "AssociateProjectCustomer":
           SetKafkaTopicName("IProjectEvent");
@@ -1203,7 +1223,7 @@ namespace TestUtility
             ProjectUID = new Guid(eventObject.ProjectUID),
             CustomerUID = new Guid(eventObject.CustomerUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {AssociateProjectCustomer = associateCustomerProject}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { AssociateProjectCustomer = associateCustomerProject }, jsonSettings);
           break;
         case "AssociateProjectGeofence":
           SetKafkaTopicName("IProjectEvent");
@@ -1214,7 +1234,7 @@ namespace TestUtility
             ProjectUID = new Guid(eventObject.ProjectUID),
             GeofenceUID = new Guid(eventObject.GeofenceUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {AssociateProjectGeofence = associateProjectGeofence}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { AssociateProjectGeofence = associateProjectGeofence }, jsonSettings);
           break;
         case "CreateGeofenceEvent":
           SetKafkaTopicName("IGeofenceEvent");
@@ -1232,8 +1252,21 @@ namespace TestUtility
             IsTransparent = Boolean.Parse(eventObject.IsTransparent),
             UserUID = new Guid(eventObject.UserUID)
           };
-          jsonString = JsonConvert.SerializeObject(new {CreateGeofenceEvent = createGeofenceEvent}, jsonSettings );
+          jsonString = JsonConvert.SerializeObject(new { CreateGeofenceEvent = createGeofenceEvent }, jsonSettings);
           break;
+
+        case "ImportedFileDescriptor":
+          var importedFileDescriptor = new ImportedFileDescriptor()
+          {
+            CustomerUid = eventObject.CustomerUid,
+            FileCreatedUtc = DateTime.Parse(eventObject.FileCreatedUtc),
+            FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUtc),
+            ImportedBy = eventObject.ImportedBy,
+            ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Alignment,
+            Name = eventObject.Name 
+          };
+          jsonString = JsonConvert.SerializeObject(importedFileDescriptor, jsonSettings);
+          break;          
       }
       return jsonString;
     }
@@ -1325,7 +1358,7 @@ namespace TestUtility
     /// <returns>true or false</returns>
     private static bool HasProperty(dynamic obj, string propertyName)
     {
-      var expandoDict = (IDictionary<string, object>) obj;
+      var expandoDict = (IDictionary<string, object>)obj;
       if (expandoDict.ContainsKey(propertyName) && expandoDict[propertyName] != null)
       {
         return true;
@@ -1342,17 +1375,17 @@ namespace TestUtility
     private ExpandoObject ConvertToExpando(string[] allColumnNames, string[] singleEventRow)
     {
       var expObj = new ExpandoObject() as IDictionary<string, Object>;
-      var colIdx = -1; 
+      var colIdx = -1;
       foreach (var colName in allColumnNames)
       {
         colIdx++;
         if (colName.Trim() == string.Empty)
-         { continue; }
+        { continue; }
 
         dynamic obj = TransformObject(singleEventRow[colIdx].Trim());
         expObj.Add(colName.Trim(), obj);
       }
-      return (ExpandoObject) expObj;
+      return (ExpandoObject)expObj;
     }
 
     /// <summary>
@@ -1365,14 +1398,14 @@ namespace TestUtility
       dynamic obj;
       if (propertyValue == "null" || propertyValue == string.Empty)
       {
-        return null;  
+        return null;
       }
       if (Regex.IsMatch(propertyValue, @"^\s*\d+d\+\d+"))
       {
-        obj = ConvertTimeStampAndDayOffSetToDateTime(propertyValue ,FirstEventDate); 
+        obj = ConvertTimeStampAndDayOffSetToDateTime(propertyValue, FirstEventDate);
         return obj;
       }
-      obj = propertyValue; 
+      obj = propertyValue;
       return obj;
     }
 
@@ -1385,9 +1418,9 @@ namespace TestUtility
     {
       var eventList = new List<ProjectDescriptor>();
       try
-      {  
+      {
         var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
-        for (var rowCnt = 1; rowCnt <= eventArray.Length-1; rowCnt++)
+        for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
         {
           var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
           dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
@@ -1396,10 +1429,10 @@ namespace TestUtility
           {
             Name = eventObject.ProjectName,
             ProjectTimeZone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             StartDate = eventObject.ProjectStartDate,
             EndDate = eventObject.ProjectEndDate,
-            ProjectGeofenceWKT = eventObject.ProjectBoundary,                        
+            ProjectGeofenceWKT = eventObject.ProjectBoundary,
           };
           if (HasProperty(eventObject, "IsArchived"))
           {
@@ -1433,7 +1466,7 @@ namespace TestUtility
       {
         msg.DisplayException(ex.Message);
         throw;
-      }      
+      }
     }
 
 
@@ -1446,9 +1479,9 @@ namespace TestUtility
     {
       var eventList = new List<ProjectV4Descriptor>();
       try
-      {  
+      {
         var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
-        for (var rowCnt = 1; rowCnt <= eventArray.Length-1; rowCnt++)
+        for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
         {
           var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
           dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
@@ -1457,10 +1490,10 @@ namespace TestUtility
           {
             Name = eventObject.ProjectName,
             ProjectTimeZone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType) Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
             StartDate = eventObject.ProjectStartDate,
-            EndDate = eventObject.ProjectEndDate,            
-            ProjectGeofenceWKT = eventObject.ProjectBoundary,                                    
+            EndDate = eventObject.ProjectEndDate,
+            ProjectGeofenceWKT = eventObject.ProjectBoundary,
           };
           if (HasProperty(eventObject, "IsArchived"))
           {
@@ -1502,7 +1535,7 @@ namespace TestUtility
       {
         msg.DisplayException(ex.Message);
         throw;
-      }      
+      }
     }
     /// <summary>
     /// Generate a random number. This is use for the number of days in the past to get a start date from.
@@ -1537,13 +1570,13 @@ namespace TestUtility
       }
       else
       {
-       configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+        configJson = JsonConvert.SerializeObject(evt, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       }
       var uri = GetBaseUri() + "api/v3/project/" + routeSuffix;
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(uri, method, configJson, statusCode, "application/json", customerUid);
       if (response.Length > 0)
-         { Console.WriteLine(what + " project response:" + response);}
+      { Console.WriteLine(what + " project response:" + response); }
       return response;
     }
 
@@ -1555,11 +1588,11 @@ namespace TestUtility
     /// <param name="configJson"></param>
     /// <param name="customerUid"></param>
     /// <returns></returns>
-    public string CallProjectWebApiV4(string routeSuffix, string method , string configJson, string customerUid = null)
+    public string CallProjectWebApiV4(string routeSuffix, string method, string configJson, string customerUid = null)
     {
-      var uri = GetBaseUri()  + routeSuffix;  // "http://localhost:20979/"
+      var uri = GetBaseUri() + routeSuffix;  // "http://localhost:20979/"
       var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, configJson,HttpStatusCode.OK, "application/json", customerUid);
+      var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json", customerUid);
       return response;
     }
     #endregion

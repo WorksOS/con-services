@@ -38,14 +38,14 @@
     <PackageReference Include="Swashbuckle.SwaggerUi" Version="6.0.0-beta902" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
-    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.7" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.0.6" />
+    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.16" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.1" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
     <PackageReference Include="AutoMapper" Version="6.0.2" />
-    <PackageReference Include="MasterDataProxies.netcore" Version="1.0.25" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.57" />
-    <PackageReference Include="TCCFileAccess.netcore" Version="1.0.4" />
-    <PackageReference Include="FlowJSHandler.netcore" Version="1.0.0" />
+    <PackageReference Include="MasterDataProxies.netcore" Version="1.0.29" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.68" />
+    <PackageReference Include="TCCFileAccess.netcore" Version="1.1.0" />
+    <PackageReference Include="FlowJSHandler.netcore" Version="1.0.1" />
   </ItemGroup>
 
 <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">  

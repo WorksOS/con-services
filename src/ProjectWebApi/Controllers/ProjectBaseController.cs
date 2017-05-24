@@ -16,12 +16,14 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.ResultsHandling;
-using TCCFileAccess;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Utilities;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers
 {
+  /// <summary>
+  /// Project Base for all Project controllers
+  /// </summary>
   public class ProjectBaseController : Controller
   {
     protected readonly IKafka producer;
@@ -29,7 +31,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected readonly ISubscriptionProxy subsProxy;
     protected readonly IGeofenceProxy geofenceProxy;
     protected readonly IRaptorProxy raptorProxy;
-    protected readonly IFileRepository fileRepo;
 
     protected readonly ProjectRepository projectService;
     protected readonly IConfigurationStore store;
@@ -50,7 +51,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <param name="fileRepo">For TCC file transfer</param>
     public ProjectBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
         IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-        IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
+        IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
     {
       log = logger.CreateLogger<ProjectBaseController>();
       this.producer = producer;
@@ -63,7 +64,6 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       this.subsProxy = subsProxy;
       this.geofenceProxy = geofenceProxy;
       this.raptorProxy = raptorProxy;
-      this.fileRepo = fileRepo;
       this.store = store;
 
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
@@ -179,7 +179,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     {
       var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-      var project = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(p => p.ProjectUID == projectUid);
+      var project = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 
       if (project == null)
       {
@@ -201,7 +201,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task UpdateProject(UpdateProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       project.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = project });
@@ -223,7 +223,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected virtual async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
         string databaseProjectBoundary)
     {
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       if (project.ProjectID <= 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -235,11 +235,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       //Send boundary as old format on kafka queue
       project.ProjectBoundary = kafkaProjectBoundary;
       var messagePayload = JsonConvert.SerializeObject(new { CreateProjectEvent = project });
-      producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
-          {
-            new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-          });
+      await producer.Send(kafkaTopicName,new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload));
       //Save boundary as WKT
       project.ProjectBoundary = databaseProjectBoundary;
       await projectService.StoreEvent(project).ConfigureAwait(false);
@@ -252,7 +248,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task AssociateProjectCustomer(AssociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = customerProject });
@@ -271,7 +267,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task DissociateProjectCustomer(DissociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { DissociateProjectCustomer = customerProject });
@@ -290,7 +286,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
     {
-      ProjectDataValidator.Validate(geofenceProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(geofenceProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
@@ -309,7 +305,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task DeleteProject(DeleteProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       project.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });

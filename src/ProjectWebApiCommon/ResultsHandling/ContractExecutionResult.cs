@@ -105,9 +105,14 @@ namespace ProjectWebApiCommon.ResultsHandling
     public static readonly int NoValidSubscription = -5;
 
     /// <summary>
+    ///   Tcc method failed. We don't have any way of knowing why
+    /// </summary>
+    public static readonly int TCCReturnFailure = -6;
+
+    /// <summary>
     ///   Supplied data didn't pass validation
     /// </summary>
-    public static readonly int TCCConfigurationError = -6;
+    public static readonly int TCCConfigurationError = -7;
 
     /// <summary>
     /// Dynamically adds new error messages addwith offset.

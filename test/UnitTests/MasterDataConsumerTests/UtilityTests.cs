@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.Utilities;
 using Repositories.DBModels;
@@ -17,7 +18,7 @@ namespace VSS.Visionlink.Project.UnitTests
 
       var request = CreateProjectRequest.CreateACreateProjectRequest
       (Guid.NewGuid(), Guid.NewGuid(),
-        123, ProjectType.Standard, "projectName", "this is the description",
+        ProjectType.Standard, "projectName", "this is the description",
         new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
         456, null, null);
@@ -32,7 +33,6 @@ namespace VSS.Visionlink.Project.UnitTests
       Assert.AreEqual(request.ProjectEndDate, kafkaEvent.ProjectEndDate, "ProjectEndDate has not been mapped correctly");
       Assert.AreEqual(request.ProjectTimezone, kafkaEvent.ProjectTimezone, "ProjectTimezone has not been mapped correctly");
       Assert.AreEqual(request.ProjectBoundary, kafkaEvent.ProjectBoundary, "ProjectBoundary has not been mapped correctly");
-      Assert.AreEqual(request.ProjectID, kafkaEvent.ProjectID, "ProjectID has not been mapped correctly");
       Assert.AreEqual(request.CoordinateSystemFileName, kafkaEvent.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
       Assert.AreEqual(request.CoordinateSystemFileContent, kafkaEvent.CoordinateSystemFileContent, "CoordinateSystemFileContent has not been mapped correctly");
 
@@ -71,7 +71,6 @@ namespace VSS.Visionlink.Project.UnitTests
       Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName, "CoordinateSystemFileName has not been mapped correctly");
     }
-
 
     [TestMethod]
     public void MapProjectToResult()
@@ -117,8 +116,12 @@ namespace VSS.Visionlink.Project.UnitTests
       Assert.AreEqual(project.CustomerUID, result.CustomerUid, "CustomerUID has not been mapped correctly");
       Assert.AreEqual(project.LegacyCustomerID.ToString(), result.LegacyCustomerId, "LegacyCustomerID has not been mapped correctly");
       Assert.AreEqual(project.SubscriptionUID, result.SubscriptionUid, "SubscriptionUID has not been mapped correctly");
-      Assert.AreEqual(project.SubscriptionStartDate.Value.ToString("O"), result.SubscriptionStartDate, "SubscriptionStartDate has not been mapped correctly");
-      Assert.AreEqual(project.SubscriptionEndDate.Value.ToString("O"), result.SubscriptionEndDate, "SubscriptionEndDate has not been mapped correctly");
+      if (project.SubscriptionStartDate != null)
+        Assert.AreEqual((object) project.SubscriptionStartDate.Value.ToString("O"), result.SubscriptionStartDate,
+          "SubscriptionStartDate has not been mapped correctly");
+      if (project.SubscriptionEndDate != null)
+        Assert.AreEqual((object) project.SubscriptionEndDate.Value.ToString("O"), result.SubscriptionEndDate,
+          "SubscriptionEndDate has not been mapped correctly");
       Assert.AreEqual(project.ServiceTypeID, (int)result.ServiceType, "ServiceTypeID has not been mapped correctly");
       Assert.AreEqual(project.GeometryWKT, result.ProjectGeofenceWKT, "GeometryWKT has not been mapped correctly");
       Assert.IsFalse(result.IsArchived, "IsArchived has not been mapped correctly");
@@ -129,32 +132,81 @@ namespace VSS.Visionlink.Project.UnitTests
       Assert.AreEqual(project.LegacyProjectID, copyOfProject.LegacyProjectID, "LegacyProjectID has not been mapped correctly");
     }
 
-    //[TestMethod]
-    //public void CanCreateFileAccessService()
-    //{
-    //  public IServiceProvider serviceProvider = null;
+    [TestMethod]
+    public void MapImportedFileRepoToResponse()
+    {
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
 
-    //  [TestInitialize]
-    //  public virtual void InitTest()
-    //  {
-    //    var serviceCollection = new ServiceCollection();
+      var request = new ImportedFile()
+      {
+        ProjectUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        CustomerUid = Guid.NewGuid().ToString(),
+        ImportedFileType = ImportedFileType.Alignment,
+        Name = "this is the filename.svl",
+        FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(Guid.NewGuid().ToString(), "/customerUID/projectUID", "this is the filename.svl")),
+        FileCreatedUtc = DateTime.UtcNow.AddDays(-2),
+        FileUpdatedUtc = DateTime.UtcNow.AddDays(-1),
+        ImportedBy = "joeSmoe@trimble.com",
+        SurveyedUtc = null,
+        IsDeleted = false,
+        LastActionedUtc = DateTime.UtcNow
+      };
 
-    //    string loggerRepoName = "UnitTestLogTest";
-    //    var logPath = System.IO.Directory.GetCurrentDirectory();
-    //    Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      var importedFileDescriptor = AutoMapperUtility.Automapper.Map<ImportedFileDescriptor>(request);
+      Assert.AreEqual(request.ProjectUid, importedFileDescriptor.ProjectUid, "ProjectUID has not been mapped correctly");
+      Assert.AreEqual(request.ImportedFileUid, importedFileDescriptor.ImportedFileUid, "ImportedFileUid has not been mapped correctly");
+      Assert.AreEqual(request.CustomerUid, importedFileDescriptor.CustomerUid, "CustomerUid has not been mapped correctly");
+      Assert.AreEqual(request.ImportedFileType, importedFileDescriptor.ImportedFileType, "ImportedFileType has not been mapped correctly");
+      Assert.AreEqual(request.Name, importedFileDescriptor.Name, "Name has not been mapped correctly");
+      Assert.AreEqual(request.FileCreatedUtc, importedFileDescriptor.FileCreatedUtc, "FileCreatedUtc has not been mapped correctly");
+      Assert.AreEqual(request.FileUpdatedUtc, importedFileDescriptor.FileUpdatedUtc, "FileUpdatedUtc has not been mapped correctly");
+      Assert.AreEqual(request.ImportedBy, importedFileDescriptor.ImportedBy, "ImportedBy has not been mapped correctly");
+      Assert.AreEqual(request.SurveyedUtc, importedFileDescriptor.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
+      Assert.AreEqual(request.LastActionedUtc, importedFileDescriptor.ImportedUtc, "ImportedUtc has not been mapped correctly");
 
-    //    ILoggerFactory loggerFactory = new LoggerFactory();
-    //    loggerFactory.AddDebug();
-    //    loggerFactory.AddLog4Net(loggerRepoName);
+      // just make a copy file descriptor is only in the source file, not the destination
+      var copyOfRequest = AutoMapperUtility.Automapper.Map<ImportedFile>(request);
+      Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");
+      Assert.AreEqual(request.FileDescriptor, copyOfRequest.FileDescriptor, "FileDescriptor has not been mapped correctly");
+    }
 
-    //    serviceCollection.AddLogging();
-    //    serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-    //    serviceCollection.AddSingleton<IConfigurationStore, VSS.GenericConfiguration.GenericConfiguration>();
-    //    serviceCollection.AddSingleton<IFileRepository, FileRepository>();
-    //    serviceProvider = serviceCollection.BuildServiceProvider();
+    [TestMethod]
+    public void MapImportedFileRepoToUpdateEvent()
+    {
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
 
-    //    var fileAccess = serviceProvider.GetRequiredService<IFileRepository>();
-    //    Assert.IsNotNull(fileAccess);
-    //}
+      var request = new ImportedFile()
+      {
+        ProjectUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        CustomerUid = Guid.NewGuid().ToString(),
+        ImportedFileType = ImportedFileType.Alignment,
+        Name = "this is the filename.svl",
+        FileDescriptor = JsonConvert.SerializeObject(FileDescriptor.CreateFileDescriptor(Guid.NewGuid().ToString(), "/customerUID/projectUID", "this is the filename.svl")),
+        FileCreatedUtc = DateTime.UtcNow.AddDays(-2),
+        FileUpdatedUtc = DateTime.UtcNow.AddDays(-1),
+        ImportedBy = "joeSmoe@trimble.com",
+        SurveyedUtc = null,
+        IsDeleted = false,
+        LastActionedUtc = DateTime.UtcNow
+      };
+
+      var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(request);
+      Assert.AreEqual(request.LastActionedUtc, updateImportedFileEvent.ActionUTC, "ActionUTC has not been mapped correctly");
+      Assert.AreEqual(request.FileCreatedUtc, updateImportedFileEvent.FileCreatedUtc, "FileCreatedUtc has not been mapped correctly");
+      Assert.AreEqual(request.FileDescriptor, updateImportedFileEvent.FileDescriptor, "FileDescriptor has not been mapped correctly");
+      Assert.AreEqual(request.FileUpdatedUtc, updateImportedFileEvent.FileUpdatedUtc, "FileUpdatedUtc has not been mapped correctly");
+      Assert.AreEqual(request.ImportedBy, updateImportedFileEvent.ImportedBy, "ImportedBy has not been mapped correctly");
+      Assert.AreEqual(request.ImportedFileUid, updateImportedFileEvent.ImportedFileUID.ToString(), "ImportedFileUID has not been mapped correctly");
+      Assert.AreEqual(request.ProjectUid, updateImportedFileEvent.ProjectUID.ToString(), "ProjectUID has not been mapped correctly");
+      Assert.AreEqual(request.LastActionedUtc, updateImportedFileEvent.ReceivedUTC, "ReceivedUTC has not been mapped correctly");
+      Assert.AreEqual(request.SurveyedUtc, updateImportedFileEvent.SurveyedUtc, "SurveyedUtc has not been mapped correctly");
+     
+      // just make a copy file descriptor is only in the source file, not the destination
+      var copyOfRequest = AutoMapperUtility.Automapper.Map<ImportedFile>(request);
+      Assert.AreEqual(request.ProjectUid, copyOfRequest.ProjectUid, "ProjectUID has not been mapped correctly");
+      Assert.AreEqual(request.FileDescriptor, copyOfRequest.FileDescriptor, "FileDescriptor has not been mapped correctly");
+    }
   }
 }

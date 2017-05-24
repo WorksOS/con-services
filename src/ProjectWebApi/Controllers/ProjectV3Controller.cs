@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
-using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -17,13 +17,16 @@ using VSS.Raptor.Service.Common.Interfaces;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V3
 {
+  /// <summary>
+  /// Project controller v3
+  /// </summary>
   public class ProjectV3Controller : ProjectBaseController
     {
 
         public ProjectV3Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
             IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-            IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
-            : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, fileRepo, logger)
+            IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
+            : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger)
         {
         }
 
@@ -39,7 +42,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
       {
         log.LogInformation("GetProjectsV3");
         var projects = (await GetProjectList());
-        return projects.Select(project =>
+          var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+          log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+            return projects.Select(project =>
             new ProjectDescriptor()
             {
               ProjectType = project.ProjectType,
@@ -55,7 +60,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
               LegacyCustomerId = project.LegacyCustomerID.ToString(),
               CoordinateSystemFileName = project.CoordinateSystemFileName
             }
-          )
+          ).Where(p=>p.CustomerUID==customerUid)
           .ToImmutableList();
       }
 

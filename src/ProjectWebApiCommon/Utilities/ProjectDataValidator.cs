@@ -5,7 +5,6 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using System.IO;
-using System.Security.Principal;
 
 namespace ProjectWebApiCommon.Models
 {
@@ -14,7 +13,7 @@ namespace ProjectWebApiCommon.Models
   /// </summary>
   public class ProjectDataValidator
   {
-    private const int MAX_FILE_NAME_LENGTH = 256;
+    private const int MAX_FILE_NAME_LENGTH = 256;    
 
     /// <summary>
     /// Validate the coordinateSystem filename
@@ -84,6 +83,13 @@ namespace ProjectWebApiCommon.Models
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Missing ProjectTimezone"));
           }
+          ProjectTimezone projectTimezone = new ProjectTimezone();
+          if (projectTimezone.timeZone.Contains(createEvent.ProjectTimezone) == false)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Invalid ProjectTimezone"));
+          }
           if (string.IsNullOrEmpty(createEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
@@ -113,12 +119,6 @@ namespace ProjectWebApiCommon.Models
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Missing ProjectEndDate"));
-          }
-          if (createEvent.ProjectEndDate < DateTime.UtcNow)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "ProjectEndDate must be in the future"));
           }
           if (createEvent.ProjectStartDate > createEvent.ProjectEndDate)
           {
@@ -173,13 +173,13 @@ namespace ProjectWebApiCommon.Models
       else if (evt is AssociateProjectCustomer)
       {
         var associateEvent = evt as AssociateProjectCustomer;
-        // todo reinstate this once acceptance tests have been changed
-        //if (associateEvent.CustomerUID.ToString() != headerCustomerUid)
-        //{
-        //  throw new ServiceException(HttpStatusCode.BadRequest,
-        //    new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-        //      "CustomerUid differs to requesting CustomerUid. Impersonation not supported."));
-        //}
+
+        if (associateEvent.CustomerUID.ToString() != headerCustomerUid)
+        {
+          var error = $"CustomerUid {associateEvent.CustomerUID.ToString()} differs to the requesting CustomerUid {headerCustomerUid}. Impersonation not supported.";
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+        }
         if (associateEvent.CustomerUID == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,

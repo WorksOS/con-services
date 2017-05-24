@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FlowJSHandler.netcore" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Routing" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.2" />
@@ -22,7 +23,8 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="1.1.3" />
     <PackageReference Include="AutoMapper" Version="6.0.2" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.57" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.68" />
+    <PackageReference Include="TCCFileAccess.netcore" Version="1.1.0" />
   </ItemGroup>
 
 </Project>

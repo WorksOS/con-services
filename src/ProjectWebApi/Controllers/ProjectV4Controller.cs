@@ -13,7 +13,6 @@ using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using ProjectWebApiCommon.Utilities;
 using Repositories;
-using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -22,12 +21,15 @@ using VSS.Raptor.Service.Common.Utilities;
 
 namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 {
+  /// <summary>
+  /// Project controller v4
+  /// </summary>
   public class ProjectV4Controller : ProjectBaseController
   {
     public ProjectV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
         IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-        IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
-        : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, fileRepo, logger)
+        IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
+        : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger)
     {
     }
 
@@ -37,7 +39,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// and both active and archived projects.
     /// </summary>
     /// <returns>A list of projects</returns>
-    [Route("api/v4/projects")]
+    [Route("api/v4/project")]
     [HttpGet]
     public async Task<ProjectV4DescriptorsListResult> GetProjectsV4()
     {
@@ -56,9 +58,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     /// Gets a project for a customer. 
     /// </summary>
     /// <returns>A project data</returns>
-    [Route("api/v4/project")]
+    [Route("api/v4/project/{projectUid}")]
     [HttpGet]
-    public async Task<ProjectV4DescriptorsSingleResult> GetProjectV4([FromQuery] string projectUid)
+    public async Task<ProjectV4DescriptorsSingleResult> GetProjectV4(string projectUid)
     {
       log.LogInformation("GetProjectV4");
       var project =  await GetProject(projectUid).ConfigureAwait(false);
@@ -78,6 +80,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
+      var customerUid = Guid.Parse(((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       if (projectRequest == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -87,21 +90,21 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
-      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = Guid.Parse(((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = customerUid;
       if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid();
 
       var project = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(project, projectService, customerUid.ToString());
 
-      await ValidateCoordSystem(project).ConfigureAwait(false); 
+      await ValidateCoordSystem(project).ConfigureAwait(false);
       ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
 
       string wktBoundary = project.ProjectBoundary;
       log.LogDebug($"Testing if there are overlapping projects for project {project.ProjectName}");
       await DoesProjectOverlap(project, wktBoundary);
 
-      //Convert to old format for Kafka for consistency on kakfa queue
+      ////Convert to old format for Kafka for consistency on kakfa queue
       string kafkaBoundary = project.ProjectBoundary
           .Replace(ProjectBoundaryValidator.POLYGON_WKT, string.Empty)
           .Replace("))", string.Empty)
@@ -120,7 +123,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         ReceivedUTC = project.ReceivedUTC
       };
 
-      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(customerProject, projectService, customerUid.ToString());
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       await ValidateAssociateSubscriptions(project).ConfigureAwait(false);
@@ -162,19 +165,27 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       await ValidateCoordSystem(project).ConfigureAwait(false);
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var projectWithLegacyProjectID = projectService.GetProjectOnly(project.ProjectUID.ToString()).Result;
         var coordinateSystemSettingsResult = await raptorProxy.CoordinateSystemPost(projectWithLegacyProjectID.LegacyProjectID, project.CoordinateSystemFileContent, project.CoordinateSystemFileName, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        log.LogDebug($"Post of CS update to RaptorServices returned code: {0} Message {1}.",
+          coordinateSystemSettingsResult?.Code ?? -1,
+          coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
         if (coordinateSystemSettingsResult == null || coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
-        {       
-          log.LogError($"Post of CS to RaptorServices failed. Reason: {0} {1}", coordinateSystemSettingsResult.Code, coordinateSystemSettingsResult.Message);
-          throw new ServiceException(HttpStatusCode.BadRequest,
-                        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                  string.Format("Unable to update CoordinateSystem in RaptorServices. Reason: {0} {1}", coordinateSystemSettingsResult.Code, coordinateSystemSettingsResult.Message)));
+        {
+           log.LogError($"Post of CS update to RaptorServices failed. Reason: {0} {1}.",
+            coordinateSystemSettingsResult?.Code ?? -1,
+            coordinateSystemSettingsResult?.Message ?? "null");
+           throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              string.Format("Unable to update CoordinateSystem in RaptorServices. returned code: {0} Message {1}.",
+                coordinateSystemSettingsResult?.Code ?? -1,
+                coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"
+              )));
         }
       }
 
@@ -205,7 +216,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
     {
       log.LogInformation("DeleteProjectV4. Project: {0}", JsonConvert.SerializeObject(project));
 
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).Name);
+      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
@@ -280,14 +291,14 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var coordinateSystemSettingsResult = await raptorProxy.CoordinateSystemPost(project.ProjectID, project.CoordinateSystemFileContent, project.CoordinateSystemFileName, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
-        log.LogDebug($"Post of CS to RaptorServices returned code: {0} Message {1}.",
+        log.LogDebug($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
           coordinateSystemSettingsResult?.Code ?? -1,
           coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
         if (coordinateSystemSettingsResult == null || coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
           var deleteProjectEvent = new DeleteProjectEvent() { ProjectUID = project.ProjectUID, DeletePermanently = true, ActionUTC = DateTime.UtcNow };
           var isDeleted = await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
-          log.LogError($"Post of CS to RaptorServices failed. Reason: {0} {1}. Set the project to deleted {2}",
+          log.LogError($"Post of CS create to RaptorServices failed. Reason: {0} {1}. Set the project to deleted {2}",
             coordinateSystemSettingsResult?.Code ?? -1,
             coordinateSystemSettingsResult?.Message ?? "null", 
             isDeleted);

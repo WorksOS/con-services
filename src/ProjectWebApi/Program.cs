@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Builder;
 
 namespace ProjectWebApi
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Program
     {
         public static void Main(string[] args)

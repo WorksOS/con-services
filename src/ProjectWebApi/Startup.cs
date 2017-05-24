@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.Project.Service.WebApiModels.Filters;
+using ProjectWebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using log4netExtensions;
 using KafkaConsumer.Kafka;
@@ -13,12 +13,14 @@ using ProjectWebApiCommon.ResultsHandling;
 using Swashbuckle.Swagger.Model;
 using ProjectWebApiCommon.Utilities;
 using TCCFileAccess;
-using VSP.MasterData.Project.WebAPI;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
 
 namespace ProjectWebApi
 {
+  /// <summary>
+  /// 
+  /// </summary>
   public class Startup
   {
     private readonly string loggerRepoName = "WebApi";
@@ -66,12 +68,19 @@ namespace ProjectWebApi
       services.AddApplicationInsightsTelemetry(Configuration);
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
-      services.AddTransient<IKafka, RdKafkaDriver>();
+      services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
       services.AddTransient<IGeofenceProxy, GeofenceProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
-      services.AddTransient<IFileRepository, FileRepository>();
+
+      // todo temp to determine which to use for testing and lower environs
+      var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
+      var useMock = string.IsNullOrEmpty(tccUrl) || tccUrl == "mock";
+      if (useMock)
+        services.AddTransient<IFileRepository, MockFileRepository>();
+      else
+        services.AddTransient<IFileRepository, FileRepository>();
 
       services.AddMvc(
         config =>

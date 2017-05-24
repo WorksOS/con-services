@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using ProjectWebApiCommon.ResultsHandling;
 
 
-namespace VSP.MasterData.Project.WebAPI
+namespace ProjectWebApi.Filters
 {
   /// <summary>
   /// Attribute enabling obligatory validation of domain objects upon reception.

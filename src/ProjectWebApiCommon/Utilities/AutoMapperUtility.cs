@@ -49,7 +49,8 @@ namespace ProjectWebApiCommon.Utilities
           cfg.CreateMap<CreateProjectRequest, CreateProjectEvent>()
             .ForMember(x => x.CustomerID, opt => opt.MapFrom(src => src.CustomerID ?? 0))
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
-            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore());
+            .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
+            .ForMember(x => x.ProjectID, opt => opt.Ignore());
           cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
             .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
@@ -57,11 +58,25 @@ namespace ProjectWebApiCommon.Utilities
           cfg.CreateMap<Project, ProjectV4Descriptor>()
             .ForMember(x => x.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
             .ForMember(x => x.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
-            .ForMember(x => x.IsArchived, opt => opt.MapFrom(src => (src.IsDeleted || src.SubscriptionEndDate < DateTime.UtcNow)))
+            .ForMember(x => x.IsArchived,
+              opt => opt.MapFrom(src => (src.IsDeleted || src.SubscriptionEndDate < DateTime.UtcNow)))
             .ForMember(x => x.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
             .ForMember(x => x.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")))
-            .ForMember(x => x.SubscriptionStartDate, opt => opt.MapFrom(src => (src.SubscriptionStartDate.HasValue ? src.SubscriptionStartDate.Value.ToString("O") : string.Empty)))
-            .ForMember(x => x.SubscriptionEndDate, opt => opt.MapFrom(src => src.SubscriptionEndDate.HasValue ? src.SubscriptionEndDate.Value.ToString("O") : string.Empty))
+            .ForMember(x => x.SubscriptionStartDate,
+              opt => opt.MapFrom(src => (src.SubscriptionStartDate.HasValue
+                ? src.SubscriptionStartDate.Value.ToString("O")
+                : string.Empty)))
+            .ForMember(x => x.SubscriptionEndDate,
+              opt => opt.MapFrom(src => src.SubscriptionEndDate.HasValue
+                ? src.SubscriptionEndDate.Value.ToString("O")
+                : string.Empty));
+          cfg.CreateMap<ImportedFile, ImportedFileDescriptor>()
+            .ForMember(x => x.ImportedUtc, opt => opt.MapFrom(src => src.LastActionedUtc));
+          cfg.CreateMap<ImportedFile, UpdateImportedFileEvent>()
+            .ForMember(x => x.ImportedFileUID, opt => opt.MapFrom(src => Guid.Parse(src.ImportedFileUid)))
+            .ForMember(x => x.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))
+            .ForMember(x => x.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc))
+            .ForMember(x => x.ReceivedUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
           ;
         }
       );
