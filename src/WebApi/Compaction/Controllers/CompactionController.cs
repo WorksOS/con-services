@@ -798,7 +798,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             {
               colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color, compactionPalette[i].value));
             }
-            cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, compactionPalette[compactionPalette.Count - 1].color, null);
+            cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
             break;
           case DisplayMode.PassCount:
             colorValues = new List<ColorValue>();
