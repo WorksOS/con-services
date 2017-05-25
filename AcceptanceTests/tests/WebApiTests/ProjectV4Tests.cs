@@ -428,7 +428,7 @@ namespace WebApiTests
        "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Boundary Test 13 | ProjectMonitoring | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      |" };
       var response1 = ts.PublishEventToWebApi(projectEventArray);
-      Assert.IsTrue(response1 == "No available subscriptions for the selected customer", "Response is unexpected. Should be No available subscriptions for the selected customer. Response: " + response1);
+      Assert.IsTrue(response1 == "There are no available subscriptions for the selected customer.", "Response is unexpected. Should be There are no available subscriptions for the selected customer. Response: " + response1);
     }
 
    [TestMethod]
