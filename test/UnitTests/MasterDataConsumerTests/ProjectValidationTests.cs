@@ -1,10 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProjectWebApiCommon.Models;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
+using ProjectWebApiCommon.ResultsHandling;
 
-namespace VSS.Visionlink.Project.UnitTests
+namespace MasterDataConsumerTests
 {
   [TestClass]
   public class ProjectValidationTests
@@ -15,7 +13,7 @@ namespace VSS.Visionlink.Project.UnitTests
       ProjectTimezone projectTimezone = new ProjectTimezone();
       Assert.IsFalse(projectTimezone.timeZone.Contains("whatever"), "ProjectTimezone should be invalid");
     }
-
+    
     [TestMethod]
     public void ValidateCreateProject_ValidProjectTimeZone()
     {

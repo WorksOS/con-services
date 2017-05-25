@@ -8,21 +8,20 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using ProjectWebApiCommon.ResultsHandling;
-using VSP.MasterData.Project.WebAPI.Controllers;
 using VSS.Raptor.Service.Common.Interfaces;
 
-namespace ProjectWebApi.Controllers
+namespace Controllers
 {
   /// <summary>
   /// 
   /// </summary>
   public class ProjectV2Controller : ProjectBaseController
-    {
+  {
     public ProjectV2Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
-            IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-            IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger) 
-      : base(producer, projectRepo, subscriptionsRepo, store, 
-            subsProxy, geofenceProxy, raptorProxy, logger)
+      IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
+      : base(producer, projectRepo, subscriptionsRepo, store,
+        subsProxy, geofenceProxy, raptorProxy, logger)
     {
     }
 
@@ -40,8 +39,8 @@ namespace ProjectWebApi.Controllers
       if (customerProject.LegacyCustomerID <= 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Legacy CustomerID must be provided"));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(38),
+            contractExecutionStatesEnum.FirstNameWithOffset(38)));
       }
       await AssociateProjectCustomer(customerProject);
     }

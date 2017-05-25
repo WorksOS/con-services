@@ -22,7 +22,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.Utilities;
 using VSS.Raptor.Service.Common.Utilities;
 
-namespace VSP.MasterData.Project.WebAPI.Controllers
+namespace Controllers
 {
   /// <summary>
   /// FileImporter controller
@@ -39,6 +39,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected readonly string kafkaTopicName;
     protected string userEmailAddress;
     protected string fileSpaceId;
+    protected ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
@@ -82,10 +84,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
       if (project == null)
       {
-        var message = $"No access to the project {projectUid} for customer {customerUid} or project does not exist.";
-        log.LogError(message);
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData, message));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(1),
+            contractExecutionStatesEnum.FirstNameWithOffset(1)));
       }
 
       log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
@@ -157,23 +158,25 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
       var isCreated = await projectService.StoreEvent(createImportedFileEvent).ConfigureAwait(false);
       if (isCreated == 0)
         throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"CreateImportedFileV4. Unable to store Imported File event to database: {JsonConvert.SerializeObject(createImportedFileEvent)}."));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(49),
+            contractExecutionStatesEnum.FirstNameWithOffset(49)));
 
       log.LogDebug($"Created the ImportedFile in DB. ImportedFile {filename} for project {projectUid}.");
 
       // plug the legacyID back into the struct to be injected into kafka
-      var existing = await projectService.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString()).ConfigureAwait(false);
+      var existing = await projectService.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString())
+        .ConfigureAwait(false);
       if (existing != null && existing.ImportedFileId > 0)
         createImportedFileEvent.ImportedFileID = existing.ImportedFileId;
       else
         throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                $"LegacyImportedFileId has not been generated {JsonConvert.SerializeObject(createImportedFileEvent)}"));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(50),
+            contractExecutionStatesEnum.FirstNameWithOffset(50)));
 
-      log.LogDebug($"Using Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
+      log.LogDebug(
+        $"Using Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
 
-      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
+      var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
@@ -209,8 +212,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         return;
 
       throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"DeleteImportedFileV4. Unable to set Imported File event to deleted: {JsonConvert.SerializeObject(deleteImportedFileEvent)}."));
+        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(51),
+          contractExecutionStatesEnum.FirstNameWithOffset(51)));
     }
 
     /// <summary>
@@ -245,8 +248,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         return updateImportedFileEvent;
 
       throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"CreateImportedFileV4. Unable to store updated Imported File event to database: {JsonConvert.SerializeObject(updateImportedFileEvent)}."));
+        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(52),
+          contractExecutionStatesEnum.FirstNameWithOffset(52)));
     }
 
     /// <summary>
@@ -256,30 +259,31 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected async Task<FileDescriptor> WriteFileToRepository(string customerUid, string projectUid,
       string pathAndFileName, ImportedFileType importedFileType, DateTime? surveyedUtc)
     {
-        var fileStream = new FileStream(pathAndFileName, FileMode.Open);
-        var tccPath = $"/{customerUid}/{projectUid}";
-        string tccFileName = Path.GetFileName(pathAndFileName);
+      var fileStream = new FileStream(pathAndFileName, FileMode.Open);
+      var tccPath = $"/{customerUid}/{projectUid}";
+      string tccFileName = Path.GetFileName(pathAndFileName);
 
-        if (importedFileType == ImportedFileType.SurveyedSurface)
-          if (surveyedUtc != null) // validation should prevent this
-            tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
-              Path.GetExtension(tccFileName));
+      if (importedFileType == ImportedFileType.SurveyedSurface)
+        if (surveyedUtc != null) // validation should prevent this
+          tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
+            Path.GetExtension(tccFileName));
 
-        log.LogInformation($"WriteFileToRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
-        // ignore any failure as dir may already exist
-        var ccMakeFolderResult = await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
-       
-        // this does an upsert
-        var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
-        if (ccPutFileResult == false)
-        {
-        var error = $"WriteFileToRepository: Unable to put file to TCC. TCCfileSpaceId { fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}";
-        log.LogError(error);
+      log.LogInformation(
+        $"WriteFileToRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
+      // ignore any failure as dir may already exist
+      var ccMakeFolderResult = await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
+
+      // this does an upsert
+      var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length)
+        .ConfigureAwait(false);
+      if (ccPutFileResult == false)
+      {
         throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.TCCReturnFailure, error));
-        }
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(53),
+            contractExecutionStatesEnum.FirstNameWithOffset(53)));
+      }
 
-        return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
+      return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 
     /// <summary>
@@ -290,7 +294,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     {
       log.LogInformation($"DeleteFileFromRepository: fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)}");
 
-      var ccFileExistsResult = await fileRepo.FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName).ConfigureAwait(false);
+      var ccFileExistsResult = await fileRepo
+        .FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName)
+        .ConfigureAwait(false);
       if (ccFileExistsResult == true)
       {
         var ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId,
@@ -298,17 +304,16 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
           .ConfigureAwait(false);
         if (ccDeleteFileResult == false)
         {
-          var error = $"Unable to put delete fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)} from TCC";
-          log.LogError(error);
           throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.TCCReturnFailure, error));
+            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
+              contractExecutionStatesEnum.FirstNameWithOffset(54)));
         }
       }
       else
         log.LogInformation(
           $"Unable to put delete fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)} from TCC, as it doesn't exist");
     }
-    
+
 
     /// <summary>
     /// Notify raptor of new file
@@ -317,7 +322,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor)
     {
-      var notificationResult = await raptorProxy.AddFile(projectId, projectUid, JsonConvert.SerializeObject(fileDescriptor), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+      var notificationResult = await raptorProxy.AddFile(projectId, projectUid,
+        JsonConvert.SerializeObject(fileDescriptor), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       log.LogDebug(
         $"NotifyRaptorAddFile: projectId: {projectId} projectUid: {projectUid}, FileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
@@ -337,16 +343,17 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor)
     {
-      var notificationResult = await raptorProxy.DeleteFile(null, projectUid, fileDescriptor, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+      var notificationResult = await raptorProxy
+        .DeleteFile(null, projectUid, fileDescriptor, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       log.LogDebug(
         $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        var error =
-          $"FileImport DeleteFile in RaptorServices failed. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}. ";
-        log.LogError(error);
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
+            string.Format(contractExecutionStatesEnum.FirstNameWithOffset(54), (notificationResult?.Code ?? -1),
+              (notificationResult?.Message ?? "null"))
+          ));
       }
     }
 

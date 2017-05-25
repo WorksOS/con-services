@@ -13,7 +13,8 @@ namespace ProjectWebApiCommon.Models
   /// </summary>
   public class ProjectDataValidator
   {
-    private const int MAX_FILE_NAME_LENGTH = 256;    
+    private const int MAX_FILE_NAME_LENGTH = 256;
+    protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
     /// <summary>
     /// Validate the coordinateSystem filename
@@ -21,10 +22,11 @@ namespace ProjectWebApiCommon.Models
     /// <param name="fileName">FileName</param>
     public static void ValidateFileName(string fileName)
     {
-      if (fileName.Length > MAX_FILE_NAME_LENGTH || string.IsNullOrEmpty(fileName) || fileName.IndexOfAny(Path.GetInvalidPathChars()) > 0 || String.IsNullOrEmpty(Path.GetFileName(fileName)))
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          String.Format("Supplied CoordinateSystem filename is not valid. Exceeds the length limit of {0}, empty or contains illegal characters.", MAX_FILE_NAME_LENGTH)));      
+      if (fileName.Length > MAX_FILE_NAME_LENGTH || string.IsNullOrEmpty(fileName) ||
+          fileName.IndexOfAny(Path.GetInvalidPathChars()) > 0 || String.IsNullOrEmpty(Path.GetFileName(fileName)))
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(2),
+            contractExecutionStatesEnum.FirstNameWithOffset(2)));
     }
 
     /// <summary>
@@ -38,20 +40,20 @@ namespace ProjectWebApiCommon.Models
       if (projectRepo == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Missing Project Repository in ProjectDataValidator.Validate"));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(3),
+            contractExecutionStatesEnum.FirstNameWithOffset(3)));
       }
       if (evt.ActionUTC == DateTime.MinValue)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Missing ActionUTC"));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(4),
+            contractExecutionStatesEnum.FirstNameWithOffset(4)));
       }
       if (evt.ProjectUID == Guid.Empty)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Missing ProjectUID"));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(5),
+            contractExecutionStatesEnum.FirstNameWithOffset(5)));
       }
       //Note: don't check if project exists for associate events.
       //We don't know the workflow for NG so associate may come before project creation.
@@ -62,10 +64,10 @@ namespace ProjectWebApiCommon.Models
         bool isCreate = evt is CreateProjectEvent;
         if ((isCreate && exists) || (!isCreate && !exists))
         {
-          string message = isCreate ? "Project already exists" : "Project does not exist";
+          var messageId = isCreate ? 6 : 7;
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              message));
+            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(messageId),
+              contractExecutionStatesEnum.FirstNameWithOffset(messageId)));
         }
         if (isCreate)
         {
@@ -74,57 +76,57 @@ namespace ProjectWebApiCommon.Models
           if (string.IsNullOrEmpty(createEvent.ProjectBoundary))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Missing ProjectBoundary"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(8),
+                contractExecutionStatesEnum.FirstNameWithOffset(8)));
           }
           if (string.IsNullOrEmpty(createEvent.ProjectTimezone))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Missing ProjectTimezone"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(9),
+                contractExecutionStatesEnum.FirstNameWithOffset(9)));
           }
           ProjectTimezone projectTimezone = new ProjectTimezone();
           if (projectTimezone.timeZone.Contains(createEvent.ProjectTimezone) == false)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Invalid ProjectTimezone"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(10),
+                contractExecutionStatesEnum.FirstNameWithOffset(10)));
           }
           if (string.IsNullOrEmpty(createEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Missing ProjectName"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(11),
+                contractExecutionStatesEnum.FirstNameWithOffset(11)));
           }
           if (createEvent.ProjectName.Length > 255)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "ProjectName is longer than the 255 characters allowed"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(12),
+                contractExecutionStatesEnum.FirstNameWithOffset(12)));
           }
           if (!string.IsNullOrEmpty(createEvent.Description) && createEvent.Description.Length > 2000)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Description is longer than the 2000 characters allowed"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(13),
+                contractExecutionStatesEnum.FirstNameWithOffset(13)));
           }
           if (createEvent.ProjectStartDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Missing ProjectStartDate"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(14),
+                contractExecutionStatesEnum.FirstNameWithOffset(14)));
           }
           if (createEvent.ProjectEndDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Missing ProjectEndDate"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(15),
+                contractExecutionStatesEnum.FirstNameWithOffset(15)));
           }
           if (createEvent.ProjectStartDate > createEvent.ProjectEndDate)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Start date must be earlier than end date"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(16),
+                contractExecutionStatesEnum.FirstNameWithOffset(16)));
           }
         }
         else if (evt is UpdateProjectEvent)
@@ -133,39 +135,40 @@ namespace ProjectWebApiCommon.Models
           if (string.IsNullOrEmpty(updateEvent.ProjectName))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "ProjectName cannot be empty"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(11),
+                contractExecutionStatesEnum.FirstNameWithOffset(11)));
           }
           if (updateEvent.ProjectName.Length > 255)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "ProjectName is longer than the 255 characters allowed"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(12),
+                contractExecutionStatesEnum.FirstNameWithOffset(12)));
           }
           if (!string.IsNullOrEmpty(updateEvent.Description) && updateEvent.Description.Length > 2000)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Description is longer than the 2000 characters allowed"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(13),
+                contractExecutionStatesEnum.FirstNameWithOffset(13)));
           }
           if (updateEvent.ProjectEndDate == DateTime.MinValue)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "ProjectEndDate cannot be empty"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(15),
+                contractExecutionStatesEnum.FirstNameWithOffset(15)));
           }
           var project = projectRepo.GetProjectOnly(evt.ProjectUID.ToString()).Result;
           if (project.StartDate > updateEvent.ProjectEndDate)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "ProjectEndDate must be later than start date"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(16),
+                contractExecutionStatesEnum.FirstNameWithOffset(16)));
           }
-          if (!string.IsNullOrEmpty(updateEvent.ProjectTimezone) && !project.ProjectTimeZone.Equals(updateEvent.ProjectTimezone))
+          if (!string.IsNullOrEmpty(updateEvent.ProjectTimezone) &&
+              !project.ProjectTimeZone.Equals(updateEvent.ProjectTimezone))
           {
             throw new ServiceException(HttpStatusCode.Forbidden,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Project timezone cannot be updated"));
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(17),
+                contractExecutionStatesEnum.FirstNameWithOffset(17)));
           }
         }
         //Nothing else to check for DeleteProjectEvent
@@ -176,28 +179,28 @@ namespace ProjectWebApiCommon.Models
 
         if (associateEvent.CustomerUID.ToString() != headerCustomerUid)
         {
-          var error = $"CustomerUid {associateEvent.CustomerUID.ToString()} differs to the requesting CustomerUid {headerCustomerUid}. Impersonation not supported.";
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(18),
+              contractExecutionStatesEnum.FirstNameWithOffset(18)));
         }
         if (associateEvent.CustomerUID == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Missing CustomerUID"));
+            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(19),
+              contractExecutionStatesEnum.FirstNameWithOffset(19)));
         }
         if (projectRepo.CustomerProjectExists(evt.ProjectUID.ToString()).Result)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Project already associated with a customer"));
+            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(20),
+              contractExecutionStatesEnum.FirstNameWithOffset(20)));
         }
       }
       else if (evt is DissociateProjectCustomer)
       {
         throw new ServiceException(HttpStatusCode.NotImplemented,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Dissociating projects from customers is not supported"));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(21),
+            contractExecutionStatesEnum.FirstNameWithOffset(21)));
       }
       else if (evt is AssociateProjectGeofence)
       {
@@ -205,11 +208,10 @@ namespace ProjectWebApiCommon.Models
         if (associateEvent.GeofenceUID == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-              "Missing GeofenceUID"));
+            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(22),
+              contractExecutionStatesEnum.FirstNameWithOffset(22)));
         }
       }
     }
-    
   }
 }

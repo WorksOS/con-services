@@ -10,13 +10,13 @@ namespace ProjectWebApiCommon.Models
   public class ProjectBoundaryValidator
   {
     public const string POLYGON_WKT = "POLYGON((";
-
-    private static List<string> _replacements = new List<string> { "POLYGON", "(", ")" };
+    private static List<string> _replacements = new List<string> {"POLYGON", "(", ")"};
+    protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
     private static IEnumerable<Point> ParseBoundaryData(string s, char pointSeparator, char coordSeparator)
     {
 
-      string[] pointsArray = s./*Remove(s.Length - 1).*/Split(pointSeparator);
+      string[] pointsArray = s. /*Remove(s.Length - 1).*/Split(pointSeparator);
 
       for (int i = 0; i < pointsArray.Length; i++)
       {
@@ -128,8 +128,8 @@ namespace ProjectWebApiCommon.Models
       if (string.IsNullOrEmpty(boundary))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Missing project boundary"));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(23),
+            contractExecutionStatesEnum.FirstNameWithOffset(23)));
       }
       try
       {
@@ -138,15 +138,15 @@ namespace ProjectWebApiCommon.Models
         if (points.Count < 3)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Invalid project boundary as it should contain at least 3 points"));
+            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(24),
+              contractExecutionStatesEnum.FirstNameWithOffset(24)));
         }
       }
       catch
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                          "Invalid project boundary"));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(25),
+            contractExecutionStatesEnum.FirstNameWithOffset(25)));
       }
     }
 
@@ -178,5 +178,4 @@ namespace ProjectWebApiCommon.Models
       return other != null ? (this.Latitude == other.Latitude && this.Longitude == other.Longitude) : false;
     }
   }
-
 }

@@ -26,7 +26,7 @@ namespace ProjectWebApi.Filters
         //Extract the errors. This is to handle the validation ServiceExceptions being thrown to get the real error message to return. 
         var modelStateErrors = actionContext.ModelState
           .Where(x => x.Value.Errors.Count > 0)
-          .Select(x => new { x.Key, x.Value.Errors })
+          .Select(x => new {x.Key, x.Value.Errors})
           .ToArray();
         List<KeyValuePair<string, string>> errors = new List<KeyValuePair<string, string>>();
         foreach (var mse in modelStateErrors)
@@ -55,7 +55,7 @@ namespace ProjectWebApi.Filters
           errors.Add(new KeyValuePair<string, string>(key, value));
         }
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.SerializationError,
             JsonConvert.SerializeObject(errors)));
       }
     }

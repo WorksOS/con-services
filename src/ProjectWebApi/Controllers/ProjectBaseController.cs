@@ -19,7 +19,7 @@ using ProjectWebApiCommon.ResultsHandling;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Utilities;
 
-namespace VSP.MasterData.Project.WebAPI.Controllers
+namespace Controllers
 {
   /// <summary>
   /// Project Base for all Project controllers
@@ -36,6 +36,7 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected readonly IConfigurationStore store;
     protected readonly string kafkaTopicName;
     private readonly SubscriptionRepository subsService;
+    protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectBaseController"/> class.
@@ -50,8 +51,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <param name="logger">The logger.</param>
     /// <param name="fileRepo">For TCC file transfer</param>
     public ProjectBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
-        IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-        IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
+      IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
     {
       log = logger.CreateLogger<ProjectBaseController>();
       this.producer = producer;
@@ -92,8 +93,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
         log.LogDebug($"Receieved {availableFreeSub.SubscriptionUID} subscription");
         //Assign a new project to a subs
         await subsProxy.AssociateProjectSubscription(Guid.Parse(availableFreeSub.SubscriptionUID),
-            project.ProjectUID,
-            Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+          project.ProjectUID,
+          Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       }
     }
 
@@ -108,27 +109,29 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type)
     {
       var availableSubscriptions =
-          (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
-          .Where(s => s.ServiceTypeID == (int)type.MatchSubscriptionType()).ToImmutableList();
-      log.LogDebug($"Receieved {availableSubscriptions.Count()} subscriptions with contents {JsonConvert.SerializeObject(availableSubscriptions)}");
+        (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
+        .Where(s => s.ServiceTypeID == (int) type.MatchSubscriptionType()).ToImmutableList();
+      log.LogDebug(
+        $"Receieved {availableSubscriptions.Count()} subscriptions with contents {JsonConvert.SerializeObject(availableSubscriptions)}");
       var projects =
-          (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
+        (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
       log.LogDebug($"Receieved {projects.Count()} projects with contents {JsonConvert.SerializeObject(projects)}");
 
       var availableFreSub = availableSubscriptions
-          .Where(s => !projects
-                          .Where(p => p.ProjectType == type && !p.IsDeleted)
-                          .Select(p => p.SubscriptionUID)
-                          .Contains(s.SubscriptionUID) &&
-                      s.ServiceTypeID == (int)type.MatchSubscriptionType())
-          .ToImmutableList();
-      log.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
+        .Where(s => !projects
+                      .Where(p => p.ProjectType == type && !p.IsDeleted)
+                      .Select(p => p.SubscriptionUID)
+                      .Contains(s.SubscriptionUID) &&
+                    s.ServiceTypeID == (int) type.MatchSubscriptionType())
+        .ToImmutableList();
+      log.LogDebug(
+        $"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
       if (!availableFreSub.Any())
       {
-        throw new ServiceException(HttpStatusCode.Forbidden,
-            new ContractExecutionResult(ContractExecutionStatesEnum.NoValidSubscription,
-                "No available subscriptions for the selected customer"));
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(37),
+            contractExecutionStatesEnum.FirstNameWithOffset(37)));
       }
       return availableFreSub;
     }
@@ -141,16 +144,17 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     protected async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid)
     {
       var availableSubscriptions =
-          (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
-                .Where(s => s.ServiceTypeID == (int)ServiceTypeEnum.Landfill || s.ServiceTypeID == (int)ServiceTypeEnum.ProjectMonitoring);
+        (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
+        .Where(s => s.ServiceTypeID == (int) ServiceTypeEnum.Landfill ||
+                    s.ServiceTypeID == (int) ServiceTypeEnum.ProjectMonitoring);
       var projects = await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
 
       var availableFreSub = availableSubscriptions
-                                .Where(s => !projects
-                                              .Where(p => !p.IsDeleted)
-                                              .Select(p => p.SubscriptionUID)
-                                              .Contains(s.SubscriptionUID))
-                                .ToImmutableList();
+        .Where(s => !projects
+          .Where(p => !p.IsDeleted)
+          .Select(p => p.SubscriptionUID)
+          .Contains(s.SubscriptionUID))
+        .ToImmutableList();
 
       return availableFreSub;
     }
@@ -179,14 +183,16 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     {
       var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-      var project = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+      var project =
+        (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+          p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
 
       if (project == null)
       {
         log.LogWarning($"User doesn't have access to {projectUid}");
         throw new ServiceException(HttpStatusCode.Forbidden,
-            new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
-                "No access to the project for a customer or project does not exist."));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(1),
+            contractExecutionStatesEnum.FirstNameWithOffset(1)));
       }
 
       log.LogInformation($"Project {projectUid} retrieved");
@@ -201,15 +207,16 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task UpdateProject(UpdateProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(project, projectService,
+        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       project.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = project });
+      var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
       producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
-          {
-            new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-          });
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+        });
       await projectService.StoreEvent(project).ConfigureAwait(false);
     }
 
@@ -221,21 +228,23 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <param name="databaseProjectBoundary">The project boundary in the new format (WKT)</param>
     /// <returns></returns>
     protected virtual async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
-        string databaseProjectBoundary)
+      string databaseProjectBoundary)
     {
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(project, projectService,
+        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       if (project.ProjectID <= 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Missing legacy ProjectID"));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(44),
+            contractExecutionStatesEnum.FirstNameWithOffset(44)));
       }
       project.ReceivedUTC = DateTime.UtcNow;
 
       //Send boundary as old format on kafka queue
       project.ProjectBoundary = kafkaProjectBoundary;
-      var messagePayload = JsonConvert.SerializeObject(new { CreateProjectEvent = project });
-      await producer.Send(kafkaTopicName,new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload));
+      var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
+      await producer.Send(kafkaTopicName,
+        new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload));
       //Save boundary as WKT
       project.ProjectBoundary = databaseProjectBoundary;
       await projectService.StoreEvent(project).ConfigureAwait(false);
@@ -248,15 +257,16 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task AssociateProjectCustomer(AssociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(customerProject, projectService,
+        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = customerProject });
+      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
       producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
-          {
-            new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
-          });
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
+        });
       await projectService.StoreEvent(customerProject).ConfigureAwait(false);
     }
 
@@ -267,15 +277,16 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task DissociateProjectCustomer(DissociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(customerProject, projectService,
+        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new { DissociateProjectCustomer = customerProject });
+      var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectCustomer = customerProject});
       producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
-          {
-            new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
-          });
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
+        });
       await projectService.StoreEvent(customerProject).ConfigureAwait(false);
     }
 
@@ -286,15 +297,16 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
     {
-      ProjectDataValidator.Validate(geofenceProject, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(geofenceProject, projectService,
+        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
+      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
       producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
-          {
-            new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
-          });
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
+        });
       await projectService.StoreEvent(geofenceProject).ConfigureAwait(false);
     }
 
@@ -305,15 +317,16 @@ namespace VSP.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     protected async Task DeleteProject(DeleteProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService, ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(project, projectService,
+        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
       project.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
+      var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
       producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
-          {
-            new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-          });
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+        });
       await projectService.StoreEvent(project).ConfigureAwait(false);
     }
   }

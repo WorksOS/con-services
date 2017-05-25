@@ -6,7 +6,7 @@ using ProjectWebApiCommon.Utilities;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Visionlink.Project.UnitTests
+namespace MasterDataConsumerTests
 {
   [TestClass]
   public class UtilityTests

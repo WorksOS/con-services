@@ -21,7 +21,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSP.MasterData.Project.WebAPI.Controllers.V4
+namespace Controllers
 {
   /// <summary>
   /// File Import controller v4
@@ -46,8 +46,8 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       fileSpaceId = store.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(fileSpaceId))
         throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.TCCConfigurationError,
-            "Unable to obtain TCC fileSpaceId"));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(48),
+            contractExecutionStatesEnum.FirstNameWithOffset(48)));
     }
 
 
@@ -115,10 +115,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
       if (!System.IO.File.Exists(file.path))
       {
-        var message = $"CreateImportedFileV4. The uploaded file {file.path} is not accessible.";
-        log.LogError(message);
         throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(55),
+            contractExecutionStatesEnum.FirstNameWithOffset(55)));
       }
 
       //validate customer-project relationship. if it fails, exception will be thrown from within the method
@@ -127,19 +126,21 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
       ImportedFileDescriptor importedFileDescriptor = null;
       if (importedFileList.Count > 0)
-        importedFileDescriptor = importedFileList.FirstOrDefault(f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
-                                                             && f.ImportedFileType == importedFileType
-                                                             && (
-                                                               (importedFileType == ImportedFileType.SurveyedSurface &&
-                                                                f.SurveyedUtc == surveyedUtc) ||
-                                                               (importedFileType != ImportedFileType.SurveyedSurface)
-                                                             ));
+        importedFileDescriptor = importedFileList.FirstOrDefault(
+          f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
+               && f.ImportedFileType == importedFileType
+               && (
+                 (importedFileType == ImportedFileType.SurveyedSurface &&
+                  f.SurveyedUtc == surveyedUtc) ||
+                 (importedFileType != ImportedFileType.SurveyedSurface)
+               ));
       if (importedFileDescriptor != null)
       {
         var message = $"CreateImportedFileV4. File: {file.flowFilename} has already been imported.";
         log.LogError(message);
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData, message));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(1),
+            contractExecutionStatesEnum.FirstNameWithOffset(1)));
       }
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
@@ -160,10 +161,10 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       // System.IO.File.Delete(file.path);
 
       var importedFile = new ImportedFileDescriptorSingleResult(
-              (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
-              .ToImmutableList()
-              .First(f => f.ImportedFileUid == createImportedFileEvent.ImportedFileUID.ToString())
-            );
+        (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
+        .ToImmutableList()
+        .First(f => f.ImportedFileUid == createImportedFileEvent.ImportedFileUID.ToString())
+      );
       log.LogInformation(
         $"CreateImportedFileV4. completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       return importedFile;
@@ -202,9 +203,9 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
 
       if (!System.IO.File.Exists(file.path))
       {
-        var error = $"CreateImportedFileV4. The uploaded file {file.path} is not accessible.";
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(55),
+            contractExecutionStatesEnum.FirstNameWithOffset(55)));
       }
 
       //validate customer-project relationship. if it fails, exception will be thrown from within the method
@@ -214,13 +215,14 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
       ImportedFile existing = null;
       if (importedFiles.Count > 0)
       {
-        existing = importedFiles.FirstOrDefault(f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
-                                                             && f.ImportedFileType == importedFileType
-                                                             && (
-                                                               (importedFileType == ImportedFileType.SurveyedSurface &&
-                                                                f.SurveyedUtc == surveyedUtc) ||
-                                                               (importedFileType != ImportedFileType.SurveyedSurface)
-                                                             ));
+        existing = importedFiles.FirstOrDefault(
+          f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
+               && f.ImportedFileType == importedFileType
+               && (
+                 (importedFileType == ImportedFileType.SurveyedSurface &&
+                  f.SurveyedUtc == surveyedUtc) ||
+                 (importedFileType != ImportedFileType.SurveyedSurface)
+               ));
       }
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
@@ -287,14 +289,14 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V4
         importedFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
       if (importedFile == null)
       {
-        var error = $"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid} doesn't exist";
-        log.LogError(error);
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, error));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(56),
+            contractExecutionStatesEnum.FirstNameWithOffset(56)));
       }
 
-      await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor)).ConfigureAwait(false);
-      
+      await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))
+        .ConfigureAwait(false);
+
       // todo await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor).ConfigureAwait(false);
 
       await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);

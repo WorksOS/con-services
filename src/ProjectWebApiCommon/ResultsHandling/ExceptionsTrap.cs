@@ -32,6 +32,7 @@ namespace ProjectWebApiCommon.ResultsHandling
       }
       catch (ServiceException ex)
       {
+        log.LogWarning($"Service exception: {ex.GetContent} statusCode: {ex.Response.StatusCode}");
         context.Response.StatusCode = (int)ex.Response.StatusCode;
         await context.Response.WriteAsync(ex.GetContent);
       }

@@ -14,7 +14,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Interfaces;
 
-namespace VSP.MasterData.Project.WebAPI.Controllers.V1
+namespace Controllers
 {
   public class ProjectV1Controller : ProjectBaseController
     {

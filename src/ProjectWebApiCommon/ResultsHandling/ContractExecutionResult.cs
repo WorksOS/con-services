@@ -14,7 +14,7 @@ namespace ProjectWebApiCommon.ResultsHandling
     ///   Initializes a new instance of the <see cref="ContractExecutionResult" /> class.
     /// </summary>
     /// <param name="code">
-    ///   The resulting code. Default value is <see cref="ContractExecutionStatesEnum.ExecutedSuccessfully" />
+    ///   The resulting code. Default value is <see cref="ContractExecutionStatesEnum.Success" />
     /// </param>
     /// <param name="message">The verbose user-friendly message. Default value is empty string.</param>
     public ContractExecutionResult(int code, string message = DefaultMessage)
@@ -25,7 +25,7 @@ namespace ProjectWebApiCommon.ResultsHandling
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="ContractExecutionResult" /> class with default
-    ///   <see cref="ContractExecutionStatesEnum.ExecutedSuccessfully" /> result
+    ///   <see cref="ContractExecutionStatesEnum.Success" /> result
     /// </summary>
     /// <param name="message">The verbose user-friendly message.</param>
     protected ContractExecutionResult(string message)
@@ -35,7 +35,7 @@ namespace ProjectWebApiCommon.ResultsHandling
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="ContractExecutionResult" /> class with default
-    ///   <see cref="ContractExecutionStatesEnum.ExecutedSuccessfully" /> result and "success" message
+    ///   <see cref="ContractExecutionStatesEnum.Success" /> result and "success" message
     /// </summary>
     public ContractExecutionResult()
       : this(DefaultMessage)
@@ -69,51 +69,82 @@ namespace ProjectWebApiCommon.ResultsHandling
   /// </summary>
   public class ContractExecutionStatesEnum : GenericEnum<ContractExecutionStatesEnum, int>
   {
+    public ContractExecutionStatesEnum()
+    {
+      DynamicAddwithOffset("No access to the project for a customer or the project does not exist.", 1);
+      DynamicAddwithOffset("Supplied CoordinateSystem filename is not valid. Exceeds the length limit of 256, is empty, or contains illegal characters.", 2);
+      DynamicAddwithOffset("Unable to connect to the Project database repository.", 3);
+      DynamicAddwithOffset("Missing ActionUTC.", 4);
+      DynamicAddwithOffset("Missing ProjectUID.", 5);
+      DynamicAddwithOffset("Project already exists.", 6);
+      DynamicAddwithOffset("Project does not exist.", 7);
+      DynamicAddwithOffset("Missing ProjectBoundary.", 8);
+      DynamicAddwithOffset("Missing ProjectTimezone.", 9);
+      DynamicAddwithOffset("Invalid ProjectTimezone.", 10);
+      DynamicAddwithOffset("Missing ProjectName.", 11);
+      DynamicAddwithOffset("ProjectName is longer than the 255 characters allowed.", 12);
+      DynamicAddwithOffset("Description is longer than the 2000 characters allowed.", 13);
+      DynamicAddwithOffset("Missing ProjectStartDate.", 14);
+      DynamicAddwithOffset("Missing ProjectEndDate.", 15);
+      DynamicAddwithOffset("Project start date must be earlier than end date.", 16);
+      DynamicAddwithOffset("Project timezone cannot be updated.", 17);
+      DynamicAddwithOffset("CustomerUid parameter differs to the requesting CustomerUid. Impersonation is not supported.", 18);
+      DynamicAddwithOffset("Missing CustomerUID.", 19);
+      DynamicAddwithOffset("Project already associated with a customer.", 20);
+      DynamicAddwithOffset("Dissociating projects from customers is not supported.", 21);
+      DynamicAddwithOffset("Missing GeofenceUID.", 22);
+      DynamicAddwithOffset("Missing project boundary.", 23);
+      DynamicAddwithOffset("Invalid project boundary as it should contain at least 3 points.", 24);
+      DynamicAddwithOffset("Invalid project boundary.", 25);
+      DynamicAddwithOffset("Filespace Id, filespace name, path and file name are all required.", 26);
+      DynamicAddwithOffset("CreateImportedFileV4.The file was not imported successfully.", 27);
+      DynamicAddwithOffset("CreateImportedFileV4. Supplied filename is not valid. Either exceeds the length limit of 256 is empty or contains illegal characters.", 28);
+      DynamicAddwithOffset("CreateImportedFileV4. Supplied path is not valid. Either is empty or contains illegal characters.", 29);
+      DynamicAddwithOffset("CreateImportedFileV4. ImportedFileType is an unrecognized type.", 30);
+      DynamicAddwithOffset("CreateImportedFileV4. ImportedFileType is not supported at present.", 31);
+      DynamicAddwithOffset("CreateImportedFileV4. ImportedFileType does not match the file extension.", 32);
+      DynamicAddwithOffset("The fileCreatedUtc is over 30 years old or >2 days in the future.", 33);
+      DynamicAddwithOffset("The fileUpdatedUtc is over 30 years old or >2 days in the future.", 34);
+      DynamicAddwithOffset("The ImportedBy is not available from authentication.", 35);
+      DynamicAddwithOffset("The SurveyedUtc is not available.", 36);
+      DynamicAddwithOffset("There are no available subscriptions for the selected customer.", 37);
+      DynamicAddwithOffset("Legacy CustomerID must be provided.", 38);
+      DynamicAddwithOffset("Missing CreateProjectRequest.", 39);
+      DynamicAddwithOffset("Missing UpdateProjectRequest.", 40);
+      DynamicAddwithOffset("Unable to create/update CoordinateSystem in RaptorServices. returned: {0} {1}.", 41);
+      DynamicAddwithOffset("LegacyProjectId has not been generated.", 42);
+      DynamicAddwithOffset("Project boundary overlaps another project, for this customer and time span.", 43);
+      DynamicAddwithOffset("Missing legacyProjectId.", 44);
+      DynamicAddwithOffset("Landfill is missing its CoordinateSystem.", 45);
+      DynamicAddwithOffset("Invalid CoordinateSystem.", 46);
+      DynamicAddwithOffset("Unable to validate CoordinateSystem in RaptorServices. returned: {0} {1}.", 47);
+      DynamicAddwithOffset("Unable to obtain TCC fileSpaceId.", 48);
+      DynamicAddwithOffset("CreateImportedFileV4. Unable to store Imported File event to database.", 49);
+      DynamicAddwithOffset("LegacyImportedFileId has not been generated.", 50);
+      DynamicAddwithOffset("DeleteImportedFileV4. Unable to set Imported File event to deleted.", 51);
+      DynamicAddwithOffset("CreateImportedFileV4. Unable to store updated Imported File event to database.", 52);
+      DynamicAddwithOffset("WriteFileToRepository: Unable to write file to TCC.", 53);
+      DynamicAddwithOffset("Unable to put delete fileDescriptor from TCC.", 54);
+      DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 54);
+      DynamicAddwithOffset("CreateImportedFileV4. The uploaded file is not accessible.", 55);
+      DynamicAddwithOffset("DeleteImportedFileV4. The importedFileUid doesn't exist under this project.", 56);
+    }
+
     /// <summary>
     /// The execution result offset to create dynamically add custom errors
     /// </summary>
-    private const int executionResultOffset = 100;
+    private const int executionResultOffset = 2000;
 
     /// <summary>
     ///   Service request executed successfully
     /// </summary>
-    public static readonly int ExecutedSuccessfully = 0;
+    public static readonly int ExecutedSuccessfully = executionResultOffset;
 
     /// <summary>
-    ///   Requested data was invalid or POSTed JSON was invalid
+    ///   Serializing request erors
     /// </summary>
-    public static readonly int IncorrectRequestedData = -1;
-
-    /// <summary>
-    ///   Supplied data didn't pass validation
-    /// </summary>
-    public static readonly int ValidationError = -2;
-
-    /// <summary>
-    ///   Internal processing error
-    /// </summary>
-    public static readonly int InternalProcessingError = -3;
-
-    /// <summary>
-    ///   The proposed new project overlaps in time and space, another project
-    /// </summary>
-    public static readonly int OverlappingProjects = -4;
-
-    /// <summary>
-    ///   The proposed new project doesn't have a valid subscription plan available
-    /// </summary>
-    public static readonly int NoValidSubscription = -5;
-
-    /// <summary>
-    ///   Tcc method failed. We don't have any way of knowing why
-    /// </summary>
-    public static readonly int TCCReturnFailure = -6;
-
-    /// <summary>
-    ///   Supplied data didn't pass validation
-    /// </summary>
-    public static readonly int TCCConfigurationError = -7;
-
+    public static readonly int SerializationError = -2;
+    
     /// <summary>
     /// Dynamically adds new error messages addwith offset.
     /// </summary>
