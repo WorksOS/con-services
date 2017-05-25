@@ -78,10 +78,10 @@ namespace WebApiTests
 
       ImportFile importFile = new ImportFile();
       var importFileArray = new[] {
-      "| EventType              | ProjectUid   | CustomerUid   | Name                          | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 |",
-     $"| ImportedFileDescriptor | {projectUid} | {customerUid} | FileImportFiles\\Link-Can.SVL | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com |"};
+      "| EventType              | ProjectUid   | CustomerUid   | Name                                    | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 |",
+     $"| ImportedFileDescriptor | {projectUid} | {customerUid} | FileImportFiles\\road intersections.SVL | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com |"};
       var filesResult = importFile.PostImportedFilesToWebApi(ts, importFileArray);
-      Assert.AreEqual(filesResult.ImportedFileDescriptor.ImportedFileTypeName, "Link-Can.SVL", " File name does not match actual");
+      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor,importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
   }
 }

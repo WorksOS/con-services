@@ -576,6 +576,37 @@ namespace TestUtility
         }
       }
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="expectedFile"></param>
+    /// <param name="ignoreZeros">Ignore nulls or zeros if expected results</param>
+    /// <param name="actualFile"></param>
+    public void CompareTheActualImportFileWithExpected(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
+    {
+        var oType = actualFile.GetType();
+        foreach (var oProperty in oType.GetProperties())
+        {
+          var expectedValue = oProperty.GetValue(expectedFile, null);
+          var actualValue = oProperty.GetValue(actualFile, null);
+          if (ignoreZeros)
+          {
+            if (expectedValue == null)
+            {
+              continue;
+            }
+            if (expectedValue.ToString() == "0")
+            {
+              continue;
+            }
+          }
+          if (!object.Equals(expectedValue, actualValue))
+          {
+            Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue);
+          }
+        }
+    }
+
 
     /// <summary>
     /// Inject the MockCustomer
@@ -1263,7 +1294,8 @@ namespace TestUtility
             FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUtc),
             ImportedBy = eventObject.ImportedBy,
             ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Alignment,
-            Name = eventObject.Name 
+            ProjectUid = eventObject.ProjectUid,
+            Name = eventObject.Name             
           };
           jsonString = JsonConvert.SerializeObject(importedFileDescriptor, jsonSettings);
           break;          
