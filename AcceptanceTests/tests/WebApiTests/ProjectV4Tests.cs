@@ -257,7 +257,7 @@ namespace WebApiTests
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | Boundary Test 8 | LandFill     | Mountain Standard Time    | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt1}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       var response = ts.PublishEventToWebApi(projectEventArray);
 
-      Assert.IsTrue(response == "No available subscriptions for the selected customer", "Should not be any subscriptions so project not created. Response: " + response);
+      Assert.IsTrue(response == "There are no available subscriptions for the selected customer.", "Should not be any subscriptions so project not created. Response: " + response);
     }
 
 
@@ -330,7 +330,7 @@ namespace WebApiTests
        "| EventType          | EventDate   | ProjectUID    | ProjectName       | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         |IsArchived | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | Boundary Test 9-2 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId2} |false      |" };
       var response2 = ts.PublishEventToWebApi(projectEventArray2);
-      Assert.IsTrue(response2 == "Project boundary overlaps another project, for this customer and time span", "Response is unexpected. Should be a success. Response: " + response2);
+      Assert.IsTrue(response2 == "Project boundary overlaps another project, for this customer and time span.", "Response is unexpected. Should be a success. Response: " + response2);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray1, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid1, projectEventArray1, true);
     }
@@ -401,7 +401,7 @@ namespace WebApiTests
        "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Boundary Test 12 | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc |" };
       var response1 = ts.PublishEventToWebApi(projectEventArray);
-      Assert.IsTrue(response1 == "No available subscriptions for the selected customer", "Response is unexpected. Should be No available subscriptions for the selected customer. Response: " + response1);
+      Assert.IsTrue(response1 == "There are no available subscriptions for the selected customer.", "Response is unexpected. Should be There are no available subscriptions for the selected customer. Response: " + response1);
     }
 
     [TestMethod]
@@ -471,7 +471,7 @@ namespace WebApiTests
        "| EventType          | EventDate   | ProjectUID    | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         | IsArchived | CoordinateSystem      | ",
       $"| CreateProjectEvent | 1d+09:00:00 | {projectUid2} | Boundary Test 14 | LandFill    | W. Europe Standard Time   | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {legacyProjectId1} | false      | BootCampDimensions.dc |" };
       var response2 = ts.PublishEventToWebApi(projectEventArray2);
-      Assert.IsTrue(response2 == "Project boundary overlaps another project, for this customer and time span", "Response is unexpected. Should be a Project boundary overlaps another project, for this customer and time span. Response: " + response2);
+      Assert.IsTrue(response2 == "Project boundary overlaps another project, for this customer and time span.", "Response is unexpected. Should be a Project boundary overlaps another project, for this customer and time span. Response: " + response2);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray1, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid1, projectEventArray1, true);
     }
@@ -720,7 +720,7 @@ namespace WebApiTests
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Boundary Test 21 | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | " };
       ts.PublishEventCollection(projectEventArray);
       var response = ts.PublishEventToWebApi(projectEventArray);
-      Assert.IsTrue(response == "Landfill is missing its CoordinateSystem", "Response is unexpected. Should be a Landfill is missing its CoordinateSystem. Response: " + response);
+      Assert.IsTrue(response == "Landfill is missing its CoordinateSystem.", "Response is unexpected. Should be a Landfill is missing its CoordinateSystem. Response: " + response);
     }
 
     [TestMethod]
