@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using ProjectWebApiCommon.Models;
 using TestUtility.Model;
@@ -50,10 +51,27 @@ namespace TestUtility
     {
       var uri = ts.GetBaseUri();
       var ed = ts.ConvertImportFileArrayToObject(importFileArray);
-      uri = uri + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileType={ed.ImportedFileTypeName}&fileCreatedUtc={ed.FileCreatedUtc.ToUniversalTime()}&fileUpdatedUtc={ed.FileUpdatedUtc.ToUniversalTime()}";
+      ed.FileCreatedUtc = ed.FileCreatedUtc;
+      expectedImportFileDescriptorSingleResult.ImportedFileDescriptor = ed;      
+      var createdDt = ed.FileCreatedUtc.ToUniversalTime().ToString("o");
+      var updatedDt = ed.FileUpdatedUtc.ToUniversalTime().ToString("o");
+      uri = uri + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileType={ed.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
       var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid);
-      var filesResult = JsonConvert.DeserializeObject<ImportedFileDescriptorSingleResult>(response);
-      return filesResult;
+      expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
+      expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc = expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc.ToUniversalTime();
+      expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc = expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc.ToUniversalTime();
+      try
+      {
+        var filesResult = JsonConvert.DeserializeObject<ImportedFileDescriptorSingleResult>(response);
+        return filesResult;
+      }
+      catch (Exception)
+      {
+        Console.WriteLine(response);
+        Assert.Fail(response);
+        return null;
+      }
+
     }
 
     /// <summary>
