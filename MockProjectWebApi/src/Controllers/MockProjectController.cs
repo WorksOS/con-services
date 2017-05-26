@@ -5,9 +5,37 @@ using MockProjectWebApi.Models;
 
 namespace MockProjectWebApi.Controllers
 {
+
+  public class MockProjectContractResult
+ {
+    /// <summary>
+    ///   Defines machine-readable code.
+    /// </summary>
+    /// <value>
+    ///   Result code.
+    /// </value>
+    public int Code { get; protected set; }
+
+    /// <summary>
+    ///   Defines user-friendly message.
+    /// </summary>
+    /// <value>
+    ///   The message string.
+    /// </value>
+    public string Message { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets the project descriptors.
+    /// </summary>
+    /// <value>
+    /// The project descriptors.
+    /// </value>
+    public List<ProjectData> ProjectDescriptors { get; set; }
+ }
+
   public class MockProjectController : Controller
   {
-
+         
     /// <summary>
     /// Gets the list of projects used in the Raptor service acceptance tests.
     /// The data is mocked.
@@ -15,7 +43,7 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The list of mocked projects</returns>
     [Route("api/v3/mockproject")]
     [HttpGet]
-    public List<ProjectData> GetMockProjects()
+    public MockProjectContractResult GetMockProjects()
     {
       Console.WriteLine("GetMockProjects");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
@@ -49,7 +77,7 @@ namespace MockProjectWebApi.Controllers
           new ProjectData { LegacyProjectId = 1099999, ProjectUid = Guid.NewGuid().ToString() },
           new ProjectData { LegacyProjectId = 1999999, ProjectUid = "0fa94210-0d7a-4015-9eee-4d9956f4b250" }
         };
-      return projectList;
+      return new  MockProjectContractResult() {ProjectDescriptors = projectList};
     }
   }
 }
