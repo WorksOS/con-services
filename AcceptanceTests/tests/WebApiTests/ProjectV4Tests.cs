@@ -836,7 +836,7 @@ namespace WebApiTests
       var response = ts.PublishEventToWebApi(projectEventArray);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
+     // ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
     }
 
     [TestMethod]
@@ -859,7 +859,7 @@ namespace WebApiTests
       var response = ts.PublishEventToWebApi(projectEventArray);
       Assert.IsTrue(response == "success", "Response is unexpected. Should be a success. Response: " + response);
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, projectEventArray, true);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, ts.ProjectUid.ToString(), projectEventArray, true);
+      //ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, ts.ProjectUid.ToString(), projectEventArray, true);
     }
   }
 }

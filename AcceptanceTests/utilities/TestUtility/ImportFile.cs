@@ -42,15 +42,17 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// 
+    /// Add a string array of data 
     /// </summary>
-    /// <param name="ts"></param>
-    /// <param name="importFileArray"></param>
+    /// <param name="ts">Test support</param>
+    /// <param name="importFileArray">string array of data</param>
+    /// <param name="row">Add a single row at a time</param>
     /// <returns></returns>
-    public ImportedFileDescriptorSingleResult PostImportedFilesToWebApi (TestSupport ts, string [] importFileArray) 
+    public ImportedFileDescriptorSingleResult PostImportedFilesToWebApi (TestSupport ts, string [] importFileArray, int row) 
     {
       var uri = ts.GetBaseUri();
-      var ed = ts.ConvertImportFileArrayToObject(importFileArray);
+
+      var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
       ed.FileCreatedUtc = ed.FileCreatedUtc;
       expectedImportFileDescriptorSingleResult.ImportedFileDescriptor = ed;      
       var createdDt = ed.FileCreatedUtc.ToUniversalTime().ToString("o");

@@ -256,11 +256,11 @@ namespace TestUtility
     }
 
 
-    public ImportedFileDescriptor ConvertImportFileArrayToObject(string[] importFileArray)
+    public ImportedFileDescriptor ConvertImportFileArrayToObject(string[] importFileArray, int row)
     {
         msg.DisplayEventsToConsole(importFileArray);
         var allColumnNames = importFileArray.ElementAt(0).Split(SEPARATOR);
-        var eventRow = importFileArray.ElementAt(1).Split(SEPARATOR);
+        var eventRow = importFileArray.ElementAt(row).Split(SEPARATOR);
         dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
         var jsonString = BuildEventIntoObject(eventObject);
         var expectedResults = JsonConvert.DeserializeObject<ImportedFileDescriptor>(jsonString);
@@ -595,7 +595,7 @@ namespace TestUtility
             {
               continue;
             }
-            if (expectedValue.ToString() == "0")
+            if (expectedValue.ToString() == "0" || expectedValue.ToString() == "1/01/0001 12:00:00 AM")
             {
               continue;
             }

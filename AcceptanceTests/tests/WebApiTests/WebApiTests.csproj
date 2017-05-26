@@ -32,10 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="FileImportFiles\Link-Can.SVL">
+    <None Update="FileImportFiles\TestAlignment1.svl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="FileImportFiles\road intersections.SVL">
+    <None Update="FileImportFiles\TestAlignment2.SVL">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
