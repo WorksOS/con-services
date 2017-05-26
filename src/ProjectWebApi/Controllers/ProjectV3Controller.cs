@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -38,30 +39,29 @@ namespace VSP.MasterData.Project.WebAPI.Controllers.V3
       /// <returns>A list of projects</returns>
       [Route("api/v3/project")]
       [HttpGet]
-      public async Task<ImmutableList<ProjectDescriptor>> GetProjectsV3()
+      public async Task<ImmutableDictionary<int, ProjectDescriptor>> GetProjectsV3()
       {
         log.LogInformation("GetProjectsV3");
         var projects = (await GetProjectList());
           var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
           log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-            return projects.Select(project =>
-            new ProjectDescriptor()
-            {
-              ProjectType = project.ProjectType,
-              Name = project.Name,
-              ProjectTimeZone = project.ProjectTimeZone,
-              IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
-              StartDate = project.StartDate.ToString("O"),
-              EndDate = project.EndDate.ToString("O"),
-              ProjectUid = project.ProjectUID,
-              LegacyProjectId = project.LegacyProjectID,
-              ProjectGeofenceWKT = project.GeometryWKT,
-              CustomerUID = project.CustomerUID,
-              LegacyCustomerId = project.LegacyCustomerID.ToString(),
-              CoordinateSystemFileName = project.CoordinateSystemFileName
-            }
-          ).Where(p=>p.CustomerUID==customerUid)
-          .ToImmutableList();
+          return projects.Where(p => p.CustomerUID == customerUid).ToImmutableDictionary(key => key.LegacyProjectID, project =>
+              new ProjectDescriptor()
+              {
+                  ProjectType = project.ProjectType,
+                  Name = project.Name,
+                  ProjectTimeZone = project.ProjectTimeZone,
+                  IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
+                  StartDate = project.StartDate.ToString("O"),
+                  EndDate = project.EndDate.ToString("O"),
+                  ProjectUid = project.ProjectUID,
+                  LegacyProjectId = project.LegacyProjectID,
+                  ProjectGeofenceWKT = project.GeometryWKT,
+                  CustomerUID = project.CustomerUID,
+                  LegacyCustomerId = project.LegacyCustomerID.ToString(),
+                  CoordinateSystemFileName = project.CoordinateSystemFileName
+              }
+          );
       }
 
       // POST: api/project
