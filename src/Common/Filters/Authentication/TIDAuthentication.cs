@@ -55,7 +55,7 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
                 try
                 {
                     var jwtToken = new TPaaSJWT(authorization);
-                    var customerProjects = await projectListProxy.GetProjects(customerUID,
+                    var customerProjects = await projectListProxy.GetProjectsV4(customerUID,
                         context.Request.Headers.GetCustomHeaders());
                     var authProjects = new List<ProjectDescriptor>();
                     if (customerProjects != null)
