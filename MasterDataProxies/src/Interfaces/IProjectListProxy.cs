@@ -8,7 +8,6 @@ namespace VSS.Raptor.Service.Common.Interfaces
 {
   public interface IProjectListProxy
   {
-    Task<List<ProjectData>> GetProjects(string customerUid, IDictionary<string, string> customHeaders = null);
     Task<List<ProjectData>> GetProjectsV4(string customerUid, IDictionary<string, string> customHeaders = null);
   }
 }
