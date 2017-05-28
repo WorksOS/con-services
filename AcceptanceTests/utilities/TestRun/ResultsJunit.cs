@@ -217,6 +217,7 @@ namespace TestRun
                     {
                         var excep = ex.InnerException.Message.Replace('<', ' ');
                         excep = excep.Replace('>', ' ');
+                        excep = excep.Replace('"', ' ');
                         var failureResult = ReplaceTag("XMLMESSAGE", excep, skelFailure);
                         failureResult = ReplaceTag("XMLSTACKTRACE", "", failureResult);
                         failureResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), failureResult);
@@ -227,9 +228,11 @@ namespace TestRun
                     {
                         var excep = ex.InnerException.Message.Replace('<', ' ');
                         excep = excep.Replace('>', ' ');
+                        excep = excep.Replace('"', ' ');
                         var errorResult = ReplaceTag("XMLMESSAGE", excep, skelFailure);
                         var stackTrace = ex.StackTrace.Replace('<', ' ');
                         stackTrace = stackTrace.Replace('>', ' ');
+                        stackTrace = stackTrace.Replace('"', ' ');
                         errorResult = ReplaceTag("XMLSTACKTRACE", stackTrace, errorResult);
                         errorResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), errorResult);
                         stdout.Flush();
@@ -240,9 +243,11 @@ namespace TestRun
                 {
                     var excep = ex.Message.Replace('<', ' ');
                     excep = excep.Replace('>', ' ');
+                    excep = excep.Replace('"', ' ');
                     var errorResult = ReplaceTag("XMLMESSAGE", excep, skelFailure);
                     var stackTrace = ex.StackTrace.Replace('<', ' ');
                     stackTrace = stackTrace.Replace('>', ' ');
+                    stackTrace = stackTrace.Replace('"', ' ');
                     errorResult = ReplaceTag("XMLSTACKTRACE", stackTrace, errorResult);
                     errorResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), errorResult);
                     stdout.Flush();
