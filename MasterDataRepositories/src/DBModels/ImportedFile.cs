@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Repositories.DBModels
 {
@@ -6,6 +7,7 @@ namespace Repositories.DBModels
   {
     public string ProjectUid { get; set; }
     public string ImportedFileUid { get; set; }
+    public long ImportedFileId { get; set; }
     public string CustomerUid { get; set; }
     public ImportedFileType ImportedFileType { get; set; }
     public string Name { get; set; }
@@ -22,18 +24,19 @@ namespace Repositories.DBModels
     {
       var otherImportedFile = obj as ImportedFile;
       if (otherImportedFile == null) return false;
-      return otherImportedFile.ProjectUid == this.ProjectUid
-             && otherImportedFile.ImportedFileUid == this.ImportedFileUid
-             && otherImportedFile.CustomerUid == this.CustomerUid 
-             && otherImportedFile.ImportedFileType == this.ImportedFileType
-             && otherImportedFile.Name == this.Name
-             && otherImportedFile.FileDescriptor == this.FileDescriptor
-             && otherImportedFile.FileCreatedUtc == this.FileCreatedUtc
-             && otherImportedFile.FileUpdatedUtc == this.FileUpdatedUtc
-             && otherImportedFile.ImportedBy == this.ImportedBy
-             && otherImportedFile.IsDeleted == this.IsDeleted
-             && otherImportedFile.SurveyedUtc == this.SurveyedUtc
-             && otherImportedFile.LastActionedUtc == this.LastActionedUtc
+      return otherImportedFile.ProjectUid == ProjectUid
+             && otherImportedFile.ImportedFileUid == ImportedFileUid
+             && otherImportedFile.ImportedFileId == ImportedFileId
+             && otherImportedFile.CustomerUid == CustomerUid
+             && otherImportedFile.ImportedFileType == ImportedFileType
+             && otherImportedFile.Name == Name
+             && otherImportedFile.FileDescriptor == FileDescriptor
+             && otherImportedFile.FileCreatedUtc == FileCreatedUtc
+             && otherImportedFile.FileUpdatedUtc == FileUpdatedUtc
+             && otherImportedFile.ImportedBy == ImportedBy
+             && otherImportedFile.IsDeleted == IsDeleted
+             && otherImportedFile.SurveyedUtc == SurveyedUtc
+             && otherImportedFile.LastActionedUtc == LastActionedUtc
         ;
     }
 
@@ -41,6 +44,5 @@ namespace Repositories.DBModels
     {
       return 0;
     }
-
   }
 }

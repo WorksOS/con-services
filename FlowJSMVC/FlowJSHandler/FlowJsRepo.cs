@@ -117,7 +117,7 @@ namespace FlowUploadFilter
 
 
 
-        private static void MultipleFilesToSingleFile(string dirPath, IEnumerable<string> fileAry, string destFile)
+        private void MultipleFilesToSingleFile(string dirPath, IEnumerable<string> fileAry, string destFile)
         {
             using (var destStream = File.Create(Path.Combine(dirPath, destFile)))
             {

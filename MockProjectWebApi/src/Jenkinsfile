@@ -38,8 +38,8 @@ node('Ubuntu_Slave') {
     if (currentBuild.result=='SUCCESS') {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Build Images'
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-${fullVersion}-${branchName} ./Artifacts/MockProjectWebApi_linux"
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux ./Artifacts/MockProjectWebApi_linux"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-${fullVersion}-${branchName} ./Artifacts/MockProjectWebApi"
+       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux ./Artifacts/MockProjectWebApi"
 
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:linux-${fullVersion}-${branch}"
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux"

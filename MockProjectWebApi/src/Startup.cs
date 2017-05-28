@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Utils;
+using src.Utils;
 
 namespace MockProjectWebApi
 {
@@ -55,10 +56,9 @@ namespace MockProjectWebApi
             app.UseExceptionTrap();
             app.UseCors("VSS");
             //app.UseTIDAuthentication();
-
-
-            app.UseApplicationInsightsRequestTelemetry();
-            app.UseApplicationInsightsExceptionTelemetry();
+            app.UseExceptionDummyPostMiddleware();
+//            app.UseApplicationInsightsRequestTelemetry();
+//            app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseMvc();
         }

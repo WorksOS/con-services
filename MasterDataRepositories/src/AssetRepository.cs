@@ -1,170 +1,145 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Dapper;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.GenericConfiguration;
-using System.Collections.Generic;
 using Repositories.DBModels;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Repositories
 {
-  public class AssetRepository : RepositoryBase, IRepository<IAssetEvent>
-  { 
-    private readonly ILogger log;
-
-    public AssetRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString)
+    public class AssetRepository : RepositoryBase, IRepository<IAssetEvent>
     {
-      log = logger.CreateLogger<AssetRepository>();
-    }
+        private readonly ILogger log;
 
-    #region store
-    public async Task<int> StoreEvent(IAssetEvent evt)
-    {
-      var upsertedCount = 0;
-      var asset = new Asset();
-      string eventType = "Unknown";
-      if (evt is CreateAssetEvent)
-      {
-        var assetEvent = (CreateAssetEvent)evt;
-        asset.Name = assetEvent.AssetName;
-        asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? null : assetEvent.AssetType;
-        asset.AssetUID = assetEvent.AssetUID.ToString();
-        asset.EquipmentVIN = assetEvent.EquipmentVIN;
-        asset.LegacyAssetID = assetEvent.LegacyAssetId;
-        asset.SerialNumber = assetEvent.SerialNumber;
-        asset.MakeCode = assetEvent.MakeCode;
-        asset.Model = assetEvent.Model;
-        asset.ModelYear = assetEvent.ModelYear;        
-        asset.IconKey = assetEvent.IconKey;
-        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue ? assetEvent.OwningCustomerUID.ToString() : null;
-        asset.IsDeleted = false;
-        asset.LastActionedUtc = assetEvent.ActionUTC;
-        eventType = "CreateAssetEvent";
-      }
-      else if (evt is UpdateAssetEvent)
-      {
-        var assetEvent = (UpdateAssetEvent)evt;
-        asset.AssetUID = assetEvent.AssetUID.ToString();
-        asset.Name = assetEvent.AssetName;
-        asset.LegacyAssetID = assetEvent.LegacyAssetId.HasValue ? assetEvent.LegacyAssetId.Value : -1;
-        asset.Model = assetEvent.Model;
-        asset.ModelYear = assetEvent.ModelYear;
-        asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? null : assetEvent.AssetType;
-        asset.IconKey = assetEvent.IconKey;
-        asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue ? assetEvent.OwningCustomerUID.ToString() : null;
-        asset.EquipmentVIN = assetEvent.EquipmentVIN;
-        asset.IsDeleted = false;
-        asset.LastActionedUtc = assetEvent.ActionUTC;
-        eventType = "UpdateAssetEvent";
-      }
-      else if (evt is DeleteAssetEvent)
-      {
-        var assetEvent = (DeleteAssetEvent)evt;
-        asset.AssetUID = assetEvent.AssetUID.ToString();
-        asset.IsDeleted = true;
-        asset.LastActionedUtc = assetEvent.ActionUTC;
-        eventType = "DeleteAssetEvent";
-      }
-
-      upsertedCount = await UpsertAssetDetail(asset, eventType);
-      return upsertedCount;
-    }
-
-    /// <summary>
-    /// All detail-related columns can be inserted, 
-    ///    but only certain columns can be updated.
-    ///    on deletion, a flag will be set.
-    /// </summary>
-    /// <param name="asset"></param>
-    /// <param name="eventType"></param>
-    /// <returns></returns>
-    private async Task<int> UpsertAssetDetail(Asset asset, string eventType)
-    {
-      try
-      {
+        public AssetRepository(IConfigurationStore _connectionString, ILoggerFactory logger) : base(_connectionString,
+            logger)
         {
-          await PerhapsOpenConnection();
-          log.LogDebug("AssetRepository: Upserting eventType{0} assetUid={1}", eventType, asset.AssetUID);
-          var upsertedCount = 0;
+            log = logger.CreateLogger<AssetRepository>();
+        }
 
-          var existing = await dbAsyncPolicy.ExecuteAsync(async () =>
-          {
-            return (await Connection.QueryAsync<Asset>
-                      (@"SELECT 
+        #region store
+
+        public async Task<int> StoreEvent(IAssetEvent evt)
+        {
+            var upsertedCount = 0;
+            var asset = new Asset();
+            var eventType = "Unknown";
+            if (evt is CreateAssetEvent)
+            {
+                var assetEvent = (CreateAssetEvent) evt;
+                asset.Name = assetEvent.AssetName;
+                asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? null : assetEvent.AssetType;
+                asset.AssetUID = assetEvent.AssetUID.ToString();
+                asset.EquipmentVIN = assetEvent.EquipmentVIN;
+                asset.LegacyAssetID = assetEvent.LegacyAssetId;
+                asset.SerialNumber = assetEvent.SerialNumber;
+                asset.MakeCode = assetEvent.MakeCode;
+                asset.Model = assetEvent.Model;
+                asset.ModelYear = assetEvent.ModelYear;
+                asset.IconKey = assetEvent.IconKey;
+                asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue
+                    ? assetEvent.OwningCustomerUID.ToString()
+                    : null;
+                asset.IsDeleted = false;
+                asset.LastActionedUtc = assetEvent.ActionUTC;
+                eventType = "CreateAssetEvent";
+            }
+            else if (evt is UpdateAssetEvent)
+            {
+                var assetEvent = (UpdateAssetEvent) evt;
+                asset.AssetUID = assetEvent.AssetUID.ToString();
+                asset.Name = assetEvent.AssetName;
+                asset.LegacyAssetID = assetEvent.LegacyAssetId.HasValue ? assetEvent.LegacyAssetId.Value : -1;
+                asset.Model = assetEvent.Model;
+                asset.ModelYear = assetEvent.ModelYear;
+                asset.AssetType = string.IsNullOrEmpty(assetEvent.AssetType) ? null : assetEvent.AssetType;
+                asset.IconKey = assetEvent.IconKey;
+                asset.OwningCustomerUID = assetEvent.OwningCustomerUID.HasValue
+                    ? assetEvent.OwningCustomerUID.ToString()
+                    : null;
+                asset.EquipmentVIN = assetEvent.EquipmentVIN;
+                asset.IsDeleted = false;
+                asset.LastActionedUtc = assetEvent.ActionUTC;
+                eventType = "UpdateAssetEvent";
+            }
+            else if (evt is DeleteAssetEvent)
+            {
+                var assetEvent = (DeleteAssetEvent) evt;
+                asset.AssetUID = assetEvent.AssetUID.ToString();
+                asset.IsDeleted = true;
+                asset.LastActionedUtc = assetEvent.ActionUTC;
+                eventType = "DeleteAssetEvent";
+            }
+
+            upsertedCount = await UpsertAssetDetail(asset, eventType);
+            return upsertedCount;
+        }
+
+        /// <summary>
+        ///     All detail-related columns can be inserted,
+        ///     but only certain columns can be updated.
+        ///     on deletion, a flag will be set.
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <param name="eventType"></param>
+        /// <returns></returns>
+        private async Task<int> UpsertAssetDetail(Asset asset, string eventType)
+        {
+            log.LogDebug("AssetRepository: Upserting eventType{0} assetUid={1}", eventType, asset.AssetUID);
+            var upsertedCount = 0;
+
+            var existing = (await QueryWithAsyncPolicy<Asset>(@"SELECT 
                               AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, 
                               LastActionedUTC AS LastActionedUtc
                             FROM Asset
-                            WHERE AssetUID = @assetUid"
-                          , new { assetUid = asset.AssetUID }
-                      )).FirstOrDefault();
-          });
+                            WHERE AssetUID = @assetUid", new {assetUid = asset.AssetUID})).FirstOrDefault();
 
-          if (existing == null || existing.IsDeleted == false)
-          {
-            if (eventType == "CreateAssetEvent")
+            if (existing == null || existing.IsDeleted == false)
             {
-              upsertedCount = await CreateAsset(asset, existing);
-            }
+                if (eventType == "CreateAssetEvent")
+                    upsertedCount = await CreateAsset(asset, existing);
 
-            if (eventType == "UpdateAssetEvent")
-            {
-              upsertedCount = await UpdateAsset(asset, existing);
-            }
+                if (eventType == "UpdateAssetEvent")
+                    upsertedCount = await UpdateAsset(asset, existing);
 
-            if (eventType == "DeleteAssetEvent")
-            {
-              upsertedCount = await DeleteAsset(asset, existing);
+                if (eventType == "DeleteAssetEvent")
+                    upsertedCount = await DeleteAsset(asset, existing);
             }
-          }
-          log.LogDebug("AssetRepository: upserted {0} rows", upsertedCount);
-          log.LogInformation("Event stored SUCCESS: {0}, {1}", eventType, JsonConvert.SerializeObject(asset));
-          return upsertedCount;
+            log.LogDebug("AssetRepository: upserted {0} rows", upsertedCount);
+            log.LogInformation("Event stored SUCCESS: {0}, {1}", eventType, JsonConvert.SerializeObject(asset));
+            return upsertedCount;
         }
-      }
-      finally
-      {
-        PerhapsCloseConnection();
-      }
-    }
 
-    private async Task<int> CreateAsset(Asset asset, Asset existing)
-    {
-      try
-      {
-        await PerhapsOpenConnection();
-        if (existing == null)
+        private async Task<int> CreateAsset(Asset asset, Asset existing)
         {
-          asset.AssetType = asset.AssetType == null ? "Unassigned" : asset.AssetType;
-          const string upsert =
-              @"INSERT Asset
+            if (existing == null)
+            {
+                asset.AssetType = asset.AssetType ?? "Unassigned";
+                const string upsert =
+                    @"INSERT Asset
                     (AssetUID, Name, LegacyAssetID, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, LastActionedUTC )
                   VALUES
-                   (@AssetUid, @Name, @LegacyAssetID, @SerialNumber, @MakeCode, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)
-          ";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
-          {
-            return await Connection.ExecuteAsync(upsert, asset);
-          });
-        }
-        else if (existing.LastActionedUtc == null
-                 // was generated by one of the internal updates e.g. LastUpdatedTime
-                 || asset.LastActionedUtc >= existing.LastActionedUtc) // potential intentional reprocessing
-        {
+                   (@AssetUid, @Name, @LegacyAssetID, @SerialNumber, @MakeCode, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)";
+                return await ExecuteWithAsyncPolicy(upsert, asset);
+            }
+            if (existing.LastActionedUtc == null
+                // was generated by one of the internal updates e.g. LastUpdatedTime
+                || asset.LastActionedUtc >= existing.LastActionedUtc) // potential intentional reprocessing
+            {
+                asset.Name = asset.Name ?? existing.Name;
+                asset.LegacyAssetID = asset.LegacyAssetID == -1 ? existing.LegacyAssetID : asset.LegacyAssetID;
+                asset.Model = asset.Model ?? existing.Model;
+                asset.ModelYear = asset.ModelYear ?? existing.ModelYear;
+                asset.AssetType = asset.AssetType ?? existing.AssetType;
+                asset.IconKey = asset.IconKey ?? existing.IconKey;
+                asset.OwningCustomerUID = asset.OwningCustomerUID ?? existing.OwningCustomerUID;
+                asset.EquipmentVIN = asset.EquipmentVIN ?? existing.EquipmentVIN;
 
-          asset.Name = asset.Name == null ? existing.Name : asset.Name;
-          asset.LegacyAssetID = asset.LegacyAssetID == -1 ? existing.LegacyAssetID : asset.LegacyAssetID;
-          asset.Model = asset.Model == null ? existing.Model : asset.Model;
-          asset.ModelYear = asset.ModelYear == null ? existing.ModelYear : asset.ModelYear;
-          asset.AssetType = asset.AssetType == null ? existing.AssetType : asset.AssetType;
-          asset.IconKey = asset.IconKey == null ? existing.IconKey : asset.IconKey;
-          asset.OwningCustomerUID = asset.OwningCustomerUID == null ? existing.OwningCustomerUID : asset.OwningCustomerUID;
-          asset.EquipmentVIN = asset.EquipmentVIN == null ? existing.EquipmentVIN : asset.EquipmentVIN;
-
-          const string update =
-              @"UPDATE Asset                
+                const string update =
+                    @"UPDATE Asset                
                   SET Name = @Name,
                       LegacyAssetID = @LegacyAssetID,
                       SerialNumber = @SerialNumber,
@@ -177,101 +152,70 @@ namespace Repositories
                       EquipmentVIN = @EquipmentVIN,      
                       LastActionedUTC = @LastActionedUtc
                 WHERE AssetUID = @AssetUid";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
-          {
-            return await Connection.ExecuteAsync(update, asset);
-          });
-        }
-        else if (asset.LastActionedUtc < existing.LastActionedUtc) // Create received after Update
-        {
-          const string update =
-              @"UPDATE Asset                
+                return await ExecuteWithAsyncPolicy(update, asset);
+            }
+            if (asset.LastActionedUtc < existing.LastActionedUtc) // Create received after Update
+            {
+                const string update =
+                    @"UPDATE Asset                
                   SET MakeCode = @MakeCode,
                     SerialNumber = @SerialNumber
                   WHERE AssetUID = @AssetUid";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
-          {
-            return await Connection.ExecuteAsync(update, asset);
-          });
+                return await ExecuteWithAsyncPolicy(update, asset);
+            }
+
+            return await Task.FromResult(0);
         }
 
-        return await Task.FromResult(0);
-      }
-      finally
-      {
-        PerhapsCloseConnection();
-      }
-    }
-
-    private async Task<int> DeleteAsset(Asset asset, Asset existing)
-    {
-      try
-      {
-        await PerhapsOpenConnection();
-        if (existing != null)
+        private async Task<int> DeleteAsset(Asset asset, Asset existing)
         {
-          if (asset.LastActionedUtc >= existing.LastActionedUtc)
-          {
-            const string update =
-                @"UPDATE Asset                
+            if (existing != null)
+            {
+                if (asset.LastActionedUtc >= existing.LastActionedUtc)
+                {
+                    const string update =
+                        @"UPDATE Asset                
                     SET IsDeleted = 1,
                       LastActionedUTC = @LastActionedUtc
                     WHERE AssetUID = @AssetUid";
-            return await dbAsyncPolicy.ExecuteAsync(async () =>
+                    return await ExecuteWithAsyncPolicy(update, asset);
+                }
+                log.LogDebug(
+                    "AssetRepository: old delete event ignored currentActionedUTC{0} newActionedUTC{1}",
+                    existing.LastActionedUtc, asset.LastActionedUtc);
+            }
+            else
             {
-              return await Connection.ExecuteAsync(update, asset);
-            });
-          }
-          else
-          {
-            log.LogDebug(
-                "AssetRepository: old delete event ignored currentActionedUTC{0} newActionedUTC{1}",
-                existing.LastActionedUtc, asset.LastActionedUtc);
-          }
+                log.LogDebug("AssetRepository: Inserted a DeleteAssetEvent as none existed. newActionedUTC{0}",
+                    asset.LastActionedUtc);
+
+                var upsert = string.Format(
+                    "INSERT Asset " +
+                    "    (AssetUID, IsDeleted, LastActionedUTC, AssetType) " +
+                    "  VALUES " +
+                    "   (@AssetUid, @IsDeleted, @LastActionedUtc, \"Unassigned\")");
+                return await ExecuteWithAsyncPolicy(upsert, asset);
+            }
+            return await Task.FromResult(0);
         }
-        else
+
+        private async Task<int> UpdateAsset(Asset asset, Asset existing)
         {
-          log.LogDebug("AssetRepository: Inserted a DeleteAssetEvent as none existed. newActionedUTC{0}",
-              asset.LastActionedUtc);
+            if (existing != null)
+            {
+                if (asset.LastActionedUtc >= existing.LastActionedUtc)
+                {
+                    asset.Name = asset.Name ?? existing.Name;
+                    asset.LegacyAssetID = asset.LegacyAssetID == -1 ? existing.LegacyAssetID : asset.LegacyAssetID;
+                    asset.Model = asset.Model ?? existing.Model;
+                    asset.ModelYear = asset.ModelYear ?? existing.ModelYear;
+                    asset.AssetType = asset.AssetType ?? existing.AssetType;
+                    asset.IconKey = asset.IconKey ?? existing.IconKey;
+                    asset.OwningCustomerUID = asset.OwningCustomerUID ?? existing.OwningCustomerUID;
+                    asset.EquipmentVIN = asset.EquipmentVIN ?? existing.EquipmentVIN;
 
-          string upsert = string.Format(
-                "INSERT Asset " +
-                "    (AssetUID, IsDeleted, LastActionedUTC, AssetType) " +
-                "  VALUES " +
-                "   (@AssetUid, @IsDeleted, @LastActionedUtc, \"Unassigned\")");
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
-          {
-            return await Connection.ExecuteAsync(@upsert, asset);
-          });
-        }
-        return await Task.FromResult(0);
-      }
-      finally
-      {
-        PerhapsCloseConnection();
-      }
-    }
-
-    private async Task<int> UpdateAsset(Asset asset, Asset existing)
-    {
-      try
-      {
-        await PerhapsOpenConnection();
-        if (existing != null)
-        {
-          if (asset.LastActionedUtc >= existing.LastActionedUtc)
-          {
-            asset.Name = asset.Name == null ? existing.Name : asset.Name;
-            asset.LegacyAssetID = asset.LegacyAssetID == -1 ? existing.LegacyAssetID : asset.LegacyAssetID;
-            asset.Model = asset.Model == null ? existing.Model : asset.Model;
-            asset.ModelYear = asset.ModelYear == null ? existing.ModelYear : asset.ModelYear;
-            asset.AssetType = asset.AssetType == null ? existing.AssetType : asset.AssetType;
-            asset.IconKey = asset.IconKey == null ? existing.IconKey : asset.IconKey;
-            asset.OwningCustomerUID = asset.OwningCustomerUID == null ? existing.OwningCustomerUID : asset.OwningCustomerUID;
-            asset.EquipmentVIN = asset.EquipmentVIN == null ? existing.EquipmentVIN : asset.EquipmentVIN;
-
-            const string update =
-                @"UPDATE Asset                
+                    const string update =
+                        @"UPDATE Asset                
                     SET Name = @Name,
                       LegacyAssetId = @LegacyAssetId,
                       Model = @Model,                      
@@ -282,164 +226,90 @@ namespace Repositories
                       EquipmentVIN = @EquipmentVIN,
                       LastActionedUTC = @LastActionedUtc
                     WHERE AssetUID = @AssetUid";
-            return await dbAsyncPolicy.ExecuteAsync(async () =>
+                    return await ExecuteWithAsyncPolicy(update, asset);
+                }
+                log.LogWarning(
+                    "AssetRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
+                    existing.LastActionedUtc, asset.LastActionedUtc);
+            }
+            else
             {
-              return await Connection.ExecuteAsync(update, asset);
-            });
-          }
-          else
-          {
-            log.LogDebug(
-                "AssetRepository: old update event ignored currentActionedUTC{0} newActionedUTC{1}",
-                existing.LastActionedUtc, asset.LastActionedUtc);
-          }
-        }
-        else
-        {
-          log.LogDebug("AssetRepository: Inserted an UpdateAssetEvent as none existed.  newActionedUTC{0}",
-              asset.LastActionedUtc);
+                log.LogDebug("AssetRepository: Inserted an UpdateAssetEvent as none existed.  newActionedUTC{0}",
+                    asset.LastActionedUtc);
 
-          asset.AssetType = asset.AssetType == null ? "Unassigned" : asset.AssetType;
-          const string upsert =
-              @"INSERT Asset
+                asset.AssetType = asset.AssetType ?? "Unassigned";
+                const string upsert =
+                    @"INSERT Asset
                     (AssetUID, Name, LegacyAssetId, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted, LastActionedUTC )
                   VALUES
-                    (@AssetUid, @Name, @LegacyAssetId, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)
-          ";
-          return await dbAsyncPolicy.ExecuteAsync(async () =>
-          {
-            return await Connection.ExecuteAsync(upsert, asset);
-          });
+                    (@AssetUid, @Name, @LegacyAssetId, @Model, @ModelYear, @AssetType, @IconKey, @OwningCustomerUID, @EquipmentVIN, @IsDeleted, @LastActionedUtc)";
+                return await ExecuteWithAsyncPolicy(upsert, asset);
+            }
+            return await Task.FromResult(0);
         }
-        return await Task.FromResult(0);
-      }
-      finally
-      {
-        PerhapsCloseConnection();
-      }
-    }
 
-    #endregion store
+        #endregion store
 
-    #region getters
-    public async Task<Asset> GetAsset(string assetUid)
-    {
-      try
-      {
-        await PerhapsOpenConnection();
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        #region getters
+
+        public async Task<Asset> GetAsset(string assetUid)
         {
-          return (await Connection.QueryAsync<Asset>
-                  (@"SELECT 
+            return (await QueryWithAsyncPolicy<Asset>(@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE AssetUID = @assetUid 
-                        AND IsDeleted = 0"
-                      , new { assetUid }
-                  )).FirstOrDefault();
-        });
-      }
-      finally
-      {
-        PerhapsCloseConnection();
-      }
-    }
+                        AND IsDeleted = 0", new {assetUid})).FirstOrDefault();
+        }
 
-    public async Task<Asset> GetAsset(long legacyAssetId)
-    {
-      try
-      {
-        await PerhapsOpenConnection();
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        public async Task<Asset> GetAsset(long legacyAssetId)
         {
-          return (await Connection.QueryAsync<Asset>
-                  (@"SELECT 
+            return (await QueryWithAsyncPolicy<Asset>(@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE LegacyAssetId = @legacyAssetId 
                         AND IsDeleted = 0"
-                      , new { legacyAssetId }
-                  )).FirstOrDefault();
-        });
-      }
-      finally
-      {
-        PerhapsCloseConnection();
-      }
-    }
+                , new {legacyAssetId}
+            )).FirstOrDefault();
+        }
 
-    public async Task<IEnumerable<Asset>> GetAssets()
-    {
-      try
-      {
-        await PerhapsOpenConnection();
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        public async Task<IEnumerable<Asset>> GetAssets()
         {
-          return (await Connection.QueryAsync<Asset>
-                  (@"SELECT 
+            return (await QueryWithAsyncPolicy<Asset>
+            (@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset
                       WHERE IsDeleted = 0"
-                  )).ToList();
-        });
-      }
-      finally
-      {
-        PerhapsCloseConnection();
-      }
-    }
+            )).ToList();
+        }
 
-    /// <summary>
-    /// Used for unit tests so we can test deleted assets
-    /// </summary>
-    /// <returns></returns>
-    public async Task<IEnumerable<Asset>> GetAllAssetsInternal()
-    {
-      try
-      {
-        await PerhapsOpenConnection();
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        /// <summary>
+        ///     Used for unit tests so we can test deleted assets
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<Asset>> GetAllAssetsInternal()
         {
-          return (await Connection.QueryAsync<Asset>
-                  (@"SELECT 
+            return (await QueryWithAsyncPolicy<Asset>
+            (@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset"
-                  )).ToList();
-        });
-      }
-      finally
-      {
-        PerhapsCloseConnection();
-      }
-    }
+            )).ToList();
+        }
 
-    public async Task<IEnumerable<Asset>> GetAssets(string[] productFamily)
-    {
-      try
-      {
-        await PerhapsOpenConnection();
-        return await dbAsyncPolicy.ExecuteAsync(async () =>
+        public async Task<IEnumerable<Asset>> GetAssets(string[] productFamily)
         {
-          return (await Connection.QueryAsync<Asset>
-                  (@"SELECT 
+            return (await QueryWithAsyncPolicy<Asset>
+            (@"SELECT 
                         AssetUID AS AssetUid, Name, LegacyAssetId, SerialNumber, MakeCode, Model, ModelYear, AssetType, IconKey, OwningCustomerUID, EquipmentVIN, IsDeleted,
                         LastActionedUTC AS LastActionedUtc
                       FROM Asset 
                       WHERE AssetType IN @families
-                        AND IsDeleted = 0", new { families = productFamily })).ToList();
-        });
-      }
-      finally
-      {
-        PerhapsCloseConnection();
-      }
-    }
+                        AND IsDeleted = 0", new {families = productFamily})).ToList();
+        }
 
-    #endregion getters
-       
-  }
+        #endregion getters
+    }
 }

@@ -17,10 +17,10 @@
   <ItemGroup>
     <PackageReference Include="Nito.AsyncEx.Coordination" Version="1.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="*" />
+    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.10" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
 	<PackageReference Include="System.ValueTuple" Version="4.3.0" />
-    <PackageReference Include="MasterDataProxies.netcore" Version="*" />
+    <PackageReference Include="MasterDataProxies.netcore" Version="1.0.29" />
   </ItemGroup>
 
 </Project>

@@ -17,11 +17,6 @@ namespace VSS.Raptor.Service.Common.Proxies
     {
     }
 
-    public async Task<List<ProjectData>> GetProjects(string customerUid, IDictionary<string, string> customHeaders = null)
-    {
-      return await GetList<ProjectData>(customerUid, projectListCacheLife, "PROJECT_API_URL", customHeaders);
-    }
-
     public async Task<List<ProjectData>> GetProjectsV4(string customerUid, IDictionary<string, string> customHeaders = null)
     {
       var result = await GetContainedList<ProjectDataResult>(customerUid, projectListCacheLife, "PROJECT_API_URL", customHeaders);
