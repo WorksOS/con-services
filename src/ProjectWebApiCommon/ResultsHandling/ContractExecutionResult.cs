@@ -138,7 +138,7 @@ namespace ProjectWebApiCommon.ResultsHandling
     /// <summary>
     ///   Service request executed successfully
     /// </summary>
-    public static readonly int ExecutedSuccessfully = executionResultOffset;
+    public static readonly int ExecutedSuccessfully = 200;
 
     /// <summary>
     ///   Serializing request erors

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
@@ -216,20 +217,26 @@ namespace Controllers
     /// <summary>
     /// Delete Project
     /// </summary>
-    /// <param name="project">DeleteProjectEvent model</param>
+    /// <param name="projectUid">projectUid to delete</param>
     /// <remarks>Deletes existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
-    [Route("api/v4/project")]
+    [Route("api/v4/project/{projectUid}")]
     [HttpDelete]
-    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromBody] DeleteProjectEvent project)
+    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromUri]string projectUid)
     {
-      log.LogInformation($"DeleteProjectV4. Project: {JsonConvert.SerializeObject(project)}");
+      log.LogInformation($"DeleteProjectV4. Project: {projectUid}");
 
+      var project = new DeleteProjectEvent()
+      {
+        ProjectUID = Guid.Parse(projectUid),
+        DeletePermanently = false,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
       ProjectDataValidator.Validate(project, projectService,
         ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
-      project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
-
+      
       var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
