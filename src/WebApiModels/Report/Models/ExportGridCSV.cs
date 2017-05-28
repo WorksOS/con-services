@@ -61,7 +61,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         public Filter filter { get; protected set; }
 
         /// <summary>
-        /// The filter ID to used in the request.
+        /// The filter ID to be used in the request.
         /// May be null.
         /// </summary>
         [JsonProperty(PropertyName = "filterID", Required = Required.Default)]
@@ -74,7 +74,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         public LiftBuildSettings liftBuildSettings { get; protected set; }
 
         /// <summary>
-        /// The spacing interval for the sampled points. Setting to 1.0m will cause points to be spaced 1.0 meters apart.
+        /// The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.
         /// </summary>
         [JsonProperty(PropertyName = "interval", Required = Required.Default)]
         public double interval { get; protected set; }
@@ -152,7 +152,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         public double direction { get; protected set; }
 
         /// <summary>
-        /// Compress the result
+        /// If set to false, the returned file content is an ANSI text representation of the CSV file. If set to true, the returned file content is a ZIP conpressed archive containing a single file with the name 'asbuilt.csv'.
         /// </summary>
         [JsonProperty(PropertyName = "compress", Required = Required.Default)]
         public bool compress { get; protected set; }
