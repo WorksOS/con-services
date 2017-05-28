@@ -46,48 +46,47 @@ Scenario Outline: Tiles - Serialized
 	| CCVChangeNoneLiftDetection              | CCVChangeNoneLiftDetection              |
 	| CCVChangeNoChange                       | CCVChangeNoChange                       |
 
-#@ignore
-#Scenario Outline: Tiles - PNG
-#	When I request PNG Tiles supplying "<ParameterName>" paramters from the repository
-	#Then the PNG Tiles response should match "<ResultName>" result from the repository
-	#Examples: 
-	#| ParameterName                           | ResultName                              |
-	#| Height                                  | Height                                  |
-	#| CCV                                     | CCV                                     |
-	#| CCVPercent                              | CCVPercent                              |
-	#| PassCount                               | PassCount                               |
-	#| CutFill                                 | CutFill                                 |
-	#| CutFillCustomPalettes                   | CutFillCustomPalettes                   |
-	#| TemperatureSummary                      | TemperatureSummary                      |
-	#| CCVSummary                              | CCVSummary                              |
-	#| CCVPercentSummary                       | CCVPercentSummary                       |
-	#| PassCountSummaryConstTarget             | PassCountSummaryConstTarget             |
-	#| PassCountSummaryRangeTarget             | PassCountSummaryRangeTarget             |
-	#| CompactionCoverage                      | CompactionCoverage                      |
-	#| VolumeCoverage                          | VolumeCoverage                          |
-	#| MDP                                     | MDP                                     |
-	#| MDPSummary                              | MDPSummary                              |
-	#| MDPPercent                              | MDPPercent                              |
-	#| MDPPercentSummary                       | MDPPercentSummary                       |
-	#| MachineSpeed                            | MachineSpeed                            |
-	#| MachineSpeedSummary                     | MachineSpeedSummary                     |
-	#| CCVPercentChange                        | CCVPercentChange                        |
-	#| CCVPercentChangeFiltered                | CCVPercentChangeFiltered                |
-	#| CCVPercentChangeSinglePass              | CCVPercentChangeSinglePass              |
-	#| CCVPercentChangeOverrideCCV             | CCVPercentChangeOverrideCCV             |
-	#| ThicknessSummary                        | ThicknessSummary                        |
-	#| ThicknessSummaryPartialOverlap          | ThicknessSummaryPartialOverlap          |
-	#| ThicknessSummaryLayerIdFiltered         | ThicknessSummaryLayerIdFiltered         |
-	#| ThicknessSummaryDesignToFilter          | ThicknessSummaryDesignToFilter          |
-	#| PassCountOutOfBoundary                  | PassCountOutOfBoundary                  |
-	#| SpeedSummaryExcludeSuperdedLifts        | SpeedSummaryExcludeSuperdedLifts        |
-	#| SpeedSummaryIncludeSuperdedLifts        | SpeedSummaryIncludeSuperdedLifts        |
-	#| RedWhenZoomedOutTooMuch                 | RedWhenZoomedOutTooMuch                 |
-	#| CCVChangeExcludeSupersededLifts         | CCVChangeExcludeSupersededLifts         |
-	#| CCVChangeIncludeSupersededLifts         | CCVChangeIncludeSupersededLifts         |
-	#| CCVChangeTopLayerIncludeSupersededLifts | CCVChangeTopLayerIncludeSupersededLifts |
-	#| CCVChangeNoneLiftDetection              | CCVChangeNoneLiftDetection              |
-	#| CCVChangeNoChange                       | CCVChangeNoChange                       |
+Scenario Outline: Tiles - PNG
+	When I request PNG Tiles supplying "<ParameterName>" paramters from the repository
+	Then the PNG Tiles response should match "<ResultName>" result from the repository
+	Examples: 
+	| ParameterName                           | ResultName                              |
+	| Height                                  | Height                                  |
+	| CCV                                     | CCV                                     |
+	| CCVPercent                              | CCVPercent                              |
+	| PassCount                               | PassCount                               |
+	| CutFill                                 | CutFill                                 |
+	| CutFillCustomPalettes                   | CutFillCustomPalettes                   |
+	| TemperatureSummary                      | TemperatureSummary                      |
+	| CCVSummary                              | CCVSummary                              |
+	| CCVPercentSummary                       | CCVPercentSummary                       |
+	| PassCountSummaryConstTarget             | PassCountSummaryConstTarget             |
+	| PassCountSummaryRangeTarget             | PassCountSummaryRangeTarget             |
+	| CompactionCoverage                      | CompactionCoverage                      |
+	| VolumeCoverage                          | VolumeCoverage                          |
+	| MDP                                     | MDP                                     |
+	| MDPSummary                              | MDPSummary                              |
+	| MDPPercent                              | MDPPercent                              |
+	| MDPPercentSummary                       | MDPPercentSummary                       |
+	| MachineSpeed                            | MachineSpeed                            |
+	| MachineSpeedSummary                     | MachineSpeedSummary                     |
+	| CCVPercentChange                        | CCVPercentChange                        |
+	| CCVPercentChangeFiltered                | CCVPercentChangeFiltered                |
+	| CCVPercentChangeSinglePass              | CCVPercentChangeSinglePass              |
+	| CCVPercentChangeOverrideCCV             | CCVPercentChangeOverrideCCV             |
+	| ThicknessSummary                        | ThicknessSummary                        |
+	| ThicknessSummaryPartialOverlap          | ThicknessSummaryPartialOverlap          |
+	| ThicknessSummaryLayerIdFiltered         | ThicknessSummaryLayerIdFiltered         |
+	| ThicknessSummaryDesignToFilter          | ThicknessSummaryDesignToFilter          |
+	| PassCountOutOfBoundary                  | PassCountOutOfBoundary                  |
+	| SpeedSummaryExcludeSuperdedLifts        | SpeedSummaryExcludeSuperdedLifts        |
+	| SpeedSummaryIncludeSuperdedLifts        | SpeedSummaryIncludeSuperdedLifts        |
+	| RedWhenZoomedOutTooMuch                 | RedWhenZoomedOutTooMuch                 |
+	| CCVChangeExcludeSupersededLifts         | CCVChangeExcludeSupersededLifts         |
+	| CCVChangeIncludeSupersededLifts         | CCVChangeIncludeSupersededLifts         |
+	| CCVChangeTopLayerIncludeSupersededLifts | CCVChangeTopLayerIncludeSupersededLifts |
+	| CCVChangeNoneLiftDetection              | CCVChangeNoneLiftDetection              |
+	| CCVChangeNoChange                       | CCVChangeNoChange                       |
 
 Scenario Outline: Tiles - Raw PNG
 	Given the PNG Tile service URI "/api/v1/tiles/png"
