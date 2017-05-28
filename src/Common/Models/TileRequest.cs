@@ -10,13 +10,13 @@ using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.Common.Utilities;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Raptor.Service.Common.Models
 {
   /// <summary>
   /// The request representation for rendering a tile of thematic information such as elevation, compaction, temperature etc
   /// The bounding box of the area to be rendered may be specified in either WGS84 lat/lon or cartesian grid coordinates in the project coordinate system.
   /// </summary>
-  public class TileRequest : ProjectID, IValidatable
+  public class TileRequest : RaptorValidator, IValidatable
   {
 
     /// <summary>
@@ -30,7 +30,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     [JsonProperty(PropertyName = "mode", Required = Required.Always)]
     [Required]
-    public DisplayMode mode { get; private set; }
+    public DisplayMode mode { get; protected set; }
 
     /// <summary>
     /// The set of colours to be used to map the datum values in the thematic data to colours to be rendered in the tile.
@@ -38,7 +38,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// </summary>
     [JsonProperty(PropertyName = "palettes", Required = Required.Default)]
     //Use default palette
-    public List<ColorPalette> palettes { get; private set; }
+    public List<ColorPalette> palettes { get; protected set; }
 
     /// <summary>
     /// Color to be used to render subgrids representationaly when the production data is zoomed too far away.
@@ -47,77 +47,77 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// The display color of the representational.
     /// </value>
     [JsonProperty(PropertyName = "representationalDisplayColor", Required = Required.Default)]
-    public uint representationalDisplayColor { get; private set; }
+    public uint representationalDisplayColor { get; protected set; }
 
     /// <summary>
     /// The settings to be used when considering compaction information being processed and analysed in preparation for rendering.
     /// </summary>
     [JsonProperty(PropertyName = "liftBuildSettings", Required = Required.Default)]
-    public LiftBuildSettings liftBuildSettings { get; private set; }
+    public LiftBuildSettings liftBuildSettings { get; protected set; }
 
     /// <summary>
     /// The volume computation type to use for summary volume thematic rendering
     /// </summary>
     [JsonProperty(PropertyName = "computeVolType", Required = Required.Default)]
-    public RaptorConverters.VolumesType computeVolType { get; private set; }
+    public RaptorConverters.VolumesType computeVolType { get; protected set; }
 
     /// <summary>
     /// The tolerance to be used to indicate no change in volume for a cell. Used for summary volume thematic rendering. Value is expressed in meters.
     /// </summary>
     [Range(ValidationConstants.MIN_NO_CHANGE_TOLERANCE, ValidationConstants.MAX_NO_CHANGE_TOLERANCE)]
     [JsonProperty(PropertyName = "computeVolNoChangeTolerance", Required = Required.Default)]
-    public double computeVolNoChangeTolerance { get; private set; }
+    public double computeVolNoChangeTolerance { get; protected set; }
 
     /// <summary>
     /// The descriptor for the design to be used for volume or cut/fill based thematic renderings.
     /// </summary>
     [JsonProperty(PropertyName = "designDescriptor", Required = Required.Default)]
-    public DesignDescriptor designDescriptor { get; private set; }
+    public DesignDescriptor designDescriptor { get; protected set; }
 
     /// <summary>
     /// The base or earliest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter1", Required = Required.Default)]
-    public Filter filter1 { get; private set; }
+    public Filter filter1 { get; protected set; }
 
     /// <summary>
     /// The ID of the base or earliest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filterId1", Required = Required.Default)]
-    public long filterId1 { get; private set; }
+    public long filterId1 { get; protected set; }
 
     /// <summary>
     /// The top or latest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filter2", Required = Required.Default)]
-    public Filter filter2 { get; private set; }
+    public Filter filter2 { get; protected set; }
 
     /// <summary>
     /// The ID of the top or latest filter to be used.
     /// </summary>
     [JsonProperty(PropertyName = "filterId2", Required = Required.Default)]
-    public long filterId2 { get; private set; }
+    public long filterId2 { get; protected set; }
 
     /// <summary>
     /// The method of filtering cell passes into layers to be used for thematic renderings that require layer analysis as an input into the rendered data.
     /// If this value is provided any layer method provided in a filter is ignored.
     /// </summary>
     [JsonProperty(PropertyName = "filterLayerMethod", Required = Required.Default)]
-    public FilterLayerMethod filterLayerMethod { get; private set; }
+    public FilterLayerMethod filterLayerMethod { get; protected set; }
 
     /// <summary>
     /// The bounding box enclosing the area to be rendered. The bounding box is expressed in terms of WGS84 latitude and longitude positions, expressed in radians.
     /// Value may be null but either this or the bounding box in grid coordinates must be provided.
     /// </summary>
     [JsonProperty(PropertyName = "boundBoxLL", Required = Required.Default)]
-    public BoundingBox2DLatLon boundBoxLL { get; private set; }
+    public BoundingBox2DLatLon boundBoxLL { get; protected set; }
 
     /// <summary>
     /// The bounding box enclosing the area to be rendered. The bounding box is expressed in terms of cartesian grid coordinates in the project coordinate system, expressed in meters.
     /// Value may be null but either this or the bounding box in lat/lng coordinates must be provided.
     /// </summary>
     [JsonProperty(PropertyName = "boundBoxGrid", Required = Required.Default)]
-    public BoundingBox2DGrid boundBoxGrid { get; private set; }
+    public BoundingBox2DGrid boundBoxGrid { get; protected set; }
 
     /// <summary>
     /// The width, in pixels, of the image tile to be rendered
@@ -125,7 +125,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     [Range(MIN_PIXELS, MAX_PIXELS)]
     [JsonProperty(PropertyName = "width", Required = Required.Always)]
     [Required]
-    public ushort width { get; private set; }
+    public ushort width { get; protected set; }
 
     /// <summary>
     /// The height, in pixels, of the image tile to be rendered
@@ -133,13 +133,13 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     [Range(MIN_PIXELS, MAX_PIXELS)]
     [JsonProperty(PropertyName = "height", Required = Required.Always)]
     [Required]
-    public ushort height { get; private set; }
+    public ushort height { get; protected set; }
 
 
     /// <summary>
     /// Private constructor
     /// </summary>
-    private TileRequest()
+    protected TileRequest()
       {}
 
     /// <summary>
@@ -226,62 +226,60 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     }
 
 
-      /// <summary>
-      /// Validates all properties
-      /// </summary>
-      public override void Validate()
+    /// <summary>
+    /// Validates all properties
+    /// </summary>
+    public override void Validate()
+    {
+      base.Validate();
+      ValidatePalettes(palettes, mode);
+
+      //Compaction settings
+      if (liftBuildSettings != null)
+        liftBuildSettings.Validate();
+
+      //Volumes
+      //mode == DisplayMode.VolumeCoverage
+      //computeVolNoChangeTolerance and computeVolType must be provided but since not nullable types they always will have a value anyway
+      ValidateDesign(designDescriptor, mode, computeVolType);
+
+      if (mode == DisplayMode.VolumeCoverage)
       {
-        base.Validate();
-        RaptorValidator.ValidatePalettes(palettes, mode);
-
-        //Compaction settings
-        if (liftBuildSettings != null)
-          liftBuildSettings.Validate();
-
-        //Volumes
-        //mode == DisplayMode.VolumeCoverage
-        //computeVolNoChangeTolerance and computeVolType must be provided but since not nullable types they always will have a value anyway
-        RaptorValidator.ValidateDesign(designDescriptor, mode, computeVolType);
-
-        if (mode == DisplayMode.VolumeCoverage)
-        {
-          RaptorValidator.ValidateVolumesFilters(computeVolType, filter1, filterId1, filter2, filterId2);
-        }
-
-        if (boundBoxLL == null && boundBoxGrid == null)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                   string.Format("Bounding box required either in lat/lng or grid coordinates")));
-          
-        }
-        else if (boundBoxLL != null && boundBoxGrid != null)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  string.Format("Only one bounding box is allowed")));
-         
-        }
-
-        if ((mode == DisplayMode.TargetThicknessSummary) && (liftBuildSettings.liftThicknessTarget ==  null))
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  string.Format("For this mode LiftThickness Target in LIftBuildSettings must be specified.")));
-        }
-
-        if ((mode == DisplayMode.TargetSpeedSummary) && (liftBuildSettings.machineSpeedTarget == null))
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  string.Format("For this mode SpeedSummary Target in LiftBuildSettings must be specified.")));
-        }
-    
+        ValidateVolumesFilters(computeVolType, filter1, filterId1, filter2, filterId2);
       }
 
-      private const int MIN_PIXELS = 64;
-      private const int MAX_PIXELS = 4096;
+      if (boundBoxLL == null && boundBoxGrid == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                  string.Format("Bounding box required either in lat/lng or grid coordinates")));
+          
+      }
+      else if (boundBoxLL != null && boundBoxGrid != null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                string.Format("Only one bounding box is allowed")));
+         
+      }
 
+      if ((mode == DisplayMode.TargetThicknessSummary) && (liftBuildSettings.liftThicknessTarget ==  null))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                string.Format("For this mode LiftThickness Target in LIftBuildSettings must be specified.")));
+      }
 
+      if ((mode == DisplayMode.TargetSpeedSummary) && (liftBuildSettings.machineSpeedTarget == null))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                string.Format("For this mode SpeedSummary Target in LiftBuildSettings must be specified.")));
+      }
+    
+    }
+
+    private const int MIN_PIXELS = 64;
+    private const int MAX_PIXELS = 4096;
   }
 }

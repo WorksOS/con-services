@@ -2,7 +2,7 @@
 using ASNodeDecls;
 using VSS.Raptor.Service.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Raptor.Service.Common.ResultHandling
 {
   public class TileResult : ContractExecutionResult
   {

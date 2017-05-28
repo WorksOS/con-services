@@ -16,7 +16,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// Requesting patch number 0 will additionally return a summation of the total number of patches of the requested size that need to be requested in order to assemble the
     /// complete data set.
     /// </summary>
-    public class PatchRequest : ProjectID, IValidatable
+    public class PatchRequest : RaptorValidator, IValidatable
     {
         /// <summary>
         /// An identifying string from the caller
@@ -198,7 +198,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
         public override void Validate()
         {
           base.Validate();
-          RaptorValidator.ValidatePalettes(palettes, mode);
+          ValidatePalettes(palettes, mode);
 
           //Compaction settings
           if (liftBuildSettings != null)
@@ -208,12 +208,12 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
           //mode == DisplayMode.VolumeCoverage
           //computeVolNoChangeTolerance and computeVolType must be provided but since not nullable types they always will have a value anyway
 
-          RaptorValidator.ValidateDesign(designDescriptor, mode, computeVolType);
+          ValidateDesign(designDescriptor, mode, computeVolType);
 
 
           if (mode == DisplayMode.VolumeCoverage)
           {
-            RaptorValidator.ValidateVolumesFilters(computeVolType, filter1, filterId1, filter2, filterId2);
+            ValidateVolumesFilters(computeVolType, filter1, filterId1, filter2, filterId2);
           }
         }
 

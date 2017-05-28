@@ -1371,7 +1371,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
       filter?.Validate();
       ElevationStatisticsResult elevExtents = mode == DisplayMode.Height ? GetElevationRange(projectId, filter) : null;
-      TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode, CompactionSettings.CompactionPalette(mode, elevExtents),
+      CompactionTileV2Request tileRequest = CompactionTileV2Request.CreateCompactionRaptorTileRequest(projectId, null, mode, CompactionSettings.CompactionPalette(mode, elevExtents),
         liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0, filter == null ? FilterLayerMethod.None :  filter.layerType.Value,
         bbox, null, width, height);
       tileRequest.Validate();
