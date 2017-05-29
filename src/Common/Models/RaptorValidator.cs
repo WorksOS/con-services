@@ -8,9 +8,9 @@ using VSS.Raptor.Service.Common.ResultHandling;
 
 namespace VSS.Raptor.Service.Common.Models
 {
-  public class RaptorValidator : ProjectID
+  public abstract class RaptorValidator : ProjectID
   {
-    protected int _cmvDetailsColorNumber;
+    //protected int _cmvDetailsColorNumber;
 
     protected virtual int cmvDetailsColorNumber
     {
@@ -29,7 +29,7 @@ namespace VSS.Raptor.Service.Common.Models
             //count = 30;
             break;
           case DisplayMode.CCV:
-            count = _cmvDetailsColorNumber;
+            count = cmvDetailsColorNumber;
             break;
           case DisplayMode.CCVPercentChange:
           case DisplayMode.CCVPercent:
