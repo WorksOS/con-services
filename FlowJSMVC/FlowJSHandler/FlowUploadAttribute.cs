@@ -7,11 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace FlowUploadFilter
 {
         public class FlowUploadAttribute : ActionFilterAttribute
         {
+
             public FlowUploadAttribute(params string[] extensions)
             {
                 Extensions = extensions;
