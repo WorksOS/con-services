@@ -46,6 +46,8 @@ Scenario Outline: Tiles - Serialized
 	| CCVChangeNoneLiftDetection              | CCVChangeNoneLiftDetection              |
 	| CCVChangeNoChange                       | CCVChangeNoChange                       |
 
+# These have always ignored since going to compaction 
+@ignore 
 Scenario Outline: Tiles - PNG
 	When I request PNG Tiles supplying "<ParameterName>" paramters from the repository
 	Then the PNG Tiles response should match "<ResultName>" result from the repository
