@@ -218,13 +218,15 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
 
             //Compaction settings
             if (liftBuildSettings != null)
+            {
                 liftBuildSettings.Validate();
+            }
 
-            if (!(reportType == GriddedCSVReportType.Alignment || (reportType == GriddedCSVReportType.Gridded)))
+            if (!(reportType == GriddedCSVReportType.Alignment || reportType == GriddedCSVReportType.Gridded))
             {
                 throw new ServiceException(HttpStatusCode.BadRequest,
                      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                         string.Format("Grid report type must be either 'Gridded' or 'Alignment'")));
+                         string.Format("Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: {0}", reportType)));
             }
 
             if (reportType == GriddedCSVReportType.Alignment)
@@ -232,10 +234,10 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
                 if (!(reportOption == GriddedCSVReportOption.Automatic ||
                       reportOption == GriddedCSVReportOption.Direction ||
                       reportOption == GriddedCSVReportOption.EndPoint))
-                    {
+                {
                     throw new ServiceException(HttpStatusCode.BadRequest,
                                        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                           string.Format("Report option for gridded report type must be 'Automatic', 'Direction' or 'EndPoint'")));
+                                           string.Format("Report option for gridded report type must be 1 ('Automatic'), 2 ('Direction') or 3 (EndPoint). Actual value supplied: {0}", reportOption)));
                 }
             }
 
@@ -248,7 +250,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
             {
                 throw new ServiceException(HttpStatusCode.BadRequest,
                      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                         string.Format("Interval must be >= 0.1m and <= 100.0m")));
+                         string.Format("Interval must be >= 0.1m and <= 100.0m. Actual value: {0}", interval)));
             }
 
             if (!(reportPassCount || reportTemperature || reportMDP || reportCutFill || reportCMV || reportElevation))
@@ -264,7 +266,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
                 {
                     throw new ServiceException(HttpStatusCode.BadRequest,
                          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                             string.Format("Direction must be in the range 0..2*PI radians")));
+                             string.Format("Direction must be in the range 0..2*PI radians. Actual value: {0}", direction)));
                 }
             }
 
