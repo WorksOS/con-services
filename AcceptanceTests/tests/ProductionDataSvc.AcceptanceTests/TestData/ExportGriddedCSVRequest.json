@@ -1,0 +1,16 @@
+﻿{
+  "FullProjectLatestDateElevationOnlyGriddedCSVExport": {
+    "projectID": 1001158,
+    "reportType": 1,
+    "reportElevation": true,
+    "reportCutFill": false,
+    "reportMDP": false,
+    "reportCMV": false,
+    "reportPassCount": false,
+    "reportTemperature": false,
+    "compress": true,
+    "interval": 0.5,
+    "filter": {
+    }
+  }
+}
