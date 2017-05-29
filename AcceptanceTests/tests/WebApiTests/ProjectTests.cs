@@ -409,6 +409,7 @@ namespace WebApiTests
       var mysql = new MySqlHelper();
 
       var ts = new TestSupport();
+      ts.CustomerId = "222222222";
       var projectUid1 = ts.ProjectUid;
       var projectId1 = ts.SetLegacyProjectId();
       CreateProjectAndAssociateWithCustomer(ts, mysql, projectId1, "project 25-1", ProjectType.Standard, 222222222);
@@ -443,6 +444,7 @@ namespace WebApiTests
       msg.Title("projects 26", "Get projects with enddated subscriptions");
       var mysql = new MySqlHelper();
       var ts = new TestSupport();
+      ts.CustomerId = "222222222";
       var projectId = ts.SetLegacyProjectId();
       CreateProjectAndAssociateWithCustomer(ts, mysql, projectId, "project 26", ProjectType.ProjectMonitoring, 222222222);
       CreateMockCustomer(ts);

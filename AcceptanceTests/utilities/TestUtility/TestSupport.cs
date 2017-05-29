@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -14,7 +15,6 @@ using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.Models;
-using ProjectWebApiCommon.ResultsHandling;
 using Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
@@ -34,6 +34,9 @@ namespace TestUtility
     public Guid CustomerUid { get; set; }
     public Guid GeofenceUid { get; set; }
     public Guid SubscriptionUid { get; set; }
+    public string CustomerId { get; set; }
+
+    public string FileSeperator { get; set; }
 
     public CreateProjectEvent CreateProjectEvt { get; set; }
     public UpdateProjectEvent UpdateProjectEvt { get; set; }
@@ -75,6 +78,15 @@ namespace TestUtility
       SetCustomerUid();
       SetGeofenceUid();
       SetSubscriptionUid();
+      SetFileSeperator();
+    }
+
+    /// <summary>
+    /// Set the file seperator
+    /// </summary>
+    private void SetFileSeperator()
+    {
+      FileSeperator = tsCfg.operatingSystem == "Windows_NT" ? "\\" : "//";
     }
 
     /// <summary>
@@ -442,16 +454,32 @@ namespace TestUtility
       {
         if (expectedResultsArray.Length == 0)
         {
-          var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
+          var actualProjects = JsonConvert.DeserializeObject<ImmutableDictionary<int, ProjectDescriptor>>(response);
           Assert.IsTrue(expectedResultsArray.Length == actualProjects.Count, " There should not be any projects");
         }
         else
         {
-          var actualProjects = JsonConvert.DeserializeObject<List<ProjectDescriptor>>(response).OrderBy(p => p.ProjectUid).ToList();
-          var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid).ToList();
+          var actualProjects = JsonConvert.DeserializeObject<ImmutableDictionary<int, ProjectDescriptor>>(response);
+          var expectedProjects = ConvertArrayToList(expectedResultsArray).OrderBy(p => p.ProjectUid)
+            .ToImmutableDictionary(key => key.LegacyProjectId, project =>
+              new ProjectDescriptor()
+              {
+                ProjectType = project.ProjectType,
+                Name = project.Name,
+                ProjectTimeZone = project.ProjectTimeZone,
+                IsArchived = project.IsArchived,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                ProjectUid = project.ProjectUid,
+                LegacyProjectId = project.LegacyProjectId,
+                ProjectGeofenceWKT = project.ProjectGeofenceWKT,
+                CustomerUID = project.CustomerUID,
+                LegacyCustomerId = CustomerId,
+                CoordinateSystemFileName = project.CoordinateSystemFileName
+              });
           msg.DisplayResults("Expected projects :" + JsonConvert.SerializeObject(expectedProjects), "Actual from WebApi: " + response);
           Assert.IsFalse(expectedResultsArray.Length == actualProjects.Count, " Number of projects return do not match expected");
-          CompareTheActualProjectListWithExpected(actualProjects, expectedProjects, true);
+          CompareTheActualProjectDictionaryWithExpected(actualProjects, expectedProjects, true);
         }
       }
     }
@@ -535,13 +563,50 @@ namespace TestUtility
               continue;
             }
           }
-          if (!object.Equals(expectedValue, actualValue))
+          if (!Equals(expectedValue, actualValue))
           {
             Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue + " on the " + cntlist + 1 + " element in the list");
           }
         }
       }
     }
+
+    /// <summary>
+    /// Compare the two lists of projects
+    /// </summary>
+    /// <param name="actualProjects"></param>
+    /// <param name="expectedProjects"></param>
+    /// <param name="ignoreZeros">Ignore nulls or zeros if expected results</param>
+    public void CompareTheActualProjectDictionaryWithExpected(ImmutableDictionary<int, ProjectDescriptor> actualProjects, ImmutableDictionary<int, ProjectDescriptor> expectedProjects, bool ignoreZeros)
+    {
+      List<ProjectDescriptor> actualList = actualProjects.Select(p => p.Value).ToList();
+      List<ProjectDescriptor> expectedList = expectedProjects.Select(p => p.Value).ToList();
+      for (var cntlist = 0; cntlist < actualList.Count; cntlist++)
+      {
+        var oType = actualList[cntlist].GetType();
+        foreach (var oProperty in oType.GetProperties())
+        {
+          var expectedValue = oProperty.GetValue(expectedList[cntlist], null);
+          var actualValue = oProperty.GetValue(actualList[cntlist], null);
+          if (ignoreZeros)
+          {
+            if (expectedValue == null)
+            {
+              continue;
+            }
+            if (expectedValue.ToString() == "0")
+            {
+              continue;
+            }
+          }
+          if (!Equals(expectedValue, actualValue))
+          {
+            Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue + " on the " + cntlist + 1 + " element in the list");
+          }
+        }
+      }
+    }
+
 
     /// <summary>
     /// Compare the two lists of projects
@@ -569,7 +634,7 @@ namespace TestUtility
               continue;
             }
           }
-          if (!object.Equals(expectedValue, actualValue))
+          if (!Equals(expectedValue, actualValue))
           {
             Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue + " on the " + cntlist + 1 + " element in the list");
           }
@@ -600,7 +665,7 @@ namespace TestUtility
               continue;
             }
           }
-          if (!object.Equals(expectedValue, actualValue))
+          if (!Equals(expectedValue, actualValue))
           {
             Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue);
           }
@@ -1127,7 +1192,7 @@ namespace TestUtility
           break;
         case "CreateProjectRequest":
           Guid? cpProjectUid = null;
-          Guid? cpCustomerUID = null;
+          Guid? cpCustomerUid = null;
           var createProjectRequest = new CreateProjectEvent()
           {
             ActionUTC = eventObject.EventDate,
@@ -1154,7 +1219,7 @@ namespace TestUtility
           }
           if (HasProperty(eventObject, "ProjectUID"))
           {
-            cpCustomerUID = new Guid(eventObject.CustomerUID);
+            cpCustomerUid = new Guid(eventObject.CustomerUID);
           }
           if (HasProperty(eventObject, "Description"))
           {
@@ -1165,7 +1230,7 @@ namespace TestUtility
             createProjectRequest.CustomerID = int.Parse(eventObject.CustomerID);
           }
           var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpProjectUid,
-            cpCustomerUID, createProjectRequest.ProjectType,
+            cpCustomerUid, createProjectRequest.ProjectType,
             createProjectRequest.ProjectName, createProjectRequest.Description, createProjectRequest.ProjectStartDate,
             createProjectRequest.ProjectEndDate, createProjectRequest.ProjectTimezone,
             createProjectRequest.ProjectBoundary, createProjectRequest.CustomerID,
