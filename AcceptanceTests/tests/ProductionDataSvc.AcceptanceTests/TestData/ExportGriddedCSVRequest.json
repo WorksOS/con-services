@@ -9,8 +9,6 @@
     "reportPassCount": false,
     "reportTemperature": false,
     "compress": true,
-    "interval": 0.5,
-    "filter": {
-    }
+    "interval": 0.5
   }
 }
