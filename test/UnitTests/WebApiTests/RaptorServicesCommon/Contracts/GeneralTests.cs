@@ -26,14 +26,18 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Contracts
                 ContractExecutionStates.DynamicAddwithOffset(
                         "The TAG file was found to be corrupted on its pre-processing scan.",
                         15);
+
+              ContractExecutionStates.DynamicAddwithOffset(
+                "A second list of dynamic errors",
+                15, ContractExecutionStates.SecondDynamicOffset);
             }
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GenerateErrorlistTest()
         {
             TestContainer container = new TestContainer();
-            Assert.AreEqual(10,container.GenerateErrorlist().Count);
+            Assert.AreEqual(11,container.GenerateErrorlist().Count);
             container.Process(WGSPoint.CreatePoint(1,1));
             Assert.AreEqual(8, container.GenerateErrorlist().Count);
         }

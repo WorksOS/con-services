@@ -25,7 +25,8 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     /// <param name="raptorClient"></param>
     /// <param name="fileRepository"></param>
     /// <param name="tileGenerator"></param>
-    public DeleteFileExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IFileRepository fileRepository, ITileGenerator tileGenerator) : base(logger, raptorClient, null, null, fileRepository, tileGenerator)
+    public DeleteFileExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IFileRepository fileRepository, ITileGenerator tileGenerator) : 
+      base(logger, raptorClient, null, null, fileRepository, tileGenerator)
     {
     }
 
@@ -36,20 +37,22 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     {
     }
 
+    /// <summary>
+    /// Populates ContractExecutionStates with Production Data Server error messages.
+    /// </summary>
+    /// 
+    protected override void ProcessErrorCodes()
+    {
+      RaptorResult.AddErrorMessages(ContractExecutionStates);
+    }
+
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
       {
         ProjectFileDescriptor request = item as ProjectFileDescriptor;
         ImportedFileTypeEnum fileType = FileUtils.GetFileType(request.File.fileName);
-
-        //Only alignment files at present
-        if (fileType != ImportedFileTypeEnum.Alignment)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
-                "Unsupported file type"));
-        }
 
         if (fileType == ImportedFileTypeEnum.DesignSurface ||
             fileType == ImportedFileTypeEnum.Alignment ||
@@ -90,6 +93,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       }
       finally
       {
+        ContractExecutionStates.ClearDynamic();
       }
 
     }

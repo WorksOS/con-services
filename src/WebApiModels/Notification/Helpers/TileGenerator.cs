@@ -40,7 +40,7 @@ namespace WebApiModels.Notification.Helpers
 
     public void CreateDxfTiles(long projectId, FileDescriptor fileDescr, bool regenerate)
     {
-      //TODO: How are we going to handle not repetaing tile generation
+      //TODO: How are we going to handle not repeating tile generation
       //In CG this was min/max/lat/lng in database as a flag
 
       ImportedFileTypeEnum fileType = FileUtils.GetFileType(fileDescr.fileName);
@@ -100,7 +100,7 @@ namespace WebApiModels.Notification.Helpers
       string generatedName = FileUtils.GeneratedFileName(fileDescr.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
 
       log.LogDebug("Before CreateFileJob: {0}", generatedName);
-      string jobId = fileRepo.CreateFileJob(fileDescr.filespaceId, generatedName);
+      string jobId = fileRepo.CreateFileJob(fileDescr.filespaceId, generatedName).Result;
 
       bool done = false;
       string fileId = null;
@@ -108,15 +108,15 @@ namespace WebApiModels.Notification.Helpers
       {
         Thread.Sleep(waitInterval);
         log.LogDebug("Before CheckFileJobStatus: JobId={0}", jobId);
-        var checkStatusResult = fileRepo.CheckFileJobStatus(jobId);
+        var checkStatusResult = fileRepo.CheckFileJobStatus(jobId).Result;
         log.LogDebug("After CheckFileJobStatus: Status={0}", checkStatusResult == null ? "null" : checkStatusResult.status);
         done = checkStatusResult != null && checkStatusResult.status == "COMPLETED";
         if (done)
         {
-          log.LogDebug("Before RenderOutputInfo.Count={0}", checkStatusResult.RenderOutputInfo.Count);
+          log.LogDebug("Before RenderOutputInfo.Count={0}", checkStatusResult.renderOutputInfo.Count);
           try
           {
-            fileId = checkStatusResult.RenderOutputInfo[0].fileId;
+            fileId = checkStatusResult.renderOutputInfo[0].fileId;
           }
           catch (Exception e)
           {
@@ -128,9 +128,9 @@ namespace WebApiModels.Notification.Helpers
       }
 
       log.LogDebug("Before GetFileJobResult: fileId={0}", fileId);
-      var getJobResultResult = fileRepo.GetFileJobResult(fileId);
+      var getJobResultResult = fileRepo.GetFileJobResult(fileId).Result;
 
-      if (getJobResultResult == null || getJobResultResult.Extents == null)
+      if (getJobResultResult == null || getJobResultResult.extents == null)
       {
         int minZoomLevel = maxZoomLevel - maxZoomRange;
         log.LogDebug("No extents determined for fileId={0}; setting zoom range to extremes Z{1}-Z{2}", fileId, minZoomLevel, maxZoomLevel);
@@ -228,8 +228,7 @@ namespace WebApiModels.Notification.Helpers
       }
       string zoomPath = string.Format("{0}/{1}", tilePath, ZoomFolder(zoomLevel));
       if (!fileRepo.FolderExists(fileDescr.filespaceId, zoomPath).Result)
-      {
- 
+      { 
         //Generate tiles for this file at this zoom level.
         //Note: This could be made asynchronous to speed it up if required
         string dstPath = string.Format("{0}.html", zoomPath);
@@ -238,7 +237,7 @@ namespace WebApiModels.Notification.Helpers
         //TODO: clean up suffix, generated name stuff everywhere
 
         log.LogDebug("Before ExportToWebFormat: srcPath={0}, dstPath={1}, zoomLevel={2}", generatedName, dstPath, zoomLevel);
-        var exportJobId = fileRepo.ExportToWebFormat(fileDescr.filespaceId, srcPath, fileDescr.filespaceId, dstPath, zoomLevel);
+        var exportJobId = fileRepo.ExportToWebFormat(fileDescr.filespaceId, generatedName, fileDescr.filespaceId, dstPath, zoomLevel).Result;
 
         if (waitInterval > -1)
         {
@@ -248,7 +247,7 @@ namespace WebApiModels.Notification.Helpers
           {
             Thread.Sleep(waitInterval);
             log.LogDebug("Before CheckExportJob: JobId={0}", exportJobId);
-            var jobStatus = fileRepo.CheckExportJob(exportJobId);
+            var jobStatus = fileRepo.CheckExportJob(exportJobId).Result;
             done = jobStatus == "COMPLETED";
           }
         }

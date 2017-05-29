@@ -72,9 +72,17 @@ namespace VSS.Raptor.Service.Common.Contracts
   public class ContractExecutionStatesEnum : GenericEnum<ContractExecutionStatesEnum, int>
   {
     /// <summary>
-    /// The execution result offset to create dynamically add custom errors
+    /// The default execution result offset to create dynamically added custom errors
     /// </summary>
     private const int executionResultOffset = 100;
+
+    /// <summary>
+    /// The execution result offset to create a second set of dynamically added custom errors
+    /// </summary>
+    private const int executionResultOffset2 = 200;
+
+    public int DefaultDynamicOffset { get { return executionResultOffset; } }
+    public int SecondDynamicOffset { get { return executionResultOffset2; } }
 
     /// <summary>
     ///   Service request executed successfully
@@ -117,33 +125,36 @@ namespace VSS.Raptor.Service.Common.Contracts
     public static readonly int NoSubscription = -7;
 
     /// <summary>
-    /// Dynamically adds new error messages addwith offset.
+    /// Dynamically adds new error messages with specified offset.
     /// </summary>
     /// <param name="name">The name of error.</param>
     /// <param name="value">The value of code.</param>
-    public void DynamicAddwithOffset(string name, int value)
+    /// <param name="offset">The offset to use.</param>
+    public void DynamicAddwithOffset(string name, int value, int offset=executionResultOffset)
     {
-      DynamicAdd(name, value + executionResultOffset);
+      DynamicAdd(name, value + offset);
     }
 
     /// <summary>
-    /// Gets the error numberwith offset.
+    /// Gets the error number with specified offset.
     /// </summary>
     /// <param name="errorNum">The error number.</param>
+    /// <param name="offset">The offset.</param>
     /// <returns></returns>
-    public int GetErrorNumberwithOffset(int errorNum)
+    public int GetErrorNumberwithOffset(int errorNum, int offset=executionResultOffset)
     {
-      return errorNum + executionResultOffset;
+      return errorNum + offset;
     }
 
     /// <summary>
-    /// Gets the frist available name of a error code taking into account 
+    /// Gets the first available name of an error code taking into account 
     /// </summary>
-    /// <param name="value">The code vale to get the name against.</param>
+    /// <param name="value">The code value to get the name against.</param>
+    /// <param name="offset">The offset.</param>
     /// <returns></returns>
-    public string FirstNameWithOffset(int value)
+    public string FirstNameWithOffset(int value, int offset=executionResultOffset)
     {
-      return FirstNameWith(value + executionResultOffset);
+      return FirstNameWith(value + offset);
     }
   }
 }

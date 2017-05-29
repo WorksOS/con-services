@@ -15,6 +15,7 @@ using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Proxies;
 using WebApiModels.Interfaces;
 using WebApiModels.Notification.Helpers;
+using WebApiModels.Notification.Models;
 
 namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
 {
@@ -30,7 +31,9 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     /// <param name="logger"></param>
     /// <param name="raptorClient"></param>
     /// <param name="fileRepository"></param>
-    public AddFileExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IFileRepository fileRepository, ITileGenerator tileGenerator) : base(logger, raptorClient, null, null, fileRepository, tileGenerator)
+    /// <param name="tileGenerator"></param>
+    public AddFileExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IFileRepository fileRepository, ITileGenerator tileGenerator) : 
+      base(logger, raptorClient, null, null, fileRepository, tileGenerator)
     {
     }
 
@@ -41,20 +44,24 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     {
     }
 
+    /// <summary>
+    /// Populates ContractExecutionStates with Production Data Server error messages.
+    /// </summary>
+    /// 
+    protected override void ProcessErrorCodes()
+    {
+      RaptorResult.AddErrorMessages(ContractExecutionStates);
+      RaptorResult.AddDesignProfileErrorMessages(ContractExecutionStates,
+        ContractExecutionStates.SecondDynamicOffset);
+    }
+
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       try
       {
         ProjectFileDescriptor request = item as ProjectFileDescriptor;
         ImportedFileTypeEnum fileType = FileUtils.GetFileType(request.File.fileName);
-        //Only alignment files at present
-        if (fileType != ImportedFileTypeEnum.Alignment)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(ContractExecutionStatesEnum.IncorrectRequestedData,
-                "Unsupported file type"));
-        }
-
+ 
         //Tell Raptor to update its cache. 
         //Note: surveyed surface file names are the TCC one including the surveyed UTC in the file name
         if (fileType == ImportedFileTypeEnum.Alignment || 
@@ -66,12 +73,10 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
           var result1 = raptorClient.UpdateCacheWithDesign(request.projectId.Value, request.File.fileName, 0, false);
           if (result1 != TDesignProfilerRequestResult.dppiOK)
           {
-            //TODO: Use the ContractExecutionStates.DynamicAddwithOffset like AddTagProcessorErrorMessages
-            //Talk to Dmitry - problem because Iwe have multiple sets of custom errors in this executor
-            //Do we want to do AddErrorMessages and ClearDynamic multiple times here?
-            throw new ServiceException(HttpStatusCode.InternalServerError,
-              new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                "Failed to update Raptor design cache"));
+            throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+              ContractExecutionStatesEnum.FailedToGetResults,
+              string.Format("Failed to update Raptor design cache with error: {0}",
+                ContractExecutionStates.FirstNameWithOffset((int)result1, ContractExecutionStates.SecondDynamicOffset))));
           }
         }
 
@@ -88,7 +93,6 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
             TVLPDDistanceUnits.vduMeters, out prjFile);
           if (result2 != TASNodeErrorStatus.asneOK)
           {
-            //TODO: Need to add custom errors
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
               ContractExecutionStatesEnum.FailedToGetResults,
               string.Format("Failed to get requested " + FileUtils.PROJECTION_FILE_EXTENSION + " file with error: {0}.",
@@ -103,7 +107,6 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
             request.projectId.Value, TVLPDDistanceUnits.vduMeters, out haFile);
           if (result3 != TASNodeErrorStatus.asneOK)
           {
-            //TODO: Need to add custom errors
             throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
               ContractExecutionStatesEnum.FailedToGetResults,
               string.Format(
@@ -119,7 +122,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
             CreateDxfFile(request.projectId.Value, request.File, suffix, request.UserPreferenceUnits);    
           }
           //Generate DXF tiles
-
+          tileGenerator.CreateDxfTiles(request.projectId.Value, request.File, false);
         }
 
         else if (fileType == ImportedFileTypeEnum.SurveyedSurface)
@@ -146,6 +149,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       }
       finally
       {
+        ContractExecutionStates.ClearDynamic();
       }
 
     }
@@ -180,7 +184,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     /// <param name="fileDescr">The original file for which the associated file is created</param>
     /// <param name="suffix">The suffix applied to the file name to get the generated file name</param>
     /// <param name="userUnits">The user units preference</param>
-    private void CreateDxfFile(long projectId, FileDescriptor fileDescr, string suffix, string userUnits)
+    private void CreateDxfFile(long projectId, FileDescriptor fileDescr, string suffix, UnitsTypeEnum userUnits)
     {
       const double ImperialFeetToMetres = 0.3048;
       const double USFeetToMetres = 0.304800609601;
@@ -189,19 +193,18 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       //They need to be in the user units.
       double interval;
       TVLPDDistanceUnits raptorUnits;
-      //TODO: make an enum for user units?
       switch (userUnits)
       {
-        case "Imperial":
+        case UnitsTypeEnum.Imperial:
           raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduImperialFeet;
           interval = 300 * ImperialFeetToMetres;
           break;
 
-        case "Metric":
+        case UnitsTypeEnum.Metric:
           raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduMeters;
           interval = 100;
           break;
-        case "US":
+        case UnitsTypeEnum.US:
         default:
           raptorUnits = VLPDDecls.TVLPDDistanceUnits.vduUSSurveyFeet;
           interval = 300 * USFeetToMetres;
@@ -225,11 +228,11 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       }
       else
       {
-        //TODO: do we want to throw a 'bad request' exeption here i.e. do we care if this fails?
         log.LogWarning("Failed to generate DXF boundary for file {0} for project {1}. Raptor error {2)", fileDescr.fileName, projectId, designProfilerResult);
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            "Failed to create " + FileUtils.DXF_FILE_EXTENSION + " file"));
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+          ContractExecutionStatesEnum.FailedToGetResults,
+          string.Format("Failed to create " + FileUtils.DXF_FILE_EXTENSION + " file with error: {0}",
+            ContractExecutionStates.FirstNameWithOffset((int)designProfilerResult, ContractExecutionStates.SecondDynamicOffset))));
       }
     }
 

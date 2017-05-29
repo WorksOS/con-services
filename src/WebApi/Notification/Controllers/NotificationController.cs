@@ -17,6 +17,7 @@ using VSS.Raptor.Service.Common.Utilities;
 using VSS.Raptor.Service.WebApi.Compaction.Controllers;
 using VSS.Raptor.Service.WebApiModels.Notification.Executors;
 using VSS.Raptor.Service.WebApiModels.Notification.Models;
+using WebApiModels.Notification.Models;
 
 
 namespace VSS.Raptor.Service.WebApi.Notification
@@ -111,7 +112,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
       }
       string coordSystem = projectsById[projectId.Value].coordinateSystemFileName;
       var userPrefs = prefProxy.GetUserPreferences(Request.Headers.GetCustomHeaders()).Result;
-      var userUnits = userPrefs == null ? "US" : userPrefs.Units;
+      var userUnits = userPrefs == null ? UnitsTypeEnum.US : (UnitsTypeEnum)Enum.Parse(typeof(UnitsTypeEnum), userPrefs.Units, true);
       FileDescriptor fileDes = null;
       try
       {
@@ -167,7 +168,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             ex.Message));
       }
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId.Value, projectUid, fileDes, null, null, fileId);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId.Value, projectUid, fileDes, null, UnitsTypeEnum.None, fileId);
       request.Validate();
       var result =
         RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo).Process(request);

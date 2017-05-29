@@ -5,6 +5,7 @@ using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
+using WebApiModels.Notification.Models;
 
 namespace VSS.Raptor.Service.WebApiModels.Notification.Models
 {
@@ -29,7 +30,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
     /// User units preference
     /// </summary>
     [JsonProperty(PropertyName = "userPreferenceUnits", Required = Required.Default)]
-    public string UserPreferenceUnits { get; private set; }
+    public UnitsTypeEnum UserPreferenceUnits { get; private set; }
 
     /// <summary>
     /// A unique file identifier
@@ -53,7 +54,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
       Guid? projectUId,
       FileDescriptor file,
       string coordSystemFileName,
-      string userUnits,
+      UnitsTypeEnum userUnits,
       long fileId
     )
     {
