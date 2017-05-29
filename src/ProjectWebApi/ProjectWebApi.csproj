@@ -45,7 +45,7 @@
     <PackageReference Include="MasterDataProxies.netcore" Version="1.0.29" />
     <PackageReference Include="MasterDataRepos.netcore" Version="1.0.68" />
     <PackageReference Include="TCCFileAccess.netcore" Version="1.1.0" />
-    <PackageReference Include="FlowJSHandler.netcore" Version="1.0.1" />
+    <PackageReference Include="FlowJSHandler.netcore" Version="1.0.4" />
   </ItemGroup>
 
 <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">  
