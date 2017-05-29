@@ -2,8 +2,8 @@
 
 namespace TCCFileAccess.Models
 {
-  public class ExportToWebFormatResult : ApiCallResult
+  public class ExportToWebFormatResult : ApiResult
   {
-    public string JobId;
+    public string jobId;
   }
 }
