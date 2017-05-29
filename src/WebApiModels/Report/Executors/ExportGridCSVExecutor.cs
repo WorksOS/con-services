@@ -80,7 +80,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                    (request.projectId ?? -1,
                     (int)request.reportType,
                     ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtProdDataExport),
-                    request.designFile,
+                    RaptorConverters.DesignDescriptor(request.designFile.id, request.designFile.file.filespaceId, request.designFile.file.path, request.designFile.file.fileName, request.designFile.offset),
                     request.interval,
                     request.reportElevation,
                     request.reportCutFill,

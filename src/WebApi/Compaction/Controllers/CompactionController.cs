@@ -810,7 +810,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
                             colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
                                 compactionPalette[i].value));
                         }
-                        cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
+            cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
                         break;
                     case DisplayMode.PassCount:
                         colorValues = new List<ColorValue>();
@@ -1434,6 +1434,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             filter?.Validate();
             ElevationStatisticsResult elevExtents =
                 mode == DisplayMode.Height ? GetElevationRange(projectId, filter) : null;
+            //Fix bug in Raptor - swap elevations if required
+            elevExtents?.SwapElevationsIfRequired();
             TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode,
                 CompactionSettings.CompactionPalette(mode, elevExtents),
                 liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0,
