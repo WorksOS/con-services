@@ -97,7 +97,13 @@ namespace Controllers
 
       var project = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
-      ProjectDataValidator.Validate(project, projectService, customerUid.ToString());
+      ProjectDataValidator.Validate(project, projectService);
+      if (project.CustomerUID != customerUid)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(18),
+            contractExecutionStatesEnum.FirstNameWithOffset(18)));
+      }
 
       await ValidateCoordSystem(project).ConfigureAwait(false);
       ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
@@ -125,7 +131,7 @@ namespace Controllers
         ReceivedUTC = project.ReceivedUTC
       };
 
-      ProjectDataValidator.Validate(customerProject, projectService, customerUid.ToString());
+      ProjectDataValidator.Validate(customerProject, projectService);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       await ValidateAssociateSubscriptions(project).ConfigureAwait(false);
@@ -169,8 +175,7 @@ namespace Controllers
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
-      ProjectDataValidator.Validate(project, projectService,
-        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(project, projectService);
       await ValidateCoordSystem(project).ConfigureAwait(false);
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
@@ -234,8 +239,7 @@ namespace Controllers
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
-      ProjectDataValidator.Validate(project, projectService,
-        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(project, projectService);
       
       var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
       producer.Send(kafkaTopicName,
@@ -323,13 +327,7 @@ namespace Controllers
         if (coordinateSystemSettingsResult == null ||
             coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
-          var deleteProjectEvent = new DeleteProjectEvent()
-          {
-            ProjectUID = project.ProjectUID,
-            DeletePermanently = true,
-            ActionUTC = DateTime.UtcNow
-          };
-          var isDeleted = await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
+          await DeleteProjectPermanently(project.ProjectUID).ConfigureAwait(false);
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(41),
               string.Format(contractExecutionStatesEnum.FirstNameWithOffset(41),
@@ -438,6 +436,25 @@ namespace Controllers
         }
       }
       return true;
+    }
+
+    /// <summary>
+    /// Used internally, if a step fails, after a project has been CREATED, 
+    ///    then delete it permanently i.e. don't just set IsDeleted.
+    /// It should not be necessary to delete any other database items?
+    ///     CustomerProject? AssociateSubscription?
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
+    private async Task DeleteProjectPermanently(Guid projectUid)
+    {
+      var deleteProjectEvent = new DeleteProjectEvent()
+      {
+        ProjectUID = projectUid,
+        DeletePermanently = true,
+        ActionUTC = DateTime.UtcNow
+      };
+      var isDeleted = await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
     }
 
     #endregion private
