@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Repositories;
 using VSS.GenericConfiguration;
@@ -8,7 +9,6 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
 using ProjectWebApiCommon.ResultsHandling;
-using VSS.Raptor.Service.Common.Interfaces;
 
 namespace Controllers
 {

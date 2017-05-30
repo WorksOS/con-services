@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
 using FlowUploadFilter;
@@ -18,8 +17,8 @@ using Repositories.DBModels;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Raptor.Service.Common.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using MasterDataProxies.Interfaces;
 
 namespace Controllers
 {
@@ -28,6 +27,8 @@ namespace Controllers
   /// </summary>
   public class FileImportV4Controller : FileImportBaseController
   {
+
+    protected static ILoggerFactory Logger;
 
     /// <summary>
     /// File import controller v4
@@ -42,7 +43,8 @@ namespace Controllers
       IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
       : base(producer, projectRepo, store, raptorProxy, fileRepo, logger)
     {
-      this.userEmailAddress = TIDAuthentication.EmailAddress;
+      Logger = logger;
+      this.userEmailAddress = (User as TidCustomPrincipal).EmailAddress;
       fileSpaceId = store.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(fileSpaceId))
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -99,14 +101,14 @@ namespace Controllers
     [Route("api/v4/importedfile")]
     [HttpPost]
     [ActionName("Upload")]
-    [FlowUpload("svl")]
+    [FlowUpload(extensions:"svl")]
     public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(FlowFile file,
       [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
       [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
 
-      var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      var customerUid = (User as TidCustomPrincipal).CustomerUid;
 
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -155,7 +157,7 @@ namespace Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      // todo await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFile.ImportedFileID).ConfigureAwait(false);
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, createImportedFileEvent.ImportedFileID).ConfigureAwait(false);
 
       // FlowJS has this locked so can't delete it here
       // System.IO.File.Delete(file.path);
@@ -189,13 +191,13 @@ namespace Controllers
     [Route("api/v4/importedfile")]
     [HttpPut]
     [ActionName("Upload")]
-    [FlowUpload("svl")]
+    [FlowUpload(extensions:"svl")]
     public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(FlowFile file,
       [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
       [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
-      var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      var customerUid = (User as TidCustomPrincipal).CustomerUid;
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
@@ -245,7 +247,7 @@ namespace Controllers
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
 
-      // todo await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId).ConfigureAwait(false);
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value).ConfigureAwait(false);
 
       // if all succeeds, update Db and send update to kafka que
       if (existing != null) // update

@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using ProjectWebApiCommon.Utilities;
@@ -17,8 +20,6 @@ using Repositories;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Utilities;
 
 namespace Controllers
 {
@@ -82,7 +83,7 @@ namespace Controllers
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
-      var customerUid = Guid.Parse(((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      var customerUid = (User as TidCustomPrincipal).CustomerUid;
       if (projectRequest == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -92,7 +93,7 @@ namespace Controllers
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
-      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = customerUid;
+      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = Guid.Parse(customerUid);
       if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid();
 
       var project = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
@@ -134,11 +135,10 @@ namespace Controllers
 
       await CreateAssociateProjectCustomer(customerProject);
 
-      var userUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).Name;
+      var userUid = Guid.Parse(((User as TidCustomPrincipal).Identity as GenericIdentity).Name);
       log.LogDebug($"Creating a geofence for project {project.ProjectName}");
       await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "", project.ProjectBoundary,
-        0,
-        true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        0, true, userUid, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
 
       log.LogDebug("CreateProjectV4. completed succesfully");
       return new ProjectV4DescriptorsSingleResult(
@@ -169,8 +169,7 @@ namespace Controllers
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
-      ProjectDataValidator.Validate(project, projectService,
-        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(project, projectService, (User as TidCustomPrincipal).CustomerUid);
       await ValidateCoordSystem(project).ConfigureAwait(false);
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
@@ -225,7 +224,9 @@ namespace Controllers
     [HttpDelete]
     public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromUri]string projectUid)
     {
-      log.LogInformation($"DeleteProjectV4. Project: {projectUid}");
+      var userUid = ((User as TidCustomPrincipal).Identity as GenericIdentity).Name;
+      var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      log.LogInformation($"DeleteProjectV4. UserUid: {userUid} customerUid: {customerUid} Project: {projectUid}");
 
       var project = new DeleteProjectEvent()
       {
@@ -234,8 +235,7 @@ namespace Controllers
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       };
-      ProjectDataValidator.Validate(project, projectService,
-        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(project, projectService, customerUid);
       
       var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
       producer.Send(kafkaTopicName,
@@ -266,10 +266,10 @@ namespace Controllers
     public async Task<SubscriptionsListResult> GetSubscriptionsV4()
     {
       log.LogInformation("GetSubscriptionsV4");
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      var customerUid = (User as TidCustomPrincipal).CustomerUid;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
 
-      //return empty list if no subscriptions available
+      //returns empty list if no subscriptions available
       return new SubscriptionsListResult()
       {
         SubscriptionDescriptors =

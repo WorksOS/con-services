@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
 using Repositories;
 using Repositories.DBModels;
@@ -16,8 +18,6 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.ResultsHandling;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Utilities;
 
 namespace Controllers
 {
@@ -79,7 +79,7 @@ namespace Controllers
     protected async Task ValidateAssociateSubscriptions(CreateProjectEvent project)
     {
       log.LogDebug("ValidateAssociateSubscriptions");
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      var customerUid = (User as TidCustomPrincipal).CustomerUid;
       log.LogDebug($"CustomerUID={customerUid} and user={User}");
 
       //Apply here rules validating types of projects I'm able to create (i.e. LF only if there is one available LF subscription available) Performance is not a concern as this request is executed once in a blue moon
@@ -166,7 +166,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      var customerUid = (User as TidCustomPrincipal).CustomerUid;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
       var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
@@ -181,7 +181,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      var customerUid = (User as TidCustomPrincipal).CustomerUid;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
       var project =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
@@ -207,8 +207,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task UpdateProject(UpdateProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService,
-        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(project, projectService, (User as TidCustomPrincipal).CustomerUid);
       project.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
@@ -230,8 +229,7 @@ namespace Controllers
     protected virtual async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
       string databaseProjectBoundary)
     {
-      ProjectDataValidator.Validate(project, projectService,
-        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(project, projectService, (User as TidCustomPrincipal).CustomerUid);
       if (project.ProjectID <= 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -257,8 +255,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task AssociateProjectCustomer(AssociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService,
-        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(customerProject, projectService, (User as TidCustomPrincipal).CustomerUid);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
@@ -277,8 +274,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task DissociateProjectCustomer(DissociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService,
-        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(customerProject, projectService, (User as TidCustomPrincipal).CustomerUid);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectCustomer = customerProject});
@@ -297,8 +293,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
     {
-      ProjectDataValidator.Validate(geofenceProject, projectService,
-        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(geofenceProject, projectService, (User as TidCustomPrincipal).CustomerUid);
       geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
@@ -317,8 +312,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task DeleteProject(DeleteProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService,
-        ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      ProjectDataValidator.Validate(project, projectService, (User as TidCustomPrincipal).CustomerUid);
       project.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});

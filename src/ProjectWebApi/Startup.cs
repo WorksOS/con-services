@@ -7,13 +7,14 @@ using ProjectWebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using log4netExtensions;
 using KafkaConsumer.Kafka;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
 using Repositories;
 using VSS.GenericConfiguration;
 using ProjectWebApiCommon.ResultsHandling;
 using Swashbuckle.Swagger.Model;
 using ProjectWebApiCommon.Utilities;
 using TCCFileAccess;
-using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
 
 namespace ProjectWebApi
@@ -73,6 +74,7 @@ namespace ProjectWebApi
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
       services.AddTransient<IGeofenceProxy, GeofenceProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<ICustomerProxy, CustomerProxy>();
 
       // todo temp to determine which to use for testing and lower environs
       var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");

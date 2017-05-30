@@ -2,18 +2,18 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Raptor.Service.Common.Interfaces;
 
 namespace Controllers
 {
@@ -42,7 +42,7 @@ namespace Controllers
     {
       log.LogInformation("GetProjectsV3");
       var projects = (await GetProjectList());
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      var customerUid = (User as TidCustomPrincipal).CustomerUid;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
       return projects.Select(project =>
           new ProjectDescriptor()
