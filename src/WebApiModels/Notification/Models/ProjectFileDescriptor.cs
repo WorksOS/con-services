@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.Raptor.Service.Common.Contracts;
@@ -18,6 +19,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
     /// The file details
     /// </summary>
     [JsonProperty(PropertyName = "file", Required = Required.Always)]
+    [Required]
     public FileDescriptor File { get; private set; }
 
     /// <summary>
@@ -36,6 +38,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
     /// A unique file identifier
     /// </summary>
     [JsonProperty(PropertyName = "fileId", Required = Required.Always)]
+    [Required]
     public long FileId { get; private set; }
 
     /// <summary>
