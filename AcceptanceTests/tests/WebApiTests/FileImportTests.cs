@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
 
@@ -41,7 +42,7 @@ namespace WebApiTests
       var expectedResults = importFile.expectedImportFileDescriptorsListResult;
       var uri = ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}";
 
-      var filesResult = importFile.GetImportedFilesFromWebApi(uri, customerUid, projectUid);
+      var filesResult = importFile.GetImportedFilesFromWebApi(uri, customerUid);
       Assert.IsTrue(filesResult.ImportedFileDescriptors.Count == expectedResults.ImportedFileDescriptors.Count, " Expected number of fields does not match actual");
       CollectionAssert.AreEqual(expectedResults.ImportedFileDescriptors, filesResult.ImportedFileDescriptors);
     }
@@ -124,12 +125,12 @@ namespace WebApiTests
       var filesResult = importFile.PostImportedFilesToWebApi(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-
+      Thread.Sleep(3000);
       var filesResult2 = importFile.PostImportedFilesToWebApi(ts, importFileArray, 2);
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
-
-      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + "api/v4/importedfiles", customerUid, projectUid);
+      Thread.Sleep(3000);
+      var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count ==2,"Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
       ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[1], expectedResult2, true);
