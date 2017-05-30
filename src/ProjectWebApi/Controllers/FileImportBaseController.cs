@@ -8,6 +8,8 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApiCommon.Models;
@@ -17,10 +19,8 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using ProjectWebApiCommon.ResultsHandling;
 using Repositories.DBModels;
 using TCCFileAccess;
-using VSS.Raptor.Service.Common.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.Utilities;
-using VSS.Raptor.Service.Common.Utilities;
 
 namespace Controllers
 {
@@ -320,10 +320,10 @@ namespace Controllers
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor)
+    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor, long importedFileId)
     {
       var notificationResult = await raptorProxy.AddFile(projectId, projectUid,
-        JsonConvert.SerializeObject(fileDescriptor), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        JsonConvert.SerializeObject(fileDescriptor), importedFileId, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       log.LogDebug(
         $"NotifyRaptorAddFile: projectId: {projectId} projectUid: {projectUid}, FileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
@@ -341,10 +341,10 @@ namespace Controllers
     ///  if it doesn't know about it then it do nothing and return success
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor)
+    protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor, long importedFileId)
     {
       var notificationResult = await raptorProxy
-        .DeleteFile(null, projectUid, fileDescriptor, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        .DeleteFile(null, projectUid, fileDescriptor, importedFileId, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       log.LogDebug(
         $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)

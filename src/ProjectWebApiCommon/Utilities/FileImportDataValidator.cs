@@ -69,13 +69,12 @@ namespace ProjectWebApiCommon.Models
             contractExecutionStatesEnum.FirstNameWithOffset(30)));
       }
 
-      if (importedFileType != ImportedFileType.Alignment)
+      if (!(importedFileType >= ImportedFileType.Linework && importedFileType <= ImportedFileType.Alignment))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(31),
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(30),
             contractExecutionStatesEnum.FirstNameWithOffset(31)));
       }
-
 
       var fileExtension = Path.GetExtension(file.flowFilename).ToLower();
       if (!(

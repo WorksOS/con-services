@@ -86,7 +86,7 @@ namespace MasterDataConsumerTests
     {
       FlowFile file = new FlowFile() {path = "blahblah", flowFilename = "deblah"};
       Guid projectUid = Guid.NewGuid();
-      ImportedFileType importedFileType = ImportedFileType.Linework;
+      ImportedFileType importedFileType = ImportedFileType.MassHaulPlan;
       DateTime? surfaceUtc = DateTime.UtcNow;
       DateTime fileCreatedUtc = DateTime.UtcNow;
       DateTime fileUpdatedUtc = DateTime.UtcNow;
@@ -167,9 +167,124 @@ namespace MasterDataConsumerTests
     }
 
     [TestMethod]
-    public void ValidateImportFile_HappyPath()
+    public void ValidateImportFile_LineworkHappyPath()
     {
-      FlowFile file = new FlowFile() {path = "\\*", flowFilename = "deblah.svl"};
+      FlowFile file = new FlowFile() {path = "\\*", flowFilename = "deblah.dxf"};
+      Guid projectUid = Guid.NewGuid();
+      ImportedFileType importedFileType = ImportedFileType.Linework;
+      DateTime? surfaceUtc = null;
+      DateTime fileCreatedUtc = DateTime.UtcNow;
+      DateTime fileUpdatedUtc = DateTime.UtcNow;
+      string importedBy = "JoeSmoe";
+
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
+    }
+
+    [TestMethod]
+    public void ValidateImportFile_LineworkWrongFileExtension()
+    {
+      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.bbbb" };
+      Guid projectUid = Guid.NewGuid();
+      ImportedFileType importedFileType = ImportedFileType.Linework;
+      DateTime? surfaceUtc = null;
+      DateTime fileCreatedUtc = DateTime.UtcNow;
+      DateTime fileUpdatedUtc = DateTime.UtcNow;
+      string importedBy = "JoeSmoe";
+
+      var ex = Assert.ThrowsException<ServiceException>(
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
+    }
+
+    [TestMethod]
+    public void ValidateImportFile_DesignSurfaceHappyPath()
+    {
+      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
+      Guid projectUid = Guid.NewGuid();
+      ImportedFileType importedFileType = ImportedFileType.DesignSurface;
+      DateTime? surfaceUtc = null;
+      DateTime fileCreatedUtc = DateTime.UtcNow;
+      DateTime fileUpdatedUtc = DateTime.UtcNow;
+      string importedBy = "JoeSmoe";
+
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
+    }
+
+    [TestMethod]
+    public void ValidateImportFile_DesignSurfaceWrongFileExtension()
+    {
+      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.bbbb" };
+      Guid projectUid = Guid.NewGuid();
+      ImportedFileType importedFileType = ImportedFileType.DesignSurface;
+      DateTime? surfaceUtc = null;
+      DateTime fileCreatedUtc = DateTime.UtcNow;
+      DateTime fileUpdatedUtc = DateTime.UtcNow;
+      string importedBy = "JoeSmoe";
+
+      var ex = Assert.ThrowsException<ServiceException>(
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
+    }
+
+
+    [TestMethod]
+    public void ValidateImportFile_SurveyedSurfaceHappyPath()
+    {
+      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
+      Guid projectUid = Guid.NewGuid();
+      ImportedFileType importedFileType = ImportedFileType.DesignSurface;
+      DateTime? surfaceUtc = DateTime.UtcNow;
+      DateTime fileCreatedUtc = DateTime.UtcNow;
+      DateTime fileUpdatedUtc = DateTime.UtcNow;
+      string importedBy = "JoeSmoe";
+
+      FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+        fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
+    }
+
+    [TestMethod]
+    public void ValidateImportFile_SurveyedSurfaceWrongFileExtension()
+    {
+      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.bbbb" };
+      Guid projectUid = Guid.NewGuid();
+      ImportedFileType importedFileType = ImportedFileType.DesignSurface;
+      DateTime? surfaceUtc = DateTime.UtcNow;
+      DateTime fileCreatedUtc = DateTime.UtcNow;
+      DateTime fileUpdatedUtc = DateTime.UtcNow;
+      string importedBy = "JoeSmoe";
+
+      var ex = Assert.ThrowsException<ServiceException>(
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
+    }
+
+    [TestMethod]
+    public void ValidateImportFile_SurveyedSurfaceMissingUtc()
+    {
+      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
+      Guid projectUid = Guid.NewGuid();
+      ImportedFileType importedFileType = ImportedFileType.SurveyedSurface;
+      DateTime? surfaceUtc = null;
+      DateTime fileCreatedUtc = DateTime.UtcNow;
+      DateTime fileUpdatedUtc = DateTime.UtcNow;
+      string importedBy = "JoeSmoe";
+
+      var ex = Assert.ThrowsException<ServiceException>(
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(36)));
+    }
+
+
+    [TestMethod]
+    public void ValidateImportFile_AlignmentHappyPath()
+    {
+      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.svl" };
       Guid projectUid = Guid.NewGuid();
       ImportedFileType importedFileType = ImportedFileType.Alignment;
       DateTime? surfaceUtc = null;
@@ -180,5 +295,23 @@ namespace MasterDataConsumerTests
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
         fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc);
     }
+
+    [TestMethod]
+    public void ValidateImportFile_AlignmentWrongFileExtension()
+    {
+      FlowFile file = new FlowFile() { path = "\\*", flowFilename = "deblah.ttm" };
+      Guid projectUid = Guid.NewGuid();
+      ImportedFileType importedFileType = ImportedFileType.Alignment;
+      DateTime? surfaceUtc = null;
+      DateTime fileCreatedUtc = DateTime.UtcNow;
+      DateTime fileUpdatedUtc = DateTime.UtcNow;
+      string importedBy = "JoeSmoe";
+
+      var ex = Assert.ThrowsException<ServiceException>(
+        () => FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType,
+          fileCreatedUtc, fileUpdatedUtc, importedBy, surfaceUtc));
+      Assert.AreNotEqual(-1, ex.GetContent.IndexOf(contractExecutionStatesEnum.FirstNameWithOffset(32)));
+    }
+
   }
 }

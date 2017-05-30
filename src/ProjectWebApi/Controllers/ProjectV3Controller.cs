@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -7,6 +6,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
@@ -14,7 +14,6 @@ using Repositories;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Raptor.Service.Common.Interfaces;
 
 namespace Controllers
 {

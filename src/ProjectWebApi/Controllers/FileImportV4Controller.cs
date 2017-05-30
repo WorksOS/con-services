@@ -18,8 +18,8 @@ using Repositories.DBModels;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Raptor.Service.Common.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using MasterDataProxies.Interfaces;
 
 namespace Controllers
 {
@@ -100,7 +100,7 @@ namespace Controllers
     [HttpPost]
     [ActionName("Upload")]
     [FlowUpload(Extensions = new string[] {
-        "svl"
+        "svl", "dxf", "ttm"
     }, Size = 1000000000)]
 
         public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(FlowFile file,
@@ -158,7 +158,7 @@ namespace Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      // todo await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFile.ImportedFileID).ConfigureAwait(false);
+      NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, createImportedFileEvent.ImportedFileID).ConfigureAwait(false);
 
       // FlowJS has this locked so can't delete it here
       // System.IO.File.Delete(file.path);
@@ -193,7 +193,7 @@ namespace Controllers
       [HttpPut]
       [ActionName("Upload")]
       [FlowUpload(Extensions = new string[] {
-          "svl"
+        "svl", "dxf", "ttm"
       }, Size = 1000000000)]
 
       public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(FlowFile file,
@@ -251,7 +251,7 @@ namespace Controllers
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
 
-      // todo await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId).ConfigureAwait(false);
+      NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value).ConfigureAwait(false);
 
       // if all succeeds, update Db and send update to kafka que
       if (existing != null) // update
