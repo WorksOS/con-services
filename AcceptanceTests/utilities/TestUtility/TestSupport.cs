@@ -744,7 +744,7 @@ namespace TestUtility
     public string GetBaseUri()
     {
       var baseUri = tsCfg.webApiUri;
-      if (Debugger.IsAttached)
+      if (Debugger.IsAttached || tsCfg.operatingSystem == "Windows_NT")
       {
         baseUri = tsCfg.debugWebApiUri;
       }
