@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.Raptor.Service.Common.Proxies.Models;
+﻿using MasterDataProxies.Models;
 
 namespace MasterDataProxies.ResultHandling
 {

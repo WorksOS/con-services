@@ -7,7 +7,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Proxies;
 
 
 namespace MasterDataProxies

@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Proxies.Models;
+using MasterDataProxies.Models;
 
 
-namespace VSS.Raptor.Service.Common.Proxies
+namespace MasterDataProxies
 {
     /// <summary>
     /// Base class for proxies getting master data from services.

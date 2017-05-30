@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 
-namespace VSS.Raptor.Service.Common.Utilities
+namespace MasterDataProxies
 {
   public static class RequestUtils
   {

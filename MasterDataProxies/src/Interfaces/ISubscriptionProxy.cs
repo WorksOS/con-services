@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace VSS.Raptor.Service.Common.Interfaces
+namespace MasterDataProxies.Interfaces
 {
     public interface ISubscriptionProxy
     {

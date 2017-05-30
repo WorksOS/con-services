@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using MasterDataProxies.Interfaces;
+using MasterDataProxies.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Proxies.Models;
 
-namespace VSS.Raptor.Service.Common.Proxies
+namespace MasterDataProxies
 {
     public class SubscriptionProxy : BaseProxy, ISubscriptionProxy
     {

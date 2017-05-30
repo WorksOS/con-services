@@ -1,7 +1,6 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace VSS.Raptor.Service.Common.Proxies.Models
+namespace MasterDataProxies.Models
 {
     public class ProjectDataResult
     {

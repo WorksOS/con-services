@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MasterDataProxies.Models
+﻿namespace MasterDataProxies.Models
 {
   /// <summary>
   ///  Describes user preference data returned by the preference master data service.

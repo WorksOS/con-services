@@ -1,6 +1,6 @@
 ﻿
 
-namespace VSS.Raptor.Service.Common.Proxies.Models
+namespace MasterDataProxies.Models
 {
   /// <summary>
   /// Used by master data caching.

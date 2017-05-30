@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 
-namespace VSS.Raptor.Service.Common.Proxies
+namespace MasterDataProxies
 {
   public class GracefulWebRequest
   {

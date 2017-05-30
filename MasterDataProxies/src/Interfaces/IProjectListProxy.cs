@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.Raptor.Service.Common.Proxies.Models;
+using MasterDataProxies.Models;
 
-namespace VSS.Raptor.Service.Common.Interfaces
+namespace MasterDataProxies.Interfaces
 {
   public interface IProjectListProxy
   {
