@@ -71,6 +71,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                 MemoryStream ResponseData = null;
                 ZipArchive archive = null;
 
+                log.LogDebug("About to call GetGriddedOrAlignmentCSVExport");
+
                 int Result = raptorClient.GetGriddedOrAlignmentCSVExport
                    (request.projectId ?? -1,
                     (int)request.reportType,
@@ -94,6 +96,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                     new SVOICOptionsDecls.TSVOICOptions(), // ICOptions, need to resolve what this should be
                     out ResponseData);
 
+                log.LogDebug("Completed call to GetGriddedOrAlignmentCSVExport");
+
                 bool success = Result == 1; // icsrrNoError
 
                 if (success)
@@ -102,6 +106,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                     if (request.compress)
                     {
+                        log.LogDebug("Creating compressor for result");
+
                         archive = new ZipArchive(outputStream, ZipArchiveMode.Create, true);
                         writerStream = archive.CreateEntry("asbuilt.csv", CompressionLevel.Optimal).Open();
                     }
@@ -140,6 +146,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                             throw new ArgumentException("Unknown gridded CSV report type");
                         }
                     }
+
+                    log.LogDebug("Retrieving response data");
 
                     ReportPackager.ReadFromStream(ResponseData);
 
@@ -222,11 +230,17 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 try
                 {
+                    log.LogDebug("Closing stream");
+
                     writerStream.Close();
                     if (request.compress)
                     {
+                        log.LogDebug("Closing compressor");
+
                         archive.Dispose(); // Force ZIPArchive to emit all data to the stream
                     }
+
+                    log.LogDebug("Returning result");
 
                     result = ExportResult.CreateExportDataResult(outputStream.ToArray(), (short)Result);
                 }
