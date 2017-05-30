@@ -153,6 +153,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ExportGriddedCSV.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExportGriddedCSV.feature</DependentUpon>
+    </Compile>
     <Compile Include="ExportReport.feature.cs">
       <DependentUpon>ExportReport.feature</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -207,6 +212,7 @@
     <Compile Include="Models\DesignNameRequest.cs" />
     <Compile Include="Models\DesignNames.cs" />
     <Compile Include="Models\ElevationStatistics.cs" />
+    <Compile Include="Models\ExportGriddedCSV.cs" />
     <Compile Include="Models\ExportReport.cs" />
     <Compile Include="Models\FiltersResult.cs" />
     <Compile Include="Models\GetMachineDesignResult.cs" />
@@ -275,6 +281,7 @@
     <Compile Include="StepDefinitions\CoordinateSystemPostSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemPostValidateSteps.cs" />
     <Compile Include="StepDefinitions\ElevationStatisticsSteps.cs" />
+    <Compile Include="StepDefinitions\ExportGriddedCSVSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportSteps.cs" />
     <Compile Include="StepDefinitions\FileAccessSteps.cs" />
     <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
@@ -388,6 +395,10 @@
     <None Include="ElevationStatistics.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ElevationStatistics.feature.cs</LastGenOutput>
+    </None>
+    <None Include="ExportGriddedCSV.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ExportGriddedCSV.feature.cs</LastGenOutput>
     </None>
     <None Include="ExportReport.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -516,7 +527,13 @@
     <None Include="TestData\ElevationStatsResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\ExportGriddedCSVRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\ExportReportRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\ExportGriddedCSVResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\ExportReportResponse.json">
