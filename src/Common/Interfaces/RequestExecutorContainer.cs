@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
@@ -68,7 +69,13 @@ namespace VSS.Raptor.Service.Common.Interfaces
     /// <typeparam name="T">>Generic type which should be</typeparam>
     /// <param name="item">>The item.</param>
     /// <returns></returns>
-    protected abstract ContractExecutionResult ProcessEx<T>(T item); 
+    protected abstract ContractExecutionResult ProcessEx<T>(T item);
+
+    protected virtual async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    {
+      throw new ServiceException(HttpStatusCode.InternalServerError,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing asynchronous executor process method override"));
+    }
 
     /// <summary>
     /// 
@@ -83,6 +90,14 @@ namespace VSS.Raptor.Service.Common.Interfaces
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
       return ProcessEx(item);
+    }
+
+    public async Task<ContractExecutionResult> ProcessAsync<T>(T item)
+    {
+      if (item == null)
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Serialization error"));
+      return await ProcessAsyncEx(item);
     }
 
     /// <summary>

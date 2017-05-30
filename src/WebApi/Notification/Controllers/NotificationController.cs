@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -92,7 +93,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     [ProjectUidVerifier]
     [Route("api/v2/notification/addfile")]
     [HttpGet]
-    public ContractExecutionResult GetAddFile(
+    public async Task<ContractExecutionResult> GetAddFile(
       [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid,
       [FromQuery] string fileDescriptor,
@@ -127,8 +128,8 @@ namespace VSS.Raptor.Service.WebApi.Notification
 
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId.Value, projectUid, fileDes, coordSystem, userUnits, fileId);
       request.Validate();
-      var result =
-        RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo).Process(request);
+      var result = await
+        RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo).ProcessAsync(request);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
       return result;
     }
@@ -145,7 +146,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     [ProjectUidVerifier]
     [Route("api/v2/notification/deletefile")]
     [HttpGet]
-    public ContractExecutionResult GetDeleteFile(
+    public async Task<ContractExecutionResult> GetDeleteFile(
       [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid,
       [FromQuery] string fileDescriptor,
@@ -170,8 +171,8 @@ namespace VSS.Raptor.Service.WebApi.Notification
       }
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId.Value, projectUid, fileDes, null, UnitsTypeEnum.None, fileId);
       request.Validate();
-      var result =
-        RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo).Process(request);
+      var result = await
+        RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo).ProcessAsync(request);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
     }

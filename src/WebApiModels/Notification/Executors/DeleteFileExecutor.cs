@@ -1,5 +1,7 @@
 ﻿
+using System;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TCCFileAccess;
 using VSS.Raptor.Service.Common.Contracts;
@@ -46,8 +48,12 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
 
-
     protected override ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
+
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
@@ -60,11 +66,11 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
         {
           var suffix = FileUtils.GeneratedFileSuffix(fileType);
           //Delete generated files
-          bool success = DeleteGeneratedFile(request.File, suffix, FileUtils.PROJECTION_FILE_EXTENSION) &&
-                         DeleteGeneratedFile(request.File, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
+          bool success = await DeleteGeneratedFile(request.File, suffix, FileUtils.PROJECTION_FILE_EXTENSION) &&
+                         await DeleteGeneratedFile(request.File, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
           if (fileType != ImportedFileTypeEnum.Linework)
           {
-            success = success && DeleteGeneratedFile(request.File, suffix, FileUtils.DXF_FILE_EXTENSION);
+            success = success && await DeleteGeneratedFile(request.File, suffix, FileUtils.DXF_FILE_EXTENSION);
           }
           if (!success)
           {
@@ -73,7 +79,8 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
                 "Failed to delete generated files"));
           }
           //Delete tiles 
-          tileGenerator.DeleteDxfTiles(request.projectId.Value, request.File, suffix);
+          string generatedName = FileUtils.GeneratedFileName(request.File.fileName, suffix, FileUtils.DXF_FILE_EXTENSION);
+          await tileGenerator.DeleteDxfTiles(request.projectId.Value, generatedName, request.File).ConfigureAwait(false);
         }
 
 
@@ -105,14 +112,14 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     /// <param name="suffix">The suffix applied to the file name to get the generated file name</param>
     /// <param name="extension">The file extension of the generated file</param>
     /// <returns>True if the file is successfully deleted, false otherwise</returns>
-    private bool DeleteGeneratedFile(FileDescriptor fileDescr, string suffix, string extension)
+    private async Task<bool> DeleteGeneratedFile(FileDescriptor fileDescr, string suffix, string extension)
     {
       string generatedName = FileUtils.GeneratedFileName(fileDescr.fileName, suffix, extension);
       log.LogDebug("Deleting generated file {0}", generatedName);
       string fullName = fileDescr.path + "/" + generatedName;
-      if (fileRepo.FileExists(fileDescr.filespaceId, fullName).Result)
+      if (await fileRepo.FileExists(fileDescr.filespaceId, fullName))
       {
-        return fileRepo.DeleteFile(fileDescr.filespaceId, fullName).Result;
+        return await fileRepo.DeleteFile(fileDescr.filespaceId, fullName);
       }
       return true;//TODO: Is this what we want if file not there?
     }

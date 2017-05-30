@@ -7,6 +7,7 @@ using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Notification.Models;
 using System.Text;
+using System.Threading.Tasks;
 using ASNodeDecls;
 using DesignProfilerDecls;
 using TCCFileAccess;
@@ -57,6 +58,11 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
+      throw new NotImplementedException("Use the asynchronous form of this method");
+    }
+
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    {
       try
       {
         ProjectFileDescriptor request = item as ProjectFileDescriptor;
@@ -98,7 +104,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
               string.Format("Failed to get requested " + FileUtils.PROJECTION_FILE_EXTENSION + " file with error: {0}.",
                 ContractExecutionStates.FirstNameWithOffset((int)result2))));
           }
-          CreateTransformFile(request.projectId.Value, request.File, prjFile, suffix, FileUtils.PROJECTION_FILE_EXTENSION);
+          await CreateTransformFile(request.projectId.Value, request.File, prjFile, suffix, FileUtils.PROJECTION_FILE_EXTENSION);
 
           //Get GM_XFORM file contents from Raptor
           log.LogDebug("Getting horizontal adjustment file from Raptor");
@@ -113,16 +119,16 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
                 "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
                 ContractExecutionStates.FirstNameWithOffset((int)result2))));
           }
-          CreateTransformFile(request.projectId.Value, request.File, prjFile, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
+          await CreateTransformFile(request.projectId.Value, request.File, prjFile, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
      
 
           if (fileType != ImportedFileTypeEnum.Linework)
           {
             //Get alignment or surface boundary as DXF file from Raptor
-            CreateDxfFile(request.projectId.Value, request.File, suffix, request.UserPreferenceUnits);    
+            await CreateDxfFile(request.projectId.Value, request.File, suffix, request.UserPreferenceUnits);    
           }
           //Generate DXF tiles
-          tileGenerator.CreateDxfTiles(request.projectId.Value, request.File, false);
+          await tileGenerator.CreateDxfTiles(request.projectId.Value, request.File, suffix, false).ConfigureAwait(false);
         }
 
         else if (fileType == ImportedFileTypeEnum.SurveyedSurface)
@@ -162,7 +168,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     /// <param name="fileData">The contents of the associated file</param>
     /// <param name="suffix">The suffix applied to the file name to get the generated file name</param>
     /// <param name="extension">The file extension of the generated file</param>
-    private void CreateTransformFile(long projectId, FileDescriptor fileDescr, string fileData, string suffix, string extension)
+    private async Task<bool> CreateTransformFile(long projectId, FileDescriptor fileDescr, string fileData, string suffix, string extension)
     {
       log.LogDebug("Creating {0} transform file for {1}", extension, fileDescr.fileName);
 
@@ -173,7 +179,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       }
       using (MemoryStream memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(fileData)))
       {
-        PutFile(projectId, fileDescr, suffix, extension, memoryStream, fileData.Length);
+        return await PutFile(projectId, fileDescr, suffix, extension, memoryStream, fileData.Length);
       }
     }
 
@@ -184,7 +190,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     /// <param name="fileDescr">The original file for which the associated file is created</param>
     /// <param name="suffix">The suffix applied to the file name to get the generated file name</param>
     /// <param name="userUnits">The user units preference</param>
-    private void CreateDxfFile(long projectId, FileDescriptor fileDescr, string suffix, UnitsTypeEnum userUnits)
+    private async Task<bool> CreateDxfFile(long projectId, FileDescriptor fileDescr, string suffix, UnitsTypeEnum userUnits)
     {
       const double ImperialFeetToMetres = 0.3048;
       const double USFeetToMetres = 0.304800609601;
@@ -224,7 +230,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
 
       if (memoryStream != null)
       {
-        PutFile(projectId, fileDescr, suffix, FileUtils.DXF_FILE_EXTENSION, memoryStream, memoryStream.Length);
+        return await PutFile(projectId, fileDescr, suffix, FileUtils.DXF_FILE_EXTENSION, memoryStream, memoryStream.Length);
       }
       else
       {
@@ -245,19 +251,20 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     /// <param name="extension">The file extension of the generated file</param>
     /// <param name="memoryStream">The contents of the associated file</param>
     /// <param name="length">The length of the contents</param>
-    private void PutFile(long projectId, FileDescriptor fileDescr, string suffix, string extension, MemoryStream memoryStream, long length)
+    private async Task<bool> PutFile(long projectId, FileDescriptor fileDescr, string suffix, string extension, MemoryStream memoryStream, long length)
     {
       //TODO: do we want this async?
       var generatedName = FileUtils.GeneratedFileName(fileDescr.fileName, suffix, extension);
       log.LogDebug("Saving file {0} in TCC", generatedName);
-      if (!fileRepo.PutFile(fileDescr.filespaceId, fileDescr.path,
-        generatedName, memoryStream, length).Result)
+      if (! await fileRepo.PutFile(fileDescr.filespaceId, fileDescr.path,
+        generatedName, memoryStream, length))
       {
         log.LogWarning("Failed to save file {0} for project {1}", generatedName, projectId);
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             "Failed to create associated file " + generatedName));
       }
+      return true;
     }
 
     /// <summary>
@@ -279,10 +286,6 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       }
       return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designId, filespaceName, fileDescr.filespaceId, fileDescr.path, fileDescr.fileName, offset);
     }
-
-
-   
-   
 
   }
 }
