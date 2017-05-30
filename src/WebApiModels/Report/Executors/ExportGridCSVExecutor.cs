@@ -18,6 +18,8 @@ using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Nighthawk.ReportSvc.WebApi.Models;
 using System.IO.Compression;
+using VSS.GenericConfiguration;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 {
@@ -34,25 +36,18 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
         private const float NULL_SINGLE = DTXModelDecls.__Global.NullSingle;
 
         /// <summary>
-        /// 
+        /// This constructor allows us to mock raptorClient & configStore
         /// </summary>
-        public IASNodeClient client { get; private set; }
-
-        /// <summary>
-        /// This constructor allows us to mock client
-        /// </summary>
-        /// <param name="client"></param>
-        public ExportGridCSVExecutor(IASNodeClient client)
+        /// <param name="raptorClient"></param>
+        public ExportGridCSVExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IConfigurationStore configStore) : base(logger, raptorClient, null, configStore)
         {
-            this.client = client;
         }
 
         /// <summary>
-        /// Default constructor
+        /// Default constructor for RequestExecutorContainer.Build
         /// </summary>
         public ExportGridCSVExecutor()
         {
-            this.client = new ASNodeClient();
         }
 
         /// <summary>
@@ -76,7 +71,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                 MemoryStream ResponseData = null;
                 ZipArchive archive = null;
 
-                int Result = client.GetGriddedOrAlignmentCSVExport
+                int Result = raptorClient.GetGriddedOrAlignmentCSVExport
                    (request.projectId ?? -1,
                     (int)request.reportType,
                     ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtProdDataExport),
