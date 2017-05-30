@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using log4netExtensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -193,5 +194,54 @@ namespace UnitTests
       var success = await fileaccess.DeleteFolder(filespaceId, folderPath);
       Assert.IsTrue(success);
     }
+
+    [TestMethod]
+    public async Task CanDoFileJob()
+    {
+      const string path = "/FileJobUnitTest/CERA.bg.dxf";
+
+      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var filespaceId = configuration.GetValueString("TCCFILESPACEID");
+      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var jobId = await fileaccess.CreateFileJob(filespaceId, path);
+      Assert.IsNotNull(jobId, "Failed to create file job");
+
+      string fileId = null;
+      var done = false;
+      while (!done)
+      {
+        var fileJobStatus = await fileaccess.CheckFileJobStatus(jobId);
+        Assert.IsNotNull(fileJobStatus, "Failed to check file job status");
+        done = fileJobStatus.status == "COMPLETED";
+        if (done)
+        {
+          fileId = fileJobStatus.renderOutputInfo[0].fileId;
+        }
+        else
+        {
+          Thread.Sleep(2000);
+        }
+      }
+
+      var jobResult = await fileaccess.GetFileJobResult(fileId);
+      Assert.IsNotNull(jobResult, "Failed to get file job result");
+    }
+
+    [TestMethod]
+    public async Task CanDoExportToWebFormat()
+    {
+      const string srcPath = "/FileJobUnitTest/CERA.bg.dxf";
+      const string dstPath = "/FileJobUnitTest/CERA.bg.dxf_Tiles$/Z15.html";
+
+      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var filespaceId = configuration.GetValueString("TCCFILESPACEID");
+      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var jobId = await fileaccess.ExportToWebFormat(filespaceId, srcPath, filespaceId, dstPath, 15);
+      Assert.IsNotNull(jobId, "Failed to export to web format"); 
+
+      var exportStatus = await fileaccess.CheckExportJob(jobId);
+      Assert.IsNotNull(exportStatus, "Failed to check export job");
+    }
+
   }
 }

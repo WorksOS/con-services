@@ -27,7 +27,8 @@ namespace src.Utils
             {
                 context.Response.StatusCode = 200;
             }
-            await _next.Invoke(context);
+            else
+                await _next.Invoke(context);
         }
     }
 
