@@ -9,7 +9,7 @@ namespace WebApiTests
   {
     private readonly Msg msg = new Msg();
 
-    [TestMethod]
+    [TestMethod][Ignore]
     public void TestNoFileUploads()
     {
       const string testName = "File Import 1";
@@ -46,7 +46,7 @@ namespace WebApiTests
       CollectionAssert.AreEqual(expectedResults.ImportedFileDescriptors, filesResult.ImportedFileDescriptors);
     }
 
-    [TestMethod] 
+    [TestMethod] [Ignore]
     public void TestImportSvlFile()
     {
       const string testName = "File Import 2";
@@ -83,7 +83,7 @@ namespace WebApiTests
       var filesResult = importFile.PostImportedFilesToWebApi(ts, importFileArray, 1);
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor,importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor, true);
     }
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void TestImport2SvlFiles()
     {
       const string testName = "File Import 3";
