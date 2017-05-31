@@ -312,11 +312,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Tiles.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Tiles.feature</DependentUpon>
-    </Compile>
     <Compile Include="StepDefinitions\DesignCacheSteps.cs" />
     <Compile Include="StepDefinitions\DotOnTheMapSteps.cs" />
     <Compile Include="StepDefinitions\EditDataSteps.cs" />
@@ -336,6 +331,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SurveyedSurface.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Tiles.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tiles.feature</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

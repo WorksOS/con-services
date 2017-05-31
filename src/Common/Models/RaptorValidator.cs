@@ -6,12 +6,18 @@ using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Utilities
+namespace VSS.Raptor.Service.Common.Models
 {
-  public static class RaptorValidator
+  public abstract class RaptorValidator : ProjectID
   {
- 
-    public static void ValidatePalettes(List<ColorPalette> palettes, DisplayMode mode)
+    //protected int _cmvDetailsColorNumber;
+
+    protected virtual int cmvDetailsColorNumber
+    {
+      get { return CMV_DETAILS_COLOR_NUMBER; }
+    }
+
+    public void ValidatePalettes(List<ColorPalette> palettes, DisplayMode mode)
     {
       if (palettes != null)
       {
@@ -23,6 +29,8 @@ namespace VSS.Raptor.Service.Common.Utilities
             //count = 30;
             break;
           case DisplayMode.CCV:
+            count = cmvDetailsColorNumber;
+            break;
           case DisplayMode.CCVPercentChange:
           case DisplayMode.CCVPercent:
             count = 5;
@@ -116,7 +124,7 @@ namespace VSS.Raptor.Service.Common.Utilities
       }
     }
 
-    public static void ValidateDesign(DesignDescriptor designDescriptor, DisplayMode mode, RaptorConverters.VolumesType computeVolType)
+    public void ValidateDesign(DesignDescriptor designDescriptor, DisplayMode mode, RaptorConverters.VolumesType computeVolType)
     {
       bool noDesign = false;
 
@@ -155,7 +163,7 @@ namespace VSS.Raptor.Service.Common.Utilities
         designDescriptor.Validate();
     }
 
-    public static void ValidateVolumesFilters(RaptorConverters.VolumesType computeVolType, Filter filter1, long filterId1, Filter filter2, long filterId2)
+    public void ValidateVolumesFilters(RaptorConverters.VolumesType computeVolType, Filter filter1, long filterId1, Filter filter2, long filterId2)
     {
       switch (computeVolType)
       {
@@ -192,8 +200,6 @@ namespace VSS.Raptor.Service.Common.Utilities
         filter2.Validate();
     }
 
+    private const int CMV_DETAILS_COLOR_NUMBER = 5;
   }
-
-
-
 }
