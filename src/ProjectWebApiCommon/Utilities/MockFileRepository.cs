@@ -9,7 +9,7 @@ namespace ProjectWebApiCommon.Utilities
 {
   public class MockFileRepository : IFileRepository
   {
-    public async Task<List<Organization>> ListOrganizations()
+    public Task<List<Organization>> ListOrganizations()
     {
       throw new NotImplementedException();
     }
@@ -49,7 +49,7 @@ namespace ProjectWebApiCommon.Utilities
       return Task.FromResult(false);
     }
 
-    public Task<PutFileResponse> PutFile(Organization org, string path, string filename, System.IO.Stream contents, long sizeOfContents)
+    public Task<PutFileResponse> PutFile(Organization org, string path, string filename, Stream contents, long sizeOfContents)
     {
       throw new NotImplementedException();
     }

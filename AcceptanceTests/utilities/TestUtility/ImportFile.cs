@@ -34,7 +34,7 @@ namespace TestUtility
     /// <param name="uri"></param>
     /// <param name="customerUid"></param>
     /// <param name="projectUid"></param>
-    public ImportedFileDescriptorListResult GetImportedFilesFromWebApi(string uri, Guid customerUid, string projectUid)
+    public ImportedFileDescriptorListResult GetImportedFilesFromWebApi(string uri, Guid customerUid)
     {
       var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid.ToString());
       var filesResult = JsonConvert.DeserializeObject<ImportedFileDescriptorListResult>(response);
@@ -77,6 +77,22 @@ namespace TestUtility
     }
 
     /// <summary>
+    /// Generate a stream from a string
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns>stream</returns>
+    public Stream GenerateStreamFromString(string s)
+    {
+      MemoryStream stream = new MemoryStream();
+      StreamWriter writer = new StreamWriter(stream);
+      writer.Write(s);
+      writer.Flush();
+      stream.Position = 0;
+      return stream;
+    }
+
+
+    /// <summary>
     /// Upload a single file to the web api 
     /// </summary>
     /// <param name="fullFileName">Full filename</param>
@@ -87,9 +103,13 @@ namespace TestUtility
     {
       try
       {
-        var filestream = new FileStream(fullFileName, FileMode.Open);
-        var flowFileUpload = SetAllAttributesForFlowFile(filestream);       
-        var content = FormatTheContentDisposition(flowFileUpload, filestream);
+        var name = new DirectoryInfo(fullFileName).Name;
+        Byte[] bytes = File.ReadAllBytes(fullFileName);
+        var inputStream = new MemoryStream(bytes);
+        var inputAsString = Convert.ToBase64String(inputStream.ToArray());
+        var filestream = new MemoryStream(Convert.FromBase64String(inputAsString));
+        var flowFileUpload = SetAllAttributesForFlowFile(filestream,name);       
+        var content = FormatTheContentDisposition(flowFileUpload, filestream, name);
         var response = DoHttpRequest(uri, "POST", content,customerUid);
         return response;
       }
@@ -153,10 +173,10 @@ namespace TestUtility
     /// File upload
     /// </summary>
     /// <param name="filestream"></param>
+    /// <param name="name"></param>
     /// <returns></returns>
-    private FlowFileUpload SetAllAttributesForFlowFile(FileStream filestream)
+    private FlowFileUpload SetAllAttributesForFlowFile(Stream filestream, string name)
     {
-      var name = new DirectoryInfo(filestream.Name).Name;
       var flowFileUpload = new FlowFileUpload
       {
         flowChunkNumber = 1,
@@ -177,10 +197,9 @@ namespace TestUtility
     /// <param name="flowFileUpload"></param>
     /// <param name="filestream"></param>
     /// <returns></returns>
-    private string FormatTheContentDisposition(FlowFileUpload flowFileUpload, FileStream filestream)
+    private string FormatTheContentDisposition(FlowFileUpload flowFileUpload, Stream filestream,string name)
     {
       var sb = new StringBuilder();
-      var name = new DirectoryInfo(filestream.Name).Name;
       sb.AppendLine();
       sb.AppendLine(BOUNDARY);
       sb.AppendLine("Content-Disposition: form-data; name=\"flowChunkNumber\"");
@@ -231,6 +250,8 @@ namespace TestUtility
       sb.Append(reader.ReadToEnd());
       sb.AppendLine();
       sb.AppendLine(BOUNDARY + "--");
+
+      reader.Dispose();
       return sb.ToString();
     }
 
@@ -245,10 +266,12 @@ namespace TestUtility
 
       if (readStream != null)
       {
-        var reader = new StreamReader(readStream, Encoding.UTF8);
+        var reader = new StreamReader(readStream);
         var responseString = reader.ReadToEnd();
+        reader.Dispose();
         return responseString;
       }
+
       return string.Empty;
     }
 

@@ -207,7 +207,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task UpdateProject(UpdateProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService, (User as TidCustomPrincipal).CustomerUid);
+      ProjectDataValidator.Validate(project, projectService);
       project.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
@@ -229,7 +229,7 @@ namespace Controllers
     protected virtual async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
       string databaseProjectBoundary)
     {
-      ProjectDataValidator.Validate(project, projectService, (User as TidCustomPrincipal).CustomerUid);
+      ProjectDataValidator.Validate(project, projectService);
       if (project.ProjectID <= 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -255,7 +255,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task AssociateProjectCustomer(AssociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService, (User as TidCustomPrincipal).CustomerUid);
+      ProjectDataValidator.Validate(customerProject, projectService);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
@@ -274,7 +274,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task DissociateProjectCustomer(DissociateProjectCustomer customerProject)
     {
-      ProjectDataValidator.Validate(customerProject, projectService, (User as TidCustomPrincipal).CustomerUid);
+      ProjectDataValidator.Validate(customerProject, projectService);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectCustomer = customerProject});
@@ -293,7 +293,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
     {
-      ProjectDataValidator.Validate(geofenceProject, projectService, (User as TidCustomPrincipal).CustomerUid);
+      ProjectDataValidator.Validate(geofenceProject, projectService);
       geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
@@ -312,7 +312,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task DeleteProject(DeleteProjectEvent project)
     {
-      ProjectDataValidator.Validate(project, projectService, (User as TidCustomPrincipal).CustomerUid);
+      ProjectDataValidator.Validate(project, projectService);
       project.ReceivedUTC = DateTime.UtcNow;
 
       var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});

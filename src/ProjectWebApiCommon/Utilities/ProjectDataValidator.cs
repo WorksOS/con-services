@@ -34,7 +34,7 @@ namespace ProjectWebApiCommon.Models
     /// </summary>
     /// <param name="evt">The event containing the data to be validated</param>
     /// <param name="repo">Project repository to use in validation</param>
-    public static void Validate(IProjectEvent evt, IRepository<IProjectEvent> repo, string headerCustomerUid)
+    public static void Validate(IProjectEvent evt, IRepository<IProjectEvent> repo)
     {
       var projectRepo = repo as ProjectRepository;
       if (projectRepo == null)
@@ -176,13 +176,6 @@ namespace ProjectWebApiCommon.Models
       else if (evt is AssociateProjectCustomer)
       {
         var associateEvent = evt as AssociateProjectCustomer;
-
-        if (associateEvent.CustomerUID.ToString() != headerCustomerUid)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(18),
-              contractExecutionStatesEnum.FirstNameWithOffset(18)));
-        }
         if (associateEvent.CustomerUID == Guid.Empty)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,

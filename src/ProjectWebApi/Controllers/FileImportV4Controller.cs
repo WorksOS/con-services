@@ -101,8 +101,11 @@ namespace Controllers
     [Route("api/v4/importedfile")]
     [HttpPost]
     [ActionName("Upload")]
-    [FlowUpload(extensions:"svl")]
-    public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(FlowFile file,
+    [FlowUpload(Extensions = new string[] {
+        "svl", "dxf", "ttm"
+    }, Size = 1000000000)]
+
+        public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(FlowFile file,
       [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
       [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
@@ -174,25 +177,28 @@ namespace Controllers
 
 
     // PUT: api/v4/importedfile
-    /// <summary>
-    /// Upsert imported file
-    ///   this creates/updates database AND creates/updates file in TCC.
-    ///   notify RaptorWebAPI.
-    /// </summary>
-    /// <param name="file"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileType"></param>
-    /// <param name="fileCreatedUtc"></param>
-    /// <param name="fileUpdatedUtc"></param>
-    /// <param name="surveyedUtc"></param>
-    /// <remarks>Updates and Imported design file for a project</remarks>
-    /// <response code="200">Ok</response>
-    /// <response code="400">Bad request</response>
-    [Route("api/v4/importedfile")]
-    [HttpPut]
-    [ActionName("Upload")]
-    [FlowUpload(extensions:"svl")]
-    public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(FlowFile file,
+      /// <summary>
+      /// Upsert imported file
+      ///   this creates/updates database AND creates/updates file in TCC.
+      ///   notify RaptorWebAPI.
+      /// </summary>
+      /// <param name="file"></param>
+      /// <param name="projectUid"></param>
+      /// <param name="importedFileType"></param>
+      /// <param name="fileCreatedUtc"></param>
+      /// <param name="fileUpdatedUtc"></param>
+      /// <param name="surveyedUtc"></param>
+      /// <remarks>Updates and Imported design file for a project</remarks>
+      /// <response code="200">Ok</response>
+      /// <response code="400">Bad request</response>
+      [Route("api/v4/importedfile")]
+      [HttpPut]
+      [ActionName("Upload")]
+      [FlowUpload(Extensions = new string[] {
+        "svl", "dxf", "ttm"
+      }, Size = 1000000000)]
+
+      public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(FlowFile file,
       [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
       [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
