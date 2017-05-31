@@ -13,11 +13,12 @@ using VSS.Raptor.Service.Common.Models;
 
 namespace VSS.Raptor.Service.WebApi.Coord.Controllers
 {
-  /// <summary>
-  /// Controller for the CoordinateSystemFile resource.
-  /// </summary>
-  /// 
-  public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
+    /// <summary>
+    /// Controller for the CoordinateSystemFile resource.
+    /// </summary>
+    /// 
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+    public class CoordinateSystemController : Controller, ICoordinateSystemFileContract
   {
     /// <summary>
     /// Raptor client for use by executor

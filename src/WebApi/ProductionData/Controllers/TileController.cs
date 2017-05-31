@@ -9,8 +9,9 @@ using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
-{ 
-  public class TileController : Controller, ITileContract
+{
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+    public class TileController : Controller, ITileContract
   {
     /// <summary>
     /// Raptor client for use by executor

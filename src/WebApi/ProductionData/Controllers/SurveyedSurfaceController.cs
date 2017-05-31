@@ -15,11 +15,12 @@ using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 {
-  /// <summary>
-  /// Controller for Surveyed Surfaces resource.
-  /// </summary>
-  /// 
-  public class SurveyedSurfaceController : Controller, ISurveyedSurfaceContract
+    /// <summary>
+    /// Controller for Surveyed Surfaces resource.
+    /// </summary>
+    /// 
+    [ResponseCache(NoStore = true)]
+    public class SurveyedSurfaceController : Controller, ISurveyedSurfaceContract
   {
     /// <summary>
     /// Raptor client for use by executor

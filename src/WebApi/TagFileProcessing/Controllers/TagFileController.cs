@@ -9,10 +9,11 @@ using VSS.Raptor.Service.WebApiModels.TagfileProcessing.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApi.TagFileProcessing.Controllers
 {
-  /// <summary>
-  /// 
-  /// </summary>
-  public class TagFileController : Controller, ITagFileContract
+    /// <summary>
+    /// 
+    /// </summary>
+    [ResponseCache(NoStore = true)]
+    public class TagFileController : Controller, ITagFileContract
   {
     /// <summary>
     /// Tag processor for use by executor

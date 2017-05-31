@@ -17,6 +17,9 @@ using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Nighthawk.ReportSvc.WebApi.Models;
+using System.IO.Compression;
+using VSS.GenericConfiguration;
+using Microsoft.Extensions.Logging;
 
 namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 {
@@ -33,25 +36,18 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
         private const float NULL_SINGLE = DTXModelDecls.__Global.NullSingle;
 
         /// <summary>
-        /// 
+        /// This constructor allows us to mock raptorClient & configStore
         /// </summary>
-        public IASNodeClient client { get; private set; }
-
-        /// <summary>
-        /// This constructor allows us to mock client
-        /// </summary>
-        /// <param name="client"></param>
-        public ExportGridCSVExecutor(IASNodeClient client)
+        /// <param name="raptorClient"></param>
+        public ExportGridCSVExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IConfigurationStore configStore) : base(logger, raptorClient, null, configStore)
         {
-            this.client = client;
         }
 
         /// <summary>
-        /// Default constructor
+        /// Default constructor for RequestExecutorContainer.Build
         /// </summary>
         public ExportGridCSVExecutor()
         {
-            this.client = new ASNodeClient();
         }
 
         /// <summary>
@@ -68,14 +64,20 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                 ExportGridCSV request = item as ExportGridCSV;
 
                 TICFilterSettings raptorFilter = RaptorConverters.ConvertFilter(request.filterID, request.filter, request.projectId);
-                MemoryStream OutputStream = new MemoryStream();
-                MemoryStream ResponseData;
+                MemoryStream outputStream = null;
 
-                int Result = client.GetGriddedOrAlignmentCSVExport
+                Stream writerStream = null;
+
+                MemoryStream ResponseData = null;
+                ZipArchive archive = null;
+
+                log.LogDebug("About to call GetGriddedOrAlignmentCSVExport");
+
+                int Result = raptorClient.GetGriddedOrAlignmentCSVExport
                    (request.projectId ?? -1,
                     (int)request.reportType,
                     ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtProdDataExport),
-                    request.designFile,
+                    RaptorConverters.DesignDescriptor(request.designFile),
                     request.interval,
                     request.reportElevation,
                     request.reportCutFill,
@@ -94,10 +96,26 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                     new SVOICOptionsDecls.TSVOICOptions(), // ICOptions, need to resolve what this should be
                     out ResponseData);
 
+                log.LogDebug("Completed call to GetGriddedOrAlignmentCSVExport");
+
                 bool success = Result == 1; // icsrrNoError
 
                 if (success)
                 {
+                    outputStream = new MemoryStream();
+
+                    if (request.compress)
+                    {
+                        log.LogDebug("Creating compressor for result");
+
+                        archive = new ZipArchive(outputStream, ZipArchiveMode.Create, true);
+                        writerStream = archive.CreateEntry("asbuilt.csv", CompressionLevel.Optimal).Open();
+                    }
+                    else
+                    {
+                        writerStream = outputStream;
+                    }
+
                     // Unpack the data for the report and construct a stream containing the result
                     TRaptorReportsPackager ReportPackager = new TRaptorReportsPackager(TRaptorReportType.rrtGridReport);
 
@@ -129,6 +147,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                         }
                     }
 
+                    log.LogDebug("Retrieving response data");
+
                     ReportPackager.ReadFromStream(ResponseData);
 
                     StringBuilder sb = new StringBuilder();
@@ -146,7 +166,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                         // Write a header
                         byte[] bytes = System.Text.Encoding.ASCII.GetBytes(sb.ToString());
-                        OutputStream.Write(bytes, 0, bytes.Length);
+                        writerStream.Write(bytes, 0, bytes.Length);
 
                         // Write a series of CSV records from the data
                         foreach (TGridRow row in ReportPackager.GridReport.Rows)
@@ -163,7 +183,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                             sb.Append("\n");
 
                             bytes = System.Text.Encoding.ASCII.GetBytes(sb.ToString());
-                            OutputStream.Write(bytes, 0, bytes.Length);
+                            writerStream.Write(bytes, 0, bytes.Length);
                         }
                     }
                     else if (request.reportType == GriddedCSVReportType.Alignment)
@@ -210,7 +230,19 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 try
                 {
-                    result = ExportResult.CreateExportDataResult(OutputStream.GetBuffer(), (short)Result);
+                    log.LogDebug("Closing stream");
+
+                    writerStream.Close();
+                    if (request.compress)
+                    {
+                        log.LogDebug("Closing compressor");
+
+                        archive.Dispose(); // Force ZIPArchive to emit all data to the stream
+                    }
+
+                    log.LogDebug("Returning result");
+
+                    result = ExportResult.CreateExportDataResult(outputStream.ToArray(), (short)Result);
                 }
                 catch
                 {

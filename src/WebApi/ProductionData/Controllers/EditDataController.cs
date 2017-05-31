@@ -18,9 +18,10 @@ using VSS.Raptor.Service.WebApiModels.Report.Executors;
 
 namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 {
-        
 
-  public class EditDataController : Controller, IEditDataContract
+
+    [ResponseCache(NoStore = true)]
+    public class EditDataController : Controller, IEditDataContract
   {
     /// <summary>
     /// Tag processor for use by executor

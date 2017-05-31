@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using ASNodeDecls;
+using log4net.Util;
 using Microsoft.Extensions.Logging;
 using SVOICFilterSettings;
 using SVOICVolumeCalculationsDecls;
@@ -20,12 +21,14 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
   /// </summary>
   public class TilesExecutor : RequestExecutorContainer
   {
+
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
     /// <param name="raptorClient"></param>
     public TilesExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
     {
+
     }
 
     /// <summary>
@@ -82,23 +85,32 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
             request.representationalDisplayColor,
             out tile);
 
-        if ((raptorResult == TASNodeErrorStatus.asneOK) || (raptorResult == TASNodeErrorStatus.asneInvalidCoordinateRange))
-        {
-          if (tile != null)
+        log.LogTrace($"Received {raptorResult} as a result of execution and tile is {tile==null}");
+
+          if ((raptorResult == TASNodeErrorStatus.asneOK) ||
+              (raptorResult == TASNodeErrorStatus.asneInvalidCoordinateRange))
           {
-            result = ConvertResult(tile, raptorResult);
+              if (tile != null)
+              {
+                  result = ConvertResult(tile, raptorResult);
+              }
+              else
+              {
+                  result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+                      "Null tile returned");
+              }
           }
           else
           {
-            result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                "Null tile returned");
+              log.LogTrace(
+                  String.Format("Failed to get requested tile with error: {0}.",
+                      ContractExecutionStates.FirstNameWithOffset((int)raptorResult)));
+
+              throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
+                  ContractExecutionStatesEnum.FailedToGetResults,
+                  String.Format("Failed to get requested tile with error: {0}.",
+                      ContractExecutionStates.FirstNameWithOffset((int) raptorResult))));
           }
-        }
-        else
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-                                     String.Format("Failed to get requested tile with error: {0}.", ContractExecutionStates.FirstNameWithOffset((int)raptorResult))));
-        }
 
       }
       finally
