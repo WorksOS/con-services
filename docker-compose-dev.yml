@@ -3,7 +3,7 @@ services:
   webapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest
     environment:
-     - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/projects
+     - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project
      - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-geofenceservice/1.0
      - ASNODEIP=10.97.96.134
      - IONODEIP=10.97.96.92
