@@ -135,11 +135,13 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportGriddedCSV")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BadRequestNoReportType")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BadRequestNoReportType")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "No report type")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Grid report type must be either 1 (\'Gridded\') or 2 (\'Alignment\'). Actual value su" +
+            "pplied: 0")]
         public virtual void ExportGriddedCSV_BadRequest_BadRequestNoReportType()
         {
-            this.ExportGriddedCSV_BadRequest("BadRequestNoReportType", "-4", "No report type", ((string[])(null)));
+            this.ExportGriddedCSV_BadRequest("BadRequestNoReportType", "-2", "Grid report type must be either 1 (\'Gridded\') or 2 (\'Alignment\'). Actual value su" +
+                    "pplied: 0", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -147,11 +149,13 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportGriddedCSV")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BadRequestUnknownReportType")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BadRequestUnknownReportType")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "No report type")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Grid report type must be either 1 (\'Gridded\') or 2 (\'Alignment\'). Actual value su" +
+            "pplied: 10")]
         public virtual void ExportGriddedCSV_BadRequest_BadRequestUnknownReportType()
         {
-            this.ExportGriddedCSV_BadRequest("BadRequestUnknownReportType", "-4", "No report type", ((string[])(null)));
+            this.ExportGriddedCSV_BadRequest("BadRequestUnknownReportType", "-2", "Grid report type must be either 1 (\'Gridded\') or 2 (\'Alignment\'). Actual value su" +
+                    "pplied: 10", ((string[])(null)));
         }
     }
 }

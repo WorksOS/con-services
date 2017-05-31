@@ -17,6 +17,6 @@ Scenario Outline: ExportGriddedCSV - Bad Request
 	Then the result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
 	| RequestName                 | ErrorCode | ErrorMessage                        |
-	| BadRequestNoReportType      | -4        | No report type                      |
-	| BadRequestUnknownReportType | -4        | No report type                      |
+	| BadRequestNoReportType      | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 0  |
+	| BadRequestUnknownReportType | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 10 |
 
