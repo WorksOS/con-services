@@ -25,7 +25,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
@@ -51,7 +51,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
@@ -89,7 +89,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
       Assert.AreEqual(legacyProjectId, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
@@ -121,7 +121,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
@@ -159,7 +159,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
       Assert.AreEqual(legacyProjectId, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
@@ -186,7 +186,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
       Assert.AreEqual(legacyProjectId, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
@@ -214,7 +214,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
     }
 
     [TestMethod]
@@ -240,7 +240,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-1, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
@@ -278,7 +278,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
       Assert.AreEqual(legacyProjectId, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
@@ -306,7 +306,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
       Assert.AreEqual(legacyProjectId, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
@@ -334,7 +334,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
       Assert.AreEqual(legacyProjectId, result.projectId, "executor returned incorrect LegacyProjectId");
     }
 
@@ -372,7 +372,7 @@ namespace RepositoryTests
 
       var result = RequestExecutorContainer.Build<ProjectIdExecutor>(factory, logger).Process(projectIdRequest) as GetProjectIdResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsFalse(result.result, "unsuccessful");
+      Assert.IsFalse(result.Result, "unsuccessful");
       Assert.AreEqual(-2, result.projectId, "executor should return -2 as overlapping valid projects are illegal");
     }
 

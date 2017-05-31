@@ -15,7 +15,7 @@ namespace WebApiModels.ResultHandling
     {
       return new TagFileProcessingErrorResult
       {
-        result = result,
+        Result = result,
         Code = code,
         Message = message
       };

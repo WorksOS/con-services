@@ -18,7 +18,7 @@ namespace ExecutorTests
 
       var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, logger).Process(request) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor should always return a result");
-      Assert.IsTrue(result.result, "unsuccessful");
+      Assert.IsTrue(result.Result, "unsuccessful");
     }
   }
 }

@@ -95,7 +95,7 @@ namespace IntegrationTests
       var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(18, actualResult.machineLevel, " Machine levels do not match ");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
 
       // Try again project id as the parameter as well
       Console.WriteLine("---------------------- 2nd call to web api -----------------------");
@@ -106,7 +106,7 @@ namespace IntegrationTests
 
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(18, actualResult.machineLevel, " Machine levels do not match ");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -160,7 +160,7 @@ namespace IntegrationTests
 
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(16, actualResult.machineLevel, " Machine levels do not match ");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -213,7 +213,7 @@ namespace IntegrationTests
       var actualResult = JsonConvert.DeserializeObject<GetAssetIdResult>(response, ts.jsonSettings);
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(0, actualResult.machineLevel, " Machine levels do not match ");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
 
       // Try again project id as the parameter as well
       Console.WriteLine("---------------------- 2nd call to web api -----------------------");
@@ -224,7 +224,7 @@ namespace IntegrationTests
 
       Assert.AreEqual(legacyAssetId, actualResult.assetId, " Legacy asset id's do not match");
       Assert.AreEqual(0, actualResult.machineLevel, " Machine levels do not match ");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
   }
 }

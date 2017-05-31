@@ -60,7 +60,7 @@ namespace WebApiTests
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundaries[0].Boundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }      
       Assert.AreEqual(legacyProjectId, actualResult.projectBoundaries[0].ProjectID, " Legacy project id's do not match");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -110,7 +110,7 @@ namespace WebApiTests
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundaries[0].Boundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }      
       Assert.AreEqual(legacyProjectId, actualResult.projectBoundaries[0].ProjectID, " Legacy project id's do not match");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -163,7 +163,7 @@ namespace WebApiTests
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundaries[0].Boundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }      
       Assert.AreEqual(legacyProjectId, actualResult.projectBoundaries[0].ProjectID, " Legacy project id's do not match");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -216,7 +216,7 @@ namespace WebApiTests
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundaries[0].Boundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }      
       Assert.AreEqual(legacyProjectId, actualResult.projectBoundaries[0].ProjectID, " Legacy project id's do not match");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -267,7 +267,7 @@ namespace WebApiTests
         Assert.AreEqual(expectedResult.FencePoints[resultCnt], actualResult.projectBoundaries[0].Boundary.FencePoints[resultCnt], " A fence point on the project boundary does not match");
       }      
       Assert.AreEqual(legacyProjectId, actualResult.projectBoundaries[0].ProjectID, " Legacy project id's do not match");
-      Assert.AreEqual(true, actualResult.result, " result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, " result of request doesn't match expected");
     }
 
     [TestMethod]

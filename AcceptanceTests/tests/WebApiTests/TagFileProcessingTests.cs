@@ -20,7 +20,7 @@ namespace WebApiTests
       msg.Title("TagfileError Test 1", "TagFile Error NoValidCells InValidPosition");
       var ts = new TestSupport {IsPublishToKafka = false};
       var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589390", TagFileErrorsEnum.NoValidCells_InValidPosition);
-      Assert.AreEqual(true, actualResult.result , "result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result , "result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -29,7 +29,7 @@ namespace WebApiTests
       msg.Title("TagfileError Test 2", "TagFileError NoValidCells OnGroundFlag NotSet");
       var ts = new TestSupport { IsPublishToKafka = false };
       var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589391", TagFileErrorsEnum.NoValidCells_OnGroundFlagNotSet);
-      Assert.AreEqual(true, actualResult.result, "result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, "result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -38,7 +38,7 @@ namespace WebApiTests
       msg.Title("TagfileError Test 3", "TagFileError ProjectID Invalid LLH NE Position");
       var ts = new TestSupport { IsPublishToKafka = false };
       var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589392", TagFileErrorsEnum.ProjectID_InvalidLLHNEPosition);
-      Assert.AreEqual(true, actualResult.result, "result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, "result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -47,7 +47,7 @@ namespace WebApiTests
       msg.Title("TagfileError Test 4", "TagFileError ProjectID MultipleProjects");
       var ts = new TestSupport { IsPublishToKafka = false };
       var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589393", TagFileErrorsEnum.ProjectID_MultipleProjects);
-      Assert.AreEqual(true, actualResult.result, "result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, "result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -56,7 +56,7 @@ namespace WebApiTests
       msg.Title("TagfileError Test 5", "TagFileError ProjectID No Matching Area");
       var ts = new TestSupport { IsPublishToKafka = false };
       var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589394", TagFileErrorsEnum.ProjectID_NoMatchingArea);
-      Assert.AreEqual(true, actualResult.result, "result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, "result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -65,7 +65,7 @@ namespace WebApiTests
       msg.Title("TagfileError Test 6", "TagFileError ProjectID NoMatching DateTime");
       var ts = new TestSupport { IsPublishToKafka = false };
       var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589395", TagFileErrorsEnum.ProjectID_NoMatchingDateTime);
-      Assert.AreEqual(true, actualResult.result, "result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, "result of request doesn't match expected");
     }
     [TestMethod]
     public void UnknownCell()
@@ -73,7 +73,7 @@ namespace WebApiTests
       msg.Title("TagfileError Test 7", "TagFileError UnknownCell");
       var ts = new TestSupport { IsPublishToKafka = false };
       var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589396", TagFileErrorsEnum.UnknownCell);
-      Assert.AreEqual(true, actualResult.result, "result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, "result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -82,7 +82,7 @@ namespace WebApiTests
       msg.Title("TagfileError Test 8", "TagFileError UnknownProject");
       var ts = new TestSupport { IsPublishToKafka = false };
       var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589397", TagFileErrorsEnum.UnknownProject);
-      Assert.AreEqual(true, actualResult.result, "result of request doesn't match expected");
+      Assert.AreEqual(true, actualResult.Result, "result of request doesn't match expected");
     }
 
     [TestMethod]
@@ -91,7 +91,7 @@ namespace WebApiTests
       msg.Title("TagfileError Test 13", "TagFileError CoordConversion Failure");
       var ts = new TestSupport { IsPublishToKafka = false };
       var actualResult = CallWebApiGetTagFileProcessingErrorResult(ts, 1234567890, "2129J001DV--422c--150707_5408589398", TagFileErrorsEnum.CoordConversion_Failure);
-      Assert.AreEqual(true, actualResult.result, "CoordConversion_Failure");
+      Assert.AreEqual(true, actualResult.Result, "CoordConversion_Failure");
     }
 
     private TagFileProcessingErrorResult CallWebApiGetTagFileProcessingErrorResult(TestSupport ts,long assetId, string tagFileName,TagFileErrorsEnum errorNum)
