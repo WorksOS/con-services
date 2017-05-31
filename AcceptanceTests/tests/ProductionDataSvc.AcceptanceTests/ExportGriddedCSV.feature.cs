@@ -79,20 +79,14 @@ namespace ProductionDataSvc.AcceptanceTests
         
         public virtual void ExportGriddedCSV_GoodRequest(string requestName, string resultName, string[] exampleTags)
         {
-            string[] @__tags = new string[] {
-                    "ignore"};
-            if ((exampleTags != null))
-            {
-                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
-            }
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportGriddedCSV - Good Request", @__tags);
-#line 8
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportGriddedCSV - Good Request", exampleTags);
+#line 7
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 9
+#line 8
  testRunner.When(string.Format("I request Export Gridded CSV supplying \"{0}\" from the request repository", requestName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 10
+#line 9
  testRunner.Then(string.Format("the result should match \"{0}\" from the result repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -101,7 +95,6 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportGriddedCSV - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportGriddedCSV")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "FullProjectLatestDateElevationOnlyGriddedCSVExport")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "FullProjectLatestDateElevationOnlyGriddedCSVExport")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "FullProjectLatestDateElevationOnlyGriddedCSVExport")]
@@ -110,23 +103,28 @@ this.FeatureBackground();
             this.ExportGriddedCSV_GoodRequest("FullProjectLatestDateElevationOnlyGriddedCSVExport", "FullProjectLatestDateElevationOnlyGriddedCSVExport", ((string[])(null)));
         }
         
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportGriddedCSV - Good Request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportGriddedCSV")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "FullProjectSpecificDateElevationOnlyGriddedCSVExport")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "FullProjectSpecificDateElevationOnlyGriddedCSVExport")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "FullProjectSpecificDateElevationOnlyGriddedCSVExport")]
+        public virtual void ExportGriddedCSV_GoodRequest_FullProjectSpecificDateElevationOnlyGriddedCSVExport()
+        {
+            this.ExportGriddedCSV_GoodRequest("FullProjectSpecificDateElevationOnlyGriddedCSVExport", "FullProjectSpecificDateElevationOnlyGriddedCSVExport", ((string[])(null)));
+        }
+        
         public virtual void ExportGriddedCSV_BadRequest(string requestName, string errorCode, string errorMessage, string[] exampleTags)
         {
-            string[] @__tags = new string[] {
-                    "ignore"};
-            if ((exampleTags != null))
-            {
-                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
-            }
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportGriddedCSV - Bad Request", @__tags);
-#line 16
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportGriddedCSV - Bad Request", exampleTags);
+#line 15
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 17
+#line 16
  testRunner.When(string.Format("I request Export Gridded CSV supplying \"{0}\" from the request repository expectin" +
                         "g BadRequest", requestName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 18
+#line 17
  testRunner.Then(string.Format("the result should contain error code {0} and error message \"{1}\"", errorCode, errorMessage), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -135,14 +133,25 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportGriddedCSV - Bad Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportGriddedCSV")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NoDateRange")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "NoDateRange")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BadRequestNoReportType")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BadRequestNoReportType")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get requested export data")]
-        public virtual void ExportGriddedCSV_BadRequest_NoDateRange()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "No report type")]
+        public virtual void ExportGriddedCSV_BadRequest_BadRequestNoReportType()
         {
-            this.ExportGriddedCSV_BadRequest("NoDateRange", "-4", "Failed to get requested export data", ((string[])(null)));
+            this.ExportGriddedCSV_BadRequest("BadRequestNoReportType", "-4", "No report type", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportGriddedCSV - Bad Request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportGriddedCSV")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BadRequestUnknownReportType")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BadRequestUnknownReportType")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "No report type")]
+        public virtual void ExportGriddedCSV_BadRequest_BadRequestUnknownReportType()
+        {
+            this.ExportGriddedCSV_BadRequest("BadRequestUnknownReportType", "-4", "No report type", ((string[])(null)));
         }
     }
 }
