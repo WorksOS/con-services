@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Xml;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,28 +6,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using log4netExtensions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.Filters;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Filters.Validation;
-using VSS.Raptor.Service.Common.JsonConverters;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using MasterDataProxies.Interfaces;
+using MasterDataProxies;
 
 namespace VSS.Raptor.Service.WebApi
 {
-    public class Startup
+  public class Startup
     {
 
         private readonly string loggerRepoName = "WebApi";
@@ -66,7 +57,7 @@ namespace VSS.Raptor.Service.WebApi
             {
                 options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
                     .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
-                        "X-VisionLink-CustomerUid", "X-VisionLink-UserUid", "Cache-Control")
+                        "X-VisionLink-CustomerUid", "X-VisionLink-UserUid", "Cache-Control", "X-VisionLink-ClearCache")
                     .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
             });
             // Add framework services.

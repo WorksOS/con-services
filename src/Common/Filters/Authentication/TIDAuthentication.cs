@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Security.Principal;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
 
 namespace VSS.Raptor.Service.Common.Filters.Authentication
 {
-    public class TIDAuthentication
+  public class TIDAuthentication
     {
         private readonly RequestDelegate _next;
         private readonly IAuthenticatedProjectsStore authProjectsStore;
