@@ -58,6 +58,10 @@ namespace TestUtility
       var createdDt = ed.FileCreatedUtc.ToUniversalTime().ToString("o");
       var updatedDt = ed.FileUpdatedUtc.ToUniversalTime().ToString("o");
       uri = uri + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileType={ed.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
+      if (ed.ImportedFileTypeName == "SurveyedSurface")
+      {
+        uri = uri + $"&SurveyedUtc={ed.SurveyedUtc}";
+      }
       var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid);
       expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
       expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc = expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc.ToUniversalTime();

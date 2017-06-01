@@ -38,6 +38,18 @@
     <None Update="FileImportFiles\TestAlignment2.SVL">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="FileImportFiles\TestDesignSurface1.ttm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FileImportFiles\TestDesignSurface2.TTM">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FileImportFiles\TestSurveyedSurface1.ttm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="FileImportFiles\TestSurveyedSurface2.TTM">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
