@@ -29,7 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="ConfigurationStore.netcore" Version="*" />
     <PackageReference Include="Polly" Version="5.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.2-beta1" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="*" />
   </ItemGroup>
 
