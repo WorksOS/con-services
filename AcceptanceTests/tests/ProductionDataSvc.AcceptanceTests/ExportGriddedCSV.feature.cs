@@ -164,12 +164,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BadRequestIntervalTooSmall")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BadRequestIntervalTooSmall")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Grid report type must be either 1 (\'Gridded\') or 2 (\'Alignment\'). Actual value su" +
-            "pplied: 10")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Interval must be >= 0.1m and <= 100.0m. Actual value: 0.09")]
         public virtual void ExportGriddedCSV_BadRequest_BadRequestIntervalTooSmall()
         {
-            this.ExportGriddedCSV_BadRequest("BadRequestIntervalTooSmall", "-2", "Grid report type must be either 1 (\'Gridded\') or 2 (\'Alignment\'). Actual value su" +
-                    "pplied: 10", ((string[])(null)));
+            this.ExportGriddedCSV_BadRequest("BadRequestIntervalTooSmall", "-2", "Interval must be >= 0.1m and <= 100.0m. Actual value: 0.09", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -178,12 +176,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BadRequestIntervalTooLarge")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BadRequestIntervalTooLarge")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Grid report type must be either 1 (\'Gridded\') or 2 (\'Alignment\'). Actual value su" +
-            "pplied: 10")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Interval must be >= 0.1m and <= 100.0m. Actual value: 101")]
         public virtual void ExportGriddedCSV_BadRequest_BadRequestIntervalTooLarge()
         {
-            this.ExportGriddedCSV_BadRequest("BadRequestIntervalTooLarge", "-2", "Grid report type must be either 1 (\'Gridded\') or 2 (\'Alignment\'). Actual value su" +
-                    "pplied: 10", ((string[])(null)));
+            this.ExportGriddedCSV_BadRequest("BadRequestIntervalTooLarge", "-2", "Interval must be >= 0.1m and <= 100.0m. Actual value: 101", ((string[])(null)));
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
@@ -192,12 +188,10 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "BadRequestNoOutputFieldsConfigured")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequestName", "BadRequestNoOutputFieldsConfigured")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-2")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Grid report type must be either 1 (\'Gridded\') or 2 (\'Alignment\'). Actual value su" +
-            "pplied: 10")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "There are no selected fields to be reported on")]
         public virtual void ExportGriddedCSV_BadRequest_BadRequestNoOutputFieldsConfigured()
         {
-            this.ExportGriddedCSV_BadRequest("BadRequestNoOutputFieldsConfigured", "-2", "Grid report type must be either 1 (\'Gridded\') or 2 (\'Alignment\'). Actual value su" +
-                    "pplied: 10", ((string[])(null)));
+            this.ExportGriddedCSV_BadRequest("BadRequestNoOutputFieldsConfigured", "-2", "There are no selected fields to be reported on", ((string[])(null)));
         }
     }
 }

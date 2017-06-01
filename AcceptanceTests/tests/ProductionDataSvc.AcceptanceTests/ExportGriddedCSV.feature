@@ -19,7 +19,7 @@ Scenario Outline: ExportGriddedCSV - Bad Request
 	| RequestName                        | ErrorCode | ErrorMessage                                                                                |
 	| BadRequestNoReportType             | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 0  |
 	| BadRequestUnknownReportType        | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 10 |
-	| BadRequestIntervalTooSmall         | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 10 |
-	| BadRequestIntervalTooLarge         | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 10 |
-	| BadRequestNoOutputFieldsConfigured | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 10 |
+	| BadRequestIntervalTooSmall         | -2        | Interval must be >= 0.1m and <= 100.0m. Actual value: 0.09                                  |
+	| BadRequestIntervalTooLarge         | -2        | Interval must be >= 0.1m and <= 100.0m. Actual value: 101                                   |
+	| BadRequestNoOutputFieldsConfigured | -2        | There are no selected fields to be reported on                                              |
 
