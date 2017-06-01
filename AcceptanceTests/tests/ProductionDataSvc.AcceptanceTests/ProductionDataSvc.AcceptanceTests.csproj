@@ -234,6 +234,11 @@
     <Compile Include="Models\SurveyedSurfaceRequest.cs" />
     <Compile Include="Models\TAGFile.cs" />
     <Compile Include="Models\TileRequest.cs" />
+    <Compile Include="Notification.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Notification.feature</DependentUpon>
+    </Compile>
     <Compile Include="PassCountDetail.feature.cs">
       <DependentUpon>PassCountDetail.feature</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -284,6 +289,7 @@
     <Compile Include="StepDefinitions\ExportGriddedCSVSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportSteps.cs" />
     <Compile Include="StepDefinitions\FileAccessSteps.cs" />
+    <Compile Include="StepDefinitions\NotificationSteps.cs" />
     <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
     <Compile Include="StepDefinitions\PassCountSummarySteps.cs" />
     <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
@@ -427,6 +433,10 @@
     <None Include="GetRaptorConfig.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetRaptorConfig.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Notification.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Notification.feature.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
     <None Include="CellDatum.feature">

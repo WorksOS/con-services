@@ -63,6 +63,7 @@ namespace WebApiModels.Notification.Helpers
       {
         // Delete previously generated .DXF tiles
         success = await DeleteDxfTiles(projectId, generatedName, fileDescr);
+        //Do we care if this fails?
       }
 
       var zoomResult = await CalculateTileZoomRange(fileDescr.filespaceId, generatedName);
@@ -73,7 +74,7 @@ namespace WebApiModels.Notification.Helpers
         string tilePath = TilePath(fileDescr.path, generatedName);
 
         // Generate .DXF file tiles and place the tiles in TCC...
-        if (regenerate || !fileRepo.FolderExists(fileDescr.filespaceId, tilePath).Result)
+        if (regenerate || ! await fileRepo.FolderExists(fileDescr.filespaceId, tilePath))
         {
           for (int zoomLevel = zoomResult.minZoom; zoomLevel <= zoomResult.maxZoom; zoomLevel++)
             success = success && await GenerateDxfTiles(projectId, generatedName, tilePath, fileDescr.filespaceId, zoomLevel);
@@ -85,7 +86,7 @@ namespace WebApiModels.Notification.Helpers
             string zoomFolder = ZoomFolder(zoomLevel);
             string zoomPath = string.Format("{0}/{1}", tilePath, zoomFolder);
 
-            if (!fileRepo.FolderExists(fileDescr.filespaceId, zoomPath).Result)
+            if (! await fileRepo.FolderExists(fileDescr.filespaceId, zoomPath))
               success = success && await GenerateDxfTiles(projectId, generatedName, tilePath, fileDescr.filespaceId, zoomLevel);
           }
         }

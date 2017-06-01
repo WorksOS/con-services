@@ -112,7 +112,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing Project or project does not belong to specified customer"));
       }
       string coordSystem = projectsById[projectId.Value].coordinateSystemFileName;
-      var userPrefs = prefProxy.GetUserPreferences(Request.Headers.GetCustomHeaders()).Result;
+      var userPrefs = await prefProxy.GetUserPreferences(Request.Headers.GetCustomHeaders());
       var userUnits = userPrefs == null ? UnitsTypeEnum.US : (UnitsTypeEnum)Enum.Parse(typeof(UnitsTypeEnum), userPrefs.Units, true);
       FileDescriptor fileDes = null;
       try
