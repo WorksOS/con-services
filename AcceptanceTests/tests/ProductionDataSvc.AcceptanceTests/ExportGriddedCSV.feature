@@ -16,7 +16,10 @@ Scenario Outline: ExportGriddedCSV - Bad Request
 	When I request Export Gridded CSV supplying "<RequestName>" from the request repository expecting BadRequest
 	Then the result should contain error code <ErrorCode> and error message "<ErrorMessage>"
 	Examples:
-	| RequestName                 | ErrorCode | ErrorMessage                        |
-	| BadRequestNoReportType      | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 0  |
-	| BadRequestUnknownReportType | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 10 |
+	| RequestName                        | ErrorCode | ErrorMessage                                                                                |
+	| BadRequestNoReportType             | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 0  |
+	| BadRequestUnknownReportType        | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 10 |
+	| BadRequestIntervalTooSmall         | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 10 |
+	| BadRequestIntervalTooLarge         | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 10 |
+	| BadRequestNoOutputFieldsConfigured | -2        | Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: 10 |
 
