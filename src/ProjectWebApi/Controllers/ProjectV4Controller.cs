@@ -143,8 +143,7 @@ namespace Controllers
       var userUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).Name;
       log.LogDebug($"Creating a geofence for project {project.ProjectName}");
       await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "", project.ProjectBoundary,
-        0,
-        true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        0, true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
 
       log.LogDebug("CreateProjectV4. completed succesfully");
       return new ProjectV4DescriptorsSingleResult(
@@ -181,9 +180,11 @@ namespace Controllers
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var projectWithLegacyProjectID = projectService.GetProjectOnly(project.ProjectUID.ToString()).Result;
+        var customHeaders = (Request.Headers.GetCustomHeaders());
+        customHeaders.Add("X-VisionLink-ClearCache", "true");
         var coordinateSystemSettingsResult = await raptorProxy
           .CoordinateSystemPost(projectWithLegacyProjectID.LegacyProjectID, project.CoordinateSystemFileContent,
-            project.CoordinateSystemFileName, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+            project.CoordinateSystemFileName, customHeaders).ConfigureAwait(false);
         log.LogDebug($"Post of CS update to RaptorServices returned code: {0} Message {1}.",
           coordinateSystemSettingsResult?.Code ?? -1,
           coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
@@ -318,9 +319,11 @@ namespace Controllers
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
+        var customHeaders = (Request.Headers.GetCustomHeaders());
+        customHeaders.Add("X-VisionLink-ClearCache", "true");
         var coordinateSystemSettingsResult = await raptorProxy
           .CoordinateSystemPost(project.ProjectID, project.CoordinateSystemFileContent,
-            project.CoordinateSystemFileName, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+            project.CoordinateSystemFileName, customHeaders).ConfigureAwait(false);
         log.LogDebug($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
           coordinateSystemSettingsResult?.Code ?? -1,
           coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
