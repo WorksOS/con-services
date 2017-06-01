@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MasterDataProxies.ResultHandling;
+using MasterDataProxies.Models;
 
 namespace MasterDataProxies.Interfaces
 {
   public interface ICustomerProxy
   {
-    Task<ContractExecutionResult> GetCustomersForMe(IDictionary < string, string> customHeaders);
+    Task<CustomerDataResult> GetCustomersForMe(IDictionary < string, string> customHeaders);
   }
 }

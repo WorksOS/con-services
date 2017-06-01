@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
 using MasterDataProxies.Models;
+using Newtonsoft.Json.Linq;
 
 
 namespace MasterDataProxies
@@ -159,6 +161,11 @@ namespace MasterDataProxies
         protected async Task<T> GetItem<T>(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders) where T : IData
     {
             T cacheData;
+            string caching = null;
+            customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+            if (!string.IsNullOrEmpty(caching) && caching == "true")
+              cache.Remove((uid));
+
             if (!cache.TryGetValue(uid, out cacheData))
             {
                 var opts = new MemoryCacheEntryOptions()
@@ -190,6 +197,11 @@ namespace MasterDataProxies
             IDictionary<string, string> customHeaders) where T : IData
     {
             List<T> cacheData;
+            string caching = null;
+            customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+            if (!string.IsNullOrEmpty(caching) && caching == "true")
+              cache.Remove((customerUid));
+
             if (!cache.TryGetValue(customerUid, out cacheData))
             {
                 var opts = new MemoryCacheEntryOptions()
@@ -215,6 +227,11 @@ namespace MasterDataProxies
                 IDictionary<string, string> customHeaders)
         {
           T cacheData;
+          string caching = null;
+          customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+          if (!string.IsNullOrEmpty(caching) && caching == "true")
+            cache.Remove((customerUid));
+
           if (!cache.TryGetValue(customerUid, out cacheData))
           {
             var opts = new MemoryCacheEntryOptions()

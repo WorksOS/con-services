@@ -9,7 +9,7 @@ namespace MasterDataProxies
     {
       var customHeaders = new Dictionary<string, string>();
 
-      string[] keys = { "X-VisionLink-CustomerUid" , "X-VisionLink-UserUid", "Authorization" };
+      string[] keys = { "X-VisionLink-CustomerUid" , "X-VisionLink-UserUid", "Authorization", "X-VisionLink-ClearCache" };
       foreach (var key in keys)
       {
         if (headers.ContainsKey(key))

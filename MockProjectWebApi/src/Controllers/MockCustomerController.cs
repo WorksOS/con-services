@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Models;
 using MockProjectWebApi.Utils;
@@ -15,16 +14,17 @@ namespace MockProjectWebApi.Controllers
     /// Dummies the post.
     /// </summary>
     [Route("api/v1/mock/GetCustomersForMe")]
-    [HttpPost]
-    public ContractExecutionResult DummyGetCustomersForMe(IDictionary<string, string> customHeaders)
+    [HttpGet]
+    public CustomerDataResult DummyGetCustomersForMe()
     {
-      if (customHeaders == null)
-        return new ContractExecutionResult((int)HttpStatusCode.InternalServerError, "CustomerProxy missing Authenication headers");
-      var customerUid = customHeaders["X-VisionLink-CustomerUID"];
+      var theCount = Request.Headers.Count;
+      if (Request.Headers == null)
+        return new CustomerDataResult(ContractExecutionStatesEnum.InternalProcessingError, "CustomerProxy missing Authenication headers");
+      var customerUid = Request.Headers["X-VisionLink-CustomerUID"];
       if (string.IsNullOrEmpty(customerUid))
-        return new ContractExecutionResult((int)HttpStatusCode.InternalServerError, "CustomerProxy missing customerUid");
+        return new CustomerDataResult(ContractExecutionStatesEnum.InternalProcessingError, "CustomerProxy missing customerUid");
 
-      var cs = new CustomerDataResult()
+      var cs = new CustomerDataResult(0, ContractExecutionResult.DefaultMessage)
       { 
         CustomerDescriptors = new List<CustomerData>()
       };
