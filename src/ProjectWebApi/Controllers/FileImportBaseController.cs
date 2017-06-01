@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApiCommon.Models;
@@ -322,8 +323,23 @@ namespace Controllers
     /// <returns></returns>
     protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor, long importedFileId)
     {
-      var notificationResult = await raptorProxy.AddFile(projectId, projectUid,
-        JsonConvert.SerializeObject(fileDescriptor), importedFileId, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+      MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult;
+      // todo need try-catch around all urls to capture not available.
+      try
+      {
+        notificationResult = await raptorProxy.AddFile(projectId, projectUid,
+            JsonConvert.SerializeObject(fileDescriptor), importedFileId, Request.Headers.GetCustomHeaders())
+          .ConfigureAwait(false);
+      }
+      catch (Exception e)
+      {
+        var error =
+          $"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}. ";
+        log.LogError(error);
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
+            string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57), "raptorProxy.AddFile", e.Message)));
+      }
       log.LogDebug(
         $"NotifyRaptorAddFile: projectId: {projectId} projectUid: {projectUid}, FileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)

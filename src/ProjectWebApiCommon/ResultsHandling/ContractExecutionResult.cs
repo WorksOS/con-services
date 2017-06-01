@@ -124,10 +124,13 @@ namespace ProjectWebApiCommon.ResultsHandling
       DynamicAddwithOffset("DeleteImportedFileV4. Unable to set Imported File event to deleted.", 51);
       DynamicAddwithOffset("CreateImportedFileV4. Unable to store updated Imported File event to database.", 52);
       DynamicAddwithOffset("WriteFileToRepository: Unable to write file to TCC.", 53);
-      DynamicAddwithOffset("Unable to put delete fileDescriptor from TCC.", 54);
+      DynamicAddwithOffset("Unable to put delete fileDescriptor from TCC. TCC code {0} message {1}", 54);
       DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 54);
       DynamicAddwithOffset("CreateImportedFileV4. The uploaded file is not accessible.", 55);
       DynamicAddwithOffset("DeleteImportedFileV4. The importedFileUid doesn't exist under this project.", 56);
+      DynamicAddwithOffset("Unable to access {0} endpoint. Exception: {1}", 57);
+      DynamicAddwithOffset("CreateImportedFileV4. The file has already been created.", 58);
+
     }
 
     /// <summary>

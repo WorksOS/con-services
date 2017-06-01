@@ -108,7 +108,6 @@ namespace Controllers
       [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
-
       var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
 
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
@@ -142,8 +141,8 @@ namespace Controllers
         var message = $"CreateImportedFileV4. File: {file.flowFilename} has already been imported.";
         log.LogError(message);
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(1),
-            contractExecutionStatesEnum.FirstNameWithOffset(1)));
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(58),
+            contractExecutionStatesEnum.FirstNameWithOffset(58)));
       }
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
@@ -158,7 +157,7 @@ namespace Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, createImportedFileEvent.ImportedFileID).ConfigureAwait(false);
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, createImportedFileEvent.ImportedFileID).ConfigureAwait(false);
 
       // FlowJS has this locked so can't delete it here
       // System.IO.File.Delete(file.path);
@@ -205,7 +204,7 @@ namespace Controllers
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
-        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {
@@ -230,6 +229,11 @@ namespace Controllers
                  (importedFileType != ImportedFileType.SurveyedSurface)
                ));
       }
+      if ( existing == null)
+        log.LogInformation($"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+      else
+        log.LogInformation($"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
+
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
       // this may be a create or update, so ok if it already exists in our DB
@@ -251,7 +255,7 @@ namespace Controllers
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
 
-      NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value).ConfigureAwait(false);
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value).ConfigureAwait(false);
 
       // if all succeeds, update Db and send update to kafka que
       if (existing != null) // update
@@ -303,7 +307,7 @@ namespace Controllers
       await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))
         .ConfigureAwait(false);
 
-      // todo await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor).ConfigureAwait(false);
+      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor, importedFile.ImportedFileId).ConfigureAwait(false);
 
       await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
 
