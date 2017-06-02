@@ -1357,11 +1357,41 @@ namespace TestUtility
             CustomerUid = eventObject.CustomerUid,
             FileCreatedUtc = DateTime.Parse(eventObject.FileCreatedUtc),
             FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUtc),
-            ImportedBy = eventObject.ImportedBy,
-            ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Alignment,
+            ImportedBy = eventObject.ImportedBy,            
             ProjectUid = eventObject.ProjectUid,
             Name = eventObject.Name             
           };
+          if (HasProperty(eventObject, "SurveyedUtc"))
+          {
+            importedFileDescriptor.SurveyedUtc = DateTime.Parse(eventObject.SurveyedUtc);
+          }
+          switch (eventObject.ImportedFileType)
+          {
+            case "0":
+              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Linework;
+              break;
+            case "1":
+              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.DesignSurface;
+              break;
+            case "2":
+              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.SurveyedSurface;
+              break;
+            case "3":
+              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.Alignment;
+              break;
+            case "4":
+              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.MobileLinework;
+              break;
+            case "5":
+              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.SiteBoundary;
+              break;
+            case "6":
+              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.ReferenceSurface;
+              break;
+            case "7":
+              importedFileDescriptor.ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType.MassHaulPlan;
+              break;
+          }
           jsonString = JsonConvert.SerializeObject(importedFileDescriptor, jsonSettings);
           break;          
       }
