@@ -4,5 +4,11 @@
     "resultCode": 1,
     "Code": 0,
     "Message": "success"
+  },
+  "FullProjectSpecificDateElevationOnlyGriddedCSVExport": {
+    "exportData": "UEsDBBQAAAAIAEEPv0qa3blMqgAAAMEBAAALAAAAYXNidWlsdC5jc3ZtkE0KwjAQhfc9RQ8g4U1mJj8HcOsduhAtSAtaPL8jNiTB7h58ecP3clmf231ebqfxPL22X3hc39M2r8tAXtQBOI0+lqQ5OOUwEKXCkkdh0SWw9YDS4z0F710kbRlTYRYoSssStN4Uyp0Lo7oIo7vp91cB2eWErkfNBsrJGP2xr6cm86R4sIHNxbZ7xtG/MMWWhdhsl4zuZnURR0DrUjcQORXpeqLVJVjvA1BLAQIUABQAAAAIAEEPv0qa3blMqgAAAMEBAAALAAAAAAAAAAAAAAAAAAAAAABhc2J1aWx0LmNzdlBLBQYAAAAAAQABADkAAADTAAAAAAA=",
+    "resultCode": 1,
+    "Code": 0,
+    "Message": "success"
   }
 }

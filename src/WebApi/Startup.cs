@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Xml;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,14 +10,9 @@ using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.Filters;
@@ -34,7 +27,7 @@ using WebApiModels.Notification.Helpers;
 
 namespace VSS.Raptor.Service.WebApi
 {
-    public class Startup
+  public class Startup
     {
 
         private readonly string loggerRepoName = "WebApi";
@@ -71,7 +64,7 @@ namespace VSS.Raptor.Service.WebApi
             {
                 options.AddPolicy("VSS", builder => builder.AllowAnyOrigin()
                     .WithHeaders("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization",
-                        "X-VisionLink-CustomerUid", "X-VisionLink-UserUid", "Cache-Control")
+                        "X-VisionLink-CustomerUid", "X-VisionLink-UserUid", "Cache-Control", "X-VisionLink-ClearCache")
                     .WithMethods("OPTIONS", "TRACE", "GET", "HEAD", "POST", "PUT", "DELETE"));
             });
             // Add framework services.

@@ -30,7 +30,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
     /// <summary>
     /// The representation of a pass counts request
     /// </summary>
-    public class ExportGridCSV : ProjectID, IValidatable
+    public class ExportGridCSV : RaptorValidator, IValidatable
     {
         /// <summary>
         /// An identifier from the caller. 
@@ -243,7 +243,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
 
             if (reportCutFill == true)
             {
-                RaptorValidator.ValidateDesign(designFile, DisplayMode.CutFill, VolumesType.None);
+                ValidateDesign(designFile, DisplayMode.CutFill, VolumesType.None);
             }
 
             if (interval < 0.1 || interval > 100.00)

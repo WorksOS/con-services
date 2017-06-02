@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Contracts;
+using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
+using VSS.Raptor.Service.Common.Models;
+using VSS.Raptor.Service.Common.ResultHandling;
 
 namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 {
