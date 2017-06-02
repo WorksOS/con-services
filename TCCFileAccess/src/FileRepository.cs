@@ -6,11 +6,10 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using MasterDataProxies;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using TCCFileAccess.Models;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Proxies;
 
 namespace TCCFileAccess
 {
