@@ -134,7 +134,13 @@ namespace FlowUploadFilter
         private void MultipleFilesToSingleFile(string dirPath, IEnumerable<string> fileAry, string destFile)
         {
             Console.WriteLine($"Merging multiple files into a single to save into {destFile}");
-            using (var destStream = File.Create(Path.Combine(dirPath, destFile)))
+            Console.WriteLine($"Check if file exists {destFile}");
+            if (File.Exists(Path.Combine(dirPath, destFile)))
+            {
+                Console.WriteLine($"Deleting file {destFile}");
+                File.Delete(Path.Combine(dirPath, destFile));
+            }
+            using (var destStream = new FileStream(Path.Combine(dirPath, destFile), FileMode.Create))
             {
                 foreach (string filePath in fileAry)
                 {
@@ -142,6 +148,7 @@ namespace FlowUploadFilter
                     using (var sourceStream = File.OpenRead(Path.Combine(dirPath, filePath)))
                         sourceStream.CopyTo(destStream); // You can pass the buffer size as second argument.
                 }
+                destStream.Flush();
             }
             Console.WriteLine($"Succefully merged file {destFile}");
         }
