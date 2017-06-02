@@ -191,8 +191,8 @@ namespace VSS.Raptor.Service.Common.ResultHandling
 
       public static void AddTagProcessorErrorMessages(ContractExecutionStatesEnum contractExecutionStates, int offset)
       {
-        contractExecutionStates.DynamicAddwithOffset("OK", (int)TTAGProcServerProcessResult.tpsprOK, offset);
-        contractExecutionStates.DynamicAddwithOffset("Unknown error", (int)TTAGProcServerProcessResult.tpsprUnknown, offset);
+        contractExecutionStates.DynamicAddwithOffset("Tagfile OK", (int)TTAGProcServerProcessResult.tpsprOK, offset);
+        contractExecutionStates.DynamicAddwithOffset("Tagfile Unknown error", (int)TTAGProcServerProcessResult.tpsprUnknown, offset);
         contractExecutionStates.DynamicAddwithOffset("OnSubmissionBase. Connection Failure.", (int)TTAGProcServerProcessResult.tpsprOnSubmissionBaseConnectionFailure, offset);
         contractExecutionStates.DynamicAddwithOffset("OnSubmissionVerb. Connection Failure.", (int)TTAGProcServerProcessResult.tpsprOnSubmissionVerbConnectionFailure, offset);
         contractExecutionStates.DynamicAddwithOffset("OnSubmissionResult. ConnectionFailure.", (int)TTAGProcServerProcessResult.tpsprOnSubmissionResultConnectionFailure, offset);
@@ -215,8 +215,8 @@ namespace VSS.Raptor.Service.Common.ResultHandling
       }
       public static void AddDesignProfileErrorMessages(ContractExecutionStatesEnum contractExecutionStates, int offset)
       {
-        contractExecutionStates.DynamicAddwithOffset("OK", (int)TDesignProfilerRequestResult.dppiOK, offset);
-        contractExecutionStates.DynamicAddwithOffset("Unknown Error", (int)TDesignProfilerRequestResult.dppiUnknownError, offset);
+        contractExecutionStates.DynamicAddwithOffset("Design Profiler OK", (int)TDesignProfilerRequestResult.dppiOK, offset);
+        contractExecutionStates.DynamicAddwithOffset("Design Profile Unknown Error", (int)TDesignProfilerRequestResult.dppiUnknownError, offset);
         contractExecutionStates.DynamicAddwithOffset("Could Not Connect To Server", (int)TDesignProfilerRequestResult.dppiCouldNotConnectToServer, offset);
         contractExecutionStates.DynamicAddwithOffset("Failed To Convert Client WGS Coords", (int)TDesignProfilerRequestResult.dppiFailedToConvertClientWGSCoords, offset);
         contractExecutionStates.DynamicAddwithOffset("Failed To Load Design File", (int)TDesignProfilerRequestResult.dppiFailedToLoadDesignFile, offset);

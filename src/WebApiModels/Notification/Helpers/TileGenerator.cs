@@ -66,7 +66,7 @@ namespace WebApiModels.Notification.Helpers
         //Do we care if this fails?
       }
 
-      var zoomResult = await CalculateTileZoomRange(fileDescr.filespaceId, generatedName);
+      var zoomResult = await CalculateTileZoomRange(fileDescr.filespaceId, fileDescr.path + "/" + generatedName);
       success = zoomResult.success;
       if (success)
       {
@@ -98,13 +98,13 @@ namespace WebApiModels.Notification.Helpers
     /// Calculate the zoom range for which to generate tiles. 
     /// </summary>
     /// <param name="filespaceId">The filespace ID in TCC where the DXF file is located</param>
-    /// <param name="generatedName">The DXF file name which is a generated associated name for design and alignment files</param>
+    /// <param name="fullGeneratedName">The full DXF file name, including path, which is a generated associated name for design and alignment files</param>
     /// <returns>Zoom range and success or failure</returns>
-    private async Task<ZoomRangeResult> CalculateTileZoomRange(string filespaceId, string generatedName)
+    private async Task<ZoomRangeResult> CalculateTileZoomRange(string filespaceId, string fullGeneratedName)
     {
       var result = new ZoomRangeResult { success = true };
 
-      log.LogDebug("CalculateTileZoomRange for file {0}", generatedName);
+      log.LogDebug("CalculateTileZoomRange for file {0}", fullGeneratedName);
 
       //Get TCC to work out the DXF file extents for us so we can calculate zoom levels to generate tiles for
 
@@ -117,12 +117,12 @@ namespace WebApiModels.Notification.Helpers
       int maxZoomRange;
       GetRenderConfig(out maxZoomLevel, out maxZoomRange, out waitInterval);
 
-      log.LogDebug("Before CreateFileJob: {0}", generatedName);
-      string jobId = await fileRepo.CreateFileJob(filespaceId, generatedName);
+      log.LogDebug("Before CreateFileJob: {0}", fullGeneratedName);
+      string jobId = await fileRepo.CreateFileJob(filespaceId, fullGeneratedName);
       if (string.IsNullOrEmpty(jobId))
       {
         result.success = false;
-        log.LogDebug("CreateFileJob failed: {0}", generatedName);
+        log.LogDebug("CreateFileJob failed: {0}", fullGeneratedName);
       }
       else
       {
@@ -182,7 +182,7 @@ namespace WebApiModels.Notification.Helpers
             double maxLon = Math.Max(extents.longitude1, extents.longitude2);
             Point latLng1 = new Point(minLat, minLon);
             Point latLng2 = new Point(maxLat, maxLon);
-            log.LogDebug("{0} has extents {1},{2} - {3},{4}", generatedName, latLng1.Latitude, latLng1.Longitude,
+            log.LogDebug("{0} has extents {1},{2} - {3},{4}", fullGeneratedName, latLng1.Latitude, latLng1.Longitude,
               latLng2.Latitude, latLng2.Longitude);
 
             result.minZoom = 0;
@@ -208,7 +208,7 @@ namespace WebApiModels.Notification.Helpers
           }
         }
       }
-      log.LogInformation("DXF TILE GENERATION: file={0}, zoom range=Z{1}-Z{2}, success={3}", generatedName, result.minZoom, result.maxZoom, result.success);
+      log.LogInformation("DXF TILE GENERATION: file={0}, zoom range=Z{1}-Z{2}, success={3}", fullGeneratedName, result.minZoom, result.maxZoom, result.success);
       return result;
     }
 

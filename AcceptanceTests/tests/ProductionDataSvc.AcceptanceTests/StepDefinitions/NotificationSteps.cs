@@ -23,49 +23,44 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.url = RaptorClientConfig.NotificationSvcBaseUri + url;
     }
 
+    [Given(@"the Delete File Notification service URI ""(.*)""")]
+    public void GivenTheDeleteFileNotificationServiceURI(string url)
+    {
+      this.url = RaptorClientConfig.NotificationSvcBaseUri + url;
+    }
+
     [Given(@"a projectUid ""(.*)""")]
     public void GivenAProjectUid(string projectUid)
     {
       this.projectUid = projectUid;
     }
 
-    [Given(@"a fileDescriptor ""(.*)""")]
-    public void GivenAFileDescriptor(string fileDescriptor)
+    [Given(@"a filespaceId ""(.*)"" and a path ""(.*)"" and a fileName ""(.*)""")]
+    public void GivenAFilespaceIdAndAPathAndAFileName(string filespaceId, string path, string fileName)
     {
-      this.fileDescriptor = fileDescriptor;
+      this.fileDescriptor = "{\"filespaceId\":\"" + filespaceId + "\",\"path\":\"" + path + "\",\"fileName\":\"" + fileName + "\"}";
     }
-        
+
     [Given(@"a fileId ""(.*)""")]
     public void GivenAFileId(int fileId)
     {
       this.fileId = fileId;
     }
-        
-    [When(@"I request Add File Notification")]
-    public void WhenIRequestAddFileNotification()
+
+    [When(@"I request File Notification")]
+    public void WhenIRequestFileNotification()
     {
       this.url = string.Format("{0}?projectUid={1}&filedescriptor={2}&fileId={3}", url, projectUid, fileDescriptor, fileId);
       fileNotificationRequester = new Getter<RequestResult>(this.url);
       fileNotificationRequester.DoValidRequest();
     }
-        
-    [When(@"I request Delete File Notification")]
-    public void WhenIRequestDeleteFileNotification()
-    {
-        ScenarioContext.Current.Pending();
-    }
-        
-    [Then(@"the Add File Notification result should be")]
-    public void ThenTheAddFileNotificationResultShouldBe(string multilineText)
+
+    [Then(@"the File Notification result should be")]
+    public void ThenTheFileNotificationResultShouldBe(string multilineText)
     {
       RequestResult expected = JsonConvert.DeserializeObject<RequestResult>(multilineText);
-      Assert.AreEqual(expected, fileNotificationRequester.CurrentResponse);
+      Assert.IsTrue(expected.Code == fileNotificationRequester.CurrentResponse.Code && expected.Message == fileNotificationRequester.CurrentResponse.Message);
     }
 
-    [Then(@"the Delete File Notification result should be")]
-    public void ThenTheDeleteFileNotificationResultShouldBe(string multilineText)
-    {
-        ScenarioContext.Current.Pending();
-    }
   }
 }

@@ -14,12 +14,12 @@ using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.Common.Utilities;
 using VSS.Raptor.Service.WebApi.Compaction.Controllers;
 using VSS.Raptor.Service.WebApiModels.Notification.Executors;
 using VSS.Raptor.Service.WebApiModels.Notification.Models;
 using WebApiModels.Notification.Models;
-
+using MasterDataProxies;
+using WebApiModels.Interfaces;
 
 namespace VSS.Raptor.Service.WebApi.Notification
 {
@@ -59,6 +59,10 @@ namespace VSS.Raptor.Service.WebApi.Notification
     /// For retrieving user preferences
     /// </summary>
     private IPreferenceProxy prefProxy;
+    /// <summary>
+    /// For handling DXF tiles
+    /// </summary>
+    private ITileGenerator tileGenerator;
 
     /// <summary>
     /// Constructor with injected raptor client, logger and authenticated projects
@@ -68,8 +72,9 @@ namespace VSS.Raptor.Service.WebApi.Notification
     /// <param name="authProjectsStore">Authenticated projects store</param>
     /// <param name="fileRepo">Imported file repository</param>
     /// <param name="prefProxy">Proxy for user preferences</param>
+    /// <param name="tileGenerator">DXF tile generator</param>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IAuthenticatedProjectsStore authProjectsStore, IFileRepository fileRepo, IConfigurationStore configStore, IPreferenceProxy prefProxy)
+      IAuthenticatedProjectsStore authProjectsStore, IFileRepository fileRepo, IConfigurationStore configStore, IPreferenceProxy prefProxy, ITileGenerator tileGenerator)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -78,6 +83,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
       this.fileRepo = fileRepo;
       this.configStore = configStore;
       this.prefProxy = prefProxy;
+      this.tileGenerator = tileGenerator;
     }
 
     /// <summary>
@@ -128,8 +134,8 @@ namespace VSS.Raptor.Service.WebApi.Notification
 
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId.Value, projectUid, fileDes, coordSystem, userUnits, fileId);
       request.Validate();
-      var result = await
-        RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo).ProcessAsync(request);
+      var executor = RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
+      var result = await executor.ProcessAsync(request);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
       return result;
     }
@@ -171,8 +177,8 @@ namespace VSS.Raptor.Service.WebApi.Notification
       }
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId.Value, projectUid, fileDes, null, UnitsTypeEnum.None, fileId);
       request.Validate();
-      var result = await
-        RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo).ProcessAsync(request);
+      var executor = RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
+      var result = await executor.ProcessAsync(request);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
     }

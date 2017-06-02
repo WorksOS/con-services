@@ -81,40 +81,15 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 6
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
- testRunner.And("a fileDescriptor \"{filespaceId:u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01,path:/Notifi" +
-                    "cationAcceptanceTest,fileName:CERA.bg.dxf}\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("a filespaceId \"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\" and a path \"/NotificationAc" +
+                    "ceptanceTest\" and a fileName \"CERA.bg.dxf\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
  testRunner.And("a fileId \"1234\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
- testRunner.When("I request Add File Notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request File Notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 10
- testRunner.Then("the Add File Notification result should be", "{\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Notification Add File - Bad Request")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Notification")]
-        public virtual void NotificationAddFile_BadRequest()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Notification Add File - Bad Request", ((string[])(null)));
-#line 18
- this.ScenarioSetup(scenarioInfo);
-#line 19
- testRunner.Given("the Add File Notification service URI \"/api/v2/notification/addfile\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 20
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 21
- testRunner.And("a fileDescriptor \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 22
- testRunner.And("a fileId \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 23
- testRunner.When("I request Add File Notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 24
- testRunner.Then("the Add File Notification result should be", "{\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the File Notification result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Add file notification successful\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -125,46 +100,22 @@ namespace ProductionDataSvc.AcceptanceTests
         public virtual void NotificationDeleteFile_GoodRequest()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Notification Delete File - Good Request", ((string[])(null)));
-#line 32
+#line 18
  this.ScenarioSetup(scenarioInfo);
-#line 33
- testRunner.Given("the Add File Notification service URI \"/api/v2/notification/deletefile\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 34
+#line 19
+ testRunner.Given("the Delete File Notification service URI \"/api/v2/notification/deletefile\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 20
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 35
- testRunner.And("a fileDescriptor \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 36
- testRunner.And("a fileId \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 37
- testRunner.When("I request Delete File Notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 21
+ testRunner.And("a filespaceId \"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\" and a path \"/NotificationAc" +
+                    "ceptanceTest\" and a fileName \"CERA.bg.dxf\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 22
+ testRunner.And("a fileId \"1234\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 23
+ testRunner.When("I request File Notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 38
- testRunner.Then("the Delete File Notification result should be", "{\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Notification Delete File - Bad Request")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Notification")]
-        public virtual void NotificationDeleteFile_BadRequest()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Notification Delete File - Bad Request", ((string[])(null)));
-#line 46
- this.ScenarioSetup(scenarioInfo);
-#line 47
- testRunner.Given("the Add File Notification service URI \"/api/v2/notification/deletefile\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 48
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 49
- testRunner.And("a fileDescriptor \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 50
- testRunner.And("a fileId \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 51
- testRunner.When("I request Delete File Notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 52
- testRunner.Then("the Delete File Notification result should be", "{\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 24
+ testRunner.Then("the File Notification result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Delete file notification successful\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

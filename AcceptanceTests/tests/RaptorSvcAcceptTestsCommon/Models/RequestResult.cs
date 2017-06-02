@@ -36,6 +36,14 @@ namespace RaptorSvcAcceptTestsCommon.Models
         {
         }
 
+        /// <summary>
+        /// Default constructor for serialization
+        /// </summary>
+        public RequestResult()
+        {
+        
+        }
+
     }
 
     public class DummyRequestResult : RequestResult

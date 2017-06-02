@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Security.Principal;
-using System.Threading;
 using System.Threading.Tasks;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 
