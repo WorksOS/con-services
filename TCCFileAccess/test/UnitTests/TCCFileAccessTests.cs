@@ -225,6 +225,7 @@ namespace UnitTests
 
       var jobResult = await fileaccess.GetFileJobResult(fileId);
       Assert.IsNotNull(jobResult, "Failed to get file job result");
+      Assert.IsNotNull(jobResult.extents, "DXF extents are null");
     }
 
     [TestMethod]
