@@ -369,7 +369,7 @@ namespace TCCFileAccess
               {
                 return true;
               }
-              CheckForInvalidTicket(getFileAttrResult, "PathExists");
+              CheckForInvalidTicket(getFileAttrResult, "PathExists", false);//don't log "file does not exist"
               return getFileAttrResult.success;
             }
           }
@@ -383,15 +383,15 @@ namespace TCCFileAccess
 
         public async Task<bool> DeleteFolder(string filespaceId, string path)
         {
-          return await DeleteFileEx(filespaceId, path);
+          return await DeleteFileEx(filespaceId, path, true);
         }
 
         public async Task<bool> DeleteFile(string filespaceId, string fullName)
         {
-          return await DeleteFileEx(filespaceId, fullName);
+          return await DeleteFileEx(filespaceId, fullName, false);
         }
 
-        public async Task<bool> DeleteFileEx(string filespaceId, string fullName)
+        public async Task<bool> DeleteFileEx(string filespaceId, string fullName, bool isFolder)
         {
           Log.LogDebug("DeleteFileEx: filespaceId={0}, fullName={1}", filespaceId, fullName);
           try
@@ -400,7 +400,7 @@ namespace TCCFileAccess
             {
               filespaceid = filespaceId,
               path = WebUtility.UrlEncode(fullName),
-              recursive = false
+              recursive = isFolder
             };
             var deleteResult = await ExecuteRequest<DeleteFileResult>(Ticket, "Del", deleteParams);
             if (deleteResult != null)
@@ -485,7 +485,7 @@ namespace TCCFileAccess
           }
         }
 
-        private void CheckForInvalidTicket(ApiResult result, string what)
+        private void CheckForInvalidTicket(ApiResult result, string what, bool logWarning=true)
         {
           //Check for expired/invalid ticket
           if (!result.success)
@@ -494,7 +494,7 @@ namespace TCCFileAccess
             {
               ticket = null;
             }
-            else
+            else if (logWarning)
             {
               Log.LogWarning("{0} failed: errorid={1}, message={2}", what, result.errorid, result.message);
             }

@@ -192,6 +192,8 @@ namespace UnitTests
     public async Task CanDeleteFolder()
     {
       const string folderPath = "/unittest/folder";
+      const string filename = "unittest.json";
+
       var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
 
@@ -200,6 +202,11 @@ namespace UnitTests
       if (!exists)
       {
         await fileaccess.MakeFolder(filespaceId, folderPath);
+      }
+      //Put something in it to test recursive
+      using (FileStream fileStream = File.Open("appsettings.json", FileMode.Open))
+      {
+        var fileuploadresult = await fileaccess.PutFile(filespaceId, folderPath, filename, fileStream, fileStream.Length);
       }
       var success = await fileaccess.DeleteFolder(filespaceId, folderPath);
       Assert.IsTrue(success);
