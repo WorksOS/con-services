@@ -127,6 +127,16 @@ namespace UnitTests
     }
 
     [TestMethod]
+    public async Task CanCheckFolderDoesNotExist()
+    {
+      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var filespaceId = configuration.GetValueString("TCCFILESPACEID");
+      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var exists = await fileaccess.FolderExists(filespaceId, "/123456789/987654321");
+      Assert.IsFalse(exists);
+    }
+
+    [TestMethod]
     public async Task CanCheckFileExists()
     {
       var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();

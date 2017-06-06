@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MasterDataProxies;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using TCCFileAccess.Models;
 using VSS.GenericConfiguration;
 
@@ -361,7 +362,7 @@ namespace TCCFileAccess
               filespaceid = filespaceId,
               path = WebUtility.UrlEncode(path)
             };
-            var getFileAttrResult = await ExecuteRequest<GetFileAttributesResult>(Ticket, "GetFileAttributes", getFileAttrParams);
+            var getFileAttrResult = await ExecuteRequestWithAllowedError<GetFileAttributesResult>(Ticket, "GetFileAttributes", getFileAttrParams);
             if (getFileAttrResult != null)
             {
               if (getFileAttrResult.success)
@@ -516,7 +517,7 @@ namespace TCCFileAccess
         }
 
     private async Task<T> ExecuteRequest<T>(string token, string contractPath, object requestData)
-        {
+    {
             if (String.IsNullOrEmpty(tccBaseUrl))
                 throw new Exception("Configuration Error - no TCC url specified");
 
@@ -532,9 +533,8 @@ namespace TCCFileAccess
             catch (WebException webException)
             {
                 using (var response = webException.Response)
-                {
-                    Log.LogWarning(
-                        $"Can not execute request TCC request with error {webException.Status} and {webException.Message}. {GetStringFromResponseStream(response)}");
+                {    
+                    Log.LogWarning($"Can not execute request TCC request with error {webException.Status} and {webException.Message}. {GetStringFromResponseStream(response)}");                 
                 }
             }
             catch (Exception e)
@@ -544,7 +544,53 @@ namespace TCCFileAccess
             return result;
         }
 
-        private string GetStringFromResponseStream(WebResponse response)
+      private async Task<T> ExecuteRequestWithAllowedError<T>(string token, string contractPath, object requestData) where T : ApiResult, new()
+      {
+        const string FILE_DOES_NOT_EXIST_ERROR =
+          "{\"errorid\":\"FILE_DOES_NOT_EXIST\",\"message\":\"File does not exist\",\"success\":false}";
+
+        if (String.IsNullOrEmpty(tccBaseUrl))
+          throw new Exception("Configuration Error - no TCC url specified");
+
+        var gracefulClient = new GracefulWebRequest(logFactory);
+        var (requestString, headers) = FormRequest(requestData, contractPath, token);
+
+        headers.Add("Content-Type", "application/json");
+        T result = default(T);
+        try
+        {
+          result = await gracefulClient.ExecuteRequest<T>(requestString, "GET", headers);
+        }
+        catch (WebException webException)
+        {
+          using (var response = webException.Response)
+          {
+            string tccError = GetStringFromResponseStream(response);
+            if (tccError == FILE_DOES_NOT_EXIST_ERROR)
+            {
+              var tccErrorResult = JsonConvert.DeserializeObject<ApiResult>(FILE_DOES_NOT_EXIST_ERROR);
+              
+              result = new T
+              {
+                success = tccErrorResult.success,
+                errorid = tccErrorResult.errorid,
+                message = tccErrorResult.message
+              };
+            }
+            else
+            {
+              Log.LogWarning($"Can not execute request TCC request with error {webException.Status} and {webException.Message}. {tccError}");
+            }
+          }
+        }
+        catch (Exception e)
+        {
+          Log.LogWarning("Can not execute request TCC response. Details: {0} {1}", e.Message, e.StackTrace);
+        }
+        return result;
+      }
+
+    private string GetStringFromResponseStream(WebResponse response)
         {
             using (var readStream = response.GetResponseStream())
             {
