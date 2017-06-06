@@ -108,17 +108,8 @@ namespace Controllers
       await ValidateCoordSystem(project).ConfigureAwait(false);
       ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
 
-      string wktBoundary = project.ProjectBoundary;
       log.LogDebug($"Testing if there are overlapping projects for project {project.ProjectName}");
-      await DoesProjectOverlap(project, wktBoundary);
-
-      ////Convert to old format for Kafka for consistency on kakfa queue
-      string kafkaBoundary = project.ProjectBoundary
-        .Replace(ProjectBoundaryValidator.POLYGON_WKT, string.Empty)
-        .Replace("))", string.Empty)
-        .Replace(',', ';')
-        .Replace(' ', ',');
-
+      await DoesProjectOverlap(project, project.ProjectBoundary);
 
       // validate projectCustomer
       AssociateProjectCustomer customerProject = new AssociateProjectCustomer()
@@ -136,14 +127,15 @@ namespace Controllers
 
       await ValidateAssociateSubscriptions(project).ConfigureAwait(false);
 
-      await CreateProject(project, kafkaBoundary, wktBoundary).ConfigureAwait(false);
-
-      await CreateAssociateProjectCustomer(customerProject);
+      project = await CreateProject(project, customerProject).ConfigureAwait(false);
 
       var userUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).Name;
       log.LogDebug($"Creating a geofence for project {project.ProjectName}");
       await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "", project.ProjectBoundary,
         0, true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+
+      // do this a late as possible in case something fails. We can cleanup kafka que.
+      await CreateKafkaEvents(project, customerProject);
 
       log.LogDebug("CreateProjectV4. completed succesfully");
       return new ProjectV4DescriptorsSingleResult(
@@ -292,16 +284,14 @@ namespace Controllers
     /// Creates a project. Handles both old and new project boundary formats.
     /// </summary>
     /// <param name="project">The create project event</param>
-    /// <param name="kafkaProjectBoundary">The project boundary in the old format (coords comma separated, points semicolon separated)</param>
-    /// <param name="databaseProjectBoundary">The project boundary in the new format (WKT)</param>
+    /// <param name="customerProject"></param>
     /// <returns></returns>
-    protected override async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
-      string databaseProjectBoundary)
+    protected async Task<CreateProjectEvent> CreateProject(CreateProjectEvent project, AssociateProjectCustomer customerProject)
     {
       log.LogDebug($"Creating the project {project.ProjectName}");
 
       var isCreated = await projectService.StoreEvent(project).ConfigureAwait(false);
-      log.LogDebug($"Created the project in DB {0}. legacyprojectID: {1}", isCreated, project.ProjectID);
+      log.LogDebug($"Created the project in DB {isCreated}. legacyprojectID: {project.ProjectID}");
 
       if (project.ProjectID <= 0)
       {
@@ -316,6 +306,10 @@ namespace Controllers
         }
       }
       log.LogDebug($"Using Legacy projectId {project.ProjectID} for project {project.ProjectName}");
+
+      // this is needed so that when ASNode (raptor client), which is called from CoordinateSystemPost, can retrieve the just written project+cp
+      await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+      log.LogDebug($"Created CustomerProject {customerProject}");
 
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
@@ -339,17 +333,7 @@ namespace Controllers
               )));
         }
       }
-
-      //Send boundary as old format on kafka queue
-      project.ProjectBoundary = kafkaProjectBoundary;
-      var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
-        {
-          new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
-        });
-      //Save boundary as WKT
-      project.ProjectBoundary = databaseProjectBoundary;
+      return project; // legacyID may have been added
     }
 
     /// <summary>
@@ -376,20 +360,39 @@ namespace Controllers
 
 
     /// <summary>
-    /// Creates an association.
+    /// Creates Kafka events.
     /// </summary>
+    /// <param name="project"></param>
     /// <param name="customerProject">The create projectCustomer event</param>
     /// <returns></returns>
-    private async Task CreateAssociateProjectCustomer(AssociateProjectCustomer customerProject)
+    private async Task CreateKafkaEvents(CreateProjectEvent project, AssociateProjectCustomer customerProject)
     {
-      log.LogDebug($"Associating Project {customerProject.ProjectUID} with Customer {customerProject.CustomerUID}");
-      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
+      log.LogDebug($"CreateProjectEvent on kafka queue {JsonConvert.SerializeObject(project)}");
+      string wktBoundary = project.ProjectBoundary;
+      
+      // Convert to old format for Kafka for consistency on kakfa queue
+      string kafkaBoundary = project.ProjectBoundary
+        .Replace(ProjectBoundaryValidator.POLYGON_WKT, string.Empty)
+        .Replace("))", string.Empty)
+        .Replace(',', ';')
+        .Replace(' ', ',');
+
+      var messagePayloadProject = JsonConvert.SerializeObject(new { CreateProjectEvent = project });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
-          new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
+          new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayloadProject)
         });
-      await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+      //Save boundary as WKT
+      project.ProjectBoundary = wktBoundary;
+
+      log.LogDebug($"AssociateCustomerProjectEvent on kafka queue {customerProject.ProjectUID} with Customer {customerProject.CustomerUID}");
+      var messagePayloadCustomerProject = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayloadCustomerProject)
+        });
     }
 
     /// <summary>
