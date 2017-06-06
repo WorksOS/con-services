@@ -134,10 +134,10 @@ namespace TCCFileAccess
             PutFileRequest sendFileParams = new PutFileRequest()
             {
                 filespaceid = filespaceId,
-                path = path,
+                path = WebUtility.UrlEncode(path),
                 replace = true,
                 commitUpload = true, 
-                filename = filename
+                filename = WebUtility.UrlEncode(filename)
             };
             if (String.IsNullOrEmpty(tccBaseUrl))
                 throw new Exception("Configuration Error - no TCC url specified");
@@ -200,7 +200,7 @@ namespace TCCFileAccess
             GetFileParams getFileParams = new GetFileParams
             {
                 filespaceid = filespaceId,
-                path = fullName
+                path = WebUtility.UrlEncode(fullName)
             };
 
             if (String.IsNullOrEmpty(tccBaseUrl))
@@ -250,9 +250,9 @@ namespace TCCFileAccess
                 RenParams renParams = new RenParams
                 {
                     filespaceid = org.filespaceId,
-                    path = srcFullName,
+                    path = WebUtility.UrlEncode(srcFullName),
                     newfilespaceid = org.filespaceId,
-                    newPath = dstFullName,
+                    newPath = WebUtility.UrlEncode(dstFullName),
                     merge = false,
                     replace = true
                 };
@@ -288,7 +288,7 @@ namespace TCCFileAccess
                 DirParams dirParams = new DirParams
                 {
                     filespaceid = org.filespaceId,
-                    path = path,
+                    path = WebUtility.UrlEncode(path),
                     recursive = false,
                     filterfolders = true,
                     //   filemasklist = "*.*"
@@ -317,7 +317,7 @@ namespace TCCFileAccess
                 LastDirChangeParams lastDirChangeParams = new LastDirChangeParams
                 {
                     filespaceid = filespaceId,
-                    path = path,
+                    path = WebUtility.UrlEncode(path),
                     recursive = true
                 };
                 var lastDirChangeResult = await ExecuteRequest<LastDirChangeResult>(Ticket, "LastDirChange", lastDirChangeParams);
@@ -359,7 +359,7 @@ namespace TCCFileAccess
             GetFileAttributesParams getFileAttrParams = new GetFileAttributesParams
             {
               filespaceid = filespaceId,
-              path = path
+              path = WebUtility.UrlEncode(path)
             };
             var getFileAttrResult = await ExecuteRequest<GetFileAttributesResult>(Ticket, "GetFileAttributes", getFileAttrParams);
             if (getFileAttrResult != null)
@@ -398,7 +398,7 @@ namespace TCCFileAccess
             DeleteFileParams deleteParams = new DeleteFileParams
             {
               filespaceid = filespaceId,
-              path = fullName,
+              path = WebUtility.UrlEncode(fullName),
               recursive = false
             };
             var deleteResult = await ExecuteRequest<DeleteFileResult>(Ticket, "Del", deleteParams);
@@ -427,7 +427,7 @@ namespace TCCFileAccess
             MkDir mkDirParams = new MkDir
             {
               filespaceid = filespaceId,
-              path = path,
+              path = WebUtility.UrlEncode(path),
               force = true
             };
             var mkDirResult = await ExecuteRequest<MkDirResult>(Ticket, "MkDir", mkDirParams);
@@ -569,7 +569,7 @@ namespace TCCFileAccess
           CreateFileJobParams jobParams = new CreateFileJobParams
           {
             filespaceid = filespaceId,
-            path = path,
+            path = WebUtility.UrlEncode(path),
             type = "GEOFILEINFO",
             forcerender = false
           };
