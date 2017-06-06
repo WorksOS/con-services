@@ -6,9 +6,9 @@ namespace TCCFileAccess.Models
 {
   public class CheckFileJobStatusResult : ApiResult
   {
-    public DateTime createTime;
-    public DateTime startTime;
-    public DateTime endTime;
+    public DateTime? createTime;
+    public DateTime? startTime;
+    public DateTime? endTime;
     public List<string> failedTiles;
     public int filestoproceed;
     public string memberdisplayname;
