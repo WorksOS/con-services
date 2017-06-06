@@ -119,7 +119,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
                 "Failed to get requested " + FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION + " file with error: {0}.",
                 ContractExecutionStates.FirstNameWithOffset((int)result2))));
           }
-          await CreateTransformFile(request.projectId.Value, request.File, prjFile, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
+          await CreateTransformFile(request.projectId.Value, request.File, haFile, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
      
 
           if (fileType != ImportedFileTypeEnum.Linework)

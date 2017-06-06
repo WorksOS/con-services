@@ -66,7 +66,8 @@ namespace WebApiModels.Notification.Helpers
         //Do we care if this fails?
       }
 
-      var zoomResult = await CalculateTileZoomRange(fileDescr.filespaceId, fileDescr.path + "/" + generatedName);
+      var fullGeneratedName = fileDescr.path + "/" + generatedName;
+      var zoomResult = await CalculateTileZoomRange(fileDescr.filespaceId, fullGeneratedName);
       success = zoomResult.success;
       if (success)
       {
@@ -77,7 +78,7 @@ namespace WebApiModels.Notification.Helpers
         if (regenerate || ! await fileRepo.FolderExists(fileDescr.filespaceId, tilePath))
         {
           for (int zoomLevel = zoomResult.minZoom; zoomLevel <= zoomResult.maxZoom; zoomLevel++)
-            success = success && await GenerateDxfTiles(projectId, generatedName, tilePath, fileDescr.filespaceId, zoomLevel);
+            success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.filespaceId, zoomLevel);
         }
         else
         {
@@ -87,7 +88,7 @@ namespace WebApiModels.Notification.Helpers
             string zoomPath = string.Format("{0}/{1}", tilePath, zoomFolder);
 
             if (! await fileRepo.FolderExists(fileDescr.filespaceId, zoomPath))
-              success = success && await GenerateDxfTiles(projectId, generatedName, tilePath, fileDescr.filespaceId, zoomLevel);
+              success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.filespaceId, zoomLevel);
           }
         }
       }

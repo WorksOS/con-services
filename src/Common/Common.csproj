@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.3" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.2-beta1" />
-    <PackageReference Include="TCCFileAccess.netcore" Version="1.1.2" />
+    <PackageReference Include="TCCFileAccess.netcore" Version="1.1.6" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.1" />
     <PackageReference Include="ConfigurationStore.netcore" Version="1.0.10" />
     <PackageReference Include="MasterDataProxies.netcore" Version="1.1.4" />
