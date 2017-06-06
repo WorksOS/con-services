@@ -104,6 +104,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
               string.Format("Failed to get requested " + FileUtils.PROJECTION_FILE_EXTENSION + " file with error: {0}.",
                 ContractExecutionStates.FirstNameWithOffset((int)result2))));
           }
+          //Note: Cannot have async void therefore bool result from method. However, failure handled inside method so ignore return value here.
           await CreateTransformFile(request.projectId.Value, request.File, prjFile, suffix, FileUtils.PROJECTION_FILE_EXTENSION);
 
           //Get GM_XFORM file contents from Raptor

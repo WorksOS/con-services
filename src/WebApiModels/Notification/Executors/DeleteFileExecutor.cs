@@ -66,11 +66,11 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
         {
           var suffix = FileUtils.GeneratedFileSuffix(fileType);
           //Delete generated files
-          bool success = await DeleteGeneratedFile(request.File, suffix, FileUtils.PROJECTION_FILE_EXTENSION) &&
-                         await DeleteGeneratedFile(request.File, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
+          bool success = await DeleteGeneratedFile(request.projectId.Value, request.File, suffix, FileUtils.PROJECTION_FILE_EXTENSION) &&
+                         await DeleteGeneratedFile(request.projectId.Value, request.File, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
           if (fileType != ImportedFileTypeEnum.Linework)
           {
-            success = success && await DeleteGeneratedFile(request.File, suffix, FileUtils.DXF_FILE_EXTENSION);
+            success = success && await DeleteGeneratedFile(request.projectId.Value, request.File, suffix, FileUtils.DXF_FILE_EXTENSION);
           }
           if (!success)
           {
@@ -108,18 +108,26 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     /// <summary>
     /// Delete a generated file associated with the specified file
     /// </summary>
+    /// <param name="projectId">The id of the project to which the file belongs</param>
     /// <param name="fileDescr">The original file</param>
     /// <param name="suffix">The suffix applied to the file name to get the generated file name</param>
     /// <param name="extension">The file extension of the generated file</param>
     /// <returns>True if the file is successfully deleted, false otherwise</returns>
-    private async Task<bool> DeleteGeneratedFile(FileDescriptor fileDescr, string suffix, string extension)
+    private async Task<bool> DeleteGeneratedFile(long projectId, FileDescriptor fileDescr, string suffix, string extension)
     {
       string generatedName = FileUtils.GeneratedFileName(fileDescr.fileName, suffix, extension);
       log.LogDebug("Deleting generated file {0}", generatedName);
       string fullName = fileDescr.path + "/" + generatedName;
       if (await fileRepo.FileExists(fileDescr.filespaceId, fullName))
       {
-        return await fileRepo.DeleteFile(fileDescr.filespaceId, fullName);
+        if (!await fileRepo.DeleteFile(fileDescr.filespaceId, fullName))
+        {
+          log.LogWarning("Failed to delete file {0} for project {1}", generatedName, projectId);
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+              "Failed to delete associated file " + generatedName));
+        }
+        return true;
       }
       return true;//TODO: Is this what we want if file not there?
     }
