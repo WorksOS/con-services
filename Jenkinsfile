@@ -1,8 +1,6 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
 
-node('Ubuntu_Slave') {
-    //Apply version number
-    //We will later use it to tag images
+    def result = ''
 
     def branch = env.BRANCH_NAME
     def buildNumber = env.BUILD_NUMBER
@@ -24,6 +22,12 @@ node('Ubuntu_Slave') {
     
     def versionNumber = versionPrefix + buildNumber
     def fullVersion = versionNumber + suffix
+
+
+node('Ubuntu_Slave') {
+    //Apply version number
+    //We will later use it to tag images
+
     def workspacePath =""
     currentBuild.displayName = versionNumber + suffix
 
@@ -53,6 +57,8 @@ node('Ubuntu_Slave') {
     publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])
     
     echo "Build result is ${currentBuild.result}"
+    result = currentBuild.result
+
     if (currentBuild.result=='SUCCESS') {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Get ecr login, push image to Repo'
@@ -104,5 +110,23 @@ node('Ubuntu_Slave') {
 	}
 
     }
+}
 
+node ('Jenkins-Win2016-Raptor')
+{
+	if (branch.contains("master"))
+	{
+         if (result=='SUCCESS')
+          {
+           currentBuild.displayName = versionNumber + suffix
+  
+           stage 'Checkout'
+           checkout scm
+
+           stage 'Build'
+           bat "build47.bat"
+
+         }
+
+        }
 }
