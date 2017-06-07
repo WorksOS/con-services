@@ -128,6 +128,8 @@ node ('Jenkins-Win2016-Raptor')
 
            stage 'Build'
            bat "build47.bat"
+          
+           archiveArtifacts artifacts: 'ProjectWebApiNet47.zip', fingerprint: true 
 
          }
 
