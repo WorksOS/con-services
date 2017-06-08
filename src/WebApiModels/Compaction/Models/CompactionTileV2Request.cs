@@ -62,7 +62,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Models
       };
     }
     protected override int cmvDetailsColorNumber => CMV_DETAILS_COLOR_NUMBER;
-    public override bool setSummaryDataLayersVisibility => true;
+    public override bool setSummaryDataLayersVisibility => false;
 
     private const int CMV_DETAILS_COLOR_NUMBER = 11;
   }

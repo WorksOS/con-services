@@ -11,7 +11,7 @@ namespace VSS.Raptor.Service.Common.Models
   public abstract class RaptorHelper : ProjectID
   {
     protected virtual int cmvDetailsColorNumber => CMV_DETAILS_COLOR_NUMBER;
-    public virtual bool setSummaryDataLayersVisibility => false;
+    public virtual bool setSummaryDataLayersVisibility => true;
     
     private const int CMV_DETAILS_COLOR_NUMBER = 5;
 
