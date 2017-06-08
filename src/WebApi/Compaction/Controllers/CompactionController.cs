@@ -28,6 +28,7 @@ using VSS.Raptor.Service.WebApiModels.Report.Executors;
 using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.ColorValue;
+using VSS.Raptor.Service.WebApiModels.Compaction.Executors;
 
 namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 {
@@ -1442,7 +1443,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
                 filter == null ? FilterLayerMethod.None : filter.layerType.Value,
                 bbox, null, width, height);
             tileRequest.Validate();
-            var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null)
+            var tileResult = RequestExecutorContainer.Build<CompactionExecutor>(logger, raptorClient, null)
                 .Process(tileRequest) as TileResult;
             return tileResult;
         }

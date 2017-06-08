@@ -16,7 +16,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// Requesting patch number 0 will additionally return a summation of the total number of patches of the requested size that need to be requested in order to assemble the
     /// complete data set.
     /// </summary>
-    public class PatchRequest : RaptorValidator, IValidatable
+    public class PatchRequest : RaptorHelper
     {
         /// <summary>
         /// An identifying string from the caller

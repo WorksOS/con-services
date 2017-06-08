@@ -61,10 +61,8 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Models
         representationalDisplayColor = representationalDisplayColor
       };
     }
-    protected override int cmvDetailsColorNumber
-    {
-      get { return CMV_DETAILS_COLOR_NUMBER; }
-    }
+    protected override int cmvDetailsColorNumber => CMV_DETAILS_COLOR_NUMBER;
+    public override bool setSummaryDataLayersVisibility => true;
 
     private const int CMV_DETAILS_COLOR_NUMBER = 11;
   }

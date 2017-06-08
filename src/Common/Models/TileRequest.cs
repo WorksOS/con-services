@@ -16,7 +16,7 @@ namespace VSS.Raptor.Service.Common.Models
   /// The request representation for rendering a tile of thematic information such as elevation, compaction, temperature etc
   /// The bounding box of the area to be rendered may be specified in either WGS84 lat/lon or cartesian grid coordinates in the project coordinate system.
   /// </summary>
-  public class TileRequest : RaptorValidator, IValidatable
+  public class TileRequest : RaptorHelper
   {
 
     /// <summary>

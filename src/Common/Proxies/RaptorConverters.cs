@@ -909,18 +909,22 @@ namespace VSS.Raptor.Service.Common.Proxies
                                                    LiftBuildSettings liftSettings,
                                                    double volumesNoChangeTolerance,
                                                    FilterLayerMethod filterLayerMethod,
-                                                   DisplayMode mode)
+                                                   DisplayMode mode,
+                                                   bool setSummaryDataLayersVisibility)
         {
           TSVOICOptions options = new TSVOICOptions();
 
           if (colorSettingsFlags == null)
-            colorSettingsFlags = new ColorSettingsFlags()
+          {
+            colorSettingsFlags = new ColorSettingsFlags();
+            if (setSummaryDataLayersVisibility)
             {
-              ccvSummaryWorkInProgressLayerVisible = true,
-              ccvSummaryTooThickLayerVisible = true,
-              mdpSummaryWorkInProgressLayerVisible = true,
-              mdpSummaryTooThickLayerVisible = true
-            };
+              colorSettingsFlags.ccvSummaryWorkInProgressLayerVisible = true;
+              colorSettingsFlags.ccvSummaryTooThickLayerVisible = true;
+              colorSettingsFlags.mdpSummaryWorkInProgressLayerVisible = true;
+              colorSettingsFlags.mdpSummaryTooThickLayerVisible = true;
+            }
+          };
 
           if (colorSettingsFlags != null && liftSettings != null)
           {
