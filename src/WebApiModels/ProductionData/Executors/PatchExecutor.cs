@@ -63,7 +63,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
                 filter1,
                 filter2,
                 RaptorConverters.convertOptions(null, request.liftBuildSettings,
-                        request.computeVolNoChangeTolerance, request.filterLayerMethod, request.mode),
+                        request.computeVolNoChangeTolerance, request.filterLayerMethod, request.mode, request.setSummaryDataLayersVisibility),
                 RaptorConverters.DesignDescriptor(request.designDescriptor),
                 volType,
                 request.patchNumber,
