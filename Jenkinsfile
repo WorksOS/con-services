@@ -62,7 +62,7 @@ node('Ubuntu_Slave') {
     echo "Build result is ${currentBuild.result}"
     result = currentBuild.result
 
-    if (currentBuild.result=='SUCCESS' && !branch.contains("master") {
+    if (currentBuild.result=='SUCCESS' && !branch.contains("master")) {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Get ecr login, push image to Repo'
        sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
