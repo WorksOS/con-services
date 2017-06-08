@@ -64,7 +64,7 @@ dir ("MasterDataConsumers")
 
     result = currentBuild.result
 
-    if (currentBuild.result=='SUCCESS' && !branch.contains("master") {
+    if (currentBuild.result=='SUCCESS' && !branch.contains("master")) {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Build Images'
        stage 'Get ecr login, push image to Repo'
