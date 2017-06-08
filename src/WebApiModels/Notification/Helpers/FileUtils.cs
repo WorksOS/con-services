@@ -55,29 +55,11 @@ namespace WebApiModels.Notification.Helpers
     {
       var shortFileName = Path.GetFileNameWithoutExtension(fileName);
       var format = "yyyy-MM-ddTHH:mm:ssZ";
-      DateTime dateTime;
-      if (IsDateTimeISO8601(shortFileName.Substring(shortFileName.Length - format.Length), format, out dateTime))
-        return dateTime;
-      return null;
+      DateTime dateTime = shortFileName.Substring(shortFileName.Length - format.Length).IsDateTimeISO8601(format);
+      return dateTime == DateTime.MinValue ? (DateTime?)null : dateTime;
     }
 
-    /// <summary>
-    /// Determines if the string contains an ISO8601 date time
-    /// </summary>
-    /// <param name="inputStringUTC">The string to check</param>
-    /// <param name="format">The format to use when checking</param>
-    /// <param name="resultDateTimeUTC">The date time from the string</param>
-    /// <returns>True if the date time was successfully extracted</returns>
-    private static bool IsDateTimeISO8601(string inputStringUTC, string format, out DateTime resultDateTimeUTC)
-    {
-      if (string.IsNullOrWhiteSpace(inputStringUTC))
-      {
-        resultDateTimeUTC = DateTime.MinValue;
-        return false;
-      }
-
-      return DateTime.TryParseExact(inputStringUTC, format, new CultureInfo("en-US"), DateTimeStyles.AdjustToUniversal, out resultDateTimeUTC);
-    }
+ 
 
     /// <summary>
     /// Generates an associated file name for the file associated with the specified file
@@ -128,5 +110,28 @@ namespace WebApiModels.Notification.Helpers
     public const string PROJECTION_FILE_EXTENSION = ".PRJ";
     public const string HORIZONTAL_ADJUSTMENT_FILE_EXTENSION = ".GM_XFORM";
 
+  }
+
+  public static class DateTimeextensions
+  {
+    /// <summary>
+    /// Determines if the string contains an ISO8601 date time
+    /// </summary>
+    /// <param name="inputStringUtc">The string to check</param>
+    /// <param name="format">The format to use when checking</param>
+    /// <returns>The date time from the string if ISO8601 else DateTime.MinDate</returns>
+    public static DateTime IsDateTimeISO8601(this string inputStringUtc, string format)
+    {
+      DateTime utcDate = DateTime.MinValue;
+      if (!string.IsNullOrWhiteSpace(inputStringUtc))
+      {
+        if (!DateTime.TryParseExact(inputStringUtc, format, new CultureInfo("en-US"), DateTimeStyles.AdjustToUniversal,
+          out utcDate))
+        {
+          utcDate = DateTime.MinValue;
+        }
+      }
+      return utcDate;
+    }
   }
 }
