@@ -5,6 +5,7 @@ services:
     environment:
      - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project
      - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-geofenceservice/1.0
+     - PREFERENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-preferenceservice/1.0
      - ASNODEIP=10.97.96.134
      - IONODEIP=10.97.96.92
      - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
@@ -12,6 +13,10 @@ services:
      - TCCUSERNAME=vldev
      - TCCPWD=vldev_key
      - TCCORG=vldev
+     - TCCFILESPACENAME=vldatastore-dev
+     - TILE_RENDER_MAX_ZOOM_LEVEL=21
+     - TILE_RENDER_MAX_ZOOM_RANGE=14
+     - TILE_RENDER_WAIT_INTERVAL=2000
     ports:
      - "5001:80"
     restart: always
