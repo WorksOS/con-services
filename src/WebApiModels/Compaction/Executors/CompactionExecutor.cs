@@ -1,13 +1,25 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.IO;
+using System.Net;
+using ASNodeDecls;
+using Common.Executors;
+using Microsoft.Extensions.Logging;
+using SVOICFilterSettings;
+using SVOICVolumeCalculationsDecls;
+using VLPDDecls;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Raptor.Service.Common.Models;
+using VSS.Raptor.Service.Common.Proxies;
+using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Raptor.Service.WebApiModels.Compaction.Models;
 
 namespace VSS.Raptor.Service.WebApiModels.Compaction.Executors
 {
   /// <summary>
   /// Processes the request to xxx
   /// </summary>
-  public class CompactionExecutor : RequestExecutorContainer
+  public class CompactionExecutor : TilesBaseExecutor
   {
     public CompactionExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
     {
@@ -20,15 +32,6 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Executors
     {
     }
 
-    /// <summary>
-    ///   Processes the xxx request
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item">Request to process</param>
-    /// <returns>a xxxResult if successful</returns>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      return null;
-    }
+    protected override TileRequest GetRequest(object item) => item as CompactionTileV2Request;
   }
 }

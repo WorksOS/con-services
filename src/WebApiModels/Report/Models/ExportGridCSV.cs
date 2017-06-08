@@ -30,7 +30,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
     /// <summary>
     /// The representation of a pass counts request
     /// </summary>
-    public class ExportGridCSV : RaptorValidator, IValidatable
+    public class ExportGridCSV : RaptorHelper
     {
         /// <summary>
         /// An identifier from the caller. 
