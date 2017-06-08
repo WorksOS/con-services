@@ -914,13 +914,13 @@ namespace VSS.Raptor.Service.Common.Proxies
           TSVOICOptions options = new TSVOICOptions();
 
           if (colorSettingsFlags == null)
-            // All the flags below should be set to false as this data is not required to be displayed on map at present
-            /*{
+            colorSettingsFlags = new ColorSettingsFlags()
+            {
               ccvSummaryWorkInProgressLayerVisible = true,
               ccvSummaryTooThickLayerVisible = true,
               mdpSummaryWorkInProgressLayerVisible = true,
               mdpSummaryTooThickLayerVisible = true
-            }*/;
+            };
 
           if (colorSettingsFlags != null && liftSettings != null)
           {
