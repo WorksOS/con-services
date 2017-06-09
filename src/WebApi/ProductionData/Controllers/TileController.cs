@@ -7,7 +7,7 @@ using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
-using WebApiModels.ProductionData.Executors;
+using Common.Executors;
 
 namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 {

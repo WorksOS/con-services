@@ -1,11 +1,10 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Runtime.Remoting.Messaging;
 using System.Security.Principal;
+using Common.Executors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -21,14 +20,10 @@ using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
 using VSS.Raptor.Service.WebApiModels.Compaction.Models;
 using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
 using VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Report.Executors;
 using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.ColorValue;
-using VSS.Raptor.Service.WebApiModels.Compaction.Executors;
 
 namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 {
@@ -1437,19 +1432,20 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
                 mode == DisplayMode.Height ? GetElevationRange(projectId, filter) : null;
             //Fix bug in Raptor - swap elevations if required
             elevExtents?.SwapElevationsIfRequired();
-            CompactionTileV2Request tileRequest = CompactionTileV2Request.CreateCompactionRaptorTileRequest(projectId, null, mode,
+            TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode,
                 CompactionSettings.CompactionPalette(mode, elevExtents),
                 liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0,
                 filter == null ? FilterLayerMethod.None : filter.layerType.Value,
-                bbox, null, width, height);
+                bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, false);
             tileRequest.Validate();
-            var tileResult = RequestExecutorContainer.Build<CompactionExecutor>(logger, raptorClient, null)
+            var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null)
                 .Process(tileRequest) as TileResult;
             return tileResult;
         }
 
 
-        #endregion
+    #endregion
 
-    }
+    private const int CMV_DETAILS_NUMBER_OF_COLORS = 11;
+  }
 }

@@ -163,7 +163,9 @@ namespace VSS.Raptor.Service.Common.Models
         BoundingBox2DGrid boundingBoxGrid,
         ushort width,
         ushort height,
-        uint representationalDisplayColor = 0
+        uint representationalDisplayColor = 0,
+        uint cmvDetailsColorNumber = 5,
+        bool setSummaryDataLayersVisibility = true
       )
       {
         return new TileRequest
@@ -185,7 +187,9 @@ namespace VSS.Raptor.Service.Common.Models
           boundBoxGrid = boundingBoxGrid,
           width = width,
           height = height,
-          representationalDisplayColor = representationalDisplayColor
+          representationalDisplayColor = representationalDisplayColor,
+          cmvDetailsColorNumber = cmvDetailsColorNumber,
+          setSummaryDataLayersVisibility = setSummaryDataLayersVisibility
         };
       }
 
