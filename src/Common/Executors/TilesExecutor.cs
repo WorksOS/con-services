@@ -3,12 +3,8 @@ using Microsoft.Extensions.Logging;
 using SVOICFilterSettings;
 using SVOICVolumeCalculationsDecls;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using VLPDDecls;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Interfaces;
@@ -18,13 +14,13 @@ using VSS.Raptor.Service.Common.ResultHandling;
 
 namespace Common.Executors
 {
-  public abstract class TilesBaseExecutor : RequestExecutorContainer
+  public class TilesExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
     /// <param name="raptorClient"></param>
-    public TilesBaseExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
+    public TilesExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
     {
       // ...
     }
@@ -32,7 +28,7 @@ namespace Common.Executors
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public TilesBaseExecutor()
+    public TilesExecutor()
     {
       // ...
     }
@@ -46,7 +42,7 @@ namespace Common.Executors
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
       ContractExecutionResult result = null;
-      TileRequest request = GetRequest(item);
+      TileRequest request = item as TileRequest;
 
       try
       {
@@ -118,8 +114,6 @@ namespace Common.Executors
       }
       return result;
     }
-
-    protected abstract TileRequest GetRequest(object item);
 
     private TileResult ConvertResult(MemoryStream tile, TASNodeErrorStatus raptorResult)
     {
