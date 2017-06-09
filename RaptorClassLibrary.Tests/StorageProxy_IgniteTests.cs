@@ -14,7 +14,7 @@ namespace VSS.VisionLink.Raptor.Storage.Tests
         [TestMethod()]
         public void Test_StorageProxy_Ignite_Creation()
         {
-            var proxy = new StorageProxy_Ignite();
+            var proxy = new StorageProxy_Ignite("Test");
 
             Assert.IsTrue(proxy != null, "Storage proxy not created");
         }

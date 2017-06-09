@@ -9,6 +9,7 @@ using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Events;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
+using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
@@ -889,7 +890,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             return true;
         }
 
-        public ServerRequestResult RetrieveSubGrid(CombinedFilter filter,
+        public ServerRequestResult RetrieveSubGrid(// IStorageProxy storageProxy,
+                                                   CombinedFilter filter,
                                                    int maxNumberOfPassesToReturn,
                                                    bool hasOverrideSpatialCellRestriction,
                                                    BoundingIntegerExtent2D overrideSpatialCellRestriction,
@@ -956,7 +958,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     //      SIGLogMessage.PublishNoODS(Nil, Format('Begin LocateSubGridContaining at %dx%d', [CellX, CellY]), slmcDebug); {SKIP}
 
                     //                    _SubGrid = SiteModel.Grid.LocateSubGridContaining(CellX, CellY, Level);
-                    _SubGrid = SubGridUtilities.LocateSubGridContaining(StorageProxy.Instance(), SiteModel.Grid, CellX, CellY, Level, 0, false, false);
+                    _SubGrid = SubGridUtilities.LocateSubGridContaining(/*storageProxy, */SiteModel.Grid, CellX, CellY, Level, 0, false, false); 
 
                     /* TODO ???:
                     if (_SubGrid != null && _SubGrid.LockToken != ASubGridLockToken)

@@ -13,16 +13,36 @@ namespace VSS.VisionLink.Raptor.Storage
     /// </summary>
     public static class StorageProxy
     {
-        private static IStorageProxy instance = null;
+        private static Object lockObj = new Object();
 
-        public static IStorageProxy Instance()
+        private static IStorageProxy raptorInstance = null;
+        private static IStorageProxy[] spatialInstance = new IStorageProxy[RaptorConfig.numSpatialProcessingDivisions];
+//        private static string spatialInstanceDivision = "";
+
+        public static IStorageProxy RaptorInstance()
         {
-            if (instance == null)
+            if (raptorInstance == null)
             {
-                instance = StorageProxyFactory.Storage();
+                raptorInstance = StorageProxyFactory.Storage("Raptor");
             }
 
-            return instance;
+            return raptorInstance;
+        }
+
+        public static IStorageProxy SpatialInstance(uint spatialDivision)
+        {
+            if (spatialInstance[spatialDivision] == null)
+            {
+                lock (lockObj)
+                {
+                    if (spatialInstance[spatialDivision] == null)
+                    {
+                        spatialInstance[spatialDivision] = StorageProxyFactory.Storage(spatialDivision.ToString());
+                    }
+                }
+            }
+
+            return spatialInstance[spatialDivision];
         }
     }
 }

@@ -41,10 +41,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
                 message.Position = 0;
                 ClientGrid.Read(new BinaryReader(message));
 
-//                Console.WriteLine("Transfering response#{0} to processor", ++responseCounter);
+                //                Console.WriteLine("Transfering response#{0} to processor", ++responseCounter);
 
-                // Send the decoded grid to the PipelinedTask
-                Task.TransferResponse(ClientGrid);
+                // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialised into the task
+                // (no assumption of thread safety within the task itself)
+                lock (Task)
+                {
+                    Task.TransferResponse(ClientGrid);
+                }
             }
             catch ( Exception E )
             {

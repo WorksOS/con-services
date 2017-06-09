@@ -101,6 +101,7 @@
     <Compile Include="Geometry\SimpleTriangle.cs" />
     <Compile Include="Geometry\UTMCoordPointPair.cs" />
     <Compile Include="Geometry\XYZ.cs" />
+    <Compile Include="GridFabric\Affinity\RaptorSpatialAffinityFunction.cs" />
     <Compile Include="GridFabric\Arguments\SubGridsRequestArgument.cs" />
     <Compile Include="GridFabric\Arguments\TileRenderRequestArgument.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFunc.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Pipelines\RequestAnalyser.cs" />
     <Compile Include="Pipelines\SubGridPipelineBase.cs" />
     <Compile Include="ProductionDataExistanceMap.cs" />
+    <Compile Include="RaptorServerConfig.cs" />
     <Compile Include="Rendering\MapSurface.cs" />
     <Compile Include="Rendering\Palettes\HeightPalette.cs" />
     <Compile Include="Rendering\Palettes\Interfaces\IPlanViewPalette.cs" />
@@ -129,7 +131,7 @@
     <Compile Include="Servers\Client\RaptorApplicationServiceServer.cs" />
     <Compile Include="Servers\Client\RaptorClientServer.cs" />
     <Compile Include="Servers\Client\TAGFileProcessingServer.cs" />
-    <Compile Include="Servers\Compute\RaptorComputeServer.cs" />
+    <Compile Include="Servers\Compute\RaptorCacheComputeServer.cs" />
     <Compile Include="Servers\Client\RaptorGenericApplicationServiceServer.cs" />
     <Compile Include="Servers\Compute\RaptorSubGridProcessingServer.cs" />
     <Compile Include="Servers\RaptorIgniteServer.cs" />

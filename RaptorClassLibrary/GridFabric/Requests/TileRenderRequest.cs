@@ -1,4 +1,5 @@
 ﻿using Apache.Ignite.Core;
+using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using System;
 using System.Collections.Generic;
@@ -81,8 +82,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             // Get a reference to the compute cluster group and send the request to it for processing
             // Note: Broadcast will block until all compute nodes receiving the request have responded, or
             // until the internal Ignite timeout expires
-            ICompute group = ignite.GetCompute();
-            Bitmap result = group.Apply(func, arg);
+
+
+            IClusterGroup group = ignite.GetCluster().ForRemotes().ForServers().ForAttribute("Role", "PSNode");
+            ICompute compute = group.GetCompute();
+            Bitmap result = compute.Apply(func, arg);
 
             // Send the appropriate response to the caller
             return result;

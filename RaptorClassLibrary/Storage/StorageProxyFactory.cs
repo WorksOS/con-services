@@ -13,13 +13,13 @@ namespace VSS.VisionLink.Raptor.Storage
     public static class StorageProxyFactory
     {
         /// <summary>
-        /// Creates the storage proxy to be used. Currnetly hard wired to the Igniote storage proxy,
+        /// Creates the storage proxy to be used. Currently hard wired to the Igniote storage proxy,
         /// should be replaced with the type from Dependency Injection when implemented.
         /// </summary>
         /// <returns></returns>
-        public static IStorageProxy Storage()
+        public static IStorageProxy Storage(string gridName)
         {
-            return new StorageProxy_Ignite();
+            return new StorageProxy_Ignite(gridName);
         }
     }
 }

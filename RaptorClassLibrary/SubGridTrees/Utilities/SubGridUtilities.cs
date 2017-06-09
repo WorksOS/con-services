@@ -32,8 +32,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
             //         "GetOTGLeafSubGridCellIndex given cell address out of bounds for this subgrid");
         }
 
-        public static ISubGrid LocateSubGridContaining(IStorageProxy storageProxy,
-            ServerSubGridTree ForSubGridTree,
+        public static ISubGrid LocateSubGridContaining(//IStorageProxy storageProxy,
+                                 ServerSubGridTree ForSubGridTree,
                                  //const GridDataCache : TICDataStoreCache;
                                  uint CellX,
                                  uint CellY,
@@ -231,7 +231,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
                     // This is a different approach to desktop systems where the individual node subgrids
                     // contain mini existence maps for the subgrids below them.
 
-                    if (ForSubGridTree.LoadLeafSubGrid(storageProxy,
+                    if (ForSubGridTree.LoadLeafSubGrid(//storageProxy,
                                            new SubGridCellAddress(CellX, CellY, false, false),
                                            true, true,
                                            LeafSubGrid))

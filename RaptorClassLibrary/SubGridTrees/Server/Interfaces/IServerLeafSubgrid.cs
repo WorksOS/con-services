@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
@@ -25,7 +26,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
         void AllocateLeafFullPassStacks();
         void AllocateLeafLatestPassGrid();
 
-        bool LoadSegmentFromStorage(string FileName, SubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses, SiteModel SiteModelReference);
+        bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, SubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses, SiteModel SiteModelReference);
 
         void Integrate(ServerSubGridTreeLeaf Source, SubGridSegmentIterator Iterator, bool IntegratingIntoIntermediaryGrid);
     }

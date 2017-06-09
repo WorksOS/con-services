@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         {
             if (instance == null)
             {
-                instance = new SiteModels(StorageProxyFactory.Storage());                
+                instance = new SiteModels(StorageProxyFactory.Storage("Raptor"));
             }
 
             return instance;

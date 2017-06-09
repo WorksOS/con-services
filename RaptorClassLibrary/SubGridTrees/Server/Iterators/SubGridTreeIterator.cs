@@ -98,7 +98,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         // the subgrid tree which marks the progress of the iteration
         SubGridTreeIteratorStateIndex[] iterationState = new SubGridTreeIteratorStateIndex[SubGridTree.SubGridTreeLevels];
 
-        IStorageProxy StorageProxy = null;
+        IStorageProxy[] SpatialStorageProxy = null;
 
         // FStorageClasses controls the storage classes that will be retrieved from the database
         // for each subgrid in the iteration
@@ -174,7 +174,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
         protected virtual ISubGrid GetCurrentSubGrid() => CurrentSubGrid;
 
-        public SubGridTreeIterator(IStorageProxy storageProxy,
+        public SubGridTreeIterator(IStorageProxy[] spatialStorageProxy,
                                    bool subGridsInServerDiskStore)
         {
             //            FDataStoreCache = ADataStoreCache;
@@ -182,7 +182,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             //          FLockToken = -1;
 
             SubGridsInServerDiskStore = subGridsInServerDiskStore;
-            StorageProxy = storageProxy;
+            SpatialStorageProxy = spatialStorageProxy;
         }
 
         public void CurrentSubgridDestroyed() => CurrentSubGrid = null;
@@ -231,12 +231,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                             }
                             else
                             {
+                                uint CellX = (uint)(iterationState[LevelIdx].SubGrid.OriginX + iterationState[LevelIdx].XIdx * SubGridTree.SubGridTreeDimension);
+                                uint CellY = (uint)(iterationState[LevelIdx].SubGrid.OriginY + iterationState[LevelIdx].YIdx * SubGridTree.SubGridTreeDimension);
+
                                 SubGrid = SubGridUtilities.LocateSubGridContaining
-                                           (StorageProxy,
+                                           (//SpatialStorageProxy[SubGridCellAddress.ToSpatialDivisionDescriptor(CellX, CellY, RaptorConfig.numSpatialProcessingDivisions)],
                                             iterationState[LevelIdx].SubGrid.Owner as ServerSubGridTree,
                                             //null, //FDataStoreCache,
-                                            (uint)(iterationState[LevelIdx].SubGrid.OriginX + iterationState[LevelIdx].XIdx * SubGridTree.SubGridTreeDimension),
-                                            (uint)(iterationState[LevelIdx].SubGrid.OriginY + iterationState[LevelIdx].YIdx * SubGridTree.SubGridTreeDimension),
+                                            CellX, CellY,
                                             SubGridTree.SubGridTreeLevels,
                                             -1 /*FLockToken*/, false, false);
                             }

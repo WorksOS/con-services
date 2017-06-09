@@ -25,13 +25,16 @@ namespace VSS.VisionLink.Raptor.Storage
 
         private static Object LockObj = new Object();
 
-        public StorageProxy_Ignite()
+        public StorageProxy_Ignite(string gridName)
         {
             if (ignite == null)
             {
-                ignite = Ignition.TryGetIgnite("Raptor");
+                ignite = Ignition.TryGetIgnite(gridName);
 
-                cache = ignite.GetCache<String, MemoryStream>("DataModels");
+                if (ignite != null)
+                {
+                    cache = ignite.GetCache<String, MemoryStream>("DataModels");
+                }
             }
         }
 

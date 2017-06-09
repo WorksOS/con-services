@@ -123,7 +123,7 @@ namespace VSS.VisionLink.Raptor.Client
 
             // Construct an integration worker and ask it to perform the integration
             List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
-            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(StorageProxy.Instance(), integrator.TasksToProcess);
+            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(/*StorageProxy.Instance(), */integrator.TasksToProcess);
 
             try
             {
@@ -142,7 +142,7 @@ namespace VSS.VisionLink.Raptor.Client
             int count = 0;
 
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
-            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(StorageProxy.Instance(), integrator.TasksToProcess);
+            AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(/*StorageProxy.Instance(), */integrator.TasksToProcess);
 
             // Create the site model and machine etc to aggregate the processed TAG file into
             SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(2, true);

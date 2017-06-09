@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
@@ -53,7 +54,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return SegmentInfo.FileName(new SubGridCellAddress((uint)(CellAddress.X & ~SubGridTree.SubGridLocalKeyMask), (uint)(CellAddress.Y & ~SubGridTree.SubGridLocalKeyMask)));
         }
 
-        public bool LoadLeafSubGridSegment(SubGridCellAddress cellAddress,
+        public bool LoadLeafSubGridSegment(//IStorageProxy storageProxy,
+                                           SubGridCellAddress cellAddress,
                                            bool loadLatestData,
                                            bool loadAllPasses,
                                            IServerLeafSubGrid SubGrid,
@@ -95,7 +97,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             //            Debug.Assert(false, "SubGrid.LoadFromFile not implemented (should usee direct serialisation from Ignite, or serialisation of dumb dinary data from same");
             // Load the cells into it from its file
-            FileLoaded = SubGrid.LoadSegmentFromStorage(FullFileName, Segment, needToLoadLatestData, needToLoadAllPasses, SiteModelReference);
+            FileLoaded = SubGrid.LoadSegmentFromStorage(StorageProxy.SpatialInstance(cellAddress.ToSpatialDivisionDescriptor(RaptorConfig.numSpatialProcessingDivisions)),
+                                                        FullFileName, Segment, needToLoadLatestData, needToLoadAllPasses, SiteModelReference);
 
             if (!FileLoaded)
             {
@@ -115,7 +118,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return true;
         }
 
-        public bool LoadLeafSubGrid(IStorageProxy storageProxy,
+        public bool LoadLeafSubGrid(//IStorageProxy storageProxy,
                                     SubGridCellAddress CellAddress,
                                     bool loadAllPasses, bool loadLatestPasses,
                                     ServerSubGridTreeLeaf SubGrid)
@@ -154,7 +157,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 }
 
                 FullFileName = GetLeafSubGridFullFileName(CellAddress);
-                Result = SubGrid.LoadDirectoryFromFile(storageProxy, FullFileName);
+                Result = SubGrid.LoadDirectoryFromFile(FullFileName);
             }
             finally
             {

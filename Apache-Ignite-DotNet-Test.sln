@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorIgniteTest", "Windows
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorServerApplication", "RaptorServerApplication\RaptorServerApplication.csproj", "{6EAD2931-5828-4D38-B141-ECF8A76E4347}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorPSNodeServer", "RaptorPSNodeServer\RaptorPSNodeServer.csproj", "{52BDC39B-A978-454B-8725-A0A887A263E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EAD2931-5828-4D38-B141-ECF8A76E4347}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52BDC39B-A978-454B-8725-A0A887A263E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52BDC39B-A978-454B-8725-A0A887A263E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52BDC39B-A978-454B-8725-A0A887A263E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52BDC39B-A978-454B-8725-A0A887A263E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

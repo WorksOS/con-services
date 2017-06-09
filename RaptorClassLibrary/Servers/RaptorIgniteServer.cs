@@ -11,12 +11,14 @@ using VSS.VisionLink.Raptor.Servers.Compute;
 namespace VSS.VisionLink.Raptor.Servers
 {
     /// <summary>
-    /// A base class for deriving server and client instances that interact witht eh Ignite In Memory Data Grid
+    /// A base class for deriving server and client instances that interact with the Ignite In Memory Data Grid
     /// </summary>
     public class RaptorIgniteServer
     {
-        protected IIgnite ignite = null;
-        protected static ICache<String, MemoryStream> cache = null;
+//        protected IIgnite spatialGrid /*ignite*/ = null;
+        protected IIgnite raptorGrid /*ignite*/ = null;
+        protected static ICache<String, MemoryStream> raptorCache = null;
+        protected static ICache<String, MemoryStream> spatialCache = null;
 
     }
 }

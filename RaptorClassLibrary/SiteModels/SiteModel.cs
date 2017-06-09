@@ -460,7 +460,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                 MemoryStream MS = new MemoryStream();
                 SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, new BinaryWriter(MS));
 
-                StorageProxyFactory.Storage().WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemGranuleType.SubgridExistenceMap, MS);
+                StorageProxyFactory.Storage("Raptor").WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemGranuleType.SubgridExistenceMap, MS);
             }
             catch (Exception E)
             {
@@ -483,7 +483,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
                 // Read its content from storage
                 MemoryStream MS = null;
-                StorageProxyFactory.Storage().ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, out MS);
+                StorageProxy.RaptorInstance().ReadStreamFromPersistentStoreDirect(ID, kSubGridExistanceMapFileName, out MS);
 
                 SubGridTreePersistor.Read(localExistanceMap, "ExistanceMap", 1, new BinaryReader(MS));
 

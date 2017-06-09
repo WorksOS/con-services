@@ -551,7 +551,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             Segment.LatestPasses.PassDataExistanceMap.ForEachSetBit((x, y) => _GlobalLatestCells.PassData[x, y] = _LatestPasses.PassData[x, y]);
         }
 
-        public void ComputeLatestPassInformation(bool fullRecompute)
+        public void ComputeLatestPassInformation(/*IStorageProxy storageProxy, */bool fullRecompute)
         {
             //            SubGridCellPassesDataSegment Segment;
             SubGridCellPassesDataSegment LastSegment;
@@ -678,7 +678,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             latestCellPassesOutOfDate = false;
         }
 
-        public bool LoadSegmentFromStorage(string FileName, SubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses, SiteModel SiteModelReference)
+        public bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, SubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses, SiteModel SiteModelReference)
         {
             FileSystemErrorStatus FSError;
             uint StoreGranuleIndex;
@@ -696,7 +696,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 MemoryStream SMS = null; // = new MemoryStream();
 
-                FSError = StorageProxy.Instance().ReadSpatialStreamFromPersistentStore
+                FSError = storageProxy.ReadSpatialStreamFromPersistentStore
                             (Owner.ID, FileName, OriginX, OriginY,
                              FileSystemSpatialStreamType.SubGridSegment, Segment.SegmentInfo.FSGranuleIndex, out SMS,
                              out StoreGranuleIndex, out StoreGranuleCount);
@@ -885,11 +885,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         }
 
 
-        public bool LoadDirectoryFromFile(IStorageProxy storage, string fileName)
+        public bool LoadDirectoryFromFile(/*IStorageProxy storage, */ string fileName)
         {
             MemoryStream SMS = null;
             uint StoreGranuleIndex = 0;
             uint StoreGranuleCount = 0;
+
+            IStorageProxy storage = StorageProxy.SpatialInstance(SubGridCellAddress.ToSpatialDivisionDescriptor(OriginX, OriginY, RaptorConfig.numSpatialProcessingDivisions));
 
             FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY,
                                                                                          FileSystemSpatialStreamType.SubGridDirectory, 0, out SMS, out StoreGranuleIndex, out StoreGranuleCount);

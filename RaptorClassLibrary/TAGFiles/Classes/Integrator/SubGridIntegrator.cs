@@ -29,7 +29,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         //const Persistor : TSVOICDeferredPersistor;
         Action<uint, uint> SubGridChangeNotifier = null;
 
-        IStorageProxy StorageProxy = null;
+        IStorageProxy[] SpatialStorageProxy = null;
 
         public SubGridIntegrator()
         {
@@ -38,12 +38,12 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         public SubGridIntegrator(ServerSubGridTree source,
         SiteModel siteModel,
         ServerSubGridTree target,
-        IStorageProxy storageProxy) : this()
+        IStorageProxy[] spatialStorageProxy) : this()
         {
             Source = source;
             SiteModel = siteModel;
             Target = target;
-            StorageProxy = storageProxy;
+            SpatialStorageProxy = spatialStorageProxy;
         }
 
         private void IntegrateIntoIntermediaryGrid(SubGridSegmentIterator SegmentIterator)
@@ -128,9 +128,10 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             // Save the integrated state of the subgrid segments to allow Ignite to store & socialise the update
             // within the cluster. No cleaving is performed yet... First ensure the latest pass information is calculated
 
-            (TargetSubGrid as ServerSubGridTreeLeaf).ComputeLatestPassInformation(true);
-
             SubGridCellAddress SubGridOriginAddress = new SubGridCellAddress(TargetSubGrid.OriginX, TargetSubGrid.OriginY);
+            IStorageProxy storageProxy = SpatialStorageProxy[SubGridOriginAddress.ToSpatialDivisionDescriptor(RaptorConfig.numSpatialProcessingDivisions)];
+
+            (TargetSubGrid as ServerSubGridTreeLeaf).ComputeLatestPassInformation(true);
 
             foreach (var s in (TargetSubGrid as ServerSubGridTreeLeaf).Directory.SegmentDirectory)
             {
@@ -138,13 +139,13 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                 {
                     FileSystemErrorStatus FSError = FileSystemErrorStatus.OK;
 
-                    s.Segment.SaveToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridSegmentFullFileName(SubGridOriginAddress, s), ref FSError);
+                    s.Segment.SaveToFile(storageProxy, ServerSubGridTree.GetLeafSubGridSegmentFullFileName(SubGridOriginAddress, s), ref FSError);
                 }
             }
 
             // Save the changed subgrid directory to allow Ignite to store & socialise the update
             // within the cluster
-            if ((TargetSubGrid as ServerSubGridTreeLeaf).SaveDirectoryToFile(StorageProxy, ServerSubGridTree.GetLeafSubGridFullFileName(SubGridOriginAddress)))
+            if ((TargetSubGrid as ServerSubGridTreeLeaf).SaveDirectoryToFile(storageProxy, ServerSubGridTree.GetLeafSubGridFullFileName(SubGridOriginAddress)))
             {
                 // Successfully saving the subgrid directory information is the point at which this subgrid may be recognised to exist
                 // in the sitemodel. Note this by including it within the SiteModel existance map
@@ -238,7 +239,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
             // Iterate over the subgrids in source and merge the cell passes from source
             // into the subgrids in this sub grid tree;
 
-            Iterator = new SubGridTreeIterator(StorageProxy, false);
+            Iterator = new SubGridTreeIterator(SpatialStorageProxy, false);
 
             SegmentIterator = new SubGridSegmentIterator(null);
             SegmentIterator.IterationDirection = IterationDirection.Forwards;
@@ -295,7 +296,8 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
                                                                  uint CellX, uint CellY,
                                                                  int LockToken)
         {
-            ServerSubGridTreeLeaf Result = SubGridUtilities.LocateSubGridContaining(StorageProxy, Grid,
+            ServerSubGridTreeLeaf Result = SubGridUtilities.LocateSubGridContaining(
+                                    Grid,
                                     // DataStoreInstance.GridDataCache,
                                     CellX, CellY,
                                     Grid.NumLevels,

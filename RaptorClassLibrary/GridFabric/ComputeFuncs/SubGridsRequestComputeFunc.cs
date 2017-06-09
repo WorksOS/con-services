@@ -17,6 +17,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.SiteModels;
+using VSS.VisionLink.Raptor.Interfaces;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
@@ -61,7 +62,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// Take a subgrid address and request the required client subgrid depending on GridDataType
         /// </summary>
         /// <param name="address"></param>
-        private void PerformSubgridRequest(SubGridCellAddress address)
+        private void PerformSubgridRequest(/*IStorageProxy storageProxy,*/ SubGridCellAddress address)
         {
             try
             {

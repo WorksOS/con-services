@@ -7,18 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using VSS.VisionLink.Raptor.Servers;
 using VSS.VisionLink.Raptor.Servers.Compute;
 
-namespace RaptorServerApplication
+namespace RaptorPSNodeServer
 {
     public partial class Form1 : Form
     {
-        RaptorCacheComputeServer server = null;
+        RaptorSubGridProcessingServer server = null;
 
         public Form1()
         {
-            server = new RaptorCacheComputeServer();
+            server = new RaptorSubGridProcessingServer();
 
             InitializeComponent();
         }

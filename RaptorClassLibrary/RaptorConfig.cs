@@ -28,5 +28,10 @@ namespace VSS.VisionLink.Raptor
         /// The number of passes to increment a cell pass array by when constructing filtered cell pass arrays
         /// </summary>
         public static int VLPDPSNode_CellPassAggregationListSizeIncrement => 100;
+
+        /// <summary>
+        /// The number of spatial processing divisions within the Raptor cluster
+        /// </summary>
+        public static uint numSpatialProcessingDivisions = 4;
     }
 }

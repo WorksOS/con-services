@@ -17,13 +17,13 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     {
         public RaptorClientServer()
         {
-            if (ignite == null)
+            if (raptorGrid == null)
             {
                 // Attempt to attach to an already existing Ignite instance
-                ignite = Ignition.TryGetIgnite("Raptor");
+                raptorGrid = Ignition.TryGetIgnite("Raptor");
 
                 // If there was no connection obtained, attempt to create a new instance
-                if (ignite == null)
+                if (raptorGrid == null)
                 {
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
@@ -31,9 +31,29 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                         ClientMode = true
                     };
 
-                    ignite = Ignition.Start(cfg);
+                    raptorGrid = Ignition.Start(cfg);
                 }
             }
+
+            /*
+            if (spatialGrid == null)
+            {
+                // Attempt to attach to an already existing Ignite instance
+                spatialGrid = Ignition.TryGetIgnite("Spatial");
+
+                // If there was no connection obtained, attempt to create a new instance
+                if (spatialGrid == null)
+                {
+                    IgniteConfiguration cfg = new IgniteConfiguration()
+                    {
+                        GridName = "Spatial",
+                        ClientMode = true
+                    };
+
+                    spatialGrid = Ignition.Start(cfg);
+                }
+            }
+            */
         }
     }    
 }
