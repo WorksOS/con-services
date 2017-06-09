@@ -25,7 +25,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
         try
         {
           return JsonConvert.DeserializeObject<LiftBuildSettings>(
-            "{'liftDetectionType': '4', 'machineSpeedTarget': { 'MinTargetMachineSpeed': '333', 'MaxTargetMachineSpeed': '417'}}");
+            "{'liftDetectionType': '4', 'cCVRange': { 'min': '80', 'max': '120'}, 'mDPRange': { 'min': '80', 'max': '120'}, 'machineSpeedTarget': { 'MinTargetMachineSpeed': '333', 'MaxTargetMachineSpeed': '417'}}");
           //liftDetectionType 4 = None, speeds are cm/sec (12 - 15 km/hr)        
         }
         catch (Exception ex)
