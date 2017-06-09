@@ -1,8 +1,6 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
 
-node('Ubuntu_Slave') {
-    //Apply version number
-    //We will later use it to tag images
+    def result = ''
 
     def branch = env.BRANCH_NAME
     def buildNumber = env.BUILD_NUMBER
@@ -16,6 +14,9 @@ node('Ubuntu_Slave') {
        } else if (branch.contains("Dev")) {
        versionPrefix = "0.99."
        branchName = "Dev"
+       } else if (branch.contains("master")) {
+       versionPrefix = "1.0."
+       branchName = "master"
        } else {
        branchName = branch.substring(branch.lastIndexOf("/") + 1)
        suffix = "-" + branchName
@@ -24,6 +25,12 @@ node('Ubuntu_Slave') {
     
     def versionNumber = versionPrefix + buildNumber
     def fullVersion = versionNumber + suffix
+
+
+node('Ubuntu_Slave') {
+    //Apply version number
+    //We will later use it to tag images
+
     def workspacePath =""
     currentBuild.displayName = versionNumber + suffix
 
@@ -53,7 +60,9 @@ node('Ubuntu_Slave') {
     publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])
     
     echo "Build result is ${currentBuild.result}"
-    if (currentBuild.result=='SUCCESS') {
+    result = currentBuild.result
+
+    if (currentBuild.result=='SUCCESS' && !branch.contains("master")) {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Get ecr login, push image to Repo'
        sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
@@ -77,32 +86,41 @@ node('Ubuntu_Slave') {
 	}
 	else
 	{
+	if (branch.contains("Dev"))
+	{
 	stage 'Build Development Images'
 
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}-${branch} ./artifacts/ProjectWebApi"
- 
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest ./artifacts/ProjectWebApi"
- 
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}-${branch}"
-
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi"
-
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}-${branch}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest"
 	   
-	   sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:${fullVersion}-${branch} ./database"
- 
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest ./database"
- 
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:${fullVersion}-${branch}"
-
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db"
-
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:${fullVersion}-${branch}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest"
 	}
+       }
 
     }
+}
 
+node ('Jenkins-Win2016-Raptor')
+{
+	if (branch.contains("master"))
+	{
+         if (result=='SUCCESS')
+          {
+           currentBuild.displayName = versionNumber + suffix
+  
+           stage 'Checkout'
+           checkout scm
+
+           stage 'Build'
+           bat "build47.bat"
+          
+           archiveArtifacts artifacts: 'ProjectWebApiNet47.zip', fingerprint: true 
+
+         }
+
+        }
 }

@@ -16,6 +16,7 @@ namespace TestUtility
 
     public ImportedFileDescriptor importFileDescriptor = new ImportedFileDescriptor();
     public ImportedFileDescriptorSingleResult expectedImportFileDescriptorSingleResult;
+    public string importedFileUid;
     private const string BOUNDARY = "------WebKitFormBoundarym45GFZc25WVhjtVB";
     private const string BOUNDARY_START = "----WebKitFormBoundarym45GFZc25WVhjtVB";
 
@@ -47,8 +48,9 @@ namespace TestUtility
     /// <param name="ts">Test support</param>
     /// <param name="importFileArray">string array of data</param>
     /// <param name="row">Add a single row at a time</param>
+    /// <param name="method">HTTP methodf</param>
     /// <returns></returns>
-    public ImportedFileDescriptorSingleResult PostImportedFilesToWebApi (TestSupport ts, string [] importFileArray, int row) 
+    public ImportedFileDescriptorSingleResult SendToImportedFilesToWebApi (TestSupport ts, string [] importFileArray, int row, string method = "POST") 
     {
       var uri = ts.GetBaseUri();
 
@@ -57,8 +59,16 @@ namespace TestUtility
       expectedImportFileDescriptorSingleResult.ImportedFileDescriptor = ed;      
       var createdDt = ed.FileCreatedUtc.ToUniversalTime().ToString("o");
       var updatedDt = ed.FileUpdatedUtc.ToUniversalTime().ToString("o");
-      uri = uri + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileType={ed.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
-      var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid);
+      uri = uri + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileType={ed.ImportedFileTypeName}&fileCreatedUtc={createdDt:yyyy-MM-ddTHH:mm:ss.fffffff}&fileUpdatedUtc={updatedDt:yyyy-MM-ddTHH:mm:ss.fffffff}";
+      if (ed.ImportedFileTypeName == "SurveyedSurface")
+      {
+        uri = uri + $"&SurveyedUtc={ed.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff} ";
+      }
+      if (method == "DELETE")
+      {
+        uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={ed.ProjectUid}&importedFileUid={importedFileUid}";
+      }
+      var response = UploadFilesToWebApi(ed.Name, uri, ed.CustomerUid, method);
       expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
       expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc = expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileCreatedUtc.ToUniversalTime();
       expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc = expectedImportFileDescriptorSingleResult.ImportedFileDescriptor.FileUpdatedUtc.ToUniversalTime();
@@ -73,7 +83,6 @@ namespace TestUtility
         Assert.Fail(response);
         return null;
       }
-
     }
 
     /// <summary>
@@ -98,8 +107,9 @@ namespace TestUtility
     /// <param name="fullFileName">Full filename</param>
     /// <param name="uri">Full uri to send it to</param>
     /// <param name="customerUid">Customer Uid</param>
+    /// <param name="method">HTTP method</param>
     /// <returns>Repsonse from web api as string</returns>
-    public string UploadFilesToWebApi(string fullFileName, string uri, string customerUid)
+    public string UploadFilesToWebApi(string fullFileName, string uri, string customerUid, string method)
     {
       try
       {
@@ -110,7 +120,7 @@ namespace TestUtility
         var filestream = new MemoryStream(Convert.FromBase64String(inputAsString));
         var flowFileUpload = SetAllAttributesForFlowFile(filestream,name);       
         var content = FormatTheContentDisposition(flowFileUpload, filestream, name);
-        var response = DoHttpRequest(uri, "POST", content,customerUid);
+        var response = DoHttpRequest(uri, method, content,customerUid);
         return response;
       }
       catch (Exception ex)
