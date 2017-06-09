@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.ResultHandling;
 
@@ -10,16 +9,14 @@ namespace VSS.Raptor.Service.Common.Models
 {
   public abstract class RaptorHelper : ProjectID
   {
-    protected virtual int cmvDetailsColorNumber => CMV_DETAILS_COLOR_NUMBER;
-    public virtual bool setSummaryDataLayersVisibility => true;
-    
-    private const int CMV_DETAILS_COLOR_NUMBER = 5;
+    protected uint cmvDetailsColorNumber;
+    public bool setSummaryDataLayersVisibility;
 
     public void ValidatePalettes(List<ColorPalette> palettes, DisplayMode mode)
     {
       if (palettes != null)
       {
-        int count = 0;
+        uint count = 0;
         switch (mode)
         {
           case DisplayMode.Height:
