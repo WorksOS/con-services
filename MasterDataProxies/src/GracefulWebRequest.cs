@@ -20,12 +20,12 @@ namespace MasterDataProxies
     }
 
     public async Task<T> ExecuteRequest<T>(string endpoint, string method,
-      IDictionary<string, string> customHeaders = null, string payloadData = null)
+      IDictionary<string, string> customHeaders = null, string payloadData = null, int retries = 3)
     {
 
       var policyResult = await Policy
         .Handle<Exception>()
-        .RetryAsync(3)
+        .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
           var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
@@ -70,11 +70,11 @@ namespace MasterDataProxies
 
 
     public async Task<Stream> ExecuteRequest(string endpoint, string method,
-      IDictionary<string, string> customHeaders = null, string payloadData = null)
+      IDictionary<string, string> customHeaders = null, string payloadData = null, int retries = 3)
     {
       var policyResult = await Policy
         .Handle<Exception>()
-        .RetryAsync(3)
+        .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
           var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
@@ -182,7 +182,7 @@ namespace MasterDataProxies
 
 
     public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload,
-      IDictionary<string, string> customHeaders = null)
+      IDictionary<string, string> customHeaders = null, int retries = 3)
     {
       log.LogDebug("Requesting project data from {0}", endpoint);
       if (customHeaders != null)
@@ -216,7 +216,7 @@ namespace MasterDataProxies
 
       var policyResult = await Policy
         .Handle<Exception>()
-        .RetryAsync(3)
+        .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
           var request = WebRequest.Create(endpoint);

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Shared across Merino apps, source code is availble under MerinoSandbox repo</Description>
     <AssemblyTitle>Shared lib to access masterdata aspects through http</AssemblyTitle>
-    <VersionPrefix>1.1.6</VersionPrefix>
+    <VersionPrefix>1.1.7</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net46;net462</TargetFrameworks>
     <AssemblyName>MasterDataProxies.netcore</AssemblyName>
     <PackageId>MasterDataProxies.netcore</PackageId>
