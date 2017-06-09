@@ -9,8 +9,10 @@ namespace VSS.Raptor.Service.Common.Models
 {
   public abstract class RaptorHelper : ProjectID
   {
-    protected uint cmvDetailsColorNumber;
-    public bool setSummaryDataLayersVisibility;
+    protected uint cmvDetailsColorNumber = CMV_DETAILS_NUMBER_OF_COLORS;
+    public bool setSummaryDataLayersVisibility = true;
+
+    private const int CMV_DETAILS_NUMBER_OF_COLORS = 5;
 
     public void ValidatePalettes(List<ColorPalette> palettes, DisplayMode mode)
     {
