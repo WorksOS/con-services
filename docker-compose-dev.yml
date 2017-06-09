@@ -8,12 +8,6 @@ services:
      - "3001:80"
     depends_on:
       - schema
-  mockprojectwebapi:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
-    env_file:
-     - docker-compose-dev.env
-    ports:
-     - "5001:5001" 
   schema:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest
     env_file:
