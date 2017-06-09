@@ -86,31 +86,20 @@ node('Ubuntu_Slave') {
 	}
 	else
 	{
+	if (branch.contains("Dev"))
+	{
 	stage 'Build Development Images'
 
 	   
-       sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}-${branch} ./artifacts/ProjectWebApi"
- 
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest ./artifacts/ProjectWebApi"
- 
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}-${branch}"
-
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi"
-
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:${fullVersion}-${branch}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest"
 	   
-	   sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:${fullVersion}-${branch} ./database"
- 
        sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest ./database"
- 
-       sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:${fullVersion}-${branch}"
-
        sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db"
-
-       sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:${fullVersion}-${branch}"
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-db:latest"
 	}
+       }
 
     }
 }
