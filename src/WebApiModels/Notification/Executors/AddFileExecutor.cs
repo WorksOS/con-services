@@ -235,7 +235,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       }
       else
       {
-        log.LogWarning("Failed to generate DXF boundary for file {0} for project {1}. Raptor error {2)", fileDescr.fileName, projectId, designProfilerResult);
+        log.LogWarning("Failed to generate DXF boundary for file {0} for project {1}. Raptor error {2}", fileDescr.fileName, projectId, designProfilerResult);
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(
           ContractExecutionStatesEnum.FailedToGetResults,
           string.Format("Failed to create " + FileUtils.DXF_FILE_EXTENSION + " file with error: {0}",
