@@ -19,8 +19,8 @@ namespace MasterDataProxies
       log = logger.CreateLogger<GracefulWebRequest>();
     }
 
-    public async Task<T> ExecuteRequest<T>(string endpoint, string method,
-      IDictionary<string, string> customHeaders = null, string payloadData = null, int retries = 3)
+    public async Task<T> ExecuteRequest<T>(string endpoint, string method, IDictionary<string, string> customHeaders = null, 
+      string payloadData = null, int retries = 3, bool suppressExceptionLogging=false)
     {
 
       var policyResult = await Policy
@@ -57,8 +57,12 @@ namespace MasterDataProxies
 
       if (policyResult.FinalException != null)
       {
-        log.LogDebug("GracefulWebRequest.ExecuteRequest(). exceptionToRethrow:{0} endpoint: {1} method: {2}, customHeaders: {3} payloadData: {4}",
-          policyResult.FinalException.ToString(), endpoint, method, customHeaders, payloadData);
+        if (!suppressExceptionLogging)
+        {
+          log.LogDebug(
+            "GracefulWebRequest.ExecuteRequest(). exceptionToRethrow:{0} endpoint: {1} method: {2}, customHeaders: {3} payloadData: {4}",
+            policyResult.FinalException.ToString(), endpoint, method, customHeaders, payloadData);
+        }
         throw policyResult.FinalException;
       }
       if (policyResult.Outcome == OutcomeType.Successful)
@@ -69,8 +73,8 @@ namespace MasterDataProxies
     }
 
 
-    public async Task<Stream> ExecuteRequest(string endpoint, string method,
-      IDictionary<string, string> customHeaders = null, string payloadData = null, int retries = 3)
+    public async Task<Stream> ExecuteRequest(string endpoint, string method, IDictionary<string, string> customHeaders = null, 
+      string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       var policyResult = await Policy
         .Handle<Exception>()
@@ -89,8 +93,12 @@ namespace MasterDataProxies
 
       if (policyResult.FinalException != null)
       {
-        log.LogDebug("GracefulWebRequest.ExecuteRequest_stream(). exceptionToRethrow:{0} endpoint: {1} method: {2}, customHeaders: {3} payloadData: {4}",
-          policyResult.FinalException.ToString(), endpoint, method, customHeaders, payloadData);
+        if (!suppressExceptionLogging)
+        {
+          log.LogDebug(
+            "GracefulWebRequest.ExecuteRequest_stream(). exceptionToRethrow:{0} endpoint: {1} method: {2}, customHeaders: {3} payloadData: {4}",
+            policyResult.FinalException.ToString(), endpoint, method, customHeaders, payloadData);
+        }
         throw policyResult.FinalException;
       }
       if (policyResult.Outcome == OutcomeType.Successful)
@@ -182,7 +190,7 @@ namespace MasterDataProxies
 
 
     public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload,
-      IDictionary<string, string> customHeaders = null, int retries = 3)
+      IDictionary<string, string> customHeaders = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       log.LogDebug("Requesting project data from {0}", endpoint);
       if (customHeaders != null)
@@ -258,8 +266,12 @@ namespace MasterDataProxies
 
       if (policyResult.FinalException != null)
       {
-        log.LogDebug("GracefulWebRequest.ExecuteRequest_multi(). exceptionToRethrow:{0} endpoint: {1} customHeaders: {2}",
-          policyResult.FinalException.ToString(), endpoint, customHeaders);
+        if (!suppressExceptionLogging)
+        {
+          log.LogDebug(
+            "GracefulWebRequest.ExecuteRequest_multi(). exceptionToRethrow:{0} endpoint: {1} customHeaders: {2}",
+            policyResult.FinalException.ToString(), endpoint, customHeaders);
+        }
         throw policyResult.FinalException;
       }
       if (policyResult.Outcome == OutcomeType.Successful)
