@@ -559,7 +559,7 @@ namespace TCCFileAccess
         T result = default(T);
         try
         {
-          result = await gracefulClient.ExecuteRequest<T>(requestString, "GET", headers);
+          result = await gracefulClient.ExecuteRequest<T>(requestString, "GET", headers, null, 0, true);
         }
         catch (WebException webException)
         {
