@@ -6,6 +6,6 @@ namespace src.Interfaces
 {
   public interface IFileListProxy
   {
-    Task<List<FileData>> GetFiles(string customerUid, IDictionary<string, string> customHeaders = null);
+    Task<List<FileData>> GetFiles(string projectUid, IDictionary<string, string> customHeaders = null);
   }
 }
