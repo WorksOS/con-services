@@ -164,7 +164,7 @@ namespace MasterDataProxies
             string caching = null;
             customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
             if (!string.IsNullOrEmpty(caching) && caching == "true")
-              cache.Remove((uid));
+              cache.Remove(uid);
 
             if (!cache.TryGetValue(uid, out cacheData))
             {
@@ -200,7 +200,7 @@ namespace MasterDataProxies
             string caching = null;
             customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
             if (!string.IsNullOrEmpty(caching) && caching == "true")
-              cache.Remove((customerUid));
+              cache.Remove(customerUid);
 
             if (!cache.TryGetValue(customerUid, out cacheData))
             {
@@ -215,32 +215,33 @@ namespace MasterDataProxies
         }
 
         /// <summary>
-        /// Gets a list of master data items for a customer. 
+        /// Gets a list of master data items for a customer or project. 
         /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
         /// </summary>
-        /// <param name="customerUid">The customer UID for the list to retrieve</param>
+        /// <param name="uid">The UID for the list to retrieve (customerUid or projectUid). Also used for the cache key</param>
         /// <param name="cacheLife">How long to cache the list</param>
         /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
         /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+        /// <param name="queryParams">Query parameters for the request (optional)</param>
         /// <returns>List of Master data items</returns>
-        protected async Task<T> GetContainedList<T>(string customerUid, TimeSpan cacheLife, string urlKey,
-                IDictionary<string, string> customHeaders)
+        protected async Task<T> GetContainedList<T>(string uid, TimeSpan cacheLife, string urlKey,
+                IDictionary<string, string> customHeaders, string queryParams = null)
         {
           T cacheData;
           string caching = null;
           customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
           if (!string.IsNullOrEmpty(caching) && caching == "true")
-            cache.Remove((customerUid));
+            cache.Remove(uid);
 
-          if (!cache.TryGetValue(customerUid, out cacheData))
+          if (!cache.TryGetValue(uid, out cacheData))
           {
             var opts = new MemoryCacheEntryOptions()
             {
               SlidingExpiration = cacheLife
             };
 
-            cacheData = await GetItem<T>(urlKey, customHeaders);
-            cache.Set(customerUid, cacheData, opts);
+            cacheData = await GetItem<T>(urlKey, customHeaders, queryParams);
+            cache.Set(uid, cacheData, opts);
           }
           return cacheData;
         }
