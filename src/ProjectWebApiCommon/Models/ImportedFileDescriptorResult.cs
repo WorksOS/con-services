@@ -142,6 +142,14 @@ namespace ProjectWebApiCommon.Models
     /// </value>
     public DateTime ImportedUtc { get; set; }
 
+    /// <summary>
+    /// Gets the path of the imported file
+    /// </summary>
+    /// <value>
+    /// Path of the imported file
+    /// </value>
+    public string Path => "/" + CustomerUid + "/" + ProjectUid;
+
     public override bool Equals(object obj)
     {
       var otherImportedFile = obj as ImportedFileDescriptor;
