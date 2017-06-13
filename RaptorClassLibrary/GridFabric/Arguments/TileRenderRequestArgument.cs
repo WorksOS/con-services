@@ -10,7 +10,7 @@ using VSS.VisionLink.Raptor.Types;
 namespace VSS.VisionLink.Raptor.GridFabric.Arguments
 {
     [Serializable]
-    public class TileRenderRequestArgument
+    public class TileRenderRequestArgument : BaseApplicationServiceRequestArgument
     {
         /// <summary>
         /// The ID of the SiteModel to execute the request against

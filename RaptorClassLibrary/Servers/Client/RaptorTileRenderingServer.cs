@@ -24,7 +24,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
         }
 
         /// <summary>
-        /// Render a thematic tile bitmap according the the given arguments
+        /// Render a thematic tile bitmap according to the given arguments
         /// </summary>
         /// <param name="argument"></param>
         /// <returns></returns>

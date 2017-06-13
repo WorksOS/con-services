@@ -1,6 +1,8 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Rendering;
@@ -14,24 +16,29 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
     /// </summary>
     public class PVMRenderingTask : PipelinedSubGridTask
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// The tile renderer responsible for processing subgrid information into tile based thematic rendering
         /// </summary>
         public PlanViewTileRenderer TileRenderer { get; set; } = null;
 
-        public PVMRenderingTask(long requestDescriptor, GridDataType gridDataType) : base(requestDescriptor, gridDataType)
+        public PVMRenderingTask(long requestDescriptor, string raptorNodeID, GridDataType gridDataType) : base(requestDescriptor, raptorNodeID, gridDataType)
         {
         }
 
-        public PVMRenderingTask(long requestDescriptor, GridDataType gridDataType, PlanViewTileRenderer tileRenderer) : this(requestDescriptor, gridDataType)
+        public PVMRenderingTask(long requestDescriptor, string raptorNodeID, GridDataType gridDataType, PlanViewTileRenderer tileRenderer) : this(requestDescriptor, raptorNodeID, gridDataType)
         {
             TileRenderer = tileRenderer;
         }
 
         public override bool TransferResponse(object response)
         {
+            // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
+
             if (!base.TransferResponse(response))
             {
+                Log.Info("Base TransferResponse returned false");
                 return false;
             }
 

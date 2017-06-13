@@ -12,7 +12,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
     /// Contains all the parameters necessary to be sent for a generic subgrids request made to the compute cluster
     /// </summary>
     [Serializable]
-    public class SubGridsRequestArgument
+    public class SubGridsRequestArgument : BaseApplicationServiceRequestArgument
     {
         /// <summary>
         /// The ID of the SiteModel to execute the request against
@@ -39,13 +39,22 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         /// </summary>
         public string MessageTopic { get; set; } = String.Empty;
 
-        public SubGridsRequestArgument(long siteModelID, long requestID, GridDataType gridDataType, MemoryStream maskStream, string messageTopic)
+        /// <summary>
+        /// Full constructor for a subgrids request
+        /// </summary>
+        /// <param name="siteModelID"></param>
+        /// <param name="requestID"></param>
+        /// <param name="gridDataType"></param>
+        /// <param name="maskStream"></param>
+        /// <param name="messageTopic"></param>
+        public SubGridsRequestArgument(long siteModelID, long requestID, GridDataType gridDataType, MemoryStream maskStream, string messageTopic, string raptorNodeID)
         {
             SiteModelID = siteModelID;
             RequestID = requestID;
             GridDataType = gridDataType;
             MaskStream = maskStream;
             MessageTopic = messageTopic;
+            RaptorNodeID = raptorNodeID;
         }
     }
 }

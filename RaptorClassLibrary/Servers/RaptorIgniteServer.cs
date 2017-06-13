@@ -20,5 +20,9 @@ namespace VSS.VisionLink.Raptor.Servers
         protected static ICache<String, MemoryStream> raptorCache = null;
         protected static ICache<String, MemoryStream> spatialCache = null;
 
+        /// <summary>
+        /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging
+        /// </summary>
+        public string RaptorNodeID = String.Empty;
     }
 }

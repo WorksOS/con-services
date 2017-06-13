@@ -102,6 +102,7 @@
     <Compile Include="Geometry\UTMCoordPointPair.cs" />
     <Compile Include="Geometry\XYZ.cs" />
     <Compile Include="GridFabric\Affinity\RaptorSpatialAffinityFunction.cs" />
+    <Compile Include="GridFabric\Arguments\BaseApplicationServiceRequestArgument.cs" />
     <Compile Include="GridFabric\Arguments\SubGridsRequestArgument.cs" />
     <Compile Include="GridFabric\Arguments\TileRenderRequestArgument.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFunc.cs" />

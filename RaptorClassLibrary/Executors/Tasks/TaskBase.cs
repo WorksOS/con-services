@@ -21,12 +21,18 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         public GridDataType GridDataType { get; set; } = GridDataType.All;
 
         /// <summary>
+        /// The raptor node wanting to recieve the results of task bases subgrid requests to the PSNode clustered processing layer
+        /// </summary>
+        public string RaptorNodeID { get; set; } = String.Empty;
+
+        /// <summary>
         /// Constructor accepting a request descriptor identifying the overall request this task is associated with
         /// </summary>
         /// <param name="requestDescriptor"></param>
-        public TaskBase(long requestDescriptor, GridDataType gridDataType)
+        public TaskBase(long requestDescriptor, string raptorNodeID, GridDataType gridDataType)
         {
             RequestDescriptor = requestDescriptor;
+            RaptorNodeID = raptorNodeID;
             GridDataType = gridDataType;
         }
 

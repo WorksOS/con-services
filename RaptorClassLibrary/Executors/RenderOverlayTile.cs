@@ -17,6 +17,11 @@ namespace VSS.VisionLink.Raptor.Executors
 {
     public class RenderOverlayTile
     {
+        /// <summary>
+        /// The Raptor application service node performing the request
+        /// </summary>
+        string RequestingRaptorNodeID { get; set; } = String.Empty;
+
         long DataModelID = -1;
         long MachineID = -1;
         //FExternalDescriptor :TASNodeRequestDescriptor;
@@ -53,12 +58,13 @@ namespace VSS.VisionLink.Raptor.Executors
                                  ushort ANPixelsX,
                                  ushort ANPixelsY,
                                  CombinedFilter AFilter1,
-                                 CombinedFilter AFilter2
+                                 CombinedFilter AFilter2,
                                  //ADesignDescriptor : TVLPDDesignDescriptor;
                                  //AReferenceVolumeType : TComputeICVolumesType;
                                  //AColourPalettes: TColourPalettes;
                                  //AICOptions: TSVOICOptions;
                                  //ARepresentColor: LongWord
+                                 string requestingRaptorNodeID
                                  )
         {
             DataModelID = ADataModelID;
@@ -76,6 +82,7 @@ namespace VSS.VisionLink.Raptor.Executors
             //ColourPalettes = AColourPalettes;
             //ICOptions = AICOptions;
             //RepresentColor = ARepresentColor
+            RequestingRaptorNodeID = requestingRaptorNodeID;
         }
 
         SubGridTreeBitMask OverallExistenceMap = null;
@@ -331,7 +338,7 @@ namespace VSS.VisionLink.Raptor.Executors
               Exit;
              */
 
-            RequestDescriptor = 0; // TODO ASNodeImplInstance.NextDescriptor;
+            RequestDescriptor = Guid.NewGuid().GetHashCode(); // TODO ASNodeImplInstance.NextDescriptor;
 
             /* Readd wen logging available
           if VLPDSvcLocations.Debug_EmitTileRenderRequestParametersToLog then
@@ -625,7 +632,7 @@ namespace VSS.VisionLink.Raptor.Executors
 
             // Construct the renderer, configure it, and set it on its way
             //  WorkingColourPalette = Nil;
-            Renderer = new PlanViewTileRenderer();
+            Renderer = new PlanViewTileRenderer(RequestingRaptorNodeID);
             try
             {
                 /* TODO 

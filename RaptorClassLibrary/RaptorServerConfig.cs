@@ -21,7 +21,7 @@ namespace VSS.VisionLink.Raptor
                 string[] args = Environment.CommandLine.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
                 instance = new RaptorServerConfig();
-                instance.SpatialSubdivisionDescriptor = args.Where(x => x.Contains("SpatialDivision=")).Select(x => x.Split(new String[] { "=" }, StringSplitOptions.RemoveEmptyEntries)[1]).Select(x => Convert.ToUInt16(x)).First();
+                instance.SpatialSubdivisionDescriptor = args.Where(x => x.Contains("SpatialDivision=")).Select(x => x.Split(new String[] { "=" }, StringSplitOptions.RemoveEmptyEntries)[1]).Select(x => Convert.ToUInt16(x)).FirstOrDefault();
             }
 
             return instance;

@@ -26,10 +26,14 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         long ID = 1;
         BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
+        RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();
+        RaptorTileRenderingServer tileRender = RaptorTileRenderingServer.NewInstance();
+
         private Bitmap PerformRender()
         {
             // Get the relevant SiteModel. Use the generic application service server to instantiate the Ignite instance
-            SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
+            // SiteModel siteModel = RaptorGenericApplicationServiceServer.PerformAction(() => SiteModels.Instance().GetSiteModel(ID, false));
+            SiteModel siteModel = SiteModels.Instance().GetSiteModel(ID, false);
 
             // Pull the sitemodel extents using the ProjectExtents executor which will use the Ignite instance created by the generic application service server above
             // extents = ProjectExtents.ProductionDataOnly(ID);
@@ -50,7 +54,8 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     extents.MaxX += Delta;
                 }
 
-                return  RaptorTileRenderingServer.NewInstance().RenderTile(new TileRenderRequestArgument
+                // return  RaptorTileRenderingServer.NewInstance().RenderTile(new TileRenderRequestArgument
+                return tileRender.RenderTile(new TileRenderRequestArgument
                 (ID,
                  DisplayMode.Height,
                  extents,

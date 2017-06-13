@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     /// </summary>
     public class TAGFileProcessingServer : RaptorClientServer
     {
-        public TAGFileProcessingServer()
+        public TAGFileProcessingServer() : base("TAGProc")
         {
 
         }

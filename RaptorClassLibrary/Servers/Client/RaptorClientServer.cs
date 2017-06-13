@@ -1,9 +1,11 @@
 ﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Cache.Eviction;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +17,9 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     /// </summary>
     public class RaptorClientServer : RaptorIgniteServer
     {
-        public RaptorClientServer()
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public RaptorClientServer(string role)
         {
             if (raptorGrid == null)
             {
@@ -25,35 +29,20 @@ namespace VSS.VisionLink.Raptor.Servers.Client
                 // If there was no connection obtained, attempt to create a new instance
                 if (raptorGrid == null)
                 {
+                    RaptorNodeID = Guid.NewGuid().ToString();
+
+                    Log.InfoFormat("Creating new Ignite node with Role = {0} & RaptorNodeID = {1}", role, RaptorNodeID);
+
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
                         GridName = "Raptor",
-                        ClientMode = true
+                        ClientMode = true,
+                        UserAttributes = new Dictionary<string, object>() { { "Role", role }, { "RaptorNodeID", RaptorNodeID } }
                     };
 
                     raptorGrid = Ignition.Start(cfg);
                 }
             }
-
-            /*
-            if (spatialGrid == null)
-            {
-                // Attempt to attach to an already existing Ignite instance
-                spatialGrid = Ignition.TryGetIgnite("Spatial");
-
-                // If there was no connection obtained, attempt to create a new instance
-                if (spatialGrid == null)
-                {
-                    IgniteConfiguration cfg = new IgniteConfiguration()
-                    {
-                        GridName = "Spatial",
-                        ClientMode = true
-                    };
-
-                    spatialGrid = Ignition.Start(cfg);
-                }
-            }
-            */
         }
     }    
 }

@@ -8,17 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VSS.VisionLink.Raptor.Servers;
-using VSS.VisionLink.Raptor.Servers.Compute;
+using VSS.VisionLink.Raptor.Servers.Client;
 
 namespace RaptorServerApplication
 {
     public partial class Form1 : Form
     {
-        RaptorCacheComputeServer server = null;
+        RaptorApplicationServiceServer server = null;
 
         public Form1()
         {
-            server = new RaptorCacheComputeServer();
+            server = new RaptorApplicationServiceServer();
 
             InitializeComponent();
         }

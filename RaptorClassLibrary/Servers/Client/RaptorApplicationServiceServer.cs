@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Apache.Ignite.Core.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     /// </summary>
     public class RaptorApplicationServiceServer : RaptorClientServer
     {
-        public RaptorApplicationServiceServer()
+        public RaptorApplicationServiceServer() : base("ASNode")
         {
 
         }

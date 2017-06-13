@@ -1,6 +1,8 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
@@ -11,9 +13,11 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
 {
     public class PipelinedSubGridTask : TaskBase, ITask
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public SubGridPipelineBase PipeLine { get; set; } = null;
 
-        public PipelinedSubGridTask(long requestDescriptor, GridDataType gridDataType) : base(requestDescriptor, gridDataType)
+        public PipelinedSubGridTask(long requestDescriptor, string raptorNodeID, GridDataType gridDataType) : base(requestDescriptor, raptorNodeID, gridDataType)
         {
         }
 
@@ -26,9 +30,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
             }
             else
             {
-                // TODO Add when logging available
-                // SIGLogMessage.PublishNoODS(Self, Format(' WARNING: TASPipelinedTask.TransferSubgridResponse: No pipeline available to submit grouped result for request %d (verb %s)',        
-                //                                          [RequestDescriptor, RPCVerbName(ResponseToVerb)]), slmcDebug);
+                Log.DebugFormat(" WARNING: TASPipelinedTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
                 return false;
             }
         }

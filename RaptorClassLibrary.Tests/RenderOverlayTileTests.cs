@@ -17,33 +17,34 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
         [TestMethod()]
         public void Test_RenderOverlayTile_Creation()
         {
-/*
-        public RenderOverlayTile(long ADataModelID,
-                                  //AExternalDescriptor :TASNodeRequestDescriptor;
-                                  DisplayMode AMode,
-                                 XYZ ABLPoint, // : TWGS84Point;
-                                 XYZ ATRPoint, // : TWGS84Point;
-                                 bool ACoordsAreGrid,
-                                 ushort ANPixelsX,
-                                 ushort ANPixelsY,
-                                 CombinedFilter AFilter1,
-                                 CombinedFilter AFilter2
-                                 //ADesignDescriptor : TVLPDDesignDescriptor;
-                                 //AReferenceVolumeType : TComputeICVolumesType;
-                                 //AColourPalettes: TColourPalettes;
-                                 //AICOptions: TSVOICOptions;
-                                 //ARepresentColor: LongWord
-                                 )
-*/
-            RenderOverlayTile render = new RenderOverlayTile(1, 
-                                                             DisplayMode.Height, 
+            /*
+                    public RenderOverlayTile(long ADataModelID,
+                                              //AExternalDescriptor :TASNodeRequestDescriptor;
+                                              DisplayMode AMode,
+                                             XYZ ABLPoint, // : TWGS84Point;
+                                             XYZ ATRPoint, // : TWGS84Point;
+                                             bool ACoordsAreGrid,
+                                             ushort ANPixelsX,
+                                             ushort ANPixelsY,
+                                             CombinedFilter AFilter1,
+                                             CombinedFilter AFilter2
+                                             //ADesignDescriptor : TVLPDDesignDescriptor;
+                                             //AReferenceVolumeType : TComputeICVolumesType;
+                                             //AColourPalettes: TColourPalettes;
+                                             //AICOptions: TSVOICOptions;
+                                             //ARepresentColor: LongWord
+                                             )
+            */
+            RenderOverlayTile render = new RenderOverlayTile(1,
+                                                             DisplayMode.Height,
                                                              new XYZ(0, 0),
                                                              new XYZ(100, 100),
                                                              true, // CoordsAreGrid
                                                              100, //PixelsX
                                                              100, // PixelsY
                                                              null, // Filter1
-                                                             null); // Filter2
+                                                             null, // Filter2
+                                                             String.Empty);
 
             Assert.IsTrue(render != null, "Did not create renderer as expected");
         }
@@ -59,7 +60,8 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
                                                              100, //PixelsX
                                                              100, // PixelsY
                                                              null, // Filter1
-                                                             null); // Filter2
+                                                             null, // Filter2
+                                                             String.Empty);
            Bitmap bmp = render.Execute();
            Assert.IsTrue(bmp != null, "Render did not return a Bitmap");
         }

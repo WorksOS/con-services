@@ -1,4 +1,5 @@
-﻿using VSS.VisionLink.Raptor.Types;
+﻿using System;
+using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Executors.Tasks.Interfaces
 {
@@ -8,5 +9,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks.Interfaces
         bool TransferResponse(object response);
 
         GridDataType GridDataType { get; set; }
+
+        string RaptorNodeID { get; set; }
     }
 }

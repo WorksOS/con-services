@@ -121,7 +121,7 @@ namespace VSS.VisionLink.Raptor.Executors
 
                         // DummyLiftBuildSettings = TICLiftBuildSettings.Create; // Dummy lift build settings
 
-                        Renderer = new PlanViewTileRenderer();
+                        Renderer = new PlanViewTileRenderer(String.Empty);
                         Renderer.Filter1 = new CombinedFilter(SiteModel);
 
                         Renderer.IsWhollyInTermsOfGridProjection = true;

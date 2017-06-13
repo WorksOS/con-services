@@ -1,8 +1,10 @@
 ﻿using Apache.Ignite.Core.Messaging;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
@@ -19,11 +21,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
     [Serializable]
     public class SubGridListener : IMessageListener<MemoryStream>
     {
-        private static int responseCounter = 0;
+        [NonSerialized]
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        // private static int responseCounter = 0;
 
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
 
-        ITask Task = null;
+        public ITask Task = null;
 
         /// <summary>
         /// The method called to announce the arrival of a message from a remote context in the cluster
@@ -41,7 +46,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
                 message.Position = 0;
                 ClientGrid.Read(new BinaryReader(message));
 
-                //                Console.WriteLine("Transfering response#{0} to processor", ++responseCounter);
+                // Log.Info(String.Format("Transferring response#{0} to processor", ++responseCounter));
 
                 // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialised into the task
                 // (no assumption of thread safety within the task itself)

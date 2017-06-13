@@ -18,6 +18,9 @@ using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Interfaces;
+using log4net;
+using System.Reflection;
+using Apache.Ignite.Core.Cluster;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
@@ -27,6 +30,21 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
     [Serializable]
     class SubGridsRequestComputeFunc : IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse>
     {
+        [NonSerialized]
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>
+        /// Local copy of the number of processing subdivisions
+        /// </summary>
+        [NonSerialized]
+        private static uint numSpatialProcessingDivisions = RaptorConfig.numSpatialProcessingDivisions;
+
+        /// <summary>
+        /// Local copy of the spatial subdision descriptor supplied to this compute server
+        /// </summary>
+        [NonSerialized]
+        private static uint spatialSubdivisionDescriptor = RaptorServerConfig.Instance().SpatialSubdivisionDescriptor;
+            
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
         private static int requestCount = 0;
 
@@ -42,6 +60,9 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         [NonSerialized]
         private SubGridsRequestArgument localArg = null;
 
+        [NonSerialized]
+        private string raptorNodeIDAsString = String.Empty;
+
         /// <summary>
         /// Take the supplied argument to the compute func and perform any necessary unpacking of the
         /// contents of it into a form ready to use. Also make a location reference to the arg parameter
@@ -51,7 +72,10 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         private void UnpackArgument(SubGridsRequestArgument arg)
         {
             localArg = arg;
+            raptorNodeIDAsString = arg.RaptorNodeID.ToString();
 
+            Log.InfoFormat("raptorNodeIDAsString is {0} in UnpackArgument()", raptorNodeIDAsString);
+            
             // Unpack the mask from the argument
             mask = new SubGridTreeBitMask();
             arg.MaskStream.Position = 0;
@@ -62,11 +86,21 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// Take a subgrid address and request the required client subgrid depending on GridDataType
         /// </summary>
         /// <param name="address"></param>
-        private void PerformSubgridRequest(/*IStorageProxy storageProxy,*/ SubGridCellAddress address)
+        private void PerformSubgridRequest(SubGridCellAddress address)
         {
             try
             {
-//                Console.WriteLine("PerformSubgridRequest #{0}", ++requestCount);
+                //Log.Info(String.Format("PerformSubgridRequest: {0} --> Examine spatial descriptor ({1} vs {2}) on {3} divisions", 
+                //    address.ToString(), address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions), 
+                //    spatialSubdivisionDescriptor, numSpatialProcessingDivisions));
+
+                // Check this subgrid address is a part of the spatial subdivision this PSNode server is responsible for.
+                if (address.ToSpatialDivisionDescriptor(numSpatialProcessingDivisions) != spatialSubdivisionDescriptor)
+                {
+                    return; // This subgrid is the responsibility of another server
+                }
+
+                // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
 
                 AreaControlSet AreaControlSet = AreaControlSet.Null();
 
@@ -96,30 +130,42 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     // Package the resulting subgrid in to a MemoryStream
                     MemoryStream MS = new MemoryStream();
                     ClientGrid.Write(new BinaryWriter(MS));
-                    // MS.Position = 0;
 
                     // .. and send it to the message topic in the compute func
                     IIgnite ignite = Ignition.GetIgnite("Raptor");
 
-                    //var rmtMsg = ignite.GetCluster().ForRemotes().GetMessaging();
-                    IMessaging rmtMsg = ignite.GetCompute().ClusterGroup.GetMessaging();
+                    // IMessaging rmtMsg = ignite.GetCluster().ForRemotes().GetMessaging();
+                    // IMessaging rmtMsg = ignite.GetCluster().ForAttribute("Role", "ASNode").GetMessaging();
+                    IClusterGroup group = ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
+
+                    // Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
+
+                    IMessaging rmtMsg = group.GetMessaging();
 
                     try
                     {
+                        //Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
+                        //               localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
+                        //               rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("Role"),
+                        //               rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("RaptorNodeID"));
                         rmtMsg.Send(MS, localArg.MessageTopic);
                     }
                     catch (Exception E)
                     {
+                        Log.Error("Exception sending message", E);
                         throw;
                     }
                 }
                 else
                 {
+                    Log.Info(String.Format("Subgrid request failed with code {0}", result));
+
                     //throw new ArgumentException(String.Format("Subgrid request failed with code {0}", result));
                 }
             }
             catch (Exception E)
             {
+                Log.Error("Exception in PerformSubgridRequest", E);
                 throw;
             }
         }
@@ -131,14 +177,16 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         /// <returns></returns>
         public SubGridRequestsResponse Invoke(SubGridsRequestArgument arg)
         {
+            Log.Info("In SubGridsRequestComputeFunc.invoke()");
+
             SubGridRequestsResponse result = new SubGridRequestsResponse();
 
             UnpackArgument(arg);
 
             result.NumSubgridsExamined = mask.CountBits();
-            result.ResponseCode = SubGridRequestsResponseResult.NotImplemented;
+            result.ResponseCode = SubGridRequestsResponseResult.Unknown;
 
-            Console.WriteLine("result.NumSubgridsExamined = {0}", result.NumSubgridsExamined);
+            Log.Info(String.Format("Num subgrids present in request = {0} [All divisions]", result.NumSubgridsExamined));
 
             // TODO Perform implementation here and craft appropriate modified result
 
@@ -146,8 +194,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             // When we do care, the lambda function below needs to filter on the affinity predicate
             // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
             // noted with the 'set' bits in the bitmask
+
+            Log.Info("Scanning subgrids in request");
+
             mask.ScanAllSetBitsAsSubGridAddresses(PerformSubgridRequest);
-        
+
+            Log.Info("Out SubGridsRequestComputeFunc.invoke()");
+
+            result.ResponseCode = SubGridRequestsResponseResult.OK;
             return result;
         }
     }

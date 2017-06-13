@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Servers.Compute;
 
 namespace RaptorPSNodeServer
@@ -20,6 +21,8 @@ namespace RaptorPSNodeServer
             server = new RaptorSubGridProcessingServer();
 
             InitializeComponent();
+
+            Text = String.Format("{0}: Spatial Division {1}", Text, RaptorServerConfig.Instance().SpatialSubdivisionDescriptor);
         }
     }
 }

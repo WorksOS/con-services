@@ -16,6 +16,11 @@ namespace VSS.VisionLink.Raptor.Rendering
 {
     public class PlanViewTileRenderer
     {
+        /// <summary>
+        /// The Raptor application service node performing the request
+        /// </summary>
+        string RequestingRaptorNodeID { get; set; } = String.Empty;
+
         public long RequestDescriptor;
         // FExternalDescriptor : TASNodeRequestDescriptor;
 
@@ -269,7 +274,7 @@ namespace VSS.VisionLink.Raptor.Rendering
 
                 // Displayer.ICOptions  = ICOptions;
 
-                PipelinedTask = new PVMRenderingTask(RequestDescriptor, GridDataFromModeConverter.Convert(Mode), this);
+                PipelinedTask = new PVMRenderingTask(RequestDescriptor, RequestingRaptorNodeID, GridDataFromModeConverter.Convert(Mode), this);
 
                 //     ASNodeImplInstance.AsyncResponder.ASNodeResponseProcessor.ASTasks.Add(PipelinedTask);
                 try
@@ -470,8 +475,10 @@ namespace VSS.VisionLink.Raptor.Rendering
             NPixelsY = ANPixelsY;
         }
 
-        public PlanViewTileRenderer() : base()
+        public PlanViewTileRenderer(string requestingRaptorNodeID) : base()
         {
+            RequestingRaptorNodeID = requestingRaptorNodeID;
+
             AbortedDueToTimeout = false;
             Displayer = null;
             //Palette = null;
