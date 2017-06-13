@@ -41,7 +41,7 @@ namespace KafkaConsumer
       topicName = topic;
       kafkaDriver.InitConsumer(configurationStore);
       log.LogDebug("KafkaConsumer: " + topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX"));
-      kafkaDriver.Subscribe(new List<string>() { topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX") });
+      kafkaDriver.Subscribe(new List<string>() {(topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim()});
     }
 
     public Task StartProcessingAsync(CancellationTokenSource token)
@@ -72,8 +72,8 @@ namespace KafkaConsumer
     private int batchCounter = 0;
     private void ProcessMessage()
     {
-      //log.LogDebug("Kafka Consuming");
-      var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(100));
+//      log.LogTrace("Kafka Consuming");
+      var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(500));
       if (messages.message == Error.NO_ERROR)
         foreach (var message in messages.payload)
         {
