@@ -31,21 +31,32 @@ namespace VSS.GenericConfiguration
       try
       {
         log.LogTrace("Base:" + System.AppContext.BaseDirectory);
+        Console.WriteLine("Base:" + System.AppContext.BaseDirectory);
         var dirToAppsettings = System.IO.Directory.GetCurrentDirectory();
         log.LogTrace("Current:" + dirToAppsettings);
+        Console.WriteLine("Current:" + dirToAppsettings);
         var pathToConfigFile = string.Empty;
 
         log.LogDebug($"Testing default path for the config file {System.IO.Directory.GetCurrentDirectory()} and {System.AppContext.BaseDirectory}");
+        Console.WriteLine($"Testing default path for the config file {System.IO.Directory.GetCurrentDirectory()} and {System.AppContext.BaseDirectory}");
         //Test if appsettings exists in the default folder for the console application
-        if (File.Exists($"{System.IO.Directory.GetCurrentDirectory()}\\appsettings.json"))
+        if (File.Exists(Path.Combine(System.IO.Directory.GetCurrentDirectory(),"appsettings.json")))
+        {
           pathToConfigFile = System.IO.Directory.GetCurrentDirectory();
-        else if (File.Exists($"{System.AppContext.BaseDirectory}\\appsettings.json"))
+          Console.WriteLine($"Setting GetCurrentDirectory path for the config file {pathToConfigFile}");
+        }
+        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory,"appsettings.json")))
+        {
           pathToConfigFile = System.AppContext.BaseDirectory;
+          Console.WriteLine($"Setting BaseDirectory path for the config file {pathToConfigFile}");
+        }
         else
         {
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
           pathToConfigFile = Path.GetDirectoryName(pathToExe);
           log.LogDebug($"Setting alternative path for the config file {pathToConfigFile}");
+          Console.WriteLine($"Setting alternative path for the config file {pathToConfigFile}");
+
         }
 
         builder.SetBasePath(pathToConfigFile) // for appsettings.json location
