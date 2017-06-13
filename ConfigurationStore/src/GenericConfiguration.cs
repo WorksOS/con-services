@@ -35,10 +35,12 @@ namespace VSS.GenericConfiguration
         log.LogTrace("Current:" + dirToAppsettings);
         var pathToConfigFile = string.Empty;
 
-        log.LogDebug($"Testing default path for the config file {System.IO.Directory.GetCurrentDirectory()}");
+        log.LogDebug($"Testing default path for the config file {System.IO.Directory.GetCurrentDirectory()} and {System.AppContext.BaseDirectory}");
         //Test if appsettings exists in the default folder for the console application
         if (File.Exists($"{System.IO.Directory.GetCurrentDirectory()}\\appsettings.json"))
           pathToConfigFile = System.IO.Directory.GetCurrentDirectory();
+        else if (File.Exists($"{System.AppContext.BaseDirectory}\\appsettings.json"))
+          pathToConfigFile = System.AppContext.BaseDirectory;
         else
         {
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
