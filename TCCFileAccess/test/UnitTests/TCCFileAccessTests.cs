@@ -111,7 +111,7 @@ namespace UnitTests
       using (FileStream fileStream = File.Open("appsettings.json", FileMode.Open))
       {
         var fileuploadresult = await fileaccess.PutFile(org, folderName, filename, fileStream, fileStream.Length);
-        var downloadFileResult = await fileaccess.GetFile(org, folderName + "/" + filename);
+        var downloadFileResult = await fileaccess.GetFile(org, Path.Combine(folderName, filename));
         Assert.AreEqual(downloadFileResult.Length, fileStream.Length);
       }
     }
@@ -167,7 +167,7 @@ namespace UnitTests
         var fileuploadresult = await fileaccess.PutFile(filespaceId, folderName, filename, fileStream, fileStream.Length);
       }
 
-      var deleted = await fileaccess.DeleteFile(filespaceId, folderName + "/" + filename);
+      var deleted = await fileaccess.DeleteFile(filespaceId, Path.Combine(folderName, filename));
       Assert.IsTrue(deleted);
     }
 
