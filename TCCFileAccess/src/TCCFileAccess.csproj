@@ -5,7 +5,7 @@
     <AssemblyTitle>Shared lib to access file from TCC</AssemblyTitle>
     <AssemblyName>TCCFileAccess.netcore</AssemblyName>
     <PackageId>TCCFileAccess.netcore</PackageId>
-    <PackageVersion>1.1.7</PackageVersion>
+    <PackageVersion>1.1.8</PackageVersion>
 
     <TargetFrameworks>netstandard1.6;net46;net462</TargetFrameworks>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
@@ -17,10 +17,10 @@
   <ItemGroup>
     <PackageReference Include="Nito.AsyncEx.Coordination" Version="1.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.10" />
+    <PackageReference Include="ConfigurationStore.netcore" Version="*" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
 	  <PackageReference Include="System.ValueTuple" Version="4.3.0" />
-    <PackageReference Include="MasterDataProxies.netcore" Version="1.1.8" />
+    <PackageReference Include="MasterDataProxies.netcore" Version="*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
