@@ -31,8 +31,8 @@ namespace Repositories
 
             if (_serviceTypes == null)
                 _serviceTypes = (await GetServiceTypes()).ToDictionary(k => k.Name, v => v);
-
-            if (evt is CreateProjectSubscriptionEvent)
+          log.LogDebug($"Event type is {evt.GetType().ToString()}");
+      if (evt is CreateProjectSubscriptionEvent)
             {
                 var subscriptionEvent = (CreateProjectSubscriptionEvent) evt;
                 var subscription = new Subscription();

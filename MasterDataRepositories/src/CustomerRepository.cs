@@ -25,8 +25,8 @@ namespace Repositories
         public async Task<int> StoreEvent(ICustomerEvent evt)
         {
             var upsertedCount = 0;
-
-            if (evt is CreateCustomerEvent)
+          log.LogDebug($"Event type is {evt.GetType().ToString()}");
+      if (evt is CreateCustomerEvent)
             {
                 var customerEvent = (CreateCustomerEvent) evt;
                 var customer = new Customer();

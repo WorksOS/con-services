@@ -7,7 +7,7 @@ namespace KafkaConsumer.Interfaces
     public interface IAbstractKafkaConsumer
     {
         void SetTopic(string topic);
-        Task StartProcessingAsync(CancellationTokenSource token);
+        Task<Task> StartProcessingAsync(CancellationTokenSource token);
         void StopProcessing();
         void StartProcessingSync();
     }

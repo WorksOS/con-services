@@ -163,16 +163,7 @@ namespace MasterDataConsumer
               IAbstractKafkaConsumer;
           consumer.SetTopic(kafkaTopic);
           consumers.Add(consumer);
-
-#if NET_4_7
-          var taskThread = new Thread(() =>
-          {
-            consumer.StartProcessingAsync(token);
-          });
-          taskThread.Start();
-#else
-          tasks.Add(consumer.StartProcessingAsync(token));
-#endif
+          tasks.Add(consumer.StartProcessingAsync(token).Result);
         }
         else
         {

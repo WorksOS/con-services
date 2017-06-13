@@ -27,6 +27,7 @@ namespace Repositories
     {
       const string polygonStr = "POLYGON";
       var upsertedCount = 0;
+      log.LogDebug($"Event type is {evt.GetType().ToString()}");
       if (evt is CreateProjectEvent)
       {
         var projectEvent = (CreateProjectEvent) evt;
@@ -176,9 +177,8 @@ namespace Repositories
     private async Task<int> UpsertProjectDetail(Project project, string eventType)
     {
       var upsertedCount = 0;
-
       var existing = (await QueryWithAsyncPolicy<Project>
-      (@"SELECT 
+        (@"SELECT 
                 ProjectUID, Description, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
                 ProjectTimeZone, LandfillTimeZone, 
                 LastActionedUTC, StartDate, EndDate, GeometryWKT,
@@ -186,8 +186,8 @@ namespace Repositories
               FROM Project
               WHERE ProjectUID = @projectUid
                 OR LegacyProjectId = @legacyProjectId",
-        new {projectUid = project.ProjectUID, legacyProjectId = project.LegacyProjectID}
-      )).FirstOrDefault();
+          new {projectUid = project.ProjectUID, legacyProjectId = project.LegacyProjectID}
+        )).FirstOrDefault();
 
       if (eventType == "CreateProjectEvent")
         upsertedCount = await CreateProject(project, existing);
@@ -197,8 +197,6 @@ namespace Repositories
 
       if (eventType == "DeleteProjectEvent")
         upsertedCount = await DeleteProject(project, existing);
-
-
       return upsertedCount;
     }
 

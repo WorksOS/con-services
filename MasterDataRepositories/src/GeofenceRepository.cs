@@ -32,7 +32,8 @@ namespace Repositories
 
             var geofence = new Geofence();
             var eventType = "Unknown";
-            if (evt is CreateGeofenceEvent)
+          log.LogDebug($"Event type is {evt.GetType().ToString()}");
+      if (evt is CreateGeofenceEvent)
             {
                 var geofenceEvent = (CreateGeofenceEvent) evt;
                 geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();

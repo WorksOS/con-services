@@ -44,15 +44,15 @@ namespace KafkaConsumer
       kafkaDriver.Subscribe(new List<string>() {(topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim()});
     }
 
-    public Task StartProcessingAsync(CancellationTokenSource token)
+    public async Task<Task> StartProcessingAsync(CancellationTokenSource token)
     {
       log.LogDebug("KafkaConsumer: StartProcessingAsync");
       stopToken = token;
-      return Task.Factory.StartNew(() =>
+      return await Task.Factory.StartNew(async () =>
       {
         while (!token.IsCancellationRequested)
         {
-          ProcessMessage();
+          await ProcessMessage();
         }
       }, TaskCreationOptions.LongRunning);
 
@@ -65,12 +65,12 @@ namespace KafkaConsumer
     /// </summary>
     public void StartProcessingSync()
     {
-       ProcessMessage();
+       ProcessMessage().Wait();
     }
 
 
     private int batchCounter = 0;
-    private void ProcessMessage()
+    private async Task ProcessMessage()
     {
 //      log.LogTrace("Kafka Consuming");
       var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(500));
@@ -85,13 +85,13 @@ namespace KafkaConsumer
             var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString,
                 messageResolver.GetConverter<T>());
             log.LogDebug("KafkaConsumer: Saving");
-            dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
+            await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
           }
           catch (Exception ex)
           {
             log.LogDebug("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}", ex.Message, ex.StackTrace);
             if (ex.InnerException != null)
-            {
+            {   
               log.LogDebug("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message, ex.InnerException.StackTrace);
             }
           }
