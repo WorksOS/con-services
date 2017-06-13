@@ -143,6 +143,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DotOnTheMap.feature</DependentUpon>
     </Compile>
+    <Compile Include="DxfTile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DxfTile.feature</DependentUpon>
+    </Compile>
     <Compile Include="EditData.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -285,6 +290,7 @@
     <Compile Include="StepDefinitions\CoordinateSystemGetSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemPostSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemPostValidateSteps.cs" />
+    <Compile Include="StepDefinitions\DxfTileSteps.cs" />
     <Compile Include="StepDefinitions\ElevationStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\ExportGriddedCSVSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportSteps.cs" />
@@ -393,6 +399,10 @@
     <None Include="DotOnTheMap.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>DotOnTheMap.feature.cs</LastGenOutput>
+    </None>
+    <None Include="DxfTile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>DxfTile.feature.cs</LastGenOutput>
     </None>
     <None Include="EditData.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

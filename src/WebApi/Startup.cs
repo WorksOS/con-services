@@ -11,6 +11,8 @@ using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using src;
+using src.Interfaces;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Interfaces;
@@ -103,6 +105,7 @@ namespace VSS.Raptor.Service.WebApi
             services.AddScoped<ITagProcessor, TagProcessor>();
             services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
             services.AddSingleton<IProjectListProxy, ProjectListProxy>();
+            services.AddSingleton<IFileListProxy, FileListProxy>();
             services.AddTransient<IFileRepository, FileRepository>();
             services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
             services.AddTransient<ITileGenerator, TileGenerator>();

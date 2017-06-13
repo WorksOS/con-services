@@ -235,7 +235,7 @@ Scenario: Compaction Get CMV Summary
 	"""
 
   Scenario: Compaction Get Tiles 
-	Given the Compaction Tiles service URI "/api/v2/compaction/tiles"
+	Given the Compaction Tiles service URI "/api/v2/compaction/productiondatatiles"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace" 
   And a displayMode "0" and a bbox "36.206964000089840283, -115.0203540002853231, 36.206956000089640213, -115.02034400028509253" and a width "256" and a height "256"
 	When I request a Tile

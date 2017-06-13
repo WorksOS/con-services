@@ -416,7 +416,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 237
   this.ScenarioSetup(scenarioInfo);
 #line 238
- testRunner.Given("the Compaction Tiles service URI \"/api/v2/compaction/tiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Compaction Tiles service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 239
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 240

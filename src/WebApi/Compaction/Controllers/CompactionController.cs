@@ -1456,15 +1456,22 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         string LAYERS,
         string CRS,
         string STYLES)
-      {
-        if (SERVICE.ToUpper() != "WMS" || VERSION != "1.3.0" || REQUEST.ToUpper() != "GETMAP" || FORMAT.ToUpper() != "IMAGE/PNG" ||
-            TRANSPARENT.ToUpper() != "TRUE" || LAYERS.ToUpper() != "LAYERS" || CRS.ToUpper() != "EPSG:4326" || !string.IsNullOrEmpty(STYLES))
+    {
+      bool invalid = (!string.IsNullOrEmpty(SERVICE) && SERVICE.ToUpper() != "WMS") ||
+                     (!string.IsNullOrEmpty(VERSION) && VERSION.ToUpper() != "1.3.0") ||
+                     (!string.IsNullOrEmpty(REQUEST) && REQUEST.ToUpper() != "GETMAP") ||
+                     (!string.IsNullOrEmpty(FORMAT) && FORMAT.ToUpper() != "IMAGE/PNG") ||
+                     (!string.IsNullOrEmpty(TRANSPARENT) && TRANSPARENT.ToUpper() != "TRUE") ||
+                     (!string.IsNullOrEmpty(LAYERS) && LAYERS.ToUpper() != "LAYERS") ||
+                     (!string.IsNullOrEmpty(CRS) && CRS.ToUpper() != "EPSG:4326") ||
+                     (!string.IsNullOrEmpty(STYLES));
+       
+        if (invalid)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "Service supports only the following: SERVICE=WMS, VERSION=1.3.0, REQUEST=GetMap, FORMAT=image/png, TRANSPARENT=true, LAYERS=Layers, CRS=EPSG:4326, STYLES= (no styles supported)"));
         }
-
       }
 
       /// <summary>
