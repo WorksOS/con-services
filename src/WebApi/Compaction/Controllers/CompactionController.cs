@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using Common.Executors;
+using MasterDataProxies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using src.Interfaces;
+using src.Models;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
@@ -23,6 +28,9 @@ using VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Report.Executors;
 using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using WebApiModels.Compaction.Executors;
+using WebApiModels.Compaction.Models;
+using WebApiModels.Notification.Helpers;
 using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.ColorValue;
 
 namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
@@ -61,23 +69,28 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         /// </summary>
         private readonly TimeSpan elevationExtentsCacheLife = new TimeSpan(0, 15, 0); //TODO: how long to cache ?
 
+    /// <summary>
+    /// For getting list of imported files for a project
+    /// </summary>
+    private readonly IFileListProxy fileListProxy;
 
-
-        /// <summary>
-        /// Constructor with injected raptor client, logger and authenticated projects
-        /// </summary>
-        /// <param name="raptorClient">Raptor client</param>
-        /// <param name="logger">Logger</param>
-        /// <param name="authProjectsStore">Authenticated projects store</param>
-        /// <param name="cache">Elevation extents cache</param>
-        public CompactionController(IASNodeClient raptorClient, ILoggerFactory logger,
-            IAuthenticatedProjectsStore authProjectsStore, IMemoryCache cache)
+    /// <summary>
+    /// Constructor with injected raptor client, logger and authenticated projects
+    /// </summary>
+    /// <param name="raptorClient">Raptor client</param>
+    /// <param name="logger">Logger</param>
+    /// <param name="authProjectsStore">Authenticated projects store</param>
+    /// <param name="cache">Elevation extents cache</param>
+    /// <param name="fileListProxy">File list proxy</param>
+    public CompactionController(IASNodeClient raptorClient, ILoggerFactory logger,
+            IAuthenticatedProjectsStore authProjectsStore, IMemoryCache cache, IFileListProxy fileListProxy)
         {
             this.raptorClient = raptorClient;
             this.logger = logger;
             this.log = logger.CreateLogger<CompactionController>();
             this.authProjectsStore = authProjectsStore;
             this.elevationExtentsCache = cache;
+            this.fileListProxy = fileListProxy;
         }
 
         /// <summary>
@@ -1076,7 +1089,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         /// <executor>TilesExecutor</executor> 
         [ProjectIdVerifier]
         [ProjectUidVerifier]
-        [Route("api/v2/compaction/tiles")]
+        [Route("api/v2/compaction/productiondatatiles")]
         [HttpPost]
         public TileResult PostTile([FromBody] CompactionTileRequest request)
         {
@@ -1089,7 +1102,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
                     request.filter.startUTC, request.filter.endUTC, request.filter.onMachineDesignID,
                     request.filter.vibeStateOn,
                     request.filter.elevationType, request.filter.layerNumber, request.filter.contributingMachines);
-            var tileResult = GetTile(filter, request.projectId.Value, request.mode, request.width, request.height,
+            var tileResult = GetProductionDataTile(filter, request.projectId.Value, request.mode, request.width, request.height,
                 request.boundBoxLL);
             return tileResult;
         }
@@ -1109,7 +1122,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         /// <executor>TilesExecutor</executor> 
         [ProjectIdVerifier]
         [ProjectUidVerifier]
-        [Route("api/v2/compaction/tiles/png")]
+        [Route("api/v2/compaction/productiondatatiles/png")]
         [HttpPost]
 
         public FileResult PostTileRaw([FromBody] CompactionTileRequest request)
@@ -1123,17 +1136,12 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
                     request.filter.startUTC, request.filter.endUTC, request.filter.onMachineDesignID,
                     request.filter.vibeStateOn,
                     request.filter.elevationType, request.filter.layerNumber, request.filter.contributingMachines);
-            var tileResult = GetTile(filter, request.projectId.Value, request.mode, request.width, request.height,
+            var tileResult = GetProductionDataTile(filter, request.projectId.Value, request.mode, request.width, request.height,
                 request.boundBoxLL);
             if (tileResult != null)
             {
                 Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-                if (!Response.Headers.ContainsKey("Cache-Control"))
-                {
-                    Response.Headers.Add("Cache-Control", "public");
-                }
-                Response.Headers.Add("Expires",
-                    DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
+                AddCacheResponseHeaders();               
                 return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
             }
 
@@ -1180,9 +1188,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         /// <executor>TilesExecutor</executor> 
         [ProjectIdVerifier]
         [ProjectUidVerifier]
-        [Route("api/v2/compaction/tiles")]
+        [Route("api/v2/compaction/productiondatatiles")]
         [HttpGet]
-        public TileResult GetTile(
+        public TileResult GetProductionDataTile(
             [FromQuery] string SERVICE,
             [FromQuery] string VERSION,
             [FromQuery] string REQUEST,
@@ -1207,19 +1215,20 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             [FromQuery] string machineName,
             [FromQuery] bool? isJohnDoe)
         {
-                     log.LogDebug("GetTile: " + Request.QueryString);
-                      if (!projectId.HasValue)
-                      {
-                          var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-                          projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
-                      }
-                      Filter filter = CompactionSettings.CompactionFilter(
-                          startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-                          GetMachines(assetID, machineName, isJohnDoe));
-                      var tileResult = GetTile(filter, projectId.Value, mode, (ushort) WIDTH, (ushort) HEIGHT,
-                          GetBoundingBox(BBOX));
-                      return tileResult;
-                      
+          log.LogDebug("GetProductionDataTile: " + Request.QueryString);
+          ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
+
+          if (!projectId.HasValue)
+          {
+              var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+              projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+          }
+          Filter filter = CompactionSettings.CompactionFilter(
+              startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
+              GetMachines(assetID, machineName, isJohnDoe));
+          var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort) WIDTH, (ushort) HEIGHT,
+              GetBoundingBox(BBOX));
+          return tileResult;                      
         }
 
 
@@ -1266,9 +1275,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         /// <executor>TilesExecutor</executor> 
         [ProjectIdVerifier]
         [ProjectUidVerifier]
-        [Route("api/v2/compaction/tiles/png")]
+        [Route("api/v2/compaction/productiondatatiles/png")]
         [HttpGet]
-        public FileResult GetTileRaw(
+        public FileResult GetProductionDataTileRaw(
             [FromQuery] string SERVICE,
             [FromQuery] string VERSION,
             [FromQuery] string REQUEST,
@@ -1293,7 +1302,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             [FromQuery] string machineName,
             [FromQuery] bool? isJohnDoe)
         {
-            log.LogDebug("GetTileRaw: " + Request.QueryString);
+            log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
+
+            ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
             if (!projectId.HasValue)
             {
                 var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
@@ -1302,17 +1313,12 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             Filter filter = CompactionSettings.CompactionFilter(
                 startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
                 GetMachines(assetID, machineName, isJohnDoe));
-            var tileResult = GetTile(filter, projectId.Value, mode, (ushort) WIDTH, (ushort) HEIGHT,
+            var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort) WIDTH, (ushort) HEIGHT,
                 GetBoundingBox(BBOX));
             if (tileResult != null)
             {
                 Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-                if (!Response.Headers.ContainsKey("Cache-Control"))
-                {
-                    Response.Headers.Add("Cache-Control", "public");
-                }
-                Response.Headers.Add("Expires",
-                    DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
+                AddCacheResponseHeaders();
                 return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
             }
 
@@ -1320,6 +1326,202 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
                 new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
                     "Raptor failed to return a tile"));
         }
+
+    /// <summary>
+    /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
+    /// The tiles for the supplied list of files are overlaid and a single tile returned.
+    /// </summary>
+    /// <param name="SERVICE">WMS parameter - value WMS</param>
+    /// <param name="VERSION">WMS parameter - value 1.3.0</param>
+    /// <param name="REQUEST">WMS parameter - value GetMap</param>
+    /// <param name="FORMAT">WMS parameter - value image/png</param>
+    /// <param name="TRANSPARENT">WMS parameter - value true</param>
+    /// <param name="LAYERS">WMS parameter - value Layers</param>
+    /// <param name="CRS">WMS parameter - value EPSG:4326</param>
+    /// <param name="STYLES">WMS parameter - value null</param>
+    /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="fileUids">A collection of imported file IDs for which to to overlay tiles</param>
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
+    /// <executor>TilesExecutor</executor> 
+      [ProjectUidVerifier]
+      [Route("api/v2/compaction/lineworktiles")]
+      [HttpGet]
+      public async Task<TileResult> GetLineworkTile(
+        [FromQuery] string SERVICE,
+        [FromQuery] string VERSION,
+        [FromQuery] string REQUEST,
+        [FromQuery] string FORMAT,
+        [FromQuery] string TRANSPARENT,
+        [FromQuery] string LAYERS,
+        [FromQuery] string CRS,
+        [FromQuery] string STYLES,
+        [FromQuery] int WIDTH,
+        [FromQuery] int HEIGHT,
+        [FromQuery] string BBOX,
+        [FromQuery] Guid projectUid,
+        [FromQuery] Guid[] fileUids)
+      {
+        log.LogDebug("GetLineworkTile: " + Request.QueryString);
+
+        ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
+        ValidateTileDimensions(WIDTH, HEIGHT);
+
+        var requiredFiles = await ValidateFileUids(projectUid, fileUids);
+        DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
+        request.Validate();
+        var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null);
+        var result = await executor.ProcessAsync(request)as TileResult;
+        return result;
+      }
+
+      /// <summary>
+      /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
+      /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
+      /// The tiles for the supplied list of files are overlaid and a single tile returned.
+      /// </summary>
+      /// <param name="SERVICE">WMS parameter - value WMS</param>
+      /// <param name="VERSION">WMS parameter - value 1.3.0</param>
+      /// <param name="REQUEST">WMS parameter - value GetMap</param>
+      /// <param name="FORMAT">WMS parameter - value image/png</param>
+      /// <param name="TRANSPARENT">WMS parameter - value true</param>
+      /// <param name="LAYERS">WMS parameter - value Layers</param>
+      /// <param name="CRS">WMS parameter - value EPSG:4326</param>
+      /// <param name="STYLES">WMS parameter - value null</param>
+      /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
+      /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
+      /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
+      /// <param name="projectUid">Project UID</param>
+      /// <param name="fileUids">A collection of imported file IDs for which to to overlay tiles</param>
+      /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
+      /// <executor>TilesExecutor</executor> 
+      [ProjectUidVerifier]
+      [Route("api/v2/compaction/lineworktiles/png")]
+      [HttpGet]
+      public async Task<FileResult> GetLineworkTileRaw(
+        [FromQuery] string SERVICE,
+        [FromQuery] string VERSION,
+        [FromQuery] string REQUEST,
+        [FromQuery] string FORMAT,
+        [FromQuery] string TRANSPARENT,
+        [FromQuery] string LAYERS,
+        [FromQuery] string CRS,
+        [FromQuery] string STYLES,
+        [FromQuery] int WIDTH,
+        [FromQuery] int HEIGHT,
+        [FromQuery] string BBOX,
+        [FromQuery] Guid projectUid,
+        [FromQuery] Guid[] fileUids)
+      {
+        log.LogDebug("GetLineworkTileRaw: " + Request.QueryString);
+
+        ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
+        ValidateTileDimensions(WIDTH, HEIGHT);
+
+        var requiredFiles = await ValidateFileUids(projectUid, fileUids);
+        DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
+        request.Validate();
+        var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null);
+        var result = await executor.ProcessAsync(request) as TileResult;
+        if (result != null && result.TileData != null)
+        {
+          AddCacheResponseHeaders();
+          return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
+        }
+
+        throw new ServiceException(HttpStatusCode.NoContent,
+          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+            "No tile found"));
+      }
+
+    /// <summary>
+    /// Validates the WMS parameters for the tile requests
+    /// </summary>
+    /// <param name="SERVICE"></param>
+    /// <param name="VERSION"></param>
+    /// <param name="REQUEST"></param>
+    /// <param name="FORMAT"></param>
+    /// <param name="TRANSPARENT"></param>
+    /// <param name="LAYERS"></param>
+    /// <param name="CRS"></param>
+    /// <param name="STYLES"></param>
+    private void ValidateWmsParameters(
+        string SERVICE,
+        string VERSION,
+        string REQUEST,
+        string FORMAT,
+        string TRANSPARENT,
+        string LAYERS,
+        string CRS,
+        string STYLES)
+      {
+        if (SERVICE.ToUpper() != "WMS" || VERSION != "1.3.0" || REQUEST.ToUpper() != "GETMAP" || FORMAT.ToUpper() != "IMAGE/PNG" ||
+            TRANSPARENT.ToUpper() != "TRUE" || LAYERS.ToUpper() != "LAYERS" || CRS.ToUpper() != "EPSG:4326" || !string.IsNullOrEmpty(STYLES))
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Service supports only the following: SERVICE=WMS, VERSION=1.3.0, REQUEST=GetMap, FORMAT=image/png, TRANSPARENT=true, LAYERS=Layers, CRS=EPSG:4326, STYLES= (no styles supported)"));
+        }
+
+      }
+
+      /// <summary>
+      /// Validates the tile width and height
+      /// </summary>
+      /// <param name="WIDTH"></param>
+      /// <param name="HEIGHT"></param>
+      private void ValidateTileDimensions(int WIDTH, int HEIGHT)
+      {
+        if (WIDTH != WebMercatorProjection.TILE_SIZE || HEIGHT != WebMercatorProjection.TILE_SIZE)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Service supports only tile width and height of " + WebMercatorProjection.TILE_SIZE + " pixels"));
+        }
+      }
+
+      /// <summary>
+      /// Validates the file UIDs for DXF tile request and gets the imported file data for them
+      /// </summary>
+      /// <param name="projectUid">The project UID where the files were imported</param>
+      /// <param name="fileUids">The file UIDs of the imported files</param>
+      /// <returns>The imported file data for the requested files</returns>
+      private async Task<List<FileData>> ValidateFileUids(Guid projectUid, Guid[] fileUids)
+      {
+        //Check at least one file specified to get tiles for
+        if (fileUids == null || fileUids.Length == 0)
+        {
+          throw new ServiceException(HttpStatusCode.NoContent,
+            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+              "No files selected"));
+        }
+        //Get all the imported files for the project
+        var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
+        if (fileList == null || fileList.Count == 0)
+        {
+          throw new ServiceException(HttpStatusCode.NoContent,
+            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+              "No imported files"));
+        }
+        //Select the required ones from the list
+        var fileUidList = fileUids.Select(f => f.ToString()).ToList();
+        return fileList.Where(f => fileUidList.Contains(f.ImportedFileUid)).ToList();
+      }
+
+      /// <summary>
+      /// Adds caching headers to the http response
+      /// </summary>
+      private void AddCacheResponseHeaders()
+      {
+        if (!Response.Headers.ContainsKey("Cache-Control"))
+        {
+          Response.Headers.Add("Cache-Control", "public");
+        }
+        Response.Headers.Add("Expires",
+          DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
+      }
 
         /// <summary>
         /// Gets the list of contributing machines from the query parameters
@@ -1413,17 +1615,19 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             return BoundingBox2DLatLon.CreateBoundingBox2DLatLon(blLong, blLat, trLong, trLat);
         }
 
-        /// <summary>
-        /// Gets the requested tile from Raptor
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <param name="projectId"></param>
-        /// <param name="mode"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="bbox"></param>
-        /// <returns>Tile result</returns>
-        private TileResult GetTile(Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
+ 
+
+    /// <summary>
+    /// Gets the requested tile from Raptor
+    /// </summary>
+    /// <param name="filter"></param>
+    /// <param name="projectId"></param>
+    /// <param name="mode"></param>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="bbox"></param>
+    /// <returns>Tile result</returns>
+    private TileResult GetProductionDataTile(Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
             BoundingBox2DLatLon bbox)
         {
             LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
@@ -1443,7 +1647,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             return tileResult;
         }
 
-
+    
     #endregion
 
     private const int CMV_DETAILS_NUMBER_OF_COLORS = 11;

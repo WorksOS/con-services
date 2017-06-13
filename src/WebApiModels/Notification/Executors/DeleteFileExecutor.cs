@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Notification.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using WebApiModels.Interfaces;
 using WebApiModels.Notification.Helpers;
 
@@ -58,17 +60,17 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       try
       {
         ProjectFileDescriptor request = item as ProjectFileDescriptor;
-        ImportedFileTypeEnum fileType = FileUtils.GetFileType(request.File.fileName);
+        ImportedFileType fileType = FileUtils.GetFileType(request.File.fileName);
 
-        if (fileType == ImportedFileTypeEnum.DesignSurface ||
-            fileType == ImportedFileTypeEnum.Alignment ||
-            fileType == ImportedFileTypeEnum.Linework)
+        if (fileType == ImportedFileType.DesignSurface ||
+            fileType == ImportedFileType.Alignment ||
+            fileType == ImportedFileType.Linework)
         {
           var suffix = FileUtils.GeneratedFileSuffix(fileType);
           //Delete generated files
           bool success = await DeleteGeneratedFile(request.projectId.Value, request.File, suffix, FileUtils.PROJECTION_FILE_EXTENSION) &&
                          await DeleteGeneratedFile(request.projectId.Value, request.File, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
-          if (fileType != ImportedFileTypeEnum.Linework)
+          if (fileType != ImportedFileType.Linework)
           {
             success = success && await DeleteGeneratedFile(request.projectId.Value, request.File, suffix, FileUtils.DXF_FILE_EXTENSION);
           }
@@ -85,7 +87,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
 
 
         //If surveyed surface, delete it in Raptor
-        if (fileType == ImportedFileTypeEnum.SurveyedSurface)
+        if (fileType == ImportedFileType.SurveyedSurface)
         {
           log.LogDebug("Discarding ground surface file in Raptor");
           if (!raptorClient.DiscardGroundSurfaceFileDetails(request.projectId.Value, request.FileId))
@@ -117,7 +119,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     {
       string generatedName = FileUtils.GeneratedFileName(fileDescr.fileName, suffix, extension);
       log.LogDebug("Deleting generated file {0}", generatedName);
-      string fullName = fileDescr.path + "/" + generatedName;
+      string fullName = Path.Combine(fileDescr.path, generatedName);
       if (await fileRepo.FileExists(fileDescr.filespaceId, fullName))
       {
         if (!await fileRepo.DeleteFile(fileDescr.filespaceId, fullName))
