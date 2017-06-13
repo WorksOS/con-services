@@ -1,3 +1,6 @@
+using System;
+using System.Diagnostics;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -101,8 +104,9 @@ namespace ProjectWebApi
           Description = "API for project data",
           TermsOfService = "None"
         });
-        string path = isDevEnv ? "bin/Debug/netcoreapp1.1/" : string.Empty;
-        options.IncludeXmlComments(path + "ProjectWebApi.xml");
+        var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+        var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+        options.IncludeXmlComments(pathToContentRoot + "\\ProjectWebApi.xml");
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
