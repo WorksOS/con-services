@@ -106,16 +106,16 @@ namespace ProjectWebApi
         });
 
         string pathToXml="";
-        if (File.Exists($"{System.IO.Directory.GetCurrentDirectory()}\\ProjectWebApi.xml"))
+        if (File.Exists(Path.Combine(System.IO.Directory.GetCurrentDirectory(),"ProjectWebApi.xml")))
           pathToXml = System.IO.Directory.GetCurrentDirectory();
-        else if (File.Exists($"{System.AppContext.BaseDirectory}\\ProjectWebApi.xml"))
+        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory,"ProjectWebApi.xml")))
           pathToXml = System.AppContext.BaseDirectory;
         else
         {
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
           pathToXml = Path.GetDirectoryName(pathToExe);
         }
-        options.IncludeXmlComments(pathToXml + "\\ProjectWebApi.xml");
+        options.IncludeXmlComments(Path.Combine(pathToXml,"ProjectWebApi.xml"));
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
