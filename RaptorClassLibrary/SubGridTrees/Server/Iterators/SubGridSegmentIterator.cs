@@ -144,7 +144,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
 
                                 // Segment failed to be loaded. Multiple messages will have been posted to the log.
                                 // Move to the next item in the iteration
-                                Result = null;
+                                Result = null; 
                                 continue;
                             }
                         }
