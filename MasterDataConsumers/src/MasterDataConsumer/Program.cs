@@ -163,7 +163,7 @@ namespace MasterDataConsumer
               IAbstractKafkaConsumer;
           consumer.SetTopic(kafkaTopic);
           consumers.Add(consumer);
-          tasks.Add(consumer.StartProcessingAsync(token).Result);
+          tasks.Add(consumer.StartProcessingAsync(token));
         }
         else
         {
