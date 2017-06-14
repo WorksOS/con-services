@@ -1446,6 +1446,6 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 
     #endregion
 
-    private const int CMV_DETAILS_NUMBER_OF_COLORS = 11;
+    private const int CMV_DETAILS_NUMBER_OF_COLORS = 16;
   }
 }
