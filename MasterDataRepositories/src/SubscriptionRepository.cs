@@ -28,8 +28,14 @@ namespace Repositories
         public async Task<int> StoreEvent(ISubscriptionEvent evt)
         {
             var upsertedCount = 0;
+          if (evt == null)
+          {
+            log.LogWarning($"Unsupported event type");
+            return 0;
+          }
 
-            if (_serviceTypes == null)
+
+      if (_serviceTypes == null)
                 _serviceTypes = (await GetServiceTypes()).ToDictionary(k => k.Name, v => v);
           log.LogDebug($"Event type is {evt.GetType().ToString()}");
       if (evt is CreateProjectSubscriptionEvent)

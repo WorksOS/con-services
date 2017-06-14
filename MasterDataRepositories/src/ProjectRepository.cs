@@ -27,6 +27,12 @@ namespace Repositories
     {
       const string polygonStr = "POLYGON";
       var upsertedCount = 0;
+      if (evt == null)
+      {
+        log.LogWarning($"Unsupported event type");
+        return 0;
+      }
+
       log.LogDebug($"Event type is {evt.GetType().ToString()}");
       if (evt is CreateProjectEvent)
       {
@@ -356,13 +362,14 @@ namespace Repositories
     private async Task<int> UpdateProject(Project project, Project existing)
     {
       var upsertedCount = 0;
-      if (project.EndDate < existing.StartDate)
-      {
-        log.LogDebug("ProjectRepository/UpdateProject: failed to update project={0} EndDate < StartDate",
-          JsonConvert.SerializeObject(project));
-        return upsertedCount;
-      }
       if (existing != null)
+      {
+        if (project.EndDate < existing.StartDate)
+        {
+          log.LogDebug("ProjectRepository/UpdateProject: failed to update project={0} EndDate < StartDate",
+            JsonConvert.SerializeObject(project));
+          return upsertedCount;
+        }
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
           project.Name = project.Name == null ? existing.Name : project.Name;
@@ -404,6 +411,7 @@ namespace Repositories
           log.LogDebug("ProjectRepository/UpdateProject: old update event ignored project={0}",
             JsonConvert.SerializeObject(project));
         }
+      }
       else
         log.LogDebug("ProjectRepository/UpdateProject: can't update as none existing project={0}",
           JsonConvert.SerializeObject(project));

@@ -24,7 +24,13 @@ namespace Repositories
         {
             var upsertedCount = 0;
             var eventType = "Unknown";
-          log.LogDebug($"Event type is {evt.GetType().ToString()}");
+          if (evt == null)
+          {
+            log.LogWarning($"Unsupported event type");
+            return 0;
+          }
+
+      log.LogDebug($"Event type is {evt.GetType().ToString()}");
       if (evt is CreateDeviceEvent)
             {
                 var device = new Device();
