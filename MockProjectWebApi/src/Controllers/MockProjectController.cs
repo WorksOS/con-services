@@ -1,41 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Models;
+using src.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-
-  public class MockProjectContractResult
- {
-    /// <summary>
-    ///   Defines machine-readable code.
-    /// </summary>
-    /// <value>
-    ///   Result code.
-    /// </value>
-    public int Code { get; protected set; }
-
-    /// <summary>
-    ///   Defines user-friendly message.
-    /// </summary>
-    /// <value>
-    ///   The message string.
-    /// </value>
-    public string Message { get; protected set; }
-
-    /// <summary>
-    /// Gets or sets the project descriptors.
-    /// </summary>
-    /// <value>
-    /// The project descriptors.
-    /// </value>
-    public List<ProjectData> ProjectDescriptors { get; set; }
- }
-
   public class MockProjectController : Controller
   {
-         
     /// <summary>
     /// Gets the list of projects used in the Raptor service acceptance tests.
     /// The data is mocked.
@@ -48,36 +22,69 @@ namespace MockProjectWebApi.Controllers
       Console.WriteLine("GetMockProjects");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
-      var projectList = new List<ProjectData>
-        {
-          new ProjectData { LegacyProjectId = 1000001, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1000100, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1000102, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1000450, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1000452, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1000544, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1000992, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001151, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001152, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001153, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001158, ProjectUid = "ff91dd40-1569-4765-a2bc-014321f76ace" },
-          new ProjectData { LegacyProjectId = 1001184, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001186, ProjectUid = "8590b7fc-079e-4b5a-b5ff-8514dadfe985" },
-          new ProjectData { LegacyProjectId = 1001191, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001209, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001210, ProjectUid = "d0a0410e-9fcc-44b1-bf1a-378c891d2ddb" },
-          new ProjectData { LegacyProjectId = 1001214, ProjectUid = "8aed6003-b8eb-47b1-941f-096a17468bf0" },
-          new ProjectData { LegacyProjectId = 1001276, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001280, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001285, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001388, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1001544, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1009999, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1012413, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1099999, ProjectUid = Guid.NewGuid().ToString() },
-          new ProjectData { LegacyProjectId = 1999999, ProjectUid = "0fa94210-0d7a-4015-9eee-4d9956f4b250" }
-        };
-      return new  MockProjectContractResult() {ProjectDescriptors = projectList};
+      return new MockProjectContractResult {ProjectDescriptors = projectList};
     }
+
+    /// <summary>
+    /// Gets the list of imported files used in the Raptor service acceptance tests.
+    /// The data is mocked.
+    /// </summary>
+    /// <returns>The list of mocked imported files</returns>
+    [Route("api/v4/mock/importedfiles")]
+    [HttpGet]
+    public FileDataResult GetMockImportedFiles([FromQuery] Guid projectUid)
+    {
+      Console.WriteLine("GetMockImportedFiles: projectUid={0}", projectUid);
+
+      List<FileData> fileList = null;
+      if (projectUid.ToString() == DIMENSIONS_PROJECT_UID)
+      {
+        fileList = new List<FileData>
+        {
+          new FileData
+          {
+            Name = "CERA.bg.dxf",
+            ProjectUid = DIMENSIONS_PROJECT_UID,
+            CustomerUid = "DxfTileAcceptanceTest", //"491ea8d1-6e4d-467f-bfdb-a84c9d32ced3",
+            ImportedFileType = ImportedFileType.Linework,
+            ImportedFileUid = "cfcd4c01-6fc8-45d5-872f-513a0f619f03"
+          }
+        };
+      }
+      return new FileDataResult { FileDescriptors = fileList};
+    }
+
+    private List<ProjectData>  projectList = new List<ProjectData>
+    {
+      new ProjectData {LegacyProjectId = 1000001, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1000100, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1000102, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1000450, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1000452, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1000544, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1000992, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001151, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001152, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001153, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = DIMENSIONS_PROJECT_ID, ProjectUid = DIMENSIONS_PROJECT_UID},
+      new ProjectData {LegacyProjectId = 1001184, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001186, ProjectUid = "8590b7fc-079e-4b5a-b5ff-8514dadfe985"},
+      new ProjectData {LegacyProjectId = 1001191, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001209, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001210, ProjectUid = "d0a0410e-9fcc-44b1-bf1a-378c891d2ddb"},
+      new ProjectData {LegacyProjectId = 1001214, ProjectUid = "8aed6003-b8eb-47b1-941f-096a17468bf0"},
+      new ProjectData {LegacyProjectId = 1001276, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001280, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001285, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001388, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001544, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1009999, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1012413, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1099999, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1999999, ProjectUid = "0fa94210-0d7a-4015-9eee-4d9956f4b250"}
+    };
+
+    private const int DIMENSIONS_PROJECT_ID = 1001158;
+    private const string DIMENSIONS_PROJECT_UID = "ff91dd40-1569-4765-a2bc-014321f76ace";
   }
 }
