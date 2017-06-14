@@ -1,6 +1,8 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks;
@@ -16,6 +18,8 @@ namespace VSS.VisionLink.Raptor.Rendering
 {
     public class PlanViewTileRenderer
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// The Raptor application service node performing the request
         /// </summary>
@@ -292,8 +296,8 @@ namespace VSS.VisionLink.Raptor.Rendering
 
                         while (!PipeLine.AllFinished && !PipeLine.PipelineAborted)
                         {
-                            // TODO waiting for result to come back from Ignite, set AllFinished to true for now...
-                            PipeLine.AllFinished = true;
+                            // TODO: Change this so that it waits on a signal rather than spinning with sleep states
+                            System.Threading.Thread.Sleep(5);
                         }
 
                         PerformAnyRequiredDebugLevelDisplay();
@@ -308,10 +312,12 @@ namespace VSS.VisionLink.Raptor.Rendering
                     finally
                     {
                         // Unhook the pipeline from the task and release the pipeline back to the pool
-                        // This probably not needed though...
-                        PipelinedTask.PipeLine = null;
-
                         //   ASNodeImplInstance.SubgridPipelinePool.ReleasePipeline(PipeLine);
+                        // This is not needed though as subgrids will be pending in the processing 
+                        // threads receiving results from the processing cluster
+
+                        // Log.Info("Setting PipelinedTask.PipeLine = null");
+                        // PipelinedTask.PipeLine = null;
                     }
                 }
                 finally
@@ -331,10 +337,10 @@ namespace VSS.VisionLink.Raptor.Rendering
                     }
                 }
             }
-            catch
+            catch (Exception E)
             {
-                // TODO Readd when logging available
-                //SIGLogMessage.Publish(Self, Format('%s.ExecutePipeline raised exception ''%s''', [Self.Classname, E.Message]), slmcException);
+                
+                Log.ErrorFormat("ExecutePipeline raised exception ''{0}''", E);
             }
 
             return Result;

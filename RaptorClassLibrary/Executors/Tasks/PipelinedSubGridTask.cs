@@ -15,7 +15,6 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public SubGridPipelineBase PipeLine { get; set; } = null;
 
         public PipelinedSubGridTask(long requestDescriptor, string raptorNodeID, GridDataType gridDataType) : base(requestDescriptor, raptorNodeID, gridDataType)
         {
@@ -30,7 +29,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
             }
             else
             {
-                Log.DebugFormat(" WARNING: TASPipelinedTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
+                Log.DebugFormat(" WARNING: PipelinedSubGridTask.TransferSubgridResponse: No pipeline available to submit grouped result for request {0}", RequestDescriptor);
                 return false;
             }
         }
@@ -43,6 +42,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
                 {
                     try
                     {
+                        Log.Debug("WARNING: Aborting pipeline due to cancellation");
                         PipeLine.Abort();
                     }
                     catch
@@ -54,6 +54,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
                 }
                 finally
                 {
+                    Log.Info("Nulling pipeline reference");
                     PipeLine = null;
                 }
             }

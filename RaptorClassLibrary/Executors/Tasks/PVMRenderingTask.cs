@@ -38,7 +38,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
 
             if (!base.TransferResponse(response))
             {
-                Log.Info("Base TransferResponse returned false");
+                Log.Warn("Base TransferResponse returned false");
                 return false;
             }
 

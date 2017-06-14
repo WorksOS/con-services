@@ -102,9 +102,16 @@ namespace VSS.Raptor.IgnitePOC.TestApp
             }
         }
 
+        private void DoUpdateLabels()
+        {
+            lblViewHeight.Text = String.Format("View height: {0:F3}", extents.SizeY);
+            lblViewWidth.Text = String.Format("View width: {0:F3}", extents.SizeX);
+        }
+
         private void ViewPortChange(Action viewPortAction)
         {
             viewPortAction();
+            DoUpdateLabels();
             DoRender();
         }
 

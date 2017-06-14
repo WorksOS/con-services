@@ -24,10 +24,16 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
         [NonSerialized]
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        // private static int responseCounter = 0;
+        /// <summary>
+        /// Count of the number of responses recieved by this listener
+        /// </summary>
+        private int responseCounter = 0;
 
         private static IClientLeafSubgridFactory ClientLeafSubGridFactory = ClientLeafSubgridFactoryFactory.GetClientLeafSubGridFactory();
 
+        /// <summary>
+        /// The reference to the task responsible for handling the returned subgrid information from the processing cluster
+        /// </summary>
         public ITask Task = null;
 
         /// <summary>
@@ -46,20 +52,36 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
                 message.Position = 0;
                 ClientGrid.Read(new BinaryReader(message));
 
-                // Log.Info(String.Format("Transferring response#{0} to processor", ++responseCounter));
+                int thisResponseCount = ++responseCounter;
+
+                // Log.InfoFormat("Transferring response#{0} to processor (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
 
                 // Send the decoded grid to the PipelinedTask, but ensure subgrids are serialised into the task
                 // (no assumption of thread safety within the task itself)
                 lock (Task)
                 {
-                    Task.TransferResponse(ClientGrid);
+                    try
+                    {
+                        if (Task.TransferResponse(ClientGrid))
+                        {
+                            // Log.InfoFormat("Processed response#{0} (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                        }
+                        else
+                        {
+                            // Log.InfoFormat("Processing response#{0} FAILED (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                        }
+                    }
+                    finally
+                    {
+                        // Tell the pipeline that a subgrid has been completely processed
+                        Task.PipeLine.SubgridProcessed();
+                    }
                 }
             }
             catch ( Exception E )
             {
                 throw;
             }
-
 
             return true;
         }

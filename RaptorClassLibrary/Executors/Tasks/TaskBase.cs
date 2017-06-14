@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
+using VSS.VisionLink.Raptor.Pipelines;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.Executors.Tasks
@@ -47,5 +48,10 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
         /// take any required actions to cancel an active request.
         /// </summary>
         public virtual void Cancel() => IsCancelled = true;
+
+        /// <summary>
+        /// A reference to a subgrid processing pipeline associated with this task
+        /// </summary>
+        public SubGridPipelineBase PipeLine { get; set; } = null;
     }
 }

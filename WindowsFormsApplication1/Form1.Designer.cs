@@ -36,6 +36,8 @@
             this.bntTranslateEast = new System.Windows.Forms.Button();
             this.bntTranslateWest = new System.Windows.Forms.Button();
             this.bntTranslateSouth = new System.Windows.Forms.Button();
+            this.lblViewWidth = new System.Windows.Forms.Label();
+            this.lblViewHeight = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -117,11 +119,31 @@
             this.bntTranslateSouth.UseVisualStyleBackColor = true;
             this.bntTranslateSouth.Click += new System.EventHandler(this.bntTranslateSouth_Click);
             // 
+            // lblViewWidth
+            // 
+            this.lblViewWidth.AutoSize = true;
+            this.lblViewWidth.Location = new System.Drawing.Point(520, 249);
+            this.lblViewWidth.Name = "lblViewWidth";
+            this.lblViewWidth.Size = new System.Drawing.Size(61, 13);
+            this.lblViewWidth.TabIndex = 8;
+            this.lblViewWidth.Text = "View Width";
+            // 
+            // lblViewHeight
+            // 
+            this.lblViewHeight.AutoSize = true;
+            this.lblViewHeight.Location = new System.Drawing.Point(520, 273);
+            this.lblViewHeight.Name = "lblViewHeight";
+            this.lblViewHeight.Size = new System.Drawing.Size(64, 13);
+            this.lblViewHeight.TabIndex = 9;
+            this.lblViewHeight.Text = "View Height";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(693, 522);
+            this.Controls.Add(this.lblViewHeight);
+            this.Controls.Add(this.lblViewWidth);
             this.Controls.Add(this.bntTranslateSouth);
             this.Controls.Add(this.bntTranslateWest);
             this.Controls.Add(this.bntTranslateEast);
@@ -135,6 +157,7 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -148,6 +171,8 @@
         private System.Windows.Forms.Button bntTranslateEast;
         private System.Windows.Forms.Button bntTranslateWest;
         private System.Windows.Forms.Button bntTranslateSouth;
+        private System.Windows.Forms.Label lblViewWidth;
+        private System.Windows.Forms.Label lblViewHeight;
     }
 }
 

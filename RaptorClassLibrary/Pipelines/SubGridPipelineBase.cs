@@ -1,6 +1,8 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks;
@@ -14,6 +16,15 @@ namespace VSS.VisionLink.Raptor.Pipelines
 {
     public class SubGridPipelineBase
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>
+        /// Records how may subgrid results there are pending to be processed through the Task assigned to this pipeline.
+        /// As each subgrid result is processed in the task, the task pings the pipeline to note another task has been 
+        /// completed. Once this count reaches zero the pipeline is cleared to complete its processing.
+        /// </summary>
+        private long SubgridsRemainingToProcess = 0;
+
         // Derived from TSVOICSubGridPipelineBase = class(TObject)
 
         public int ID = 0;
@@ -91,6 +102,14 @@ namespace VSS.VisionLink.Raptor.Pipelines
 
         public bool AllFinished = false;
 
+        public void SubgridProcessed()
+        {
+            if (System.Threading.Interlocked.Decrement(ref SubgridsRemainingToProcess) <= 0)
+            {
+                AllFinished = true;
+            }
+        }
+
         public SubGridPipelineBase(int AID, PipelinedSubGridTask task)
         {
             PipelineTask = task;
@@ -150,7 +169,9 @@ namespace VSS.VisionLink.Raptor.Pipelines
                 return;
             }
 
-            Console.WriteLine("Reuest analyser counts {0} subgrids to be requested, compared to {1} subgrids in production existance map", analyser.Mask.CountBits(), ProdDataExistenceMap.CountBits());
+            SubgridsRemainingToProcess = analyser.TotalNumberOfSubgridsAnalysed;
+
+            Log.InfoFormat("Request analyser counts {0} subgrids to be requested, compared to {1} subgrids in production existance map", analyser.TotalNumberOfSubgridsAnalysed, ProdDataExistenceMap.CountBits());
 
             if (analyser.TotalNumberOfSubgridsAnalysed == 0)
             {
