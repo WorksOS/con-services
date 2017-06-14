@@ -131,7 +131,6 @@ namespace Repositories
           FileUpdatedUtc = projectEvent.FileUpdatedUtc,
           ImportedBy = projectEvent.ImportedBy,
           SurveyedUtc = projectEvent.SurveyedUTC,
-          IsDeleted = false,
           LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "CreateImportedFileEvent");
@@ -998,14 +997,13 @@ namespace Repositories
       var importedFileList = await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
-            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted,
+            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated,
             LastActionedUTC
           FROM ImportedFile
             WHERE fk_ProjectUID = @projectUid
               AND IsDeleted = 0",
         new {projectUid}
       );
-
 
       return importedFileList;
     }
@@ -1015,15 +1013,43 @@ namespace Repositories
       var importedFile = (await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
-            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted,
+            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated,
             LastActionedUTC
           FROM ImportedFile
             WHERE importedFileUID = @importedFileUid",
         new {importedFileUid}
       )).FirstOrDefault();
-
-
+      
       return importedFile;
+    }
+
+    public async Task<int> SetImportedFileActivatedState(IEnumerable<string> importFileUids, bool isActivated)
+    {
+      var updateCount = await ExecuteWithAsyncPolicy
+        (@"UPDATE `VSS-MasterData-Project`.ImportedFile
+           SET IsActivated = True
+           WHERE ImportedFileUID IN (@importFileUids)");
+
+      log.LogDebug("ImportedFile: updated {updateCount} rows setting IsActivated={isActivated}");
+
+      return updateCount;
+    }
+
+    public async Task<IEnumerable<ImportedFile>> GetActivatedImportFiles(string projectUid)
+    {
+      var importedFiles = await QueryWithAsyncPolicy<ImportedFile>
+      (@"SELECT 
+            fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
+            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated,
+            LastActionedUTC
+          FROM ImportedFile
+            WHERE fk_ProjectUID = @projectUid
+              AND IsDeleted = 0
+              AND IsActivated = True",
+        new {projectUid}
+      );
+
+      return importedFiles;
     }
 
     #endregion gettersImportedFiles

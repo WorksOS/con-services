@@ -17,6 +17,7 @@ namespace Repositories.DBModels
     public string ImportedBy { get; set; }
     public DateTime? SurveyedUtc { get; set; }
     public bool IsDeleted { get; set; }
+    public bool IsActivated { get; set; }
     public DateTime LastActionedUtc { get; set; }
 
 
@@ -35,6 +36,7 @@ namespace Repositories.DBModels
              && otherImportedFile.FileUpdatedUtc == FileUpdatedUtc
              && otherImportedFile.ImportedBy == ImportedBy
              && otherImportedFile.IsDeleted == IsDeleted
+             && otherImportedFile.IsActivated == IsActivated
              && otherImportedFile.SurveyedUtc == SurveyedUtc
              && otherImportedFile.LastActionedUtc == LastActionedUtc
         ;
