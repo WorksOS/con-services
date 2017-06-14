@@ -350,7 +350,7 @@ namespace WebApiTests
       var startDateTime2 = DateTime.Now.Date.AddMonths(3);
       var endDateTime2 = DateTime.Now.Date.AddMonths(9);
       const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109))";
-      const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.597660 -43.542353,172.595071 -43.542112))";
+      const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.59766 -43.542353,172.595071 -43.542112))";
       var customerEventArray = new[] {
        "| TableName | EventDate   | Name             | fk_CustomerTypeID | CustomerUID   |",
       $"| Customer  | 0d+09:00:00 | Boundary Test 11 | 1                 | {customerUid} |"};
