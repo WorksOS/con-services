@@ -71,13 +71,15 @@ namespace ProjectWebApi.Filters
         {
           try
           {
+            var userUid = ((context.User as TidCustomPrincipal).Identity as GenericIdentity).Name;
             CustomerDataResult customerResult =
-              await customerProxy.GetCustomersForMe(context.Request.Headers.GetCustomHeaders());
-            if (customerResult.status != 200 || customerResult.customer.Count < 1 ||
+              await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+            if (customerResult.status != 200 || customerResult.customer == null || customerResult.customer.Count < 1 ||
                 !customerResult.customer.Exists(x => x.uid == customerUid))
             {
-              log.LogWarning("User is not authorized to configure this customer");
-              await SetResult("User is not authorized to configure this customer", context);
+              var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
+              log.LogWarning(error);
+              await SetResult(error, context);
               return;
             }
           }
