@@ -25,14 +25,14 @@ namespace MasterDataProxies
     /// </summary>
     /// <param name="customHeaders"></param>
     /// <returns></returns>
-    public async Task<CustomerDataResult> GetCustomersForMe(IDictionary < string, string> customHeaders)
+    public async Task<CustomerDataResult> GetCustomersForMe(string userUid, IDictionary< string, string> customHeaders)
     {
       // e.g. https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/customers/me
       var urlKey = "CUSTOMERSERVICE_API_URL";
       string url = configurationStore.GetValueString(urlKey);
-      log.LogDebug($"CustomerProxy.GetCustomersForMe:: urlKey: {urlKey}  url: {url} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
+      log.LogDebug($"CustomerProxy.GetCustomersForMe: userUid:{userUid} urlKey: {urlKey}  url: {url} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
 
-      var response = await GetContainedList<CustomerDataResult>("", customerCacheLife, urlKey, customHeaders);
+      var response = await GetContainedList<CustomerDataResult>(userUid, customerCacheLife, urlKey, customHeaders);
       var message = string.Format("CustomerProxy.GetCustomersForMe: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       log.LogDebug(message);
       return response;
