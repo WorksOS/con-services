@@ -173,14 +173,20 @@ namespace Controllers
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var projectWithLegacyProjectID = projectService.GetProjectOnly(project.ProjectUID.ToString()).Result;
+
         var customHeaders = (Request.Headers.GetCustomHeaders());
-        customHeaders.Add("X-VisionLink-ClearCache", "true");
+        string caching = null;
+        customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+        if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
+          customHeaders.Add("X-VisionLink-ClearCache", "true");
+
         var coordinateSystemSettingsResult = await raptorProxy
           .CoordinateSystemPost(projectWithLegacyProjectID.LegacyProjectID, project.CoordinateSystemFileContent,
             project.CoordinateSystemFileName, customHeaders).ConfigureAwait(false);
         log.LogDebug($"Post of CS update to RaptorServices returned code: {0} Message {1}.",
           coordinateSystemSettingsResult?.Code ?? -1,
           coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
+
         if (coordinateSystemSettingsResult == null ||
             coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
@@ -317,7 +323,11 @@ namespace Controllers
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var customHeaders = (Request.Headers.GetCustomHeaders());
-        customHeaders.Add("X-VisionLink-ClearCache", "true");
+        string caching = null;
+        customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+        if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
+          customHeaders.Add("X-VisionLink-ClearCache", "true");
+
         var coordinateSystemSettingsResult = await raptorProxy
           .CoordinateSystemPost(project.ProjectID, project.CoordinateSystemFileContent,
             project.CoordinateSystemFileName, customHeaders).ConfigureAwait(false);
