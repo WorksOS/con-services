@@ -14,6 +14,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using src.Interfaces;
 using src.Models;
+using TCCFileAccess;
+using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
@@ -69,10 +71,18 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         /// </summary>
         private readonly TimeSpan elevationExtentsCacheLife = new TimeSpan(0, 15, 0); //TODO: how long to cache ?
 
-    /// <summary>
-    /// For getting list of imported files for a project
-    /// </summary>
-    private readonly IFileListProxy fileListProxy;
+      /// <summary>
+      /// For getting list of imported files for a project
+      /// </summary>
+      private readonly IFileListProxy fileListProxy;
+      /// <summary>
+      /// Where to get environment variables, connection string etc. from
+      /// </summary>
+      private IConfigurationStore configStore;
+      /// <summary>
+      /// Used to talk to TCC
+      /// </summary>
+      private readonly IFileRepository fileRepo;
 
     /// <summary>
     /// Constructor with injected raptor client, logger and authenticated projects
@@ -82,8 +92,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="authProjectsStore">Authenticated projects store</param>
     /// <param name="cache">Elevation extents cache</param>
     /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="configStore">Configuration store</param>
+    /// <param name="fileRepo">Imported file repository</param>
     public CompactionController(IASNodeClient raptorClient, ILoggerFactory logger,
-            IAuthenticatedProjectsStore authProjectsStore, IMemoryCache cache, IFileListProxy fileListProxy)
+            IAuthenticatedProjectsStore authProjectsStore, IMemoryCache cache, 
+            IFileListProxy fileListProxy, IConfigurationStore configStore, IFileRepository fileRepo)
         {
             this.raptorClient = raptorClient;
             this.logger = logger;
@@ -91,6 +104,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             this.authProjectsStore = authProjectsStore;
             this.elevationExtentsCache = cache;
             this.fileListProxy = fileListProxy;
+            this.configStore = configStore;
+            this.fileRepo = fileRepo;
         }
 
         /// <summary>
@@ -1372,7 +1387,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var requiredFiles = await ValidateFileUids(projectUid, fileUids);
         DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
         request.Validate();
-        var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null);
+        var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
         var result = await executor.ProcessAsync(request)as TileResult;
         return result;
       }
@@ -1423,7 +1438,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var requiredFiles = await ValidateFileUids(projectUid, fileUids);
         DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
         request.Validate();
-        var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null);
+        var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
         var result = await executor.ProcessAsync(request) as TileResult;
         if (result != null && result.TileData != null)
         {

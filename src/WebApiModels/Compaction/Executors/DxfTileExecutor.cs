@@ -60,10 +60,9 @@ namespace WebApiModels.Compaction.Executors
         //Calculate zoom level
         int zoomLevel = CalculateZoomLevel(request.bbox);
         int numTiles = 1 << zoomLevel; //equivalent to 2 to the power of zoomLevel
-        Point latLng = new Point(request.bbox.bottomLeftLat, request.bbox.bottomLeftLon);
-        //TODO: check which (tile) corner we want here
-        Point tilePt = WebMercatorProjection.LatLngToTile(latLng, numTiles);
-        log.LogDebug("DxfTileExecutor: zoomLevel={0}, numTiles={1}, tilePt={2},{3}", zoomLevel, numTiles, tilePt.x, tilePt.y);
+        Point topLeftLatLng = new Point(WebMercatorProjection.RadiansToDegrees(request.bbox.topRightLat), WebMercatorProjection.RadiansToDegrees(request.bbox.bottomLeftLon));
+        Point topLeftTile = WebMercatorProjection.LatLngToTile(topLeftLatLng, numTiles);
+        log.LogDebug("DxfTileExecutor: zoomLevel={0}, numTiles={1}, topLeftTile={2},{3}", zoomLevel, numTiles, topLeftTile.x, topLeftTile.y);
 
         log.LogDebug("DxfTileExecutor: {0} files", request.files.Count());
         log.LogDebug(string.Join(",", request.files.Select(f => f.Name).ToList()));
@@ -79,7 +78,7 @@ namespace WebApiModels.Compaction.Executors
             //Work out tile location
             var suffix = FileUtils.GeneratedFileSuffix(file.ImportedFileType);
             string generatedName = FileUtils.GeneratedFileName(file.Name, suffix, FileUtils.DXF_FILE_EXTENSION);
-            string fullTileName = string.Format("{0}/{1}/{2}.png", FileUtils.ZoomPath(FileUtils.TilePath(file.Path, generatedName), zoomLevel), tilePt.y, tilePt.x);
+            string fullTileName = string.Format("{0}/{1}/{2}.png", FileUtils.ZoomPath(FileUtils.TilePath(file.Path, generatedName), zoomLevel), topLeftTile.y, topLeftTile.x);
             log.LogDebug("DxfTileExecutor: looking for requested tile {0}", fullTileName);
 
             //Download the tile
@@ -106,19 +105,22 @@ namespace WebApiModels.Compaction.Executors
         //Overlay the tiles
         log.LogDebug("DxfTileExecutor: Overlaying {0} tiles", tileList.Count);
         byte[] overlayData = null;
-        System.Drawing.Point origin = new System.Drawing.Point(0, 0);
-        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
-        using (Graphics g = Graphics.FromImage(bitmap))
+        if (tileList.Count > 0)
         {
-          foreach (byte[] tileData in tileList)
+          System.Drawing.Point origin = new System.Drawing.Point(0, 0);
+          using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
+          using (Graphics g = Graphics.FromImage(bitmap))
           {
-            using (var tileStream = new MemoryStream(tileData))
+            foreach (byte[] tileData in tileList)
             {
-              Image image = Image.FromStream(tileStream);
-              g.DrawImage(image, origin);
+              using (var tileStream = new MemoryStream(tileData))
+              {
+                Image image = Image.FromStream(tileStream);
+                g.DrawImage(image, origin);
+              }
             }
+            overlayData = BitmapToByteArray(bitmap);
           }
-          overlayData = BitmapToByteArray(bitmap);
         }
 
         return TileResult.CreateTileResult(overlayData, TASNodeErrorStatus.asneOK);
@@ -181,8 +183,8 @@ namespace WebApiModels.Compaction.Executors
       //Google maps zoom level starts at 0 for whole world (-90.0 to 90.0, -180.0 to 180.0)
       //and doubles the precision both horizontally and vertically for each suceeding level.
       int zoomLevel = 0;
-      double latSize = 180.0;
-      double longSize = 360.0;
+      double latSize = Math.PI; //180.0;
+      double longSize = 2 * Math.PI; //360.0;
       while (latSize > selectionLatSize && longSize > selectionLongSize && zoomLevel < MAXZOOM)
       {
         zoomLevel++;

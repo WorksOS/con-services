@@ -81,8 +81,8 @@ this.ScenarioSetup(scenarioInfo);
 #line 6
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 7
-  testRunner.And("a bbox \"36.206964000089840283, -115.0203540002853231, 36.206956000089640213, -115" +
-                    ".02034400028509253\" and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("a bbox \"-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625\"" +
+                    " and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
   testRunner.And("a fileUid \"cfcd4c01-6fc8-45d5-872f-513a0f619f03\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
@@ -90,8 +90,8 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
 #line 10
  testRunner.Then("the Dxf Tile result should be", @"{
-  ""TileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAADi0lEQVR42u3TQU0FARQEQdYNmpCD8Y8FLpPNS1cp6Es/n58vJr7fDuAfHgOsGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4ILn8/t2ArzHAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFI+wPL4oIQ8iSaXgAAAABJRU5ErkJggg=="",
-  ""TileOutsideProjectExtents"": false,
+  ""tileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFySURBVHhe7dRBCgQhDARAv+v/H7CjMkIIwsAeYxWI2nrtNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIC/9d5/c71X4Ba7+IYAXMoQgMvkou/yGwBQWCz46WwIQFGx5CsYTue5xxwoIpY87lvM8xtQQC53Lvq+539AAbHgKxhy0U9/gCK+hkB8jzlQRCz5CobTee4xv0drD/arc8l8x/8cAAAAAElFTkSuQmCC"",
+  ""tileOutsideProjectExtents"": false,
   ""Code"": 0,
   ""Message"": ""success""
 }", ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -112,20 +112,14 @@ this.ScenarioSetup(scenarioInfo);
 #line 22
  testRunner.And("a projectUid \"0fa94210-0d7a-4015-9eee-4d9956f4b250\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 23
-  testRunner.And("a bbox \"36.206964000089840283, -115.0203540002853231, 36.206956000089640213, -115" +
-                    ".02034400028509253\" and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("a bbox \"-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625\"" +
+                    " and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 24
   testRunner.And("a fileUid \"cfcd4c01-6fc8-45d5-872f-513a0f619f03\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 25
- testRunner.When("I request a Dxf Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+ testRunner.When("I request a Dxf Tile Expecting NoContent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 26
- testRunner.Then("the Dxf Tile result should be", @"{
-  ""TileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAADi0lEQVR42u3TQU0FARQEQdYNmpCD8Y8FLpPNS1cp6Es/n58vJr7fDuAfHgOsGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4ILn8/t2ArzHAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFI+wPL4oIQ8iSaXgAAAABJRU5ErkJggg=="",
-  ""TileOutsideProjectExtents"": false,
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("I should get no response body", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -136,27 +130,21 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void DxfTile_NoFileUids()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - No FileUids", ((string[])(null)));
-#line 36
+#line 28
 this.ScenarioSetup(scenarioInfo);
-#line 37
+#line 29
  testRunner.Given("the Dxf Tile service URI \"/api/v2/compaction/lineworktiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 38
+#line 30
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 39
-  testRunner.And("a bbox \"36.206964000089840283, -115.0203540002853231, 36.206956000089640213, -115" +
-                    ".02034400028509253\" and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 40
+#line 31
+  testRunner.And("a bbox \"-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625\"" +
+                    " and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 32
   testRunner.And("a fileUid \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 41
- testRunner.When("I request a Dxf Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 42
- testRunner.Then("the Dxf Tile result should be", @"{
-  ""TileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAADi0lEQVR42u3TQU0FARQEQdYNmpCD8Y8FLpPNS1cp6Es/n58vJr7fDuAfHgOsGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4ILn8/t2ArzHAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFI+wPL4oIQ8iSaXgAAAABJRU5ErkJggg=="",
-  ""TileOutsideProjectExtents"": false,
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 33
+ testRunner.When("I request a Dxf Tile Expecting NoContent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 34
+ testRunner.Then("I should get no response body", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

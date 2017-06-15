@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using ProductionDataSvc.AcceptanceTests.Models;
@@ -45,13 +46,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I request a Dxf Tile")]
     public void WhenIRequestADxfTile()
     {
-      url = string.Format("{0}?projectUid={1}", url, projectUid);
-      if (!string.IsNullOrEmpty(fileUid))
-      {
-        url = string.Format("{0}&fileUids={1}", url, fileUid);
-      }
-      url += queryParameters;
-      tileRequester = new Getter<TileResult>(url);
+      tileRequester = new Getter<TileResult>(MakeUrl());
       tileRequester.DoValidRequest();
     }
 
@@ -62,5 +57,38 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       //Assert.IsTrue(expected.Code == tileRequester.CurrentResponse.Code && expected.Message == tileRequester.CurrentResponse.Message);
       Assert.AreEqual(expected, tileRequester.CurrentResponse);
     }
+
+    [When(@"I request a Dxf Tile Expecting NoContent")]
+    public void WhenIRequestADxfTileExpectingNoContent()
+    {
+      tileRequester = new Getter<TileResult>(MakeUrl());
+      tileRequester.DoInvalidRequest(HttpStatusCode.NoContent);
+    }
+
+    [Then(@"I should get no response body")]
+    public void ThenIShouldGetNoResponseBody()
+    {
+      Assert.IsNull(tileRequester.CurrentResponse);
+    }
+
+    [Then(@"I should get error code (.*) and message ""(.*)""")]
+    public void ThenIShouldGetErrorCodeAndMessage(int errorCode, string message)
+    {
+      Assert.AreEqual(errorCode, tileRequester.CurrentResponse.Code);
+      Assert.AreEqual(message, tileRequester.CurrentResponse.Message);
+    }
+
+    private string MakeUrl()
+    {
+      var fullUrl = string.Format("{0}?projectUid={1}", url, projectUid);
+      if (!string.IsNullOrEmpty(fileUid))
+      {
+        fullUrl = string.Format("{0}&fileUids={1}", fullUrl, fileUid);
+      }
+      fullUrl += queryParameters;
+      return fullUrl;
+    }
+
+
   }
 }
