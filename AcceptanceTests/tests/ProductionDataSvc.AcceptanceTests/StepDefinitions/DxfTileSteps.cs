@@ -14,6 +14,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private string url;
     private string projectUid;
     private string fileUid;
+    private string fileUid2;
     private string queryParameters = string.Empty;
     private Getter<TileResult> tileRequester;
 
@@ -42,7 +43,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     {
       this.fileUid = fileUid;
     }
-        
+
+    [Given(@"a second fileUid ""(.*)""")]
+    public void GivenASecondFileUid(string fileUid2)
+    {
+      this.fileUid2 = fileUid2;
+    }
+
     [When(@"I request a Dxf Tile")]
     public void WhenIRequestADxfTile()
     {
@@ -84,6 +91,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       if (!string.IsNullOrEmpty(fileUid))
       {
         fullUrl = string.Format("{0}&fileUids={1}", fullUrl, fileUid);
+      }
+      if (!string.IsNullOrEmpty(fileUid2))
+      {
+        fullUrl = string.Format("{0}&fileUids={1}", fullUrl, fileUid2);
       }
       fullUrl += queryParameters;
       return fullUrl;

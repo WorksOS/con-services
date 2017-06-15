@@ -179,7 +179,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
         throw new ServiceException(HttpStatusCode.BadRequest, 
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Empty transform file contents"));
       }
-      using (MemoryStream memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(fileData)))
+      using (MemoryStream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(fileData)))
       {
         return await PutFile(projectId, fileDescr, suffix, extension, memoryStream, fileData.Length);
       }
