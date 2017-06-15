@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Models;
 using MockProjectWebApi.Utils;
@@ -15,12 +16,12 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     [Route("api/v1/mock/getcustomersforme")]
     [HttpGet]
-    public CustomerDataResult DummyGetCustomersForMe()
+    public CustomerDataResult DummyGetCustomersForMe(HttpContext context)
     {
-      var theCount = Request.Headers.Count;
-      if (Request.Headers == null)
+      var theCount = context.Request.Headers.Count;
+      if (context.Request.Headers == null)
         return new CustomerDataResult(ContractExecutionStatesEnum.InternalProcessingError, "CustomerProxy missing Authenication headers");
-      var customerUid = Request.Headers["X-VisionLink-CustomerUID"];
+      var customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
       if (string.IsNullOrEmpty(customerUid))
         return new CustomerDataResult(ContractExecutionStatesEnum.InternalProcessingError, "CustomerProxy missing customerUid");
 
