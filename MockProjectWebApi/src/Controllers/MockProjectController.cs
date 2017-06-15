@@ -45,9 +45,17 @@ namespace MockProjectWebApi.Controllers
           {
             Name = "CERA.bg.dxf",
             ProjectUid = DIMENSIONS_PROJECT_UID,
-            CustomerUid = "DxfTileAcceptanceTest", //"491ea8d1-6e4d-467f-bfdb-a84c9d32ced3",
+            CustomerUid = "DxfTileAcceptanceTest", 
             ImportedFileType = ImportedFileType.Linework,
             ImportedFileUid = "cfcd4c01-6fc8-45d5-872f-513a0f619f03"
+          },
+          new FileData
+          {
+            Name = "Marylands_Metric.dxf",
+            ProjectUid = DIMENSIONS_PROJECT_UID,
+            CustomerUid = "DxfTileAcceptanceTest", 
+            ImportedFileType = ImportedFileType.Linework,
+            ImportedFileUid = "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b"
           }
         };
       }
