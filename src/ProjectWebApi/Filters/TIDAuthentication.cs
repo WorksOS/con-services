@@ -71,10 +71,10 @@ namespace ProjectWebApi.Filters
         {
           try
           {
-            CustomerDataResult customers =
+            CustomerDataResult customerResult =
               await customerProxy.GetCustomersForMe(context.Request.Headers.GetCustomHeaders());
-            if (customers.Code != 0 || customers.CustomerDescriptors.Count < 1 ||
-                !customers.CustomerDescriptors.Exists(x => x.Uid == customerUid))
+            if (customerResult.status != 200 || customerResult.customer.Count < 1 ||
+                !customerResult.customer.Exists(x => x.uid == customerUid))
             {
               log.LogWarning("User is not authorized to configure this customer");
               await SetResult("User is not authorized to configure this customer", context);
