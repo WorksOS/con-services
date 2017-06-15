@@ -1,4 +1,6 @@
-﻿namespace MasterDataProxies.Models
+﻿using Newtonsoft.Json;
+
+namespace MasterDataProxies.Models
 {
   /// <summary>
   ///   Describes VL customer
@@ -33,9 +35,7 @@
     /// <summary>
     /// Key to use for caching customer master data
     /// </summary>
-    public string CacheKey
-    {
-      get { return ""; }
-    }
+    [JsonIgnore]
+    public string CacheKey => uid;
   }
 }
