@@ -11,7 +11,7 @@
     /// <value>
     /// The customer uid.
     /// </value>
-    public string Uid { get; set; }
+    public string uid { get; set; }
 
     /// <summary>
     /// Gets or sets the customer name.
@@ -19,7 +19,7 @@
     /// <value>
     /// The customer name.
     /// </value>
-    public string Name { get; set; }
+    public string name { get; set; }
 
     /// <summary>
     /// Gets or sets the type of customer
@@ -27,7 +27,7 @@
     /// <value>
     /// The Customer Type
     /// </value>
-    public string Type { get; set; }
+    public string type { get; set; }
 
 
     /// <summary>
