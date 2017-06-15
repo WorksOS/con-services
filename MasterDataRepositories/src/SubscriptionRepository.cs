@@ -31,7 +31,7 @@ namespace Repositories
 
             if (_serviceTypes == null)
                 _serviceTypes = (await GetServiceTypes()).ToDictionary(k => k.Name, v => v);
-          log.LogDebug($"Event type is {evt.GetType().ToString()}");
+          log.LogDebug($"Event type is {evt.GetType()}");
       if (evt is CreateProjectSubscriptionEvent)
             {
                 var subscriptionEvent = (CreateProjectSubscriptionEvent) evt;
@@ -256,18 +256,13 @@ namespace Repositories
                       LastActionedUTC=@LastActionedUTC
                 WHERE SubscriptionUID = @SubscriptionUID";
 
-                    {
-                        upsertedCount = await ExecuteWithAsyncPolicy(update, subscription);
-                        log.LogDebug(
-                            "SubscriptionRepository/UpdateSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}",
-                            upsertedCount, subscription.SubscriptionUID);
-                        return upsertedCount == 2
-                            ? 1
-                            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-                    }
-
-                    log.LogDebug("SubscriptionRepository/UpdateSubscription: old update event ignored subscription={0}",
-                        JsonConvert.SerializeObject(subscription));
+                    upsertedCount = await ExecuteWithAsyncPolicy(update, subscription);
+                    log.LogDebug(
+                      "SubscriptionRepository/UpdateSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}",
+                       upsertedCount, subscription.SubscriptionUID);
+                    return upsertedCount == 2
+                      ? 1
+                      : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
                 }
             log.LogDebug("SubscriptionRepository/UpdateSubscription: can't update as none existing subscription={0}",
                 JsonConvert.SerializeObject(subscription));
@@ -331,7 +326,7 @@ namespace Repositories
 
         private async Task<int> UpsertAssetSubscriptionDetail(AssetSubscription assetSubscription)
         {
-            var upsertedCount = 0;
+            int upsertedCount;
 
             var existing = (await QueryWithAsyncPolicy<AssetSubscription>
             (@"SELECT 
