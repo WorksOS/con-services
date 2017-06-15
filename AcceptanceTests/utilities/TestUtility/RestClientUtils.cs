@@ -107,6 +107,7 @@ namespace TestUtility
             {
               request.Headers["X-VisionLink-CustomerUid"] = customerUid;
             }
+            request.Headers["X-VisionLink-ClearCache"] = "true";
             return request;
         }
     }
