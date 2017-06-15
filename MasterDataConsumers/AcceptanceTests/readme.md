@@ -2,7 +2,7 @@ Docker
 ======
 
 The deploy folder is where the docker image is built from. And because of the way we use docker-compose.yml and 
-also for test result file retrievral, this folder need to have exactly the following structure:
+also for test result file retrieval, this folder need to have exactly the following structure:
 
 deploy
 |

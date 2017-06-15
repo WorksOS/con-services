@@ -13,9 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="appsettings.json;log4nettest.xml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
+    <None Include="appsettings.json;log4nettest.xml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +29,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="ConfigurationStore.netcore" Version="1.0.10" />
     <PackageReference Include="MasterDataRepos.netcore" Version="1.0.68" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
 </Project>
