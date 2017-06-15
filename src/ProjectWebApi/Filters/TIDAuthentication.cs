@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
+using VSS.GenericConfiguration;
 
 namespace ProjectWebApi.Filters
 {
@@ -20,15 +21,18 @@ namespace ProjectWebApi.Filters
     private readonly RequestDelegate _next;
     private ILogger<TIDAuthentication> log;
     private readonly ICustomerProxy customerProxy;
+    protected readonly IConfigurationStore store;
 
 
     public TIDAuthentication(RequestDelegate next,
       ICustomerProxy customerProxy,
+      IConfigurationStore store,
       ILoggerFactory logger)
     {
       log = logger.CreateLogger<TIDAuthentication>();
       this.customerProxy = customerProxy;
       _next = next;
+      this.store = store;
     }
 
     public async Task Invoke(HttpContext context)
@@ -61,19 +65,31 @@ namespace ProjectWebApi.Filters
           await SetResult("Invalid authentication", context);
           return;
         }
-        
+
         // User must have be authenticated against this customer
         if (!string.IsNullOrEmpty(customerUid))
         {
-          CustomerDataResult customers = await customerProxy.GetCustomersForMe(context.Request.Headers.GetCustomHeaders());
-          if (customers.Code != 0 || customers.CustomerDescriptors.Count < 1 || !customers.CustomerDescriptors.Exists(x => x.Uid == customerUid))
+          try
           {
-            log.LogWarning("User is not authorized to configure this customer");
-            await SetResult("User is not authorized to configure this customer", context);
+            CustomerDataResult customers =
+              await customerProxy.GetCustomersForMe(context.Request.Headers.GetCustomHeaders());
+            if (customers.Code != 0 || customers.CustomerDescriptors.Count < 1 ||
+                !customers.CustomerDescriptors.Exists(x => x.Uid == customerUid))
+            {
+              log.LogWarning("User is not authorized to configure this customer");
+              await SetResult("User is not authorized to configure this customer", context);
+              return;
+            }
+          }
+          catch (Exception e)
+          {
+            log.LogWarning($"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
+            await SetResult("Failed authentication", context);
             return;
           }
         }
-        log.LogInformation("Authorization: for Customer: {0} userUid: {1} allowed", customerUid, Guid.Parse(((context.User as TidCustomPrincipal).Identity as GenericIdentity).Name));
+        log.LogInformation("Authorization: for Customer: {0} userUid: {1} allowed", customerUid,
+          Guid.Parse(((context.User as TidCustomPrincipal).Identity as GenericIdentity).Name));
       }
       await _next.Invoke(context);
     }

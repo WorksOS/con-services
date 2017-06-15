@@ -133,7 +133,7 @@ namespace Controllers
       var userUid = Guid.Parse(((User as TidCustomPrincipal).Identity as GenericIdentity).Name);
       log.LogDebug($"Creating a geofence for project {project.ProjectName}");
       await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project", project.ProjectBoundary,
-        0, true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        0, true, userUid, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
 
       // do this a late as possible in case something fails. We can cleanup kafka que.
       await CreateKafkaEvents(project, customerProject);
