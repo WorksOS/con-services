@@ -24,15 +24,21 @@ namespace Repositories
         public async Task<int> StoreEvent(IGeofenceEvent evt)
         {
             var upsertedCount = 0;
+          if (evt == null)
+          {
+            log.LogWarning($"Unsupported event type");
+            return 0;
+          }
 
 
-            // since this is a masterDataService (not landfill specific but will be used for compaction and potentially other apps), 
-            //  lets just store all geofence types
-            var geofenceType = GetGeofenceType(evt);
+          // since this is a masterDataService (not landfill specific but will be used for compaction and potentially other apps), 
+      //  lets just store all geofence types
+      var geofenceType = GetGeofenceType(evt);
 
             var geofence = new Geofence();
             var eventType = "Unknown";
-            if (evt is CreateGeofenceEvent)
+          log.LogDebug($"Event type is {evt.GetType().ToString()}");
+      if (evt is CreateGeofenceEvent)
             {
                 var geofenceEvent = (CreateGeofenceEvent) evt;
                 geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();

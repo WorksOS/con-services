@@ -27,7 +27,14 @@ namespace Repositories
             var upsertedCount = 0;
             var asset = new Asset();
             var eventType = "Unknown";
-            if (evt is CreateAssetEvent)
+          if (evt == null)
+          {
+            log.LogWarning($"Unsupported event type");
+            return 0;
+          }
+
+      log.LogDebug($"Event type is {evt.GetType().ToString()}");
+      if (evt is CreateAssetEvent)
             {
                 var assetEvent = (CreateAssetEvent) evt;
                 asset.Name = assetEvent.AssetName;

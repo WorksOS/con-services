@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
-using MasterDataProxies.ResultHandling;
 
 namespace MasterDataProxies.Models
 {
-  public class CustomerDataResult : ContractExecutionResult
+  public class CustomerDataResult
   {
-    /// <summary>
-    /// Gets or sets the customer descriptors.
-    /// </summary>
-    /// <value>
-    /// The customer descriptors.
-    /// </value>
-    public List<CustomerData> CustomerDescriptors { get; set; }
+    public int status = 200;
+    public Metadata metadata;
+    public List<CustomerData> customer { get; set; }
+  }
+
+  public class Metadata
+  {
+    public string msg = "Customers retrieved successfully";
   }
 }

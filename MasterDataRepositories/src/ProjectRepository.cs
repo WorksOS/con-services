@@ -27,6 +27,13 @@ namespace Repositories
     {
       const string polygonStr = "POLYGON";
       var upsertedCount = 0;
+      if (evt == null)
+      {
+        log.LogWarning($"Unsupported event type");
+        return 0;
+      }
+
+      log.LogDebug($"Event type is {evt.GetType().ToString()}");
       if (evt is CreateProjectEvent)
       {
         var projectEvent = (CreateProjectEvent) evt;
@@ -59,8 +66,9 @@ namespace Repositories
             projectEvent.ProjectBoundary =
               string.Concat(polygonStr + "((", projectEvent.ProjectBoundary, "))");
           }
+          //Polygon must start and end with the same point
 
-          project.GeometryWKT = projectEvent.ProjectBoundary;
+          project.GeometryWKT = projectEvent.ProjectBoundary.ParseGeometryData().ClosePolygonIfRequired().ToPolygonWKT(); 
           upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
         }
       }
@@ -176,9 +184,8 @@ namespace Repositories
     private async Task<int> UpsertProjectDetail(Project project, string eventType)
     {
       var upsertedCount = 0;
-
       var existing = (await QueryWithAsyncPolicy<Project>
-      (@"SELECT 
+        (@"SELECT 
                 ProjectUID, Description, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsDeleted,
                 ProjectTimeZone, LandfillTimeZone, 
                 LastActionedUTC, StartDate, EndDate, GeometryWKT,
@@ -186,8 +193,8 @@ namespace Repositories
               FROM Project
               WHERE ProjectUID = @projectUid
                 OR LegacyProjectId = @legacyProjectId",
-        new {projectUid = project.ProjectUID, legacyProjectId = project.LegacyProjectID}
-      )).FirstOrDefault();
+          new {projectUid = project.ProjectUID, legacyProjectId = project.LegacyProjectID}
+        )).FirstOrDefault();
 
       if (eventType == "CreateProjectEvent")
         upsertedCount = await CreateProject(project, existing);
@@ -197,8 +204,6 @@ namespace Repositories
 
       if (eventType == "DeleteProjectEvent")
         upsertedCount = await DeleteProject(project, existing);
-
-
       return upsertedCount;
     }
 
@@ -358,13 +363,14 @@ namespace Repositories
     private async Task<int> UpdateProject(Project project, Project existing)
     {
       var upsertedCount = 0;
-      if (project.EndDate < existing.StartDate)
-      {
-        log.LogDebug("ProjectRepository/UpdateProject: failed to update project={0} EndDate < StartDate",
-          JsonConvert.SerializeObject(project));
-        return upsertedCount;
-      }
       if (existing != null)
+      {
+        if (project.EndDate < existing.StartDate)
+        {
+          log.LogDebug("ProjectRepository/UpdateProject: failed to update project={0} EndDate < StartDate",
+            JsonConvert.SerializeObject(project));
+          return upsertedCount;
+        }
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
           project.Name = project.Name == null ? existing.Name : project.Name;
@@ -406,6 +412,7 @@ namespace Repositories
           log.LogDebug("ProjectRepository/UpdateProject: old update event ignored project={0}",
             JsonConvert.SerializeObject(project));
         }
+      }
       else
         log.LogDebug("ProjectRepository/UpdateProject: can't update as none existing project={0}",
           JsonConvert.SerializeObject(project));
@@ -1167,5 +1174,68 @@ namespace Repositories
     }
 
     #endregion gettersSpatial
+  }
+
+  internal class Point
+  {
+    public double X;
+    public double Y;
+    public string WKTSubstring => $"{X} {Y}";
+
+    public override bool Equals(object obj)
+    {
+      var source = (Point)obj;
+      return (source.X == X) && (source.Y == Y);
+    }
+  }
+
+  internal static class ExtensionString
+  {
+    private static Dictionary<string, string> _replacements = new Dictionary<string, string>();
+
+    static ExtensionString()
+    {
+      _replacements["LINESTRING"] = "";
+      _replacements["CIRCLE"] = "";
+      _replacements["POLYGON"] = "";
+      _replacements["POINT"] = "";
+      _replacements["("] = "";
+      _replacements[")"] = "";
+    }
+
+    public static List<Point> ClosePolygonIfRequired(this List<Point> s)
+    {
+      if (Equals(s.First(), s.Last()))
+        return s;
+      s.Add(s.First());
+      return s;
+    }
+
+    public static string ToPolygonWKT(this List<Point> s)
+    {
+      var internalString = s.Select(p => p.WKTSubstring).Aggregate((i, j) => $"{i},{j}");
+      return $"POLYGON(({internalString}))";
+    }
+
+    public static List<Point> ParseGeometryData(this string s)
+    {
+      var points = new List<Point>();
+
+      foreach (string to_replace in _replacements.Keys)
+      {
+        s = s.Replace(to_replace, _replacements[to_replace]);
+      }
+
+      string[] pointsArray = s.Split(',').Select(str => str.Trim()).ToArray();
+
+      IEnumerable<string[]> coordinates;
+
+      //gets x and y coordinates split by space, trims whitespace at pos 0, converts to double array
+      coordinates = pointsArray.Select(point => point.Trim().Split(null)
+        .Where(v => !string.IsNullOrWhiteSpace(v)).ToArray());
+      points = coordinates.Select(p => new Point() { X = double.Parse(p[0]), Y = double.Parse(p[1]) }).ToList();
+
+      return points;
+    }
   }
 }

@@ -20,6 +20,9 @@
     <None Update="Dockerfile;runme.sh;wait-for-it.sh;log4net.xml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +33,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="ConfigurationStore.netcore" Version="*" />
     <PackageReference Include="KafkaConsumer.netcore" Version="*" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="*" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
   </ItemGroup>
