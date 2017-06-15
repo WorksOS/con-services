@@ -228,7 +228,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
         (projectId,
           DesignDescriptor(0, fileDescr, 0),
           DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtDXF,
-          interval, raptorUnits), out memoryStream, out designProfilerResult);
+          interval, raptorUnits,0), out memoryStream, out designProfilerResult);
 
       if (memoryStream != null)
       {
