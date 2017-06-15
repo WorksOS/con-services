@@ -15,7 +15,7 @@ namespace RepositoryTests
   public class SchemaTests
   {
 
-    IServiceProvider serviceProvider = null;
+    IServiceProvider serviceProvider;
     IConfigurationStore gc;
 
     [TestInitialize]

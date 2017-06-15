@@ -38,8 +38,7 @@ namespace Repositories.DBModels
              && otherImportedFile.IsDeleted == IsDeleted
              && otherImportedFile.IsActivated == IsActivated
              && otherImportedFile.SurveyedUtc == SurveyedUtc
-             && otherImportedFile.LastActionedUtc == LastActionedUtc
-        ;
+             && otherImportedFile.LastActionedUtc == LastActionedUtc;
     }
 
     public override int GetHashCode()
