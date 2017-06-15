@@ -30,7 +30,7 @@ namespace MasterDataProxies
       // e.g. https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/customers/me
       var urlKey = "CUSTOMERSERVICE_API_URL";
       string url = configurationStore.GetValueString(urlKey);
-      log.LogDebug($"CustomerProxy.GetCustomersForMe: urlKey: {urlKey}  url: {url} customHeaders {customHeaders}");
+      log.LogDebug($"CustomerProxy.GetCustomersForMe: urlKey: {urlKey}  url: {url} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
 
       var response = await GetContainedList<CustomerDataResult>("", customerCacheLife, urlKey, customHeaders);
       var message = string.Format("CustomerProxy.GetCustomersForMe: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));

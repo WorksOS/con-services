@@ -13,7 +13,7 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Dummies the post.
     /// </summary>
-    [Route("api/v1/mock/GetCustomersForMe")]
+    [Route("api/v1/mock/getcustomersforme")]
     [HttpGet]
     public CustomerDataResult DummyGetCustomersForMe()
     {
