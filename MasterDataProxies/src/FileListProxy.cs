@@ -8,7 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
 
-namespace src
+namespace MasterDataProxies
 {
   public class FileListProxy : BaseProxy, IFileListProxy
   {
