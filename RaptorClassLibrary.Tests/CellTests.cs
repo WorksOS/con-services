@@ -14,7 +14,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_Cell_EmptyCellPassesOnCreation()
         {
-            Cell c = new Cell(0);
+            Cell_NonStatic c = new Cell_NonStatic(0);
 
             Assert.IsTrue(c.PassCount == 0, "Count of passes in cell not 0 as expected");
             Assert.IsTrue(c.IsEmpty, "Cell does not report itself as being empty of cell passes");
@@ -26,7 +26,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_Cell_CellPassAllocation()
         {
-            Cell c = new Cell(0);
+            Cell_NonStatic c = new Cell_NonStatic(0);
 
             c.AllocatePasses(10);
 
@@ -39,7 +39,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_Cell_AddCellPassOrdered()
         {
-            Cell c = new Cell(0);
+            Cell_NonStatic c = new Cell_NonStatic(0);
 
             c.AddPass(CellPassTests.ATestCellPass());
 
@@ -62,7 +62,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_Cell_AddCellPassUnOrdered()
         {
-            Cell c = new Cell(0);
+            Cell_NonStatic c = new Cell_NonStatic(0);
 
             c.AddPass(CellPassTests.ATestCellPass2());
 
@@ -86,7 +86,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_Cell_TopMostHeight()
         {
-            Cell c1 = new Cell(0);
+            Cell_NonStatic c1 = new Cell_NonStatic(0);
 
             // Add two cell passes in ascending order
             c1.AddPass(CellPassTests.ATestCellPass());
@@ -96,7 +96,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             Assert.IsTrue(c1.TopMostHeight == 50, "Top most height not 50 as expected from cell pass 2");
 
             // Add two cell passes in ascending order
-            Cell c2 = new Cell(0);
+            Cell_NonStatic c2 = new Cell_NonStatic(0);
 
             c2.AddPass(CellPassTests.ATestCellPass2());
             c2.AddPass(CellPassTests.ATestCellPass());
@@ -112,7 +112,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         public void Test_Cell_LocateTime()
         {
             // Create a cell with two cell passes with different times
-            Cell c = new Cell(0);
+            Cell_NonStatic c = new Cell_NonStatic(0);
             CellPass cp1 = CellPassTests.ATestCellPass();
             CellPass cp2 = CellPassTests.ATestCellPass2();
 
@@ -153,7 +153,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_Cell_ReplaceCellPass()
         {
-            Cell c = new Cell(0);
+            Cell_NonStatic c = new Cell_NonStatic(0);
 
             // Add a cell pass then replace it with a second cell pass
             c.AddPass(CellPassTests.ATestCellPass());
@@ -168,7 +168,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         [TestMethod]
         public void Test_Cell_RemoveCellPass()
         {
-            Cell c = new Cell(0);
+            Cell_NonStatic c = new Cell_NonStatic(0);
 
             // Add a cell pass then replace it with a second cell pass
             c.AddPass(CellPassTests.ATestCellPass());
@@ -194,10 +194,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             CellPass cp1 = CellPassTests.ATestCellPass();
             CellPass cp2 = CellPassTests.ATestCellPass2();
 
-            Cell c1 = new Cell(0);
+            Cell_NonStatic c1 = new Cell_NonStatic(0);
             c1.AddPass(cp1);
 
-            Cell c2 = new Cell(0);
+            Cell_NonStatic c2 = new Cell_NonStatic(0);
             c2.AddPass(cp2);
 
             int addedCount = 0;
@@ -223,10 +223,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // Create cells with the same single cell pass in each
             CellPass cp1 = CellPassTests.ATestCellPass();
 
-            Cell c1 = new Cell(0);
+            Cell_NonStatic c1 = new Cell_NonStatic(0);
             c1.AddPass(cp1);
 
-            Cell c2 = new Cell(0);
+            Cell_NonStatic c2 = new Cell_NonStatic(0);
             c2.AddPass(cp1);
 
             int addedCount = 0;

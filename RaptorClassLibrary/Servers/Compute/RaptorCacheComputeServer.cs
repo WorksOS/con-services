@@ -24,7 +24,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         public virtual void ConfigureRaptorGrid(IgniteConfiguration cfg)
         {
             cfg.GridName = "Raptor";
-            cfg.JvmMaxMemoryMb = 1000;
+            cfg.JvmMaxMemoryMb = 4000;
             cfg.UserAttributes = new Dictionary<String, object>();
             cfg.UserAttributes.Add("Owner", "Raptor");
         }
@@ -39,7 +39,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.ReadThrough = true;
             cfg.WriteThrough = true;
             cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
-            cfg.EvictionPolicy = new LruEvictionPolicy() { MaxMemorySize = 2000000000 };
+            cfg.EvictionPolicy = new LruEvictionPolicy() { MaxMemorySize = 1000000000 };
             cfg.CacheMode = CacheMode.Replicated;
             cfg.Backups = 0;
         }
@@ -59,7 +59,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.ReadThrough = true;
             cfg.WriteThrough = true;
             cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
-            cfg.EvictionPolicy = new LruEvictionPolicy() { MaxMemorySize = 2000000000 };
+            cfg.EvictionPolicy = new LruEvictionPolicy() { MaxMemorySize = 3000000000 };
             cfg.Backups = 0;
             cfg.CacheMode = CacheMode.Partitioned;
             cfg.AffinityFunction = new RaptorSpatialAffinityFunction();

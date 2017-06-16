@@ -38,6 +38,9 @@
             this.bntTranslateSouth = new System.Windows.Forms.Button();
             this.lblViewWidth = new System.Windows.Forms.Label();
             this.lblViewHeight = new System.Windows.Forms.Label();
+            this.lblCellsPerPixel = new System.Windows.Forms.Label();
+            this.chkSelectEarliestPass = new System.Windows.Forms.CheckBox();
+            this.btnRedraw = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -61,7 +64,7 @@
             // 
             // bntTranslateNorth
             // 
-            this.bntTranslateNorth.Location = new System.Drawing.Point(562, 123);
+            this.bntTranslateNorth.Location = new System.Drawing.Point(562, 143);
             this.bntTranslateNorth.Name = "bntTranslateNorth";
             this.bntTranslateNorth.Size = new System.Drawing.Size(75, 23);
             this.bntTranslateNorth.TabIndex = 2;
@@ -91,7 +94,7 @@
             // 
             // bntTranslateEast
             // 
-            this.bntTranslateEast.Location = new System.Drawing.Point(603, 152);
+            this.bntTranslateEast.Location = new System.Drawing.Point(603, 172);
             this.bntTranslateEast.Name = "bntTranslateEast";
             this.bntTranslateEast.Size = new System.Drawing.Size(75, 23);
             this.bntTranslateEast.TabIndex = 5;
@@ -101,7 +104,7 @@
             // 
             // bntTranslateWest
             // 
-            this.bntTranslateWest.Location = new System.Drawing.Point(523, 152);
+            this.bntTranslateWest.Location = new System.Drawing.Point(523, 172);
             this.bntTranslateWest.Name = "bntTranslateWest";
             this.bntTranslateWest.Size = new System.Drawing.Size(74, 23);
             this.bntTranslateWest.TabIndex = 6;
@@ -111,7 +114,7 @@
             // 
             // bntTranslateSouth
             // 
-            this.bntTranslateSouth.Location = new System.Drawing.Point(562, 181);
+            this.bntTranslateSouth.Location = new System.Drawing.Point(562, 201);
             this.bntTranslateSouth.Name = "bntTranslateSouth";
             this.bntTranslateSouth.Size = new System.Drawing.Size(75, 23);
             this.bntTranslateSouth.TabIndex = 7;
@@ -137,11 +140,43 @@
             this.lblViewHeight.TabIndex = 9;
             this.lblViewHeight.Text = "View Height";
             // 
+            // lblCellsPerPixel
+            // 
+            this.lblCellsPerPixel.AutoSize = true;
+            this.lblCellsPerPixel.Location = new System.Drawing.Point(520, 297);
+            this.lblCellsPerPixel.Name = "lblCellsPerPixel";
+            this.lblCellsPerPixel.Size = new System.Drawing.Size(73, 13);
+            this.lblCellsPerPixel.TabIndex = 10;
+            this.lblCellsPerPixel.Text = "Cells Per Pixel";
+            // 
+            // chkSelectEarliestPass
+            // 
+            this.chkSelectEarliestPass.AutoSize = true;
+            this.chkSelectEarliestPass.Location = new System.Drawing.Point(523, 323);
+            this.chkSelectEarliestPass.Name = "chkSelectEarliestPass";
+            this.chkSelectEarliestPass.Size = new System.Drawing.Size(117, 17);
+            this.chkSelectEarliestPass.TabIndex = 11;
+            this.chkSelectEarliestPass.Text = "Select earliest pass";
+            this.chkSelectEarliestPass.UseVisualStyleBackColor = true;
+            // 
+            // btnRedraw
+            // 
+            this.btnRedraw.Location = new System.Drawing.Point(562, 99);
+            this.btnRedraw.Name = "btnRedraw";
+            this.btnRedraw.Size = new System.Drawing.Size(75, 23);
+            this.btnRedraw.TabIndex = 12;
+            this.btnRedraw.Text = "Redraw";
+            this.btnRedraw.UseVisualStyleBackColor = true;
+            this.btnRedraw.Click += new System.EventHandler(this.btnRedraw_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(693, 522);
+            this.Controls.Add(this.btnRedraw);
+            this.Controls.Add(this.chkSelectEarliestPass);
+            this.Controls.Add(this.lblCellsPerPixel);
             this.Controls.Add(this.lblViewHeight);
             this.Controls.Add(this.lblViewWidth);
             this.Controls.Add(this.bntTranslateSouth);
@@ -173,6 +208,9 @@
         private System.Windows.Forms.Button bntTranslateSouth;
         private System.Windows.Forms.Label lblViewWidth;
         private System.Windows.Forms.Label lblViewHeight;
+        private System.Windows.Forms.Label lblCellsPerPixel;
+        private System.Windows.Forms.CheckBox chkSelectEarliestPass;
+        private System.Windows.Forms.Button btnRedraw;
     }
 }
 

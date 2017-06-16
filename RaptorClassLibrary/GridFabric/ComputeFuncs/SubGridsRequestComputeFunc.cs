@@ -63,6 +63,16 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
         [NonSerialized]
         private string raptorNodeIDAsString = String.Empty;
 
+        [NonSerialized]
+        private IIgnite ignite = null;
+
+        [NonSerialized]
+        private IClusterGroup group = null;
+
+        [NonSerialized]
+        private IMessaging rmtMsg = null;
+
+
         /// <summary>
         /// Take the supplied argument to the compute func and perform any necessary unpacking of the
         /// contents of it into a form ready to use. Also make a location reference to the arg parameter
@@ -100,7 +110,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     return; // This subgrid is the responsibility of another server
                 }
 
-                // Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
+                Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
 
                 AreaControlSet AreaControlSet = AreaControlSet.Null();
 
@@ -111,7 +121,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
                 // Reach into the subgrid request layer and retrieve an appropriate subgrid
                 ServerRequestResult result = SubGridRequestor.RequestSubGridInternal
-                   (null, // Try it with a null filter to start
+                   (localArg.Filters.Filters.Count() > 0 ? localArg.Filters.Filters[0] : null,
                     int.MaxValue, // MaxCellPasses
                     false, // Override cell restriction
                     BoundingIntegerExtent2D.Inverted(), // Override cell restriction
@@ -131,23 +141,13 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     MemoryStream MS = new MemoryStream();
                     ClientGrid.Write(new BinaryWriter(MS));
 
-                    // .. and send it to the message topic in the compute func
-                    IIgnite ignite = Ignition.GetIgnite("Raptor");
-
-                    // IMessaging rmtMsg = ignite.GetCluster().ForRemotes().GetMessaging();
-                    // IMessaging rmtMsg = ignite.GetCluster().ForAttribute("Role", "ASNode").GetMessaging();
-                    IClusterGroup group = ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
-
-                    // Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
-
-                    IMessaging rmtMsg = group.GetMessaging();
-
+                    // ... and send it to the message topic in the compute func
                     try
                     {
-                        //Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
-                        //               localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
-                        //               rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("Role"),
-                        //               rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("RaptorNodeID"));
+                        Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
+                                       localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
+                                       rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("Role"),
+                                       rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("RaptorNodeID"));
                         rmtMsg.Send(MS, localArg.MessageTopic);
                     }
                     catch (Exception E)
@@ -190,12 +190,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             // TODO Perform implementation here and craft appropriate modified result
 
-            // For now, pretend this context cares about all the subgrids...
-            // When we do care, the lambda function below needs to filter on the affinity predicate
-            // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
-            // noted with the 'set' bits in the bitmask
+            ignite = Ignition.GetIgnite("Raptor");
+            group = ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
 
-            Log.Info("Scanning subgrids in request");
+            Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);
+
+            rmtMsg = group.GetMessaging();
+             
+        // For now, pretend this context cares about all the subgrids...
+        // When we do care, the lambda function below needs to filter on the affinity predicate
+        // Scan through all the bitmap leaf subgrids, and for each, scan through all the subgrids as 
+        // noted with the 'set' bits in the bitmask
+
+        Log.Info("Scanning subgrids in request");
 
             mask.ScanAllSetBitsAsSubGridAddresses(PerformSubgridRequest);
 

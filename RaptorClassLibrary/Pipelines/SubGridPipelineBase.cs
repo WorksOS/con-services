@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
@@ -17,6 +18,11 @@ namespace VSS.VisionLink.Raptor.Pipelines
     public class SubGridPipelineBase
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>
+        /// The event used to signal that the pipeline processing has completed, or aborted
+        /// </summary>
+        public AutoResetEvent pipelineSignalEvent { get; } = new AutoResetEvent(false);
 
         /// <summary>
         /// Records how may subgrid results there are pending to be processed through the Task assigned to this pipeline.
@@ -107,6 +113,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
             if (System.Threading.Interlocked.Decrement(ref SubgridsRemainingToProcess) <= 0)
             {
                 AllFinished = true;
+                pipelineSignalEvent.Set();
             }
         }
 
@@ -149,7 +156,12 @@ namespace VSS.VisionLink.Raptor.Pipelines
         //        Destructor Destroy; Override;
 
         //              procedure Initiate; Virtual;
-        public virtual void Abort() => PipelineAborted = true;
+        public virtual void Abort()
+        {
+            PipelineAborted = true;
+
+            pipelineSignalEvent.Set();
+        }
 
         //              procedure Terminate; Virtual;
         //              Function TimeToLiveExpired : Boolean;
@@ -159,14 +171,14 @@ namespace VSS.VisionLink.Raptor.Pipelines
         // being restarted.
         //              Procedure AbortAndShutdown;
 
-        public void Initiate()
-        {
+        public bool Initiate()
+        {            
             // First analyse the request to determine the set of subgrids that will need to be requested
             RequestAnalyser analyser = new RequestAnalyser(this, WorldExtents);
             if (!analyser.Execute())
             {
                 // Leave gracefully...
-                return;
+                return false;
             }
 
             SubgridsRemainingToProcess = analyser.TotalNumberOfSubgridsAnalysed;
@@ -176,7 +188,7 @@ namespace VSS.VisionLink.Raptor.Pipelines
             if (analyser.TotalNumberOfSubgridsAnalysed == 0)
             {
                 // There are no subgrids to be requested, leave quietly
-                return;
+                return false;
             }
 
             // Send the subgrid request mask to the grid fabric layer for processing
@@ -190,6 +202,13 @@ namespace VSS.VisionLink.Raptor.Pipelines
             {
                 throw;
             }
+
+            return true;
+        }
+
+        public void WaitForCompletion()
+        {
+            pipelineSignalEvent.WaitOne(120000); // Don't wait for more than two minutes...
         }
     }
 }

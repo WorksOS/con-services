@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Arguments
@@ -35,6 +36,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         public MemoryStream MaskStream { get; set; } = null;
 
         /// <summary>
+        /// The set of filters to be applied to the requested subgrids
+        /// </summary>
+        public FilterSet Filters { get; set; } = null;
+
+        /// <summary>
         /// The name of the message topic that subgrid responses should be sent to
         /// </summary>
         public string MessageTopic { get; set; } = String.Empty;
@@ -47,12 +53,13 @@ namespace VSS.VisionLink.Raptor.GridFabric.Arguments
         /// <param name="gridDataType"></param>
         /// <param name="maskStream"></param>
         /// <param name="messageTopic"></param>
-        public SubGridsRequestArgument(long siteModelID, long requestID, GridDataType gridDataType, MemoryStream maskStream, string messageTopic, string raptorNodeID)
+        public SubGridsRequestArgument(long siteModelID, long requestID, GridDataType gridDataType, MemoryStream maskStream, FilterSet filters, string messageTopic, string raptorNodeID)
         {
             SiteModelID = siteModelID;
             RequestID = requestID;
             GridDataType = gridDataType;
             MaskStream = maskStream;
+            Filters = filters;
             MessageTopic = messageTopic;
             RaptorNodeID = raptorNodeID;
         }

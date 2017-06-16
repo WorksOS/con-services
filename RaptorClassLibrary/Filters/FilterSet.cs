@@ -9,6 +9,7 @@ namespace VSS.VisionLink.Raptor.Filters
     /// <summary>
     /// FilterSet represents a set of filters to be applied to each subgrid in a query within a single operation
     /// </summary>
+    [Serializable]
     public class FilterSet
     {
         /// <summary>

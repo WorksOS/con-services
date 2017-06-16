@@ -64,7 +64,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         public SubGridTreeBitMask Mask { get; set; } = null;
 
         /// <summary>
-        /// The set of filters to be applied to the suibgrids being processed
+        /// The set of filters to be applied to the subgrids being processed
         /// </summary>
         public FilterSet Filters { get; set; } = null;
 
@@ -98,7 +98,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             SubGridTreePersistor.Write(Mask, new BinaryWriter(MS));
             MS.Position = 0;
              
-            return new SubGridsRequestArgument(SiteModelID, RequestID, RequestedGridDataType, MS, String.Format("SubGridRequest:{0}", RequestID), RaptorNodeID);
+            return new SubGridsRequestArgument(SiteModelID, RequestID, RequestedGridDataType, MS, Filters, String.Format("SubGridRequest:{0}", RequestID), RaptorNodeID);
         }
 
         /// <summary>

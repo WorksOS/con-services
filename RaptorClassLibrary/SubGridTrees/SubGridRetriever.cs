@@ -1,7 +1,9 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
@@ -25,6 +27,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 {
     public class SubGridRetriever
     {
+        [NonSerialized]
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         // Local state populated for the purpose of access from variosu local methods
         private CombinedFilter Filter = null;
         private AreaControlSet AreaControlSet;
@@ -908,6 +913,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                                    ref AreaControlSet areaControlSet,
                                                    ClientHeightLeafSubGrid designElevations)
         {
+            Log.Info("Entering RetrieveSubGrid");
+
             ServerRequestResult Result = ServerRequestResult.UnknownError;
 
             //  SIGLogMessage.PublishNoODS(Nil, Format('In RetrieveSubGrid: Active pass filters = %s, Active cell filters = %s', [PassFilter.ActiveFiltersText, CellFilter.ActiveFiltersText]), slmcDebug);
@@ -1118,6 +1125,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 // SIGLogMessage.PublishNoODS(Nil, Format('Exception ''%s'' occured in RetrieveSubGrid', [E.Message]), E, slmcException);
                 throw;
             }
+
+            Log.Info("Exiting RetrieveSubGrid");
 
             return Result;
         }

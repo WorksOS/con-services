@@ -91,7 +91,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
         {
             base.Clear();
 
-            ForEach((x, y) => Cells[x, y] = Consts.NullHeight); // Optimisation: Use PassData_Height_Null assignment as in current gen;
+            ForEach((x, y) => Cells[x, y] = Consts.NullHeight); // TODO: Optimisation: Use PassData_Height_Null assignment as in current gen;
 
             FirstPassMap.Clear();
             SurveyedSurfaceMap.Clear();
@@ -167,8 +167,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             SurveyedSurfaceMap.Write(writer);
 
             for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            {
                 for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                {
                     writer.Write(Cells[I, J]);
+                }
+            }
         }
 
         /// <summary>
@@ -185,13 +189,17 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Client
             SurveyedSurfaceMap.Read(reader);
 
             for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            {
                 for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                {
                     Cells[I, J] = reader.ReadSingle();
+                }
+            }
         }
 
         /// <summary>
         /// Sets all elevations in the height client leaf sub grid to zero (not null)
         /// </summary>
-        public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y] = 0);
+        public void SetToZeroHeight() => ForEach((x, y) => Cells[x, y] = 0); // TODO: Optimisation: Use single array assignment
     }
 }

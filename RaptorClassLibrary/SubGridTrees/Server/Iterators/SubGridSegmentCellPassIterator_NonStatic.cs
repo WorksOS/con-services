@@ -42,13 +42,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             if (SegmentIterator.IterationDirection == IterationDirection.Forwards)
             {
                 cellInSegmentIndex = -1;
-                finishCellInSegmentIndex = SegmentIterator.CurrentSubGridSegment.PassesData.PassData[cellX, cellY].PassCount;
+                finishCellInSegmentIndex = (int)SegmentIterator.CurrentSubGridSegment.PassesData.PassCount(cellX, cellY);
 
                 cellPassIterationDirectionIncrement = 1;
             }
             else
             {
-                cellInSegmentIndex = SegmentIterator.CurrentSubGridSegment.PassesData.PassData[cellX, cellY].PassCount;
+                cellInSegmentIndex = (int)SegmentIterator.CurrentSubGridSegment.PassesData.PassCount(cellX, cellY);
                 finishCellInSegmentIndex = -1;
 
                 cellPassIterationDirectionIncrement = -1;
@@ -61,7 +61,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
         /// <returns></returns>
         protected override CellPass ExtractCellPass()
         {
-            return SegmentIterator.CurrentSubGridSegment.PassesData.PassData[cellX, cellY].Passes[cellInSegmentIndex];
+            return SegmentIterator.CurrentSubGridSegment.PassesData.ExtractCellPass(cellX, cellY, cellInSegmentIndex);
         }
     }
 }

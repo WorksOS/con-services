@@ -54,7 +54,19 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                     extents.MaxX += Delta;
                 }
 
-                // return  RaptorTileRenderingServer.NewInstance().RenderTile(new TileRenderRequestArgument
+                CellPassAttributeFilter AttributeFilter = new CellPassAttributeFilter(siteModel)
+                {
+                    ReturnEarliestFilteredCellPass = chkSelectEarliestPass.Checked,
+                    ElevationType = chkSelectEarliestPass.Checked ? ElevationType.First : ElevationType.Last
+                };
+
+                CellSpatialFilter SpatialFilter = new CellSpatialFilter()
+                {
+                    CoordsAreGrid = true,
+                    IsSpatial = true,
+                    Fence = new Fence(extents)
+                };
+
                 return tileRender.RenderTile(new TileRenderRequestArgument
                 (ID,
                  DisplayMode.Height,
@@ -62,15 +74,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
                  true, // CoordsAreGrid
                  500, // PixelsX
                  500, // PixelsY
-                 new CombinedFilter(siteModel) // Filter1
-                 {
-                     SpatialFilter = new CellSpatialFilter()
-                     {
-                         CoordsAreGrid = true,
-                         IsSpatial = true,
-                         Fence = new Fence(extents)
-                     }
-                 },
+                 new CombinedFilter(AttributeFilter, SpatialFilter), // Filter1
                  null // filter 2
                 ));
             }
@@ -104,8 +108,9 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 
         private void DoUpdateLabels()
         {
-            lblViewHeight.Text = String.Format("View height: {0:F3}", extents.SizeY);
-            lblViewWidth.Text = String.Format("View width: {0:F3}", extents.SizeX);
+            lblViewHeight.Text = String.Format("View height: {0:F3}m", extents.SizeY);
+            lblViewWidth.Text = String.Format("View width: {0:F3}m", extents.SizeX);
+            lblCellsPerPixel.Text = String.Format("Cells Per Pixel (X): {0:F3}", (extents.SizeX / pictureBox1.Width) / 0.34);
         }
 
         private void ViewPortChange(Action viewPortAction)
@@ -149,6 +154,11 @@ namespace VSS.Raptor.IgnitePOC.TestApp
         private void bntTranslateSouth_Click(object sender, EventArgs e)
         {
             ViewPortChange(() => extents.Offset(0, -0.2 * extents.SizeX));
+        }
+
+        private void btnRedraw_Click(object sender, EventArgs e)
+        {
+            ViewPortChange(() => { });
         }
     }
 }

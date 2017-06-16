@@ -34,7 +34,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tasks
 
         public override bool TransferResponse(object response)
         {
-            // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
+            Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
 
             if (!base.TransferResponse(response))
             {

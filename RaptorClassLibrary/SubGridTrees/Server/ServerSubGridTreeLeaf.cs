@@ -137,25 +137,25 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             // Add the processed pass to the cell
 
-            if (Segment.PassesData.PassData[cellX, cellY].PassCount == 0)
+            if (Segment.PassesData.PassCount(cellX, cellY) == 0)
             {
-                Segment.PassesData.PassData[cellX, cellY].AddPass(Pass, 0);
+                Segment.PassesData.AddPass(cellX, cellY, Pass, 0);
                 CellPassAdded(Segment, Pass);
             }
             else
             {
-                if (Segment.PassesData.PassData[cellX, cellY].LocateTime(Pass.Time, out PassIndex))
+                if (Segment.PassesData.LocateTime(cellX, cellY, Pass.Time, out PassIndex))
                 {
                     // Replace the existing cell pass with the new one. The assumption
                     // here is that more than one machine will never cross a cell center position
                     // within the same second (the resolution of the cell pass time stamps)
-                    Segment.PassesData.PassData[cellX, cellY].ReplacePass(PassIndex, Pass);
+                    Segment.PassesData.ReplacePass(cellX, cellY, PassIndex, Pass);
 
                     Dirty = true;
                 }
                 else
                 {
-                    Segment.PassesData.PassData[cellX, cellY].AddPass(Pass, PassIndex);
+                    Segment.PassesData.AddPass(cellX, cellY, Pass, PassIndex);
                     CellPassAdded(Segment, Pass);
                 }
             }
@@ -249,7 +249,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// </summary>
         /// <param name="TypeToCheck"></param>
         /// <param name="ValueFromLatestCellPass"></param>
-        private void GetAppropriateLatestValueFor(Cell CellPasses,
+        private void GetAppropriateLatestValueFor(Cell_NonStatic CellPasses,
                                                   ref CellPass LatestData,
                                                   int LastPassIndex,
                                                   GridDataType TypeToCheck,
@@ -352,7 +352,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
         }
 
-        public void CalculateLatestPassDataForPassStack(Cell CellPasses,
+        public void CalculateLatestPassDataForPassStack(Cell_NonStatic CellPasses,
                                                         ref CellPass LatestData,
                                                         out bool CCVFromLatestCellPass,
                                                         out bool RMVFromLatestCellPass,
@@ -367,7 +367,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             Debug.Assert(CellPasses.PassCount > 0, "CalculateLatestPassDataForPassStack called with a cell pass stack containing no passes");
 
-            LastPassIndex = CellPasses.PassCount - 1;
+            LastPassIndex = (int)CellPasses.PassCount - 1;
 
             LatestData.Time = CellPasses.Passes[LastPassIndex].Time;
             LatestData.MachineID = CellPasses.Passes[LastPassIndex].MachineID;
@@ -477,9 +477,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     }
 
                     // Update the latest data from any previous segment with the information contained in this segment
-                    if (Segment.PassesData.PassData[I, J].PassCount > 0)
+                    if (Segment.PassesData.PassCount(I, J) > 0)
                     {
-                        CalculateLatestPassDataForPassStack(Segment.PassesData.PassData[I, J],
+                        CalculateLatestPassDataForPassStack(Segment.PassesData.Cell(I, J),
                                                             ref Segment.LatestPasses.PassData[I, J],
                                                             out CCVFromLatestCellPass,
                                                             out RMVFromLatestCellPass,
@@ -936,7 +936,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             SubGridCellPassesDataSegment Segment;
             SubGridCellPassesDataSegment SourceSegment;
-            int StartIndex, EndIndex;
+            uint StartIndex, EndIndex;
             DateTime EndTime;
             int AddedCount;
             int ModifiedCount;
@@ -967,13 +967,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             UpdateStartEndTimeRange(Source.LeafStartTime);
             UpdateStartEndTimeRange(Source.LeafEndTime);
 
-            for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            for (uint I = 0; I < SubGridTree.SubGridTreeDimension; I++)
             {
-                for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                for (uint J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                 {
                     // Perform the physical integration of the new cell passes into the target subgrid
                     StartIndex = 0;
-                    int localPassCount = SourceSegment.PassesData.PassData[I, J].PassCount;
+                    uint localPassCount = SourceSegment.PassesData.PassCount(I, J);
 
                     if (localPassCount == 0)
                     {
@@ -982,8 +982,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
                     // Restrict the iterator to examining only those segments that fall within the
                     // time range covered by the passes in the cell being processes.
-                    Iterator.SetTimeRange(SourceSegment.PassesData.PassData[I, J].Passes[0].Time,
-                                          SourceSegment.PassesData.PassData[I, J].Passes[localPassCount - 1].Time);
+                    Iterator.SetTimeRange(SourceSegment.PassesData.PassTime(I, J, 0),
+                                          SourceSegment.PassesData.PassTime(I, J, localPassCount - 1));
 
                     // Now iterate over the time bounded segments in the database and integrate
                     // the new cell passes
@@ -992,20 +992,20 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     {
                         Segment = Iterator.CurrentSubGridSegment;
 
-                        if (StartIndex < localPassCount && SourceSegment.PassesData.PassData[I, J].Passes[StartIndex].Time >= Segment.SegmentInfo.EndTime)
+                        if (StartIndex < localPassCount && SourceSegment.PassesData.PassTime(I, J, StartIndex) >= Segment.SegmentInfo.EndTime)
                         {
                             continue;
                         }
 
                         EndIndex = StartIndex;
                         EndTime = Segment.SegmentInfo.EndTime;
-                        PassCountMinusOne = localPassCount - 1;
-                        while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassData[I, J].Passes[EndIndex + 1].Time < EndTime)
+                        PassCountMinusOne = (int)localPassCount - 1;
+                        while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassTime(I, J, EndIndex + 1) < EndTime)
                         {
                             EndIndex++;
                         }
 
-                        Segment.PassesData.PassData[I, J].Integrate(SourceSegment.PassesData.PassData[I, J], StartIndex, EndIndex, out AddedCount, out ModifiedCount);
+                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.Cell(I, J), StartIndex, EndIndex, out AddedCount, out ModifiedCount);
 
                         if (AddedCount > 0 || ModifiedCount > 0)
                         {

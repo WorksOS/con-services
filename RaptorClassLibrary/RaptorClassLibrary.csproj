@@ -20,7 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cells\CellStatic.cs" />
     <Compile Include="DesignDescriptor.cs" />
     <Compile Include="Events\Interfaces\IProductionEventChangeList.cs" />
     <Compile Include="Events\ProductionEventChangeList.cs" />
@@ -89,7 +90,7 @@
     <Compile Include="Filters\SubGridFilterMasks.cs" />
     <Compile Include="Geometry\BoundingIntegerExtent2D.cs" />
     <Compile Include="Geometry\BoundingWorldExtent3D.cs" />
-    <Compile Include="Cells\Cell.cs" />
+    <Compile Include="Cells\CellNonStatic.cs" />
     <Compile Include="Cells\CellEvents.cs" />
     <Compile Include="Cells\CellPass.cs" />
     <Compile Include="Cells\CellTargets.cs" />

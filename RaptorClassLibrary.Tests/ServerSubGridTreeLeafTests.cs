@@ -86,8 +86,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             Assert.IsTrue(leaf.Cells != null &&
                           leaf.Directory.SegmentDirectory.First().Segment != null &&
-                          leaf.Directory.SegmentDirectory.First().Segment.PassesData != null &&
-                          leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassData != null,
+                          leaf.Directory.SegmentDirectory.First().Segment.PassesData != null,
                           "Segment passes data not created correctly for AddPass()");
 
             CellPass pass = CreateTestCellPass();
@@ -95,11 +94,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             // Check the cell passes in the segment records the cell pass
             Assert.IsTrue(leaf.Directory.SegmentDirectory.First().Segment.PassesData.SegmentPassCount == 1, "Segment pass count is not 1");
-            Assert.IsTrue(leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassData[0, 0].PassCount == 1, "Cell pass count is not 1");
-            Assert.IsTrue(leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassData[0, 0].Passes[0].Time == new DateTime(2000, 1, 1, 1, 1, 1), "Cell pass has incorrect date");
+            Assert.IsTrue(leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassCount(0, 0) == 1, "Cell pass count is not 1");
+            Assert.IsTrue(leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassTime(0, 0, 0) == new DateTime(2000, 1, 1, 1, 1, 1), "Cell pass has incorrect date");
 
             // Pull the pass a compare it to what was added
-            CellPass pass2 = leaf.Directory.SegmentDirectory.First().Segment.PassesData.PassData[0, 0].Passes[0];
+            CellPass pass2 = leaf.Directory.SegmentDirectory.First().Segment.PassesData.Pass(0, 0, 0);
             Assert.IsTrue(pass2.Equals(pass), "Pass retrieved is not the same as the pass asses");
 
             // Check that the start and end time for the leaf was updated when the cell pass was added.

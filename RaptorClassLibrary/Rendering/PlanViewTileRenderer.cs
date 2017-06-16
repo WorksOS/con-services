@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors.Tasks;
 using VSS.VisionLink.Raptor.Filters;
@@ -252,8 +253,6 @@ namespace VSS.VisionLink.Raptor.Rendering
         {
             PipelinedSubGridTask PipelinedTask = null;
 
-            // WaitResult: TWaitResult;
-
             BoundingIntegerExtent2D CellExtents;
             RequestErrorStatus Result = RequestErrorStatus.Unknown;
 
@@ -291,13 +290,10 @@ namespace VSS.VisionLink.Raptor.Rendering
                     {
                         ConfigurePipeline(out CellExtents);
 
-                        // EpochCount = 0;
-                        PipeLine.Initiate();
-
-                        while (!PipeLine.AllFinished && !PipeLine.PipelineAborted)
+                        // EpochCount = 0
+                        if (PipeLine.Initiate())
                         {
-                            // TODO: Change this so that it waits on a signal rather than spinning with sleep states
-                            System.Threading.Thread.Sleep(5);
+                            PipeLine.WaitForCompletion();
                         }
 
                         PerformAnyRequiredDebugLevelDisplay();
@@ -312,12 +308,9 @@ namespace VSS.VisionLink.Raptor.Rendering
                     finally
                     {
                         // Unhook the pipeline from the task and release the pipeline back to the pool
-                        //   ASNodeImplInstance.SubgridPipelinePool.ReleasePipeline(PipeLine);
                         // This is not needed though as subgrids will be pending in the processing 
                         // threads receiving results from the processing cluster
-
-                        // Log.Info("Setting PipelinedTask.PipeLine = null");
-                        // PipelinedTask.PipeLine = null;
+                        //   ASNodeImplInstance.SubgridPipelinePool.ReleasePipeline(PipeLine);
                     }
                 }
                 finally
@@ -340,7 +333,7 @@ namespace VSS.VisionLink.Raptor.Rendering
             catch (Exception E)
             {
                 
-                Log.ErrorFormat("ExecutePipeline raised exception ''{0}''", E);
+                Log.ErrorFormat("ExecutePipeline raised exception '{0}'", E);
             }
 
             return Result;

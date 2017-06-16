@@ -64,11 +64,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
                     {
                         if (Task.TransferResponse(ClientGrid))
                         {
-                            // Log.InfoFormat("Processed response#{0} (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                            Log.InfoFormat("Processed response#{0} (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
                         }
                         else
                         {
-                            // Log.InfoFormat("Processing response#{0} FAILED (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
+                            Log.InfoFormat("Processing response#{0} FAILED (from thread {1})", thisResponseCount, System.Threading.Thread.CurrentThread.ManagedThreadId);
                         }
                     }
                     finally

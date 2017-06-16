@@ -1,6 +1,8 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Common;
@@ -16,6 +18,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 {
     public static class SubGridRequestor
     {
+        [NonSerialized]
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         // InitialiseFilterContext performs any required filter initialisation and configuration
         // that is external to the filter prior to engaging in cell by cell processing of
         // this subgrid
@@ -108,6 +113,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             bool SubgridAlreadyPresentInCache = false;
 
             ServerRequestResult Result = ServerRequestResult.UnknownError;
+
+            Log.Info("Entering RequestSubGridInternal");
 
             if (AProdDataRequested || ASurveyedSurfaceDataRequested)
             {
@@ -517,6 +524,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 }
             }
             */
+
+            Log.Info("Exiting RequestSubGridInternal");
 
             return Result;
         }

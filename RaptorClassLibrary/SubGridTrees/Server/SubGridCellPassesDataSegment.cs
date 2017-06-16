@@ -25,8 +25,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public SubGridCellPassesDataSegmentInfo SegmentInfo { get; set; } = null;
 
-        //        public SubGridCellSegmentPassesDataWrapper PassesData { get; set; } = null;
-        public SubGridCellSegmentPassesDataWrapper_NonStatic PassesData { get; set; } = null;
+//        public SubGridCellSegmentPassesDataWrapper PassesData { get; set; } = null;
+//        public SubGridCellSegmentPassesDataWrapper_NonStatic PassesData { get; set; } = null;
+        public ISubGridCellSegmentPassesDataWrapper PassesData { get; set; } = null;
+       
         public SubGridCellLatestPassDataWrapper_NonStatic LatestPasses { get; set; } = null;
 
         public SubGridCellPassesDataSegment()
@@ -66,34 +68,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             LatestPasses = null;
         }
 
-        private void CalculateTotalPasses(ref int TotalPasses, ref int MaxPassCount)
-        {
-            int ThePassCount;
-
-            TotalPasses = 0;
-            MaxPassCount = 0;
-
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
-                for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
-                {
-                    ThePassCount = PassesData.PassData[i, j].PassCount;
-
-                    if (ThePassCount > MaxPassCount)
-                    {
-                        MaxPassCount = ThePassCount;
-                    }
-
-                    TotalPasses += ThePassCount;
-                }
-            }
-        }
-
         public bool SavePayloadToStream(BinaryWriter writer)
         {
             int EndPosition;
-            int TotalPasses = 0;
-            int MaxPassCount = 0;
             bool Result = true;
             int CellStacksOffset = -1;
 
@@ -125,42 +102,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             CellStacksOffset = (int)writer.BaseStream.Position;
 
-            CalculateTotalPasses(ref TotalPasses, ref MaxPassCount);
-
-            writer.Write(TotalPasses);
-            writer.Write(MaxPassCount);
-
-            int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
-
-            // Read all the cells from the stream
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
-                for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
-                {
-                    switch (PassCounts_Size)
-                    {
-                        case 1: writer.Write((byte)PassesData.PassData[i, j].PassCount); break;
-                        case 2: writer.Write((ushort)PassesData.PassData[i, j].PassCount); break;
-                        case 3: writer.Write((int)PassesData.PassData[i, j].PassCount); break;
-                        default:
-                            // TODO readd when logging available
-                            //SIGLogMessage.PublishNoODS(Self, Format('Unknown PassCounts_Size (%d)', [PassCounts_Size]), slmcAssert);
-                            return false;
-                    }
-                }
-            }
-
-            // write all the cells to the stream
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
-                for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
-                {
-                    for (int k = 0; k < PassesData.PassData[i, j].PassCount; k++)
-                    {
-                        PassesData.PassData[i, j].Passes[k].Write(writer);
-                    }
-                }
-            }
+            PassesData.Write(writer);
 
             EndPosition = (int)writer.BaseStream.Position;
 
@@ -180,14 +122,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                                ref long LatestCellPassDataSize,
                                                ref long CellPassStacksDataSize)
         {
-            int TotalPasses;
-            int MaxPassCount;
-
-            int PassCounts_Size;
-            int[,] PassCounts = new int[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
-
-            int PassCount_;
-
             LatestCellPassDataSize = 0;
             CellPassStacksDataSize = 0;
 
@@ -226,48 +160,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 reader.BaseStream.Seek(CellStacksOffset, SeekOrigin.Begin);
 
-                TotalPasses = reader.ReadInt32();
-                MaxPassCount = reader.ReadInt32();
-
-                PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
-
-                for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-                {
-                    for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
-                    {
-                        switch (PassCounts_Size)
-                        {
-                            case 1: PassCounts[i, j] = reader.ReadByte(); break;
-                            case 2: PassCounts[i, j] = reader.ReadInt16(); break;
-                            case 3: PassCounts[i, j] = reader.ReadInt32(); break;
-                            default:
-                                // TODO readd when logging available
-                                //SIGLogMessage.PublishNoODS(Self, Format('Unknown PassCounts_Size (%d)', [PassCounts_Size]), slmcAssert);
-                                return false;
-                        }
-                    }
-                }
-
-                // Read all the cells from the stream
-                for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-                {
-                    for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
-                    {
-                        PassCount_ = PassCounts[i, j];
-
-                        if (PassCounts[i, j] > 0)
-                        {
-                            // TODO: Revisit static cell pass support for reading contexts
-                            PassesData.PassData[i, j].AllocatePasses(PassCounts[i, j]);
-                            for (int k = 0; k < PassCount_; k++)
-                            {
-                                PassesData.PassData[i, j].Passes[k].Read(reader);
-                            }
-
-                            PassesData.SegmentPassCount += PassCount_;
-                        };
-                    }
-                }
+                PassesData.Read(reader);
             }
 
             return true;
@@ -381,17 +274,17 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             double Min = 1E10;
             double Max = -1E10;
 
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
+            for (uint i = 0; i < SubGridTree.SubGridTreeDimension; i++)
             {
-                for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
+                for (uint j = 0; j < SubGridTree.SubGridTreeDimension; j++)
                 {
-                    int _PassCount = PassesData.PassData[i, j].PassCount;
+                    uint _PassCount = PassesData.PassCount(i, j);
 
                     if (_PassCount > 0)
                     {
-                        for (int PassIndex = 0; PassIndex < _PassCount; PassIndex++)
+                        for (uint PassIndex = 0; PassIndex < _PassCount; PassIndex++)
                         {
-                            float _height = PassesData.PassData[i, j].Passes[PassIndex].Height;
+                            float _height = PassesData.PassHeight(i, j, PassIndex);
 
                             if (_height > Max)
                             {

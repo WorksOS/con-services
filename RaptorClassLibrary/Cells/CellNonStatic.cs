@@ -8,20 +8,20 @@ using System.Threading.Tasks;
 namespace VSS.VisionLink.Raptor.Cells
 {
     /// <summary>
-    /// TICCell represents cell instances stored in the compaction information grid.
+    /// Cell_NonStatic represents cell instances stored in the compaction information grid.
     /// The compaction information grid itself is modelled after the standard TGriddedGrid,
     /// but is reimplemented rather than derived.
     /// An interesting point to note is that a cell knows very little about it's context
     /// in the grid. It doesn't know who owns it, where it is or who its neighbours are.
-    /// These are all handled in upper layer which must provide such information to the
+    /// These are all handled in upper layers which must provide such information to the
     /// cell as needed when requesting the cell perform certain operations or calculate
     /// certain quantities (such as calculating the current topmost height of the cell).
     /// </summary>
-    public struct Cell
+    public struct Cell_NonStatic
     {
         /// <summary>
         /// Passes represents all the passes a compactor has made over this cell in the
-        /// compaction iformation grid. The passes are arranged in time order: The first
+        /// compaction information grid. The passes are arranged in time order: The first
         /// entry representing the oldest value, the last cell representing the most
         /// current reading.
         /// </summary>
@@ -31,7 +31,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// Number of cell passes recorded for this cell
         /// </summary>
         /// <returns></returns>
-        public int PassCount => Passes == null ? 0 : Passes.Length;
+        public uint PassCount => Passes == null ? 0 : (uint)Passes.Length;
 
         /// <summary>
         /// Determines if the cell is empty of all cell passes
@@ -40,18 +40,18 @@ namespace VSS.VisionLink.Raptor.Cells
         public bool IsEmpty => PassCount == 0;
 
         /// <summary>
-        /// Determines the height (Elevation from NEE) of the 'top most', or latest recorded in time, cell pass. If there are ne passes a null height is returned.
+        /// Determines the height (Elevation from NEE) of the 'top most', or latest recorded in time, cell pass. If there are no passes a null height is returned.
         /// </summary>
         /// <returns></returns>
         public float TopMostHeight => IsEmpty ? CellPass.NullHeight : Passes.Last().Height;
 
         /// <summary>
-        /// Alolcate or resize an array of passes to a new size
+        /// Allocate or resize an array of passes to a new size
         /// </summary>
         /// <param name="passCount"></param>
-        public void AllocatePasses(int passCount)
+        public void AllocatePasses(uint passCount)
         {
-            Array.Resize<CellPass>(ref Passes, passCount);
+            Array.Resize<CellPass>(ref Passes, (int)passCount);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace VSS.VisionLink.Raptor.Cells
         public bool LocateTime(DateTime time, out int index)
         {
             int L = 0;
-            int H = PassCount - 1;
+            int H = (int)PassCount - 1;
             int I, C;
 
             while (L <= H)
@@ -172,16 +172,16 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <param name="endIndex"></param>
         /// <param name="addedCount"></param>
         /// <param name="modifiedCount"></param>
-        public void Integrate(Cell source,
-                              int startIndex,
-                              int endIndex,
+        public void Integrate(Cell_NonStatic source,
+                              uint startIndex,
+                              uint endIndex,
                               out int addedCount,
                               out int modifiedCount)
         {
             int IntegratedPassCount;
             CellPass[] IntegratedPasses = null;
             int ThisIndex = 0;
-            int SourceIndex = startIndex;
+            uint SourceIndex = startIndex;
             int IntegratedIndex = 0;
             int OriginalPassCount;
 
@@ -193,8 +193,8 @@ namespace VSS.VisionLink.Raptor.Cells
                 return;
             }
 
-            OriginalPassCount = PassCount;
-            IntegratedPassCount = OriginalPassCount + (endIndex - startIndex + 1);
+            OriginalPassCount = (int)PassCount;
+            IntegratedPassCount = (int)(OriginalPassCount + (endIndex - startIndex + 1));
 
             // Set the length to be the combined. While this may be more than needed if
             // there are passes in source that have identical times to the passes in
@@ -268,7 +268,7 @@ namespace VSS.VisionLink.Raptor.Cells
             addedCount = IntegratedPassCount - OriginalPassCount;
         }
 
-        public Cell(int cellPassCount)
+        public Cell_NonStatic(uint cellPassCount)
         {
             Passes = null;
             AllocatePasses(cellPassCount);

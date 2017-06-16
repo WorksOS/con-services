@@ -8,16 +8,11 @@ using VSS.VisionLink.Raptor.Cells;
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
     /// <summary>
-    /// A wrapper for a subgrid containing all information related to teh 'latest kown' information related to each cell.
-    /// This includes 'existence' information which indicates if the cell in quest has any cell passes recorded for it.
+    /// A wrapper for a subgrid containing all information related to the 'latest kown' information related to each cell.
+    /// This includes 'existence' information which indicates if the cell in question has any cell passes recorded for it.
     /// </summary>
-    public class SubGridCellLatestPassDataWrapper_NonStatic 
+    public class SubGridCellLatestPassDataWrapperBase 
     {
-        /// <summary>
-        /// The array of 32x32 cells containing a cell pass representing the latest known values for a variety of cell attributes
-        /// </summary>
-        public CellPass[,] PassData = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
-
         /// <summary>
         /// The existence map detailed which cells have pass data recorded for them
         /// </summary>
@@ -41,7 +36,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public bool HasMDPData => true;
         public bool HasCCAData => true;
 
-        public SubGridCellLatestPassDataWrapper_NonStatic()
+        public SubGridCellLatestPassDataWrapperBase()
         {
             ClearPasses();
         }
@@ -68,18 +63,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <summary>
         /// Clear all latest information for the subgrid
         /// </summary>
-        public void ClearPasses()
+        public virtual void ClearPasses()
         {
-            for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
-            {
-                for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
-                {
-                    PassData[I, J].Clear();
-                }
-            }
         }
 
-        public void AssignValuesFromLastPassFlags(SubGridCellLatestPassDataWrapper_NonStatic Source)
+        /// <summary>
+        /// Copies the flags information from the source latest cell pass wrapper to this one
+        /// </summary>
+        /// <param name="Source"></param>
+        public void AssignValuesFromLastPassFlags(SubGridCellLatestPassDataWrapperBase Source)
         {
             CCVValuesAreFromLastPass.Assign(Source.CCVValuesAreFromLastPass);
             RMVValuesAreFromLastPass.Assign(Source.RMVValuesAreFromLastPass);
@@ -91,4 +83,29 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             CCAValuesAreFromLastPass.Assign(Source.CCAValuesAreFromLastPass);
         }
     }
+
+    public class SubGridCellLatestPassDataWrapper_NonStatic : SubGridCellLatestPassDataWrapperBase
+    {
+        /// <summary>
+        /// The array of 32x32 cells containing a cell pass representing the latest known values for a variety of cell attributes
+        /// </summary>
+        public CellPass[,] PassData = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+        /// <summary>
+        /// Provides the 'NonStatic' behaviour for clearing the passes in the latest pass information
+        /// </summary>
+        public override void ClearPasses()
+        {
+            base.ClearPasses();
+
+            for (int I = 0; I < SubGridTree.SubGridTreeDimension; I++)
+            {
+                for (int J = 0; J < SubGridTree.SubGridTreeDimension; J++)
+                {
+                    PassData[I, J].Clear();
+                }
+            }
+        }
+    }
+
 }
