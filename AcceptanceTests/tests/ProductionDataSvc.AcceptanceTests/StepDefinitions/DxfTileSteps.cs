@@ -13,8 +13,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   {
     private string url;
     private string projectUid;
-    private string fileUid;
-    private string fileUid2;
+    private string fileType;
     private string queryParameters = string.Empty;
     private Getter<TileResult> tileRequester;
 
@@ -38,16 +37,10 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         bbox, width, height);
     }
 
-    [Given(@"a fileUid ""(.*)""")]
-    public void GivenAFileUid(string fileUid)
+    [Given(@"a fileType ""(.*)""")]
+    public void GivenAFileType(string fileType)
     {
-      this.fileUid = fileUid;
-    }
-
-    [Given(@"a second fileUid ""(.*)""")]
-    public void GivenASecondFileUid(string fileUid2)
-    {
-      this.fileUid2 = fileUid2;
+      this.fileType = fileType;
     }
 
     [When(@"I request a Dxf Tile")]
@@ -72,6 +65,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       tileRequester.DoInvalidRequest(HttpStatusCode.NoContent);
     }
 
+    [When(@"I request a Dxf Tile Expecting BadRequest")]
+    public void WhenIRequestADxfTileExpectingBadRequest()
+    {
+      tileRequester = new Getter<TileResult>(MakeUrl());
+      tileRequester.DoInvalidRequest(HttpStatusCode.BadRequest);
+    }
+
+
     [Then(@"I should get no response body")]
     public void ThenIShouldGetNoResponseBody()
     {
@@ -85,16 +86,14 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.AreEqual(message, tileRequester.CurrentResponse.Message);
     }
 
+
+
     private string MakeUrl()
     {
       var fullUrl = string.Format("{0}?projectUid={1}", url, projectUid);
-      if (!string.IsNullOrEmpty(fileUid))
+      if (!string.IsNullOrEmpty(fileType))
       {
-        fullUrl = string.Format("{0}&fileUids={1}", fullUrl, fileUid);
-      }
-      if (!string.IsNullOrEmpty(fileUid2))
-      {
-        fullUrl = string.Format("{0}&fileUids={1}", fullUrl, fileUid2);
+        fullUrl = string.Format("{0}&fileTypes={1}", fullUrl, fileType);
       }
       fullUrl += queryParameters;
       return fullUrl;

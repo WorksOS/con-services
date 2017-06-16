@@ -8,12 +8,12 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Common.Executors;
 using MasterDataProxies;
+using MasterDataProxies.Interfaces;
+using MasterDataProxies.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using src.Interfaces;
-using src.Models;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Contracts;
@@ -30,10 +30,12 @@ using VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Report.Executors;
 using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using WebApiModels.Compaction.Executors;
 using WebApiModels.Compaction.Models;
 using WebApiModels.Notification.Helpers;
 using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.ColorValue;
+using ProjectID = VSS.Raptor.Service.Common.Models.ProjectID;
 
 namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 {
@@ -43,6 +45,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
         /// <summary>
         /// Raptor client for use by executor
+        /// 
         /// </summary>
         private readonly IASNodeClient raptorClient;
 
@@ -1358,10 +1361,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
-    /// <param name="fileUids">A collection of imported file IDs for which to to overlay tiles</param>
+    /// <param name="fileTypes">A collection of imported file types for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
-      [ProjectUidVerifier]
+    [ProjectUidVerifier]
       [Route("api/v2/compaction/lineworktiles")]
       [HttpGet]
       public async Task<TileResult> GetLineworkTile(
@@ -1377,14 +1380,14 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         [FromQuery] int HEIGHT,
         [FromQuery] string BBOX,
         [FromQuery] Guid projectUid,
-        [FromQuery] Guid[] fileUids)
+        [FromQuery] string[] fileTypes)
       {
         log.LogDebug("GetLineworkTile: " + Request.QueryString);
 
         ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
         ValidateTileDimensions(WIDTH, HEIGHT);
 
-        var requiredFiles = await ValidateFileUids(projectUid, fileUids);
+        var requiredFiles = await ValidateFileTypes(projectUid, fileTypes);
         DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
         request.Validate();
         var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
@@ -1392,27 +1395,27 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         return result;
       }
 
-      /// <summary>
-      /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
-      /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
-      /// The tiles for the supplied list of files are overlaid and a single tile returned.
-      /// </summary>
-      /// <param name="SERVICE">WMS parameter - value WMS</param>
-      /// <param name="VERSION">WMS parameter - value 1.3.0</param>
-      /// <param name="REQUEST">WMS parameter - value GetMap</param>
-      /// <param name="FORMAT">WMS parameter - value image/png</param>
-      /// <param name="TRANSPARENT">WMS parameter - value true</param>
-      /// <param name="LAYERS">WMS parameter - value Layers</param>
-      /// <param name="CRS">WMS parameter - value EPSG:4326</param>
-      /// <param name="STYLES">WMS parameter - value null</param>
-      /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
-      /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
-      /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
-      /// <param name="projectUid">Project UID</param>
-      /// <param name="fileUids">A collection of imported file IDs for which to to overlay tiles</param>
-      /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
-      /// <executor>TilesExecutor</executor> 
-      [ProjectUidVerifier]
+    /// <summary>
+    /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
+    /// Supplies tiles of linework for DXF, Alignment and Design surface files imported into a project.
+    /// The tiles for the supplied list of files are overlaid and a single tile returned.
+    /// </summary>
+    /// <param name="SERVICE">WMS parameter - value WMS</param>
+    /// <param name="VERSION">WMS parameter - value 1.3.0</param>
+    /// <param name="REQUEST">WMS parameter - value GetMap</param>
+    /// <param name="FORMAT">WMS parameter - value image/png</param>
+    /// <param name="TRANSPARENT">WMS parameter - value true</param>
+    /// <param name="LAYERS">WMS parameter - value Layers</param>
+    /// <param name="CRS">WMS parameter - value EPSG:4326</param>
+    /// <param name="STYLES">WMS parameter - value null</param>
+    /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="fileTypes">A collection of imported file types for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
+    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
+    /// <executor>TilesExecutor</executor> 
+    [ProjectUidVerifier]
       [Route("api/v2/compaction/lineworktiles/png")]
       [HttpGet]
       public async Task<FileResult> GetLineworkTileRaw(
@@ -1428,14 +1431,14 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         [FromQuery] int HEIGHT,
         [FromQuery] string BBOX,
         [FromQuery] Guid projectUid,
-        [FromQuery] Guid[] fileUids)
+        [FromQuery] string[] fileTypes)
       {
         log.LogDebug("GetLineworkTileRaw: " + Request.QueryString);
 
         ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
         ValidateTileDimensions(WIDTH, HEIGHT);
 
-        var requiredFiles = await ValidateFileUids(projectUid, fileUids);
+        var requiredFiles = await ValidateFileTypes(projectUid, fileTypes);
         DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
         request.Validate();
         var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
@@ -1505,19 +1508,46 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
 
       /// <summary>
-      /// Validates the file UIDs for DXF tile request and gets the imported file data for them
+      /// Validates the file types for DXF tile request and gets the imported file data for them
       /// </summary>
       /// <param name="projectUid">The project UID where the files were imported</param>
-      /// <param name="fileUids">The file UIDs of the imported files</param>
+      /// <param name="fileTypes">The file types of the imported files</param>
       /// <returns>The imported file data for the requested files</returns>
-      private async Task<List<FileData>> ValidateFileUids(Guid projectUid, Guid[] fileUids)
+      private async Task<List<FileData>> ValidateFileTypes(Guid projectUid, string[] fileTypes)
       {
         //Check at least one file specified to get tiles for
-        if (fileUids == null || fileUids.Length == 0)
+        if (fileTypes == null || fileTypes.Length == 0)
         {
           throw new ServiceException(HttpStatusCode.NoContent,
             new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
               "No files selected"));
+        }
+        //Check file types are valid
+        List<ImportedFileType> selectedFileTypes = new List<ImportedFileType>();
+        foreach (var fileType in fileTypes)
+        {
+          ImportedFileType importedFileType;
+          if (Enum.TryParse(fileType, true, out importedFileType))
+          {
+            if (importedFileType == ImportedFileType.Linework ||
+                importedFileType == ImportedFileType.Alignment ||
+                importedFileType == ImportedFileType.DesignSurface)
+            {
+              selectedFileTypes.Add(importedFileType);
+            }
+            else
+            {
+              throw new ServiceException(HttpStatusCode.BadRequest,
+                new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                  "Unsupported file type " + fileType));
+            }
+          }
+          else
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                "Invalid file type " + fileType));
+          }
         }
         //Get all the imported files for the project
         var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
@@ -1528,8 +1558,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
               "No imported files"));
         }
         //Select the required ones from the list
-        var fileUidList = fileUids.Select(f => f.ToString()).ToList();
-        return fileList.Where(f => fileUidList.Contains(f.ImportedFileUid)).ToList();
+        return fileList.Where(f => selectedFileTypes.Contains(f.ImportedFileType)).ToList();
+      //TODO: When 'active' flag has been added to file descriptors, only select active files here
       }
 
       /// <summary>

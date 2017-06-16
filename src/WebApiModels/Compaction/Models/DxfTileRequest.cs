@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-using src.Models;
+using MasterDataProxies.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 
