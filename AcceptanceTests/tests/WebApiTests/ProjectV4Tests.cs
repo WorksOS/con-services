@@ -273,8 +273,8 @@ namespace WebApiTests
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
-      const string geometryWkt2 = "POLYGON((172.595838000000 -43.5427080000000,172.594636000000 -43.5438900000000,172.596568 -43.543800,172.595838000000 -43.5427080000000))";
+      const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109))";
+      const string geometryWkt2 = "POLYGON((172.595838 -43.542708,172.594636 -43.54389,172.596568 -43.5438,172.595838 -43.542708))";
       var customerEventArray = new[] {
        "| TableName | EventDate   | Name            | fk_CustomerTypeID | CustomerUID   |",
       $"| Customer  | 0d+09:00:00 | Boundary Test 1 | 1                 | {customerUid} |"};
@@ -313,8 +313,8 @@ namespace WebApiTests
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
       var endDateTime = new DateTime(9999, 12, 31);
-      const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
-      const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.597660 -43.542353,172.595071 -43.542112))";
+      const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109))";
+      const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.59766 -43.542353,172.595071 -43.542112))";
       var customerEventArray = new[] {
        "| TableName | EventDate   | Name            | fk_CustomerTypeID | CustomerUID   |",
       $"| Customer  | 0d+09:00:00 | Boundary Test 1 | 1                 | {customerUid} |"};
@@ -349,8 +349,8 @@ namespace WebApiTests
       var endDateTime = DateTime.Now.Date.AddMonths(2);
       var startDateTime2 = DateTime.Now.Date.AddMonths(3);
       var endDateTime2 = DateTime.Now.Date.AddMonths(9);
-      const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
-      const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.597660 -43.542353,172.595071 -43.542112))";
+      const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109))";
+      const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.59766 -43.542353,172.595071 -43.542112))";
       var customerEventArray = new[] {
        "| TableName | EventDate   | Name             | fk_CustomerTypeID | CustomerUID   |",
       $"| Customer  | 0d+09:00:00 | Boundary Test 11 | 1                 | {customerUid} |"};
@@ -448,7 +448,7 @@ namespace WebApiTests
       var endDateTime = new DateTime(9999, 12, 31);
       var startDate = startDateTime.ToString("yyyy-MM-dd");
       var endDate = endDateTime.ToString("yyyy-MM-dd");
-      const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))";
+      const string geometryWkt1 = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965,172.595831670724 -43.5427038560109))";
       const string geometryWkt2 = "POLYGON((172.595309 -43.542883,172.594735 -43.543357,172.594037 -43.542756,172.595309 -43.542883))";
       var eventsArray = new[] {
        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID    | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID  |",

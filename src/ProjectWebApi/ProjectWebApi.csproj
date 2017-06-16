@@ -39,13 +39,13 @@
     <PackageReference Include="Swashbuckle.SwaggerUi" Version="6.0.0-beta902" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
     <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
-    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.21" />
+    <PackageReference Include="KafkaConsumer.netcore" Version="*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.2" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
     <PackageReference Include="AutoMapper" Version="6.0.2" />
-    <PackageReference Include="MasterDataProxies.netcore" Version="1.1.20" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.72" />
-    <PackageReference Include="TCCFileAccess.netcore" Version="1.1.11" />
+    <PackageReference Include="MasterDataProxies.netcore" Version="*" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="*" />
+    <PackageReference Include="TCCFileAccess.netcore" Version="*" />
     <PackageReference Include="FlowJSHandler.netcore" Version="1.0.6" />
   </ItemGroup>
 
@@ -60,6 +60,8 @@
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="1.1.2" />
+    <PackageReference Include="System.Net.Security" Version="4.0.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.1.0" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
