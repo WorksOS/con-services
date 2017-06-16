@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS ImportedFile (
   ImportedBy varchar(256) NOT NULL,
   SurveyedUTC datetime(6) DEFAULT NULL, 
   IsDeleted tinyint(4) DEFAULT '0',
-  IsActivated tinyint(4) DEFAULT '0',
   LastActionedUTC datetime(6) NOT NULL,
   InsertUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   UpdateUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Repo.Extensions;
 using Repositories.DBModels;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -27,10 +28,10 @@ namespace Repositories
     {
       const string polygonStr = "POLYGON";
       var upsertedCount = 0;
-      log.LogDebug($"Event type is {evt.GetType().ToString()}");
+      log.LogDebug($"Event type is {evt.GetType()}");
       if (evt is CreateProjectEvent)
       {
-        var projectEvent = (CreateProjectEvent) evt;
+        var projectEvent = (CreateProjectEvent)evt;
         var project = new Project();
         project.LegacyProjectID = projectEvent.ProjectID;
         project.Description = projectEvent.Description;
@@ -67,7 +68,7 @@ namespace Repositories
       }
       else if (evt is UpdateProjectEvent)
       {
-        var projectEvent = (UpdateProjectEvent) evt;
+        var projectEvent = (UpdateProjectEvent)evt;
 
         var project = new Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
@@ -86,7 +87,7 @@ namespace Repositories
       }
       else if (evt is DeleteProjectEvent)
       {
-        var projectEvent = (DeleteProjectEvent) evt;
+        var projectEvent = (DeleteProjectEvent)evt;
         var project = new Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.LastActionedUTC = projectEvent.ActionUTC;
@@ -94,7 +95,7 @@ namespace Repositories
       }
       else if (evt is AssociateProjectCustomer)
       {
-        var projectEvent = (AssociateProjectCustomer) evt;
+        var projectEvent = (AssociateProjectCustomer)evt;
         var customerProject = new CustomerProject();
         customerProject.ProjectUID = projectEvent.ProjectUID.ToString();
         customerProject.CustomerUID = projectEvent.CustomerUID.ToString();
@@ -104,7 +105,7 @@ namespace Repositories
       }
       else if (evt is AssociateProjectGeofence)
       {
-        var projectEvent = (AssociateProjectGeofence) evt;
+        var projectEvent = (AssociateProjectGeofence)evt;
         var projectGeofence = new ProjectGeofence();
         projectGeofence.ProjectUID = projectEvent.ProjectUID.ToString();
         projectGeofence.GeofenceUID = projectEvent.GeofenceUID.ToString();
@@ -117,7 +118,7 @@ namespace Repositories
       }
       else if (evt is CreateImportedFileEvent)
       {
-        var projectEvent = (CreateImportedFileEvent) evt;
+        var projectEvent = (CreateImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
           ProjectUid = projectEvent.ProjectUID.ToString(),
@@ -131,13 +132,14 @@ namespace Repositories
           FileUpdatedUtc = projectEvent.FileUpdatedUtc,
           ImportedBy = projectEvent.ImportedBy,
           SurveyedUtc = projectEvent.SurveyedUTC,
-          LastActionedUtc = projectEvent.ActionUTC
+          LastActionedUtc = projectEvent.ActionUTC,
+          IsActivated = true
         };
         upsertedCount = await UpsertImportedFile(importedFile, "CreateImportedFileEvent");
       }
       else if (evt is UpdateImportedFileEvent)
       {
-        var projectEvent = (UpdateImportedFileEvent) evt;
+        var projectEvent = (UpdateImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
           ProjectUid = projectEvent.ProjectUID.ToString(),
@@ -153,7 +155,7 @@ namespace Repositories
       }
       else if (evt is DeleteImportedFileEvent)
       {
-        var projectEvent = (DeleteImportedFileEvent) evt;
+        var projectEvent = (DeleteImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
           ProjectUid = projectEvent.ProjectUID.ToString(),
@@ -185,7 +187,7 @@ namespace Repositories
               FROM Project
               WHERE ProjectUID = @projectUid
                 OR LegacyProjectId = @legacyProjectId",
-          new {projectUid = project.ProjectUID, legacyProjectId = project.LegacyProjectID}
+          new { projectUid = project.ProjectUID, legacyProjectId = project.LegacyProjectID }
         )).FirstOrDefault();
 
       if (eventType == "CreateProjectEvent")
@@ -235,9 +237,8 @@ namespace Repositories
           log.LogDebug(
             "ProjectRepository/CreateProject: (insert): upserted {0} rows (1=insert, 2=update) for: projectUid:{1}",
             upsertedCount, project.ProjectUID);
-          return upsertedCount == 2
-            ? 1
-            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+
+          return upsertedCount.CalculateUpsertCount();
         }
       }
       if (string.IsNullOrEmpty(existing.Name))
@@ -248,7 +249,7 @@ namespace Repositories
         // this code comes from landfill, however in MD, no dummy is created. 
         //   is this obsolete?
         const string update =
-          @"UPDATE Project                
+          @"UPDATE Project
                 SET LegacyProjectID = @LegacyProjectID,
                   Name = @Name,
                   Description = @Description,
@@ -269,9 +270,8 @@ namespace Repositories
           log.LogDebug(
             "ProjectRepository/CreateProject: (update): upserted {0} rows (1=insert, 2=update) for: projectUid:{1}",
             upsertedCount, project.ProjectUID);
-          return upsertedCount == 2
-            ? 1
-            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+
+          return upsertedCount.CalculateUpsertCount();
         }
       }
       if (existing.LastActionedUTC >= project.LastActionedUTC)
@@ -290,8 +290,8 @@ namespace Repositories
         }
 
         const string update =
-          @"UPDATE Project                
-                SET LegacyProjectID = @LegacyProjectID,                  
+          @"UPDATE Project
+                SET LegacyProjectID = @LegacyProjectID,
                   ProjectTimeZone = @ProjectTimeZone,
                   LandfillTimeZone = @LandfillTimeZone,
                   StartDate = @StartDate,
@@ -305,9 +305,8 @@ namespace Repositories
           log.LogDebug(
             "ProjectRepository/CreateProject: (updateExisting): upserted {0} rows (1=insert, 2=update) for: projectUid:{1}",
             upsertedCount, project.ProjectUID);
-          return upsertedCount == 2
-            ? 1
-            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+
+          return upsertedCount.CalculateUpsertCount();
         }
       }
 
@@ -326,7 +325,7 @@ namespace Repositories
             JsonConvert.SerializeObject(project));
 
           const string update =
-            @"UPDATE Project                
+            @"UPDATE Project
                 SET IsDeleted = 1,
                   LastActionedUTC = @LastActionedUTC
                 WHERE ProjectUID = @ProjectUID";
@@ -336,9 +335,8 @@ namespace Repositories
             log.LogDebug(
               "ProjectRepository/DeleteProject: upserted {0} rows (1=insert, 2=update) for: projectUid:{1}",
               upsertedCount, project.ProjectUID);
-            return upsertedCount == 2
-              ? 1
-              : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+
+            return upsertedCount.CalculateUpsertCount();
           }
         }
         else
@@ -378,7 +376,7 @@ namespace Repositories
             JsonConvert.SerializeObject(project));
 
           const string update =
-            @"UPDATE Project                
+            @"UPDATE Project
                 SET Name = @Name,
                   Description = @Description,
                   LastActionedUTC = @LastActionedUTC,
@@ -393,9 +391,8 @@ namespace Repositories
             log.LogDebug(
               "ProjectRepository/UpdateProject: upserted {0} rows (1=insert, 2=update) for: projectUid:{1}",
               upsertedCount, project.ProjectUID);
-            return upsertedCount == 2
-              ? 1
-              : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+
+            return upsertedCount.CalculateUpsertCount();
           }
         }
         else
@@ -418,7 +415,7 @@ namespace Repositories
                 fk_CustomerUID AS CustomerUID, LegacyCustomerID, fk_ProjectUID AS ProjectUID, LastActionedUTC
               FROM CustomerProject
               WHERE fk_CustomerUID = @customerUID AND fk_ProjectUID = @projectUID",
-        new {customerUID = customerProject.CustomerUID, projectUID = customerProject.ProjectUID}
+        new { customerUID = customerProject.CustomerUID, projectUID = customerProject.ProjectUID }
       )).FirstOrDefault();
 
       if (eventType == "AssociateProjectCustomerEvent")
@@ -435,8 +432,6 @@ namespace Repositories
 
     private async Task<int> AssociateProjectCustomer(CustomerProject customerProject, CustomerProject existing)
     {
-      var upsertedCount = 0;
-
       log.LogDebug(
         "ProjectRepository/AssociateProjectCustomer: can't update as none existing customerProject={0}",
         JsonConvert.SerializeObject(customerProject));
@@ -445,7 +440,7 @@ namespace Repositories
               (fk_ProjectUID, fk_CustomerUID, LegacyCustomerID, LastActionedUTC)
             VALUES
               (@ProjectUID, @CustomerUID, @LegacyCustomerID, @LastActionedUTC)
-            ON DUPLICATE KEY UPDATE              
+            ON DUPLICATE KEY UPDATE
               LastActionedUTC =
                 IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
                     VALUES(LastActionedUTC), LastActionedUTC),
@@ -454,11 +449,12 @@ namespace Repositories
                     VALUES(LegacyCustomerID), LegacyCustomerID)";
 
       {
-        upsertedCount = await ExecuteWithAsyncPolicy(insert, customerProject);
+        var upsertedCount = await ExecuteWithAsyncPolicy(insert, customerProject);
         log.LogDebug(
           "ProjectRepository/AssociateProjectCustomer: upserted {0} rows (1=insert, 2=update) for: customerProjectUid:{1}",
           upsertedCount, customerProject.CustomerUID);
-        return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+
+        return upsertedCount.CalculateUpsertCount();
       }
     }
 
@@ -474,7 +470,7 @@ namespace Repositories
               fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
             FROM ProjectGeofence
             WHERE fk_ProjectUID = @projectUID AND fk_GeofenceUID = @geofenceUID",
-        new {projectUID = projectGeofence.ProjectUID, geofenceUID = projectGeofence.GeofenceUID}
+        new { projectUID = projectGeofence.ProjectUID, geofenceUID = projectGeofence.GeofenceUID }
       )).FirstOrDefault();
 
       if (eventType == "AssociateProjectGeofenceEvent")
@@ -499,15 +495,13 @@ namespace Repositories
               VALUES
                 (@GeofenceUID, @ProjectUID, @LastActionedUTC)";
 
-
         {
           upsertedCount = await ExecuteWithAsyncPolicy(insert, projectGeofence);
           log.LogDebug(
             "ProjectRepository/AssociateProjectGeofence: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} geofenceUid:{2}",
             upsertedCount, projectGeofence.ProjectUID, projectGeofence.GeofenceUID);
-          return upsertedCount == 2
-            ? 1
-            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+
+          return upsertedCount.CalculateUpsertCount();
         }
       }
 
@@ -529,12 +523,12 @@ namespace Repositories
 
       var existing = (await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
-              fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID, 
+              fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID,
               fk_ImportedFileTypeID as ImportedFileType, Name, 
-              FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted,
+              FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated,
               LastActionedUTC
             FROM ImportedFile
-            WHERE ImportedFileUID = @importedFileUid", new {importedFileUid = importedFile.ImportedFileUid}
+            WHERE ImportedFileUID = @importedFileUid", new { importedFileUid = importedFile.ImportedFileUid }
       )).FirstOrDefault();
 
       if (eventType == "CreateImportedFileEvent")
@@ -561,18 +555,17 @@ namespace Repositories
 
         var insert = string.Format(
           "INSERT ImportedFile " +
-          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, LastActionedUTC) " +
+          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, IsDeleted, IsActivated, LastActionedUTC) " +
           "  VALUES " +
-          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, 0, @LastActionedUtc)");
+          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUTC, @FileUpdatedUTC, @ImportedBy, @SurveyedUtc, 0, 1, @LastActionedUtc)");
 
         {
           upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
           log.LogDebug(
             "ProjectRepository/CreateImportedFile: (insert): upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}",
             upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
-          return upsertedCount == 2
-            ? 1
-            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+
+          return upsertedCount.CalculateUpsertCount();
         }
       }
       if (existing.LastActionedUtc >= importedFile.LastActionedUtc)
@@ -585,7 +578,7 @@ namespace Repositories
         // The only thing which can be updated is a) the file content, and the LastActionedUtc. A file cannot be moved between projects/customers.
         // We don't store (a), and leave actionUTC as the more recent. 
         const string update =
-          @"UPDATE ImportedFile                
+          @"UPDATE ImportedFile
               SET fk_ProjectUID = @projectUID, 
                 ImportedFileID = @ImportedFileId,
                 fk_CustomerUID = @customerUID,
@@ -603,9 +596,8 @@ namespace Repositories
           log.LogDebug(
             "ProjectRepository/CreateImportedFile: (updateExisting): upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}",
             upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
-          return upsertedCount == 2
-            ? 1
-            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+
+          return upsertedCount.CalculateUpsertCount();
         }
       }
 
@@ -620,34 +612,32 @@ namespace Repositories
       // We don't store (a), and leave actionUTC as the more recent. 
       var upsertedCount = 0;
       if (existing != null)
+      {
         if (importedFile.LastActionedUtc > existing.LastActionedUtc)
         {
           const string update =
-            @"UPDATE ImportedFile                
+            @"UPDATE ImportedFile
                 SET 
                   FileDescriptor = @fileDescriptor,
                   FileCreatedUTC = @fileCreatedUtc,
                   FileUpdatedUTC = @fileUpdatedUtc,
                   ImportedBy = @importedBy, 
                   SurveyedUTC = @surveyedUTC,
-                  LastActionedUTC = @LastActionedUTC
+                  LastActionedUTC = @LastActionedUTC,
+                  IsActivated = @IsActivated
                 WHERE ImportedFileUID = @ImportedFileUid";
 
-          {
-            upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
-            log.LogDebug(
-              "ProjectRepository/UpdateImportedFile: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}",
-              upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
-            return upsertedCount == 2
-              ? 1
-              : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-          }
+          upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
+          log.LogDebug(
+            "ProjectRepository/UpdateImportedFile: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}",
+            upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
+
+          return upsertedCount.CalculateUpsertCount();
         }
-        else
-        {
-          log.LogDebug("ProjectRepository/UpdateImportedFile: old update event ignored importedFile {0}",
-            JsonConvert.SerializeObject(importedFile));
-        }
+
+        log.LogDebug("ProjectRepository/UpdateImportedFile: old update event ignored importedFile {0}",
+          JsonConvert.SerializeObject(importedFile));
+      }
       else
         log.LogDebug("ProjectRepository/UpdateImportedFile: can't update as none existing importedFile {0}",
           JsonConvert.SerializeObject(importedFile));
@@ -674,9 +664,8 @@ namespace Repositories
             log.LogDebug(
               "ProjectRepository/DeleteImportedFile: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}",
               upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
-            return upsertedCount == 2
-              ? 1
-              : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+
+            return upsertedCount.CalculateUpsertCount();
           }
         }
         else
@@ -706,7 +695,7 @@ namespace Repositories
     public async Task<Project> GetProject(string projectUid)
     {
       var project = (await QueryWithAsyncPolicy<Project>(@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
@@ -717,7 +706,7 @@ namespace Repositories
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE p.ProjectUID = @projectUid AND p.IsDeleted = 0",
-        new {projectUid})).FirstOrDefault();
+        new { projectUid })).FirstOrDefault();
       return project;
     }
 
@@ -728,17 +717,17 @@ namespace Repositories
     /// <returns></returns>
     public async Task<Project> GetProject(long legacyProjectID)
     {
-      var project = await QueryWithAsyncPolicy<Project>(@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+      var project = await QueryWithAsyncPolicy<Project>(@"SELECT
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID               
+                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-                JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID                
+                JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
               WHERE p.LegacyProjectID = @legacyProjectID 
                 AND p.IsDeleted = 0",
-        new {legacyProjectID});
+        new { legacyProjectID });
       return project.FirstOrDefault();
     }
 
@@ -754,20 +743,20 @@ namespace Repositories
     {
       var projectSubList = await QueryWithAsyncPolicy<Project>
       (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
+                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID,
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID                             
+                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID
               WHERE p.LegacyProjectID = @legacyProjectID 
                 AND p.IsDeleted = 0
                 AND @validAtDate BETWEEN s.StartDate AND s.EndDate",
-        new {legacyProjectID, validAtDate = validAtDate.Date}
+        new { legacyProjectID, validAtDate = validAtDate.Date }
       );
 
 
@@ -783,18 +772,18 @@ namespace Repositories
     {
       var projects = (await QueryWithAsyncPolicy<Project>
       (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-              FROM Project p 
+              FROM Project p
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
                 JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE ps.fk_SubscriptionUID = @subscriptionUid AND p.IsDeleted = 0",
-        new {subscriptionUid}
+        new { subscriptionUid }
       )).FirstOrDefault();
       ;
 
@@ -814,19 +803,19 @@ namespace Repositories
     {
       var projects = await QueryWithAsyncPolicy<Project>
       (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
+                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID,
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-              FROM Project p 
+              FROM Project p
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
                 JOIN CustomerUser cu on cu.fk_CustomerUID = c.CustomerUID
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE cu.UserUID = @userUid and p.IsDeleted = 0",
-        new {userUid}
+        new { userUid }
       );
 
 
@@ -845,19 +834,19 @@ namespace Repositories
     {
       var projects = await QueryWithAsyncPolicy<Project>
       (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-              FROM Project p 
+              FROM Project p
                 JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
                 JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
                 JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID
                 LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE cp.fk_CustomerUID = @customerUid and cu.UserUID = @userUid and p.IsDeleted = 0",
-        new {customerUid, userUid}
+        new { customerUid, userUid }
       );
 
 
@@ -878,7 +867,7 @@ namespace Repositories
       var projects = await QueryWithAsyncPolicy<Project>
       (@"SELECT 
                 c.CustomerUID, cp.LegacyCustomerID, 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
@@ -893,7 +882,7 @@ namespace Repositories
                 AND (g.fk_GeofenceTypeID IS NULL 
                       OR (g.IsDeleted = 0 AND g.fk_GeofenceTypeID = 1)
                     )",
-        new {customerUid}
+        new { customerUid }
       );
 
 
@@ -911,13 +900,13 @@ namespace Repositories
     public async Task<Project> GetProjectOnly(string projectUid)
     {
       var project = (await QueryWithAsyncPolicy<Project>
-      (@"SELECT              
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+      (@"SELECT
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC
               FROM Project p 
               WHERE p.ProjectUID = @projectUid",
-        new {projectUid}
+        new { projectUid }
       )).FirstOrDefault();
 
 
@@ -932,10 +921,10 @@ namespace Repositories
     public async Task<bool> ProjectExists(string projectUid)
     {
       var uid = (await QueryWithAsyncPolicy<string>
-      (@"SELECT p.ProjectUID             
+      (@"SELECT p.ProjectUID
               FROM Project p 
               WHERE p.ProjectUID = @projectUid",
-        new {projectUid}
+        new { projectUid }
       )).FirstOrDefault();
 
 
@@ -950,10 +939,10 @@ namespace Repositories
     public async Task<bool> CustomerProjectExists(string projectUid)
     {
       var uid = (await QueryWithAsyncPolicy<string>
-      (@"SELECT cp.fk_ProjectUID             
+      (@"SELECT cp.fk_ProjectUID
               FROM CustomerProject cp 
               WHERE cp.fk_ProjectUID = @projectUid",
-        new {projectUid}
+        new { projectUid }
       )).FirstOrDefault();
 
 
@@ -969,18 +958,18 @@ namespace Repositories
     {
       var project = (await QueryWithAsyncPolicy<Project>
       (@"SELECT 
-                  p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                  p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                   p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                   p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                   cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                  ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID              
+                  ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
               FROM Project p 
                 LEFT JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
                 LEFT JOIN Customer c ON c.CustomerUID = cp.fk_CustomerUID
                 LEFT JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
                 LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
               WHERE p.ProjectUID = @projectUid",
-        new {projectUid}
+        new { projectUid }
       )).FirstOrDefault();
 
 
@@ -1002,7 +991,7 @@ namespace Repositories
           FROM ImportedFile
             WHERE fk_ProjectUID = @projectUid
               AND IsDeleted = 0",
-        new {projectUid}
+        new { projectUid }
       );
 
       return importedFileList;
@@ -1017,9 +1006,9 @@ namespace Repositories
             LastActionedUTC
           FROM ImportedFile
             WHERE importedFileUID = @importedFileUid",
-        new {importedFileUid}
+        new { importedFileUid }
       )).FirstOrDefault();
-      
+
       return importedFile;
     }
 
@@ -1046,7 +1035,7 @@ namespace Repositories
             WHERE fk_ProjectUID = @projectUid
               AND IsDeleted = 0
               AND IsActivated = True",
-        new {projectUid}
+        new { projectUid }
       );
 
       return importedFiles;
@@ -1086,7 +1075,7 @@ namespace Repositories
         , point);
 
       var projects =
-        await QueryWithAsyncPolicy<Project>(select, new {customerUID, timeOfPosition = timeOfPosition.Date});
+        await QueryWithAsyncPolicy<Project>(select, new { customerUID, timeOfPosition = timeOfPosition.Date });
 
 
       return projects;
@@ -1127,7 +1116,7 @@ namespace Repositories
         , point);
 
       var projects = await QueryWithAsyncPolicy<Project>(select,
-        new {customerUID, timeOfPosition = timeOfPosition.Date, projectType, serviceType});
+        new { customerUID, timeOfPosition = timeOfPosition.Date, projectType, serviceType });
 
 
       return projects;
@@ -1163,7 +1152,7 @@ namespace Repositories
         , polygonToCheck);
 
       var projects = await QueryWithAsyncPolicy<Project>(select,
-        new {customerUID, startDate = startDate.Date, endDate = endDate.Date});
+        new { customerUID, startDate = startDate.Date, endDate = endDate.Date });
 
 
       return projects.Count() > 0;
@@ -1173,7 +1162,7 @@ namespace Repositories
     {
       var projects = await QueryWithAsyncPolicy<Project>
       (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,                     
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
                 p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, p.GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
