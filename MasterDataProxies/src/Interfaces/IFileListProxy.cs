@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using src.Models;
+using MasterDataProxies.Models;
 
-namespace src.Interfaces
+namespace MasterDataProxies.Interfaces
 {
   public interface IFileListProxy
   {

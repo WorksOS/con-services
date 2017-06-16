@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace src.Models
+namespace MasterDataProxies.Models
 {
   /// <summary>
   /// Describes an imported file for a project
