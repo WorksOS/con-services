@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApiCommon.Models;
@@ -78,8 +77,8 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      log.LogInformation($"GetProject: CustomerUID={customerUid} and projectUid={projectUid}");
+      var customerUid = LogCustomerDetails("GetProject", projectUid);
+
       var project =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
@@ -94,19 +93,18 @@ namespace Controllers
       return project;
     }
 
-
     /// <summary>
     /// Gets the imported file list for a project
     /// </summary>
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFile>> GetImportedFiles(string projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      log.LogInformation($"GetImportedFiles: CustomerUID={customerUid} and projectUid={projectUid}");
+      LogCustomerDetails("GetImportedFiles", projectUid);
+
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
 
-      log.LogInformation($"ImportedFile list contains {importedFiles.Count()} importedFiles");
+      log.LogInformation($"ImportedFile list contains {importedFiles.Count} importedFiles");
       return importedFiles;
     }
 
@@ -116,12 +114,12 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      log.LogInformation($"GetImportedFileList: CustomerUID={customerUid} and projectUid={projectUid}");
+      LogCustomerDetails("GetImportedFileList", projectUid);
+
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
 
-      log.LogInformation($"ImportedFile list contains {importedFiles.Count()} importedFiles");
+      log.LogInformation($"ImportedFile list contains {importedFiles.Count} importedFiles");
 
       var importedFileList = importedFiles.Select(importedFile =>
           AutoMapperUtility.Automapper.Map<ImportedFileDescriptor>(importedFile))
@@ -298,7 +296,7 @@ namespace Controllers
       var ccFileExistsResult = await fileRepo
         .FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName)
         .ConfigureAwait(false);
-      if (ccFileExistsResult == true)
+      if (ccFileExistsResult)
       {
         var ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId,
             fileDescriptor.path + '/' + fileDescriptor.fileName)
@@ -373,6 +371,16 @@ namespace Controllers
       }
     }
 
+    /// <summary>
+    /// Sets activated state for imported files.
+    /// </summary>
+    protected async Task<ImmutableList<ImportedFile>> SetFileActivatedState(Guid projectUid, IEnumerable<string> importedFileUids, bool isActivated)
+    {
+      log.LogInformation($"ActivateFile list contains {importedFileUids.Count()} importedFiles");
+
+      throw new NotImplementedException();
+    }
+
     #region private
 
     private static string GeneratedFileName(string fileName, string suffix, string extension)
@@ -384,6 +392,14 @@ namespace Controllers
     {
       //Note: ':' is an invalid character for filenames in Windows so get rid of them
       return "_" + surveyedUtc.ToIso8601DateTimeString().Replace(":", string.Empty);
+    }
+
+    private string LogCustomerDetails(string functionName, string projectUid)
+    {
+      var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      log.LogInformation($"{functionName}: CustomerUID={customerUid} and projectUid={projectUid}");
+
+      return customerUid;
     }
 
     #endregion

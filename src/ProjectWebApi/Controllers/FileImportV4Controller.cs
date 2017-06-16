@@ -20,6 +20,7 @@ using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using MasterDataProxies.Interfaces;
+using System.Collections.Generic;
 
 namespace Controllers
 {
@@ -61,7 +62,7 @@ namespace Controllers
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV4([FromQuery] string projectUid)
     {
       log.LogInformation("GetImportedFilesV4");
-      return new ImportedFileDescriptorListResult()
+      return new ImportedFileDescriptorListResult
       {
         ImportedFileDescriptors = await GetImportedFileList(projectUid).ConfigureAwait(false)
       };
@@ -113,7 +114,7 @@ namespace Controllers
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
-        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {
@@ -315,8 +316,21 @@ namespace Controllers
         $"DeleteImportedFileV4. Completed succesfully. ProjectUid {projectUid} importedFileUid: {importedFileUid}");
       return new ContractExecutionResult();
     }
+
+    /// <summary>
+    /// Sets activated state on one or more imported files.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="importedFileUids">Collection of files to have the activated state set on</param>
+    /// <param name="isActivated">Boolean value </param>
+    /// <returns></returns>
+    [Route("api/v4/activateFiles")]
+    [HttpPost]
+    protected async Task<ImportedFileDescriptorListResult> SetFileActivatedStateV4(Guid projectUid, IEnumerable<string> importedFileUids, bool isActivated)
+    {
+      log.LogInformation("ActivateFiles");
+
+      throw new NotImplementedException();
+    }
   }
 }
-
-
-

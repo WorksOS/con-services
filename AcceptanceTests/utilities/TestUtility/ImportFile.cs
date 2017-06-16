@@ -42,6 +42,13 @@ namespace TestUtility
       return filesResult;
     }
 
+    public T GetFromWebApi<T>(string uri, Guid customerUid)
+    {
+      var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid.ToString());
+      var filesResult = JsonConvert.DeserializeObject<T>(response);
+      return filesResult;
+    }
+
     /// <summary>
     /// Add a string array of data 
     /// </summary>
@@ -294,15 +301,13 @@ namespace TestUtility
     /// <param name="configJson"></param>
     /// <param name="customerUid"></param>
     /// <returns></returns>
-    private string CallWebApi(string uri, string method, string configJson, string customerUid = null)
+    private static string CallWebApi(string uri, string method, string configJson, string customerUid = null)
     {
       var restClient = new RestClientUtil();
       var response = restClient.DoHttpRequest(uri, method, configJson, HttpStatusCode.OK, "application/json",
         customerUid);
       return response;
     }
-
-
   }
 
   /// <summary>

@@ -5,7 +5,6 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ProjectWebApiCommon.Models
 {
-
   /// <summary>
   /// List of importedfile descriptors
   /// </summary>
@@ -27,11 +26,9 @@ namespace ProjectWebApiCommon.Models
   /// <seealso cref="ProjectWebApiCommon.ResultsHandling.ContractExecutionResult" />
   public class ImportedFileDescriptorSingleResult : ContractExecutionResult
   {
-    private ImportedFileDescriptor _importedFileDescriptor;
-
     public ImportedFileDescriptorSingleResult(ImportedFileDescriptor importedFileDescriptor)
     {
-      this._importedFileDescriptor = importedFileDescriptor;
+      this.ImportedFileDescriptor = importedFileDescriptor;
     }
 
     /// <summary>
@@ -40,11 +37,7 @@ namespace ProjectWebApiCommon.Models
     /// <value>
     /// The ImportedFile descriptors.
     /// </value>
-    public ImportedFileDescriptor ImportedFileDescriptor
-    {
-      get { return _importedFileDescriptor; }
-      set { _importedFileDescriptor = value; }
-    }
+    public ImportedFileDescriptor ImportedFileDescriptor { get; set; }
   }
 
 
@@ -143,6 +136,11 @@ namespace ProjectWebApiCommon.Models
     public DateTime ImportedUtc { get; set; }
 
     /// <summary>
+    /// Gets or sets the Activation State of the imported file.
+    /// </summary>
+    public bool IsActivated { get; set; }
+
+    /// <summary>
     /// Gets the path of the imported file
     /// </summary>
     /// <value>
@@ -164,6 +162,7 @@ namespace ProjectWebApiCommon.Models
              && otherImportedFile.ImportedBy == this.ImportedBy
              && otherImportedFile.SurveyedUtc == this.SurveyedUtc
              && otherImportedFile.ImportedUtc == this.ImportedUtc
+            // && otherImportedFile.IsActivated == this.IsActivated
         ;
     }
   }
