@@ -1365,9 +1365,10 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectUidVerifier]
-      [Route("api/v2/compaction/lineworktiles")]
-      [HttpGet]
-      public async Task<TileResult> GetLineworkTile(
+    [Route("api/v2/compaction/lineworktiles")]
+    [HttpGet]
+    [ResponseCache(Duration = 180, VaryByHeader = "X-VisionLink-ClearCache")]
+    public async Task<TileResult> GetLineworkTile(
         [FromQuery] string SERVICE,
         [FromQuery] string VERSION,
         [FromQuery] string REQUEST,
@@ -1416,8 +1417,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectUidVerifier]
-      [Route("api/v2/compaction/lineworktiles/png")]
-      [HttpGet]
+    [Route("api/v2/compaction/lineworktiles/png")]
+    [HttpGet]
+    [ResponseCache(Duration = 180, VaryByHeader = "X-VisionLink-ClearCache")]
       public async Task<FileResult> GetLineworkTileRaw(
         [FromQuery] string SERVICE,
         [FromQuery] string VERSION,
