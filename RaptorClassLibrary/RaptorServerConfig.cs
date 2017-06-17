@@ -8,7 +8,8 @@ namespace VSS.VisionLink.Raptor
 {
     /// <summary>
     /// Raptor server config is intended to collect and represent configuration presented to this server instance
-    /// in particular, such as its spatial subdivision role
+    /// in particular, such as its spatial subdivision role or whether it handles mutable or immutable spatial data 
+    /// (ie: read-write or read-only contexts)
     /// </summary>
     public class RaptorServerConfig
     {
@@ -37,5 +38,12 @@ namespace VSS.VisionLink.Raptor
         /// for serving requests against.
         /// </summary>
         public uint SpatialSubdivisionDescriptor { get; set; } = 0;
+
+        /// <summary>
+        /// UseMutableCellPassSegments controls whether the subgrid segments containing cell passes use a mutable structure 
+        /// that permits addition/removal of cell passes (eg: in the context of processing in-bound TAG files and other 
+        /// changes), or an immutable structure that favours memory allocation efficiency given read-only operations
+        /// </summary>
+        public bool UseMutableCellPassSegments { get; set; } = true;
     }
 }

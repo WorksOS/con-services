@@ -42,9 +42,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             if (PassesData == null)
             {
                 HasAllPasses = true;
-
-                //                PassesData = new SubGridCellSegmentPassesDataWrapper();
-                PassesData = new SubGridCellSegmentPassesDataWrapper_NonStatic();
+                PassesData = SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper();
             }
         }
         public void AllocateLatestPassGrid()

@@ -63,6 +63,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cells\CellStatic.cs" />
+    <Compile Include="Compression\AttributeValueRangeCalculator.cs" />
+    <Compile Include="Compression\BitFieldArray.cs" />
+    <Compile Include="Compression\BitFieldArrayRecordsDescriptor.cs" />
+    <Compile Include="Compression\EncodedBitFieldDescriptor.cs" />
     <Compile Include="DesignDescriptor.cs" />
     <Compile Include="Events\Interfaces\IProductionEventChangeList.cs" />
     <Compile Include="Events\ProductionEventChangeList.cs" />

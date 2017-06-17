@@ -9,6 +9,45 @@ using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
+    /// <summary>
+    /// Interface for the subgrid cell segment cell pass collection wrapper factory
+    /// </summary>
+    public interface ISubGridCellSegmentPassesDataWrapperFactory
+    {
+        ISubGridCellSegmentPassesDataWrapper NewWrapper();
+    }
+
+    /// <summary>
+    /// Factory that creates subgrid segments that contain collections of cell passes
+    /// </summary>
+    public class SubGridCellSegmentPassesDataWrapperFactory : ISubGridCellSegmentPassesDataWrapperFactory
+    {
+        private static SubGridCellSegmentPassesDataWrapperFactory instance = null;
+
+        public ISubGridCellSegmentPassesDataWrapper NewWrapper()
+        {
+            //return new SubGridCellSegmentPassesDataWrapper_NonStatic();
+            if (RaptorServerConfig.Instance().UseMutableCellPassSegments)
+            {
+                return new SubGridCellSegmentPassesDataWrapper_NonStatic();
+            }
+            else
+            {
+                return new SubGridCellSegmentPassesDataWrapper_Static();
+            }
+        }
+
+        public static SubGridCellSegmentPassesDataWrapperFactory Instance()
+        {
+            if (instance == null)
+            {
+                instance = new SubGridCellSegmentPassesDataWrapperFactory();
+            }
+
+            return instance;
+        }
+    }
+
     public interface ISubGridCellSegmentPassesDataWrapper
     {
         int SegmentPassCount { get; set; }
@@ -276,11 +315,22 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public Cell_Static[,] PassData = null;
 
         /// <summary>
+        /// Default no-arg constructor that does not instantiate any state
+        /// </summary>
+        public SubGridCellSegmentPassesDataWrapper_Static()
+        {
+        }
+
+        /// <summary>
         /// Constructor that accepts a set of cell passes and creates the internal structures to hold them
         /// </summary>
         /// <param name="cellPassCount"></param>
-        public SubGridCellSegmentPassesDataWrapper_Static(CellPass[,][] cellPasses)
+        public void SetState(CellPass[,][] cellPasses)
         {
+            // Ensure eny existing state is erased
+            PassData = null;
+            CellPasses = null;
+
             // Determine the total number of passes that need to be stored and create the array to hold them
             int totalPassCount = 0;
 
