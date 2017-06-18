@@ -490,45 +490,48 @@ this.ScenarioSetup(scenarioInfo);
                     "\t\t\t\"value\": 500.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 16174803,\r\n\t\t\t\"value\": 600.0\r\n\t\t},\r\n\t\t" +
                     "{\r\n\t\t\t\"color\": 13990524,\r\n\t\t\t\"value\": 700.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 12660791,\r\n\t" +
                     "\t\t\"value\": 800.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 15105570,\r\n\t\t\t\"value\": 900.0\r\n\t\t},\r\n\t\t{" +
-                    "\r\n\t\t\t\"color\": 7091331,\r\n\t\t\t\"value\": 1000.0\r\n\t\t}\r\n    ],\n    \"aboveLastColor\": nu" +
-                    "ll,\n    \"belowFirstColor\": null\n  },\n  \"passCountDetailPalette\": {\n    \"colorVal" +
-                    "ues\": [\n      {\n        \"color\": 2971523,\n        \"value\": 1\n      },\n      {\n  " +
-                    "      \"color\": 4430812,\n        \"value\": 2\n      },\n      {\n        \"color\": 125" +
-                    "09169,\n        \"value\": 3\n      },\n      {\n        \"color\": 10341991,\n        \"v" +
-                    "alue\": 4\n      },\n      {\n        \"color\": 7053374,\n        \"value\": 5\n      },\n" +
-                    "      {\n        \"color\": 3828517,\n        \"value\": 6\n      },\n      {\n        \"c" +
-                    "olor\": 16174803,\n        \"value\": 7\n      },\n      {\n        \"color\": 13990524,\n" +
-                    "        \"value\": 8\n      }\n    ],\n    \"aboveLastColor\": 12660791,\n    \"belowFirs" +
-                    "tColor\": null\n  },\n  \"passCountSummaryPalette\": {\n    \"aboveTargetColor\": 139591" +
-                    "68,\n    \"onTargetColor\": 9159498,\n    \"belowTargetColor\": 87963\n  },\n  \"cutFillP" +
-                    "alette\": {\n    \"colorValues\": [\n      {\n        \"color\": 11789820,\n        \"valu" +
-                    "e\": -0.2\n      },\n      {\n        \"color\": 236517,\n        \"value\": -0.1\n      }" +
-                    ",\n      {\n        \"color\": 87963,\n        \"value\": -0.05\n      },\n      {\n      " +
-                    "  \"color\": 9159498,\n        \"value\": 0\n      },\n      {\n        \"color\": 1676437" +
-                    "0,\n        \"value\": 0.05\n      },\n      {\n        \"color\": 15037299,\n        \"va" +
-                    "lue\": 0.1\n      },\n      {\n        \"color\": 13959168,\n        \"value\": 0.2\n     " +
-                    " }\n    ],\n    \"aboveLastColor\": null,\n    \"belowFirstColor\": null\n  },\n  \"temper" +
-                    "atureSummaryPalette\": {\n    \"aboveTargetColor\": 13959168,\n    \"onTargetColor\": 9" +
-                    "159498,\n    \"belowTargetColor\": 87963\n  },\n  \"cmvSummaryPalette\": {\n    \"aboveTa" +
-                    "rgetColor\": 13959168,\n    \"onTargetColor\": 9159498,\n    \"belowTargetColor\": 8796" +
-                    "3\n  },\n  \"mdpSummaryPalette\": {\n    \"aboveTargetColor\": 13959168,\n    \"onTargetC" +
-                    "olor\": 9159498,\n    \"belowTargetColor\": 87963\n  },\n  \"cmvPercentChangePalette\": " +
-                    "{\n    \"colorValues\": [\n      {\n        \"color\": 9159498,\n        \"value\": 5\n    " +
-                    "  },\n      {\n        \"color\": 16764370,\n        \"value\": 20\n      },\n      {\n   " +
-                    "     \"color\": 15037299,\n        \"value\": 50\n      }\n    ],\n    \"aboveLastColor\":" +
-                    " 13959168,\n    \"belowFirstColor\": 33554431\n  },\n  \"speedSummaryPalette\": {\n    \"" +
-                    "aboveTargetColor\": 13959168,\n    \"onTargetColor\": 9159498,\n    \"belowTargetColor" +
-                    "\": 87963\n  },\n  \"temperatureDetailPalette\": {\n    \"colorValues\": [\n      {\n     " +
-                    "   \"color\": 2971523,\n        \"value\": 70\n      },\n      {\n        \"color\": 44308" +
-                    "12,\n        \"value\": 80\n      },\n      {\n        \"color\": 12509169,\n        \"val" +
-                    "ue\": 90\n      },\n      {\n        \"color\": 14479047,\n        \"value\": 100\n      }" +
-                    ",\n      {\n        \"color\": 10341991,\n        \"value\": 110\n      },\n      {\n     " +
-                    "   \"color\": 7053374,\n        \"value\": 120\n      },\n      {\n        \"color\": 3828" +
-                    "517,\n        \"value\": 130\n      },\n      {\n        \"color\": 16174803,\n        \"v" +
-                    "alue\": 140\n      },\n      {\n        \"color\": 13990524,\n        \"value\": 150\n    " +
-                    "  },\n      {\n        \"color\": 12660791,\n        \"value\": 160\n      }\n    ],\n    " +
-                    "\"aboveLastColor\": null,\n    \"belowFirstColor\": null\n  },\n  \"Code\": 0,\n  \"Message" +
-                    "\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+                    "\r\n\t\t\t\"color\": 14785888,\r\n\t\t\t\"value\": 1000.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 15190446,\r\n\t" +
+                    "\t\t\"value\": 1100.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 5182823,\r\n\t\t\t\"value\": 1200.0\r\n\t\t},\r\n\t\t" +
+                    "{\r\n\t\t\t\"color\": 9259433,\r\n\t\t\t\"value\": 1300.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 13740258,\r\n\t" +
+                    "\t\t\"value\": 1400.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 1971179,\r\n\t\t\t\"value\": 1500.0\r\n\t\t}\r\n   " +
+                    " ],\n    \"aboveLastColor\": null,\n    \"belowFirstColor\": null\n  },\n  \"passCountDet" +
+                    "ailPalette\": {\n    \"colorValues\": [\n      {\n        \"color\": 2971523,\n        \"v" +
+                    "alue\": 1\n      },\n      {\n        \"color\": 4430812,\n        \"value\": 2\n      },\n" +
+                    "      {\n        \"color\": 12509169,\n        \"value\": 3\n      },\n      {\n        \"" +
+                    "color\": 10341991,\n        \"value\": 4\n      },\n      {\n        \"color\": 7053374,\n" +
+                    "        \"value\": 5\n      },\n      {\n        \"color\": 3828517,\n        \"value\": 6" +
+                    "\n      },\n      {\n        \"color\": 16174803,\n        \"value\": 7\n      },\n      {" +
+                    "\n        \"color\": 13990524,\n        \"value\": 8\n      }\n    ],\n    \"aboveLastColo" +
+                    "r\": 12660791,\n    \"belowFirstColor\": null\n  },\n  \"passCountSummaryPalette\": {\n  " +
+                    "  \"aboveTargetColor\": 13959168,\n    \"onTargetColor\": 9159498,\n    \"belowTargetCo" +
+                    "lor\": 87963\n  },\n  \"cutFillPalette\": {\n    \"colorValues\": [\n      {\n        \"col" +
+                    "or\": 11789820,\n        \"value\": -0.2\n      },\n      {\n        \"color\": 236517,\n " +
+                    "       \"value\": -0.1\n      },\n      {\n        \"color\": 87963,\n        \"value\": -" +
+                    "0.05\n      },\n      {\n        \"color\": 9159498,\n        \"value\": 0\n      },\n    " +
+                    "  {\n        \"color\": 16764370,\n        \"value\": 0.05\n      },\n      {\n        \"c" +
+                    "olor\": 15037299,\n        \"value\": 0.1\n      },\n      {\n        \"color\": 13959168" +
+                    ",\n        \"value\": 0.2\n      }\n    ],\n    \"aboveLastColor\": null,\n    \"belowFirs" +
+                    "tColor\": null\n  },\n  \"temperatureSummaryPalette\": {\n    \"aboveTargetColor\": 1395" +
+                    "9168,\n    \"onTargetColor\": 9159498,\n    \"belowTargetColor\": 87963\n  },\n  \"cmvSum" +
+                    "maryPalette\": {\n    \"aboveTargetColor\": 13959168,\n    \"onTargetColor\": 9159498,\n" +
+                    "    \"belowTargetColor\": 87963\n  },\n  \"mdpSummaryPalette\": {\n    \"aboveTargetColo" +
+                    "r\": 13959168,\n    \"onTargetColor\": 9159498,\n    \"belowTargetColor\": 87963\n  },\n " +
+                    " \"cmvPercentChangePalette\": {\n    \"colorValues\": [\n      {\n        \"color\": 9159" +
+                    "498,\n        \"value\": 5\n      },\n      {\n        \"color\": 16764370,\n        \"val" +
+                    "ue\": 20\n      },\n      {\n        \"color\": 15037299,\n        \"value\": 50\n      }\n" +
+                    "    ],\n    \"aboveLastColor\": 13959168,\n    \"belowFirstColor\": 33554431\n  },\n  \"s" +
+                    "peedSummaryPalette\": {\n    \"aboveTargetColor\": 13959168,\n    \"onTargetColor\": 91" +
+                    "59498,\n    \"belowTargetColor\": 87963\n  },\n  \"temperatureDetailPalette\": {\n    \"c" +
+                    "olorValues\": [\n      {\n        \"color\": 2971523,\n        \"value\": 70\n      },\n  " +
+                    "    {\n        \"color\": 4430812,\n        \"value\": 80\n      },\n      {\n        \"co" +
+                    "lor\": 12509169,\n        \"value\": 90\n      },\n      {\n        \"color\": 14479047,\n" +
+                    "        \"value\": 100\n      },\n      {\n        \"color\": 10341991,\n        \"value\"" +
+                    ": 110\n      },\n      {\n        \"color\": 7053374,\n        \"value\": 120\n      },\n " +
+                    "     {\n        \"color\": 3828517,\n        \"value\": 130\n      },\n      {\n        \"" +
+                    "color\": 16174803,\n        \"value\": 140\n      },\n      {\n        \"color\": 1399052" +
+                    "4,\n        \"value\": 150\n      },\n      {\n        \"color\": 12660791,\n        \"val" +
+                    "ue\": 160\n      }\n    ],\n    \"aboveLastColor\": null,\n    \"belowFirstColor\": null\n" +
+                    "  },\n  \"Code\": 0,\n  \"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

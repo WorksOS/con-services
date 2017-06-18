@@ -129,12 +129,12 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvMaximum.color, cmvSettings.maxCMV/10.0 + 1));
           */
           const int STEP = 100;
-          // Decimal values: 2971523, 4430812, 12509169, 10341991, 7053374, 3828517, 16174803, 13990524, 12660791, 15105570, 7091331 
-          List<uint> cmvColors = new List<uint> { 0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DCE67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037, 0xE67E22, 0x6C3483 };
+          // Decimal values: 2971523, 4430812, 12509169, 10341991, 7053374, 3828517, 16174803, 13990524, 12660791, 15105570, 14785888, 15190446, 5182823, 9259433, 13740258, 1971179
+          List<uint> cmvColors = new List<uint> { 0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DCE67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037, 0xE67E22, 0xE19D60, 0xE7C9AE, 0x4F1567, 0x8D49A9, 0xD1A8E2, 0x1E13EB };
 
           for (int i = 0; i < cmvColors.Count; i++)
           {
-            //The last 11th color and value are for above...
+            //The last 16th color and value are for above...
             palette.Add(ColorPalette.CreateColorPalette(cmvColors[i], i * STEP));
           }
           break;
