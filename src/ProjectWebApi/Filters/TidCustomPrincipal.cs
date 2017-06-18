@@ -5,7 +5,7 @@ namespace ProjectWebApi.Filters
   /// <summary>
   /// 
   /// </summary>
-  public class TidCustomPrincipal : ClaimsPrincipal
+  public class TIDCustomPrincipal : ClaimsPrincipal
   {
  
     /// <summary>
@@ -13,7 +13,7 @@ namespace ProjectWebApi.Filters
     /// <param name="identity"></param>
     /// <param name="customerUid"></param>
     /// <param name="emailAddress"></param>
-    public TidCustomPrincipal(ClaimsIdentity identity, string customerUid, string emailAddress) : base(identity)
+    public TIDCustomPrincipal(ClaimsIdentity identity, string customerUid, string emailAddress) : base(identity)
     {
       CustomerUid = customerUid;
       EmailAddress = emailAddress;

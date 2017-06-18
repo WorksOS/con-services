@@ -77,7 +77,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation($"GetProject: CustomerUID={customerUid} and projectUid={projectUid}");
       var project =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
@@ -100,7 +100,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFile>> GetImportedFiles(string projectUid)
     {
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation($"GetImportedFiles: CustomerUID={customerUid} and projectUid={projectUid}");
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
@@ -115,7 +115,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
     {
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation($"GetImportedFileList: CustomerUID={customerUid} and projectUid={projectUid}");
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
@@ -274,8 +274,10 @@ namespace Controllers
 
       log.LogInformation(
         $"WriteFileToRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
-      // ignore any failure as dir may already exist
-      var ccMakeFolderResult = await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
+      // check for exists first to avoid an misleading exception in our logs.
+      var folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
+      if (folderAlreadyExists == false)
+        await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
 
       // this does an upsert
       var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length)
@@ -287,6 +289,8 @@ namespace Controllers
             contractExecutionStatesEnum.FirstNameWithOffset(53)));
       }
 
+      log.LogInformation(
+        $"WriteFileToRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
       return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 

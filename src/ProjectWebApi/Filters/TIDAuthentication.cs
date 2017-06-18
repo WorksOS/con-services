@@ -57,7 +57,7 @@ namespace ProjectWebApi.Filters
         {
           var jwtToken = new TPaaSJWT(authorization);
           var identity = new GenericIdentity(jwtToken.UserUid.ToString());
-          context.User = new TidCustomPrincipal(identity, customerUid, jwtToken.EmailAddress);
+          context.User = new TIDCustomPrincipal(identity, customerUid, jwtToken.EmailAddress);
         }
         catch (Exception e)
         {
@@ -71,7 +71,7 @@ namespace ProjectWebApi.Filters
         {
           try
           {
-            var userUid = ((context.User as TidCustomPrincipal).Identity as GenericIdentity).Name;
+            var userUid = ((context.User as TIDCustomPrincipal).Identity as GenericIdentity).Name;
             CustomerDataResult customerResult =
               await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
             if (customerResult.status != 200 || customerResult.customer == null || customerResult.customer.Count < 1 ||
@@ -91,7 +91,7 @@ namespace ProjectWebApi.Filters
           }
         }
         log.LogInformation("Authorization: for Customer: {0} userUid: {1} allowed", customerUid,
-          Guid.Parse(((context.User as TidCustomPrincipal).Identity as GenericIdentity).Name));
+          Guid.Parse(((context.User as TIDCustomPrincipal).Identity as GenericIdentity).Name));
       }
       await _next.Invoke(context);
     }

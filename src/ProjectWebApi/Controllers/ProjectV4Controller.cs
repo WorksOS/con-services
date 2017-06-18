@@ -83,7 +83,7 @@ namespace Controllers
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       if (projectRequest == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -130,7 +130,7 @@ namespace Controllers
 
       project = await CreateProject(project, customerProject).ConfigureAwait(false);
 
-      var userUid = Guid.Parse(((User as TidCustomPrincipal).Identity as GenericIdentity).Name);
+      var userUid = Guid.Parse(((User as TIDCustomPrincipal).Identity as GenericIdentity).Name);
       log.LogDebug($"Creating a geofence for project {project.ProjectName}");
       await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project", project.ProjectBoundary,
         0, true, userUid, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
@@ -230,8 +230,8 @@ namespace Controllers
     [HttpDelete]
     public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromUri]string projectUid)
     {
-      var userUid = ((User as TidCustomPrincipal).Identity as GenericIdentity).Name;
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var userUid = ((User as TIDCustomPrincipal).Identity as GenericIdentity).Name;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation($"DeleteProjectV4. UserUid: {userUid} customerUid: {customerUid} Project: {projectUid}");
 
       var project = new DeleteProjectEvent()
@@ -272,7 +272,7 @@ namespace Controllers
     public async Task<SubscriptionsListResult> GetSubscriptionsV4()
     {
       log.LogInformation("GetSubscriptionsV4");
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
 
       //returns empty list if no subscriptions available

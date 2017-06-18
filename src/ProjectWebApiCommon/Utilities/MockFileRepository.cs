@@ -41,7 +41,7 @@ namespace ProjectWebApiCommon.Utilities
 
     public Task<bool> FolderExists(string filespaceId, string folder)
     {
-      throw new NotImplementedException();
+      return Task.FromResult(false);
     }
 
     public Task<bool> FileExists(string filespaceId, string filename)

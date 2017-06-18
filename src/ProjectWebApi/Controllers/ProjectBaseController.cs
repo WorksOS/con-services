@@ -79,7 +79,7 @@ namespace Controllers
     protected async Task ValidateAssociateSubscriptions(CreateProjectEvent project)
     {
       log.LogDebug("ValidateAssociateSubscriptions");
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogDebug($"CustomerUID={customerUid} and user={User}");
 
       //Apply here rules validating types of projects I'm able to create (i.e. LF only if there is one available LF subscription available) Performance is not a concern as this request is executed once in a blue moon
@@ -166,7 +166,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
     {
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
       var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
@@ -181,7 +181,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
       var project =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(

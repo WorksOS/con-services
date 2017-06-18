@@ -111,8 +111,8 @@ namespace Controllers
       [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
-      var userEmailAddress = (User as TidCustomPrincipal).EmailAddress;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
+      var userEmailAddress = (User as TIDCustomPrincipal).EmailAddress;
 
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -206,8 +206,8 @@ namespace Controllers
       [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
-      var customerUid = (User as TidCustomPrincipal).CustomerUid;
-      var userEmailAddress = (User as TidCustomPrincipal).EmailAddress;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
+      var userEmailAddress = (User as TIDCustomPrincipal).EmailAddress;
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
