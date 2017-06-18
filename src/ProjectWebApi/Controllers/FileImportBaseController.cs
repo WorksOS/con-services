@@ -38,7 +38,6 @@ namespace Controllers
     protected readonly ProjectRepository projectService;
     protected readonly IConfigurationStore store;
     protected readonly string kafkaTopicName;
-    protected string userEmailAddress;
     protected string fileSpaceId;
     protected ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
@@ -235,6 +234,10 @@ namespace Controllers
     {
       var nowUtc = DateTime.UtcNow;
       var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(existing);
+      updateImportedFileEvent.FileDescriptor = fileDescriptor;
+      updateImportedFileEvent.SurveyedUtc = surveyedUtc;
+      updateImportedFileEvent.FileUpdatedUtc = fileUpdatedUtc;
+      updateImportedFileEvent.ImportedBy = importedBy;
       updateImportedFileEvent.ActionUTC = nowUtc;
       updateImportedFileEvent.ReceivedUTC = nowUtc;
 

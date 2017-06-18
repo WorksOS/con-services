@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
 using FlowUploadFilter;
@@ -44,7 +45,6 @@ namespace Controllers
       : base(producer, projectRepo, store, raptorProxy, fileRepo, logger)
     {
       Logger = logger;
-      this.userEmailAddress = (User as TidCustomPrincipal).EmailAddress;
       fileSpaceId = store.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(fileSpaceId))
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -101,16 +101,18 @@ namespace Controllers
     [Route("api/v4/importedfile")]
     [HttpPost]
     [ActionName("Upload")]
-    [FlowUpload(Extensions = new string[] {
-        "svl", "dxf", "ttm"
+    [FlowUpload(Extensions = new string[]
+    {
+      "svl", "dxf", "ttm"
     }, Size = 1000000000)]
 
-        public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(FlowFile file,
+    public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileV4(FlowFile file,
       [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
       [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
       var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var userEmailAddress = (User as TidCustomPrincipal).EmailAddress;
 
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
@@ -159,7 +161,8 @@ namespace Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, createImportedFileEvent.ImportedFileID).ConfigureAwait(false);
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor,
+        createImportedFileEvent.ImportedFileID).ConfigureAwait(false);
 
       // FlowJS has this locked so can't delete it here
       // System.IO.File.Delete(file.path);
@@ -176,33 +179,35 @@ namespace Controllers
 
 
     // PUT: api/v4/importedfile
-      /// <summary>
-      /// Upsert imported file
-      ///   this creates/updates database AND creates/updates file in TCC.
-      ///   notify RaptorWebAPI.
-      /// </summary>
-      /// <param name="file"></param>
-      /// <param name="projectUid"></param>
-      /// <param name="importedFileType"></param>
-      /// <param name="fileCreatedUtc"></param>
-      /// <param name="fileUpdatedUtc"></param>
-      /// <param name="surveyedUtc"></param>
-      /// <remarks>Updates and Imported design file for a project</remarks>
-      /// <response code="200">Ok</response>
-      /// <response code="400">Bad request</response>
-      [Route("api/v4/importedfile")]
-      [HttpPut]
-      [ActionName("Upload")]
-      [FlowUpload(Extensions = new string[] {
-        "svl", "dxf", "ttm"
-      }, Size = 1000000000)]
+    /// <summary>
+    /// Upsert imported file
+    ///   this creates/updates database AND creates/updates file in TCC.
+    ///   notify RaptorWebAPI.
+    /// </summary>
+    /// <param name="file"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="importedFileType"></param>
+    /// <param name="fileCreatedUtc"></param>
+    /// <param name="fileUpdatedUtc"></param>
+    /// <param name="surveyedUtc"></param>
+    /// <remarks>Updates and Imported design file for a project</remarks>
+    /// <response code="200">Ok</response>
+    /// <response code="400">Bad request</response>
+    [Route("api/v4/importedfile")]
+    [HttpPut]
+    [ActionName("Upload")]
+    [FlowUpload(Extensions = new string[]
+    {
+      "svl", "dxf", "ttm"
+    }, Size = 1000000000)]
 
-      public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(FlowFile file,
+    public async Task<ImportedFileDescriptorSingleResult> UpdateImportedFileV4(FlowFile file,
       [FromUri] Guid projectUid, [FromUri] ImportedFileType importedFileType,
       [FromUri] DateTime fileCreatedUtc, [FromUri] DateTime fileUpdatedUtc,
       [FromUri] DateTime? surveyedUtc = null)
     {
       var customerUid = (User as TidCustomPrincipal).CustomerUid;
+      var userEmailAddress = (User as TidCustomPrincipal).EmailAddress;
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
@@ -231,10 +236,12 @@ namespace Controllers
                  (importedFileType != ImportedFileType.SurveyedSurface)
                ));
       }
-      if ( existing == null)
-        log.LogInformation($"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+      if (existing == null)
+        log.LogInformation(
+          $"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
       else
-        log.LogInformation($"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
+        log.LogInformation(
+          $"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
@@ -257,7 +264,8 @@ namespace Controllers
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value).ConfigureAwait(false);
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value)
+        .ConfigureAwait(false);
 
       // if all succeeds, update Db and send update to kafka que
       if (existing != null) // update
@@ -309,7 +317,8 @@ namespace Controllers
       await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))
         .ConfigureAwait(false);
 
-      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor, importedFile.ImportedFileId).ConfigureAwait(false);
+      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor, importedFile.ImportedFileId)
+        .ConfigureAwait(false);
 
       await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
 
