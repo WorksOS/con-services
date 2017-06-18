@@ -1367,7 +1367,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
-    [ResponseCache(Duration = 180, VaryByHeader = "X-VisionLink-ClearCache")]
+    [ResponseCache(Duration = 180, VaryByHeader = "X-VisionLink-ClearCache", VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetLineworkTile(
         [FromQuery] string SERVICE,
         [FromQuery] string VERSION,
