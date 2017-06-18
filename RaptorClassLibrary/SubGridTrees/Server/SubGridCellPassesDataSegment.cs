@@ -9,6 +9,7 @@ using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
 
@@ -25,8 +26,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public SubGridCellPassesDataSegmentInfo SegmentInfo { get; set; } = null;
 
-//        public SubGridCellSegmentPassesDataWrapper PassesData { get; set; } = null;
-//        public SubGridCellSegmentPassesDataWrapper_NonStatic PassesData { get; set; } = null;
         public ISubGridCellSegmentPassesDataWrapper PassesData { get; set; } = null;
        
         public SubGridCellLatestPassDataWrapper_NonStatic LatestPasses { get; set; } = null;

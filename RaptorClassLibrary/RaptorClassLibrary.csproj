@@ -180,6 +180,8 @@
     <Compile Include="SubGridTrees\Interfaces\ISubGridFactory.cs" />
     <Compile Include="SubGridTrees\Interfaces\ISubGrid.cs" />
     <Compile Include="SubGridTrees\Interfaces\ISubGridTree.cs" />
+    <Compile Include="SubGridTrees\Server\Interfaces\ISubGridCellSegmentPassesDataWrapper.cs" />
+    <Compile Include="SubGridTrees\Server\Interfaces\ISubGridCellSegmentPassesDataWrapperFactory.cs" />
     <Compile Include="SubGridTrees\Server\Iterators\Interfaces\ISubGridSegmentCellPassIterator.cs" />
     <Compile Include="SubGridTrees\LeafSubGrid.cs" />
     <Compile Include="SubGridTrees\LeafSubGridBase.cs" />
@@ -201,7 +203,10 @@
     <Compile Include="SubGridTrees\Server\SubGridCellPassesDataSegmentInfo.cs" />
     <Compile Include="SubGridTrees\Server\SubGridCellPassesDataSegments.cs" />
     <Compile Include="SubGridTrees\Server\SubGridCellPassesDataWrapper.cs" />
+    <Compile Include="SubGridTrees\Server\SubGridCellSegmentPassesDataWrapperBase.cs" />
+    <Compile Include="SubGridTrees\Server\SubGridCellSegmentPassesDataWrapperFactory.cs" />
     <Compile Include="SubGridTrees\Server\SubGridCellSegmentPassesDataWrapper_NonStatic.cs" />
+    <Compile Include="SubGridTrees\Server\SubGridCellSegmentPassesDataWrapper_Static.cs" />
     <Compile Include="SubGridTrees\Server\SubGridDirectory.cs" />
     <Compile Include="SubGridTrees\SubGrid.cs" />
     <Compile Include="SubGridTrees\SubGridCellAddress.cs" />
