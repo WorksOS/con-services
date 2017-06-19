@@ -11,249 +11,264 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Repositories
 {
-    public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>
+  public class SubscriptionRepository : RepositoryBase, IRepository<ISubscriptionEvent>
+  {
+    private readonly ILogger log;
+
+    public Dictionary<string, ServiceType> _serviceTypes;
+
+    public SubscriptionRepository(IConfigurationStore connectionString, ILoggerFactory logger) : base(
+      connectionString, logger)
     {
-        private readonly ILogger log;
+      log = logger.CreateLogger<SubscriptionRepository>();
+    }
 
-        public Dictionary<string, ServiceType> _serviceTypes;
+    #region store
 
-        public SubscriptionRepository(IConfigurationStore connectionString, ILoggerFactory logger) : base(
-            connectionString, logger)
-        {
-            log = logger.CreateLogger<SubscriptionRepository>();
-        }
-
-        #region store
-
-        public async Task<int> StoreEvent(ISubscriptionEvent evt)
-        {
-            var upsertedCount = 0;
-          if (evt == null)
-          {
-            log.LogWarning($"Unsupported event type");
-            return 0;
-          }
+    public async Task<int> StoreEvent(ISubscriptionEvent evt)
+    {
+      var upsertedCount = 0;
+      if (evt == null)
+      {
+        log.LogWarning($"Unsupported event type");
+        return 0;
+      }
 
 
       if (_serviceTypes == null)
-                _serviceTypes = (await GetServiceTypes()).ToDictionary(k => k.Name, v => v);
-          log.LogDebug($"Event type is {evt.GetType().ToString()}");
+        _serviceTypes = (await GetServiceTypes()).ToDictionary(k => k.Name, v => v);
+      log.LogDebug($"Event type is {evt.GetType().ToString()}");
       if (evt is CreateProjectSubscriptionEvent)
-            {
-                var subscriptionEvent = (CreateProjectSubscriptionEvent) evt;
-                var subscription = new Subscription();
-                subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
-                subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
-                subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
-                subscription.StartDate = subscriptionEvent.StartDate.Date;
-                //This is to handle CG subscriptions where we set the EndDate annually.
-                //In NG the end date is the maximum unless it is cancelled/terminated.
-                subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow
-                    ? new DateTime(9999, 12, 31)
-                    : subscriptionEvent.EndDate.Date;
-                subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-                upsertedCount = await UpsertSubscriptionDetail(subscription, "CreateProjectSubscriptionEvent");
-            }
-            else if (evt is UpdateProjectSubscriptionEvent)
-            {
-                var subscriptionEvent = (UpdateProjectSubscriptionEvent) evt;
-                var subscription = new Subscription();
-                subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
-
-                // this is dangerous. I suppose if current logic is chnanged to MOVE a servicePlan for rental customers
-                // i.e. from one to the next customer, then this may be possible.
-                //   in that scenario, what should be the relavant StartDate, EndDate and EffectiveDate? (not of concern here)
-                subscription.CustomerUID = subscriptionEvent.CustomerUID.HasValue
-                    ? subscriptionEvent.CustomerUID.Value.ToString()
-                    : null;
-
-                // should not be able to change a serviceType!!!
-                // subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
-                subscription.StartDate = subscriptionEvent.StartDate == null
-                    ? DateTime.MinValue.Date
-                    : subscriptionEvent.StartDate.Value.Date;
-                // todo update allows a future endDate but create does not, is this an error?
-                // also, for both create and update for start and end dates these are calendar days
-                //    in the assets timezone, but the create checks for UTC time....
-                subscription.EndDate = subscriptionEvent.EndDate == null
-                    ? DateTime.MaxValue.Date
-                    : subscriptionEvent.EndDate.Value.Date;
-                subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-                upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateProjectSubscriptionEvent");
-            }
-            else if (evt is AssociateProjectSubscriptionEvent)
-            {
-                var subscriptionEvent = (AssociateProjectSubscriptionEvent) evt;
-                var projectSubscription = new ProjectSubscription();
-                projectSubscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
-                projectSubscription.ProjectUID = subscriptionEvent.ProjectUID.ToString();
-                projectSubscription.EffectiveDate = subscriptionEvent.EffectiveDate;
-                projectSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-                upsertedCount =
-                    await UpsertProjectSubscriptionDetail(projectSubscription, "AssociateProjectSubscriptionEvent");
-            }
-            else if (evt is CreateCustomerSubscriptionEvent)
-            {
-                var subscriptionEvent = (CreateCustomerSubscriptionEvent) evt;
-                var subscription = new Subscription();
-                subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
-                subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
-                subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
-                subscription.StartDate = subscriptionEvent.StartDate;
-                //This is to handle CG subscriptions where we set the EndDate annually.
-                //In NG the end date is the maximum unless it is cancelled/terminated.
-                subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow
-                    ? new DateTime(9999, 12, 31)
-                    : subscriptionEvent.EndDate;
-                subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-                upsertedCount = await UpsertSubscriptionDetail(subscription, "CreateCustomerSubscriptionEvent");
-            }
-            else if (evt is UpdateCustomerSubscriptionEvent)
-            {
-                var subscriptionEvent = (UpdateCustomerSubscriptionEvent) evt;
-                var subscription = new Subscription();
-                subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
-                subscription.StartDate = subscriptionEvent.StartDate ?? DateTime.MinValue;
-                subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
-                subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-                upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateCustomerSubscriptionEvent");
-            }
-            else if (evt is CreateAssetSubscriptionEvent)
-            {
-                var subscriptionEvent = (CreateAssetSubscriptionEvent) evt;
-                var subscription = new Subscription();
-                subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
-                subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
-                subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
-                subscription.StartDate = subscriptionEvent.StartDate;
-                //This is to handle CG subscriptions where we set the EndDate annually.
-                //In NG the end date is the maximum unless it is cancelled/terminated.
-                subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow
-                    ? new DateTime(9999, 12, 31)
-                    : subscriptionEvent.EndDate;
-                subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-                upsertedCount = await UpsertSubscriptionDetail(subscription, "CreateAssetSubscriptionEvent");
-
-                if (upsertedCount == 1)
-                {
-                    var assetSubscription = new AssetSubscription();
-                    assetSubscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
-                    assetSubscription.AssetUID = subscriptionEvent.AssetUID.ToString();
-                    assetSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-                    upsertedCount = await UpsertAssetSubscriptionDetail(assetSubscription);
-                }
-            }
-            else if (evt is UpdateAssetSubscriptionEvent)
-            {
-                var subscriptionEvent = (UpdateAssetSubscriptionEvent) evt;
-                var subscription = new Subscription();
-                subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
-                subscription.CustomerUID = subscriptionEvent.CustomerUID.HasValue
-                    ? subscriptionEvent.CustomerUID.Value.ToString()
-                    : null;
-                subscription.StartDate = subscriptionEvent.StartDate ?? DateTime.MinValue;
-                subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
-                subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-                upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateAssetSubscriptionEvent");
-
-                if (upsertedCount == 1)
-                {
-                    var assetSubscription = new AssetSubscription();
-                    assetSubscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
-                    assetSubscription.AssetUID = subscriptionEvent.AssetUID.ToString();
-                    assetSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
-                    upsertedCount = await UpsertAssetSubscriptionDetail(assetSubscription);
-                }
-            }
-
-            return upsertedCount;
-        }
-
-
-        /// <summary>
-        ///     All detail-related columns can be inserted,
-        ///     but only certain columns can be updated.
-        /// </summary>
-        /// <param name="subscription"></param>
-        /// <param name="eventType"></param>
-        /// <returns>Number of upserted records</returns>
-        private async Task<int> UpsertSubscriptionDetail(Subscription subscription, string eventType)
+      {
+        var subscriptionEvent = (CreateProjectSubscriptionEvent) evt;
+        if (!_serviceTypes.ContainsKey(subscriptionEvent.SubscriptionType))
         {
-            var upsertedCount = 0;
+          log.LogWarning($"Unsupported service type: {subscriptionEvent.SubscriptionType}");
+          return 0;
+        }
+        var subscription = new Subscription();
+        subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+        subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
+        subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
+        subscription.StartDate = subscriptionEvent.StartDate.Date;
+        //This is to handle CG subscriptions where we set the EndDate annually.
+        //In NG the end date is the maximum unless it is cancelled/terminated.
+        subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow
+          ? new DateTime(9999, 12, 31)
+          : subscriptionEvent.EndDate.Date;
+        subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+        upsertedCount = await UpsertSubscriptionDetail(subscription, "CreateProjectSubscriptionEvent");
+      }
+      else if (evt is UpdateProjectSubscriptionEvent)
+      {
+        var subscriptionEvent = (UpdateProjectSubscriptionEvent) evt;
+        var subscription = new Subscription();
+        subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
 
-            var existing = (await QueryWithAsyncPolicy<Subscription>
-            (@"SELECT 
+        // this is dangerous. I suppose if current logic is chnanged to MOVE a servicePlan for rental customers
+        // i.e. from one to the next customer, then this may be possible.
+        //   in that scenario, what should be the relavant StartDate, EndDate and EffectiveDate? (not of concern here)
+        subscription.CustomerUID = subscriptionEvent.CustomerUID.HasValue
+          ? subscriptionEvent.CustomerUID.Value.ToString()
+          : null;
+
+        // should not be able to change a serviceType!!!
+        // subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
+        subscription.StartDate = subscriptionEvent.StartDate == null
+          ? DateTime.MinValue.Date
+          : subscriptionEvent.StartDate.Value.Date;
+        // todo update allows a future endDate but create does not, is this an error?
+        // also, for both create and update for start and end dates these are calendar days
+        //    in the assets timezone, but the create checks for UTC time....
+        subscription.EndDate = subscriptionEvent.EndDate == null
+          ? DateTime.MaxValue.Date
+          : subscriptionEvent.EndDate.Value.Date;
+        subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+        upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateProjectSubscriptionEvent");
+      }
+      else if (evt is AssociateProjectSubscriptionEvent)
+      {
+        var subscriptionEvent = (AssociateProjectSubscriptionEvent) evt;
+        var projectSubscription = new ProjectSubscription();
+        projectSubscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+        projectSubscription.ProjectUID = subscriptionEvent.ProjectUID.ToString();
+        projectSubscription.EffectiveDate = subscriptionEvent.EffectiveDate;
+        projectSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+        upsertedCount =
+          await UpsertProjectSubscriptionDetail(projectSubscription, "AssociateProjectSubscriptionEvent");
+      }
+      else if (evt is CreateCustomerSubscriptionEvent)
+      {
+        var subscriptionEvent = (CreateCustomerSubscriptionEvent) evt;
+        if (!_serviceTypes.ContainsKey(subscriptionEvent.SubscriptionType))
+        {
+          log.LogWarning($"Unsupported service type: {subscriptionEvent.SubscriptionType}");
+          return 0;
+        }
+        var subscription = new Subscription();
+        subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+        subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
+        subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
+        subscription.StartDate = subscriptionEvent.StartDate;
+        //This is to handle CG subscriptions where we set the EndDate annually.
+        //In NG the end date is the maximum unless it is cancelled/terminated.
+        subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow
+          ? new DateTime(9999, 12, 31)
+          : subscriptionEvent.EndDate;
+        subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+        upsertedCount = await UpsertSubscriptionDetail(subscription, "CreateCustomerSubscriptionEvent");
+      }
+      else if (evt is UpdateCustomerSubscriptionEvent)
+      {
+        var subscriptionEvent = (UpdateCustomerSubscriptionEvent) evt;
+        var subscription = new Subscription();
+        subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+        subscription.StartDate = subscriptionEvent.StartDate ?? DateTime.MinValue;
+        subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
+        subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+        upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateCustomerSubscriptionEvent");
+      }
+      else if (evt is CreateAssetSubscriptionEvent)
+      {
+        var subscriptionEvent = (CreateAssetSubscriptionEvent) evt;
+        if (!_serviceTypes.ContainsKey(subscriptionEvent.SubscriptionType))
+        {
+          log.LogWarning($"Unsupported service type: {subscriptionEvent.SubscriptionType}");
+          return 0;
+        }
+        var subscription = new Subscription();
+        subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+        subscription.CustomerUID = subscriptionEvent.CustomerUID.ToString();
+        subscription.ServiceTypeID = _serviceTypes[subscriptionEvent.SubscriptionType].ID;
+        subscription.StartDate = subscriptionEvent.StartDate;
+        //This is to handle CG subscriptions where we set the EndDate annually.
+        //In NG the end date is the maximum unless it is cancelled/terminated.
+        subscription.EndDate = subscriptionEvent.EndDate > DateTime.UtcNow
+          ? new DateTime(9999, 12, 31)
+          : subscriptionEvent.EndDate;
+        subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+        upsertedCount = await UpsertSubscriptionDetail(subscription, "CreateAssetSubscriptionEvent");
+
+        if (upsertedCount == 1)
+        {
+          var assetSubscription = new AssetSubscription();
+          assetSubscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+          assetSubscription.AssetUID = subscriptionEvent.AssetUID.ToString();
+          assetSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+          upsertedCount = await UpsertAssetSubscriptionDetail(assetSubscription);
+        }
+      }
+      else if (evt is UpdateAssetSubscriptionEvent)
+      {
+        var subscriptionEvent = (UpdateAssetSubscriptionEvent) evt;
+        var subscription = new Subscription();
+        subscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+        subscription.CustomerUID = subscriptionEvent.CustomerUID.HasValue
+          ? subscriptionEvent.CustomerUID.Value.ToString()
+          : null;
+        subscription.StartDate = subscriptionEvent.StartDate ?? DateTime.MinValue;
+        subscription.EndDate = subscriptionEvent.EndDate ?? DateTime.MinValue;
+        subscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+        upsertedCount = await UpsertSubscriptionDetail(subscription, "UpdateAssetSubscriptionEvent");
+
+        if (upsertedCount == 1)
+        {
+          var assetSubscription = new AssetSubscription();
+          assetSubscription.SubscriptionUID = subscriptionEvent.SubscriptionUID.ToString();
+          assetSubscription.AssetUID = subscriptionEvent.AssetUID.ToString();
+          assetSubscription.LastActionedUTC = subscriptionEvent.ActionUTC;
+          upsertedCount = await UpsertAssetSubscriptionDetail(assetSubscription);
+        }
+      }
+
+      return upsertedCount;
+    }
+
+
+    /// <summary>
+    ///     All detail-related columns can be inserted,
+    ///     but only certain columns can be updated.
+    /// </summary>
+    /// <param name="subscription"></param>
+    /// <param name="eventType"></param>
+    /// <returns>Number of upserted records</returns>
+    private async Task<int> UpsertSubscriptionDetail(Subscription subscription, string eventType)
+    {
+      var upsertedCount = 0;
+
+      var existing = (await QueryWithAsyncPolicy<Subscription>
+      (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, StartDate, EndDate, fk_ServiceTypeID AS ServiceTypeID, LastActionedUTC 
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUID",
-                new {subscriptionUID = subscription.SubscriptionUID}
-            )).FirstOrDefault();
+        new {subscriptionUID = subscription.SubscriptionUID}
+      )).FirstOrDefault();
 
-            if (eventType == "CreateProjectSubscriptionEvent" || eventType == "CreateCustomerSubscriptionEvent" ||
-                eventType == "CreateAssetSubscriptionEvent")
-                upsertedCount = await CreateSubscription(subscription, existing);
+      if (eventType == "CreateProjectSubscriptionEvent" || eventType == "CreateCustomerSubscriptionEvent" ||
+          eventType == "CreateAssetSubscriptionEvent")
+        upsertedCount = await CreateSubscription(subscription, existing);
 
-            if (eventType == "UpdateProjectSubscriptionEvent" || eventType == "UpdateCustomerSubscriptionEvent" ||
-                eventType == "UpdateAssetSubscriptionEvent")
-                upsertedCount = await UpdateSubscription(subscription, existing);
+      if (eventType == "UpdateProjectSubscriptionEvent" || eventType == "UpdateCustomerSubscriptionEvent" ||
+          eventType == "UpdateAssetSubscriptionEvent")
+        upsertedCount = await UpdateSubscription(subscription, existing);
 
 
-            return upsertedCount;
-        }
+      return upsertedCount;
+    }
 
-        private async Task<int> CreateSubscription(Subscription subscription, Subscription existing)
-        {
-            var upsertedCount = 0;
-            if (existing == null)
-            {
-                log.LogDebug("SubscriptionRepository/CreateSubscription: going to create subscription={0}",
-                    JsonConvert.SerializeObject(subscription));
+    private async Task<int> CreateSubscription(Subscription subscription, Subscription existing)
+    {
+      var upsertedCount = 0;
+      if (existing == null)
+      {
+        log.LogDebug("SubscriptionRepository/CreateSubscription: going to create subscription={0}",
+          JsonConvert.SerializeObject(subscription));
 
-                const string insert =
-                    @"INSERT Subscription
+        const string insert =
+          @"INSERT Subscription
                 (SubscriptionUID, fk_CustomerUID, StartDate, EndDate, fk_ServiceTypeID, LastActionedUTC)
               VALUES
                 (@SubscriptionUID, @CustomerUID, @StartDate, @EndDate, @ServiceTypeID, @LastActionedUTC)";
 
-                {
-                    upsertedCount = await ExecuteWithAsyncPolicy(insert, subscription);
-                    log.LogDebug(
-                        "SubscriptionRepository/CreateSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}",
-                        upsertedCount, subscription.SubscriptionUID);
-
-                    return upsertedCount == 2
-                        ? 1
-                        : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-                }
-            }
-            log.LogDebug("SubscriptionRepository/CreateSubscription: can't create as already exists subscription={0}",
-                JsonConvert.SerializeObject(subscription));
-            return upsertedCount;
-        }
-
-        private async Task<int> UpdateSubscription(Subscription subscription, Subscription existing)
         {
-            // todo this code allows customerUID and serviceType to be updated - is this intentional?
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, subscription);
+          log.LogDebug(
+            "SubscriptionRepository/CreateSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}",
+            upsertedCount, subscription.SubscriptionUID);
 
-            var upsertedCount = 0;
-            if (existing != null)
-                if (subscription.LastActionedUTC >= existing.LastActionedUTC)
-                {
-                    log.LogDebug("SubscriptionRepository/UpdateSubscription: going to create subscription={0}",
-                        JsonConvert.SerializeObject(subscription));
+          return upsertedCount == 2
+            ? 1
+            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        }
+      }
+      log.LogDebug("SubscriptionRepository/CreateSubscription: can't create as already exists subscription={0}",
+        JsonConvert.SerializeObject(subscription));
+      return upsertedCount;
+    }
 
-                    //subscription only has values for columns to be updated
-                    if (string.IsNullOrEmpty(subscription.CustomerUID))
-                        subscription.CustomerUID = existing.CustomerUID;
-                    if (subscription.StartDate == DateTime.MinValue)
-                        subscription.StartDate = existing.StartDate;
-                    if (subscription.EndDate == DateTime.MinValue)
-                        subscription.EndDate = existing.EndDate;
-                    if (subscription.ServiceTypeID == 0)
-                        subscription.ServiceTypeID = existing.ServiceTypeID;
+    private async Task<int> UpdateSubscription(Subscription subscription, Subscription existing)
+    {
+      // todo this code allows customerUID and serviceType to be updated - is this intentional?
 
-                    const string update =
-                        @"UPDATE Subscription                
+      var upsertedCount = 0;
+      if (existing != null)
+        if (subscription.LastActionedUTC >= existing.LastActionedUTC)
+        {
+          log.LogDebug("SubscriptionRepository/UpdateSubscription: going to create subscription={0}",
+            JsonConvert.SerializeObject(subscription));
+
+          //subscription only has values for columns to be updated
+          if (string.IsNullOrEmpty(subscription.CustomerUID))
+            subscription.CustomerUID = existing.CustomerUID;
+          if (subscription.StartDate == DateTime.MinValue)
+            subscription.StartDate = existing.StartDate;
+          if (subscription.EndDate == DateTime.MinValue)
+            subscription.EndDate = existing.EndDate;
+          if (subscription.ServiceTypeID == 0)
+            subscription.ServiceTypeID = existing.ServiceTypeID;
+
+          const string update =
+            @"UPDATE Subscription                
                   SET SubscriptionUID = @SubscriptionUID,
                       fk_CustomerUID = @CustomerUID,
                       StartDate=@StartDate, 
@@ -262,221 +277,219 @@ namespace Repositories
                       LastActionedUTC=@LastActionedUTC
                 WHERE SubscriptionUID = @SubscriptionUID";
 
-                    {
-                        upsertedCount = await ExecuteWithAsyncPolicy(update, subscription);
-                        log.LogDebug(
-                            "SubscriptionRepository/UpdateSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}",
-                            upsertedCount, subscription.SubscriptionUID);
-                        return upsertedCount == 2
-                            ? 1
-                            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-                    }
-
-                    log.LogDebug("SubscriptionRepository/UpdateSubscription: old update event ignored subscription={0}",
-                        JsonConvert.SerializeObject(subscription));
-                }
-            log.LogDebug("SubscriptionRepository/UpdateSubscription: can't update as none existing subscription={0}",
-                JsonConvert.SerializeObject(subscription));
-            return upsertedCount;
+          {
+            upsertedCount = await ExecuteWithAsyncPolicy(update, subscription);
+            log.LogDebug(
+              "SubscriptionRepository/UpdateSubscription: upserted {0} rows (1=insert, 2=update) for: subscriptionUid:{1}",
+              upsertedCount, subscription.SubscriptionUID);
+            return upsertedCount == 2
+              ? 1
+              : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+          }
         }
+      log.LogDebug("SubscriptionRepository/UpdateSubscription: can't update as none existing subscription={0}",
+        JsonConvert.SerializeObject(subscription));
+      return upsertedCount;
+    }
 
 
-        private async Task<int> UpsertProjectSubscriptionDetail(ProjectSubscription projectSubscription,
-            string eventType)
-        {
-            var upsertedCount = 0;
+    private async Task<int> UpsertProjectSubscriptionDetail(ProjectSubscription projectSubscription,
+      string eventType)
+    {
+      var upsertedCount = 0;
 
-            var existing = (await QueryWithAsyncPolicy<ProjectSubscription>
-            (@"SELECT 
+      var existing = (await QueryWithAsyncPolicy<ProjectSubscription>
+      (@"SELECT 
                 fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
               FROM ProjectSubscription
               WHERE fk_ProjectUID = @projectUID AND fk_SubscriptionUID = @subscriptionUID",
-                new {projectUID = projectSubscription.ProjectUID, subscriptionUID = projectSubscription.SubscriptionUID}
-            )).FirstOrDefault();
+        new {projectUID = projectSubscription.ProjectUID, subscriptionUID = projectSubscription.SubscriptionUID}
+      )).FirstOrDefault();
 
-            if (eventType == "AssociateProjectSubscriptionEvent")
-                upsertedCount = await AssociateProjectSubscription(projectSubscription, existing);
+      if (eventType == "AssociateProjectSubscriptionEvent")
+        upsertedCount = await AssociateProjectSubscription(projectSubscription, existing);
 
-            return upsertedCount;
-        }
+      return upsertedCount;
+    }
 
-        private async Task<int> AssociateProjectSubscription(ProjectSubscription projectSubscription,
-            ProjectSubscription existing)
-        {
-            var upsertedCount = 0;
+    private async Task<int> AssociateProjectSubscription(ProjectSubscription projectSubscription,
+      ProjectSubscription existing)
+    {
+      var upsertedCount = 0;
 
-            if (existing == null)
-            {
-                log.LogDebug(
-                    "SubscriptionRepository/AssociateProjectSubscription: going to create projectSubscription={0}",
-                    JsonConvert.SerializeObject(projectSubscription));
+      if (existing == null)
+      {
+        log.LogDebug(
+          "SubscriptionRepository/AssociateProjectSubscription: going to create projectSubscription={0}",
+          JsonConvert.SerializeObject(projectSubscription));
 
-                const string insert =
-                    @"INSERT ProjectSubscription
+        const string insert =
+          @"INSERT ProjectSubscription
                 (fk_SubscriptionUID, fk_ProjectUID, EffectiveDate, LastActionedUTC)
               VALUES
                 (@SubscriptionUID, @ProjectUID, @EffectiveDate, @LastActionedUTC)";
 
 
-                {
-                    upsertedCount = await ExecuteWithAsyncPolicy(insert, projectSubscription);
-                    log.LogDebug(
-                        "SubscriptionRepository/AssociateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: SubscriptionUid:{1}",
-                        upsertedCount, projectSubscription.SubscriptionUID);
-                    return upsertedCount == 2
-                        ? 1
-                        : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-                }
-            }
-
-            log.LogDebug(
-                "SubscriptionRepository/AssociateProjectSubscription: can't create as already exists projectSubscription={0}",
-                JsonConvert.SerializeObject(projectSubscription));
-            return upsertedCount;
-        }
-
-        private async Task<int> UpsertAssetSubscriptionDetail(AssetSubscription assetSubscription)
         {
-            var upsertedCount = 0;
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, projectSubscription);
+          log.LogDebug(
+            "SubscriptionRepository/AssociateProjectSubscription: upserted {0} rows (1=insert, 2=update) for: SubscriptionUid:{1}",
+            upsertedCount, projectSubscription.SubscriptionUID);
+          return upsertedCount == 2
+            ? 1
+            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+        }
+      }
 
-            var existing = (await QueryWithAsyncPolicy<AssetSubscription>
-            (@"SELECT 
+      log.LogDebug(
+        "SubscriptionRepository/AssociateProjectSubscription: can't create as already exists projectSubscription={0}",
+        JsonConvert.SerializeObject(projectSubscription));
+      return upsertedCount;
+    }
+
+    private async Task<int> UpsertAssetSubscriptionDetail(AssetSubscription assetSubscription)
+    {
+      var upsertedCount = 0;
+
+      var existing = (await QueryWithAsyncPolicy<AssetSubscription>
+      (@"SELECT 
                 fk_SubscriptionUID AS SubscriptionUID, fk_AssetUID AS AssetUID, EffectiveDate, LastActionedUTC
               FROM AssetSubscription
               WHERE fk_AssetUID = @assetUID AND fk_SubscriptionUID = @subscriptionUID",
-                new {assetUID = assetSubscription.AssetUID, subscriptionUID = assetSubscription.SubscriptionUID}
-            )).FirstOrDefault();
+        new {assetUID = assetSubscription.AssetUID, subscriptionUID = assetSubscription.SubscriptionUID}
+      )).FirstOrDefault();
 
-            upsertedCount = await AssociateAssetSubscription(assetSubscription, existing);
+      upsertedCount = await AssociateAssetSubscription(assetSubscription, existing);
 
 
-            return upsertedCount;
-        }
+      return upsertedCount;
+    }
 
-        private async Task<int> AssociateAssetSubscription(AssetSubscription assetSubscription,
-            AssetSubscription existing)
-        {
-            var upsertedCount = 0;
+    private async Task<int> AssociateAssetSubscription(AssetSubscription assetSubscription,
+      AssetSubscription existing)
+    {
+      var upsertedCount = 0;
 
-            if (existing == null)
-            {
-                log.LogDebug("SubscriptionRepository/AssociateAssetSubscription: going to create assetSubscription={0}",
-                    JsonConvert.SerializeObject(assetSubscription));
+      if (existing == null)
+      {
+        log.LogDebug("SubscriptionRepository/AssociateAssetSubscription: going to create assetSubscription={0}",
+          JsonConvert.SerializeObject(assetSubscription));
 
-                const string insert =
-                    @"INSERT AssetSubscription
+        const string insert =
+          @"INSERT AssetSubscription
                 (fk_SubscriptionUID, fk_AssetUID, EffectiveDate, LastActionedUTC)
               VALUES
                 (@SubscriptionUID, @AssetUID, @EffectiveDate, @LastActionedUTC)";
 
 
-                {
-                    upsertedCount = await ExecuteWithAsyncPolicy(insert, assetSubscription);
-                    log.LogDebug(
-                        "SubscriptionRepository/AssociateAssetSubscription: upserted {0} rows (1=insert, 2=update) for: SubscriptionUid:{1}",
-                        upsertedCount, assetSubscription.SubscriptionUID);
-                    return upsertedCount == 2
-                        ? 1
-                        : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
-                }
-            }
-
-            log.LogDebug(
-                "SubscriptionRepository/AssociateProjectSubscription: can't create as already exists projectSubscription={0}",
-                JsonConvert.SerializeObject(assetSubscription));
-            return upsertedCount;
-        }
-
-        private async Task<IEnumerable<ServiceType>> GetServiceTypes()
         {
-            var serviceTypes = await QueryWithAsyncPolicy<ServiceType>
-            (@"SELECT 
-                s.ID, s.Description AS Name, sf.ID AS ServiceTypeFamilyID, sf.Description AS ServiceTypeFamilyName
-              FROM ServiceTypeEnum s JOIN ServiceTypeFamilyEnum sf on s.fk_ServiceTypeFamilyID = sf.ID"
-            );
-
-            return serviceTypes;
+          upsertedCount = await ExecuteWithAsyncPolicy(insert, assetSubscription);
+          log.LogDebug(
+            "SubscriptionRepository/AssociateAssetSubscription: upserted {0} rows (1=insert, 2=update) for: SubscriptionUid:{1}",
+            upsertedCount, assetSubscription.SubscriptionUID);
+          return upsertedCount == 2
+            ? 1
+            : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
         }
+      }
 
-        #endregion store
+      log.LogDebug(
+        "SubscriptionRepository/AssociateProjectSubscription: can't create as already exists projectSubscription={0}",
+        JsonConvert.SerializeObject(assetSubscription));
+      return upsertedCount;
+    }
+
+    private async Task<IEnumerable<ServiceType>> GetServiceTypes()
+    {
+      var serviceTypes = await QueryWithAsyncPolicy<ServiceType>
+      (@"SELECT 
+              s.ID, s.Description AS Name, sf.ID AS ServiceTypeFamilyID, sf.Description AS ServiceTypeFamilyName
+            FROM ServiceTypeEnum s 
+              JOIN ServiceTypeFamilyEnum sf on s.fk_ServiceTypeFamilyID = sf.ID"
+      );
+
+      return serviceTypes;
+    }
+
+    #endregion store
 
 
-        #region getters
+    #region getters
 
-        public async Task<Subscription> GetSubscription(string subscriptionUid)
-        {
-            var subscription = (await QueryWithAsyncPolicy<Subscription>
-            (@"SELECT 
+    public async Task<Subscription> GetSubscription(string subscriptionUid)
+    {
+      var subscription = (await QueryWithAsyncPolicy<Subscription>
+      (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUid"
-                , new {subscriptionUid}
-            )).FirstOrDefault();
+        , new {subscriptionUid}
+      )).FirstOrDefault();
 
 
-            return subscription;
-        }
+      return subscription;
+    }
 
-        public async Task<IEnumerable<Subscription>> GetSubscriptionsByCustomer(string customerUid,
-            DateTime validAtDate)
-        {
-            var subscription = await QueryWithAsyncPolicy<Subscription>
-            (@"SELECT 
+    public async Task<IEnumerable<Subscription>> GetSubscriptionsByCustomer(string customerUid,
+      DateTime validAtDate)
+    {
+      var subscription = await QueryWithAsyncPolicy<Subscription>
+      (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
               WHERE fk_CustomerUID = @customerUid
                 AND @validAtDate BETWEEN StartDate AND EndDate"
-                , new {customerUid, validAtDate}
-            );
+        , new {customerUid, validAtDate}
+      );
 
 
-            return subscription;
-        }
+      return subscription;
+    }
 
-        public async Task<IEnumerable<Subscription>> GetSubscriptionsByAsset(string assetUid, DateTime validAtDate)
-        {
-            var subscription = await QueryWithAsyncPolicy<Subscription>
-            (@"SELECT 
+    public async Task<IEnumerable<Subscription>> GetSubscriptionsByAsset(string assetUid, DateTime validAtDate)
+    {
+      var subscription = await QueryWithAsyncPolicy<Subscription>
+      (@"SELECT 
                 s.SubscriptionUID, s.fk_CustomerUID as CustomerUID, s.fk_ServiceTypeID as ServiceTypeID, s.StartDate, s.EndDate, s.LastActionedUTC
               FROM AssetSubscription aSub
                 INNER JOIN Subscription s ON s.SubscriptionUID = aSub.fk_SubscriptionUID
               WHERE aSub.fk_AssetUID = @assetUid
                 AND @validAtDate BETWEEN s.StartDate AND s.EndDate"
-                , new {assetUid, validAtDate}
-            );
+        , new {assetUid, validAtDate}
+      );
 
 
-            return subscription;
-        }
+      return subscription;
+    }
 
-        public async Task<IEnumerable<Subscription>> GetSubscriptions_UnitTest(string subscriptionUid)
-        {
-            var subscriptions = await QueryWithAsyncPolicy<Subscription>
-            (@"SELECT 
+    public async Task<IEnumerable<Subscription>> GetSubscriptions_UnitTest(string subscriptionUid)
+    {
+      var subscriptions = await QueryWithAsyncPolicy<Subscription>
+      (@"SELECT 
                 SubscriptionUID, fk_CustomerUID AS CustomerUID, fk_ServiceTypeID AS ServiceTypeID, StartDate, EndDate, LastActionedUTC
               FROM Subscription
               WHERE SubscriptionUID = @subscriptionUid"
-                , new {subscriptionUid}
-            );
+        , new {subscriptionUid}
+      );
 
 
-            return subscriptions;
-        }
-
-        public async Task<IEnumerable<ProjectSubscription>> GetProjectSubscriptions_UnitTest(string subscriptionUid)
-        {
-            var projectSubscriptions = await QueryWithAsyncPolicy<ProjectSubscription>
-            (@"SELECT 
-                fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
-              FROM ProjectSubscription
-              WHERE fk_SubscriptionUID = @subscriptionUID"
-                , new {subscriptionUid}
-            );
-
-
-            return projectSubscriptions;
-        }
-
-        #endregion
+      return subscriptions;
     }
+
+    public async Task<IEnumerable<ProjectSubscription>> GetProjectSubscriptions_UnitTest(string subscriptionUid)
+    {
+      var projectSubscriptions = await QueryWithAsyncPolicy<ProjectSubscription>
+      (@"SELECT 
+              fk_SubscriptionUID AS SubscriptionUID, fk_ProjectUID AS ProjectUID, EffectiveDate, LastActionedUTC
+            FROM ProjectSubscription
+            WHERE fk_SubscriptionUID = @subscriptionUID"
+        , new {subscriptionUid}
+      );
+
+
+      return projectSubscriptions;
+    }
+
+    #endregion
+  }
 }

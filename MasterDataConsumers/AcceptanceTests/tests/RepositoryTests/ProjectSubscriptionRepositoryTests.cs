@@ -76,6 +76,30 @@ namespace RepositoryTests
     }
 
     /// <summary>
+    /// Create ProjectSubscription - unhandled subtype
+    /// </summary>
+    [TestMethod]
+    public void CreateSubscriptionWithProject_UnhandledSubscriptionType()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUID = Guid.NewGuid();
+
+      var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = customerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Project Monitoring de blah",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createProjectSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "ProjectSubscription event not written");
+    }
+
+    /// <summary>
     /// Create Subscription - Subscription already exists
     ///   Subscription exists but is different. nonsense - ignore
     /// </summary>
