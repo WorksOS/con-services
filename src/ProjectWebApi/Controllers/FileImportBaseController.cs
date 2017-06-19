@@ -230,12 +230,13 @@ namespace Controllers
     protected async Task<UpdateImportedFileEvent> UpdateImportedFile(
       ImportedFile existing,
       string fileDescriptor, DateTime? surveyedUtc,
-      DateTime fileUpdatedUtc, string importedBy)
+      DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy)
     {
       var nowUtc = DateTime.UtcNow;
       var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(existing);
       updateImportedFileEvent.FileDescriptor = fileDescriptor;
       updateImportedFileEvent.SurveyedUtc = surveyedUtc;
+      updateImportedFileEvent.FileCreatedUtc = fileCreatedUtc; // as per Barret 19th June 2017
       updateImportedFileEvent.FileUpdatedUtc = fileUpdatedUtc;
       updateImportedFileEvent.ImportedBy = importedBy;
       updateImportedFileEvent.ActionUTC = nowUtc;
