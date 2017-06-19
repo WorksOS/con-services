@@ -69,7 +69,7 @@ namespace Repositories
           }
           //Polygon must start and end with the same point
 
-          project.GeometryWKT = projectEvent.ProjectBoundary.ParseGeometryData().ClosePolygonIfRequired().ToPolygonWKT(); 
+          project.GeometryWKT = projectEvent.ProjectBoundary.ParseGeometryData().ClosePolygonIfRequired().ToPolygonWKT();
           upsertedCount = await UpsertProjectDetail(project, "CreateProjectEvent");
         }
       }
@@ -336,13 +336,13 @@ namespace Repositories
         {
           if (isDeletePermanently)
           {
-              log.LogDebug($"ProjectRepository/DeleteProject: deleting a project permanently: {JsonConvert.SerializeObject(project)}");
-              const string delete =
-                @"DELETE FROM Project
+            log.LogDebug($"ProjectRepository/DeleteProject: deleting a project permanently: {JsonConvert.SerializeObject(project)}");
+            const string delete =
+              @"DELETE FROM Project
                     WHERE ProjectUID = @projectUID";
-              upsertedCount = await ExecuteWithAsyncPolicy(delete, project);
-              log.LogDebug($"ProjectRepository/DeleteProject: deleted {upsertedCount} rows (1=insert, 2=update) for: projectUid:{project.ProjectUID}");
-              return upsertedCount;
+            upsertedCount = await ExecuteWithAsyncPolicy(delete, project);
+            log.LogDebug($"ProjectRepository/DeleteProject: deleted {upsertedCount} rows (1=insert, 2=update) for: projectUid:{project.ProjectUID}");
+            return upsertedCount;
           }
           else
           {
@@ -354,9 +354,9 @@ namespace Repositories
                   SET IsDeleted = 1,
                     LastActionedUTC = @LastActionedUTC
                   WHERE ProjectUID = @ProjectUID";
-              upsertedCount = await ExecuteWithAsyncPolicy(update, project);
+            upsertedCount = await ExecuteWithAsyncPolicy(update, project);
             log.LogDebug($"ProjectRepository/DeleteProject: upserted {upsertedCount} rows (1=insert, 2=update) for: projectUid:{project.ProjectUID}");
-              return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           }
         }
         else
@@ -476,6 +476,43 @@ namespace Repositories
 
         return upsertedCount.CalculateUpsertCount();
       }
+    }
+
+    private async Task<int> DissociateProjectCustomer(CustomerProject customerProject, CustomerProject existing)
+    {
+      var upsertedCount = 0;
+
+      log.LogDebug(
+        "ProjectRepository/DissociateProjectCustomer: customerProject={0} existing={1}",
+        JsonConvert.SerializeObject(customerProject), JsonConvert.SerializeObject(existing));
+
+      if (existing != null)
+      {
+        if (customerProject.LastActionedUTC >= existing.LastActionedUTC)
+        {
+          log.LogDebug("CustomerRepository/DissociateProjectCustomer: deleting a projectCustomer={0}",
+            JsonConvert.SerializeObject(customerProject));
+          const string delete =
+            @"DELETE FROM CustomerProject
+              WHERE fk_CustomerUID = @customerUID AND fk_ProjectUID = @projectUID";
+          upsertedCount = await ExecuteWithAsyncPolicy(delete, customerProject);
+          log.LogDebug(
+            "CustomerRepository/DissociateProjectCustomer: upserted {0} rows (1=insert, 2=update) for: customerUid:{1}",
+            upsertedCount, customerProject.CustomerUID);
+          return upsertedCount;
+        }
+
+        // may have been associated again since, so don't delete
+        log.LogDebug("CustomerRepository/DissociateProjectCustomer: old delete event ignored projectCustomer={0}",
+          JsonConvert.SerializeObject(customerProject));
+      }
+      else
+      {
+        log.LogDebug(
+          "CustomerRepository/DissociateProjectCustomer: can't delete as none existing projectCustomer={0}",
+          JsonConvert.SerializeObject(customerProject));
+      }
+      return upsertedCount;
     }
 
     private async Task<int> UpsertProjectGeofenceDetail(ProjectGeofence projectGeofence, string eventType)
@@ -632,6 +669,7 @@ namespace Repositories
       // We don't store (a), and leave actionUTC as the more recent. 
       var upsertedCount = 0;
       if (existing != null)
+      {
         if (importedFile.LastActionedUtc >= existing.LastActionedUtc)
         {
           const string update =
@@ -658,8 +696,11 @@ namespace Repositories
           JsonConvert.SerializeObject(importedFile));
       }
       else
+      {
         log.LogDebug("ProjectRepository/UpdateImportedFile: can't update as none existing importedFile {0}",
           JsonConvert.SerializeObject(importedFile));
+      }
+
       return upsertedCount;
     }
 
