@@ -149,7 +149,8 @@ namespace Repositories
           FileUpdatedUtc = projectEvent.FileUpdatedUtc,
           ImportedBy = projectEvent.ImportedBy,
           SurveyedUtc = projectEvent.SurveyedUtc,
-          LastActionedUtc = projectEvent.ActionUTC
+          LastActionedUtc = projectEvent.ActionUTC,
+          IsActivated = projectEvent.IsActivated
         };
         upsertedCount = await UpsertImportedFile(importedFile, "UpdateImportedFileEvent");
       }
