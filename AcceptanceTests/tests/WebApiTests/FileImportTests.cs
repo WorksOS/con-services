@@ -464,7 +464,7 @@ namespace WebApiTests
       ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
     }
 
-    [TestMethod] [Ignore]
+    [TestMethod]// [Ignore]
     public void TestImportANewFileThenUpdateTheSurveyedSurfaceFile()
     {
       const string testName = "File Import 7";
