@@ -332,7 +332,6 @@ namespace Controllers
     protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor, long importedFileId)
     {
       MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult;
-      // todo need try-catch around all urls to capture not available.
       try
       {
         notificationResult = await raptorProxy.AddFile(projectId, projectUid,

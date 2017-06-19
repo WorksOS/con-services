@@ -377,7 +377,7 @@ namespace Controllers
       log.LogDebug($"Creating the project {project.ProjectName}");
 
       var isCreated = await projectService.StoreEvent(project).ConfigureAwait(false);
-      log.LogDebug($"Created the project in DB {isCreated}. legacyprojectID: {project.ProjectID}");
+      log.LogDebug($"Created the project in DB. IsCreated: {isCreated}. proejctUid: {project.ProjectUID} legacyprojectID: {project.ProjectID}");
 
       if (project.ProjectID <= 0)
       {
@@ -413,9 +413,10 @@ namespace Controllers
         var coordinateSystemSettingsResult = await raptorProxy
           .CoordinateSystemPost(legacyProjectId, coordinateSystemFileContent,
             coordinateSystemFileName, customHeaders).ConfigureAwait(false);
-        log.LogDebug($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
+        var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
           coordinateSystemSettingsResult?.Code ?? -1,
           coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
+        log.LogDebug(message);
         if (coordinateSystemSettingsResult == null ||
             coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
@@ -450,7 +451,6 @@ namespace Controllers
       };
       var isDeleted = await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
 
-      // todo implement DB repo DissasociatePC
       await projectService.StoreEvent(new DissociateProjectCustomer()
       {
         CustomerUID = customerUid,
@@ -600,7 +600,6 @@ namespace Controllers
 
       if (subscriptionUidAssigned != Guid.Empty)
       {
-        // todo add subsProxy.Dissoc
         await subsProxy.DissociateProjectSubscription(subscriptionUidAssigned,
           projectUid, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       }
@@ -613,11 +612,11 @@ namespace Controllers
     /// <returns></returns>
     private async Task CreateGeofenceInGeofenceService(CreateProjectEvent project)
     {
-      log.LogDebug($"Creating a geofence for project {project.ProjectName}");
+      log.LogDebug($"Creating a geofence for project: {project.ProjectName}");
       var userUid = Guid.Parse(((User as TIDCustomPrincipal).Identity as GenericIdentity).Name);
       try
       {
-        await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
+        geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
           project.ProjectBoundary,
           0, true, userUid, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       }
