@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -14,6 +15,7 @@ using Repositories;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Newtonsoft.Json;
 
 namespace Controllers
 {
@@ -40,27 +42,28 @@ namespace Controllers
     [HttpGet]
     public async Task<ImmutableDictionary<int, ProjectDescriptor>> GetProjectsV3()
     {
-        log.LogInformation("GetProjectsV3");
-        var projects = (await GetProjectList());
+      log.LogInformation("GetProjectsV3");
+      var projects = (await GetProjectList());
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-          log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-          return projects.Where(p => p.CustomerUID == customerUid).ToImmutableDictionary(key => key.LegacyProjectID, project =>
-              new ProjectDescriptor()
-              {
-                  ProjectType = project.ProjectType,
-                  Name = project.Name,
-                  ProjectTimeZone = project.ProjectTimeZone,
-                  IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
-                  StartDate = project.StartDate.ToString("O"),
-                  EndDate = project.EndDate.ToString("O"),
-                  ProjectUid = project.ProjectUID,
-                  LegacyProjectId = project.LegacyProjectID,
-                  ProjectGeofenceWKT = project.GeometryWKT,
-                  CustomerUID = project.CustomerUID,
-                  LegacyCustomerId = project.LegacyCustomerID.ToString(),
-                  CoordinateSystemFileName = project.CoordinateSystemFileName
-              }
-          );
+      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      return projects.Where(p => p.CustomerUID == customerUid).ToImmutableDictionary(key => key.LegacyProjectID,
+        project =>
+          new ProjectDescriptor()
+          {
+            ProjectType = project.ProjectType,
+            Name = project.Name,
+            ProjectTimeZone = project.ProjectTimeZone,
+            IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
+            StartDate = project.StartDate.ToString("O"),
+            EndDate = project.EndDate.ToString("O"),
+            ProjectUid = project.ProjectUID,
+            LegacyProjectId = project.LegacyProjectID,
+            ProjectGeofenceWKT = project.GeometryWKT,
+            CustomerUID = project.CustomerUID,
+            LegacyCustomerId = project.LegacyCustomerID.ToString(),
+            CoordinateSystemFileName = project.CoordinateSystemFileName
+          }
+      );
     }
 
     // POST: api/project
@@ -165,6 +168,133 @@ namespace Controllers
       await AssociateGeofenceProject(geofenceProject);
     }
 
+
+    #region private
+
+    /// <summary>
+    /// Creates a project. Handles both old and new project boundary formats. this method can be overriden
+    /// </summary>
+    /// <param name="project">The create project event</param>
+    /// <param name="kafkaProjectBoundary">The project boundary in the old format (coords comma separated, points semicolon separated)</param>
+    /// <param name="databaseProjectBoundary">The project boundary in the new format (WKT)</param>
+    /// <returns></returns>
+    private async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary, string databaseProjectBoundary)
+    {
+      ProjectDataValidator.Validate(project, projectService);
+      if (project.ProjectID <= 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(44),
+            contractExecutionStatesEnum.FirstNameWithOffset(44)));
+      }
+      project.ReceivedUTC = DateTime.UtcNow;
+
+      //Send boundary as old format on kafka queue
+      project.ProjectBoundary = kafkaProjectBoundary;
+      var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
+      await producer.Send(kafkaTopicName,
+        new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload));
+      //Save boundary as WKT
+      project.ProjectBoundary = databaseProjectBoundary;
+      await projectService.StoreEvent(project).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Updates the project.
+    /// </summary>
+    /// <param name="project">The project.</param>
+    /// <returns></returns>
+    private async Task UpdateProject(UpdateProjectEvent project)
+    {
+      ProjectDataValidator.Validate(project, projectService);
+      project.ReceivedUTC = DateTime.UtcNow;
+
+      var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+        });
+      await projectService.StoreEvent(project).ConfigureAwait(false);
+    }
+    
+    /// <summary>
+    /// Associates the project customer.
+    /// </summary>
+    /// <param name="customerProject">The customer project.</param>
+    /// <returns></returns>
+    private async Task AssociateProjectCustomer(AssociateProjectCustomer customerProject)
+    {
+      ProjectDataValidator.Validate(customerProject, projectService);
+      customerProject.ReceivedUTC = DateTime.UtcNow;
+
+      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
+        });
+      await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Dissociates the project customer. this actually deletes the link.
+    /// </summary>
+    /// <param name="customerProject">The customer project.</param>
+    /// <returns></returns>
+    private async Task DissociateProjectCustomer(DissociateProjectCustomer customerProject)
+    {
+      ProjectDataValidator.Validate(customerProject, projectService);
+      customerProject.ReceivedUTC = DateTime.UtcNow;
+
+      var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectCustomer = customerProject});
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
+        });
+      await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Associates the geofence project.
+    /// </summary>
+    /// <param name="geofenceProject">The geofence project.</param>
+    /// <returns></returns>
+    private async Task AssociateGeofenceProject(AssociateProjectGeofence geofenceProject)
+    {
+      ProjectDataValidator.Validate(geofenceProject, projectService);
+      geofenceProject.ReceivedUTC = DateTime.UtcNow;
+
+      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
+        });
+      await projectService.StoreEvent(geofenceProject).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Deletes the project.
+    /// </summary>
+    /// <param name="project">The project.</param>
+    /// <returns></returns>
+    private async Task DeleteProject(DeleteProjectEvent project)
+    {
+      ProjectDataValidator.Validate(project, projectService);
+      project.ReceivedUTC = DateTime.UtcNow;
+
+      var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
+      producer.Send(kafkaTopicName,
+        new List<KeyValuePair<string, string>>()
+        {
+          new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
+        });
+      await projectService.StoreEvent(project).ConfigureAwait(false);
+    }
+
+    #endregion private
   }
 }
 

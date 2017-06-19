@@ -130,7 +130,7 @@ namespace ProjectWebApiCommon.ResultsHandling
       DynamicAddwithOffset("DeleteImportedFileV4. The importedFileUid doesn't exist under this project.", 56);
       DynamicAddwithOffset("Unable to access {0} endpoint. Exception: {1}", 57);
       DynamicAddwithOffset("CreateImportedFileV4. The file has already been created.", 58);
-
+      DynamicAddwithOffset("GeofenceService CreateGeofence failed. No geofenceUid returned.", 59);
     }
 
     /// <summary>
