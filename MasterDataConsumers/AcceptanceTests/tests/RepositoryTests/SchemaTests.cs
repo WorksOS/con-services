@@ -15,7 +15,7 @@ namespace RepositoryTests
   public class SchemaTests
   {
 
-    IServiceProvider serviceProvider = null;
+    IServiceProvider serviceProvider;
     IConfigurationStore gc;
 
     [TestInitialize]
@@ -133,7 +133,7 @@ namespace RepositoryTests
       const string tableName = "ImportedFile";
       List<string> columnNames = new List<string>
       {
-        "fk_ProjectUID", "ImportedFileUID", "ImportedFileID", "fk_CustomerUID", "fk_ImportedFileTypeID", "Name", "FileDescriptor", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "SurveyedUTC", "IsDeleted", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+        "fk_ProjectUID", "ImportedFileUID", "ImportedFileID", "fk_CustomerUID", "fk_ImportedFileTypeID", "Name", "FileDescriptor", "FileCreatedUTC", "FileUpdatedUTC", "ImportedBy", "SurveyedUTC", "IsDeleted", "IsActivated", "LastActionedUTC", "InsertUTC", "UpdateUTC"
       };
       CheckSchema(tableName, columnNames);
     }
@@ -228,8 +228,5 @@ namespace RepositoryTests
         what, gc.GetValueString("MYSQL_DATABASE_NAME"), tableName);
       return query;
     }
-
-
   }
-
 }

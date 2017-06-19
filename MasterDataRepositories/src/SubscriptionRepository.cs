@@ -349,7 +349,7 @@ namespace Repositories
 
     private async Task<int> UpsertAssetSubscriptionDetail(AssetSubscription assetSubscription)
     {
-      var upsertedCount = 0;
+            int upsertedCount;
 
       var existing = (await QueryWithAsyncPolicy<AssetSubscription>
       (@"SELECT 
