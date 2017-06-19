@@ -1,7 +1,7 @@
 ﻿Feature: DxfTile
 	I should be able to request DXF tiles
 
-Scenario: Dxf Tile - Good Request One FileType 
+Scenario: Dxf Tile - Good Request 
 	Given the Dxf Tile service URI "/api/v2/compaction/lineworktiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And a bbox "-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625" and a width "256" and a height "256"
@@ -25,13 +25,13 @@ Scenario: Dxf Tile - No Imported Files
 	When I request a Dxf Tile Expecting NoContent
 	Then I should get no response body
 
-Scenario: Dxf Tile - No FileTypes 
+Scenario: Dxf Tile - No FileType 
 	Given the Dxf Tile service URI "/api/v2/compaction/lineworktiles"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
   And a bbox "-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625" and a width "256" and a height "256"
   And a fileType ""
-	When I request a Dxf Tile Expecting NoContent
-	Then I should get no response body
+	When I request a Dxf Tile Expecting BadRequest
+	Then I should get error code -2 and message "Missing file type"
 
 Scenario: Dxf Tile - Bad FileType 
 	Given the Dxf Tile service URI "/api/v2/compaction/lineworktiles"
@@ -39,6 +39,7 @@ Scenario: Dxf Tile - Bad FileType
   And a bbox "-43.5445665843636, 172.578735351563, -43.5405847948288, 172.584228515625" and a width "256" and a height "256"
   And a fileType "SurveyedSurface"
 	When I request a Dxf Tile Expecting BadRequest
-	Then I should get error code -2 and message "Unsupported file type SurveyedSurface"
+  Then I should get error code -2 and message "Unsupported file type SurveyedSurface"
+
 
  

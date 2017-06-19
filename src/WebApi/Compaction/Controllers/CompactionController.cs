@@ -1361,13 +1361,12 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
-    /// <param name="fileTypes">A collection of imported file types for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
+    /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
-    [ResponseCache(Duration = 180, VaryByHeader = "X-VisionLink-ClearCache", VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetLineworkTile(
         [FromQuery] string SERVICE,
         [FromQuery] string VERSION,
@@ -1381,14 +1380,14 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         [FromQuery] int HEIGHT,
         [FromQuery] string BBOX,
         [FromQuery] Guid projectUid,
-        [FromQuery] string[] fileTypes)
+        [FromQuery] string fileType)
       {
         log.LogDebug("GetLineworkTile: " + Request.QueryString);
 
         ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
         ValidateTileDimensions(WIDTH, HEIGHT);
 
-        var requiredFiles = await ValidateFileTypes(projectUid, fileTypes);
+        var requiredFiles = await ValidateFileType(projectUid, fileType);
         DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
         request.Validate();
         var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
@@ -1413,14 +1412,13 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
     /// <param name="BBOX">The bounding box of the tile in decimal degrees: bottom left corner lat/lng and top right corner lat/lng</param>
     /// <param name="projectUid">Project UID</param>
-    /// <param name="fileTypes">A collection of imported file types for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
+    /// <param name="fileType">The imported file type for which to to overlay tiles. Valid values are Linework, Alignment and DesignSurface</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
-    [ResponseCache(Duration = 180, VaryByHeader = "X-VisionLink-ClearCache", VaryByQueryKeys = new[] { "*" })]
-      public async Task<FileResult> GetLineworkTileRaw(
+    public async Task<FileResult> GetLineworkTileRaw(
         [FromQuery] string SERVICE,
         [FromQuery] string VERSION,
         [FromQuery] string REQUEST,
@@ -1433,14 +1431,14 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         [FromQuery] int HEIGHT,
         [FromQuery] string BBOX,
         [FromQuery] Guid projectUid,
-        [FromQuery] string[] fileTypes)
+        [FromQuery] string fileType)
       {
         log.LogDebug("GetLineworkTileRaw: " + Request.QueryString);
 
         ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
         ValidateTileDimensions(WIDTH, HEIGHT);
 
-        var requiredFiles = await ValidateFileTypes(projectUid, fileTypes);
+        var requiredFiles = await ValidateFileType(projectUid, fileType);
         DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
         request.Validate();
         var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
@@ -1510,47 +1508,40 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
 
       /// <summary>
-      /// Validates the file types for DXF tile request and gets the imported file data for them
+      /// Validates the file type for DXF tile request and gets the imported file data for it
       /// </summary>
       /// <param name="projectUid">The project UID where the files were imported</param>
-      /// <param name="fileTypes">The file types of the imported files</param>
+      /// <param name="fileType">The file type of the imported files</param>
       /// <returns>The imported file data for the requested files</returns>
-      private async Task<List<FileData>> ValidateFileTypes(Guid projectUid, string[] fileTypes)
+      private async Task<List<FileData>> ValidateFileType(Guid projectUid, string fileType)
       {
-        //Check at least one file specified to get tiles for
-        if (fileTypes == null || fileTypes.Length == 0)
+        //Check file type specified
+        if (string.IsNullOrEmpty(fileType))
         {
-          throw new ServiceException(HttpStatusCode.NoContent,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-              "No files selected"));
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Missing file type"));
         }
-        //Check file types are valid
-        List<ImportedFileType> selectedFileTypes = new List<ImportedFileType>();
-        foreach (var fileType in fileTypes)
+        //Check file type is valid
+        ImportedFileType importedFileType;
+        if (Enum.TryParse(fileType, true, out importedFileType))
         {
-          ImportedFileType importedFileType;
-          if (Enum.TryParse(fileType, true, out importedFileType))
-          {
-            if (importedFileType == ImportedFileType.Linework ||
-                importedFileType == ImportedFileType.Alignment ||
-                importedFileType == ImportedFileType.DesignSurface)
-            {
-              selectedFileTypes.Add(importedFileType);
-            }
-            else
-            {
-              throw new ServiceException(HttpStatusCode.BadRequest,
-                new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  "Unsupported file type " + fileType));
-            }
-          }
-          else
+          if (importedFileType != ImportedFileType.Linework &&
+              importedFileType != ImportedFileType.Alignment &&
+              importedFileType != ImportedFileType.DesignSurface)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                "Invalid file type " + fileType));
+                "Unsupported file type " + fileType));
           }
         }
+        else
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              "Invalid file type " + fileType));
+        }
+        
         //Get all the imported files for the project
         var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
         if (fileList == null || fileList.Count == 0)
@@ -1560,7 +1551,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
               "No imported files"));
         }
         //Select the required ones from the list
-        return fileList.Where(f => selectedFileTypes.Contains(f.ImportedFileType)).ToList();
+        return fileList.Where(f => f.ImportedFileType == importedFileType).ToList();
       //TODO: When 'active' flag has been added to file descriptors, only select active files here
       }
 

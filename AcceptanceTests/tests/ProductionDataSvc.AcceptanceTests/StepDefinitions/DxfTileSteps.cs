@@ -54,7 +54,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void ThenTheDxfTileResultShouldBe(string multilineText)
     {
       TileResult expected = JsonConvert.DeserializeObject<TileResult>(multilineText);
-      //Assert.IsTrue(expected.Code == tileRequester.CurrentResponse.Code && expected.Message == tileRequester.CurrentResponse.Message);
       Assert.AreEqual(expected, tileRequester.CurrentResponse);
     }
 
@@ -93,7 +92,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var fullUrl = string.Format("{0}?projectUid={1}", url, projectUid);
       if (!string.IsNullOrEmpty(fileType))
       {
-        fullUrl = string.Format("{0}&fileTypes={1}", fullUrl, fileType);
+        fullUrl = string.Format("{0}&fileType={1}", fullUrl, fileType);
       }
       fullUrl += queryParameters;
       return fullUrl;

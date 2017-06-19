@@ -69,11 +69,11 @@ namespace ProductionDataSvc.AcceptanceTests
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Dxf Tile - Good Request One FileType")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Dxf Tile - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "DxfTile")]
-        public virtual void DxfTile_GoodRequestOneFileType()
+        public virtual void DxfTile_GoodRequest()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - Good Request One FileType", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - Good Request", ((string[])(null)));
 #line 4
 this.ScenarioSetup(scenarioInfo);
 #line 5
@@ -215,11 +215,11 @@ this.ScenarioSetup(scenarioInfo);
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Dxf Tile - No FileTypes")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Dxf Tile - No FileType")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "DxfTile")]
-        public virtual void DxfTile_NoFileTypes()
+        public virtual void DxfTile_NoFileType()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - No FileTypes", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Dxf Tile - No FileType", ((string[])(null)));
 #line 28
 this.ScenarioSetup(scenarioInfo);
 #line 29
@@ -232,9 +232,9 @@ this.ScenarioSetup(scenarioInfo);
 #line 32
   testRunner.And("a fileType \"\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 33
- testRunner.When("I request a Dxf Tile Expecting NoContent", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I request a Dxf Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 34
- testRunner.Then("I should get no response body", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("I should get error code -2 and message \"Missing file type\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -259,7 +259,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 41
  testRunner.When("I request a Dxf Tile Expecting BadRequest", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 42
- testRunner.Then("I should get error code -2 and message \"Unsupported file type SurveyedSurface\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then("I should get error code -2 and message \"Unsupported file type SurveyedSurface\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
