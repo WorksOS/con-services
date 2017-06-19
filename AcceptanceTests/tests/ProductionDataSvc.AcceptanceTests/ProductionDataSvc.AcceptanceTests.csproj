@@ -113,6 +113,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Compaction.feature</DependentUpon>
     </Compile>
+    <Compile Include="CompactionTagFile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionTagFile.feature</DependentUpon>
+    </Compile>
     <Compile Include="CoordinateConversion.feature.cs">
       <DependentUpon>CoordinateConversion.feature</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -209,6 +214,7 @@
     <Compile Include="Models\CompactionPassCountDetailedResult.cs" />
     <Compile Include="Models\CompactionPassCountSummaryResult.cs" />
     <Compile Include="Models\CompactionSpeedSummaryResult.cs" />
+    <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
     <Compile Include="Models\CompactionTileRequest.cs" />
     <Compile Include="Models\ConfigResult.cs" />
@@ -286,6 +292,7 @@
     <Compile Include="StepDefinitions\CMVDetailSteps.cs" />
     <Compile Include="StepDefinitions\CMVSummarySteps.cs" />
     <Compile Include="StepDefinitions\CompactionSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionTagFileSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateConversionSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemGetSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemPostSteps.cs" />
@@ -375,6 +382,10 @@
     <None Include="Compaction.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Compaction.feature.cs</LastGenOutput>
+    </None>
+    <None Include="CompactionTagFile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionTagFile.feature.cs</LastGenOutput>
     </None>
     <None Include="CoordinateConversion.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -526,6 +537,7 @@
     <None Include="TestData\CMVSummaryResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\CompactionTagFileRequest.json" />
     <None Include="TestData\CoordSysValidationResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

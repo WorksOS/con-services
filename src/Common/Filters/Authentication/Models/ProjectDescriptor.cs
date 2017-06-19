@@ -32,5 +32,9 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication.Models
     /// Gets or sets the CoordinateSystem FileName which the project is associated with
     /// </summary>
     public string coordinateSystemFileName { get; set; }
+    /// <summary>
+    /// Gets or sets the project boundary as WKT
+    /// </summary>
+    public string projectGeofenceWKT { get; set; }
   }
 }

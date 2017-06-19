@@ -33,7 +33,7 @@ namespace VSS.Raptor.Service.Common.Proxies
         var points = geometry.Split(',');
         foreach (var point in points)
         {
-          var parts = point.Split(' ');
+          var parts = point.Trim().Split(' ');
           var lng = double.Parse(parts[0]);
           var lat = double.Parse(parts[1]);
           latlngs.Add(WGSPoint.CreatePoint(lat * DEGREES_TO_RADIANS, lng * DEGREES_TO_RADIANS));

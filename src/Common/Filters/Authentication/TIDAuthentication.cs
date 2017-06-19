@@ -65,8 +65,9 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
                                 isLandFill = project.ProjectType == ProjectType.LandFill,
                                 isArchived = project.IsArchived,
                                 projectUid = project.ProjectUid,
-                                projectId = project.LegacyProjectId,
-                                coordinateSystemFileName = project.CoordinateSystemFileName
+                                projectId = project.LegacyProjectId,                              
+                                coordinateSystemFileName = project.CoordinateSystemFileName,
+                                projectGeofenceWKT = project.ProjectGeofenceWKT
                             };
                             authProjects.Add(projectDesc);
                         }
