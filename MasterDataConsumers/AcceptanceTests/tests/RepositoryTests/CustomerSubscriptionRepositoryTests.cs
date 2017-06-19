@@ -68,6 +68,29 @@ namespace RepositoryTests
     }
 
     /// <summary>
+    /// Create CustomerSubscription - unhandled subtype
+    /// </summary>
+    [TestMethod]
+    public void CreateCustomerSubscription_UnhandledSubscriptionType()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createCustomerSubscriptionEvent = new CreateCustomerSubscriptionEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Manual 3D Project Monitoring blah de blah",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createCustomerSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "CustomerSubscription event not written");
+    }
+
+    /// <summary>
     /// Create Subscription - Subscription already exists
     ///   Subscription exists but is different. nonsense - ignore
     /// </summary>
@@ -227,6 +250,53 @@ namespace RepositoryTests
 
     #endregion
 
+    #region AssetSubscriptions
+    /// <summary>
+    /// Create AssetSubscription 
+    /// </summary>
+    [TestMethod]
+    public void CreateAssetSubscription_HappyPath()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createAssetSubscriptionEvent = new CreateAssetSubscriptionEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Essentials",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createAssetSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "AssetSubscription event not written");
+    }
+
+    /// <summary>
+    /// Create AssetSubscription - unhandled subtype
+    /// </summary>
+    [TestMethod]
+    public void CreateAssetSubscription_UnhandledSubscriptionType()
+    {
+      DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createAssetSubscriptionEvent = new CreateAssetSubscriptionEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Essentials blah",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUTC
+      };
+
+      var s = subscriptionContext.StoreEvent(createAssetSubscriptionEvent);
+      s.Wait();
+      Assert.AreEqual(0, s.Result, "AssetSubscription event should not have been written");
+    }
+    #endregion AssetSubscriptions
 
     #region private
     private CreateCustomerSubscriptionEvent CopyModel(SubscriptionRepository subscriptionRepo, Subscription subscription)

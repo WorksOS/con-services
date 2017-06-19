@@ -13,6 +13,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="appsettings.json;log4nettest.xml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
@@ -30,8 +33,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.10" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.68" />
+    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.15" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.73" />
   </ItemGroup>
 
   <ItemGroup>

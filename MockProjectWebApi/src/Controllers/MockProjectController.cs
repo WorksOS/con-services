@@ -73,7 +73,7 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1000992, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001151, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001152, ProjectUid = Guid.NewGuid().ToString()},
-      new ProjectData {LegacyProjectId = 1001153, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = 1001153, ProjectUid = "b14bb927-3c10-47b2-b958-4ce7aabbc594", ProjectGeofenceWKT = "POLYGON((6.96461375644884 46.250301540882, 6.96643887353764 46.2509268520462, 6.97460415600528 46.2477169036207, 6.97269423208211 46.2470325441392, 6.96461375644884 46.250301540882))"},
       new ProjectData {LegacyProjectId = DIMENSIONS_PROJECT_ID, ProjectUid = DIMENSIONS_PROJECT_UID},
       new ProjectData {LegacyProjectId = 1001184, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001186, ProjectUid = "8590b7fc-079e-4b5a-b5ff-8514dadfe985"},

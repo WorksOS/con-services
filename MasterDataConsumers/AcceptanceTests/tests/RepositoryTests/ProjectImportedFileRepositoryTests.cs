@@ -262,6 +262,51 @@ namespace RepositoryTests
       Assert.IsTrue(g.Result.IsDeleted, "Should be able to retrieve deleted flag via GUID ");
     }
 
+    /// <summary>
+    /// Delete ImportedFile permantly
+    /// </summary>
+    [TestMethod]
+    public void DeleteImportedFile_Permanently()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createImportedFileEvent = new CreateImportedFileEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.NewGuid(),
+        ImportedFileID = new Random().Next(1, 1999999),
+        CustomerUID = Guid.NewGuid(),
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        Name = "Test SS type.ttm",
+        FileDescriptor = "fd",
+        FileCreatedUtc = actionUtc,
+        FileUpdatedUtc = actionUtc,
+        ImportedBy = "JoeSmoe",
+        SurveyedUTC = actionUtc.AddDays(-1),
+        ActionUTC = actionUtc
+      };
+
+      _projectContext.StoreEvent(createImportedFileEvent).Wait();
+
+      var deleteImportedFileEvent = new DeleteImportedFileEvent()
+      {
+        ProjectUID = createImportedFileEvent.ProjectUID,
+        ImportedFileUID = createImportedFileEvent.ImportedFileUID,
+        DeletePermanently = true,
+        ActionUTC = actionUtc.AddHours(1)
+      };
+
+      _projectContext.StoreEvent(deleteImportedFileEvent).Wait();
+
+      var g = _projectContext.GetImportedFile(createImportedFileEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Should not be able to retrieve ImportedFile from ProjectRepo");
+
+      g = _projectContext.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Should be able to retrieve ImportedFile from ProjectRepo via GUID ");
+    }
+
     #endregion ImportedFiles
 
 

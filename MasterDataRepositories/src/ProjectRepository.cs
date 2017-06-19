@@ -98,7 +98,7 @@ namespace Repositories
         var project = new Project();
         project.ProjectUID = projectEvent.ProjectUID.ToString();
         project.LastActionedUTC = projectEvent.ActionUTC;
-        upsertedCount = await UpsertProjectDetail(project, "DeleteProjectEvent");
+        upsertedCount = await UpsertProjectDetail(project, "DeleteProjectEvent", projectEvent.DeletePermanently);
       }
       else if (evt is AssociateProjectCustomer)
       {
@@ -110,6 +110,15 @@ namespace Repositories
         customerProject.LastActionedUTC = projectEvent.ActionUTC;
         upsertedCount = await UpsertCustomerProjectDetail(customerProject, "AssociateProjectCustomerEvent");
       }
+      else if (evt is DissociateProjectCustomer)
+      {
+        var projectEvent = (DissociateProjectCustomer)evt;
+        var customerProject = new CustomerProject();
+        customerProject.ProjectUID = projectEvent.ProjectUID.ToString();
+        customerProject.CustomerUID = projectEvent.CustomerUID.ToString();
+        customerProject.LastActionedUTC = projectEvent.ActionUTC;
+        upsertedCount = await UpsertCustomerProjectDetail(customerProject, "DissociateProjectCustomerEvent");
+      }
       else if (evt is AssociateProjectGeofence)
       {
         var projectEvent = (AssociateProjectGeofence)evt;
@@ -118,10 +127,6 @@ namespace Repositories
         projectGeofence.GeofenceUID = projectEvent.GeofenceUID.ToString();
         projectGeofence.LastActionedUTC = projectEvent.ActionUTC;
         upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "AssociateProjectGeofenceEvent");
-      }
-      else if (evt is DissociateProjectCustomer)
-      {
-        throw new NotImplementedException("Dissociating projects from customers is not supported");
       }
       else if (evt is CreateImportedFileEvent)
       {
@@ -170,7 +175,7 @@ namespace Repositories
           ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
           LastActionedUtc = projectEvent.ActionUTC
         };
-        upsertedCount = await UpsertImportedFile(importedFile, "DeleteImportedFileEvent");
+        upsertedCount = await UpsertImportedFile(importedFile, "DeleteImportedFileEvent", projectEvent.DeletePermanently);
       }
       return upsertedCount;
     }
@@ -183,7 +188,7 @@ namespace Repositories
     /// <param name="project"></param>
     /// <param name="eventType"></param>
     /// <returns></returns>
-    private async Task<int> UpsertProjectDetail(Project project, string eventType)
+    private async Task<int> UpsertProjectDetail(Project project, string eventType, bool isDeletePermanently = false)
     {
       var upsertedCount = 0;
       var existing = (await QueryWithAsyncPolicy<Project>
@@ -205,7 +210,7 @@ namespace Repositories
         upsertedCount = await UpdateProject(project, existing);
 
       if (eventType == "DeleteProjectEvent")
-        upsertedCount = await DeleteProject(project, existing);
+        upsertedCount = await DeleteProject(project, existing, isDeletePermanently);
       return upsertedCount;
     }
 
@@ -323,38 +328,43 @@ namespace Repositories
       return upsertedCount;
     }
 
-    private async Task<int> DeleteProject(Project project, Project existing)
+    private async Task<int> DeleteProject(Project project, Project existing, bool isDeletePermanently)
     {
       var upsertedCount = 0;
       if (existing != null)
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
-          log.LogDebug("ProjectRepository/DeleteProject: updating project={0}",
-            JsonConvert.SerializeObject(project));
-
-          const string update =
-            @"UPDATE Project
-                SET IsDeleted = 1,
-                  LastActionedUTC = @LastActionedUTC
-                WHERE ProjectUID = @ProjectUID";
-
+          if (isDeletePermanently)
           {
-            upsertedCount = await ExecuteWithAsyncPolicy(update, project);
-            log.LogDebug(
-              "ProjectRepository/DeleteProject: upserted {0} rows (1=insert, 2=update) for: projectUid:{1}",
-              upsertedCount, project.ProjectUID);
+              log.LogDebug($"ProjectRepository/DeleteProject: deleting a project permanently: {JsonConvert.SerializeObject(project)}");
+              const string delete =
+                @"DELETE FROM Project
+                    WHERE ProjectUID = @projectUID";
+              upsertedCount = await ExecuteWithAsyncPolicy(delete, project);
+              log.LogDebug($"ProjectRepository/DeleteProject: deleted {upsertedCount} rows (1=insert, 2=update) for: projectUid:{project.ProjectUID}");
+              return upsertedCount;
+          }
+          else
+          {
+            log.LogDebug("ProjectRepository/DeleteProject: updating project={0}",
+              JsonConvert.SerializeObject(project));
 
-            return upsertedCount.CalculateUpsertCount();
+            const string update =
+              @"UPDATE Project                
+                  SET IsDeleted = 1,
+                    LastActionedUTC = @LastActionedUTC
+                  WHERE ProjectUID = @ProjectUID";
+              upsertedCount = await ExecuteWithAsyncPolicy(update, project);
+            log.LogDebug($"ProjectRepository/DeleteProject: upserted {upsertedCount} rows (1=insert, 2=update) for: projectUid:{project.ProjectUID}");
+              return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           }
         }
         else
         {
-          log.LogDebug("ProjectRepository/DeleteProject: old delete event ignored project={0}",
-            JsonConvert.SerializeObject(project));
+          log.LogDebug($"ProjectRepository/DeleteProject: old delete event ignored project={JsonConvert.SerializeObject(project)}");
         }
       else
-        log.LogDebug("ProjectRepository/DeleteProject: can't delete as none existing ignored project={0}",
-          JsonConvert.SerializeObject(project));
+        log.LogDebug($"ProjectRepository/DeleteProject: can't delete as none existing ignored project={JsonConvert.SerializeObject(project)}");
       return upsertedCount;
     }
 
@@ -430,8 +440,8 @@ namespace Repositories
 
       if (eventType == "AssociateProjectCustomerEvent")
         upsertedCount = await AssociateProjectCustomer(customerProject, existing);
-
-
+      if (eventType == "DissociateProjectCustomerEvent")
+        upsertedCount = await DissociateProjectCustomer(customerProject, existing);
       return upsertedCount;
     }
 
@@ -526,7 +536,7 @@ namespace Repositories
 
     #region importedFiles
 
-    private async Task<int> UpsertImportedFile(ImportedFile importedFile, string eventType)
+    private async Task<int> UpsertImportedFile(ImportedFile importedFile, string eventType, bool isDeletePermanently = false)
     {
       var upsertedCount = 0;
 
@@ -548,7 +558,7 @@ namespace Repositories
         upsertedCount = await UpdateImportedFile(importedFile, existing);
 
       if (eventType == "DeleteImportedFileEvent")
-        upsertedCount = await DeleteImportedFile(importedFile, existing);
+        upsertedCount = await DeleteImportedFile(importedFile, existing, isDeletePermanently);
 
 
       return upsertedCount;
@@ -622,8 +632,7 @@ namespace Repositories
       // We don't store (a), and leave actionUTC as the more recent. 
       var upsertedCount = 0;
       if (existing != null)
-      {
-        if (importedFile.LastActionedUtc > existing.LastActionedUtc)
+        if (importedFile.LastActionedUtc >= existing.LastActionedUtc)
         {
           const string update =
             @"UPDATE ImportedFile
@@ -654,39 +663,50 @@ namespace Repositories
       return upsertedCount;
     }
 
-    private async Task<int> DeleteImportedFile(ImportedFile importedFile, ImportedFile existing)
+    private async Task<int> DeleteImportedFile(ImportedFile importedFile, ImportedFile existing,
+      bool isDeletePermanently)
     {
       var upsertedCount = 0;
       if (existing != null)
         if (importedFile.LastActionedUtc >= existing.LastActionedUtc)
         {
-          log.LogDebug("ProjectRepository/DeleteImportedFile: deleting importedFile {0}",
-            JsonConvert.SerializeObject(importedFile));
+          if (isDeletePermanently)
+          {
+            log.LogDebug(
+              $"ProjectRepository/DeleteImportedFile: deleting a project permanently: {JsonConvert.SerializeObject(importedFile)}");
+            const string delete =
+              @"DELETE FROM ImportedFile
+                  WHERE ImportedFileUID = @ImportedFileUid";
+            upsertedCount = await ExecuteWithAsyncPolicy(delete, importedFile);
+            log.LogDebug(
+              $"ProjectRepository/DeleteImportedFile: deleted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
+            return upsertedCount;
+          }
+          else
+          {
+            log.LogDebug("ProjectRepository/DeleteImportedFile: deleting importedFile {0}",
+              JsonConvert.SerializeObject(importedFile));
 
-          const string update =
-            @"UPDATE ImportedFile                               
+            const string update =
+              @"UPDATE ImportedFile                               
                 SET IsDeleted = 1,
                     LastActionedUTC = @LastActionedUTC
                 WHERE ImportedFileUID = @ImportedFileUid";
 
-          {
             upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
             log.LogDebug(
-              "ProjectRepository/DeleteImportedFile: upserted {0} rows (1=insert, 2=update) for: projectUid:{1} importedFileUid: {2}",
-              upsertedCount, importedFile.ProjectUid, importedFile.ImportedFileUid);
-
-            return upsertedCount.CalculateUpsertCount();
+              $"ProjectRepository/DeleteImportedFile: upserted {upsertedCount} rows (1=insert, 2=update) for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
+            return upsertedCount == 2 ? 1 : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           }
         }
         else
         {
-          log.LogDebug("ProjectRepository/DeleteImportedFile: old delete event ignored importedFile={0}",
-            JsonConvert.SerializeObject(importedFile));
+          log.LogDebug(
+            $"ProjectRepository/DeleteImportedFile: old delete event ignored importedFile={JsonConvert.SerializeObject(importedFile)}");
         }
       else
         log.LogDebug(
-          "ProjectRepository/DeleteImportedFile: can't delete as none existing ignored importedFile={0}",
-          JsonConvert.SerializeObject(importedFile));
+          $"ProjectRepository/DeleteImportedFile: can't delete as none existing ignored importedFile={JsonConvert.SerializeObject(importedFile)}");
       return upsertedCount;
     }
 

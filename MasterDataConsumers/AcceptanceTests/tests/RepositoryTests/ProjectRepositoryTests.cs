@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -897,6 +898,73 @@ namespace RepositoryTests
     }
 
     /// <summary>
+    /// Delete Project permanentlhy 
+    /// </summary>
+    [TestMethod]
+    public void DeleteProject_Permanently()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUtc
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = new Random().Next(1, 1999999),
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUtc
+      };
+
+      var deleteProjectEvent = new DeleteProjectEvent()
+      {
+        ProjectUID = createProjectEvent.ProjectUID,
+        DeletePermanently = true,
+        ActionUTC = actionUtc.AddHours(1)
+      };
+
+      _projectContext.StoreEvent(createProjectEvent).Wait();
+      _customerContext.StoreEvent(createCustomerEvent).Wait();
+      _projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+
+      // this one ignores the IsDeleted flag in DB
+      var g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+      Assert.IsFalse(g.Result.IsDeleted, "Project details are incorrect from ProjectRepo");
+
+      var s = _projectContext.StoreEvent(deleteProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not deleted");
+
+      g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.IsNull(g.Result, "Unable to retrieve Project from ProjectRepo");
+    }
+
+    /// <summary>
     /// Delete Project - ActionUTC too old
     ///   customer and CustomerProject relationship also added
     ///   project exists and New ActionUTC is later than its LastActionUTC.
@@ -1126,6 +1194,83 @@ namespace RepositoryTests
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
+    }
+
+    /// <summary>
+    /// Associate Customer Project - Happy Path
+    ///   then Dissassociate - should be removed
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectWithCustomer_ThenDissociate_HappyPath()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var projectTimeZone = "New Zealand Standard Time";
+
+      var createCustomerEvent = new CreateCustomerEvent()
+      {
+        CustomerUID = Guid.NewGuid(),
+        CustomerName = "The Customer Name",
+        CustomerType = CustomerType.Customer.ToString(),
+        ActionUTC = actionUtc
+      };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = new Random().Next(1, 1999999),
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = projectTimeZone,
+
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ProjectBoundary =
+          "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        LegacyCustomerID = 1234,
+        RelationType = RelationType.Customer,
+        ActionUTC = actionUtc
+      };
+
+      var dissociateCustomerProjectEvent = new DissociateProjectCustomer()
+      {
+        CustomerUID = createCustomerEvent.CustomerUID,
+        ProjectUID = createProjectEvent.ProjectUID,
+        ActionUTC = actionUtc
+      };
+
+
+      var s = _projectContext.StoreEvent(createProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Project event not written");
+
+      s = _customerContext.StoreEvent(createCustomerEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Customer event not written");
+
+      s = _projectContext.StoreEvent(associateCustomerProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "CustomerProject not associated");
+
+      var g = _projectContext.GetProjectsForCustomer(createCustomerEvent.CustomerUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve Projects for Customer");
+      Assert.AreEqual(1, g.Result.Count(), "Project count is incorrect for Customer");
+
+      s = _projectContext.StoreEvent(dissociateCustomerProjectEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "CustomerProject not disassociated");
+
+      g = _projectContext.GetProjectsForCustomer(createCustomerEvent.CustomerUID.ToString());
+      g.Wait();
+      Assert.IsNotNull(g.Result, "Unable to retrieve Projects for Customer after Dissassociation");
+      Assert.AreEqual(0, g.Result.Count(), "Project count is incorrect for Customer after Dissassociation");
     }
 
     #endregion
