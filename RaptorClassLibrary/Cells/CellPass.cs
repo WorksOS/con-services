@@ -181,7 +181,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <summary>
         /// Helper class that maps the two bites in the GPSMode byte to the four pass type values
         /// </summary>
-        private static class PassTypeHelper
+        public static class PassTypeHelper
         {
             /// <summary>
             /// Sets the appropriate bits in the GPSModeStore corresponding to the desired pass type
@@ -255,7 +255,7 @@ namespace VSS.VisionLink.Raptor.Cells
         /// GPSModeStore stores the GPS mode in the lowest 4 bits of the GPSModeStore byte. The remaining 4 bits are
         /// available for use, probably as flags.
         /// </summary>
-        private byte GPSModeStore;
+        public byte GPSModeStore;
 
         /// <summary>
         /// The GPS mode in effect when the cell pass was measured

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
+using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
@@ -109,6 +110,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public CellPass Pass(uint X, uint Y, uint passIndex)
         {
             return PassData[X, Y].Passes[passIndex];
+        }
+
+        public void SetState(CellPass[,][] cellPasses)
+        {
+           PassData = new Cell_NonStatic[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+           SubGridUtilities.SubGridDimensionalIterator((x, y) => PassData[x, y].Passes = cellPasses[x, y]);
         }
     }
 }

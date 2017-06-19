@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cells\CellStatic.cs" />
+    <Compile Include="Compression\AttributeValueModifiers.cs" />
     <Compile Include="Compression\AttributeValueRangeCalculator.cs" />
     <Compile Include="Compression\BitFieldArray.cs" />
     <Compile Include="Compression\BitFieldArrayRecordsDescriptor.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="SubGridTrees\Server\SubGridCellSegmentPassesDataWrapperFactory.cs" />
     <Compile Include="SubGridTrees\Server\SubGridCellSegmentPassesDataWrapper_NonStatic.cs" />
     <Compile Include="SubGridTrees\Server\SubGridCellSegmentPassesDataWrapper_Static.cs" />
+    <Compile Include="SubGridTrees\Server\SubGridCellSegmentPassesDataWrapper_StaticCompressed.cs" />
     <Compile Include="SubGridTrees\Server\SubGridDirectory.cs" />
     <Compile Include="SubGridTrees\SubGrid.cs" />
     <Compile Include="SubGridTrees\SubGridCellAddress.cs" />
@@ -224,6 +226,7 @@
     <Compile Include="SubGridTrees\SubGridTree.cs" />
     <Compile Include="SubGridTrees\SubGridTreeBitmapSubGridBits.cs" />
     <Compile Include="SubGridTrees\Types\SubGridTreeSparseCellRecord.cs" />
+    <Compile Include="SubGridTrees\Utilities\SubgridDimensionalInterator.cs" />
     <Compile Include="SubGridTrees\Utilities\SubGridUtilities.cs" />
     <Compile Include="TAGFiles\Classes\Integrator\AggregatedDataIntegrator.cs" />
     <Compile Include="TAGFiles\Classes\Integrator\AggregatedDataIntegratorTask.cs" />

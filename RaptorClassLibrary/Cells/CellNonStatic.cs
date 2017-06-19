@@ -128,7 +128,7 @@ namespace VSS.VisionLink.Raptor.Cells
             Passes[position] = pass;
 
 #if CELLDEBUG
-            for (int i = 0; i < PassCount - 2; i++)
+            for (int i = 0; i < PassCount - 1; i++)
             {
                 Debug.Assert(Passes[i].Time < Passes[i + 1].Time, "Passes not in time order during cell processing.");
             }

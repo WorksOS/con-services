@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace VSS.VisionLink.Raptor.Compression
 {
+    /// <summary>
+    /// Bit field arrays implement arrays variable bit fields to mor eefficiently use memory.
+    /// They are commonly used in conjunction with dynamic/entropic compression of vectors of values being
+    /// stored by the arrays. Records may be implemented that represent sets of fields, where the fields for each record are
+    /// contiguously stored in memory to improve access locality.
+    /// </summary>
     public struct BitFieldArray
     {
         public const int kNBytesReadAtATime = 1;
@@ -18,10 +24,13 @@ namespace VSS.VisionLink.Raptor.Compression
         public const int kBitsRemainingInStorageBlockMask = 0x7; // 1 Byte : $7, 2 bytes : $f, 4 bytes : $1f
 
         /// <summary>
-        /// Storage is the memory allocated to storing the bit field array
+        /// Storage is the memory allocated to storing the bit field array.
         /// </summary>
         private byte[] Storage;
 
+        /// <summary>
+        /// The current bit address position in a bit field array during a stream write operation into it.
+        /// </summary>
         private uint StreamWriteBitPos;
 
         // FNumBits indicates the total number of bits stored in the bit field array

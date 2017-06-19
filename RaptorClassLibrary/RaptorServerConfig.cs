@@ -45,5 +45,11 @@ namespace VSS.VisionLink.Raptor
         /// changes), or an immutable structure that favours memory allocation efficiency given read-only operations
         /// </summary>
         public bool UseMutableCellPassSegments { get; set; } = true;
+
+        /// <summary>
+        /// Defines whether cell pass sets for subgrid segments should be compressed
+        /// </summary>
+        public bool CompressImmutableCellPassSegments { get; set; } = true;
+
     }
 }

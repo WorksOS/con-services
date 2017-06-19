@@ -9,7 +9,7 @@ using VSS.VisionLink.Raptor.SubGridTrees.Server;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
 {
-    public static class SubGridUtilities
+    public static partial class SubGridUtilities
     {
         /// <summary>
         /// GetOTGLeafSubGridCellIndex determines the local in-subgrid X/Y location of a

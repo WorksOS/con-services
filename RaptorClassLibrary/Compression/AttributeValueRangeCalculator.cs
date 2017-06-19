@@ -10,8 +10,7 @@ namespace VSS.VisionLink.Raptor.Compression
     {
         // CalculateAttributeValueRange scans a single attribute across  all records in a block of values
         public static void CalculateAttributeValueRange(int[] Values,
-                                   int StepSize, int ValueSize, // In bytes
-                                   int Count, uint Mask,
+                                   uint Mask,
                                    int ANativeNullValue, bool ANullable,
                                    ref EncodedBitFieldDescriptor FieldDescriptor)
         {
@@ -24,7 +23,7 @@ namespace VSS.VisionLink.Raptor.Compression
             FieldDescriptor.MaxValue = ANativeNullValue;
             FieldDescriptor.Nullable = ANullable;
 
-            for (int I = 0; I < Count; I++)
+            for (int I = 0; I < Values.Length; I++)
             {
                 // Pull the value from the location specified by pointer
                 TestValue = Values[I];

@@ -14,17 +14,26 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
     {
         private static SubGridCellSegmentPassesDataWrapperFactory instance = null;
 
+        /// <summary>
+        /// Chooses which of the three segment cell pass wrappers should be created:
+        ///  - NonStatic: Fully mutable high fidelity representation (most memory blocks allocated)
+        ///  - Static: Immutable high fidelity representation (few memory blocks allocated)
+        ///  - StaticCompressed: Immutable, compressed (with trivial loss level), few memory block allocated
+        /// </summary>
+        /// <returns></returns>
         public ISubGridCellSegmentPassesDataWrapper NewWrapper()
         {
-            //return new SubGridCellSegmentPassesDataWrapper_NonStatic();
             if (RaptorServerConfig.Instance().UseMutableCellPassSegments)
             {
                 return new SubGridCellSegmentPassesDataWrapper_NonStatic();
             }
-            else
+
+            if (RaptorServerConfig.Instance().CompressImmutableCellPassSegments)
             {
-                return new SubGridCellSegmentPassesDataWrapper_Static();
+                return new SubGridCellSegmentPassesDataWrapper_StaticCompressed();
             }
+
+            return new SubGridCellSegmentPassesDataWrapper_Static();
         }
 
         public static SubGridCellSegmentPassesDataWrapperFactory Instance()
