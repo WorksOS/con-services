@@ -270,7 +270,7 @@ namespace Controllers
       // if all succeeds, update Db and send update to kafka que
       if (existing != null) // update
         await UpdateImportedFile(existing, JsonConvert.SerializeObject(fileDescriptor), surveyedUtc,
-            fileUpdatedUtc, userEmailAddress)
+            fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
           .ConfigureAwait(false);
 
       var importedFile = new ImportedFileDescriptorSingleResult(
