@@ -92,8 +92,7 @@ namespace Controllers
       log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
       return project;
     }
-
-
+    
     /// <summary>
     /// Gets the imported file list for a project
     /// </summary>
@@ -129,8 +128,9 @@ namespace Controllers
       return importedFileList;
     }
 
+
     /// <summary>
-    /// Creates an imported file. Writes to Db and creates the Kafka event.
+    /// Creates an imported file in Db.
     /// </summary>
     /// <returns />
     protected async Task<CreateImportedFileEvent> CreateImportedFile(Guid customerUid, Guid projectUid,
@@ -151,7 +151,7 @@ namespace Controllers
         FileUpdatedUtc = fileUpdatedUtc,
         ImportedBy = importedBy,
         SurveyedUTC = surveyedUtc,
-        ActionUTC = nowUtc, // aka importedDate
+        ActionUTC = nowUtc, // aka importedUtc
         ReceivedUTC = nowUtc
       };
 
@@ -174,56 +174,17 @@ namespace Controllers
             contractExecutionStatesEnum.FirstNameWithOffset(50)));
 
       log.LogDebug(
-        $"Using Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
-
-      var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
-        {
-          new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-        });
-
+        $"CreateImportedFile: Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
       return createImportedFileEvent;
     }
 
     /// <summary>
-    /// Creates an imported file. Writes to Db and creates the Kafka event.
-    /// </summary>
-    /// <returns />
-    protected async Task DeleteImportedFile(Guid projejctUid, Guid importedFileUid)
-    {
-      var nowUtc = DateTime.UtcNow;
-      var deleteImportedFileEvent = new DeleteImportedFileEvent()
-      {
-        ProjectUID = projejctUid,
-        ImportedFileUID = importedFileUid,
-        ActionUTC = nowUtc, // aka importedDate
-        ReceivedUTC = nowUtc
-      };
-
-      var messagePayload = JsonConvert.SerializeObject(new {DeleteImportedFileEvent = deleteImportedFileEvent});
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
-        {
-          new KeyValuePair<string, string>(deleteImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-        });
-
-      if (await projectService.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
-        return;
-
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(51),
-          contractExecutionStatesEnum.FirstNameWithOffset(51)));
-    }
-
-    /// <summary>
-    /// Creates an imported file. Writes to Db and creates the Kafka event.
-    /// only thing which should change here is a) FileUpdatedUtc/ActionUtc
-    ///       file Descriptor???
+    /// Update an imported file in the Db.
     /// </summary>
     /// <param name="existing">The existing imported file event from the database</param>
     /// <param name="fileDescriptor"></param>
     /// <param name="surveyedUtc"></param>
+    /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="importedBy"></param>
     /// <returns></returns>
@@ -242,13 +203,6 @@ namespace Controllers
       updateImportedFileEvent.ActionUTC = nowUtc;
       updateImportedFileEvent.ReceivedUTC = nowUtc;
 
-      var messagePayload = JsonConvert.SerializeObject(new {UpdateImportedFileEvent = updateImportedFileEvent});
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
-        {
-          new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-        });
-
       if (await projectService.StoreEvent(updateImportedFileEvent).ConfigureAwait(false) == 1)
         return updateImportedFileEvent;
 
@@ -258,10 +212,36 @@ namespace Controllers
     }
 
     /// <summary>
+    /// Deletes imported file from the Db.
+    /// </summary>
+    /// <returns />
+    protected async Task<DeleteImportedFileEvent> DeleteImportedFile(Guid projejctUid, Guid importedFileUid, bool deletePermanently = false)
+    {
+      var nowUtc = DateTime.UtcNow;
+      var deleteImportedFileEvent = new DeleteImportedFileEvent()
+      {
+        ProjectUID = projejctUid,
+        ImportedFileUID = importedFileUid,
+        DeletePermanently = deletePermanently,
+        ActionUTC = nowUtc, // aka importedDate
+        ReceivedUTC = nowUtc
+      };
+
+      if (await projectService.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
+        return deleteImportedFileEvent;
+
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(51),
+          contractExecutionStatesEnum.FirstNameWithOffset(51)));
+    }
+
+    /// <summary>
     /// Writes the importedFile to TCC
+    ///   returns filespaceID; path and filename which identifies it uniquely in TCC
+    ///   this may be a create or update, so ok if it already exists in our DB
     /// </summary>
     /// <returns></returns>
-    protected async Task<FileDescriptor> WriteFileToRepository(string customerUid, string projectUid,
+    protected async Task<FileDescriptor> WriteFileToTCCRepository(string customerUid, string projectUid,
       string pathAndFileName, ImportedFileType importedFileType, DateTime? surveyedUtc)
     {
       var fileStream = new FileStream(pathAndFileName, FileMode.Open);
@@ -274,7 +254,7 @@ namespace Controllers
             Path.GetExtension(tccFileName));
 
       log.LogInformation(
-        $"WriteFileToRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
+        $"WriteFileToTCCRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
       // check for exists first to avoid an misleading exception in our logs.
       var folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
       if (folderAlreadyExists == false)
@@ -291,7 +271,7 @@ namespace Controllers
       }
 
       log.LogInformation(
-        $"WriteFileToRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
+        $"WriteFileToTCCRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
       return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 
@@ -299,9 +279,9 @@ namespace Controllers
     /// Deletes the importedFile from TCC
     /// </summary>
     /// <returns></returns>
-    protected async Task DeleteFileFromRepository(FileDescriptor fileDescriptor)
+    protected async Task DeleteFileFromTCCRepository(FileDescriptor fileDescriptor)
     {
-      log.LogInformation($"DeleteFileFromRepository: fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)}");
+      log.LogInformation($"DeleteFileFromTCCRepository: fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)}");
 
       var ccFileExistsResult = await fileRepo
         .FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName)
@@ -329,7 +309,7 @@ namespace Controllers
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor, long importedFileId)
+    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate)
     {
       MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult;
       try
@@ -340,23 +320,25 @@ namespace Controllers
       }
       catch (Exception e)
       {
-        var error =
-          $"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}. ";
-        log.LogError(error);
+        log.LogError($"FileImport AddFile in RaptorServices failed with exception. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. isCreate: {isCreate}. Exception Thrown: {e.Message}. ");
+        if (isCreate)
+          await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
+
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
             string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57), "raptorProxy.AddFile", e.Message)));
       }
       log.LogDebug(
         $"NotifyRaptorAddFile: projectId: {projectId} projectUid: {projectUid}, FileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        var error =
-          $"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}. ";
-        log.LogError(error);
+        log.LogError($"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"} isCreate: {isCreate}. ");
+        if (isCreate)
+          await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
+
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(notificationResult.Code, notificationResult.Message));
-        // todo On an Insert only, delete the importedFile which will have been inserted into DB.
       }
     }
 
