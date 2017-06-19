@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Models;
@@ -22,7 +23,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I POST a compaction tag file with code (.*) from the repository")]
     public void WhenIPOSTACompactionTagFileWithCodeFromTheRepository(int code)
     {
-      tagPoster.DoValidRequest(code.ToString());
+      tagPoster.DoValidRequest(code.ToString(), HttpStatusCode.BadRequest);
     }
 
     [Then(@"the Tag File Service response should contain Code (.*) and Message ""(.*)""")]

@@ -6,5 +6,5 @@ Background:
 
 Scenario: CompactionTagFile - Good Request
 	When I POST a compaction tag file with code 100 from the repository
-	Then the Tag File Service response should contain Code 0 and Message "success"
+	Then the Tag File Service response should contain Code 108 and Message "Failed to process tagfile with error: OnChooseMachine. Machine Subscriptions Invalid."
 
