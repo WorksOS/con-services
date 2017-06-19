@@ -319,7 +319,8 @@ namespace Controllers
               contractExecutionStatesEnum.FirstNameWithOffset(45)));
       }
 
-      ProjectBoundaryValidator.ValidateWKT(((CreateProjectEvent) project).ProjectBoundary);
+      if (project is CreateProjectEvent)
+        ProjectBoundaryValidator.ValidateWKT(((CreateProjectEvent) project).ProjectBoundary);
 
       var csFileName = (project is CreateProjectEvent)
         ? ((CreateProjectEvent) project).CoordinateSystemFileName
