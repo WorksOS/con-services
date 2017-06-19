@@ -25,7 +25,13 @@ namespace Repositories
         public async Task<int> StoreEvent(ICustomerEvent evt)
         {
             var upsertedCount = 0;
-          log.LogDebug($"Event type is {evt.GetType().ToString()}");
+          if (evt == null)
+          {
+            log.LogWarning($"Unsupported event type");
+            return 0;
+          }
+
+      log.LogDebug($"Event type is {evt.GetType().ToString()}");
       if (evt is CreateCustomerEvent)
             {
                 var customerEvent = (CreateCustomerEvent) evt;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace src.Models
+namespace MasterDataProxies.Models
 {
   /// <summary>
   /// List of file descriptors

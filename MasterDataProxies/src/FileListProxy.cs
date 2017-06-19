@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MasterDataProxies;
+using MasterDataProxies.Interfaces;
+using MasterDataProxies.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using src.Interfaces;
-using src.Models;
 using VSS.GenericConfiguration;
 
-namespace src
+namespace MasterDataProxies
 {
   public class FileListProxy : BaseProxy, IFileListProxy
   {
