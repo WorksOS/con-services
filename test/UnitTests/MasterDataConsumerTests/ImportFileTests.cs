@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using FlowUploadFilter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProjectWebApiCommon.Models;

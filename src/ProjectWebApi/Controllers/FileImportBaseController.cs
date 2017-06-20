@@ -1,27 +1,26 @@
-﻿using System;
+﻿using KafkaConsumer.Kafka;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using ProjectWebApiCommon.Models;
+using ProjectWebApiCommon.ResultsHandling;
+using ProjectWebApiCommon.Utilities;
+using Repositories;
+using Repositories.DBModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using KafkaConsumer.Kafka;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using ProjectWebApi.Filters;
-using ProjectWebApiCommon.Models;
-using Repositories;
+using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using ProjectWebApiCommon.ResultsHandling;
-using Repositories.DBModels;
-using TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApiCommon.Utilities;
 
 namespace Controllers
 {
@@ -75,10 +74,10 @@ namespace Controllers
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
-    protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
+    protected async Task<Project> GetProject(string projectUid)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation($"GetProject: CustomerUID={customerUid} and projectUid={projectUid}");
+      var customerUid = LogCustomerDetails("GetProject", projectUid);
+
       var project =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
@@ -93,19 +92,18 @@ namespace Controllers
       return project;
     }
 
-
     /// <summary>
     /// Gets the imported file list for a project
     /// </summary>
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFile>> GetImportedFiles(string projectUid)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation($"GetImportedFiles: CustomerUID={customerUid} and projectUid={projectUid}");
+      LogCustomerDetails("GetImportedFiles", projectUid);
+
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
 
-      log.LogInformation($"ImportedFile list contains {importedFiles.Count()} importedFiles");
+      log.LogInformation($"ImportedFile list contains {importedFiles.Count} importedFiles");
       return importedFiles;
     }
 
@@ -115,12 +113,12 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation($"GetImportedFileList: CustomerUID={customerUid} and projectUid={projectUid}");
+      LogCustomerDetails("GetImportedFileList", projectUid);
+
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
 
-      log.LogInformation($"ImportedFile list contains {importedFiles.Count()} importedFiles");
+      log.LogInformation($"ImportedFile list contains {importedFiles.Count} importedFiles");
 
       var importedFileList = importedFiles.Select(importedFile =>
           AutoMapperUtility.Automapper.Map<ImportedFileDescriptor>(importedFile))
@@ -176,7 +174,7 @@ namespace Controllers
       log.LogDebug(
         $"Using Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
 
-      var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
+      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
@@ -201,7 +199,7 @@ namespace Controllers
         ReceivedUTC = nowUtc
       };
 
-      var messagePayload = JsonConvert.SerializeObject(new {DeleteImportedFileEvent = deleteImportedFileEvent});
+      var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
@@ -242,7 +240,7 @@ namespace Controllers
       updateImportedFileEvent.ActionUTC = nowUtc;
       updateImportedFileEvent.ReceivedUTC = nowUtc;
 
-      var messagePayload = JsonConvert.SerializeObject(new {UpdateImportedFileEvent = updateImportedFileEvent});
+      var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
@@ -306,7 +304,7 @@ namespace Controllers
       var ccFileExistsResult = await fileRepo
         .FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName)
         .ConfigureAwait(false);
-      if (ccFileExistsResult == true)
+      if (ccFileExistsResult)
       {
         var ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId,
             fileDescriptor.path + '/' + fileDescriptor.fileName)
@@ -382,6 +380,16 @@ namespace Controllers
       }
     }
 
+    /// <summary>
+    /// Sets activated state for imported files.
+    /// </summary>
+    protected async Task<ImmutableList<ImportedFile>> SetFileActivatedState(string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileUids)
+    {
+      log.LogInformation($"ActivateFile list contains {importedFileUids.Count} importedFiles");
+
+      throw new NotImplementedException();
+    }
+
     #region private
 
     private static string GeneratedFileName(string fileName, string suffix, string extension)
@@ -393,6 +401,14 @@ namespace Controllers
     {
       //Note: ':' is an invalid character for filenames in Windows so get rid of them
       return "_" + surveyedUtc.ToIso8601DateTimeString().Replace(":", string.Empty);
+    }
+
+    private string LogCustomerDetails(string functionName, string projectUid)
+    {
+      var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      log.LogInformation($"{functionName}: CustomerUID={customerUid} and projectUid={projectUid}");
+
+      return customerUid;
     }
 
     #endregion

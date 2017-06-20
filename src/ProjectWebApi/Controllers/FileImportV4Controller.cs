@@ -1,25 +1,25 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Net;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using System.Web.Http;
-using FlowUploadFilter;
-using Microsoft.Extensions.Logging;
+﻿using FlowUploadFilter;
 using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
 using Repositories.DBModels;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Net;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Web.Http;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using MasterDataProxies.Interfaces;
 
 namespace Controllers
 {
@@ -63,12 +63,26 @@ namespace Controllers
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV4([FromQuery] string projectUid)
     {
       log.LogInformation("GetImportedFilesV4");
-      return new ImportedFileDescriptorListResult()
+      return new ImportedFileDescriptorListResult
       {
         ImportedFileDescriptors = await GetImportedFileList(projectUid).ConfigureAwait(false)
       };
     }
 
+    /// <summary>
+    /// Sets activated state on one or more imported files.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="importedFileUids">Collection of file Uids to set the activated state on</param>
+    /// <returns></returns>
+    [Route("api/v4/importedfiles")]
+    [HttpPut]
+    protected async Task<ImmutableList<ActivatedFileDescriptor>> PutImportedFilesV4([FromQuery] string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileUids)
+    {
+      log.LogInformation("ActivateFiles");
+
+      throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Used as a callback by Flow.JS
@@ -117,7 +131,7 @@ namespace Controllers
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
-        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {
@@ -328,6 +342,3 @@ namespace Controllers
     }
   }
 }
-
-
-
