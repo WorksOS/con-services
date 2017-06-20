@@ -21,6 +21,21 @@ namespace ProjectWebApiCommon.Models
   }
 
   /// <summary>
+  /// List of activated ImportedFile descriptors
+  /// </summary>
+  /// <seealso cref="ContractExecutionResult" />
+  public class ActivatedFileDescriptorListResult : ContractExecutionResult
+  {
+    /// <summary>
+    /// Gets or sets the activated ImportedFile descriptors.
+    /// </summary>
+    /// <value>
+    /// The activated ImportedFile descriptors.
+    /// </value>
+    public ImmutableList<ActivatedFileDescriptor> ActivatedFileDescriptors { get; set; }
+  }
+
+  /// <summary>
   /// Single importedfile descriptor
   /// </summary>
   /// <seealso cref="ProjectWebApiCommon.ResultsHandling.ContractExecutionResult" />
@@ -138,7 +153,7 @@ namespace ProjectWebApiCommon.Models
     /// <summary>
     /// Gets or sets the Activation State of the imported file.
     /// </summary>
-    public bool IsActivated { get; set; }
+    //public bool IsActivated { get; set; }
 
     /// <summary>
     /// Gets the path of the imported file
@@ -162,8 +177,24 @@ namespace ProjectWebApiCommon.Models
              && otherImportedFile.ImportedBy == this.ImportedBy
              && otherImportedFile.SurveyedUtc == this.SurveyedUtc
              && otherImportedFile.ImportedUtc == this.ImportedUtc
-            // && otherImportedFile.IsActivated == this.IsActivated
+           //  && otherImportedFile.IsActivated == this.IsActivated
         ;
     }
+  }
+
+  public class ActivatedFileDescriptor
+  {
+    /// <summary>
+    /// Gets or sets the ImportedFile uid.
+    /// </summary>
+    /// <value>
+    /// Is Activated
+    /// </value>
+    public string ImportedFileUid { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Activation State of the imported file.
+    /// </summary>
+    public bool IsActivated { get; set; }
   }
 }

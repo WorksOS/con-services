@@ -1,26 +1,25 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Net;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using System.Web.Http;
-using FlowUploadFilter;
-using Microsoft.Extensions.Logging;
+﻿using FlowUploadFilter;
 using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
 using Repositories.DBModels;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Net;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Web.Http;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using MasterDataProxies.Interfaces;
-using System.Collections.Generic;
 
 namespace Controllers
 {
@@ -68,6 +67,20 @@ namespace Controllers
       };
     }
 
+    /// <summary>
+    /// Sets activated state on one or more imported files.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="importedFileUids">Collection of file Uids to set the activated state on</param>
+    /// <returns></returns>
+    [Route("api/v4/importedfiles")]
+    [HttpPut]
+    protected async Task<ImmutableList<ActivatedFileDescriptor>> PutImportedFilesV4([FromQuery] string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileUids)
+    {
+      log.LogInformation("ActivateFiles");
+
+      throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Used as a callback by Flow.JS
@@ -315,22 +328,6 @@ namespace Controllers
       log.LogInformation(
         $"DeleteImportedFileV4. Completed succesfully. ProjectUid {projectUid} importedFileUid: {importedFileUid}");
       return new ContractExecutionResult();
-    }
-
-    /// <summary>
-    /// Sets activated state on one or more imported files.
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileUids">Collection of files to have the activated state set on</param>
-    /// <param name="isActivated">Boolean value </param>
-    /// <returns></returns>
-    [Route("api/v4/activateFiles")]
-    [HttpPost]
-    protected async Task<ImportedFileDescriptorListResult> SetFileActivatedStateV4(Guid projectUid, IEnumerable<string> importedFileUids, bool isActivated)
-    {
-      log.LogInformation("ActivateFiles");
-
-      throw new NotImplementedException();
     }
   }
 }

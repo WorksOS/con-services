@@ -75,7 +75,7 @@ namespace Controllers
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
-    protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
+    protected async Task<Project> GetProject(string projectUid)
     {
       var customerUid = LogCustomerDetails("GetProject", projectUid);
 
@@ -374,9 +374,9 @@ namespace Controllers
     /// <summary>
     /// Sets activated state for imported files.
     /// </summary>
-    protected async Task<ImmutableList<ImportedFile>> SetFileActivatedState(Guid projectUid, IEnumerable<string> importedFileUids, bool isActivated)
+    protected async Task<ImmutableList<ImportedFile>> SetFileActivatedState(string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileUids)
     {
-      log.LogInformation($"ActivateFile list contains {importedFileUids.Count()} importedFiles");
+      log.LogInformation($"ActivateFile list contains {importedFileUids.Count} importedFiles");
 
       throw new NotImplementedException();
     }
