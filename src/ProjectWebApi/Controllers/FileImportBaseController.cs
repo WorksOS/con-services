@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
@@ -12,6 +11,7 @@ using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
 using Repositories;
 using VSS.GenericConfiguration;
@@ -37,7 +37,6 @@ namespace Controllers
     protected readonly ProjectRepository projectService;
     protected readonly IConfigurationStore store;
     protected readonly string kafkaTopicName;
-    protected string userEmailAddress;
     protected string fileSpaceId;
     protected ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
@@ -132,7 +131,7 @@ namespace Controllers
     /// Creates an imported file. Writes to Db and creates the Kafka event.
     /// </summary>
     /// <returns />
-    protected virtual async Task<CreateImportedFileEvent> CreateImportedFile(Guid customerUid, Guid projectUid,
+    protected async Task<CreateImportedFileEvent> CreateImportedFile(Guid customerUid, Guid projectUid,
       ImportedFileType importedFileType, string filename, DateTime? surveyedUtc,
       string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy)
     {
@@ -189,7 +188,7 @@ namespace Controllers
     /// Creates an imported file. Writes to Db and creates the Kafka event.
     /// </summary>
     /// <returns />
-    protected virtual async Task DeleteImportedFile(Guid projejctUid, Guid importedFileUid)
+    protected async Task DeleteImportedFile(Guid projejctUid, Guid importedFileUid)
     {
       var nowUtc = DateTime.UtcNow;
       var deleteImportedFileEvent = new DeleteImportedFileEvent()
@@ -226,13 +225,18 @@ namespace Controllers
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="importedBy"></param>
     /// <returns></returns>
-    protected virtual async Task<UpdateImportedFileEvent> UpdateImportedFile(
+    protected async Task<UpdateImportedFileEvent> UpdateImportedFile(
       ImportedFile existing,
       string fileDescriptor, DateTime? surveyedUtc,
-      DateTime fileUpdatedUtc, string importedBy)
+      DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy)
     {
       var nowUtc = DateTime.UtcNow;
       var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(existing);
+      updateImportedFileEvent.FileDescriptor = fileDescriptor;
+      updateImportedFileEvent.SurveyedUtc = surveyedUtc;
+      updateImportedFileEvent.FileCreatedUtc = fileCreatedUtc; // as per Barret 19th June 2017
+      updateImportedFileEvent.FileUpdatedUtc = fileUpdatedUtc;
+      updateImportedFileEvent.ImportedBy = importedBy;
       updateImportedFileEvent.ActionUTC = nowUtc;
       updateImportedFileEvent.ReceivedUTC = nowUtc;
 
@@ -269,8 +273,10 @@ namespace Controllers
 
       log.LogInformation(
         $"WriteFileToRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
-      // ignore any failure as dir may already exist
-      var ccMakeFolderResult = await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
+      // check for exists first to avoid an misleading exception in our logs.
+      var folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
+      if (folderAlreadyExists == false)
+        await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
 
       // this does an upsert
       var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length)
@@ -282,6 +288,8 @@ namespace Controllers
             contractExecutionStatesEnum.FirstNameWithOffset(53)));
       }
 
+      log.LogInformation(
+        $"WriteFileToRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
       return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     }
 
@@ -347,6 +355,7 @@ namespace Controllers
         log.LogError(error);
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(notificationResult.Code, notificationResult.Message));
+        // todo On an Insert only, delete the importedFile which will have been inserted into DB.
       }
     }
 

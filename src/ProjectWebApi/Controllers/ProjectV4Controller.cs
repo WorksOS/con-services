@@ -12,6 +12,7 @@ using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using ProjectWebApiCommon.Utilities;
@@ -82,7 +83,7 @@ namespace Controllers
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
-      var customerUid = Guid.Parse(((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType);
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       if (projectRequest == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -92,13 +93,13 @@ namespace Controllers
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
-      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = customerUid;
+      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = Guid.Parse(customerUid);
       if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid();
 
       var project = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
       ProjectDataValidator.Validate(project, projectService);
-      if (project.CustomerUID != customerUid)
+      if (project.CustomerUID.ToString() != customerUid)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(18),
@@ -129,10 +130,10 @@ namespace Controllers
 
       project = await CreateProject(project, customerProject).ConfigureAwait(false);
 
-      var userUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).Name;
+      var userUid = Guid.Parse(((User as TIDCustomPrincipal).Identity as GenericIdentity).Name);
       log.LogDebug($"Creating a geofence for project {project.ProjectName}");
       await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project", project.ProjectBoundary,
-        0, true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        0, true, userUid, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
 
       // do this a late as possible in case something fails. We can cleanup kafka que.
       await CreateKafkaEvents(project, customerProject);
@@ -172,14 +173,20 @@ namespace Controllers
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var projectWithLegacyProjectID = projectService.GetProjectOnly(project.ProjectUID.ToString()).Result;
+
         var customHeaders = (Request.Headers.GetCustomHeaders());
-        customHeaders.Add("X-VisionLink-ClearCache", "true");
+        string caching = null;
+        customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+        if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
+          customHeaders.Add("X-VisionLink-ClearCache", "true");
+
         var coordinateSystemSettingsResult = await raptorProxy
           .CoordinateSystemPost(projectWithLegacyProjectID.LegacyProjectID, project.CoordinateSystemFileContent,
             project.CoordinateSystemFileName, customHeaders).ConfigureAwait(false);
         log.LogDebug($"Post of CS update to RaptorServices returned code: {0} Message {1}.",
           coordinateSystemSettingsResult?.Code ?? -1,
           coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
+
         if (coordinateSystemSettingsResult == null ||
             coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
@@ -223,7 +230,9 @@ namespace Controllers
     [HttpDelete]
     public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromUri]string projectUid)
     {
-      log.LogInformation($"DeleteProjectV4. Project: {projectUid}");
+      var userUid = ((User as TIDCustomPrincipal).Identity as GenericIdentity).Name;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
+      log.LogInformation($"DeleteProjectV4. UserUid: {userUid} customerUid: {customerUid} Project: {projectUid}");
 
       var project = new DeleteProjectEvent()
       {
@@ -263,10 +272,10 @@ namespace Controllers
     public async Task<SubscriptionsListResult> GetSubscriptionsV4()
     {
       log.LogInformation("GetSubscriptionsV4");
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
 
-      //return empty list if no subscriptions available
+      //returns empty list if no subscriptions available
       return new SubscriptionsListResult()
       {
         SubscriptionDescriptors =
@@ -314,7 +323,11 @@ namespace Controllers
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var customHeaders = (Request.Headers.GetCustomHeaders());
-        customHeaders.Add("X-VisionLink-ClearCache", "true");
+        string caching = null;
+        customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+        if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
+          customHeaders.Add("X-VisionLink-ClearCache", "true");
+
         var coordinateSystemSettingsResult = await raptorProxy
           .CoordinateSystemPost(project.ProjectID, project.CoordinateSystemFileContent,
             project.CoordinateSystemFileName, customHeaders).ConfigureAwait(false);

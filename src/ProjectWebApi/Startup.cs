@@ -77,6 +77,7 @@ namespace ProjectWebApi
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
       services.AddTransient<IGeofenceProxy, GeofenceProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<ICustomerProxy, CustomerProxy>();
 
       // todo temp to determine which to use for testing and lower environs
       var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
