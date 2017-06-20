@@ -89,7 +89,7 @@ namespace WebApiTests
       var subscriptionUid3 = Guid.NewGuid();
       var subscriptionUid4 = Guid.NewGuid();
       var legacyProjectId1 = ts.SetLegacyProjectId();
-      var legacyProjectId2 = legacyProjectId1+1;
+      var legacyProjectId2 = legacyProjectId1 + 1;
       var projectUid1 = Guid.NewGuid().ToString();
       var projectUid2 = Guid.NewGuid().ToString();
       var startDateTime = ts.FirstEventDate;
@@ -142,7 +142,7 @@ namespace WebApiTests
       var subscriptionUid3 = Guid.NewGuid();
       var subscriptionUid4 = Guid.NewGuid();
       var legacyProjectId1 = ts.SetLegacyProjectId();
-      var legacyProjectId2 = legacyProjectId1+1;
+      var legacyProjectId2 = legacyProjectId1 + 1;
       var projectUid1 = Guid.NewGuid().ToString();
       var projectUid2 = Guid.NewGuid().ToString();
       var startDateTime = ts.FirstEventDate;
@@ -174,15 +174,16 @@ namespace WebApiTests
       Thread.Sleep(5000);
       var response = ts.CallProjectWebApiV4("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
-      Assert.AreEqual(objresp.SubscriptionDescriptors.Count, 2, " Expecting 2 subscriptions in the results");
-      Assert.AreEqual(objresp.Message, "success", "The message in the response should be success");
+      Assert.AreEqual(3, objresp.SubscriptionDescriptors.Count, " Expected subscriptions mismatch");
+      Assert.AreEqual("success", objresp.Message, "The message in the response should be success");
+
       foreach (var sub in objresp.SubscriptionDescriptors)
       {
-        if (sub.ServiceTypeName == "ProjectMonitoring") { }
-        else
-        { Assert.Fail("The subscription should be Project Monitoring"); }
+        if (sub.ServiceTypeName != "ProjectMonitoring")
+        {
+          Assert.Fail("The subscription should be Project Monitoring");
+        }
       }
     }
-
   }
 }
