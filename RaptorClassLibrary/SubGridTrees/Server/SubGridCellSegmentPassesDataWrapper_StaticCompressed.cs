@@ -21,6 +21,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
     [Serializable]
     public class SubGridCellSegmentPassesDataWrapper_StaticCompressed : SubGridCellSegmentPassesDataWrapperBase, ISubGridCellSegmentPassesDataWrapper
     {
+        /// <summary>
+        /// The set of field descriptors for the attribute being stored in the bit field array compressed form
+        /// </summary>
         private struct EncodedFieldDescriptorsStruct
         {
             public EncodedBitFieldDescriptor MachineIDIndex;
@@ -37,6 +40,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             public EncodedBitFieldDescriptor Amplitude;
             public EncodedBitFieldDescriptor CCA;
 
+            /// <summary>
+            /// Initialise all descriptors
+            /// </summary>
             public void Init()
             {
                 MachineIDIndex.Init();
@@ -54,6 +60,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 CCA.Init();
             }
 
+            /// <summary>
+            /// Serialise all descriptors to the supplied writer
+            /// </summary>
+            /// <param name="writer"></param>
             public void Write(BinaryWriter writer)
             {
                 MachineIDIndex.Write(writer);
@@ -71,6 +81,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 CCA.Write(writer);
             }
 
+            /// <summary>
+            /// Deserialise all descriptors using the supplied reader
+            /// </summary>
+            /// <param name="reader"></param>
             public void Read(BinaryReader reader)
             {
                 MachineIDIndex.Read(reader);
@@ -88,6 +102,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 CCA.Read(reader);
             }
 
+            /// <summary>
+            /// Calculate the chained offsets and numbers of requiredbits for each attribute being stored
+            /// </summary>
+            /// <param name="NumBitsPerCellPass"></param>
             public void CalculateTotalOffsetBits(ref int NumBitsPerCellPass)
             {
                 MachineIDIndex.OffsetBits = 0;
@@ -135,6 +153,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// EncodedColPassCountsBits containes the number of bits required to store the per column counts in BF_PassCounts.
         /// </summary>
         byte EncodedColPassCountsBits;
+
+        /// <summary>
+        /// The offset from the start of the bit field array containing the cell pass information for the cells in the 
+        /// segment after the column index information that is also stored in the bit field arrat
+        /// </summary>
         int FirstPerCellPassIndexOffset;
 
         /// <summary>
@@ -151,6 +174,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// </summary>
         EncodedBitFieldDescriptor PassCountEncodedFieldDescriptor;
 
+        /// <summary>
+        /// The number of bits required to store all the fields from a cell pass within the bit field array
+        /// representation of that record.
+        /// </summary>
         int NumBitsPerCellPass;
 
         /// <summary>
@@ -160,11 +187,24 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
         }
 
+        /// <summary>
+        /// Add a pass to a cell pass list. Not supported as this is an immutable structure.
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="pass"></param>
+        /// <param name="position"></param>
         public void AddPass(uint X, uint Y, CellPass pass, int position = -1)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
+        /// <summary>
+        /// Allocate cell passes for a cell. Not supported as this is an immutable structure.
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="passCount"></param>
         public void AllocatePasses(uint X, uint Y, uint passCount)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
@@ -190,6 +230,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             public int FirstCellPass;
         }
 
+        /// <summary>
+        /// Retrieves the number of passes present in this segment for the cell identified by col and row, as well as
+        /// the index of the first cell pass in that list within the overall list of passes for the cell in this segment
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
         public SubGridCellPassCountRecord GetPassCountAndFirstCellPassIndex(uint Col, uint Row)
         {
             // Read the per column first cell pass index, then read the first cell pass offset for the cell itself.
@@ -248,6 +295,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return cellPasses;
         }
 
+        /// <summary>
+        /// Extracts a single cell pass from the cell passes within this segment from the cell identified by X and Y
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="passNumber"></param>
+        /// <returns></returns>
         public CellPass ExtractCellPass(uint X, uint Y, int passNumber)
         {
             // X & Y indicate the cell lcoation in the subgrid, and passNumber represents the index of the pass in the cell that is required
@@ -259,6 +313,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return ExtractCellPass(Index.FirstCellPass + passNumber);
         }
 
+        /// <summary>
+        /// Extracts a single cell pass from the cell passes held within this segment where the cell pass is identified by its index
+        /// within the set of cell passes stored for the segment
+        /// </summary>
+        /// <param name="Index"></param>
+        /// <returns></returns>
         public CellPass ExtractCellPass(int Index)
         {
             // IMPORTANT: The fields read in this method must be read in the  same order as they were written during encoding
@@ -430,7 +490,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             int segmentPassCount = 0;
             BitFieldArrayRecordsDescriptor[] recordDescriptors;
-            byte TotalOffsetBits;
             int[] ColFirstCellPassIndexes = new int[SubGridTree.SubGridTreeDimension];
             int[,] PerCellColRelativeFirstCellPassIndexes = new int[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
             int cellPassIndex;
@@ -686,8 +745,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     BF_PassCounts.StreamWrite(firstPassIndex, EncodedColPassCountsBits);
                 }
 
-                // Write the cell pass count for each cell relative to the column based
-                // cell pass count
+                // Write the cell pass count for each cell relative to the column based cell pass count
                 SubGridUtilities.SubGridDimensionalIterator((col, row) => BF_PassCounts.StreamWrite(PerCellColRelativeFirstCellPassIndexes[col, row], PassCountEncodedFieldDescriptor.RequiredBits));
             }
             finally

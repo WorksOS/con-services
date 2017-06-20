@@ -47,7 +47,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public bool LocateTime(uint X, uint Y, DateTime time, out int index)
         {
-            return PassData[X, Y].LocateTime(time, out index);                    
+            bool exactMatch = PassData[X, Y].LocateTime(time, out index);
+
+            if (!exactMatch)
+            {
+                // return previous cell pass as this is the one 'in effect' for the time being observed
+                index--;
+            }
+
+            return exactMatch;
         }
 
         public void Read(BinaryReader reader)

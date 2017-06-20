@@ -15,7 +15,7 @@ namespace VSS.VisionLink.Raptor.Compression
     {
         /// <summary>
         /// Performs a computation to modify the height into the form used by the compressed static version
-        /// of the segment cell pass information
+        /// of the segment cell pass information, which is an integer number of millimeters above datum.
         /// </summary>
         /// <param name="height"></param>
         /// <returns></returns>
@@ -23,7 +23,8 @@ namespace VSS.VisionLink.Raptor.Compression
 
         /// <summary>
         /// Performs a computation to modify the time into the form used by the compressed static version
-        /// of the segment cell pass information
+        /// of the segment cell pass information, which is a relative time offset from an origin, expressed with 
+        /// a resolution of seconds.
         /// </summary>
         /// <param name="time"></param>
         /// <returns></returns>
@@ -31,7 +32,8 @@ namespace VSS.VisionLink.Raptor.Compression
 
         /// <summary>
         /// Performs a computation to modify the GPS mode into the form used by the compressed static version
-        /// of the segment cell pass information
+        /// of the segment cell pass information, which is a bit mask operation to remove other information held within the
+        /// GPSMode store that may contaminate this quantity.
         /// </summary>
         /// <param name="mode"></param>
         /// <returns></returns>

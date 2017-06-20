@@ -115,6 +115,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         // the transient CellPassesStorage reference and then encoded into the cache format)
         BitFieldArray BF_CellPasses;
 
+        /// <summary>
+        /// The set of field descriptors for the attribute being stored in the bit field array compressed form
+        /// </summary>
         private struct EncodedFieldDescriptorsStruct
         {
             public EncodedBitFieldDescriptor Time;
@@ -125,6 +128,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             public EncodedBitFieldDescriptor MaterialTemperature;
             public EncodedBitFieldDescriptor CCA;
 
+            /// <summary>
+            /// Initialise all descriptors
+            /// </summary>
             public void Init()
             {
                 Time.Init();
@@ -136,6 +142,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 CCA.Init();
             }
 
+            /// <summary>
+            /// Serialise all descriptors to the supplied writer
+            /// </summary>
+            /// <param name="writer"></param>
             public void Write(BinaryWriter writer)
             {
                 Time.Write(writer);
@@ -147,6 +157,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 CCA.Write(writer);
             }
 
+            /// <summary>
+            /// Deserialise all descriptors using the supplied reader
+            /// </summary>
+            /// <param name="reader"></param>
             public void Read(BinaryReader reader)
             {
                 Time.Read(reader);
@@ -158,6 +172,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 CCA.Read(reader);
             }
 
+            /// <summary>
+            /// Calculate the chained offsets and numbers of requiredbits for each attribute being stored
+            /// </summary>
+            /// <param name="NumBitsPerCellPass"></param>
             public void CalculateTotalOffsetBits(ref int NumBitsPerCellPass)
             {
                 Time.OffsetBits = 0;

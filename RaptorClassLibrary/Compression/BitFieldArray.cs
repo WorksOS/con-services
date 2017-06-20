@@ -18,9 +18,27 @@ namespace VSS.VisionLink.Raptor.Compression
     /// </summary>
     public struct BitFieldArray
     {
+        /// <summary>
+        /// Read this many bytes at a time from the BitFieldArray storage when reading values
+        /// </summary>
         public const int kNBytesReadAtATime = 1;
+
+        /// <summary>
+        /// Read this many bits at a time from the BitFieldArray storage when reading values
+        /// </summary>
         public const int kNBitsReadAtATime = kNBytesReadAtATime * 8;
+
+        /// <summary>
+        /// The number of bits necessary to shift the offset address for a field in a bit field array to 
+        /// convert the the bit address into logical blocks (ie: the block size at which bits are read from memory
+        /// when reading or writing values)
+        /// </summary>
         public const int kBitLocationToBlockShift = 3; // 1 Byte : 3, 2 Bytes : 4, 4 Bytes : 5
+
+        /// <summary>
+        /// The number of bits required to express the power of 2 sized block of bits, eg: a block of 8 bits needs
+        /// 3 bits to express the number range 0..7m so the mask if 0x7 (0b111), etc
+        /// </summary>
         public const int kBitsRemainingInStorageBlockMask = 0x7; // 1 Byte : $7, 2 bytes : $f, 4 bytes : $1f
 
         /// <summary>
@@ -36,6 +54,9 @@ namespace VSS.VisionLink.Raptor.Compression
         // FNumBits indicates the total number of bits stored in the bit field array
         private uint FNumBits;
 
+        /// <summary>
+        /// Allocates a block of memory large enough to store the number of bits required (See FNumBits * MemorySize())
+        /// </summary>
         private void AllocateBuffer()
         {
             if (MemorySize() == 0)
@@ -64,11 +85,16 @@ namespace VSS.VisionLink.Raptor.Compression
         /// MemorySize returns the total number of bytes occupied by the array of bitfield records
         /// </summary>
         /// <returns></returns>
-        public uint MemorySize() => (NumBits & 0x7) != 0 ? NumBits >> 3 + 1 : NumBits >> 3;
+        public uint MemorySize() => (FNumBits & 0x7) != 0 ? FNumBits >> kBitLocationToBlockShift + 1 : FNumBits >> kBitLocationToBlockShift;
 
-        public void Initialise(int ABitsPerRecord, int ANumRecords)
+        /// <summary>
+        /// Initialise the bit field array ready to store NumRecords each requiring BitsPerRecord storage
+        /// </summary>
+        /// <param name="BitsPerRecord"></param>
+        /// <param name="NumRecords"></param>
+        public void Initialise(int bitsPerRecord, int numRecords)
         {
-            FNumBits = (uint)((long)ABitsPerRecord * ANumRecords);
+            FNumBits = (uint)((long)bitsPerRecord * numRecords);
 
             AllocateBuffer();
         }
@@ -143,7 +169,7 @@ namespace VSS.VisionLink.Raptor.Compression
             // least significant AValueBits in Value
             AValue = AValue & ((1 << ValueBits) - 1);
 
-            int BytePointer = (int)(StreamWriteBitPos >> 3);
+            int BytePointer = (int)(StreamWriteBitPos >> kBitLocationToBlockShift);
             int AvailBitsInCurrentStorageByte = 8 - (byte)(StreamWriteBitPos & 0x7);
 
             // Write initial bits into storage byte
@@ -196,7 +222,7 @@ namespace VSS.VisionLink.Raptor.Compression
             // least significant AValueBits in Value
             AValue = AValue & ((1 << AValueBits) - 1);
 
-            uint BytePointer = StreamWriteBitPos >> 3; // Pointer(NativeUInt(FStorage) + NativeUInt(FStreamWriteBitPos SHR 3));
+            uint BytePointer = StreamWriteBitPos >> kBitLocationToBlockShift;
             int AvailBitsInCurrentStorageByte = (int)(8 - (StreamWriteBitPos & 0x7));
 
             // Write initial bits into storage byte
