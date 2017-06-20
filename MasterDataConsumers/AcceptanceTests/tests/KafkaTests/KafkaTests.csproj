@@ -16,6 +16,7 @@
     <None Update="appsettings.json;log4nettest.xml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
+    <None Include="appsettings.json;log4nettest.xml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
