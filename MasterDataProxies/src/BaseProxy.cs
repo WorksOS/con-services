@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
 using MasterDataProxies.Models;
-using Newtonsoft.Json.Linq;
-
 
 namespace MasterDataProxies
 {
@@ -35,10 +32,11 @@ namespace MasterDataProxies
         /// <param name="urlKey">The configuration store key for the URL</param>
         /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
         /// <param name="payload">The payload of the request</param>
+        /// <param name="route">Additional routing to add to the base URL (optional)</param>
         /// <returns>The item</returns>
-        protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders)
+        protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null)
         {
-            var url = ExtractUrl(urlKey);
+            var url = ExtractUrl(urlKey, route);
             T result = default(T);
             try
             {
@@ -68,10 +66,11 @@ namespace MasterDataProxies
         /// </summary>
         /// <param name="urlKey">The configuration store key for the URL</param>
         /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+        /// <param name="route">Additional routing to add to the base URL (optional)</param>
         /// <returns>List of items</returns>
-        private async Task<List<T>> GetList<T>(string urlKey, IDictionary<string, string> customHeaders) where T : IData
+        private async Task<List<T>> GetList<T>(string urlKey, IDictionary<string, string> customHeaders, string route = null) where T : IData
         {
-            var url = ExtractUrl(urlKey);
+            var url = ExtractUrl(urlKey, route);
 
             List<T> result = null;
             try
@@ -103,10 +102,11 @@ namespace MasterDataProxies
     /// <param name="urlKey">The configuration store key for the URL</param>
     /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="queryParams">Query parameters for the request (optional)</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
-    protected async Task<T> GetItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams=null)
+    protected async Task<T> GetItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams=null, string route=null)
     {
-      var url = ExtractUrl(urlKey);
+      var url = ExtractUrl(urlKey, route);
       if (!string.IsNullOrEmpty(queryParams))
       {
         url += queryParams;
@@ -136,19 +136,7 @@ namespace MasterDataProxies
       return result;
     }
 
-    private string ExtractUrl(string urlKey)
-    {
-        string url = configurationStore.GetValueString(urlKey);
-        log.LogInformation(string.Format("{0}: {1}", urlKey, url));
 
-        if (url == null)
-        {
-            var errorString = string.Format("Your application is missing an environment variable {0}", urlKey);
-            log.LogError(errorString);
-            throw new InvalidOperationException(errorString);
-        }
-        return url;
-    }
 
         /// <summary>
         /// Gets a master data item. If the item is not in the cache then requests items from the relevant service and adds them to the cache.
@@ -157,9 +145,10 @@ namespace MasterDataProxies
         /// <param name="cacheLife">How long to cache items</param>
         /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
         /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+        /// <param name="route">Additional routing to add to the base URL (optional)</param>
         /// <returns>Master data item</returns>
-        protected async Task<T> GetItem<T>(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders) where T : IData
-    {
+        protected async Task<T> GetItem<T>(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders, string route = null) where T : IData
+        {
             T cacheData;
             string caching = null;
             customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
@@ -173,7 +162,7 @@ namespace MasterDataProxies
                     SlidingExpiration = cacheLife
                 };
 
-                var list = await GetList<T>(urlKey, customHeaders);
+                var list = await GetList<T>(urlKey, customHeaders, route);
                 foreach (var item in list)
                 {
                     var data = item as IData;
@@ -192,10 +181,11 @@ namespace MasterDataProxies
         /// <param name="cacheLife">How long to cache the list</param>
         /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
         /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+        /// <param name="route">Additional routing to add to the base URL (optional)</param>
         /// <returns>List of Master data items</returns>
         protected async Task<List<T>> GetList<T>(string customerUid, TimeSpan cacheLife, string urlKey,
-            IDictionary<string, string> customHeaders) where T : IData
-    {
+                IDictionary<string, string> customHeaders, string route = null) where T : IData
+        {
             List<T> cacheData;
             string caching = null;
             customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
@@ -208,7 +198,7 @@ namespace MasterDataProxies
                 {
                     SlidingExpiration = cacheLife
                 };
-                cacheData = await GetList<T>(urlKey, customHeaders);
+                cacheData = await GetList<T>(urlKey, customHeaders, route);
                 cache.Set(customerUid, cacheData, opts);
             }
             return cacheData;
@@ -223,9 +213,10 @@ namespace MasterDataProxies
         /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
         /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
         /// <param name="queryParams">Query parameters for the request (optional)</param>
+        /// <param name="route">Additional routing to add to the base URL (optional)</param>
         /// <returns>List of Master data items</returns>
         protected async Task<T> GetContainedList<T>(string uid, TimeSpan cacheLife, string urlKey,
-                IDictionary<string, string> customHeaders, string queryParams = null)
+                    IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
         {
           T cacheData;
           string caching = null;
@@ -240,10 +231,27 @@ namespace MasterDataProxies
               SlidingExpiration = cacheLife
             };
 
-            cacheData = await GetItem<T>(urlKey, customHeaders, queryParams);
+            cacheData = await GetItem<T>(urlKey, customHeaders, queryParams, route);
             cache.Set(uid, cacheData, opts);
           }
           return cacheData;
         }
+      private string ExtractUrl(string urlKey, string route)
+      {
+        string url = configurationStore.GetValueString(urlKey);
+        log.LogInformation(string.Format("{0}: {1}, route={2}", urlKey, url, route));
+
+        if (url == null)
+        {
+          var errorString = string.Format("Your application is missing an environment variable {0}", urlKey);
+          log.LogError(errorString);
+          throw new InvalidOperationException(errorString);
+        }
+        if (!string.IsNullOrEmpty(route))
+        {
+          url += route;
+        }
+        return url;
+      }
   }
 }

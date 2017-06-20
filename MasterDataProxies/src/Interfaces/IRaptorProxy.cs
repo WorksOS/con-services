@@ -13,9 +13,11 @@ namespace MasterDataProxies.Interfaces
     Task<CoordinateSystemSettings> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFilename,
             IDictionary<string, string> customHeaders = null);
 
-    Task<ContractExecutionResult> AddFile(long? projectId, Guid? projectUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null);
+    Task<ContractExecutionResult> AddFile(Guid projectUid, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null);
 
-    Task<ContractExecutionResult> DeleteFile(long? projectId, Guid? projectUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null);
+    Task<ContractExecutionResult> DeleteFile(Guid projectUid, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null);
+
+    Task<ContractExecutionResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders = null);
 
   }
 }
