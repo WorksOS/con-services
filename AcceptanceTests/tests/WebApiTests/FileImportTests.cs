@@ -454,7 +454,8 @@ namespace WebApiTests
       ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult2, true);
     }
 
-    [TestMethod]// [Ignore]
+    [TestMethod]
+    [Ignore]
     public void TestImportANewFileThenUpdateTheSurveyedSurfaceFile()
     {
       const string testName = "File Import 7";
@@ -599,8 +600,6 @@ namespace WebApiTests
       ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[1], expectedResult, true);
 
       var activatedFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/activatedfiles?projectUid={projectUid}", customerUid);
-
-
     }
   }
 }
