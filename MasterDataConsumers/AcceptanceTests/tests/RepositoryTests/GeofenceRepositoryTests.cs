@@ -76,6 +76,41 @@ namespace RepositoryTests
     }
 
     /// <summary>
+    /// Create Geofence - Happy path 
+    ///   null description
+    /// </summary>
+    [TestMethod]
+    public void CreateGeofence_NullDescription()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = null,
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var s = geofenceContext.StoreEvent(createGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Unable to store geofence");
+
+      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      g.Wait();
+      var projectGeofences = g.Result.ToList();
+      Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
+      Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
+    }
+
+    /// <summary>
     /// Create Geofenced - Already exists
     ///   geofence exists already.
     /// </summary>
