@@ -1,6 +1,6 @@
+using ProjectWebApiCommon.ResultsHandling;
 using System;
 using System.Collections.Immutable;
-using ProjectWebApiCommon.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ProjectWebApiCommon.Models
@@ -43,7 +43,7 @@ namespace ProjectWebApiCommon.Models
   {
     public ImportedFileDescriptorSingleResult(ImportedFileDescriptor importedFileDescriptor)
     {
-      this.ImportedFileDescriptor = importedFileDescriptor;
+      ImportedFileDescriptor = importedFileDescriptor;
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ namespace ProjectWebApiCommon.Models
     /// The Project uid.
     /// </value>
     public string ProjectUid { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the file uid.
     /// </summary>
@@ -99,7 +99,7 @@ namespace ProjectWebApiCommon.Models
     /// <value>
     /// The name of the file type.
     /// </value>
-    public string ImportedFileTypeName => this.ImportedFileType.ToString();
+    public string ImportedFileTypeName => ImportedFileType.ToString();
 
     /// <summary>
     /// Gets or sets the name of the file.
@@ -153,7 +153,7 @@ namespace ProjectWebApiCommon.Models
     /// <summary>
     /// Gets or sets the Activation State of the imported file.
     /// </summary>
-    //public bool IsActivated { get; set; }
+    public bool IsActivated { get; set; }
 
     /// <summary>
     /// Gets the path of the imported file
@@ -177,7 +177,7 @@ namespace ProjectWebApiCommon.Models
              && otherImportedFile.ImportedBy == this.ImportedBy
              && otherImportedFile.SurveyedUtc == this.SurveyedUtc
              && otherImportedFile.ImportedUtc == this.ImportedUtc
-           //  && otherImportedFile.IsActivated == this.IsActivated
+             && otherImportedFile.IsActivated == this.IsActivated
         ;
     }
   }
