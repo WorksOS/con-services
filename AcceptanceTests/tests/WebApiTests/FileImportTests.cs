@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtility;
 
 namespace WebApiTests
@@ -407,7 +407,8 @@ namespace WebApiTests
     }
 
 
-    [TestMethod] [Ignore]
+    [TestMethod]
+    [Ignore]
     public void TestImportANewFileThenUpdateTheDesignSurfaceFile()
     {
       const string testName = "File Import 7";
@@ -438,13 +439,10 @@ namespace WebApiTests
        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
-      var fileName1 = "FileImportFiles" + ts.FileSeperator + "TestDesignSurface1.ttm";
-      var fileName2 = "FileImportFiles" + ts.FileSeperator + "TestDesignSurface1.ttm";
-
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name        | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                  |", // SurveyedUtc               |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fileName1} | 1                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com  |", // {startDateTime}           |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fileName2} | 1                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testAnotherUser@trimble.com |" }; // {startDateTime.AddDays(5)}|"};
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com  |", // {startDateTime}           |",
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 1                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testAnotherUser@trimble.com |" }; // {startDateTime.AddDays(5)}|"};
       var filesResult = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
@@ -487,13 +485,10 @@ namespace WebApiTests
        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
       ts.PublishEventCollection(projectEventArray);
 
-      var fileName1 = "FileImportFiles" + ts.FileSeperator + "TestDesignSurface1.ttm";
-      var fileName2 = "FileImportFiles" + ts.FileSeperator + "TestDesignSurface1.ttm";
-
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name        | ImportedFileType | FileCreatedUtc              | FileUpdatedUtc              | ImportedBy                 | SurveyedUtc     |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fileName1} | 2                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | {startDateTime} |",
-      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fileName2} | 2                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | {startDateTime} |"};
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime}             | {startDateTime.AddDays(5)}  | testProjectMDM@trimble.com | {startDateTime} |",
+      $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {TestFile.TestDesignSurface1} | 2                | {startDateTime.AddDays(10)} | {startDateTime.AddDays(10)} | testProjectMDM@trimble.com | {startDateTime} |"};
       var filesResult = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
@@ -506,7 +501,8 @@ namespace WebApiTests
     }
 
 
-    [TestMethod] [Ignore]
+    [TestMethod]
+    [Ignore]
     public void TestImportANewFileThenDeleteTheAlignmentFile()
     {
       const string testName = "File Import 7";
