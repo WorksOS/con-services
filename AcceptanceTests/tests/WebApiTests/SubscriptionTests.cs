@@ -174,7 +174,7 @@ namespace WebApiTests
       Thread.Sleep(5000);
       var response = ts.CallProjectWebApiV4("api/v4/subscriptions", "GET", null, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<SubscriptionsListResult>(response);
-      Assert.AreEqual(3, objresp.SubscriptionDescriptors.Count, " Expected subscriptions mismatch");
+      Assert.AreEqual(2, objresp.SubscriptionDescriptors.Count, " Expected subscriptions mismatch");
       Assert.AreEqual("success", objresp.Message, "The message in the response should be success");
 
       foreach (var sub in objresp.SubscriptionDescriptors)
