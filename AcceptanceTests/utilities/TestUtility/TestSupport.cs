@@ -35,9 +35,6 @@ namespace TestUtility
     public Guid GeofenceUid { get; set; }
     public Guid SubscriptionUid { get; set; }
     public string CustomerId { get; set; }
-
-    public string FileSeperator { get; set; }
-
     public CreateProjectEvent CreateProjectEvt { get; set; }
     public UpdateProjectEvent UpdateProjectEvt { get; set; }
     public DeleteProjectEvent DeleteProjectEvt { get; set; }
@@ -78,17 +75,8 @@ namespace TestUtility
       SetCustomerUid();
       SetGeofenceUid();
       SetSubscriptionUid();
-      SetFileSeperator();
     }
-
-    /// <summary>
-    /// Set the file seperator
-    /// </summary>
-    private void SetFileSeperator()
-    {
-      FileSeperator = tsCfg.operatingSystem == "Windows_NT" ? "\\" : "//";
-    }
-
+    
     /// <summary>
     /// Set the legacy asset id
     /// </summary>
