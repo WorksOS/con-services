@@ -1032,23 +1032,6 @@ namespace RepositoryTests
         return false;
     }
 
-    private CreateProjectEvent CopyModel(Project project)
-    {
-      return new CreateProjectEvent()
-      {
-        ProjectUID = Guid.Parse(project.ProjectUID),
-        ProjectID = project.LegacyProjectID,
-        ProjectName = project.Name,
-        ProjectType = project.ProjectType,
-        ProjectTimezone = project.ProjectTimeZone,
-
-        ProjectStartDate = project.StartDate,
-        ProjectEndDate = project.EndDate,
-        ProjectBoundary = project.GeometryWKT,
-        ActionUTC = project.LastActionedUTC
-      };
-    }
-
     private Project CopyModel(CreateProjectEvent kafkaProjectEvent)
     {
       return new Project()
@@ -1084,8 +1067,5 @@ namespace RepositoryTests
       Assert.AreEqual(createGeofenceEvent.GeometryWKT, returnedProject.GeometryWKT, "Incorrect geometry");
     }
     #endregion
-
   }
 }
- 
- 

@@ -308,50 +308,5 @@ namespace RepositoryTests
     }
 
     #endregion ImportedFiles
-
-
-    #region Private
-    private CreateProjectEvent CopyModel(Project project)
-    {
-      return new CreateProjectEvent()
-      {
-        ProjectUID = Guid.Parse(project.ProjectUID),
-        ProjectID = project.LegacyProjectID,
-        ProjectName = project.Name,
-        ProjectType = project.ProjectType,
-        ProjectTimezone = project.ProjectTimeZone,
-
-        ProjectStartDate = project.StartDate,
-        ProjectEndDate = project.EndDate,
-        ActionUTC = project.LastActionedUTC,
-        ProjectBoundary = project.GeometryWKT,
-        CoordinateSystemFileName = project.CoordinateSystemFileName
-      };
-    }
-
-    private Repositories.DBModels.Project CopyModel(CreateProjectEvent kafkaProjectEvent)
-    {
-      return new Project()
-      {
-        ProjectUID = kafkaProjectEvent.ProjectUID.ToString(),
-        LegacyProjectID = kafkaProjectEvent.ProjectID,
-        Name = kafkaProjectEvent.ProjectName,
-        ProjectType = kafkaProjectEvent.ProjectType,
-        // IsDeleted =  N/A
-
-        ProjectTimeZone = kafkaProjectEvent.ProjectTimezone,
-        LandfillTimeZone = TimeZone.WindowsToIana(kafkaProjectEvent.ProjectTimezone),
-
-        LastActionedUTC = kafkaProjectEvent.ActionUTC,
-        StartDate = kafkaProjectEvent.ProjectStartDate,
-        EndDate = kafkaProjectEvent.ProjectEndDate,
-        GeometryWKT = kafkaProjectEvent.ProjectBoundary,
-        CoordinateSystemFileName = kafkaProjectEvent.CoordinateSystemFileName
-      };
-    }
-    #endregion Private
-
   }
 }
- 
- 

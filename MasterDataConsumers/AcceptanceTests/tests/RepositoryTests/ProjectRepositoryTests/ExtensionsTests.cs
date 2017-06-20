@@ -1,10 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repo.Extensions;
 
-namespace RepositoryTests
+namespace RepositoryTests.ProjectRepositoryTests
 {
   [TestClass]
-  public class ProjectRepositoryExtensionsTests
+  public class ExtensionsTests
     {
       [TestMethod]
       [DataRow(0, 0)]

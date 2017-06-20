@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using log4netExtensions;
-using VSS.GenericConfiguration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repositories;
 using Repositories.DBModels;
+using RepositoryTests.Internal;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace RepositoryTests
+namespace RepositoryTests.ProjectRepositoryTests
 {
   [TestClass]
-  public class ProjectRepositoryTests
+  public class RepositoryTests
   {
-    IServiceProvider _serviceProvider = null;
-    CustomerRepository _customerContext = null;
-    ProjectRepository _projectContext = null;
-    SubscriptionRepository _subscriptionRepository = null;
+    IServiceProvider _serviceProvider;
+    CustomerRepository _customerContext;
+    ProjectRepository _projectContext;
 
     [TestInitialize]
     public void Init()
@@ -32,13 +32,13 @@ namespace RepositoryTests
 
       _serviceProvider = new ServiceCollection()
         .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
+        .AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .BuildServiceProvider();
 
       _customerContext = new CustomerRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
       _projectContext = new ProjectRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
-      _subscriptionRepository = new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
     }
 
 
@@ -54,9 +54,8 @@ namespace RepositoryTests
     public void CreateProjectWithCustomer_HappyPath()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -64,25 +63,24 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         Description = "the Description",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
-
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        CoordinateSystemFileContent = new byte[] {0, 1, 2, 3, 4},
+        CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
         CoordinateSystemFileName = "thisLocation\\this.cs"
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -107,7 +105,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CoordinateSystemLastActionedUTC = createProjectEvent.ActionUTC;
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
@@ -127,9 +125,8 @@ namespace RepositoryTests
     public void CreateProjectWithCustomer_HappyPath_Unicode()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -137,25 +134,24 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name(株)城内組　二見地区築堤護岸工事",
         Description = "the Description(株)城内組　二見地区築堤護岸工事",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
-
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        CoordinateSystemFileContent = new byte[] {0, 1, 2, 3, 4},
+        CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
         CoordinateSystemFileName = "thisLocation\\this.cs"
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -180,7 +176,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CoordinateSystemLastActionedUTC = createProjectEvent.ActionUTC;
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
@@ -200,16 +196,14 @@ namespace RepositoryTests
     public void CreateProjectWithCustomer_HappyPath_NoLegacyProjectId()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = 0,
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
-
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
@@ -222,7 +216,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       var g = _projectContext.GetProjectOnly(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
@@ -242,16 +236,14 @@ namespace RepositoryTests
     public void CreateProjectWithCustomer_HappyPath_DuplicateLegacyProjectId()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createProjectEvent1 = new CreateProjectEvent()
+      var createProjectEvent1 = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
-
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
@@ -259,14 +251,13 @@ namespace RepositoryTests
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
       };
 
-      var createProjectEvent2 = new CreateProjectEvent()
+      var createProjectEvent2 = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = createProjectEvent1.ProjectID,
         ProjectName = "The Project Name 2",
         ProjectType = createProjectEvent1.ProjectType,
         ProjectTimezone = createProjectEvent1.ProjectTimezone,
-
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
@@ -294,9 +285,8 @@ namespace RepositoryTests
     public void CreateProjectWithCustomer_HappyPathButOutOfOrder()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -304,14 +294,13 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
-
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
@@ -319,7 +308,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -344,7 +333,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Customer event not written");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
@@ -363,15 +352,14 @@ namespace RepositoryTests
     public void CreateProject_NoCustomer()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -388,12 +376,12 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not written");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       g = _projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve Project from ProjectRepo");
       Assert.AreEqual(project, g.Result, "Project details are incorrect from ProjectRepo");
-      Assert.AreEqual("Pacific/Auckland", g.Result.LandfillTimeZone,
+      Assert.AreEqual(ProjectTimezones.PacificAuckland, g.Result.LandfillTimeZone,
         "Project landfill timeZone is incorrect from ProjectRepo");
 
       // should fail as there is no Customer or CustProject
@@ -411,9 +399,8 @@ namespace RepositoryTests
     public void CreateProjectWithCustomer_ProjectExists()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -421,13 +408,13 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -436,7 +423,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -464,7 +451,7 @@ namespace RepositoryTests
       createProjectEvent.ActionUTC = createProjectEvent.ActionUTC.AddMinutes(-2);
       _projectContext.StoreEvent(createProjectEvent).Wait();
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.LastActionedUTC = actionUtc;
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
@@ -484,9 +471,8 @@ namespace RepositoryTests
     public void CreateProjectWithCustomer_ProjectExistsButIsDummy()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -494,13 +480,13 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -509,7 +495,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEventEarlier = new CreateProjectEvent()
+      var createProjectEventEarlier = new CreateProjectEvent
       {
         ProjectUID = createProjectEvent.ProjectUID,
         ProjectID = createProjectEvent.ProjectID,
@@ -524,7 +510,7 @@ namespace RepositoryTests
         ActionUTC = createProjectEvent.ActionUTC.AddDays(-1)
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -553,7 +539,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Earlier Project event should have been written");
 
-      Project project = CopyModel(createProjectEventEarlier);
+      Project project = TestHelpers.CopyModel(createProjectEventEarlier);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
@@ -572,9 +558,8 @@ namespace RepositoryTests
     public void UpdateProject_HappyPath()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -582,25 +567,25 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
 
-        CoordinateSystemFileContent = new byte[] {0, 1, 2, 3, 4},
+        CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
         CoordinateSystemFileName = "thisLocation\\this.cs",
         ActionUTC = actionUtc
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -609,7 +594,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var updateProjectEvent = new UpdateProjectEvent()
+      var updateProjectEvent = new UpdateProjectEvent
       {
         ProjectUID = createProjectEvent.ProjectUID,
         ProjectName = "The NEW Project Name",
@@ -641,7 +626,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not updated");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.Name = updateProjectEvent.ProjectName;
       project.EndDate = updateProjectEvent.ProjectEndDate;
@@ -662,9 +647,8 @@ namespace RepositoryTests
     public void UpdateProject_IgnoreNulls()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -672,13 +656,13 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -687,7 +671,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -696,7 +680,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var updateProjectEvent = new UpdateProjectEvent()
+      var updateProjectEvent = new UpdateProjectEvent
       {
         ProjectUID = createProjectEvent.ProjectUID,
         ProjectType = createProjectEvent.ProjectType,
@@ -715,7 +699,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not updated");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       //project.Name = createProjectEvent.ProjectName;
       //project.EndDate = createProjectEvent.ProjectEndDate;
@@ -737,9 +721,8 @@ namespace RepositoryTests
     public void UpdateProject_OldUpdate()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -747,13 +730,13 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -762,7 +745,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -771,7 +754,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var updateProjectEvent = new UpdateProjectEvent()
+      var updateProjectEvent = new UpdateProjectEvent
       {
         ProjectUID = createProjectEvent.ProjectUID,
         ProjectName = "The NEW Project Name",
@@ -802,7 +785,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(0, s.Result, "Project event not updated");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
@@ -821,9 +804,8 @@ namespace RepositoryTests
     public void DeleteProject_HappyPath()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -831,13 +813,13 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -846,7 +828,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -855,7 +837,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var deleteProjectEvent = new DeleteProjectEvent()
+      var deleteProjectEvent = new DeleteProjectEvent
       {
         ProjectUID = createProjectEvent.ProjectUID,
         ActionUTC = actionUtc.AddHours(1)
@@ -881,7 +863,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Project event not deleted");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.IsDeleted = true;
       project.LastActionedUTC = deleteProjectEvent.ActionUTC;
@@ -904,9 +886,8 @@ namespace RepositoryTests
     public void DeleteProject_Permanently()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -914,13 +895,13 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -929,7 +910,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -938,7 +919,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var deleteProjectEvent = new DeleteProjectEvent()
+      var deleteProjectEvent = new DeleteProjectEvent
       {
         ProjectUID = createProjectEvent.ProjectUID,
         DeletePermanently = true,
@@ -973,9 +954,8 @@ namespace RepositoryTests
     public void DeleteProject_OldActionUTC()
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -983,13 +963,13 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -998,7 +978,7 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -1007,7 +987,7 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var deleteProjectEvent = new DeleteProjectEvent()
+      var deleteProjectEvent = new DeleteProjectEvent
       {
         ProjectUID = createProjectEvent.ProjectUID,
         ActionUTC = ActionUTC.AddHours(-1)
@@ -1033,7 +1013,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(0, s.Result, "Project event should not be deleted");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -1056,9 +1036,8 @@ namespace RepositoryTests
     public void AssociateProjectWithCustomer_HappyPath()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -1066,13 +1045,13 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -1081,7 +1060,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -1090,7 +1069,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var updateAssociateCustomerProjectEvent = new AssociateProjectCustomer()
+      var updateAssociateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -1119,7 +1098,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "CustomerProject not updated");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = updateAssociateCustomerProjectEvent.LegacyCustomerID;
       g = _projectContext.GetProject(createProjectEvent.ProjectUID.ToString());
@@ -1137,9 +1116,8 @@ namespace RepositoryTests
     public void AssociateProjectWithCustomer_ChangeIsEarlier()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -1147,13 +1125,13 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -1163,7 +1141,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -1172,7 +1150,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var updateAssociateCustomerProjectEvent = new AssociateProjectCustomer()
+      var updateAssociateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -1186,7 +1164,7 @@ namespace RepositoryTests
       _projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
       _projectContext.StoreEvent(updateAssociateCustomerProjectEvent).Wait();
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CustomerUID = createCustomerEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.IsDeleted = false;
@@ -1204,9 +1182,8 @@ namespace RepositoryTests
     public void AssociateProjectWithCustomer_ThenDissociate_HappyPath()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -1214,13 +1191,13 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var createProjectEvent = new CreateProjectEvent()
+      var createProjectEvent = new CreateProjectEvent
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
 
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -1229,7 +1206,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+      var associateCustomerProjectEvent = new AssociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -1238,7 +1215,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var dissociateCustomerProjectEvent = new DissociateProjectCustomer()
+      var dissociateCustomerProjectEvent = new DissociateProjectCustomer
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ProjectUID = createProjectEvent.ProjectUID,
@@ -1274,91 +1251,5 @@ namespace RepositoryTests
     }
 
     #endregion
-
-
-    #region Timezones
-
-    /// <summary>
-    /// These Timezone conversions need to be done as acceptance tests so they are run on linux - the target platform.
-    /// They should behave ok on windows (this will occur if you run a/ts against local containers).
-    /// </summary>
-    [TestMethod]
-    public void ConvertTimezone_WindowsToIana()
-    {
-      var projectTimeZone = "New Zealand Standard Time";
-      Assert.AreEqual("Pacific/Auckland", TimeZone.WindowsToIana(projectTimeZone), "Unable to convert WindowsToIana");
-    }
-
-    [TestMethod]
-    public void ConvertTimezone_WindowsToIana_Invalid()
-    {
-      var projectTimeZone = "New Zealand Standard Time222";
-      Assert.AreEqual("", TimeZone.WindowsToIana(projectTimeZone), "Should not be able to convert WindowsToIana");
-    }
-
-    [TestMethod]
-    public void ConvertTimezone_WindowsToIana_alreadyIana()
-    {
-      var projectTimeZone = "Pacific/Auckland";
-      Assert.AreEqual("", TimeZone.WindowsToIana(projectTimeZone), "Should not be able to convert WindowsToIana");
-    }
-
-    [TestMethod]
-    public void ConvertTimezone_WindowsToIana_UTC()
-    {
-      var projectTimeZone = "UTC";
-      Assert.AreEqual("Etc/UTC", TimeZone.WindowsToIana(projectTimeZone), "Unable to convert WindowsToIana");
-    }
-
-    #endregion Timezones
-
-
-    #region Private
-
-    private CreateProjectEvent CopyModel(Project project)
-    {
-      return new CreateProjectEvent()
-      {
-        ProjectUID = Guid.Parse(project.ProjectUID),
-        ProjectID = project.LegacyProjectID,
-        ProjectName = project.Name,
-        Description = project.Description,
-        ProjectType = project.ProjectType,
-        ProjectTimezone = project.ProjectTimeZone,
-
-        ProjectStartDate = project.StartDate,
-        ProjectEndDate = project.EndDate,
-        ActionUTC = project.LastActionedUTC,
-        ProjectBoundary = project.GeometryWKT,
-        CoordinateSystemFileName = project.CoordinateSystemFileName
-      };
-    }
-
-    private Repositories.DBModels.Project CopyModel(CreateProjectEvent kafkaProjectEvent)
-    {
-      return new Project()
-      {
-        ProjectUID = kafkaProjectEvent.ProjectUID.ToString(),
-        LegacyProjectID = kafkaProjectEvent.ProjectID,
-        Name = kafkaProjectEvent.ProjectName,
-        Description = kafkaProjectEvent.Description,
-        ProjectType = kafkaProjectEvent.ProjectType,
-        // IsDeleted =  N/A
-
-        ProjectTimeZone = kafkaProjectEvent.ProjectTimezone,
-        LandfillTimeZone = TimeZone.WindowsToIana(kafkaProjectEvent.ProjectTimezone),
-
-        LastActionedUTC = kafkaProjectEvent.ActionUTC,
-        StartDate = kafkaProjectEvent.ProjectStartDate,
-        EndDate = kafkaProjectEvent.ProjectEndDate,
-        GeometryWKT = kafkaProjectEvent.ProjectBoundary,
-        CoordinateSystemFileName = kafkaProjectEvent.CoordinateSystemFileName
-      };
-    }
-
-    #endregion Private
-
   }
 }
- 
- 
