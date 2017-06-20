@@ -1159,7 +1159,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             if (tileResult != null)
             {
                 Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-                AddCacheResponseHeaders();               
+                //AddCacheResponseHeaders();  //done by middleware               
                 return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
             }
 
@@ -1336,7 +1336,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
             if (tileResult != null)
             {
                 Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-                AddCacheResponseHeaders();
+                //AddCacheResponseHeaders();  //done by middleware               
                 return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
             }
 
@@ -1367,6 +1367,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = false)]//temp. no caching
     public async Task<TileResult> GetLineworkTile(
         [FromQuery] string SERVICE,
         [FromQuery] string VERSION,
@@ -1418,6 +1419,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = false)]//temp. no caching
     public async Task<FileResult> GetLineworkTileRaw(
         [FromQuery] string SERVICE,
         [FromQuery] string VERSION,
@@ -1445,7 +1447,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         var result = await executor.ProcessAsync(request) as TileResult;
         if (result != null && result.TileData != null)
         {
-          AddCacheResponseHeaders();
+          //AddCacheResponseHeaders();  //done by middleware               
           return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
         }
 
@@ -1555,6 +1557,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       //TODO: When 'active' flag has been added to file descriptors, only select active files here
       }
 
+    /*
       /// <summary>
       /// Adds caching headers to the http response
       /// </summary>
@@ -1567,6 +1570,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         Response.Headers.Add("Expires",
           DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
       }
+      */
 
         /// <summary>
         /// Gets the list of contributing machines from the query parameters
