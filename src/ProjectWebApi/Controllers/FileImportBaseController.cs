@@ -1,26 +1,26 @@
-﻿using System;
+﻿using KafkaConsumer.Kafka;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using ProjectWebApiCommon.Models;
+using ProjectWebApiCommon.ResultsHandling;
+using ProjectWebApiCommon.Utilities;
+using Repositories;
+using Repositories.DBModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using KafkaConsumer.Kafka;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using ProjectWebApi.Filters;
-using ProjectWebApiCommon.Models;
-using Repositories;
+using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using ProjectWebApiCommon.ResultsHandling;
-using Repositories.DBModels;
-using TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApiCommon.Utilities;
 
 namespace Controllers
 {
@@ -174,7 +174,7 @@ namespace Controllers
       log.LogDebug(
         $"Using Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
 
-      var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
+      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
@@ -199,7 +199,7 @@ namespace Controllers
         ReceivedUTC = nowUtc
       };
 
-      var messagePayload = JsonConvert.SerializeObject(new {DeleteImportedFileEvent = deleteImportedFileEvent});
+      var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
@@ -240,7 +240,7 @@ namespace Controllers
       updateImportedFileEvent.ActionUTC = nowUtc;
       updateImportedFileEvent.ReceivedUTC = nowUtc;
 
-      var messagePayload = JsonConvert.SerializeObject(new {UpdateImportedFileEvent = updateImportedFileEvent});
+      var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
