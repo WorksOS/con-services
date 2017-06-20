@@ -198,7 +198,7 @@ namespace TestRun
             {
                 if (!string.IsNullOrEmpty(singleClassName))
                 {
-                    if (singleClassName != current.Name)
+                    if (singleClassName != current.Name.ToLower())
                     {
                         continue;
                     }
