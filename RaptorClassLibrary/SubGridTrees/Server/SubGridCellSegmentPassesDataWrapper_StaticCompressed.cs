@@ -210,7 +210,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
 
-        public Cell_NonStatic Cell(uint X, uint Y)
+        public CellPass[] ExtractCellPasses(uint X, uint Y)
         {
             throw new InvalidOperationException("Non-static cell descriptions not supported by compressed static segments");
         }
@@ -360,7 +360,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return Result;
         }
 
-        public void Integrate(uint X, uint Y, Cell_NonStatic source, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount)
+        public void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount)
         {
             throw new InvalidOperationException("Immutable cell pass segment.");
         }
@@ -408,7 +408,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         }
 
         public void Read(BinaryReader reader)
-        {
+        {            
             FirstRealCellPassTime = DateTime.FromBinary(reader.ReadInt64());
 
             SegmentPassCount = reader.ReadInt32();
@@ -436,16 +436,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             // TODO: Machines are not supported yet
             // InitialiseMachineIDsSet(SiteModelReference);
-        }
-
-        public void Read(uint X, uint Y, BinaryReader reader)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Read(uint X, uint Y, uint passNumber, BinaryReader reader)
-        {
-            throw new NotImplementedException();
         }
 
         public void ReplacePass(uint X, uint Y, int position, CellPass pass)
@@ -476,16 +466,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             PassCountEncodedFieldDescriptor.Write(writer);
         }
 
-        public void Write(uint X, uint Y, BinaryWriter writer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Write(uint X, uint Y, uint passNumber, BinaryWriter writer)
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <summary>
+        /// Takes a full set of cell passes for the sement and converts them into the internal representation for
+        /// the static compressed cell pass segment
+        /// </summary>
+        /// <param name="cellPasses"></param>
         public void PerformEncodingStaticCompressedCache(CellPass[,][] cellPasses)
         {
             int segmentPassCount = 0;
@@ -723,16 +708,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Create the bit field arrays to contain the segment call pass index & count plus passes.
             recordDescriptors = new BitFieldArrayRecordsDescriptor[] 
             {
-                new BitFieldArrayRecordsDescriptor()
-                {
-                    NumRecords = SubGridTree.SubGridTreeDimension,
-                    BitsPerRecord = EncodedColPassCountsBits
-                },
-                new BitFieldArrayRecordsDescriptor()
-                {
-                    NumRecords = SubGridTree.SubGridTreeDimension * SubGridTree.SubGridTreeDimension,
-                    BitsPerRecord = PassCountEncodedFieldDescriptor.RequiredBits
-                }
+                new BitFieldArrayRecordsDescriptor() { NumRecords = SubGridTree.SubGridTreeDimension, BitsPerRecord = EncodedColPassCountsBits },
+                new BitFieldArrayRecordsDescriptor() { NumRecords = SubGridTree.SubGridTreeCellsPerSubgrid, BitsPerRecord = PassCountEncodedFieldDescriptor.RequiredBits }
             };
 
             BF_PassCounts.Initialise(recordDescriptors);
@@ -756,11 +733,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Copy the call passes themselves into BF
             recordDescriptors = new BitFieldArrayRecordsDescriptor[] 
             {            
-                new BitFieldArrayRecordsDescriptor()
-                {
-                    NumRecords = SegmentPassCount,
-                    BitsPerRecord = NumBitsPerCellPass
-                }
+                new BitFieldArrayRecordsDescriptor() { NumRecords = SegmentPassCount, BitsPerRecord = NumBitsPerCellPass }
             };
 
             BF_CellPasses.Initialise(recordDescriptors);

@@ -249,7 +249,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// </summary>
         /// <param name="TypeToCheck"></param>
         /// <param name="ValueFromLatestCellPass"></param>
-        private void GetAppropriateLatestValueFor(Cell_NonStatic CellPasses,
+        private void GetAppropriateLatestValueFor(CellPass [] CellPasses,
                                                   ref CellPass LatestData,
                                                   int LastPassIndex,
                                                   GridDataType TypeToCheck,
@@ -263,9 +263,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 switch (TypeToCheck)
                 {
                     case GridDataType.CCV:
-                        if (CellPasses.Passes[I].CCV != CellPass.NullCCV)
+                        if (CellPasses[I].CCV != CellPass.NullCCV)
                         {
-                            LatestData.CCV = CellPasses.Passes[I].CCV;
+                            LatestData.CCV = CellPasses[I].CCV;
                             ValueFromLatestCellPass = I == LastPassIndex;
 
                             return;
@@ -273,9 +273,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                         break;
 
                     case GridDataType.RMV:
-                        if (CellPasses.Passes[I].RMV != CellPass.NullRMV)
+                        if (CellPasses[I].RMV != CellPass.NullRMV)
                         {
-                            LatestData.RMV = CellPasses.Passes[I].RMV;
+                            LatestData.RMV = CellPasses[I].RMV;
                             ValueFromLatestCellPass = I == LastPassIndex;
 
                             return;
@@ -283,9 +283,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                         break;
 
                     case GridDataType.Frequency:
-                        if (CellPasses.Passes[I].Frequency != CellPass.NullFrequency)
+                        if (CellPasses[I].Frequency != CellPass.NullFrequency)
                         {
-                            LatestData.Frequency = CellPasses.Passes[I].Frequency;
+                            LatestData.Frequency = CellPasses[I].Frequency;
                             ValueFromLatestCellPass = I == LastPassIndex;
 
                             return;
@@ -293,9 +293,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                         break;
 
                     case GridDataType.Amplitude:
-                        if (CellPasses.Passes[I].Amplitude != CellPass.NullAmplitude)
+                        if (CellPasses[I].Amplitude != CellPass.NullAmplitude)
                         {
-                            LatestData.Amplitude = CellPasses.Passes[I].Amplitude;
+                            LatestData.Amplitude = CellPasses[I].Amplitude;
                             ValueFromLatestCellPass = I == LastPassIndex;
 
                             return;
@@ -305,12 +305,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     case GridDataType.GPSMode:
                         {
                             // Also grab flags for halfpass and rearaxle
-                            LatestData.halfPass = CellPasses.Passes[I].halfPass;
-                            LatestData.passType = CellPasses.Passes[I].passType;
+                            LatestData.halfPass = CellPasses[I].halfPass;
+                            LatestData.passType = CellPasses[I].passType;
 
-                            if (CellPasses.Passes[I].gpsMode != CellPass.NullGPSMode)
+                            if (CellPasses[I].gpsMode != CellPass.NullGPSMode)
                             {
-                                LatestData.gpsMode = CellPasses.Passes[I].gpsMode;
+                                LatestData.gpsMode = CellPasses[I].gpsMode;
                                 ValueFromLatestCellPass = I == LastPassIndex;
                                 return;
                             }
@@ -318,9 +318,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                         break;
 
                     case GridDataType.Temperature:
-                        if (CellPasses.Passes[I].MaterialTemperature != CellPass.NullMaterialTemp)
+                        if (CellPasses[I].MaterialTemperature != CellPass.NullMaterialTemp)
                         {
-                            LatestData.MaterialTemperature = CellPasses.Passes[I].MaterialTemperature;
+                            LatestData.MaterialTemperature = CellPasses[I].MaterialTemperature;
                             ValueFromLatestCellPass = I == LastPassIndex;
 
                             return;
@@ -328,9 +328,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                         break;
 
                     case GridDataType.MDP:
-                        if (CellPasses.Passes[I].MDP != CellPass.NullMDP)
+                        if (CellPasses[I].MDP != CellPass.NullMDP)
                         {
-                            LatestData.MDP = CellPasses.Passes[I].MDP;
+                            LatestData.MDP = CellPasses[I].MDP;
                             ValueFromLatestCellPass = I == LastPassIndex;
 
                             return;
@@ -338,9 +338,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                         break;
 
                     case GridDataType.CCA:
-                        if (CellPasses.Passes[I].CCA != CellPass.NullCCA)
+                        if (CellPasses[I].CCA != CellPass.NullCCA)
                         {
-                            LatestData.CCA = CellPasses.Passes[I].CCA;
+                            LatestData.CCA = CellPasses[I].CCA;
                             ValueFromLatestCellPass = I == LastPassIndex;
                             return;
                         }
@@ -352,7 +352,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
         }
 
-        public void CalculateLatestPassDataForPassStack(Cell_NonStatic CellPasses,
+        public void CalculateLatestPassDataForPassStack(CellPass[] CellPasses,
                                                         ref CellPass LatestData,
                                                         out bool CCVFromLatestCellPass,
                                                         out bool RMVFromLatestCellPass,
@@ -365,24 +365,24 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             int LastPassIndex;
 
-            Debug.Assert(CellPasses.PassCount > 0, "CalculateLatestPassDataForPassStack called with a cell pass stack containing no passes");
+            Debug.Assert(CellPasses.Length > 0, "CalculateLatestPassDataForPassStack called with a cell pass stack containing no passes");
 
-            LastPassIndex = (int)CellPasses.PassCount - 1;
+            LastPassIndex = (int)CellPasses.Length - 1;
 
-            LatestData.Time = CellPasses.Passes[LastPassIndex].Time;
-            LatestData.MachineID = CellPasses.Passes[LastPassIndex].MachineID;
+            LatestData.Time = CellPasses[LastPassIndex].Time;
+            LatestData.MachineID = CellPasses[LastPassIndex].MachineID;
 
-            if (CellPasses.Passes[LastPassIndex].Height != Consts.NullHeight)
+            if (CellPasses[LastPassIndex].Height != Consts.NullHeight)
             {
-                LatestData.Height = CellPasses.Passes[LastPassIndex].Height;
+                LatestData.Height = CellPasses[LastPassIndex].Height;
             }
 
-            if (CellPasses.Passes[LastPassIndex].RadioLatency != CellPass.NullRadioLatency)
+            if (CellPasses[LastPassIndex].RadioLatency != CellPass.NullRadioLatency)
             {
-                LatestData.RadioLatency = CellPasses.Passes[LastPassIndex].RadioLatency;
+                LatestData.RadioLatency = CellPasses[LastPassIndex].RadioLatency;
             }
 
-            LatestData.MachineSpeed = CellPasses.Passes[LastPassIndex].MachineSpeed;
+            LatestData.MachineSpeed = CellPasses[LastPassIndex].MachineSpeed;
 
             GetAppropriateLatestValueFor(CellPasses, ref LatestData, LastPassIndex, GridDataType.GPSMode, out GPSModeFromLatestCellPass);
             GetAppropriateLatestValueFor(CellPasses, ref LatestData, LastPassIndex, GridDataType.CCV, out CCVFromLatestCellPass);
@@ -479,7 +479,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     // Update the latest data from any previous segment with the information contained in this segment
                     if (Segment.PassesData.PassCount(I, J) > 0)
                     {
-                        CalculateLatestPassDataForPassStack(Segment.PassesData.Cell(I, J),
+                        CalculateLatestPassDataForPassStack(Segment.PassesData.ExtractCellPasses(I, J),
                                                             ref Segment.LatestPasses.PassData[I, J],
                                                             out CCVFromLatestCellPass,
                                                             out RMVFromLatestCellPass,
@@ -1005,7 +1005,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                             EndIndex++;
                         }
 
-                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.Cell(I, J), StartIndex, EndIndex, out AddedCount, out ModifiedCount);
+                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, out AddedCount, out ModifiedCount);
 
                         if (AddedCount > 0 || ModifiedCount > 0)
                         {

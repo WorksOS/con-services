@@ -172,29 +172,27 @@ namespace VSS.VisionLink.Raptor.Cells
         /// <param name="endIndex"></param>
         /// <param name="addedCount"></param>
         /// <param name="modifiedCount"></param>
-        public void Integrate(Cell_NonStatic source,
+        public void Integrate(CellPass[] sourcePasses,
                               uint startIndex,
                               uint endIndex,
                               out int addedCount,
                               out int modifiedCount)
         {
-            int IntegratedPassCount;
-            CellPass[] IntegratedPasses = null;
-            int ThisIndex = 0;
-            uint SourceIndex = startIndex;
-            int IntegratedIndex = 0;
-            int OriginalPassCount;
-
             addedCount = 0;
             modifiedCount = 0;
 
-            if (source.PassCount == 0)
+            if (sourcePasses.Length == 0)
             {
                 return;
             }
 
-            OriginalPassCount = (int)PassCount;
-            IntegratedPassCount = (int)(OriginalPassCount + (endIndex - startIndex + 1));
+            CellPass[] IntegratedPasses = null;
+            int ThisIndex = 0;
+            uint SourceIndex = startIndex;
+            int IntegratedIndex = 0;
+
+            int OriginalPassCount = (int)PassCount;
+            int IntegratedPassCount = (int)(OriginalPassCount + (endIndex - startIndex + 1));
 
             // Set the length to be the combined. While this may be more than needed if
             // there are passes in source that have identical times to the passes in
@@ -210,7 +208,7 @@ namespace VSS.VisionLink.Raptor.Cells
             {
                 if (ThisIndex >= PassCount)
                 {
-                    IntegratedPasses[IntegratedIndex] = source.Passes[SourceIndex];
+                    IntegratedPasses[IntegratedIndex] = sourcePasses[SourceIndex];
                     SourceIndex++;
                 }
                 else if (SourceIndex > endIndex)
@@ -218,7 +216,7 @@ namespace VSS.VisionLink.Raptor.Cells
                     IntegratedPasses[IntegratedIndex] = Passes[ThisIndex];
                     ThisIndex++;
                 }
-                else switch (Passes[ThisIndex].Time.CompareTo(source.Passes[SourceIndex].Time))
+                else switch (Passes[ThisIndex].Time.CompareTo(sourcePasses[SourceIndex].Time))
                     {
                         case -1:
                             {
@@ -228,10 +226,10 @@ namespace VSS.VisionLink.Raptor.Cells
                             }
                         case 0:
                             {
-                                if (!Passes[ThisIndex].Equals(source.Passes[SourceIndex]))
+                                if (!Passes[ThisIndex].Equals(sourcePasses[SourceIndex]))
                                     modifiedCount++;
 
-                                IntegratedPasses[IntegratedIndex] = source.Passes[SourceIndex];
+                                IntegratedPasses[IntegratedIndex] = sourcePasses[SourceIndex];
                                 SourceIndex++;
                                 ThisIndex++;
                                 IntegratedPassCount--;
@@ -239,7 +237,7 @@ namespace VSS.VisionLink.Raptor.Cells
                             }
                         case 1:
                             {
-                                IntegratedPasses[IntegratedIndex] = source.Passes[SourceIndex];
+                                IntegratedPasses[IntegratedIndex] = sourcePasses[SourceIndex];
                                 SourceIndex++;
                                 break;
                             }

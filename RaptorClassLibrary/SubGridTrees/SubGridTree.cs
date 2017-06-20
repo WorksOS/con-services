@@ -89,7 +89,7 @@ namespace VSS.VisionLink.Raptor
         /// <summary>
         /// The number of cells contained within a subgrid
         /// </summary>
-        public const uint SubGridTreeCellsPerSubgrid = SubGridTreeDimension * SubGridTreeDimension;
+        public const int SubGridTreeCellsPerSubgrid = SubGridTreeDimension * SubGridTreeDimension;
 
         /// <summary>
         // The number of cells on-the-ground a single cell in the

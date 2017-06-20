@@ -204,7 +204,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             int modifiedCount = 0;
 
             // Test integration of later cell pass to list with earlier cell pass resulting in 1 added and 0 modified
-            c1.Integrate(c2, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
+            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
 
             Assert.IsTrue(addedCount == 1, "Count of added cell pases is not 1, but {0}", addedCount);
             Assert.IsTrue(modifiedCount == 0, "Count of modified cell pases is not 0, but {0}", modifiedCount);
@@ -233,7 +233,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             int modifiedCount = 0;
 
             // Test integration of the identical cell passes resulting in a single cell pass, 0 added and 0 modified (as identical cell passes are not a modification)
-            c1.Integrate(c2, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
+            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
 
             Assert.IsTrue(addedCount == 0, "Count of added cell pases is not 0, but {0}", addedCount);
             Assert.IsTrue(modifiedCount == 0, "Count of modified cell pases is not 0, but {0}", modifiedCount);
@@ -247,7 +247,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             c2.Passes[0].MachineID = 100000;
 
             // Test integration of the identical cell passes resulting in a single cell pass, 0 added and 1 modified (as identical cell passes are not a modification)
-            c1.Integrate(c2, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
+            c1.Integrate(c2.Passes, 0, c2.PassCount - 1, out addedCount, out modifiedCount);
 
             Assert.IsTrue(addedCount == 0, "Count of added cell pases is not 0, but {0}", addedCount);
             Assert.IsTrue(modifiedCount == 1, "Count of modified cell pases is not 1, but {0}", modifiedCount);

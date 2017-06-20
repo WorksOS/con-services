@@ -66,44 +66,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         void Read(BinaryReader reader);
 
         /// <summary>
-        /// Reads the cell passes within this segment for the cell identified by X and Y
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="reader"></param>
-        void Read(uint X, uint Y, BinaryReader reader);
-
-        /// <summary>
-        /// Reads a single pass within the cell passes for this segment
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="passNumber"></param>
-        /// <param name="reader"></param>
-        void Read(uint X, uint Y, uint passNumber, BinaryReader reader);
-
-        /// <summary>
         /// Writes all cell passes for this segment
         /// </summary>
         /// <param name="writer"></param>
         void Write(BinaryWriter writer);
-
-        /// <summary>
-        /// Writes the cell passes within this segment for a cell identified by X and Y
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="writer"></param>
-        void Write(uint X, uint Y, BinaryWriter writer);
-
-        /// <summary>
-        /// Writes a single cell passed from the cell passes within this segment
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        /// <param name="passNumber"></param>
-        /// <param name="writer"></param>
-        void Write(uint X, uint Y, uint passNumber, BinaryWriter writer);
 
         /// <summary>
         /// Retrieves the Height recorded by the cell pass at the given index from the cell passes for the cell within this segment
@@ -135,7 +101,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         /// <param name="EndIndex"></param>
         /// <param name="AddedCount"></param>
         /// <param name="ModifiedCount"></param>
-        void Integrate(uint X, uint Y, Cell_NonStatic source, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount);
+        void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount);
 
         /// <summary>
         /// Returns a full cell pass with all attributes from the cell passes within this segment for the cell identitifed by X and Y
@@ -156,12 +122,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         CellPass ExtractCellPass(uint X, uint Y, int passNumber);
 
         /// <summary>
-        /// Returns a full mutable version of the cell passes contaied within this segment for the cell identified by X and Y
+        /// Returns a full mutable version of the cell passes contained within this segment for the cell identified by X and Y
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y"></param>
         /// <returns></returns>
-        Cell_NonStatic Cell(uint X, uint Y);
+        CellPass[] ExtractCellPasses(uint X, uint Y);
 
         /// <summary>
         /// Allows a caller to supply the raw cell pass information to the segment which may convert it to 

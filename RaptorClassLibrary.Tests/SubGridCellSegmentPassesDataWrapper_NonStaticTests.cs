@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
+using System.IO;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 {
     [TestClass()]
     public class SubGridCellSegmentPassesDataWrapper_NonStaticTests
     {
+        /// <summary>
+        /// A handy test cell pass for the unit tests below to use
+        /// </summary>
+        /// <returns></returns>
         private CellPass TestCellPass()
         {
             return new CellPass()
@@ -148,39 +153,34 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
         }
 
         [TestMethod()]
-        public void SubGridCellSegmentPassesDataWrapper_NonStatic_Read_Test()
+        public void SubGridCellSegmentPassesDataWrapper_NonStatic_WriteRead_Test()
         {
-            Assert.Fail();
-        }
+            // Create the main 2D array of cell pass arrays
+            CellPass[,][] cellPasses = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension][];
 
-        [TestMethod()]
-        public void SubGridCellSegmentPassesDataWrapper_NonStatic_ReadTest1()
-        {
-            Assert.Fail();
-        }
+            // Create each sub array and add a test cell pass to it
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new CellPass[] { TestCellPass() });
 
-        [TestMethod()]
-        public void SubGridCellSegmentPassesDataWrapper_NonStatic_ReadTest2()
-        {
-            Assert.Fail();
-        }
+            ISubGridCellSegmentPassesDataWrapper item1 = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
-        [TestMethod()]
-        public void SubGridCellSegmentPassesDataWrapper_NonStatic_Write_Test()
-        {
-            Assert.Fail();
-        }
+            MemoryStream ms = new MemoryStream();
 
-        [TestMethod()]
-        public void SubGridCellSegmentPassesDataWrapper_NonStatic_WriteTest1()
-        {
-            Assert.Fail();
-        }
+            // Write to the stream...
+            BinaryWriter writer = new BinaryWriter(ms);
+            item1.SetState(cellPasses);
+            item1.Write(writer);
 
-        [TestMethod()]
-        public void SubGridCellSegmentPassesDataWrapper_NonStatic_WriteTest2()
-        {
-            Assert.Fail();
+            // Create a new segment and read it back again
+            ISubGridCellSegmentPassesDataWrapper item2 = new SubGridCellSegmentPassesDataWrapper_NonStatic();
+
+            ms.Position = 0;
+            BinaryReader reader = new BinaryReader(ms);
+            item2.Read(reader);
+
+            SubGridUtilities.SubGridDimensionalIterator((col, row) =>
+            {
+                Assert.IsTrue(item1.ExtractCellPasses(col, row).Zip(item2.ExtractCellPasses(col, row), (a, b) => a.Equals(b)).All(x => x == true), "Read segment does not contain the same list of cell passes written into it");
+            });
         }
 
         [TestMethod()]
@@ -208,7 +208,23 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
         [TestMethod()]
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_Integrate_Test()
         {
-            Assert.Fail();
+            ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
+
+            CellPass pass = TestCellPass();
+            item.AddPass(1, 1, pass);
+
+            CellPass pass2 = TestCellPass();
+            pass2.Time = pass2.Time.AddSeconds(60);
+
+            Cell_NonStatic integrateFrom = new Cell_NonStatic();
+            integrateFrom.AddPass(pass2);
+
+            int addedCount, modifiedCount;
+            item.Integrate(1, 1, integrateFrom.Passes, 0, 0, out addedCount, out modifiedCount);
+
+            Assert.IsTrue(item.PassCount(1, 1) == 2, "Passcount is incorrect, expected 2, got {0}", item.PassCount(1, 1));
+            Assert.IsTrue(addedCount == 1, "addedCount is incorrect, expected 1, got {0}", addedCount);
+            Assert.IsTrue(modifiedCount == 0, "modifiedCount is incorrect, expected 0, got {0}", modifiedCount);
         }
 
         [TestMethod()]
@@ -232,7 +248,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             Assert.IsTrue(item.PassCount(1, 1) == 3, "Passes not added to cell");
 
-            Cell_NonStatic cell = item.Cell(1, 1);
+            Cell_NonStatic cell = new Cell_NonStatic() { Passes = item.ExtractCellPasses(1, 1) };
 
             Assert.IsTrue(cell.Passes.Zip(passes, (a, b) => a.Equals(b)).All(x => x == true), "Extracted cell does not contain the same cell passes added to it");
         }
@@ -248,6 +264,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             Assert.IsTrue(item.Pass(1, 1, 0).Equals(pass), "Cell pass not same as value added");
         }
 
+        /// <summary>
+        /// Tests that the method to take a set of cell passes for the segment can set all those call passes into the 
+        /// internal representation
+        /// </summary>
         [TestMethod()]
         public void SubGridCellSegmentPassesDataWrapper_NonStatic_SetState_Test()
         {
@@ -255,7 +275,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             CellPass[,][] cellPasses = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension][];
 
             // Create each sub array and add a test cell pass to it
-            SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new CellPass[1] { TestCellPass() });
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => cellPasses[x, y] = new CellPass[] { TestCellPass() });
 
             ISubGridCellSegmentPassesDataWrapper item = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 

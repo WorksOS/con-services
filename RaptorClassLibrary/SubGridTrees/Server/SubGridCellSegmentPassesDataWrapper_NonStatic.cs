@@ -60,10 +60,42 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public void Read(BinaryReader reader)
         {
-            base.Read(reader, this);
+            int TotalPasses = reader.ReadInt32();
+            int MaxPassCount = reader.ReadInt32();
+
+            int[,] PassCounts = new int[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+            int PassCounts_Size = PassCountSize.Calculate(MaxPassCount);
+
+            SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            {
+                switch (PassCounts_Size)
+                {
+                    case 1: PassCounts[i, j] = reader.ReadByte(); break;
+                    case 2: PassCounts[i, j] = reader.ReadInt16(); break;
+                    case 3: PassCounts[i, j] = reader.ReadInt32(); break;
+                    default:
+                        throw new InvalidDataException(String.Format("Unknown PassCounts_Size {0}", PassCounts_Size));
+                }
+            });
+
+            // Read all the cells from the stream
+            SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            {
+                int PassCount_ = PassCounts[i, j];
+
+                if (PassCounts[i, j] > 0)
+                {
+                    // TODO: Revisit static cell pass support for reading contexts
+                    AllocatePasses(i, j, (uint)PassCounts[i, j]);
+                    Read(i, j, reader);
+
+                    SegmentPassCount += PassCount_;
+                };
+            });
         }
 
-        public void Read(uint X, uint Y, BinaryReader reader)
+        private void Read(uint X, uint Y, BinaryReader reader)
         {
             uint passCount = PassCount(X, Y);
             for (uint cellPassIndex = 0; cellPassIndex < passCount; cellPassIndex++)
@@ -72,22 +104,72 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
         }
 
-        public void Read(uint X, uint Y, uint passNumber, BinaryReader reader)
+        private void Read(uint X, uint Y, uint passNumber, BinaryReader reader)
         {
             PassData[X, Y].Passes[passNumber].Read(reader);
         }
 
-        public void Write(BinaryWriter writer)
+        /// <summary>
+        /// Calculate the total number of passes from all the cells present in this subgrid segment
+        /// </summary>
+        /// <param name="TotalPasses"></param>
+        /// <param name="MaxPassCount"></param>
+        private void CalculateTotalPasses(ref uint TotalPasses, ref uint MaxPassCount)
         {
-            base.Write(writer, this);
+            uint _TotalPasses = 0;
+            uint _MaxPassCount = 0;
+
+            SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            {
+                uint ThePassCount = PassCount(i, j);
+
+                if (ThePassCount > _MaxPassCount)
+                {
+                    _MaxPassCount = ThePassCount;
+                }
+
+                _TotalPasses += ThePassCount;
+            });
+
+            TotalPasses = _TotalPasses;
+            MaxPassCount = _MaxPassCount;
         }
 
-        public void Write(uint X, uint Y, uint passNumber, BinaryWriter writer)
+        public void Write(BinaryWriter writer)
+        {
+            uint TotalPasses = 0;
+            uint MaxPassCount = 0;
+
+            CalculateTotalPasses(ref TotalPasses, ref MaxPassCount);
+
+            writer.Write(TotalPasses);
+            writer.Write(MaxPassCount);
+
+            int PassCounts_Size = PassCountSize.Calculate((int)MaxPassCount);
+
+            // Read all the cells from the stream
+            SubGridUtilities.SubGridDimensionalIterator((i, j) =>
+            {
+                switch (PassCounts_Size)
+                {
+                    case 1: writer.Write((byte)PassCount(i, j)); break;
+                    case 2: writer.Write((ushort)PassCount(i, j)); break;
+                    case 3: writer.Write((int)PassCount(i, j)); break;
+                    default:
+                        throw new InvalidDataException(String.Format("Unknown PassCounts_Size: {0}", PassCounts_Size));
+                }
+            });
+
+            // write all the cells to the stream
+            SubGridUtilities.SubGridDimensionalIterator((i, j) => Write(i, j, writer));
+        }
+
+        private void Write(uint X, uint Y, uint passNumber, BinaryWriter writer)
         {
             PassData[X, Y].Passes[passNumber].Write(writer);
         }
 
-        public void Write(uint X, uint Y, BinaryWriter writer)
+        private void Write(uint X, uint Y, BinaryWriter writer)
         {
             foreach (CellPass cellPass in PassData[X, Y].Passes)
             {
@@ -105,14 +187,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return PassData[X, Y].Passes[passNumber].Time;
         }
 
-        public void Integrate(uint X, uint Y, Cell_NonStatic source, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount)
+        public void Integrate(uint X, uint Y, CellPass[] sourcePasses, uint StartIndex, uint EndIndex, out int AddedCount, out int ModifiedCount)
         {
-            PassData[X, Y].Integrate(source, StartIndex, EndIndex, out AddedCount, out ModifiedCount);
+            PassData[X, Y].Integrate(sourcePasses, StartIndex, EndIndex, out AddedCount, out ModifiedCount);
         }
 
-        public Cell_NonStatic Cell(uint X, uint Y)
+        public CellPass[] ExtractCellPasses(uint X, uint Y)
         {
-            return PassData[X, Y];
+            return PassData[X, Y].Passes;
         }
 
         public CellPass Pass(uint X, uint Y, uint passIndex)
