@@ -1,34 +1,38 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repo.Extensions;
-using RepositoryTests.Internal;
 
 namespace RepositoryTests.ProjectRepositoryTests
 {
   [TestClass]
-  public class ExtensionsTests : TestControllerBase
+  public class ExtensionsTests
   {
-    [TestInitialize]
-    public void Init()
-    {
-      SetupLogging();
-    }
+    //[TestMethod]
+    //[DataRow(0, 0)]
+    //[DataRow(1, 1)]
+    //[DataRow(2, 1)]
+    //[DataRow(4, 4)]
+    //public void Integer_CalculateUpsertCount(int upsertCount, int expected)
+    //{
+    //  Assert.AreEqual(expected, upsertCount.CalculateUpsertCount());
+    //}
 
     [TestMethod]
-    [DataRow(0, 0)]
-    [DataRow(1, 1)]
-    [DataRow(2, 1)]
-    [DataRow(4, 4)]
-    public void Integer_CalculateUpsertCount(int upsertCount, int expected)
+    public void Integer_CalculateUpsertCount1()
     {
-      Assert.AreEqual(expected, upsertCount.CalculateUpsertCount());
+      Assert.AreEqual(0, 0.CalculateUpsertCount());
     }
-  }
-
-  [TestClass]
-  public class ExTests
-  {
     [TestMethod]
     public void Integer_CalculateUpsertCount2()
+    {
+      Assert.AreEqual(1, 1.CalculateUpsertCount());
+    }
+    [TestMethod]
+    public void Integer_CalculateUpsertCount3()
+    {
+      Assert.AreEqual(1, 2.CalculateUpsertCount());
+    }
+    [TestMethod]
+    public void Integer_CalculateUpsertCount4()
     {
       Assert.AreEqual(4, 4.CalculateUpsertCount());
     }

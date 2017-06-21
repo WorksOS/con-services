@@ -1,5 +1,4 @@
-﻿using log4netExtensions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repositories;
@@ -12,9 +11,8 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace RepositoryTests
 {
   [TestClass]
-  public class ProjectSpatialRepositoryTests
+  public class ProjectSpatialRepositoryTests : TestControllerBase
   {
-    IServiceProvider serviceProvider;
     CustomerRepository customerContext;
     ProjectRepository projectContext;
     SubscriptionRepository subscriptionContext;
@@ -22,25 +20,12 @@ namespace RepositoryTests
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      SetupLogging();
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceProvider = new ServiceCollection()
-        .AddLogging()
-        .AddSingleton(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .BuildServiceProvider();
-
-      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
-      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
-      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      customerContext = new CustomerRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      projectContext = new ProjectRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      subscriptionContext = new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
     }
-
 
     /// <summary>
     /// Point is within the projectboundary - Happy path i.e. 

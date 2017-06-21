@@ -1,38 +1,26 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using log4netExtensions;
-using VSS.GenericConfiguration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repositories;
 using Repositories.DBModels;
+using RepositoryTests.Internal;
+using System;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {
   [TestClass]
-  public class CustomerSubscriptionRepositoryTests
+  public class CustomerSubscriptionRepositoryTests : TestControllerBase
   {
-    IServiceProvider serviceProvider = null;
-    SubscriptionRepository subscriptionContext = null;
+    SubscriptionRepository subscriptionContext;
 
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      SetupLogging();
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceProvider = new ServiceCollection()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
-        .BuildServiceProvider();
-      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      subscriptionContext = new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
     }
 
     #region CustomerSubscriptions
@@ -312,7 +300,7 @@ namespace RepositoryTests
       };
     }
 
-    private Subscription CopyModel(SubscriptionRepository subscriptionRepo, CreateCustomerSubscriptionEvent kafkaCustomerSubscriptionEvent)
+    private static Subscription CopyModel(SubscriptionRepository subscriptionRepo, CreateCustomerSubscriptionEvent kafkaCustomerSubscriptionEvent)
     {
       return new Subscription()
       {
@@ -326,23 +314,16 @@ namespace RepositoryTests
       };
     }
 
-    private bool CompareSubs(Subscription original, Subscription result)
+    private static bool CompareSubs(Subscription original, Subscription result)
     {
-      if (original.SubscriptionUID == result.SubscriptionUID
-        && original.CustomerUID == result.CustomerUID
-        && original.ServiceTypeID == result.ServiceTypeID
-        && original.StartDate == result.StartDate
-        && original.EndDate == result.EndDate
-        && original.LastActionedUTC == result.LastActionedUTC
-        )
-        return true;
-      else
-        return false;
+      return original.SubscriptionUID == result.SubscriptionUID
+             && original.CustomerUID == result.CustomerUID
+             && original.ServiceTypeID == result.ServiceTypeID
+             && original.StartDate == result.StartDate
+             && original.EndDate == result.EndDate
+             && original.LastActionedUTC == result.LastActionedUTC;
     }
 
     #endregion
-
   }
 }
- 
- 

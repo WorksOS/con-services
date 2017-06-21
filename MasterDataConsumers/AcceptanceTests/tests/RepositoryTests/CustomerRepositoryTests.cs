@@ -1,41 +1,26 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using log4netExtensions;
-using VSS.GenericConfiguration;
-using Repositories.DBModels;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repositories;
+using Repositories.DBModels;
+using RepositoryTests.Internal;
+using System;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {
   [TestClass]
-  public class CustomerRepositoryTests
+  public class CustomerRepositoryTests : TestControllerBase
   {
-    IServiceProvider serviceProvider = null;
-    CustomerRepository customerContext = null;
+    CustomerRepository customerContext;
 
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      SetupLogging();
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceProvider = new ServiceCollection()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
-        .BuildServiceProvider();
-
-      var retrievedloggerFactory = serviceProvider.GetService<ILoggerFactory>();
-      Assert.IsNotNull(retrievedloggerFactory);
-      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      customerContext = new CustomerRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
     }
 
     #region Customers
@@ -49,7 +34,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -77,7 +62,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -104,7 +89,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -137,7 +122,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -145,7 +130,7 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var updateCustomerEvent = new UpdateCustomerEvent()
+      var updateCustomerEvent = new UpdateCustomerEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         CustomerName = "The Customer Name Updated",
@@ -178,7 +163,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -186,7 +171,7 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var updateCustomerEvent = new UpdateCustomerEvent()
+      var updateCustomerEvent = new UpdateCustomerEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         CustomerName = "The Customer Name Updated",
@@ -216,7 +201,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -224,14 +209,14 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var updateCustomerEvent = new UpdateCustomerEvent()
+      var updateCustomerEvent = new UpdateCustomerEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         CustomerName = "The Customer Name Updated",
         ActionUTC = ActionUTC.AddMinutes(2)
       };
 
-      var deleteCustomerEvent = new DeleteCustomerEvent()
+      var deleteCustomerEvent = new DeleteCustomerEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ActionUTC = ActionUTC.AddHours(1)
@@ -268,7 +253,7 @@ namespace RepositoryTests
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var customerUID = Guid.NewGuid();
 
-      var updateCustomerEvent = new UpdateCustomerEvent()
+      var updateCustomerEvent = new UpdateCustomerEvent
       {
         CustomerUID = customerUID,
         CustomerName = "The Customer Name GotIt!",
@@ -280,7 +265,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Update Customer event not written");
 
-      var partialWrittenCustomerEvent = new CreateCustomerEvent()
+      var partialWrittenCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = updateCustomerEvent.CustomerUID,
         CustomerName = updateCustomerEvent.CustomerName,
@@ -304,7 +289,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -312,14 +297,14 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var updateCustomerEvent = new UpdateCustomerEvent()
+      var updateCustomerEvent = new UpdateCustomerEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         CustomerName = "The Customer Name FirstTime",
         ActionUTC = ActionUTC.AddMinutes(1)
       };
 
-      var updateCustomerEvent2 = new UpdateCustomerEvent()
+      var updateCustomerEvent2 = new UpdateCustomerEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         CustomerName = "The Customer Name SecondsTime",
@@ -351,7 +336,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -359,7 +344,7 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var deleteCustomerEvent = new DeleteCustomerEvent()
+      var deleteCustomerEvent = new DeleteCustomerEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,       
         ActionUTC = ActionUTC.AddHours(1)
@@ -395,7 +380,7 @@ namespace RepositoryTests
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var customerUid = Guid.NewGuid();
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = customerUid,
         CustomerName = "The Customer Name",
@@ -403,13 +388,13 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var deleteCustomerEvent = new DeleteCustomerEvent()
+      var deleteCustomerEvent = new DeleteCustomerEvent
       {
         CustomerUID = customerUid,
         ActionUTC = ActionUTC.AddHours(1)
       };
 
-      var partialWrittenCustomerEvent = new CreateCustomerEvent()
+      var partialWrittenCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = customerUid,
         CustomerName = "",
@@ -447,7 +432,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -455,7 +440,7 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var deleteCustomerEvent = new DeleteCustomerEvent()
+      var deleteCustomerEvent = new DeleteCustomerEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         ActionUTC = ActionUTC.AddHours(-1)
@@ -486,7 +471,7 @@ namespace RepositoryTests
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -494,7 +479,7 @@ namespace RepositoryTests
         ActionUTC = actionUTC
       };
 
-      var associateCustomerUserEvent = new AssociateCustomerUserEvent()
+      var associateCustomerUserEvent = new AssociateCustomerUserEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
@@ -523,7 +508,7 @@ namespace RepositoryTests
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var customerUid = Guid.NewGuid();
 
-      var associateCustomerUserEvent = new AssociateCustomerUserEvent()
+      var associateCustomerUserEvent = new AssociateCustomerUserEvent
       {
         CustomerUID = customerUid,
         UserUID = Guid.NewGuid(),
@@ -556,7 +541,7 @@ namespace RepositoryTests
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -564,7 +549,7 @@ namespace RepositoryTests
         ActionUTC = actionUTC
       };
 
-      var associateCustomerUserEvent = new AssociateCustomerUserEvent()
+      var associateCustomerUserEvent = new AssociateCustomerUserEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
@@ -594,7 +579,7 @@ namespace RepositoryTests
     {
       DateTime actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -602,14 +587,14 @@ namespace RepositoryTests
         ActionUTC = actionUTC
       };
 
-      var associateCustomerUserEvent = new AssociateCustomerUserEvent()
+      var associateCustomerUserEvent = new AssociateCustomerUserEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
         ActionUTC = actionUTC.AddMinutes(1)
       };
 
-      var dissociateCustomerUserEvent = new DissociateCustomerUserEvent()
+      var dissociateCustomerUserEvent = new DissociateCustomerUserEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = associateCustomerUserEvent.UserUID,
@@ -641,7 +626,7 @@ namespace RepositoryTests
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       var userUid = Guid.NewGuid();
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -649,7 +634,7 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var dissociateCustomerUserEvent = new DissociateCustomerUserEvent()
+      var dissociateCustomerUserEvent = new DissociateCustomerUserEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = userUid,
@@ -678,7 +663,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -686,14 +671,14 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var associateCustomerUserEvent = new AssociateCustomerUserEvent()
+      var associateCustomerUserEvent = new AssociateCustomerUserEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = Guid.NewGuid(),
         ActionUTC = ActionUTC.AddMinutes(1)
       };
 
-      var dissociateCustomerUserEvent = new DissociateCustomerUserEvent()
+      var dissociateCustomerUserEvent = new DissociateCustomerUserEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         UserUID = associateCustomerUserEvent.UserUID,
@@ -726,7 +711,7 @@ namespace RepositoryTests
     {
       DateTime ActionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var createCustomerEvent = new CreateCustomerEvent()
+      var createCustomerEvent = new CreateCustomerEvent
       {
         CustomerUID = Guid.NewGuid(),
         CustomerName = "The Customer Name",
@@ -734,7 +719,7 @@ namespace RepositoryTests
         ActionUTC = ActionUTC
       };
 
-      var createCustomerTccOrgEvent = new CreateCustomerTccOrgEvent()
+      var createCustomerTccOrgEvent = new CreateCustomerTccOrgEvent
       {
         CustomerUID = createCustomerEvent.CustomerUID,
         TCCOrgID = "TCCOrgID " + createCustomerEvent.CustomerUID.ToString(),
@@ -760,7 +745,7 @@ namespace RepositoryTests
     #region private
     private CreateCustomerEvent CopyModel(Customer customer)
     {
-      return new CreateCustomerEvent()
+      return new CreateCustomerEvent
       {
         CustomerUID = Guid.Parse(customer.CustomerUID),
         CustomerName = customer.Name,
@@ -769,9 +754,9 @@ namespace RepositoryTests
       };
     }
 
-    private Customer CopyModel(CreateCustomerEvent kafkaCustomerEvent)
+    private static Customer CopyModel(CreateCustomerEvent kafkaCustomerEvent)
     {
-      return new Customer()
+      return new Customer
       {
         CustomerUID = kafkaCustomerEvent.CustomerUID.ToString(),
         Name = kafkaCustomerEvent.CustomerName,
@@ -781,7 +766,4 @@ namespace RepositoryTests
     }
     #endregion
   }
-
 }
- 
- 

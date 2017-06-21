@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.GenericConfiguration;
 
 namespace RepositoryTests.Internal
@@ -27,6 +28,8 @@ namespace RepositoryTests.Internal
         .AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .BuildServiceProvider();
+
+      Assert.IsNotNull(_serviceProvider.GetService<ILoggerFactory>());
     }
   }
 }

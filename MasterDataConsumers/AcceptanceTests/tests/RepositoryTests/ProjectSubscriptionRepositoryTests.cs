@@ -1,45 +1,33 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System.Linq;
-using log4netExtensions;
-using VSS.GenericConfiguration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repositories;
 using Repositories.DBModels;
+using RepositoryTests.Internal;
+using System;
+using System.Linq;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {
   [TestClass]
-  public class ProjectSubscriptionRepositoryTests
+  public class ProjectSubscriptionRepositoryTests : TestControllerBase
   {
-    IServiceProvider serviceProvider = null;
-    SubscriptionRepository subscriptionContext = null;
-    CustomerRepository customerContext = null;
-    ProjectRepository projectContext = null;
-    GeofenceRepository geofenceContext = null;
+    SubscriptionRepository subscriptionContext;
+    CustomerRepository customerContext;
+    ProjectRepository projectContext;
+    GeofenceRepository geofenceContext;
 
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      SetupLogging();
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceProvider = new ServiceCollection()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
-        .BuildServiceProvider();
-      subscriptionContext = new SubscriptionRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
-      customerContext = new CustomerRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
-      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
-      geofenceContext = new GeofenceRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      subscriptionContext = new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      customerContext = new CustomerRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      projectContext = new ProjectRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      geofenceContext = new GeofenceRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
     }
 
     #region ProjectSubscriptions
