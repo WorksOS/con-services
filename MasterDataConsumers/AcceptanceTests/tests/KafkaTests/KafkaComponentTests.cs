@@ -16,7 +16,6 @@ using Repositories;
 using Repositories.DBModels;
 using KafkaConsumer.Kafka;
 using KafkaConsumer.Interfaces;
-using Repo.Extensions;
 
 namespace KafkaTests
 {
@@ -75,59 +74,55 @@ namespace KafkaTests
     ///    i.e. creating a Consumer container; polling DB waiting for the object to appear
     /// </summary>
     [TestMethod]
-    [DataRow(4, 5)]
-    [DataRow(0, 0)]
-    public void AssetConsumerWritesToDB(int a, int b)
+    public void AssetConsumerWritesToDB()
     {
-      Assert.AreEqual(a, b.CalculateUpsertCount());
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var createAssetEvent = new CreateAssetEvent
+      {
+        AssetUID = Guid.NewGuid(),
+        AssetName = "The Asset Name",
+        AssetType = "whatever",
+        ActionUTC = actionUtc
+      };
 
-      //DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      //var createAssetEvent = new CreateAssetEvent
-      //{
-      //  AssetUID = Guid.NewGuid(),
-      //  AssetName = "The Asset Name",
-      //  AssetType ="whatever",
-      //  ActionUTC = actionUtc
-      //};
+      var configurationStore = serviceProvider.GetService<IConfigurationStore>();
+      var baseTopic = "VSS.Interfaces.Events.MasterData.IAssetEvent" + Guid.NewGuid();
+      var suffix = configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      var topicName = baseTopic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
-      //var configurationStore = serviceProvider.GetService<IConfigurationStore>();
-      //var baseTopic = "VSS.Interfaces.Events.MasterData.IAssetEvent" + Guid.NewGuid();
-      //var suffix = configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
-      //var topicName = baseTopic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      string messagePayload = JsonConvert.SerializeObject(new { CreateAssetEvent = createAssetEvent });
 
-      //string messagePayload = JsonConvert.SerializeObject(new { CreateAssetEvent = createAssetEvent });
+      var _producer = serviceProvider.GetService<IKafka>();
+      _producer.InitProducer(serviceProvider.GetService<IConfigurationStore>());
+      _producer.Send(topicName,
+                new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>(createAssetEvent.AssetUID.ToString(), messagePayload)
+                });
 
-      //var _producer = serviceProvider.GetService<IKafka>();
-      //_producer.InitProducer(serviceProvider.GetService<IConfigurationStore>());
-      //_producer.Send(topicName,
-      //          new List<KeyValuePair<string, string>>()
-      //          {
-      //              new KeyValuePair<string, string>(createAssetEvent.AssetUID.ToString(), messagePayload)
-      //          });
+      var bar1 = serviceProvider.GetService<IKafkaConsumer<IAssetEvent>>();
+      bar1.SetTopic(baseTopic);
 
-      //var bar1 = serviceProvider.GetService<IKafkaConsumer<IAssetEvent>>();
-      //bar1.SetTopic(baseTopic);
+      // don't appear to need to wait for writing to the kafka q
+      //Thread.Sleep(1000);
 
-      //// don't appear to need to wait for writing to the kafka q
-      ////Thread.Sleep(1000);
+      var assetContext = new AssetRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      Task<Asset> dbReturn = null;
+      for (int i = 0; i < 10; i++)
+      {
+        bar1.StartProcessingSync();
 
-      //var assetContext = new AssetRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
-      //Task<Asset> dbReturn = null;
-      //for (int i = 0; i < 10; i++)
-      //{
-      //  bar1.StartProcessingSync();
+        // wait for consumer, and anything to be written to the db;
+        Thread.Sleep(5000);
 
-      //  // wait for consumer, and anything to be written to the db;
-      //  Thread.Sleep(5000);
+        dbReturn = assetContext.GetAsset(createAssetEvent.AssetUID.ToString());
+        dbReturn.Wait();
+        if (dbReturn.Result != null)
+          break;
+      }
 
-      //  dbReturn = assetContext.GetAsset(createAssetEvent.AssetUID.ToString());
-      //  dbReturn.Wait();
-      //  if (dbReturn.Result != null)
-      //    break;
-      //}
-
-      //Assert.IsNotNull(dbReturn.Result, "Unable to retrieve Asset from AssetRepo");
-      //Assert.AreEqual(createAssetEvent.AssetUID.ToString(), dbReturn.Result.AssetUID, "Asset details are incorrect from AssetRepo");
+      Assert.IsNotNull(dbReturn.Result, "Unable to retrieve Asset from AssetRepo");
+      Assert.AreEqual(createAssetEvent.AssetUID.ToString(), dbReturn.Result.AssetUID, "Asset details are incorrect from AssetRepo");
     }
 
     [TestMethod]
