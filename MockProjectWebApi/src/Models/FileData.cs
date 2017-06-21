@@ -101,6 +101,11 @@ namespace src.Models
     public DateTime ImportedUtc { get; set; }
 
     /// <summary>
+    /// Gets or sets the Activation State of the imported file.
+    /// </summary>
+    public bool IsActivated { get; set; }
+
+    /// <summary>
     /// Gets the path of the imported file
     /// </summary>
     /// <value>
