@@ -10,7 +10,7 @@ namespace RepositoryTests.Internal
 {
   public class TestControllerBase
   {
-    protected IServiceProvider _serviceProvider;
+    protected IServiceProvider ServiceProvider;
 
     public void SetupLogging()
     {
@@ -23,13 +23,13 @@ namespace RepositoryTests.Internal
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
-      _serviceProvider = new ServiceCollection()
+      ServiceProvider = new ServiceCollection()
         .AddLogging()
         .AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .BuildServiceProvider();
 
-      Assert.IsNotNull(_serviceProvider.GetService<ILoggerFactory>());
+      Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
     }
   }
 }

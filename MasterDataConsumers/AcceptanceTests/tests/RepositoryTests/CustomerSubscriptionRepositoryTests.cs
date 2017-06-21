@@ -20,7 +20,7 @@ namespace RepositoryTests
     {
       SetupLogging();
 
-      subscriptionContext = new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      subscriptionContext = new SubscriptionRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
     }
 
     #region CustomerSubscriptions
@@ -52,7 +52,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
     /// <summary>
@@ -192,7 +192,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
 
@@ -233,7 +233,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createCustomerSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
     #endregion
@@ -287,18 +287,6 @@ namespace RepositoryTests
     #endregion AssetSubscriptions
 
     #region private
-    private CreateCustomerSubscriptionEvent CopyModel(SubscriptionRepository subscriptionRepo, Subscription subscription)
-    {
-      return new CreateCustomerSubscriptionEvent()
-      {
-        SubscriptionUID = Guid.Parse(subscription.SubscriptionUID),
-        CustomerUID = Guid.Parse(subscription.CustomerUID),
-        SubscriptionType = subscription.ServiceTypeID.ToString(),
-        StartDate = subscription.StartDate,
-        EndDate = subscription.EndDate,
-        ActionUTC = subscription.LastActionedUTC
-      };
-    }
 
     private static Subscription CopyModel(SubscriptionRepository subscriptionRepo, CreateCustomerSubscriptionEvent kafkaCustomerSubscriptionEvent)
     {
@@ -312,16 +300,6 @@ namespace RepositoryTests
         LastActionedUTC = kafkaCustomerSubscriptionEvent.ActionUTC,
 
       };
-    }
-
-    private static bool CompareSubs(Subscription original, Subscription result)
-    {
-      return original.SubscriptionUID == result.SubscriptionUID
-             && original.CustomerUID == result.CustomerUID
-             && original.ServiceTypeID == result.ServiceTypeID
-             && original.StartDate == result.StartDate
-             && original.EndDate == result.EndDate
-             && original.LastActionedUTC == result.LastActionedUTC;
     }
 
     #endregion

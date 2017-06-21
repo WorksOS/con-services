@@ -20,7 +20,7 @@ namespace RepositoryTests
     {
       SetupLogging();
 
-      customerContext = new CustomerRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      customerContext = new CustomerRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
     }
 
     #region Customers
@@ -743,16 +743,6 @@ namespace RepositoryTests
     #endregion tccOrg
 
     #region private
-    private CreateCustomerEvent CopyModel(Customer customer)
-    {
-      return new CreateCustomerEvent
-      {
-        CustomerUID = Guid.Parse(customer.CustomerUID),
-        CustomerName = customer.Name,
-        CustomerType = customer.CustomerType.ToString(),
-        ActionUTC = customer.LastActionedUTC
-      };
-    }
 
     private static Customer CopyModel(CreateCustomerEvent kafkaCustomerEvent)
     {

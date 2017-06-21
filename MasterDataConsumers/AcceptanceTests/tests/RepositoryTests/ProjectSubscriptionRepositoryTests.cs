@@ -24,10 +24,10 @@ namespace RepositoryTests
     {
       SetupLogging();
 
-      subscriptionContext = new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
-      customerContext = new CustomerRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
-      projectContext = new ProjectRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
-      geofenceContext = new GeofenceRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      subscriptionContext = new SubscriptionRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
+      customerContext = new CustomerRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
+      projectContext = new ProjectRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
+      geofenceContext = new GeofenceRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
     }
 
     #region ProjectSubscriptions
@@ -60,7 +60,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
     /// <summary>
@@ -126,7 +126,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
     /// <summary>
@@ -201,7 +201,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
 
@@ -243,7 +243,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
     /// <summary>
@@ -287,7 +287,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
     /// <summary>
@@ -330,7 +330,7 @@ namespace RepositoryTests
       var g = subscriptionContext.GetSubscription(createProjectSubscriptionEvent.SubscriptionUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve subscription from subscriptionRepo");
-      Assert.IsTrue(CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
+      Assert.IsTrue(TestHelpers.CompareSubs(subscription, g.Result), "subscription details are incorrect from subscriptionRepo");
     }
 
     #endregion
@@ -406,7 +406,6 @@ namespace RepositoryTests
     public void AssociateProjectSubscriptionEvent_HappyPathBySub()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
       var customerUID = Guid.NewGuid();
 
       var createCustomerEvent = new CreateCustomerEvent()
@@ -418,7 +417,7 @@ namespace RepositoryTests
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
@@ -455,7 +454,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "associateProjectSubscription event not written");
 
-      Project project = CopyModel(createProjectEvent);
+      Project project = TestHelpers.CopyModel(createProjectEvent);
       project.CustomerUID = associateCustomerProjectEvent.CustomerUID.ToString();
       project.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project.ServiceTypeID = subscriptionContext._serviceTypes[createProjectSubscriptionEvent.SubscriptionType].ID;
@@ -480,7 +479,6 @@ namespace RepositoryTests
     public void AssociateProjectSubscriptionEvent_HappyPath_ByUserMultipleSubs()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
       { CustomerUID = Guid.NewGuid(), CustomerName = "The Customer Name", CustomerType = CustomerType.Customer.ToString(), ActionUTC = actionUtc };
@@ -495,11 +493,11 @@ namespace RepositoryTests
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = actionUtc
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -564,7 +562,7 @@ namespace RepositoryTests
       Assert.IsNotNull(projects, "Unable to retrieve 1 project/sub from projectRepo");
       Assert.AreEqual(2, projects.Count, "should be 1 project/sub from projectRepo");
 
-      Project project1 = CopyModel(createProjectEvent);
+      Project project1 = TestHelpers.CopyModel(createProjectEvent);
       project1.CustomerUID = associateCustomerProjectEvent.CustomerUID.ToString();
       project1.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project1.ServiceTypeID = subscriptionContext._serviceTypes[createProjectSubscriptionEvent1.SubscriptionType].ID;
@@ -579,7 +577,7 @@ namespace RepositoryTests
       else
         Assert.AreEqual(project1, projects[1], "project details 1 are incorrect from Project-sub Repo");
 
-      Project project2 = CopyModel(createProjectEvent);
+      Project project2 = TestHelpers.CopyModel(createProjectEvent);
       project2.CustomerUID = associateCustomerProjectEvent.CustomerUID.ToString();
       project2.LegacyCustomerID = associateCustomerProjectEvent.LegacyCustomerID;
       project2.ServiceTypeID = subscriptionContext._serviceTypes[createProjectSubscriptionEvent2.SubscriptionType].ID;
@@ -606,7 +604,6 @@ namespace RepositoryTests
     public void AssociateProjectSubscriptionEvent_HappyPath_ByCustomerMultipleProjectsAndSubs()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
       var projectUidA = Guid.NewGuid();
       var projectUidB = Guid.NewGuid();
 
@@ -619,7 +616,7 @@ namespace RepositoryTests
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
@@ -730,7 +727,7 @@ namespace RepositoryTests
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154))",
@@ -801,7 +798,6 @@ namespace RepositoryTests
     public void AssociateProjectSubscriptionEvent_HappyPath_ByUserNoSubs()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
 
       var createCustomerEvent = new CreateCustomerEvent()
       { CustomerUID = Guid.NewGuid(), CustomerName = "The Customer Name", CustomerType = CustomerType.Customer.ToString(), ActionUTC = actionUtc };
@@ -816,11 +812,11 @@ namespace RepositoryTests
         ProjectID = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = DateTime.MaxValue,
-          ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-          ActionUTC = actionUtc
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
       };
 
       var associateCustomerProjectEvent = new AssociateProjectCustomer()
@@ -853,7 +849,6 @@ namespace RepositoryTests
     public void GetByLegacyProjectIDAtSubscriptionDate()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectTimeZone = "New Zealand Standard Time";
       int legacyProjectID = new Random().Next(1, 1999999);
       DateTime subscriptionDateToSearch = new DateTime(2017, 1, 1, 2, 30, 3);
 
@@ -863,16 +858,16 @@ namespace RepositoryTests
       var associateCustomerUser = new AssociateCustomerUserEvent()
       { CustomerUID = createCustomerEvent.CustomerUID, UserUID = Guid.NewGuid(), ActionUTC = actionUtc };
 
-      
+
       var createProjectEvent = new CreateProjectEvent()
       {
         ProjectUID = Guid.NewGuid(),
         ProjectID = legacyProjectID,
         ProjectName = "The Project Name",
         ProjectType = ProjectType.LandFill,
-        ProjectTimezone = projectTimeZone,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
         ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),       
+        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
       };
@@ -960,7 +955,7 @@ namespace RepositoryTests
         Assert.AreEqual(20, projects[1].ServiceTypeID, "PM should be the most recent service from projectRepo");
         Assert.AreEqual(createProjectSubscriptionEvent3.EndDate, projects[1].SubscriptionEndDate, "PM EndDate incorrect from projectRepo");
       }
-      else        
+      else
       {
         Assert.AreEqual(20, projects[0].ServiceTypeID, "PM should be the most recent service from projectRepo");
         Assert.AreEqual(createProjectSubscriptionEvent3.EndDate, projects[0].SubscriptionEndDate, "PM EndDate incorrect from projectRepo");
@@ -1006,40 +1001,7 @@ namespace RepositoryTests
       };
     }
 
-    private bool CompareSubs(Subscription original, Subscription result)
-    {
-      if (original.SubscriptionUID == result.SubscriptionUID
-        && original.CustomerUID == result.CustomerUID
-        && original.ServiceTypeID == result.ServiceTypeID
-        && original.StartDate == result.StartDate
-        && original.EndDate == result.EndDate
-        && original.LastActionedUTC == result.LastActionedUTC
-        )
-        return true;
-      else
-        return false;
-    }
-
-    private Project CopyModel(CreateProjectEvent kafkaProjectEvent)
-    {
-      return new Project()
-      {
-        ProjectUID = kafkaProjectEvent.ProjectUID.ToString(),
-        LegacyProjectID = kafkaProjectEvent.ProjectID,
-        Name = kafkaProjectEvent.ProjectName,
-        ProjectType = kafkaProjectEvent.ProjectType,
-        // IsDeleted =  N/A
-
-        ProjectTimeZone = kafkaProjectEvent.ProjectTimezone,
-        LandfillTimeZone = TimeZone.WindowsToIana(kafkaProjectEvent.ProjectTimezone),
-        GeometryWKT = kafkaProjectEvent.ProjectBoundary,
-        LastActionedUTC = kafkaProjectEvent.ActionUTC,
-        StartDate = kafkaProjectEvent.ProjectStartDate,
-        EndDate = kafkaProjectEvent.ProjectEndDate
-      };
-    }
-
-    private void CompareProjects(Project returnedProject, CreateProjectSubscriptionEvent createProjectSubscriptionEvent, CreateGeofenceEvent createGeofenceEvent)
+    private static void CompareProjects(Project returnedProject, CreateProjectSubscriptionEvent createProjectSubscriptionEvent, CreateGeofenceEvent createGeofenceEvent)
     {
       if (createProjectSubscriptionEvent == null)
       {

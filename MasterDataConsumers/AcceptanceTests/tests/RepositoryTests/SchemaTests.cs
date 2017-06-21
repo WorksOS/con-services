@@ -19,7 +19,7 @@ namespace RepositoryTests
     {
       SetupLogging();
 
-      gc = _serviceProvider.GetService<IConfigurationStore>();
+      gc = ServiceProvider.GetService<IConfigurationStore>();
     }
 
     [TestMethod]
