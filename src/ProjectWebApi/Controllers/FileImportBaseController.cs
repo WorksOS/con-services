@@ -27,18 +27,26 @@ namespace Controllers
   /// <summary>
   /// FileImporter controller
   /// </summary>
+  /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
   public class FileImportBaseController : Controller
   {
-    protected readonly IKafka producer;
+    /// <summary>
+    /// The log
+    /// </summary>
     protected readonly ILogger log;
-    protected readonly IRaptorProxy raptorProxy;
-    protected readonly IFileRepository fileRepo;
-
-    protected readonly ProjectRepository projectService;
-    protected readonly IConfigurationStore store;
-    protected readonly string kafkaTopicName;
+    private readonly IRaptorProxy raptorProxy;
+    private readonly IFileRepository fileRepo;
+    private readonly ProjectRepository projectService;
+    private readonly IKafka producer;
+    private readonly string kafkaTopicName;
+    /// <summary>
+    /// The file space identifier
+    /// </summary>
     protected string fileSpaceId;
-    protected ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    /// <summary>
+    /// The contract execution states enum
+    /// </summary>
+    protected readonly ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
 
     /// <summary>
@@ -62,7 +70,6 @@ namespace Controllers
       projectService = projectRepo as ProjectRepository;
       this.raptorProxy = raptorProxy;
       this.fileRepo = fileRepo;
-      this.store = store;
 
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
@@ -222,6 +229,7 @@ namespace Controllers
     /// <param name="existing">The existing imported file event from the database</param>
     /// <param name="fileDescriptor"></param>
     /// <param name="surveyedUtc"></param>
+    /// <param name="fileCreatedUtc"></param>
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="importedBy"></param>
     /// <returns></returns>

@@ -49,6 +49,10 @@ namespace ProjectWebApiCommon.Models
     [JsonProperty(PropertyName = "Content", Required = Required.Always)]
     public byte[] Content { get; set; }
 
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
 
     public override bool Equals(object obj)
     {
