@@ -140,6 +140,8 @@ namespace VSS.Raptor.Service.WebApi
             {
               serviceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out config);
               log.LogTrace("Received config {0}", config);
+              if (config.Contains("Error retrieving Raptor config"))
+                throw new Exception(config);
             }
             catch (Exception e)
             {
