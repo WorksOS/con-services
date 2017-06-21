@@ -4,42 +4,63 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
+using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
 using Repositories.DBModels;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApiCommon.ResultsHandling;
 
 namespace Controllers
 {
   /// <summary>
-  /// Project Base for all Project controllers
+  ///   Project Base for all Project controllers
   /// </summary>
   public class ProjectBaseController : Controller
   {
-    protected readonly IKafka producer;
-    protected readonly ILogger log;
-    protected readonly ISubscriptionProxy subsProxy;
-    protected readonly IGeofenceProxy geofenceProxy;
-    protected readonly IRaptorProxy raptorProxy;
-
-    protected readonly ProjectRepository projectService;
-    protected readonly IConfigurationStore store;
-    protected readonly string kafkaTopicName;
-    private readonly SubscriptionRepository subsService;
-    protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    /// <summary>
+    /// The contract execution states enum
+    /// </summary>
+    protected static readonly ContractExecutionStatesEnum contractExecutionStatesEnum =
+      new ContractExecutionStatesEnum();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ProjectBaseController"/> class.
+    /// The geofence proxy
+    /// </summary>
+    protected readonly IGeofenceProxy geofenceProxy;
+    /// <summary>
+    /// The kafka topic name
+    /// </summary>
+    protected readonly string kafkaTopicName;
+    /// <summary>
+    /// The log
+    /// </summary>
+    protected readonly ILogger log;
+    /// <summary>
+    /// The producer
+    /// </summary>
+    protected readonly IKafka producer;
+    /// <summary>
+    /// The project service
+    /// </summary>
+    protected readonly ProjectRepository projectService;
+    /// <summary>
+    /// The raptor proxy
+    /// </summary>
+    protected readonly IRaptorProxy raptorProxy;
+    private readonly ISubscriptionProxy subsProxy;
+    private readonly SubscriptionRepository subsService;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProjectBaseController" /> class.
     /// </summary>
     /// <param name="producer">The producer.</param>
     /// <param name="projectRepo">The project repo.</param>
@@ -49,7 +70,6 @@ namespace Controllers
     /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
-    /// <param name="fileRepo">For TCC file transfer</param>
     public ProjectBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
@@ -65,14 +85,13 @@ namespace Controllers
       this.subsProxy = subsProxy;
       this.geofenceProxy = geofenceProxy;
       this.raptorProxy = raptorProxy;
-      this.store = store;
 
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
     /// <summary>
-    /// Validates if there any subscriptions available for the request create project event
+    ///   Validates if there any subscriptions available for the request create project event
     /// </summary>
     /// <param name="project">The project.</param>
     /// <returns></returns>
@@ -99,7 +118,7 @@ namespace Controllers
     }
 
     /// <summary>
-    /// Gets the free subs for a project type
+    ///   Gets the free subs for a project type
     /// </summary>
     /// <param name="customerUid">The customer uid.</param>
     /// <param name="type">The type.</param>
@@ -126,18 +145,16 @@ namespace Controllers
                     s.ServiceTypeID == (int) type.MatchSubscriptionType())
         .ToImmutableList();
       log.LogDebug(
-        $"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
+        $"We have {availableFreSub.Count} free subscriptions for the selected project type {type}");
       if (!availableFreSub.Any())
-      {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(37),
             contractExecutionStatesEnum.FirstNameWithOffset(37)));
-      }
       return availableFreSub;
     }
 
     /// <summary>
-    /// Gets the free subscription regardless project type.
+    ///   Gets the free subscription regardless project type.
     /// </summary>
     /// <param name="customerUid">The customer uid.</param>
     /// <returns></returns>
@@ -161,10 +178,10 @@ namespace Controllers
 
 
     /// <summary>
-    /// Gets the project list for a customer
+    ///   Gets the project list for a customer
     /// </summary>
     /// <returns></returns>
-    protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
+    protected async Task<ImmutableList<Project>> GetProjectList()
     {
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
@@ -175,11 +192,11 @@ namespace Controllers
     }
 
     /// <summary>
-    /// Gets the project.
+    ///   Gets the project.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
-    protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
+    protected async Task<Project> GetProject(string projectUid)
     {
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
@@ -201,7 +218,7 @@ namespace Controllers
 
 
     /// <summary>
-    /// Updates the project.
+    ///   Updates the project.
     /// </summary>
     /// <param name="project">The project.</param>
     /// <returns></returns>
@@ -212,7 +229,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
         });
@@ -220,10 +237,13 @@ namespace Controllers
     }
 
     /// <summary>
-    /// Creates a project. Handles both old and new project boundary formats. this method can be overriden
+    ///   Creates a project. Handles both old and new project boundary formats. this method can be overriden
     /// </summary>
     /// <param name="project">The create project event</param>
-    /// <param name="kafkaProjectBoundary">The project boundary in the old format (coords comma separated, points semicolon separated)</param>
+    /// <param name="kafkaProjectBoundary">
+    ///   The project boundary in the old format (coords comma separated, points semicolon
+    ///   separated)
+    /// </param>
     /// <param name="databaseProjectBoundary">The project boundary in the new format (WKT)</param>
     /// <returns></returns>
     protected virtual async Task CreateProject(CreateProjectEvent project, string kafkaProjectBoundary,
@@ -231,11 +251,9 @@ namespace Controllers
     {
       ProjectDataValidator.Validate(project, projectService);
       if (project.ProjectID <= 0)
-      {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(44),
             contractExecutionStatesEnum.FirstNameWithOffset(44)));
-      }
       project.ReceivedUTC = DateTime.UtcNow;
 
       //Send boundary as old format on kafka queue
@@ -249,7 +267,7 @@ namespace Controllers
     }
 
     /// <summary>
-    /// Associates the project customer.
+    ///   Associates the project customer.
     /// </summary>
     /// <param name="customerProject">The customer project.</param>
     /// <returns></returns>
@@ -260,7 +278,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
         });
@@ -268,7 +286,7 @@ namespace Controllers
     }
 
     /// <summary>
-    /// Dissociates the project customer.
+    ///   Dissociates the project customer.
     /// </summary>
     /// <param name="customerProject">The customer project.</param>
     /// <returns></returns>
@@ -279,7 +297,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectCustomer = customerProject});
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
         });
@@ -287,7 +305,7 @@ namespace Controllers
     }
 
     /// <summary>
-    /// Associates the geofence project.
+    ///   Associates the geofence project.
     /// </summary>
     /// <param name="geofenceProject">The geofence project.</param>
     /// <returns></returns>
@@ -298,7 +316,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
         });
@@ -306,7 +324,7 @@ namespace Controllers
     }
 
     /// <summary>
-    /// Deletes the project.
+    ///   Deletes the project.
     /// </summary>
     /// <param name="project">The project.</param>
     /// <returns></returns>
@@ -317,7 +335,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
         });

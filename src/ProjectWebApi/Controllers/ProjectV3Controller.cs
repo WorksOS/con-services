@@ -23,6 +23,17 @@ namespace Controllers
   public class ProjectV3Controller : ProjectBaseController
   {
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProjectV3Controller"/> class.
+    /// </summary>
+    /// <param name="producer">The producer.</param>
+    /// <param name="projectRepo">The project repo.</param>
+    /// <param name="subscriptionsRepo">The subscriptions repo.</param>
+    /// <param name="store">The store.</param>
+    /// <param name="subsProxy">The subs proxy.</param>
+    /// <param name="geofenceProxy">The geofence proxy.</param>
+    /// <param name="raptorProxy">The raptorServices proxy.</param>
+    /// <param name="logger">The logger.</param>
     public ProjectV3Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
