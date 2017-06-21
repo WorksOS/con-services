@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using log4netExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,28 +12,15 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace RepositoryTests.ProjectRepositoryTests
 {
   [TestClass]
-  public class RepositoryTests
+  public class RepositoryTests : TestControllerBase
   {
-    IServiceProvider _serviceProvider;
     CustomerRepository _customerContext;
     ProjectRepository _projectContext;
 
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      _serviceProvider = new ServiceCollection()
-        .AddLogging()
-        .AddSingleton(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .BuildServiceProvider();
+      SetupLogging();
 
       _customerContext = new CustomerRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
       _projectContext = new ProjectRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
