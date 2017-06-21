@@ -27,8 +27,7 @@ namespace Controllers
   /// </summary>
   public class FileImportV4Controller : FileImportBaseController
   {
-
-    protected static ILoggerFactory Logger;
+    private static ILoggerFactory Logger;
 
     /// <summary>
     /// File import controller v4
