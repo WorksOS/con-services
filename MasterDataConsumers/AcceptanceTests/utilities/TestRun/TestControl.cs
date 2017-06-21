@@ -69,6 +69,8 @@ namespace TestRun
                 {
                     Console.WriteLine("  Reason: {0}", ex.InnerException.Message);
                 }
+                Console.Out.Flush();
+
                 WriteDllException(ex);
                 return false;
             }
@@ -320,6 +322,8 @@ namespace TestRun
             Console.WriteLine(@"=================================================================================================");
             Console.WriteLine("Test: " + method.Name);
             Console.WriteLine(@"=================================================================================================");
+            Console.Out.Flush();
+
             var consoleOut = new StringWriter();
             if (isStdoutCaptured)
             {  Console.SetOut(consoleOut); }
@@ -363,7 +367,8 @@ namespace TestRun
                     {Console.SetOut(stdOut);}
                 Console.WriteLine(@"=================================================================================================");
                 Console.WriteLine("Test : " + method.Name + " ***********  FAILED ************ ");
-                Console.WriteLine(@"=================================================================================================");                
+                Console.WriteLine(@"=================================================================================================");
+                Console.Out.Flush();
             }
             finally
             {
@@ -376,7 +381,7 @@ namespace TestRun
       /// </summary>
       /// <param name="message">test results to be logged</param>
       /// <param name="logfile">log file name</param>
-      private void Write(string message, string logfile)
+      private static void Write(string message, string logfile)
         {
             using (var w = File.AppendText(logfile))
             {
