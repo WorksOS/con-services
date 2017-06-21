@@ -316,8 +316,7 @@ namespace TestRun
                 return;
             }
 
-
-          // Set the console messages to be in the file
+            // Set the console messages to be in the file
             Console.WriteLine(@"=================================================================================================");
             Console.WriteLine("Test: " + method.Name);
             Console.WriteLine(@"=================================================================================================");
