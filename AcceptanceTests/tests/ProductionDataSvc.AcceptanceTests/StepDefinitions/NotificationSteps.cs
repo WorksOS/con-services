@@ -14,6 +14,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private string projectUid;
     private string fileDescriptor;
     private long fileId;
+    private string fileUid;
 
     private Getter<RequestResult> fileNotificationRequester;
 
@@ -47,10 +48,17 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.fileId = fileId;
     }
 
+    [Given(@"a fileUid ""(.*)""")]
+    public void GivenAFileUid(string fileUid)
+    {
+      this.fileUid = fileUid;
+    }
+
+
     [When(@"I request File Notification")]
     public void WhenIRequestFileNotification()
     {
-      this.url = string.Format("{0}?projectUid={1}&filedescriptor={2}&fileId={3}", url, projectUid, fileDescriptor, fileId);
+      this.url = string.Format("{0}?projectUid={1}&filedescriptor={2}&fileId={3}&fileUid={4}", url, projectUid, fileDescriptor, fileId, fileUid);
       fileNotificationRequester = new Getter<RequestResult>(this.url);
       fileNotificationRequester.DoValidRequest();
     }

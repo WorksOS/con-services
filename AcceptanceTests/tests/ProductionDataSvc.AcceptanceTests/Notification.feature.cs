@@ -86,9 +86,11 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 8
  testRunner.And("a fileId \"1234\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
+  testRunner.And("a fileUid \"314cdcdd-1002-4431-a621-f5aa77be6f79\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 10
  testRunner.When("I request File Notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 10
+#line 11
  testRunner.Then("the File Notification result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Add file notification successful\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -100,21 +102,23 @@ namespace ProductionDataSvc.AcceptanceTests
         public virtual void NotificationDeleteFile_GoodRequest()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Notification Delete File - Good Request", ((string[])(null)));
-#line 18
- this.ScenarioSetup(scenarioInfo);
 #line 19
- testRunner.Given("the Delete File Notification service URI \"/api/v2/notification/deletefile\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ this.ScenarioSetup(scenarioInfo);
 #line 20
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("the Delete File Notification service URI \"/api/v2/notification/deletefile\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 21
+ testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 22
  testRunner.And("a filespaceId \"u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01\" and a path \"/NotificationAc" +
                     "ceptanceTest\" and a fileName \"Topcon Road - DesignMap.dxf\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 22
- testRunner.And("a fileId \"1234\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 23
+ testRunner.And("a fileId \"1234\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 24
+  testRunner.And("a fileUid \"314cdcdd-1002-4431-a621-f5aa77be6f79\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 25
  testRunner.When("I request File Notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 24
+#line 26
  testRunner.Then("the File Notification result should be", "{\n  \"Code\": 0,\n  \"Message\": \"Delete file notification successful\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

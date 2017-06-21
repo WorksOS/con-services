@@ -101,6 +101,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     /// Notifies Raptor that a file has been added to a project
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="fileUid">File UID</param>
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
     /// <param name="fileId">A unique file identifier</param>
     /// <returns></returns>
@@ -110,6 +111,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     [HttpGet]
     public async Task<ContractExecutionResult> GetAddFile(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long fileId)
     {
@@ -131,7 +133,8 @@ namespace VSS.Raptor.Service.WebApi.Notification
       request.Validate();
       var executor = RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
-      await ClearFilesCaches(projectUid, new List<Guid>(), customHeaders);//TODO: pass fileUid
+      //Do we need to validate fileUid ?
+      await ClearFilesCaches(projectUid, new List<Guid>{fileUid}, customHeaders);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
       return result;
     }
@@ -140,6 +143,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     /// Notifies Raptor that a file has been deleted from a project
     /// </summary>
     /// <param name="projectUid">Project UID</param>
+    /// <param name="fileUid">File UID</param>
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>    /// <returns></returns>
     /// <param name="fileId">A unique file identifier</param>
     /// <executor>DeleteFileExecutor</executor> 
@@ -148,6 +152,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     [HttpGet]
     public async Task<ContractExecutionResult> GetDeleteFile(
       [FromQuery] Guid projectUid,
+      [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long fileId)
     {
@@ -160,7 +165,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
       var executor = RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       var customHeaders = Request.Headers.GetCustomHeaders();
-      await ClearFilesCaches(projectUid, new List<Guid>(), customHeaders);//TODO: pass fileUid
+      await ClearFilesCaches(projectUid, new List<Guid>{fileUid}, customHeaders);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
     }
