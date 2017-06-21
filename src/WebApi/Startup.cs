@@ -8,7 +8,6 @@ using Swashbuckle.Swagger.Model;
 using log4netExtensions;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TCCFileAccess;
@@ -19,9 +18,6 @@ using VSS.Raptor.Service.Common.Filters;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Filters.Validation;
-using VSS.Raptor.Service.Common.JsonConverters;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 using WebApiModels.Interfaces;
 using WebApiModels.Notification.Helpers;
 
@@ -103,6 +99,7 @@ namespace VSS.Raptor.Service.WebApi
             services.AddScoped<ITagProcessor, TagProcessor>();
             services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
             services.AddSingleton<IProjectListProxy, ProjectListProxy>();
+            services.AddSingleton<IFileListProxy, FileListProxy>();
             services.AddTransient<IFileRepository, FileRepository>();
             services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
             services.AddTransient<ITileGenerator, TileGenerator>();
@@ -143,6 +140,8 @@ namespace VSS.Raptor.Service.WebApi
             {
               serviceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out config);
               log.LogTrace("Received config {0}", config);
+              if (config.Contains("Error retrieving Raptor config"))
+                throw new Exception(config);
             }
             catch (Exception e)
             {

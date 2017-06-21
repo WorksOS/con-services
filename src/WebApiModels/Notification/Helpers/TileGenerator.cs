@@ -1,11 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.WebApiModels.Notification.Models;
 using WebApiModels.Interfaces;
 
 namespace WebApiModels.Notification.Helpers
@@ -66,13 +66,13 @@ namespace WebApiModels.Notification.Helpers
         //Do we care if this fails?
       }
 
-      var fullGeneratedName = fileDescr.path + "/" + generatedName;
+      var fullGeneratedName = Path.Combine(fileDescr.path, generatedName);
       var zoomResult = await CalculateTileZoomRange(fileDescr.filespaceId, fullGeneratedName);
       success = zoomResult.success;
       if (success)
       {
         //Now do the rendering
-        string tilePath = TilePath(fileDescr.path, generatedName);
+        string tilePath = FileUtils.TilePath(fileDescr.path, generatedName);
 
         // Generate .DXF file tiles and place the tiles in TCC...
         if (regenerate || ! await fileRepo.FolderExists(fileDescr.filespaceId, tilePath))
@@ -84,8 +84,7 @@ namespace WebApiModels.Notification.Helpers
         {
           for (int zoomLevel = zoomResult.minZoom; zoomLevel <= zoomResult.maxZoom; zoomLevel++)
           {
-            string zoomFolder = ZoomFolder(zoomLevel);
-            string zoomPath = string.Format("{0}/{1}", tilePath, zoomFolder);
+            string zoomPath = FileUtils.ZoomPath(tilePath, zoomLevel);
 
             if (! await fileRepo.FolderExists(fileDescr.filespaceId, zoomPath))
               success = success && await GenerateDxfTiles(projectId, fullGeneratedName, tilePath, fileDescr.filespaceId, zoomLevel);
@@ -242,7 +241,7 @@ namespace WebApiModels.Notification.Helpers
     public async Task<bool> DeleteDxfTiles(long projectId, string generatedName, FileDescriptor fileDescr)
     {
       bool success = true;
-      string tilePath = TilePath(fileDescr.path, generatedName);
+      string tilePath = FileUtils.TilePath(fileDescr.path, generatedName);
       log.LogDebug("Deleting DXF tiles {0}", tilePath);
       if (await fileRepo.FolderExists(fileDescr.filespaceId, tilePath))
       {
@@ -256,27 +255,7 @@ namespace WebApiModels.Notification.Helpers
       return success;
     }
 
-    /// <summary>
-    /// The full folder name of where the tiles are stored
-    /// </summary>
-    /// <param name="path">The full path of where the DXF file is located</param>
-    /// <param name="generatedName">The DXF file name which is generated for an alignment or design file</param>
-    /// <returns>The full path of the tile folder</returns>
-    private string TilePath(string path, string generatedName)
-    {
-      string tileFolder = FileUtils.TilesFolderWithSuffix(generatedName);
-      return string.Format("{0}/{1}", path, tileFolder);
-    }
-
-    /// <summary>
-    /// The zoom folder name for the specified zoom level
-    /// </summary>
-    /// <param name="zoomLevel">The zoom level</param>
-    /// <returns>The zoom folder name</returns>
-    private string ZoomFolder(int zoomLevel)
-    {
-      return string.Format("Z{0}", zoomLevel);
-    }
+ 
 
     /// <summary>
     /// Generates DXF tiles
@@ -302,7 +281,7 @@ namespace WebApiModels.Notification.Helpers
       }
       if (success)
       {
-        string zoomPath = string.Format("{0}/{1}", tilePath, ZoomFolder(zoomLevel));
+        string zoomPath = FileUtils.ZoomPath(tilePath, zoomLevel);
         if (!await fileRepo.FolderExists(filespaceId, zoomPath))
         {
           //Generate tiles for this file at this zoom level.

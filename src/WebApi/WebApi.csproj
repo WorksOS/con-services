@@ -42,6 +42,12 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5</DefineConstants>
   </PropertyGroup>

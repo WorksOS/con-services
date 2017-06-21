@@ -2,12 +2,9 @@
 using System.Globalization;
 using System.IO;
 using System.Net;
-using Microsoft.Extensions.Logging;
-using TCCFileAccess;
 using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Notification.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiModels.Notification.Helpers
 {
@@ -21,23 +18,23 @@ namespace WebApiModels.Notification.Helpers
     /// </summary>
     /// <param name="fileName">The file name</param>
     /// <returns>THe file type</returns>
-    public static ImportedFileTypeEnum GetFileType(string fileName)
+    public static ImportedFileType GetFileType(string fileName)
     {
       string ext = Path.GetExtension(fileName).ToUpper();
       if (ext == ".DXF")
-        return ImportedFileTypeEnum.Linework;
+        return ImportedFileType.Linework;
       if (ext == ".TTM")
       {
         return SurveyedSurfaceUtc(fileName).HasValue
-          ? ImportedFileTypeEnum.SurveyedSurface
-          : ImportedFileTypeEnum.DesignSurface;
+          ? ImportedFileType.SurveyedSurface
+          : ImportedFileType.DesignSurface;
       }
       if (ext == ".SVL")
-        return ImportedFileTypeEnum.Alignment;
+        return ImportedFileType.Alignment;
       if (ext == ".KML" || ext == ".KMZ")
-        return ImportedFileTypeEnum.MobileLinework;
+        return ImportedFileType.MobileLinework;
       if (ext == ".VCL" || ext == ".TMH")
-        return ImportedFileTypeEnum.MassHaulPlan;
+        return ImportedFileType.MassHaulPlan;
 
       //Reference surface does not have it's own file. It is an offset wrt an existing design surface.
 
@@ -78,13 +75,13 @@ namespace WebApiModels.Notification.Helpers
     /// </summary>
     /// <param name="fileType">The type of file for which the associated file will be generated</param>
     /// <returns>The suffix</returns>
-    public static string GeneratedFileSuffix(ImportedFileTypeEnum fileType)
+    public static string GeneratedFileSuffix(ImportedFileType fileType)
     {
       switch (fileType)
       {
-          case ImportedFileTypeEnum.Linework: return string.Empty;
-          case ImportedFileTypeEnum.Alignment: return GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX;
-          case ImportedFileTypeEnum.DesignSurface: return GENERATED_SURFACE_FILE_SUFFIX;
+          case ImportedFileType.Linework: return string.Empty;
+          case ImportedFileType.Alignment: return GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX;
+          case ImportedFileType.DesignSurface: return GENERATED_SURFACE_FILE_SUFFIX;
       }
       return string.Empty;
     }
@@ -99,7 +96,30 @@ namespace WebApiModels.Notification.Helpers
       return string.Format("{0}{1}", dxfFileName, GENERATED_TILE_FOLDER_SUFFIX);
     }
 
-  
+    /// <summary>
+    /// The full folder name of where the tiles are stored
+    /// </summary>
+    /// <param name="path">The full path of where the DXF file is located</param>
+    /// <param name="generatedName">The DXF file name which is generated for an alignment or design file</param>
+    /// <returns>The full path of the tile folder</returns>
+    public static string TilePath(string path, string generatedName)
+    {
+      string tileFolder = TilesFolderWithSuffix(generatedName);
+      return string.Format("{0}/{1}", path, tileFolder);
+    }
+
+    /// <summary>
+    /// The path to the zoom folder name for the specified zoom level
+    /// </summary>
+    /// <param name="tilePath">The path to the folder where the tiles are stored</param>
+    /// <param name="zoomLevel">The zoom level</param>
+    /// <returns>The zoom path</returns>
+    public static string ZoomPath(string tilePath, int zoomLevel)
+    {
+      return string.Format("{0}/Z{1}", tilePath, zoomLevel);
+    }
+
+
 
     private const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
     private const string GENERATED_SURFACE_FILE_SUFFIX = "_Boundary$";

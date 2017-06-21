@@ -235,7 +235,7 @@ Scenario: Compaction Get CMV Summary
 	"""
 
   Scenario: Compaction Get Tiles 
-	Given the Compaction Tiles service URI "/api/v2/compaction/tiles"
+	Given the Compaction Tiles service URI "/api/v2/compaction/productiondatatiles"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace" 
   And a displayMode "0" and a bbox "36.206964000089840283, -115.0203540002853231, 36.206956000089640213, -115.02034400028509253" and a width "256" and a height "256"
 	When I request a Tile
@@ -425,8 +425,28 @@ Scenario: Compaction Get CMV Summary
 					"value": 900.0
 				},
 				{
-					"color": 7091331,
+					"color": 14785888,
 					"value": 1000.0
+				},
+				{
+					"color": 15190446,
+					"value": 1100.0
+				},
+				{
+					"color": 5182823,
+					"value": 1200.0
+				},
+				{
+					"color": 9259433,
+					"value": 1300.0
+				},
+				{
+					"color": 13740258,
+					"value": 1400.0
+				},
+				{
+					"color": 1971179,
+					"value": 1500.0
 				}
       ],
       "aboveLastColor": null,

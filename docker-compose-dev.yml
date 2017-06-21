@@ -6,6 +6,7 @@ services:
      - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/project
      - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-geofenceservice/1.0
      - PREFERENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-preferenceservice/1.0
+     - IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
      - ASNODEIP=10.97.96.134
      - IONODEIP=10.97.96.92
      - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
@@ -13,6 +14,7 @@ services:
      - TCCUSERNAME=vldev
      - TCCPWD=vldev_key
      - TCCORG=vldev
+     - TCCFILESPACEID=u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
      - TCCFILESPACENAME=vldatastore-dev
      - TILE_RENDER_MAX_ZOOM_LEVEL=21
      - TILE_RENDER_MAX_ZOOM_RANGE=14

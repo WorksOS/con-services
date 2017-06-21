@@ -14,6 +14,7 @@ using TCCFileAccess;
 using VLPDDecls;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Proxies;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using WebApiModels.Interfaces;
 using WebApiModels.Notification.Helpers;
 using WebApiModels.Notification.Models;
@@ -66,13 +67,13 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
       try
       {
         ProjectFileDescriptor request = item as ProjectFileDescriptor;
-        ImportedFileTypeEnum fileType = FileUtils.GetFileType(request.File.fileName);
+        ImportedFileType fileType = FileUtils.GetFileType(request.File.fileName);
  
         //Tell Raptor to update its cache. 
         //Note: surveyed surface file names are the TCC one including the surveyed UTC in the file name
-        if (fileType == ImportedFileTypeEnum.Alignment || 
-            fileType == ImportedFileTypeEnum.DesignSurface ||
-            fileType == ImportedFileTypeEnum.SurveyedSurface)
+        if (fileType == ImportedFileType.Alignment || 
+            fileType == ImportedFileType.DesignSurface ||
+            fileType == ImportedFileType.SurveyedSurface)
         {
           log.LogDebug("Updating Raptor design cache");
 
@@ -86,9 +87,9 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
           }
         }
 
-        if (fileType == ImportedFileTypeEnum.Linework ||
-            fileType == ImportedFileTypeEnum.DesignSurface ||
-            fileType == ImportedFileTypeEnum.Alignment)
+        if (fileType == ImportedFileType.Linework ||
+            fileType == ImportedFileType.DesignSurface ||
+            fileType == ImportedFileType.Alignment)
         {
           var suffix = FileUtils.GeneratedFileSuffix(fileType);
           //Get PRJ file contents from Raptor
@@ -123,7 +124,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
           await CreateTransformFile(request.projectId.Value, request.File, haFile, suffix, FileUtils.HORIZONTAL_ADJUSTMENT_FILE_EXTENSION);
      
 
-          if (fileType != ImportedFileTypeEnum.Linework)
+          if (fileType != ImportedFileType.Linework)
           {
             //Get alignment or surface boundary as DXF file from Raptor
             await CreateDxfFile(request.projectId.Value, request.File, suffix, request.UserPreferenceUnits);    
@@ -132,7 +133,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
           await tileGenerator.CreateDxfTiles(request.projectId.Value, request.File, suffix, false).ConfigureAwait(false);
         }
 
-        else if (fileType == ImportedFileTypeEnum.SurveyedSurface)
+        else if (fileType == ImportedFileType.SurveyedSurface)
         {
           log.LogDebug("Storing ground surface file in Raptor");
           DesignDescriptor dd = Common.Models.DesignDescriptor.CreateDesignDescriptor(request.FileId, request.File, 0.0);
@@ -178,7 +179,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
         throw new ServiceException(HttpStatusCode.BadRequest, 
           new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Empty transform file contents"));
       }
-      using (MemoryStream memoryStream = new MemoryStream(Encoding.Unicode.GetBytes(fileData)))
+      using (MemoryStream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(fileData)))
       {
         return await PutFile(projectId, fileDescr, suffix, extension, memoryStream, fileData.Length);
       }
@@ -227,7 +228,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
         (projectId,
           DesignDescriptor(0, fileDescr, 0),
           DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtDXF,
-          interval, raptorUnits), out memoryStream, out designProfilerResult);
+          interval, raptorUnits,0), out memoryStream, out designProfilerResult);
 
       if (memoryStream != null)
       {

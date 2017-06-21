@@ -182,6 +182,12 @@ namespace VSS.Raptor.Service.Common.ResultHandling
                     (int) TASNodeErrorStatus.asneExportDateRangesNoOverlap, offset);
             contractExecutionStates.DynamicAddwithOffset("Invalid page size or number for patch request. Try reducing the area being requested.",
                     (int) TASNodeErrorStatus.asneInvalidArgument, offset);
+            contractExecutionStates.DynamicAddwithOffset("No coordinate system assigned to project.",
+              (int)TASNodeErrorStatus.asneNoCoordinateSystem, offset);
+            contractExecutionStates.DynamicAddwithOffset("Failed to load coordinate system data from project's data model file.",
+                (int)TASNodeErrorStatus.asneFailedToLoadCoordinateSystem, offset);
+            contractExecutionStates.DynamicAddwithOffset("Failed to create coordinate transformer.",
+                (int)TASNodeErrorStatus.asneFailedToCreateCoordinateTransformer, offset);
         }
 
       public static void AddTagProcessorErrorMessages(ContractExecutionStatesEnum contractExecutionStates)
@@ -206,10 +212,15 @@ namespace VSS.Raptor.Service.Common.ResultHandling
         contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. No GridEpochs Found In TAGFile.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelNoGridEpochsFoundInTAGFile, offset);
         contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. Supplied DataModel Boundary Contains Insufficeint Vertices.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelSuppliedDataModelBoundaryContainsInsufficeintVertices, offset);
         contractExecutionStates.DynamicAddwithOffset("OnChooseDataModel. First Epoch Blade Position Does Not Lie Within Project Boundary.", (int)TTAGProcServerProcessResult.tpsprOnChooseDataModelFirstEpochBladePositionDoesNotLieWithinProjectBoundary, offset);
-
+        contractExecutionStates.DynamicAddwithOffset("OnOverrideEvent. Failed on event's date validation.", (int)TTAGProcServerProcessResult.tpsprFailedEventDateValidation, offset);
+        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. Invalid tag file submission message type.", (int)TTAGProcServerProcessResult.tpsprInvalidTagFileSubmissionMessageType, offset);
+        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. TAG file already exists in data model's processing folder.", (int)TTAGProcServerProcessResult.tpsprTAGFileAlreadyExistsInProcessingFolderForDataModel, offset);
+        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. TAG file already exists in data model's processing archival queue.", (int)TTAGProcServerProcessResult.tpsprTAGFileAlreadyExistsInProcessingArchivalQueueForDataModel, offset);
+        contractExecutionStates.DynamicAddwithOffset("OnProcessTAGFile. Service has been stopped.", (int)TTAGProcServerProcessResult.tpsprServiceStopped, offset);
+        contractExecutionStates.DynamicAddwithOffset("OnOverrideEvent. Failed on target data validation.", (int)TTAGProcServerProcessResult.tpsprFailedValidation, offset);
       }
 
-      public static void AddDesignProfileErrorMessages(ContractExecutionStatesEnum contractExecutionStates)
+    public static void AddDesignProfileErrorMessages(ContractExecutionStatesEnum contractExecutionStates)
       {
         AddDesignProfileErrorMessages(contractExecutionStates, contractExecutionStates.DefaultDynamicOffset);
       }
