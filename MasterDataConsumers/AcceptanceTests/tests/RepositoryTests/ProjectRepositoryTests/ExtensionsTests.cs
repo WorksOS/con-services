@@ -15,5 +15,11 @@ namespace RepositoryTests.ProjectRepositoryTests
       {
         Assert.AreEqual(expected, upsertCount.CalculateUpsertCount());
       }
+
+      [TestMethod]
+      public void Integer_CalculateUpsertCount2()
+      {
+        Assert.AreEqual(4, 4.CalculateUpsertCount());
+      }
   }
 }
