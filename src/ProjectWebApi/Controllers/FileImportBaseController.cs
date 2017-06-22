@@ -17,6 +17,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using ProjectWebApi.Filters;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -120,7 +121,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
     {
-      LogCustomerDetails("GetImportedFileList", projectUid);
+       LogCustomerDetails("GetImportedFileList", projectUid);
 
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
@@ -287,8 +288,7 @@ namespace Controllers
         await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
 
       // this does an upsert
-      var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length)
-        .ConfigureAwait(false);
+      var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
       if (ccPutFileResult == false)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -413,7 +413,8 @@ namespace Controllers
 
     private string LogCustomerDetails(string functionName, string projectUid)
     {
-      var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
+     // var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       log.LogInformation($"{functionName}: CustomerUID={customerUid} and projectUid={projectUid}");
 
       return customerUid;
