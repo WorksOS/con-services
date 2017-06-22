@@ -10,6 +10,7 @@ using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
 using Repositories.DBModels;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -71,15 +72,57 @@ namespace Controllers
     /// Sets activated state on one or more imported files.
     /// </summary>
     /// <param name="projectUid"></param>
-    /// <param name="importedFileUids">Collection of file Uids to set the activated state on</param>
+    /// <param name="importedFileDescriptors">Collection of file Uids to set the activated state on</param>
     /// <returns></returns>
     [Route("api/v4/importedfiles")]
     [HttpPut]
-    protected async Task<ImmutableList<ActivatedFileDescriptor>> PutImportedFilesV4([FromQuery] string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileUids)
+    protected async Task<IActionResult> UpdateImportedFileActivationStateV4([FromQuery] string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileDescriptors)
     {
+      const string functionId = "SetImportedFileActivatedStateV4";
       log.LogInformation("ActivateFiles");
+      
+      var fileIds = importedFileDescriptors.Aggregate(string.Empty, (current, id) => string.Join(",", id.ImportedFileUid));
+      log.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
 
-      throw new NotImplementedException();
+      var importedFiles = await GetImportedFiles(projectUid);
+      if (!importedFiles.Any())
+      {
+        return Ok(new { message = "No files to process" });
+      }
+
+      var updateFileUids = new List<string>();
+
+      foreach (var activatedFileDescriptor in importedFileDescriptors)
+      {
+        var existingFile =
+          importedFiles.FirstOrDefault(f => f.ImportedFileUid == activatedFileDescriptor.ImportedFileUid);
+        if (existingFile == null)
+        {
+          log.LogInformation(
+            $"{functionId}. file doesn't exist. projectUid {projectUid}, fileUid: {activatedFileDescriptor.ImportedFileUid}");
+          continue;
+        }
+
+        log.LogInformation(
+          $"{functionId}. file already exists, will be updated: {JsonConvert.SerializeObject(existingFile)}");
+        updateFileUids.Add(activatedFileDescriptor.ImportedFileUid);
+      }
+
+      // if all succeeds, send insert to Db and kafka que
+      //var importedFileId = existing?.ImportedFileId;
+      //var project = await GetProject(projectUid);
+
+      //await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value);
+
+      if (updateFileUids.Any())
+      {
+        // TODO need updated API
+      //  UpdateImportedFileEvent fileDescriptor = await SetFileActivatedState(projectUid, updateFileUids, null);
+
+        return Ok(new { code = HttpStatusCode.OK, message = "Success" });
+      }
+
+      return StatusCode((int) HttpStatusCode.InternalServerError);
     }
 
     /// <summary>
@@ -223,7 +266,7 @@ namespace Controllers
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
-        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {
@@ -250,7 +293,7 @@ namespace Controllers
       }
       if (existing == null)
         log.LogInformation(
-          $"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+          $"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
       else
         log.LogInformation(
           $"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
