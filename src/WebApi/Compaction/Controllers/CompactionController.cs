@@ -1367,7 +1367,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = false)]//temp. no caching
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
     public async Task<TileResult> GetLineworkTile(
         [FromQuery] string SERVICE,
         [FromQuery] string VERSION,
@@ -1419,7 +1419,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = false)]//temp. no caching
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
     public async Task<FileResult> GetLineworkTileRaw(
         [FromQuery] string SERVICE,
         [FromQuery] string VERSION,
