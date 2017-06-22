@@ -52,6 +52,8 @@ namespace WebApiModels.Notification.Helpers
     {
       var shortFileName = Path.GetFileNameWithoutExtension(fileName);
       var format = "yyyy-MM-ddTHH:mm:ssZ";
+      if (shortFileName.Length <= format.Length)
+        return (DateTime?) null;
       DateTime dateTime = shortFileName.Substring(shortFileName.Length - format.Length).IsDateTimeISO8601(format);
       return dateTime == DateTime.MinValue ? (DateTime?)null : dateTime;
     }

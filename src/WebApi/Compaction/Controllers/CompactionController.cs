@@ -1553,8 +1553,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
               "No imported files"));
         }
         //Select the required ones from the list
-        return fileList.Where(f => f.ImportedFileType == importedFileType).ToList();
-      //TODO: When 'active' flag has been added to file descriptors, only select active files here
+        return fileList.Where(f => f.ImportedFileType == importedFileType && f.IsActivated).ToList();
       }
 
     /*
