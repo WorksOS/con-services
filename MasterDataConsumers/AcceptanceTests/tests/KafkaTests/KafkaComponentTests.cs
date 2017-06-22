@@ -81,12 +81,12 @@ namespace KafkaTests
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "The Asset Name",
-        AssetType ="whatever",
+        AssetType = "whatever",
         ActionUTC = actionUtc
       };
 
       var configurationStore = serviceProvider.GetService<IConfigurationStore>();
-      var baseTopic = "VSS.Interfaces.Events.MasterData.IAssetEvent" + Guid.NewGuid().ToString();
+      var baseTopic = "VSS.Interfaces.Events.MasterData.IAssetEvent" + Guid.NewGuid();
       var suffix = configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       var topicName = baseTopic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
@@ -138,7 +138,7 @@ namespace KafkaTests
       };
 
       var configurationStore = serviceProvider.GetService<IConfigurationStore>();
-      var baseTopic = "VSS.Interfaces.Events.MasterData.ICustomerEvent" + Guid.NewGuid().ToString();
+      var baseTopic = "VSS.Interfaces.Events.MasterData.ICustomerEvent" + Guid.NewGuid();
       var suffix = configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       var topicName = baseTopic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
@@ -191,7 +191,7 @@ namespace KafkaTests
       };
 
       var configurationStore = serviceProvider.GetService<IConfigurationStore>();
-      var baseTopic = "VSS.Interfaces.Events.MasterData.IDeviceEvent" + Guid.NewGuid().ToString();
+      var baseTopic = "VSS.Interfaces.Events.MasterData.IDeviceEvent" + Guid.NewGuid();
       var suffix = configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       var topicName = baseTopic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
@@ -251,7 +251,7 @@ namespace KafkaTests
       };
 
       var configurationStore = serviceProvider.GetService<IConfigurationStore>();
-      var baseTopic = "VSS.Interfaces.Events.MasterData.CreateProjectEvent" + Guid.NewGuid().ToString();
+      var baseTopic = "VSS.Interfaces.Events.MasterData.CreateProjectEvent" + Guid.NewGuid();
       var suffix = configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       var topicName = baseTopic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
@@ -307,7 +307,7 @@ namespace KafkaTests
       };
 
       var configurationStore = serviceProvider.GetService<IConfigurationStore>();
-      var baseTopic = "VSS.Interfaces.Events.MasterData.CreateProjectSubscriptionEvent" + Guid.NewGuid().ToString();
+      var baseTopic = "VSS.Interfaces.Events.MasterData.CreateProjectSubscriptionEvent" + Guid.NewGuid();
       var suffix = configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       var topicName = baseTopic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
@@ -368,7 +368,7 @@ namespace KafkaTests
       };
 
       var configurationStore = serviceProvider.GetService<IConfigurationStore>();
-      var baseTopic = "VSS.Interfaces.Events.MasterData.CreateGeofenceEvent" + Guid.NewGuid().ToString();
+      var baseTopic = "VSS.Interfaces.Events.MasterData.CreateGeofenceEvent" + Guid.NewGuid();
       var suffix = configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       var topicName = baseTopic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 

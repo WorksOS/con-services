@@ -1,41 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Dapper;
+﻿using Dapper;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
-using log4netExtensions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
+using RepositoryTests.Internal;
+using System.Collections.Generic;
+using System.Linq;
 using VSS.GenericConfiguration;
 
 namespace RepositoryTests
 {
   [TestClass]
-  public class SchemaTests
+  public class SchemaTests : TestControllerBase
   {
-
-    IServiceProvider serviceProvider;
     IConfigurationStore gc;
 
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      SetupLogging();
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceProvider = new ServiceCollection()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
-        .BuildServiceProvider();
-
-      gc = serviceProvider.GetService<IConfigurationStore>();
+      gc = ServiceProvider.GetService<IConfigurationStore>();
     }
 
     [TestMethod]

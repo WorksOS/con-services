@@ -1,44 +1,28 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using log4netExtensions;
-using VSS.GenericConfiguration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repositories;
 using Repositories.DBModels;
+using RepositoryTests.Internal;
+using System;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {
   [TestClass]
-  public class DeviceRepositoryTests
+  public class DeviceRepositoryTests : TestControllerBase
   {
-
-    IServiceProvider serviceProvider = null;
-    DeviceRepository deviceContext = null;
-    AssetRepository assetContext = null;
+    DeviceRepository deviceContext;
+    AssetRepository assetContext;
 
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      SetupLogging();
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceProvider = new ServiceCollection()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
-        .BuildServiceProvider();
-
-      var retrievedloggerFactory = serviceProvider.GetService<ILoggerFactory>();
-      Assert.IsNotNull(retrievedloggerFactory);
-      deviceContext = new DeviceRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
-      assetContext = new AssetRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      deviceContext = new DeviceRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
+      assetContext = new AssetRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
     }
 
     /// <summary>
@@ -80,8 +64,8 @@ namespace RepositoryTests
         return null;
       }).Wait();
     }
-        
-    
+
+
     /// <summary>
     /// ActionUTC is set already to an earlier date
     /// this could have been from a Create or Update - does it matter?
@@ -298,8 +282,8 @@ namespace RepositoryTests
       var s = deviceContext.StoreEvent(associateDeviceAssetEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "DeviceAsset event not written");
-      
-      var g = deviceContext.GetAssociatedAsset(createDeviceEvent.DeviceSerialNumber, createDeviceEvent.DeviceType );
+
+      var g = deviceContext.GetAssociatedAsset(createDeviceEvent.DeviceSerialNumber, createDeviceEvent.DeviceType);
       g.Wait();
       Assert.IsNotNull(g.Result, "Unable to retrieve AssetDevicePlus from CustomerRepo");
       Assert.AreEqual(associateDeviceAssetEvent.DeviceUID.ToString(), g.Result.DeviceUID, "DeviceUID is incorrect from DeviceRepo");
@@ -308,7 +292,7 @@ namespace RepositoryTests
       Assert.AreEqual(createAssetEvent.OwningCustomerUID.ToString(), g.Result.OwningCustomerUID, "OwningCustomerUID is incorrect from DeviceRepo");
     }
 
-    
+
     /// <summary>
     ///  DissociateDeviceAsset - Happy path
     ///    assoc exists, delete it
@@ -340,7 +324,7 @@ namespace RepositoryTests
       g = deviceContext.GetAssociatedAsset("RadioSerial", "SNM940");
       Assert.IsNull(g.Result, "There should be no DeviceAsset association from DeviceRepo");
     }
-    
+
     #endregion
 
   }
