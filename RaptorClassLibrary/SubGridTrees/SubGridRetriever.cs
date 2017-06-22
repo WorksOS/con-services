@@ -250,39 +250,38 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     // those attributes are null), check the global latest pass version of
                     // those values. If they are null, then no further work needs to be done
 
-                    // This is the non-static cell pass implementation
                     switch (ClientGrid.GridDataType)
                     {
                         case GridDataType.CCV:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.PassData[StripeIndex, J].CCV == CellPass.NullCCV)
+                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
                             { continue; }
                             break;
                         case GridDataType.RMV:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.PassData[StripeIndex, J].RMV == CellPass.NullRMV)
+                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadRMV(StripeIndex, J) == CellPass.NullRMV)
                             { continue; }
                             break;
                         case GridDataType.Frequency:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.PassData[StripeIndex, J].Frequency == CellPass.NullFrequency)
+                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadFrequency(StripeIndex, J) == CellPass.NullFrequency)
                             { continue; }
                             break;
                         case GridDataType.Amplitude:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.PassData[StripeIndex, J].Amplitude == CellPass.NullAmplitude)
+                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadAmplitude(StripeIndex, J) == CellPass.NullAmplitude)
                             { continue; }
                             break;
                         case GridDataType.GPSMode:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.PassData[StripeIndex, J].gpsMode == GPSMode.NoGPS)
+                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadGPSMode(StripeIndex, J) == GPSMode.NoGPS)
                             { continue; }
                             break;
                         case GridDataType.MDP:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.PassData[StripeIndex, J].MDP == CellPass.NullMDP)
+                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadMDP(StripeIndex, J) == CellPass.NullMDP)
                             { continue; }
                             break;
                         case GridDataType.CCA:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.PassData[StripeIndex, J].CCA == CellPass.NullCCA)
+                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadCCA(StripeIndex, J) == CellPass.NullCCA)
                             { continue; }
                             break;
                         case GridDataType.Temperature:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.PassData[StripeIndex, J].MaterialTemperature == CellPass.NullMaterialTemp)
+                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemp)
                             { continue; }
                             break; 
 
@@ -310,7 +309,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                        }
                         */
 
-                        AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _SubGridAsLeaf.Directory.GlobalLatestCells.PassData[StripeIndex, J];
+                        AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _SubGridAsLeaf.Directory.GlobalLatestCells[StripeIndex, J];
 
                         HaveFilteredPass = true;
                         AssignmentContext.FilteredValue.PassCount = -1;
@@ -344,7 +343,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                             if (CanUseGlobalLatestCells)
                             {
                                 // Optimistically assume that the global latest value is acceptable
-                                AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _SubGridAsLeaf.Directory.GlobalLatestCells.PassData[StripeIndex, J];
+                                AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _SubGridAsLeaf.Directory.GlobalLatestCells[StripeIndex, J];
                                 AssignmentContext.FilteredValue.PassCount = -1;
 
                                 // Check to see if there is a non-null value for the requested field in the latest value.
@@ -564,40 +563,43 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 return true;
             }
 
+            // Obtain a reference to the base class from the interfaces implementation to access the flags below
+            SubGridCellLatestPassDataWrapperBase baseGlobalLatestCells = (SubGridCellLatestPassDataWrapperBase)_SubGridAsLeaf.Directory.GlobalLatestCells;
+
             // Check the subgrid global attribute presence flags that are tracked for optional
             // attribute values to see if there is anything at all that needs to be done here
             switch (ClientGrid.GridDataType)
             {
                 case GridDataType.CCV:
-                    if (!_SubGridAsLeaf.Directory.GlobalLatestCells.HasCCVData)
+                    if (!baseGlobalLatestCells.HasCCVData)
                         return true;
                     break;
                 case GridDataType.RMV:
-                    if (!_SubGridAsLeaf.Directory.GlobalLatestCells.HasRMVData)
+                    if (!baseGlobalLatestCells.HasRMVData)
                         return true;
                     break;
                 case GridDataType.Frequency:
-                    if (!_SubGridAsLeaf.Directory.GlobalLatestCells.HasFrequencyData)
+                    if (!baseGlobalLatestCells.HasFrequencyData)
                         return true;
                     break;
                 case GridDataType.Amplitude:
-                    if (!_SubGridAsLeaf.Directory.GlobalLatestCells.HasAmplitudeData)
+                    if (!baseGlobalLatestCells.HasAmplitudeData)
                         return true;
                     break;
                 case GridDataType.GPSMode:
-                    if (!_SubGridAsLeaf.Directory.GlobalLatestCells.HasGPSModeData)
+                    if (!baseGlobalLatestCells.HasGPSModeData)
                         return true;
                     break;
                 case GridDataType.Temperature:
-                    if (!_SubGridAsLeaf.Directory.GlobalLatestCells.HasTemperatureData)
+                    if (!baseGlobalLatestCells.HasTemperatureData)
                         return true;
                     break;
                 case GridDataType.MDP:
-                    if (!_SubGridAsLeaf.Directory.GlobalLatestCells.HasMDPData)
+                    if (!baseGlobalLatestCells.HasMDPData)
                         return true;
                     break;
                 case GridDataType.CCA:
-                    if (!_SubGridAsLeaf.Directory.GlobalLatestCells.HasCCAData)
+                    if (!baseGlobalLatestCells.HasCCAData)
                         return true;
                     break;
             }

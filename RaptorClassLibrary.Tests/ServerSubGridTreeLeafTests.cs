@@ -176,7 +176,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             leaf.AllocateLeafLatestPassGrid();
 
-            Assert.IsTrue(leaf.Directory.GlobalLatestCells.PassData != null, "Latest pass grid for leaf not created by AllocateLeafLatestPassGrid");
+            Assert.IsTrue(leaf.Directory.GlobalLatestCells[0, 0].Time == DateTime.MinValue, "Latest pass grid for leaf not created by AllocateLeafLatestPassGrid");
         }
 
         [TestMethod()]
@@ -236,7 +236,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
             Assert.IsTrue(leaf.CellHasValue(0, 0), "Cell does not have value");
 
-            CellPass latestPass = leaf.Directory.GlobalLatestCells.PassData[0, 0];
+            CellPass latestPass = leaf.Directory.GlobalLatestCells[0, 0];
 
             Assert.IsTrue(latestPass.Equals(pass), "Latest cell pass does not match pass");
         }

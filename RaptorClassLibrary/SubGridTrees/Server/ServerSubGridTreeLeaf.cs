@@ -13,6 +13,7 @@ using VSS.VisionLink.Raptor.SiteModels;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
 using VSS.VisionLink.Raptor.Types;
 
@@ -480,7 +481,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     if (Segment.PassesData.PassCount(I, J) > 0)
                     {
                         CalculateLatestPassDataForPassStack(Segment.PassesData.ExtractCellPasses(I, J),
-                                                            ref Segment.LatestPasses.PassData[I, J],
+                                                            ref ((SubGridCellLatestPassDataWrapper_NonStatic)(Segment).LatestPasses).PassData[I, J],
                                                             out CCVFromLatestCellPass,
                                                             out RMVFromLatestCellPass,
                                                             out FrequencyFromLatestCellPass,
@@ -536,8 +537,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // modified.
             SubGridCellPassesDataSegment Segment = Directory.SegmentDirectory.Last().Segment;
 
-            SubGridCellLatestPassDataWrapper_NonStatic _GlobalLatestCells = Directory.GlobalLatestCells;
-            SubGridCellLatestPassDataWrapper_NonStatic _LatestPasses = Segment.LatestPasses;
+            ISubGridCellLatestPassDataWrapper _GlobalLatestCells = Directory.GlobalLatestCells;
+            ISubGridCellLatestPassDataWrapper _LatestPasses = Segment.LatestPasses;
 
             if (_LatestPasses == null)
             {
@@ -548,7 +549,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             _GlobalLatestCells.AssignValuesFromLastPassFlags(_LatestPasses);
             _GlobalLatestCells.PassDataExistanceMap.Assign(_LatestPasses.PassDataExistanceMap);
 
-            Segment.LatestPasses.PassDataExistanceMap.ForEachSetBit((x, y) => _GlobalLatestCells.PassData[x, y] = _LatestPasses.PassData[x, y]);
+            Segment.LatestPasses.PassDataExistanceMap.ForEachSetBit((x, y) => ((SubGridCellLatestPassDataWrapper_NonStatic)_GlobalLatestCells).PassData[x, y] = ((SubGridCellLatestPassDataWrapper_NonStatic)_LatestPasses).PassData[x, y]);
         }
 
         public void ComputeLatestPassInformation(/*IStorageProxy storageProxy, */bool fullRecompute)

@@ -112,6 +112,7 @@
     <Compile Include="GridFabric\Arguments\BaseApplicationServiceRequestArgument.cs" />
     <Compile Include="GridFabric\Arguments\SubGridsRequestArgument.cs" />
     <Compile Include="GridFabric\Arguments\TileRenderRequestArgument.cs" />
+    <Compile Include="GridFabric\Caches\SpatialGridCache.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
     <Compile Include="GridFabric\Listeners\SubGridListener.cs" />
@@ -181,6 +182,8 @@
     <Compile Include="SubGridTrees\Interfaces\ISubGridFactory.cs" />
     <Compile Include="SubGridTrees\Interfaces\ISubGrid.cs" />
     <Compile Include="SubGridTrees\Interfaces\ISubGridTree.cs" />
+    <Compile Include="SubGridTrees\Server\Interfaces\ISubGridCellLatestPassDataWrapper.cs" />
+    <Compile Include="SubGridTrees\Server\Interfaces\ISubGridCellLatestPassesDataWrapperFactory.cs" />
     <Compile Include="SubGridTrees\Server\Interfaces\ISubGridCellSegmentPassesDataWrapper.cs" />
     <Compile Include="SubGridTrees\Server\Interfaces\ISubGridCellSegmentPassesDataWrapperFactory.cs" />
     <Compile Include="SubGridTrees\Server\Iterators\Interfaces\ISubGridSegmentCellPassIterator.cs" />
@@ -200,6 +203,7 @@
     <Compile Include="SubGridTrees\Server\ServerSubGridTree.cs" />
     <Compile Include="SubGridTrees\Server\ServerSubGridTreeLeaf.cs" />
     <Compile Include="SubGridTrees\Server\SubGridCellLatestPassDataWrapper.cs" />
+    <Compile Include="SubGridTrees\Server\SubGridCellLatestPassesDataWrapperFactory.cs" />
     <Compile Include="SubGridTrees\Server\SubGridCellPassesDataSegment.cs" />
     <Compile Include="SubGridTrees\Server\SubGridCellPassesDataSegmentInfo.cs" />
     <Compile Include="SubGridTrees\Server\SubGridCellPassesDataSegments.cs" />

@@ -28,7 +28,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public ISubGridCellSegmentPassesDataWrapper PassesData { get; set; } = null;
        
-        public SubGridCellLatestPassDataWrapper_NonStatic LatestPasses { get; set; } = null;
+        public ISubGridCellLatestPassDataWrapper LatestPasses { get; set; } = null;
 
         public SubGridCellPassesDataSegment()
         {
@@ -49,7 +49,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             if (LatestPasses == null)
             {
                 HasLatestData = true;
-                LatestPasses = new SubGridCellLatestPassDataWrapper_NonStatic();
+                LatestPasses = SubGridCellLatestPassesDataWrapperFactory.Instance().NewWrapper(); // new SubGridCellLatestPassDataWrapper_NonStatic();
             }
         }
 
@@ -78,24 +78,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             Debug.Assert(HasAllPasses && HasLatestData && (PassesData != null) && (LatestPasses != null),
                    "Leaf subgrids being written to persistent store must be fully populated with pass stacks and latest pass grid");
 
-            // Write out the latest cell pass grid
-            for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-            {
-                for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
-                {
-                    LatestPasses.PassData[i, j].Write(writer);
-                }
-            }
-
-            LatestPasses.PassDataExistanceMap.Write(writer);
-            LatestPasses.CCVValuesAreFromLastPass.Write(writer);
-            LatestPasses.RMVValuesAreFromLastPass.Write(writer);
-            LatestPasses.FrequencyValuesAreFromLastPass.Write(writer);
-            LatestPasses.GPSModeValuesAreFromLatestCellPass.Write(writer);
-            LatestPasses.AmplitudeValuesAreFromLastPass.Write(writer);
-            LatestPasses.TemperatureValuesAreFromLastPass.Write(writer);
-            LatestPasses.MDPValuesAreFromLastPass.Write(writer);
-            LatestPasses.CCAValuesAreFromLastPass.Write(writer);
+            LatestPasses.Write(writer);
 
             CellStacksOffset = (int)writer.BaseStream.Position;
 
@@ -134,23 +117,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                     return false;
                 }
 
-                for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-                {
-                    for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
-                    {
-                        LatestPasses.PassData[i, j].Read(reader);
-                    }
-                }
-
-                LatestPasses.PassDataExistanceMap.Read(reader);
-                LatestPasses.CCVValuesAreFromLastPass.Read(reader);
-                LatestPasses.RMVValuesAreFromLastPass.Read(reader);
-                LatestPasses.FrequencyValuesAreFromLastPass.Read(reader);
-                LatestPasses.GPSModeValuesAreFromLatestCellPass.Read(reader);
-                LatestPasses.AmplitudeValuesAreFromLastPass.Read(reader);
-                LatestPasses.TemperatureValuesAreFromLastPass.Read(reader);
-                LatestPasses.MDPValuesAreFromLastPass.Read(reader);
-                LatestPasses.CCAValuesAreFromLastPass.Read(reader);
+                LatestPasses.Read(reader);
             }
 
             if (HasAllPasses && loadAllPasses)
@@ -319,18 +286,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             CalculateElevationRangeOfPasses();
 
             /*
-             *            if (RecordSegmentCleavingOperationsToLog)
-                        {
-                            CalculateTotalPasses(ref TotalPasses, ref MaxPasses);
+             *   if (RecordSegmentCleavingOperationsToLog)
+               {
+                   CalculateTotalPasses(ref TotalPasses, ref MaxPasses);
 
-                            // TODO ...
-                            if (TotalPasses > VLPDSvcLocations.VLPD_SubGridSegmentPassCountLimit)
-                            {
-                                // TODO readd when logging available
-                                //SIGLogMessage.PublishNoODS(this, "Saving segment {0} with {1} cell passes (max:{2}) which violates the maximum number of cell passes within a segment ({4})",        
-                                //                           Filename, TotalPasses, MaxPasses, VLPDSvcLocations.VLPD_SubGridSegmentPassCountLimit], slmcDebug);
-                            }
-                        }
+                   // TODO ...
+                   if (TotalPasses > VLPDSvcLocations.VLPD_SubGridSegmentPassCountLimit)
+                   {
+                       // TODO readd when logging available
+                       //SIGLogMessage.PublishNoODS(this, "Saving segment {0} with {1} cell passes (max:{2}) which violates the maximum number of cell passes within a segment ({4})",        
+                       //                           Filename, TotalPasses, MaxPasses, VLPDSvcLocations.VLPD_SubGridSegmentPassCountLimit], slmcDebug);
+                   }
+               }
             */
 
             /* TODO...

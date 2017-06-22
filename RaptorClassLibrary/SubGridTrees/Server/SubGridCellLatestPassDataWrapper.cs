@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Cells;
 using VSS.VisionLink.Raptor.Common;
 using VSS.VisionLink.Raptor.Compression;
+using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Types;
 
@@ -76,7 +77,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// Copies the flags information from the source latest cell pass wrapper to this one
         /// </summary>
         /// <param name="Source"></param>
-        public void AssignValuesFromLastPassFlags(SubGridCellLatestPassDataWrapperBase Source)
+        public void AssignValuesFromLastPassFlags(ISubGridCellLatestPassDataWrapper Source)
         {
             CCVValuesAreFromLastPass.Assign(Source.CCVValuesAreFromLastPass);
             RMVValuesAreFromLastPass.Assign(Source.RMVValuesAreFromLastPass);
@@ -87,14 +88,60 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             MDPValuesAreFromLastPass.Assign(Source.MDPValuesAreFromLastPass);
             CCAValuesAreFromLastPass.Assign(Source.CCAValuesAreFromLastPass);
         }
+
+        public virtual void Read(BinaryReader reader)
+        {
+            // Read in the latest call pass flags
+            PassDataExistanceMap.Read(reader);
+            CCVValuesAreFromLastPass.Read(reader);
+            RMVValuesAreFromLastPass.Read(reader);
+            FrequencyValuesAreFromLastPass.Read(reader);
+            GPSModeValuesAreFromLatestCellPass.Read(reader);
+            AmplitudeValuesAreFromLastPass.Read(reader);
+            TemperatureValuesAreFromLastPass.Read(reader);
+            MDPValuesAreFromLastPass.Read(reader);
+            CCAValuesAreFromLastPass.Read(reader);
+        }
+
+        public virtual void Write(BinaryWriter writer)
+        {
+            // Write out the latest call pass flags
+            PassDataExistanceMap.Write(writer);
+            CCVValuesAreFromLastPass.Write(writer);
+            RMVValuesAreFromLastPass.Write(writer);
+            FrequencyValuesAreFromLastPass.Write(writer);
+            GPSModeValuesAreFromLatestCellPass.Write(writer);
+            AmplitudeValuesAreFromLastPass.Write(writer);
+            TemperatureValuesAreFromLastPass.Write(writer);
+            MDPValuesAreFromLastPass.Write(writer);
+            CCAValuesAreFromLastPass.Write(writer);
+        }
     }
 
-    public class SubGridCellLatestPassDataWrapper_NonStatic : SubGridCellLatestPassDataWrapperBase
+    public class SubGridCellLatestPassDataWrapper_NonStatic : SubGridCellLatestPassDataWrapperBase, ISubGridCellLatestPassDataWrapper
     {
         /// <summary>
         /// The array of 32x32 cells containing a cell pass representing the latest known values for a variety of cell attributes
         /// </summary>
         public CellPass[,] PassData = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
+
+        /// <summary>
+        /// Implement the last pass indexer from the interface.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public CellPass this[int x, int y]
+        {
+            get
+            {
+                return PassData[x, y];
+            }
+            set
+            {
+                PassData[x, y] = value;
+            }
+        }
 
         /// <summary>
         /// Provides the 'NonStatic' behaviour for clearing the passes in the latest pass information
@@ -105,9 +152,108 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             SubGridUtilities.SubGridDimensionalIterator((x, y) => PassData[x, y].Clear());
         }
+
+        public override void Read(BinaryReader reader)
+        {
+            base.Read(reader);
+
+            // Read in the latest call passes themselves
+            SubGridUtilities.SubGridDimensionalIterator((i, j) => PassData[i, j].Read(reader));
+        }
+
+        /// <summary>
+        /// ReadCCV will read the CCV from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public short ReadCCV(int Col, int Row)
+        {
+            return PassData[Col, Row].CCV;
+        }
+
+        /// <summary>
+        /// ReadRMV will read the RMV from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public short ReadRMV(int Col, int Row)
+        {
+            return PassData[Col, Row].RMV;
+        }
+
+        /// <summary>
+        /// ReadFrequency will read the Frequency from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public ushort ReadFrequency(int Col, int Row)
+        {
+            return PassData[Col, Row].Frequency;
+        }
+
+        // ReadAmplitude will read the Amplitude from the latest cell identified by the Row and Col
+        public ushort ReadAmplitude(int Col, int Row)
+        {
+            return PassData[Col, Row].Amplitude;
+        }
+
+        /// <summary>
+        /// ReadCCA will read the CCA from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public byte ReadCCA(int Col, int Row)
+        {
+            return PassData[Col, Row].CCA;
+        }
+
+        /// <summary>
+        /// ReadGPSMode will read the GPSMode from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public GPSMode ReadGPSMode(int Col, int Row)
+        {
+            return PassData[Col, Row].gpsMode;
+        }
+
+        /// <summary>
+        /// ReadMDP will read the MDP from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public short ReadMDP(int Col, int Row)
+        {
+            return PassData[Col, Row].MDP;
+        }
+
+        /// <summary>
+        /// ReadTemperature will read the Temperature from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
+        public ushort ReadTemperature(int Col, int Row)
+        {
+            return PassData[Col, Row].MaterialTemperature;
+        }
+
+        public override void Write(BinaryWriter writer)
+        {
+            base.Write(writer);
+
+            // Write out the latest call passes themselves
+            SubGridUtilities.SubGridDimensionalIterator((i, j) => PassData[i, j].Write(writer));
+        }
     }
 
-    public class SubGridCellLatestPassDataWrapper_NonStaticCompressed : SubGridCellLatestPassDataWrapperBase
+    public class SubGridCellLatestPassDataWrapper_StaticCompressed : SubGridCellLatestPassDataWrapperBase, ISubGridCellLatestPassDataWrapper
     {
         DateTime FirstRealCellPassTime;
 
@@ -191,11 +337,29 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
         }
 
+        /// <summary>
+        /// Implement the last pass indexer from the interface.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public CellPass this[int x, int y]
+        {
+            get
+            {
+                return CellPass(x, y);
+            }
+            set
+            {
+                throw new NotSupportedException("Writing to individual last pass information is not supported in immutable representations");
+            }
+        }
+
         EncodedFieldDescriptorsStruct EncodedFieldDescriptors = new EncodedFieldDescriptorsStruct();
 
         int NumBitsPerCellPass;
 
-        public SubGridCellLatestPassDataWrapper_NonStaticCompressed()
+        public SubGridCellLatestPassDataWrapper_StaticCompressed()
         {
             EncodedFieldDescriptors.Init();
         }
@@ -309,7 +473,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return (short)BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.RMV);
         }
 
-        // ReadMDP will read the MDP from the latest cell identified by the Row and Col
+        /// <summary>
+        /// ReadMDP will read the MDP from the latest cell identified by the Row and Col
+        /// </summary>
+        /// <param name="Col"></param>
+        /// <param name="Row"></param>
+        /// <returns></returns>
         public short ReadMDP(int Col, int Row)
         {
             int BitLocation = (((Col * SubGridTree.SubGridTreeDimension) + Row) * NumBitsPerCellPass) + EncodedFieldDescriptors.MDP.OffsetBits;

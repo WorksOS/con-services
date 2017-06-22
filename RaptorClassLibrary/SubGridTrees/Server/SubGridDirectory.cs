@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 
 namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 {
@@ -29,7 +30,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         // FLatestCells contains the computed latest cell information that spans
         // all the segments in the subgrid
-        public SubGridCellLatestPassDataWrapper_NonStatic GlobalLatestCells { get; set; } = null;
+        public ISubGridCellLatestPassDataWrapper GlobalLatestCells { get; set; } = null;
 
         //      property FSGranuleIndex : TICFSGranuleIndex read FFSGranuleIndex write FFSGranuleIndex;
         //      property FSGranuleCount : Longword read FFSGranuleCount write FFSGranuleCount;
@@ -51,8 +52,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             //    FFSGranuleIndex = 0;
             //    FFSGranuleCount = 0;
 
-            //        PersistedClovenSegments = TICSubGridCellPassesDataSegmentInfoList.Create;
-            //        PersistedClovenSegments.KeepSegmentsInOrder = False;
+            //    PersistedClovenSegments = TICSubGridCellPassesDataSegmentInfoList.Create;
+            //    PersistedClovenSegments.KeepSegmentsInOrder = False;
         }
 
         public void CreateDefaultSegment()
@@ -87,29 +88,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 Debug.Assert(GlobalLatestCells != null, "Cannot write subgrid directory without global latest values available");
 
-                // Write out the latest call pass flags
-                GlobalLatestCells.PassDataExistanceMap.Write(writer);
-                GlobalLatestCells.CCVValuesAreFromLastPass.Write(writer);
-                GlobalLatestCells.RMVValuesAreFromLastPass.Write(writer);
-                GlobalLatestCells.FrequencyValuesAreFromLastPass.Write(writer);
-                GlobalLatestCells.GPSModeValuesAreFromLatestCellPass.Write(writer);
-                GlobalLatestCells.AmplitudeValuesAreFromLastPass.Write(writer);
-                GlobalLatestCells.TemperatureValuesAreFromLastPass.Write(writer);
-                GlobalLatestCells.MDPValuesAreFromLastPass.Write(writer);
-                GlobalLatestCells.CCAValuesAreFromLastPass.Write(writer);
-
-                // Write out the latest call passes themselves
-
-                for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-                {
-                    for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
-                    {
-                        GlobalLatestCells.PassData[i, j].Write(writer);
-                    }
-                }
+                GlobalLatestCells.Write(writer);
 
                 // Write out the directoy of segments
-
                 SegmentCount = SegmentDirectory.Count;
 
                 Debug.Assert(SegmentDirectory.Count > 0, "Writing a segment directory with no segments");
@@ -134,26 +115,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 Debug.Assert(GlobalLatestCells != null, "Cannot read subgrid directory without global latest values available");
 
-                // Read in the latest call pass flags
-                GlobalLatestCells.PassDataExistanceMap.Read(reader);
-                GlobalLatestCells.CCVValuesAreFromLastPass.Read(reader);
-                GlobalLatestCells.RMVValuesAreFromLastPass.Read(reader);
-                GlobalLatestCells.FrequencyValuesAreFromLastPass.Read(reader);
-                GlobalLatestCells.GPSModeValuesAreFromLatestCellPass.Read(reader);
-                GlobalLatestCells.AmplitudeValuesAreFromLastPass.Read(reader);
-                GlobalLatestCells.TemperatureValuesAreFromLastPass.Read(reader);
-                GlobalLatestCells.MDPValuesAreFromLastPass.Read(reader);
-                GlobalLatestCells.CCAValuesAreFromLastPass.Read(reader);
-
-                // Write out the latest call passes themselves
-
-                for (int i = 0; i < SubGridTree.SubGridTreeDimension; i++)
-                {
-                    for (int j = 0; j < SubGridTree.SubGridTreeDimension; j++)
-                    {
-                        GlobalLatestCells.PassData[i, j].Read(reader);
-                    }
-                }
+                GlobalLatestCells.Read(reader);
 
                 // Read in the directoy of segments
                 int SegmentCount = reader.ReadInt32();
