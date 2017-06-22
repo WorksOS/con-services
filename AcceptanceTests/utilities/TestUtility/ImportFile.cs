@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using ProjectWebApiCommon.Models;
@@ -127,8 +128,6 @@ namespace TestUtility
         var filestream = new MemoryStream(Convert.FromBase64String(inputAsString));
         var flowFileUpload = SetAllAttributesForFlowFile(filestream,name);       
         var content = FormatTheContentDisposition(flowFileUpload, filestream, name);
-        Console.WriteLine($"UPLOAD_FILE: {method} {uri} {customerUid}");
-        Console.WriteLine(content);
         var response = DoHttpRequest(uri, method, content,customerUid);
         return response;
       }
@@ -220,20 +219,19 @@ namespace TestUtility
     private string FormatTheContentDisposition(FlowFileUpload flowFileUpload, Stream filestream,string name)
     {
       var sb = new StringBuilder();
-      var nl = Environment.NewLine;
-      sb.AppendFormat($"{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowChunkNumber\"{nl}{nl}{flowFileUpload.flowChunkNumber}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowChunkSize\"{nl}{nl}{flowFileUpload.flowChunkSize}\"{nl}" +
-                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowCurrentChunkSize\"{nl}{nl}{flowFileUpload.flowCurrentChunkSize}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowTotalSize\"{nl}{nl}{flowFileUpload.flowTotalSize}{nl} \"" +
-                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowIdentifier\"{nl}{nl}{flowFileUpload.flowIdentifier}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowFilename\"{nl}{nl}{flowFileUpload.flowFilename}{nl}\"" +
-                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}\"" +
+      var nl = "\r\n";
+      sb.AppendFormat($"{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowChunkNumber\"{nl}{nl}{flowFileUpload.flowChunkNumber}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowChunkSize\"{nl}{nl}{flowFileUpload.flowChunkSize}{nl}" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowCurrentChunkSize\"{nl}{nl}{flowFileUpload.flowCurrentChunkSize}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowTotalSize\"{nl}{nl}{flowFileUpload.flowTotalSize}{nl}" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowIdentifier\"{nl}{nl}{flowFileUpload.flowIdentifier}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowFilename\"{nl}{nl}{flowFileUpload.flowFilename}{nl}" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}" +
                       $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
 
       StreamReader reader = new StreamReader(filestream);
       sb.Append(reader.ReadToEnd());
       sb.Append($"{nl}");
       sb.Append($"{BOUNDARY}--{nl}");
-
       reader.Dispose();
-      return sb.ToString();
+      return Regex.Replace(sb.ToString(), "(?<!\r)\n", "\r\n"); 
     }
 
     /// <summary>
@@ -250,7 +248,7 @@ namespace TestUtility
         var reader = new StreamReader(readStream);
         var responseString = reader.ReadToEnd();
         reader.Dispose();
-        return responseString;
+        return Regex.Replace(responseString, "(?<!\r)\n", "\r\n");
       }
 
       return string.Empty;
