@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 
 namespace TestRun
 {
-    /// <summary>
-    /// Build the trx file that holds the test results
-    /// </summary>
-    public class ResultsMstest
+  /// <summary>
+  /// Build the trx file that holds the test results
+  /// </summary>
+  public class ResultsMstest
     {
         #region public properties
         public string wholeTrxFile { get; set; }
@@ -173,7 +172,8 @@ namespace TestRun
                 testResult = ReplaceTag("XMLOUTCOME", "Failed", testResult);
                 testResult = ReplaceTag("XMLCOMPUTER", Environment.MachineName, testResult);
                 testResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), testResult);
-                var excep = ex.InnerException.Message.Replace('<', ' ');
+
+                var excep = ex.GetBaseException().Message.Replace('<', ' ' );
                 excep = excep.Replace('>', ' ');
                 var exceptionDetails = "Test method " + method.Name + " threw exception: " + Environment.NewLine +
                                        ex.Message +

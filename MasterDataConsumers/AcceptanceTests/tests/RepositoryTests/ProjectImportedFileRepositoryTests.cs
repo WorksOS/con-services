@@ -1,43 +1,28 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using log4netExtensions;
-using VSS.GenericConfiguration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repositories;
-using Repositories.DBModels;
+using RepositoryTests.Internal;
+using System;
+using System.Linq;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {
   [TestClass]
-  public class ProjectImportedFileRepositoryTests
+  public class ProjectImportedFileRepositoryTests : TestControllerBase
   {
-    IServiceProvider _serviceProvider = null;
-    CustomerRepository _customerContext = null;
-    ProjectRepository _projectContext = null;
+    ProjectRepository _projectContext;
 
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      SetupLogging();
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      _serviceProvider = new ServiceCollection()
-        .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .BuildServiceProvider();
-
-      _customerContext = new CustomerRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
-      _projectContext = new ProjectRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
-      new SubscriptionRepository(_serviceProvider.GetService<IConfigurationStore>(), _serviceProvider.GetService<ILoggerFactory>());
+      new CustomerRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
+      _projectContext = new ProjectRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
+      new SubscriptionRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
     }
 
 
@@ -51,7 +36,7 @@ namespace RepositoryTests
     public void CreateImportedFile_HappyPath()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-     
+
       var createImportedFileEvent = new CreateImportedFileEvent()
       {
         ProjectUID = Guid.NewGuid(),
@@ -68,7 +53,7 @@ namespace RepositoryTests
         ActionUTC = actionUtc
       };
 
-      var s =_projectContext.StoreEvent(createImportedFileEvent);
+      var s = _projectContext.StoreEvent(createImportedFileEvent);
       s.Wait();
       Assert.AreEqual(1, s.Result, "ImportedFile event not written");
 
@@ -195,7 +180,7 @@ namespace RepositoryTests
       };
 
       _projectContext.StoreEvent(createImportedFileEvent).Wait();
-      
+
       var updateImportedFileEvent = new UpdateImportedFileEvent()
       {
         ProjectUID = createImportedFileEvent.ProjectUID,

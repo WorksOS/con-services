@@ -1,41 +1,29 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using log4netExtensions;
-using VSS.GenericConfiguration;
-using Repositories.DBModels;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repositories;
+using Repositories.DBModels;
+using RepositoryTests.Internal;
+using System;
+using System.Linq;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {
   [TestClass]
-  public class GeofenceRepositoryTests
+  public class GeofenceRepositoryTests : TestControllerBase
   {
-    IServiceProvider serviceProvider = null;
     GeofenceRepository geofenceContext = null;
     ProjectRepository projectContext = null;
 
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      SetupLogging();
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceProvider = new ServiceCollection()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
-        .BuildServiceProvider();
-      geofenceContext = new GeofenceRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
-      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      geofenceContext = new GeofenceRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
+      projectContext = new ProjectRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
     }
 
     #region Geofence
@@ -330,8 +318,6 @@ namespace RepositoryTests
 
     #endregion
 
-
-
     #region AssociateGeofenceWithProject
 
     /// <summary>
@@ -426,9 +412,5 @@ namespace RepositoryTests
     }
 
     #endregion
-
   }
-
 }
- 
- 

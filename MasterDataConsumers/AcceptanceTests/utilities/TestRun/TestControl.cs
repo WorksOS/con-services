@@ -69,6 +69,7 @@ namespace TestRun
                 {
                     Console.WriteLine("  Reason: {0}", ex.InnerException.Message);
                 }
+
                 WriteDllException(ex);
                 return false;
             }
@@ -171,7 +172,7 @@ namespace TestRun
         /// <summary>
         /// Load any dll's that are used by the testing classes
         /// </summary>
-        private void LoadNecessaryDlls()
+        private static void LoadNecessaryDlls()
         {
             // Invoke any of the dll's used by the testing framework.
             Thread.Sleep(10);
@@ -193,7 +194,6 @@ namespace TestRun
         /// <returns>bool if run successfully</returns>
         private bool GetAllClassesInAssemblyAndRunTests(Assembly assembly, Type[] classes)
         {
-            stats.StartDateTimeAllTests = DateTime.Now;
             foreach (var current in classes)
             {
                 if (!string.IsNullOrEmpty(singleClassName))
@@ -261,7 +261,7 @@ namespace TestRun
         /// </summary>
         /// <param name="current"></param>
         /// <param name="instance"></param>
-        private void RunAnyTestInitializeMethods(Type current, object instance)
+        private static void RunAnyTestInitializeMethods(Type current, object instance)
         {
             var initializeMethod = current.GetMethods().FirstOrDefault(m => m.GetCustomAttributes(typeof(TestInitializeAttribute)).Any());
             if (initializeMethod != null)
@@ -288,7 +288,6 @@ namespace TestRun
         {
             if (isParallel)
             {  
-
                 var parallelOptions = new ParallelOptions {MaxDegreeOfParallelism = parallelTasks};
                 Parallel.ForEach(methods,parallelOptions, method =>
                 {
@@ -316,10 +315,12 @@ namespace TestRun
                 Console.WriteLine("IGNORE TestMethod: " + method.Name);
                 return;
             }
+
             // Set the console messages to be in the file
             Console.WriteLine(@"=================================================================================================");
             Console.WriteLine("Test: " + method.Name);
             Console.WriteLine(@"=================================================================================================");
+
             var consoleOut = new StringWriter();
             if (isStdoutCaptured)
             {  Console.SetOut(consoleOut); }
@@ -363,7 +364,7 @@ namespace TestRun
                     {Console.SetOut(stdOut);}
                 Console.WriteLine(@"=================================================================================================");
                 Console.WriteLine("Test : " + method.Name + " ***********  FAILED ************ ");
-                Console.WriteLine(@"=================================================================================================");                
+                Console.WriteLine(@"=================================================================================================");
             }
             finally
             {
@@ -376,7 +377,7 @@ namespace TestRun
       /// </summary>
       /// <param name="message">test results to be logged</param>
       /// <param name="logfile">log file name</param>
-      private void Write(string message, string logfile)
+      private static void Write(string message, string logfile)
         {
             using (var w = File.AppendText(logfile))
             {
