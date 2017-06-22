@@ -9,9 +9,7 @@ namespace WebApiTests
   public class FileImportTests
   {
     private readonly Msg msg = new Msg();
-
     [TestMethod]
-    [Ignore]
     public void TestNoFileUploads()
     {
       const string testName = "File Import 1";
@@ -49,7 +47,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void TestImportSvlFile()
     {
       const string testName = "File Import 2";
@@ -87,7 +84,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void TestImport2SvlFiles()
     {
       const string testName = "File Import 3";
@@ -137,7 +133,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void TestImportSurfaceFile()
     {
       const string testName = "File Import 4";
@@ -175,7 +170,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void TestImport2SurfaceFiles()
     {
       const string testName = "File Import 5";
@@ -225,7 +219,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void TestImportSurveyedSurfaceFile()
     {
       const string testName = "File Import 4";
@@ -263,8 +256,7 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
-    public void TestImport2SurveyedSurfaceFiles()
+public void TestImport2SurveyedSurfaceFiles()
     {
       const string testName = "File Import 5";
       msg.Title(testName, "Create standard project and customer then upload two Surveryed surface files");
@@ -313,7 +305,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void TestImportTheSameFileTwice()
     {
       const string testName = "File Import 6";
@@ -360,7 +351,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void TestImportANewFileThenUpdateTheAlignmentFile()
     {
       const string testName = "File Import 7";
@@ -408,7 +398,6 @@ namespace WebApiTests
 
 
     [TestMethod]
-    [Ignore]
     public void TestImportANewFileThenUpdateTheDesignSurfaceFile()
     {
       const string testName = "File Import 7";
@@ -455,7 +444,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void TestImportANewFileThenUpdateTheSurveyedSurfaceFile()
     {
       const string testName = "File Import 7";
@@ -503,7 +491,6 @@ namespace WebApiTests
 
 
     [TestMethod]
-    [Ignore]
     public void TestImportANewFileThenDeleteTheAlignmentFile()
     {
       const string testName = "File Import 7";
@@ -551,7 +538,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    [Ignore]
     public void TestGetActivatedImportFiles()
     {
       const string testName = "Get Activated Import Files";
