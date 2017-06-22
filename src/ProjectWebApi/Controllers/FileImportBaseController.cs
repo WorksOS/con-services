@@ -335,31 +335,31 @@ namespace Controllers
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor, long importedFileId)
+    protected async Task NotifyRaptorAddFile(Guid projectUid, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid)
     {
       MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult;
       // todo need try-catch around all urls to capture not available.
       try
       {
-        notificationResult = await raptorProxy.AddFile(projectId, projectUid,
+        notificationResult = await raptorProxy.AddFile(projectUid, importedFileUid,
             JsonConvert.SerializeObject(fileDescriptor), importedFileId, Request.Headers.GetCustomHeaders())
           .ConfigureAwait(false);
       }
       catch (Exception e)
       {
         var error =
-          $"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}. ";
+          $"FileImport AddFile in RaptorServices failed. projectUid:{projectUid} importedFileUid:{importedFileUid} fileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}.";
         log.LogError(error);
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
             string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57), "raptorProxy.AddFile", e.Message)));
       }
       log.LogDebug(
-        $"NotifyRaptorAddFile: projectId: {projectId} projectUid: {projectUid}, FileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+        $"NotifyRaptorAddFile: projectUid: {projectUid}, importedFileUid: {importedFileUid}, fileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
       {
         var error =
-          $"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}. ";
+          $"FileImport AddFile in RaptorServices failed. projectUid:{projectUid} fileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}. ";
         log.LogError(error);
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(notificationResult.Code, notificationResult.Message));
@@ -372,10 +372,10 @@ namespace Controllers
     ///  if it doesn't know about it then it do nothing and return success
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor, long importedFileId)
+    protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor, long importedFileId, Guid importedFileUid)
     {
       var notificationResult = await raptorProxy
-        .DeleteFile(null, projectUid, fileDescriptor, importedFileId, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        .DeleteFile(projectUid, importedFileUid, fileDescriptor, importedFileId, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       log.LogDebug(
         $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)

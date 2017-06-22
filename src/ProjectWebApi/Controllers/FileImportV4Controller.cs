@@ -173,8 +173,8 @@ namespace Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor,
-        createImportedFileEvent.ImportedFileID).ConfigureAwait(false);
+      await NotifyRaptorAddFile(projectUid, fileDescriptor, createImportedFileEvent.ImportedFileID, 
+        createImportedFileEvent.ImportedFileUID).ConfigureAwait(false);
 
       // FlowJS has this locked so can't delete it here
       // System.IO.File.Delete(file.path);
@@ -276,7 +276,7 @@ namespace Controllers
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value)
+      await NotifyRaptorAddFile(projectUid, fileDescriptor, importedFileId.Value, Guid.Parse(importedFileUid))
         .ConfigureAwait(false);
 
       // if all succeeds, update Db and send update to kafka que
@@ -329,7 +329,7 @@ namespace Controllers
       await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))
         .ConfigureAwait(false);
 
-      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor, importedFile.ImportedFileId)
+      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor, importedFile.ImportedFileId, importedFileUid)
         .ConfigureAwait(false);
 
       await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
