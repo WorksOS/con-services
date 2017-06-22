@@ -77,8 +77,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation($"GetProject: CustomerUID={customerUid} and projectUid={projectUid}");
+      var customerUid = LogCustomerDetails("GetProject", projectUid);
       var project =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
@@ -99,8 +98,8 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFile>> GetImportedFiles(string projectUid)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation($"GetImportedFiles: CustomerUID={customerUid} and projectUid={projectUid}");
+      LogCustomerDetails("GetImportedFiles", projectUid);
+
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
 
@@ -114,8 +113,8 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation($"GetImportedFileList: CustomerUID={customerUid} and projectUid={projectUid}");
+      LogCustomerDetails("GetImportedFileList", projectUid);
+
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
 
@@ -314,9 +313,9 @@ namespace Controllers
       MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult;
       try
       {
-        notificationResult = await raptorProxy.AddFile(projectId, projectUid,
+        notificationResult = await raptorProxy.AddFile(projectUid, importedFileUid,
             JsonConvert.SerializeObject(fileDescriptor), importedFileId, Request.Headers.GetCustomHeaders())
-          .ConfigureAwait(false);
+                  .ConfigureAwait(false);
       }
       catch (Exception e)
       {
@@ -347,10 +346,10 @@ namespace Controllers
     ///  if it doesn't know about it then it do nothing and return success
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor, long importedFileId)
+    protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor, long importedFileId, Guid importedFileUid)
     {
       var notificationResult = await raptorProxy
-        .DeleteFile(null, projectUid, fileDescriptor, importedFileId, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+        .DeleteFile(projectUid, importedFileUid, fileDescriptor, importedFileId, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       log.LogDebug(
         $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
@@ -376,6 +375,14 @@ namespace Controllers
       return "_" + surveyedUtc.ToIso8601DateTimeString().Replace(":", string.Empty);
     }
 
+    private string LogCustomerDetails(string functionName, string projectUid)
+    {
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
+      // var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      log.LogInformation($"{functionName}: CustomerUID={customerUid} and projectUid={projectUid}");
+
+      return customerUid;
+    }
     #endregion
 
   }

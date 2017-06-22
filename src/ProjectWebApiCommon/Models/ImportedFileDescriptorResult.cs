@@ -1,11 +1,10 @@
+using ProjectWebApiCommon.ResultsHandling;
 using System;
 using System.Collections.Immutable;
-using ProjectWebApiCommon.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ProjectWebApiCommon.Models
 {
-
   /// <summary>
   /// List of importedfile descriptors
   /// </summary>
@@ -22,16 +21,29 @@ namespace ProjectWebApiCommon.Models
   }
 
   /// <summary>
+  /// List of activated ImportedFile descriptors
+  /// </summary>
+  /// <seealso cref="ContractExecutionResult" />
+  public class ActivatedFileDescriptorListResult : ContractExecutionResult
+  {
+    /// <summary>
+    /// Gets or sets the activated ImportedFile descriptors.
+    /// </summary>
+    /// <value>
+    /// The activated ImportedFile descriptors.
+    /// </value>
+    public ImmutableList<ActivatedFileDescriptor> ActivatedFileDescriptors { get; set; }
+  }
+
+  /// <summary>
   /// Single importedfile descriptor
   /// </summary>
   /// <seealso cref="ProjectWebApiCommon.ResultsHandling.ContractExecutionResult" />
   public class ImportedFileDescriptorSingleResult : ContractExecutionResult
   {
-    private ImportedFileDescriptor _importedFileDescriptor;
-
     public ImportedFileDescriptorSingleResult(ImportedFileDescriptor importedFileDescriptor)
     {
-      this._importedFileDescriptor = importedFileDescriptor;
+      ImportedFileDescriptor = importedFileDescriptor;
     }
 
     /// <summary>
@@ -40,11 +52,7 @@ namespace ProjectWebApiCommon.Models
     /// <value>
     /// The ImportedFile descriptors.
     /// </value>
-    public ImportedFileDescriptor ImportedFileDescriptor
-    {
-      get { return _importedFileDescriptor; }
-      set { _importedFileDescriptor = value; }
-    }
+    public ImportedFileDescriptor ImportedFileDescriptor { get; set; }
   }
 
 
@@ -60,7 +68,7 @@ namespace ProjectWebApiCommon.Models
     /// The Project uid.
     /// </value>
     public string ProjectUid { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the file uid.
     /// </summary>
@@ -91,7 +99,7 @@ namespace ProjectWebApiCommon.Models
     /// <value>
     /// The name of the file type.
     /// </value>
-    public string ImportedFileTypeName => this.ImportedFileType.ToString();
+    public string ImportedFileTypeName => ImportedFileType.ToString();
 
     /// <summary>
     /// Gets or sets the name of the file.
@@ -143,12 +151,22 @@ namespace ProjectWebApiCommon.Models
     public DateTime ImportedUtc { get; set; }
 
     /// <summary>
+    /// Gets or sets the Activation State of the imported file.
+    /// </summary>
+    public bool IsActivated { get; set; }
+
+    /// <summary>
     /// Gets the path of the imported file
     /// </summary>
     /// <value>
     /// Path of the imported file
     /// </value>
     public string Path => "/" + CustomerUid + "/" + ProjectUid;
+
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
 
     public override bool Equals(object obj)
     {
@@ -164,7 +182,24 @@ namespace ProjectWebApiCommon.Models
              && otherImportedFile.ImportedBy == this.ImportedBy
              && otherImportedFile.SurveyedUtc == this.SurveyedUtc
              && otherImportedFile.ImportedUtc == this.ImportedUtc
+             && otherImportedFile.IsActivated == this.IsActivated
         ;
     }
+  }
+
+  public class ActivatedFileDescriptor
+  {
+    /// <summary>
+    /// Gets or sets the ImportedFile uid.
+    /// </summary>
+    /// <value>
+    /// Is Activated
+    /// </value>
+    public string ImportedFileUid { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Activation State of the imported file.
+    /// </summary>
+    public bool IsActivated { get; set; }
   }
 }

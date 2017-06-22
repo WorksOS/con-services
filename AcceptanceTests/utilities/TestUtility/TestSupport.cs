@@ -35,9 +35,6 @@ namespace TestUtility
     public Guid GeofenceUid { get; set; }
     public Guid SubscriptionUid { get; set; }
     public string CustomerId { get; set; }
-
-    public string FileSeperator { get; set; }
-
     public CreateProjectEvent CreateProjectEvt { get; set; }
     public UpdateProjectEvent UpdateProjectEvt { get; set; }
     public DeleteProjectEvent DeleteProjectEvt { get; set; }
@@ -78,17 +75,8 @@ namespace TestUtility
       SetCustomerUid();
       SetGeofenceUid();
       SetSubscriptionUid();
-      SetFileSeperator();
     }
-
-    /// <summary>
-    /// Set the file seperator
-    /// </summary>
-    private void SetFileSeperator()
-    {
-      FileSeperator = tsCfg.operatingSystem == "Windows_NT" ? "\\" : "//";
-    }
-
+    
     /// <summary>
     /// Set the legacy asset id
     /// </summary>
@@ -1356,7 +1344,7 @@ namespace TestUtility
           {
             CustomerUid = eventObject.CustomerUid,
             FileCreatedUtc = DateTime.Parse(eventObject.FileCreatedUtc),
-            FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUtc),
+            FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUtc),             
             ImportedBy = eventObject.ImportedBy,            
             ProjectUid = eventObject.ProjectUid,
             Name = eventObject.Name             
@@ -1364,6 +1352,10 @@ namespace TestUtility
           if (HasProperty(eventObject, "SurveyedUtc"))
           {
             importedFileDescriptor.SurveyedUtc = DateTime.Parse(eventObject.SurveyedUtc);
+          }
+          if (HasProperty(eventObject, "IsActivated"))
+          {
+            importedFileDescriptor.IsActivated = eventObject.IsActivated.ToLower() == "true";
           }
           switch (eventObject.ImportedFileType)
           {

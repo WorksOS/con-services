@@ -340,7 +340,7 @@ namespace Controllers
             contractExecutionStatesEnum.FirstNameWithOffset(56)));
       }
 
-      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor, importedFile.ImportedFileId)
+      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor, importedFile.ImportedFileId, Guid.Parse(importedFile.ImportedFileUid))
         .ConfigureAwait(false);
 
       await DeleteFileFromTCCRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))
@@ -357,6 +357,21 @@ namespace Controllers
       log.LogInformation(
         $"DeleteImportedFileV4. Completed succesfully. ProjectUid {projectUid} importedFileUid: {importedFileUid}");
       return new ContractExecutionResult();
+    }
+
+    /// <summary>
+    /// Sets activated state on one or more imported files.
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="importedFileUids">Collection of file Uids to set the activated state on</param>
+    /// <returns></returns>
+    [Route("api/v4/importedfiles")]
+    [HttpPut]
+    protected async Task<ImmutableList<ActivatedFileDescriptor>> PutImportedFilesV4([FromQuery] string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileUids)
+    {
+      log.LogInformation("ActivateFiles");
+
+      throw new NotImplementedException();
     }
   }
 }

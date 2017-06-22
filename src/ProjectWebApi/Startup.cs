@@ -31,6 +31,10 @@ namespace ProjectWebApi
     private bool isDevEnv = false;
     IServiceCollection serviceCollection;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Startup"/> class.
+    /// </summary>
+    /// <param name="env">The env.</param>
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
@@ -52,9 +56,19 @@ namespace ProjectWebApi
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
-    public IConfigurationRoot Configuration { get; }
+    /// <summary>
+    /// Gets the configuration.
+    /// </summary>
+    /// <value>
+    /// The configuration.
+    /// </value>
+    private IConfigurationRoot Configuration { get; }
 
     // This method gets called by the runtime. Use this method to add services to the container
+    /// <summary>
+    /// Configures the services.
+    /// </summary>
+    /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddLogging();
@@ -123,6 +137,12 @@ namespace ProjectWebApi
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+    /// <summary>
+    /// Configures the specified application.
+    /// </summary>
+    /// <param name="app">The application.</param>
+    /// <param name="env">The env.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
@@ -138,8 +158,8 @@ namespace ProjectWebApi
       //Enable TID here
       app.UseTIDAuthentication();
 
-      app.UseApplicationInsightsRequestTelemetry();
-      app.UseApplicationInsightsExceptionTelemetry();
+      /*app.UseApplicationInsightsRequestTelemetry();
+      app.UseApplicationInsightsExceptionTelemetry();*/
 
       app.UseMvc();
 
