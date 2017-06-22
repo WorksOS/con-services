@@ -66,7 +66,7 @@ namespace WebApiModels.Notification.Helpers
         //Do we care if this fails?
       }
 
-      var fullGeneratedName = Path.Combine(fileDescr.path, generatedName);
+      var fullGeneratedName = string.Format("{0}/{1}", fileDescr.path, generatedName);
       var zoomResult = await CalculateTileZoomRange(fileDescr.filespaceId, fullGeneratedName);
       success = zoomResult.success;
       if (success)
