@@ -414,7 +414,7 @@ namespace Controllers
 
     private string LogCustomerDetails(string functionName, string projectUid)
     {
-      var customerUid = ((User as TIDCustomPrincipal).CustomerUid;
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       log.LogInformation($"{functionName}: CustomerUID={customerUid} and projectUid={projectUid}");
 
       return customerUid;
