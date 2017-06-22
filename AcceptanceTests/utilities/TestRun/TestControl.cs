@@ -174,7 +174,7 @@ namespace TestRun
         private void LoadNecessaryDlls()
         {
             // Invoke any of the dll's used by the testing framework.
-            Thread.Sleep(10);
+            Thread.Sleep(1);
             var getDate = DateTime.ParseExact("09:00:00", "HH:mm:ss", CultureInfo.InvariantCulture).TimeOfDay;
             Debug.WriteLine("In Diagnostics");
             GuidAttribute guidAt = new GuidAttribute(Guid.NewGuid().ToString());

@@ -169,7 +169,7 @@ namespace TestUtility
           break;
         }
         retryCount++;
-        Thread.Sleep(1500);
+        Thread.Sleep(500);
       }
       return resultCount;
     }
