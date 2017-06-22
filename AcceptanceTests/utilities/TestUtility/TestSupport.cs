@@ -1344,7 +1344,7 @@ namespace TestUtility
           {
             CustomerUid = eventObject.CustomerUid,
             FileCreatedUtc = DateTime.Parse(eventObject.FileCreatedUtc),
-            FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUtc),
+            FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUtc),             
             ImportedBy = eventObject.ImportedBy,            
             ProjectUid = eventObject.ProjectUid,
             Name = eventObject.Name             
@@ -1352,6 +1352,10 @@ namespace TestUtility
           if (HasProperty(eventObject, "SurveyedUtc"))
           {
             importedFileDescriptor.SurveyedUtc = DateTime.Parse(eventObject.SurveyedUtc);
+          }
+          if (HasProperty(eventObject, "IsActivated"))
+          {
+            importedFileDescriptor.IsActivated = eventObject.IsActivated.ToLower() == "true";
           }
           switch (eventObject.ImportedFileType)
           {
