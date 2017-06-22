@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using ProjectWebApiCommon.Models;
@@ -218,59 +219,19 @@ namespace TestUtility
     private string FormatTheContentDisposition(FlowFileUpload flowFileUpload, Stream filestream,string name)
     {
       var sb = new StringBuilder();
-      sb.AppendLine();
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowChunkNumber\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowChunkNumber.ToString());
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowChunkSize\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowChunkSize.ToString());
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowCurrentChunkSize\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowCurrentChunkSize.ToString());
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowTotalSize\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowTotalSize.ToString());
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowIdentifier\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowIdentifier);
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowFilename\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowFilename);
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowRelativePath\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowRelativePath);
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowTotalChunks\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowTotalChunks.ToString());
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"file\"; filename=\"" + name + "\"");
-      sb.AppendLine("Content-Type: application/octet-stream");
-      sb.AppendLine();
+      var nl = "\r\n";
+      sb.AppendFormat($"{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowChunkNumber\"{nl}{nl}{flowFileUpload.flowChunkNumber}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowChunkSize\"{nl}{nl}{flowFileUpload.flowChunkSize}{nl}" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowCurrentChunkSize\"{nl}{nl}{flowFileUpload.flowCurrentChunkSize}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowTotalSize\"{nl}{nl}{flowFileUpload.flowTotalSize}{nl}" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowIdentifier\"{nl}{nl}{flowFileUpload.flowIdentifier}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowFilename\"{nl}{nl}{flowFileUpload.flowFilename}{nl}" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
 
       StreamReader reader = new StreamReader(filestream);
       sb.Append(reader.ReadToEnd());
-      sb.AppendLine();
-      sb.AppendLine(BOUNDARY + "--");
-
+      sb.Append($"{nl}");
+      sb.Append($"{BOUNDARY}--{nl}");
       reader.Dispose();
-      return sb.ToString();
+      return Regex.Replace(sb.ToString(), "(?<!\r)\n", "\r\n"); 
     }
 
     /// <summary>
@@ -287,7 +248,7 @@ namespace TestUtility
         var reader = new StreamReader(readStream);
         var responseString = reader.ReadToEnd();
         reader.Dispose();
-        return responseString;
+        return Regex.Replace(responseString, "(?<!\r)\n", "\r\n");
       }
 
       return string.Empty;
