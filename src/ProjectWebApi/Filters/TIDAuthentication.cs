@@ -21,9 +21,16 @@ namespace ProjectWebApi.Filters
     private readonly RequestDelegate _next;
     private ILogger<TIDAuthentication> log;
     private readonly ICustomerProxy customerProxy;
-    protected readonly IConfigurationStore store;
+    private readonly IConfigurationStore store;
 
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TIDAuthentication"/> class.
+    /// </summary>
+    /// <param name="next">The next.</param>
+    /// <param name="customerProxy">The customer proxy.</param>
+    /// <param name="store">The store.</param>
+    /// <param name="logger">The logger.</param>
     public TIDAuthentication(RequestDelegate next,
       ICustomerProxy customerProxy,
       IConfigurationStore store,
@@ -35,6 +42,11 @@ namespace ProjectWebApi.Filters
       this.store = store;
     }
 
+    /// <summary>
+    /// Invokes the specified context.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <returns></returns>
     public async Task Invoke(HttpContext context)
     {
       if (!context.Request.Path.Value.Contains("swagger"))
@@ -103,8 +115,16 @@ namespace ProjectWebApi.Filters
     }
   }
 
+  /// <summary>
+  /// 
+  /// </summary>
   public static class TIDAuthenticationExtensions
   {
+    /// <summary>
+    /// Uses the tid authentication.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    /// <returns></returns>
     public static IApplicationBuilder UseTIDAuthentication(this IApplicationBuilder builder)
     {
       return builder.UseMiddleware<TIDAuthentication>();

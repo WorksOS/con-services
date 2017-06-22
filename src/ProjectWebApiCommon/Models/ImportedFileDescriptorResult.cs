@@ -163,6 +163,11 @@ namespace ProjectWebApiCommon.Models
     /// </value>
     public string Path => "/" + CustomerUid + "/" + ProjectUid;
 
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
+
     public override bool Equals(object obj)
     {
       var otherImportedFile = obj as ImportedFileDescriptor;

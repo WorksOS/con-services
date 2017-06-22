@@ -28,6 +28,17 @@ namespace Controllers
   /// </summary>
   public class ProjectV4Controller : ProjectBaseController
   {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProjectV4Controller"/> class.
+    /// </summary>
+    /// <param name="producer">The producer.</param>
+    /// <param name="projectRepo">The project repo.</param>
+    /// <param name="subscriptionsRepo">The subscriptions repo.</param>
+    /// <param name="store">The store.</param>
+    /// <param name="subsProxy">The subs proxy.</param>
+    /// <param name="geofenceProxy">The geofence proxy.</param>
+    /// <param name="raptorProxy">The raptorServices proxy.</param>
+    /// <param name="logger">The logger.</param>
     public ProjectV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
@@ -136,7 +147,7 @@ namespace Controllers
         0, true, userUid, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
 
       // do this a late as possible in case something fails. We can cleanup kafka que.
-      await CreateKafkaEvents(project, customerProject);
+      CreateKafkaEvents(project, customerProject);
 
       log.LogDebug("CreateProjectV4. completed succesfully");
       return new ProjectV4DescriptorsSingleResult(
@@ -378,7 +389,7 @@ namespace Controllers
     /// <param name="project"></param>
     /// <param name="customerProject">The create projectCustomer event</param>
     /// <returns></returns>
-    private async Task CreateKafkaEvents(CreateProjectEvent project, AssociateProjectCustomer customerProject)
+    private void CreateKafkaEvents(CreateProjectEvent project, AssociateProjectCustomer customerProject)
     {
       log.LogDebug($"CreateProjectEvent on kafka queue {JsonConvert.SerializeObject(project)}");
       string wktBoundary = project.ProjectBoundary;
@@ -408,10 +419,16 @@ namespace Controllers
         });
     }
 
+
     /// <summary>
-    /// validate CordinateSystem if provided
+    /// Validates the coord system.
     /// </summary>
-    /// <param name=""></param>
+    /// <param name="project">The project.</param>
+    /// <returns></returns>
+    /// <exception cref="ServiceException">
+    /// </exception>
+    /// <exception cref="ContractExecutionResult">
+    /// </exception>
     private async Task<bool> ValidateCoordSystem(IProjectEvent project)
     {
       // a Creating a landfill must have a CS, else optional
