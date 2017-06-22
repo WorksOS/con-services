@@ -71,7 +71,8 @@ namespace ProjectWebApiCommon.Utilities
                 ? src.SubscriptionEndDate.Value.ToString("O")
                 : string.Empty));
           cfg.CreateMap<ImportedFile, ImportedFileDescriptor>()
-            .ForMember(x => x.ImportedUtc, opt => opt.MapFrom(src => src.LastActionedUtc));
+            .ForMember(x => x.ImportedUtc, opt => opt.MapFrom(src => src.LastActionedUtc))
+            .ForMember(x => x.LegacyFileId, opt => opt.MapFrom(src => src.ImportedFileId));
           cfg.CreateMap<ImportedFile, UpdateImportedFileEvent>()
             .ForMember(x => x.ImportedFileUID, opt => opt.MapFrom(src => Guid.Parse(src.ImportedFileUid)))
             .ForMember(x => x.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))
