@@ -48,6 +48,7 @@ namespace MockProjectWebApi.Controllers
             CustomerUid = "DxfTileAcceptanceTest", 
             ImportedFileType = ImportedFileType.Linework,
             ImportedFileUid = "cfcd4c01-6fc8-45d5-872f-513a0f619f03",
+            LegacyFileId = 1,
             IsActivated = true
           },
           new FileData
@@ -57,6 +58,7 @@ namespace MockProjectWebApi.Controllers
             CustomerUid = "DxfTileAcceptanceTest", 
             ImportedFileType = ImportedFileType.Linework,
             ImportedFileUid = "ea89be4b-0efb-4b8f-ba33-03f0973bfc7b",
+            LegacyFileId = 2,
             IsActivated = true
           }
         };
