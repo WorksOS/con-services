@@ -7,7 +7,7 @@ docker rmi 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi
 docker rmi 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
 
 $Cmd = 'aws'
-$Args = 'ecr', 'get-login'
+$Args = 'ecr', 'get-login', '--profile', 'vss-grant'
 
 $LoginID = &$Cmd $Args
 Write $LoginID

@@ -127,6 +127,8 @@ namespace TestUtility
         var filestream = new MemoryStream(Convert.FromBase64String(inputAsString));
         var flowFileUpload = SetAllAttributesForFlowFile(filestream,name);       
         var content = FormatTheContentDisposition(flowFileUpload, filestream, name);
+        Console.WriteLine($"UPLOAD_FILE: {method} {uri} {customerUid}");
+        Console.WriteLine(content);
         var response = DoHttpRequest(uri, method, content,customerUid);
         return response;
       }
@@ -218,56 +220,17 @@ namespace TestUtility
     private string FormatTheContentDisposition(FlowFileUpload flowFileUpload, Stream filestream,string name)
     {
       var sb = new StringBuilder();
-      sb.AppendLine();
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowChunkNumber\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowChunkNumber.ToString());
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowChunkSize\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowChunkSize.ToString());
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowCurrentChunkSize\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowCurrentChunkSize.ToString());
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowTotalSize\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowTotalSize.ToString());
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowIdentifier\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowIdentifier);
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowFilename\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowFilename);
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowRelativePath\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowRelativePath);
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"flowTotalChunks\"");
-      sb.AppendLine();
-      sb.AppendLine(flowFileUpload.flowTotalChunks.ToString());
-
-      sb.AppendLine(BOUNDARY);
-      sb.AppendLine("Content-Disposition: form-data; name=\"file\"; filename=\"" + name + "\"");
-      sb.AppendLine("Content-Type: application/octet-stream");
-      sb.AppendLine();
+      var nl = Environment.NewLine;
+      sb.AppendFormat($"{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowChunkNumber\"{nl}{nl}{flowFileUpload.flowChunkNumber}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowChunkSize\"{nl}{nl}{flowFileUpload.flowChunkSize}\"{nl}" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowCurrentChunkSize\"{nl}{nl}{flowFileUpload.flowCurrentChunkSize}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowTotalSize\"{nl}{nl}{flowFileUpload.flowTotalSize}{nl} \"" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowIdentifier\"{nl}{nl}{flowFileUpload.flowIdentifier}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowFilename\"{nl}{nl}{flowFileUpload.flowFilename}{nl}\"" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowRelativePath\"{nl}{nl}{flowFileUpload.flowRelativePath}{nl}{BOUNDARY}{nl}Content-Disposition: form-data; name=\"flowTotalChunks\"{nl}{nl}{flowFileUpload.flowTotalChunks}{nl}\"" +
+                      $"{BOUNDARY}{nl}Content-Disposition: form-data; name=\"file\"; filename=\"{name}\"{nl}Content-Type: application/octet-stream{nl}{nl}");
 
       StreamReader reader = new StreamReader(filestream);
       sb.Append(reader.ReadToEnd());
-      sb.AppendLine();
-      sb.AppendLine(BOUNDARY + "--");
+      sb.Append($"{nl}");
+      sb.Append($"{BOUNDARY}--{nl}");
 
       reader.Dispose();
       return sb.ToString();
