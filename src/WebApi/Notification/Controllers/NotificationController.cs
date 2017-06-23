@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Common.Filters.Authentication.Models;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -45,11 +46,6 @@ namespace VSS.Raptor.Service.WebApi.Notification
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// Used to get list of projects for customer
-    /// </summary>
-    private readonly IAuthenticatedProjectsStore authProjectsStore;
-
-    /// <summary>
     /// Used to talk to TCC
     /// </summary>
     private readonly IFileRepository fileRepo;
@@ -77,19 +73,17 @@ namespace VSS.Raptor.Service.WebApi.Notification
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="authProjectsStore">Authenticated projects store</param>
     /// <param name="fileRepo">Imported file repository</param>
     /// <param name="prefProxy">Proxy for user preferences</param>
     /// <param name="tileGenerator">DXF tile generator</param>
     /// <param name="fileListProxy">File list proxy</param>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IAuthenticatedProjectsStore authProjectsStore, IFileRepository fileRepo, IConfigurationStore configStore, 
+      IFileRepository fileRepo, IConfigurationStore configStore, 
       IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionController>();
-      this.authProjectsStore = authProjectsStore;
       this.fileRepo = fileRepo;
       this.configStore = configStore;
       this.prefProxy = prefProxy;
@@ -116,20 +110,13 @@ namespace VSS.Raptor.Service.WebApi.Notification
       [FromQuery] long fileId)
     {
       log.LogDebug("GetAddFile: " + Request.QueryString);
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      long projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
-      var projectsById = authProjectsStore.GetProjectsById(customerUid);
-      if (!projectsById.ContainsKey(projectId))
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing Project or project does not belong to specified customer"));
-      }
-      string coordSystem = projectsById[projectId].coordinateSystemFileName;
+      ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
+      string coordSystem = projectDescr.coordinateSystemFileName;
       var customHeaders = Request.Headers.GetCustomHeaders();
       var userPrefs = await prefProxy.GetUserPreferences(customHeaders);
       var userUnits = userPrefs == null ? UnitsTypeEnum.US : (UnitsTypeEnum)Enum.Parse(typeof(UnitsTypeEnum), userPrefs.Units, true);
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId, projectUid, fileDes, coordSystem, userUnits, fileId);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, coordSystem, userUnits, fileId);
       request.Validate();
       var executor = RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
@@ -157,10 +144,9 @@ namespace VSS.Raptor.Service.WebApi.Notification
       [FromQuery] long fileId)
     {
       log.LogDebug("GetDeleteFile: " + Request.QueryString);
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      long projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+      ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId);
       request.Validate();
       var executor = RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);

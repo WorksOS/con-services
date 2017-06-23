@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using Common.Filters.Authentication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Logging;
@@ -36,11 +37,7 @@ namespace VSS.Raptor.Service.Common.JsonConverters
           var projectID = result.Model as ProjectID;
           if (!projectID.projectId.HasValue)
           {
-            var authProjectsStore = context.HttpContext.RequestServices.GetRequiredService<IAuthenticatedProjectsStore>();
-
-            var customerUid =
-              ((context.HttpContext.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-            projectID.projectId = ProjectID.GetProjectId(customerUid, projectID.projectUid, authProjectsStore);
+            projectID.projectId = (context.HttpContext.User as RaptorPrincipal).GetProjectId(projectID.projectUid);
           }
         }
         return result;

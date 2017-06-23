@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Common.Filters.Authentication.Models;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -17,15 +18,13 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
   public class TIDAuthentication
     {
         private readonly RequestDelegate _next;
-        private readonly IAuthenticatedProjectsStore authProjectsStore;
         private readonly IProjectListProxy projectListProxy;
         private readonly ILogger log;
 
 
-        public TIDAuthentication(RequestDelegate next, IAuthenticatedProjectsStore authProjectsStore, IProjectListProxy projectListProxy, ILoggerFactory logger)
+        public TIDAuthentication(RequestDelegate next, IProjectListProxy projectListProxy, ILoggerFactory logger)
         {
             _next = next;
-            this.authProjectsStore = authProjectsStore;
             this.projectListProxy = projectListProxy;
             log = logger.CreateLogger<TIDAuthentication>();
         }
@@ -72,14 +71,13 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
                             authProjects.Add(projectDesc);
                         }
                     }
-                    authProjectsStore.SetAuthenticatedProjectList(customerUID, authProjects);
                     log.LogDebug("Authorization: for Customer: {0} projectList is: {1}", customerUID,
                         authProjects.Count);
 
                     var identity = string.IsNullOrEmpty(customerUID)
                         ? new GenericIdentity(jwtToken.UserUid.ToString())
                         : new GenericIdentity(jwtToken.UserUid.ToString(), customerUID);
-                    var principal = new GenericPrincipal(identity, new string[] { });
+                    var principal = new RaptorPrincipal(identity, customerUID, authProjects);
                     context.User = principal;
                     //Thread.CurrentPrincipal = principal;
                 }

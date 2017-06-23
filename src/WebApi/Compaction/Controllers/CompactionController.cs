@@ -7,6 +7,7 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Common.Executors;
+using Common.Filters.Authentication.Models;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using MasterDataProxies.Models;
@@ -60,11 +61,6 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// Used to get list of projects for customer
-    /// </summary>
-    private readonly IAuthenticatedProjectsStore authProjectsStore;
-
-    /// <summary>
     /// Cache for elevation extents, needed for elevation palette
     /// </summary>
     private readonly IMemoryCache elevationExtentsCache;
@@ -92,19 +88,16 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="authProjectsStore">Authenticated projects store</param>
     /// <param name="cache">Elevation extents cache</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileRepo">Imported file repository</param>
-    public CompactionController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IAuthenticatedProjectsStore authProjectsStore, IMemoryCache cache, 
+    public CompactionController(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache, 
       IFileListProxy fileListProxy, IConfigurationStore configStore, IFileRepository fileRepo)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionController>();
-      this.authProjectsStore = authProjectsStore;
       this.elevationExtentsCache = cache;
       this.fileListProxy = fileListProxy;
       this.configStore = configStore;
@@ -155,8 +148,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       CMVSettings cmvSettings = CompactionSettings.CompactionCmvSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
@@ -193,8 +185,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     {
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       PassCountSettings passCountSettings = isSummary ? null : CompactionSettings.CompactionPassCountSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
@@ -323,8 +314,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       MDPSettings mdpSettings = CompactionSettings.CompactionMdpSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
@@ -470,8 +460,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       TemperatureSettings temperatureSettings = CompactionSettings.CompactionTemperatureSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
@@ -550,8 +539,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
@@ -630,8 +618,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid.Value, includeSurveyedSurfaces,
@@ -824,8 +811,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       log.LogInformation("GetColorPalettes: " + Request.QueryString);
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       List<DisplayMode> modes = new List<DisplayMode>
       {
@@ -998,8 +984,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       log.LogInformation("GetElevationPalette: " + Request.QueryString);
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
 
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid.Value, includeSurveyedSurfaces,
@@ -1072,8 +1057,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       log.LogInformation("GetElevationRange: " + Request.QueryString);
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       try
       {
@@ -1249,8 +1233,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       log.LogInformation("GetProjectStatistics: " + Request.QueryString);
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid.Value, includeSurveyedSurfaces,
         Request.Headers.GetCustomHeaders());
@@ -1361,8 +1344,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid.Value, includeSurveyedSurfaces,
         Request.Headers.GetCustomHeaders());
@@ -1452,8 +1434,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
       if (!projectId.HasValue)
       {
-        var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid.Value, includeSurveyedSurfaces,
         Request.Headers.GetCustomHeaders());

@@ -94,7 +94,6 @@ namespace VSS.Raptor.Service.WebApi
 
             //Configure application services
             services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>();
-            services.AddSingleton<IAuthenticatedProjectsStore, AuthenticatedProjectStore>();
             services.AddScoped<IASNodeClient, ASNodeClient>();
             services.AddScoped<ITagProcessor, TagProcessor>();
             services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();

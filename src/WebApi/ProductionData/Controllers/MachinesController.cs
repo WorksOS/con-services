@@ -4,6 +4,7 @@ using System.Net;
 using System.Linq;
 using System.Collections.Generic;
 using System.Security.Principal;
+using Common.Filters.Authentication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Contracts;
@@ -37,23 +38,17 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
-    /// <summary>
-    /// Used to get list of projects for customer
-    /// </summary>
-    private readonly IAuthenticatedProjectsStore authProjectsStore;
-
+ 
     /// <summary>
     /// Constructor with injected raptor client and logger
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="authProjectsStore">Authenticated projects store</param>
-    public MachinesController(IASNodeClient raptorClient, ILoggerFactory logger, IAuthenticatedProjectsStore authProjectsStore)
+    public MachinesController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<MachinesController>();
-      this.authProjectsStore = authProjectsStore;
     }
 
     // GET: api/Machines
@@ -88,9 +83,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
     public MachineExecutionResult Get([FromRoute] Guid projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID Id = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
       return RequestExecutorContainer.Build<GetMachineIdsExecutor>(logger, raptorClient, null).Process(Id) as MachineExecutionResult;
     }
@@ -132,9 +126,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
     public ContractExecutionResult Get([FromRoute] Guid projectUid, [FromRoute] long machineId)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID Id = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
       MachineExecutionResult result =
           RequestExecutorContainer.Build<GetMachineIdsExecutor>(logger, raptorClient, null).Process(Id) as MachineExecutionResult;
@@ -175,9 +168,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
     public MachineDesignsExecutionResult GetMachineDesigns([FromRoute] Guid projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID Id = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
       return RequestExecutorContainer.Build<GetMachineDesignsExecutor>(logger, raptorClient, null).Process(Id) as MachineDesignsExecutionResult;
     }
@@ -213,9 +205,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
     public LayerIdsExecutionResult GetMachineLayerIds([FromRoute] Guid projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID Id = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
       return RequestExecutorContainer.Build<GetLayerIdsExecutor>(logger, raptorClient, null).Process(Id) as LayerIdsExecutionResult;
     }
@@ -256,9 +247,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
     public MachineLayerIdsExecutionResult GetMachineLifts([FromRoute] Guid projectUid, [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID Id = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
 
       return GetMachineLiftsWith(Id, startUtc, endUtc);

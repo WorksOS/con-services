@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Principal;
+using Common.Filters.Authentication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Filters.Authentication;
@@ -36,22 +37,15 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// </summary>
     private readonly ILoggerFactory logger;
     /// <summary>
-    /// Used to get list of projects for customer
-    /// </summary>
-    private readonly IAuthenticatedProjectsStore authProjectsStore;
-
-    /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="logger">Logger</param>
     /// <param name="raptorClient">Raptor client</param>
-    /// <param name="authProjectsStore">Authenticated projects store</param>
-    public CCAColorPaletteController(ILoggerFactory logger, IASNodeClient raptorClient, IAuthenticatedProjectsStore authProjectsStore)
+    public CCAColorPaletteController(ILoggerFactory logger, IASNodeClient raptorClient)
     {
       this.logger = logger;
       this.log = logger.CreateLogger<CCAColorPaletteController>();
       this.raptorClient = raptorClient;
-      this.authProjectsStore = authProjectsStore;
     }
 
     /// <summary>
@@ -102,10 +96,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
                                      [FromQuery] int? liftId = null)
     {
       log.LogInformation("Get: " + Request.QueryString);
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
 
-      long projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
-
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var request = CCAColorPaletteRequest.CreateCCAColorPaletteRequest(projectId, assetId, startUtc, endUtc, liftId);
       request.Validate();
 

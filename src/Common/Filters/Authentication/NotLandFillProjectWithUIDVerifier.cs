@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Reflection;
 using System.Security.Principal;
+using Common.Filters.Authentication.Models;
 using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication.Models;
@@ -41,24 +42,14 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
         if (!(projectUidValue is string))
           return;
 
-        var authProjectsStore = actionContext.HttpContext.RequestServices.GetRequiredService<IAuthenticatedProjectsStore>();
-        if (authProjectsStore == null)
-          return;
-        var customerUid = ((actionContext.HttpContext.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-        var projectsByUid = authProjectsStore.GetProjectsByUid(customerUid);
-
-        var found = projectsByUid.ContainsKey((string) projectUidValue);
-        var landFillProject = found ? projectsByUid[(string) projectUidValue].isLandFill : false;
-
-        Guid outputGuid;
-
-        if (!found || !Guid.TryParse((string) projectUidValue, out outputGuid)) return;
-
-        if (landFillProject)
+        var projectDescr = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string)projectUidValue);
+        if (projectDescr.isLandFill)
+        {
           throw new ServiceException(HttpStatusCode.Unauthorized,
             new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
               "Don't have access to the selected landfill project."
             ));
+        }
       }
     }
 }

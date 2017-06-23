@@ -18,6 +18,7 @@ using VSS.Raptor.Service.Common.Utilities;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Contracts;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
 using Common.Executors;
+using Common.Filters.Authentication.Models;
 
 namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 {
@@ -44,24 +45,19 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// Proxy for getting geofences from master data. Used to get boundary for Raptor using given geofenceUid.
     /// </summary>
     private readonly IGeofenceProxy geofenceProxy;
-    /// <summary>
-    /// Used to get list of projects for customer
-    /// </summary>
-    private readonly IAuthenticatedProjectsStore authProjectsStore;
+
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="geofenceProxy">Proxy client for getting geofences for boundaries</param>
     /// <param name="logger">Logger</param>
     /// <param name="raptorClient">Raptor client</param>
-    /// <param name="authProjectsStore">Authenticated projects store</param>
-    public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient, IAuthenticatedProjectsStore authProjectsStore)
+    public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient)
     {
       this.geofenceProxy = geofenceProxy;
       this.logger = logger;
       this.log = logger.CreateLogger<CCATileController>();
       this.raptorClient = raptorClient;
-      this.authProjectsStore = authProjectsStore;
     }
     /// <summary>
     /// Supplies tiles of rendered CCA data overlays.
@@ -151,11 +147,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      long projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
-
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
-
       var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
       if (tileResult != null)
       {

@@ -89,34 +89,6 @@ namespace VSS.Raptor.Service.Common.Models
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "At least one of the project identifiers must be defined!"));
         }
-
-    }
-
-    public static long GetProjectId(string customerUid, Guid? projectUid, IAuthenticatedProjectsStore authProjectsStore)
-    {
-      if (!projectUid.HasValue)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
-      }
-      if (authProjectsStore == null)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing authenticated projects store"));
-      }
-      var projectsByUid = authProjectsStore.GetProjectsByUid(customerUid);
-      if (!projectsByUid.ContainsKey(projectUid.ToString()))
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing Project or project does not belong to specified customer"));
-      }
-      long projectId = projectsByUid[projectUid.ToString()].projectId;
-      if (projectId <= 0)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.AuthError, "Missing project ID"));
-      }
-      return projectId;
     }
   }
 }
