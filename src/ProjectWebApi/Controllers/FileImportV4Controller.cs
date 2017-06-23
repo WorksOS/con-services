@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using TCCFileAccess;
@@ -23,6 +24,12 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Controllers
 {
+  public class ReqDto
+  {
+    public string ProjectUid { get; set; }
+    public ImmutableList<ActivatedFileDescriptor> ImportedFileDescriptors { get; set; }
+  }
+
   /// <summary>
   /// File Import controller v4
   /// </summary>
@@ -71,58 +78,24 @@ namespace Controllers
     /// <summary>
     /// Sets activated state on one or more imported files.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileDescriptors">Collection of file Uids to set the activated state on</param>
-    /// <returns></returns>
+    /// <param name="projectUid">Project identifier</param>
+    /// <param name="importFilesRequest">Collection of file Uids to set the activated state on</param>
     [Route("api/v4/importedfiles")]
     [HttpPut]
-    protected async Task<IActionResult> UpdateImportedFileActivationStateV4([FromQuery] string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileDescriptors)
+    public async Task<IActionResult> UpdateImportedFileActivationStateV4(string projectUid, [FromBody] ActivatedImportFilesRequest importFilesRequest)
     {
       const string functionId = "SetImportedFileActivatedStateV4";
       log.LogInformation("ActivateFiles");
-      
-      var fileIds = importedFileDescriptors.Aggregate(string.Empty, (current, id) => string.Join(",", id.ImportedFileUid));
-      log.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
 
-      var importedFiles = await GetImportedFiles(projectUid);
-      if (!importedFiles.Any())
+      if (importFilesRequest == null)
       {
-        return Ok(new { message = "No files to process" });
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(40),
+            contractExecutionStatesEnum.FirstNameWithOffset(40)));
       }
+      log.LogInformation($"{functionId}. projectRequest: {0}", JsonConvert.SerializeObject(importFilesRequest));
 
-      var updateFileUids = new List<string>();
-
-      foreach (var activatedFileDescriptor in importedFileDescriptors)
-      {
-        var existingFile =
-          importedFiles.FirstOrDefault(f => f.ImportedFileUid == activatedFileDescriptor.ImportedFileUid);
-        if (existingFile == null)
-        {
-          log.LogInformation(
-            $"{functionId}. file doesn't exist. projectUid {projectUid}, fileUid: {activatedFileDescriptor.ImportedFileUid}");
-          continue;
-        }
-
-        log.LogInformation(
-          $"{functionId}. file already exists, will be updated: {JsonConvert.SerializeObject(existingFile)}");
-        updateFileUids.Add(activatedFileDescriptor.ImportedFileUid);
-      }
-
-      // if all succeeds, send insert to Db and kafka que
-      //var importedFileId = existing?.ImportedFileId;
-      //var project = await GetProject(projectUid);
-
-      //await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value);
-
-      if (updateFileUids.Any())
-      {
-        // TODO need updated API
-      //  UpdateImportedFileEvent fileDescriptor = await SetFileActivatedState(projectUid, updateFileUids, null);
-
-        return Ok(new { code = HttpStatusCode.OK, message = "Success" });
-      }
-
-      return StatusCode((int) HttpStatusCode.InternalServerError);
+      return Ok(new { code = HttpStatusCode.OK, message = "Success" });
     }
 
     /// <summary>

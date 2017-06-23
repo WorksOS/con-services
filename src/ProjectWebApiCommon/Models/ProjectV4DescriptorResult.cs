@@ -230,5 +230,4 @@ namespace ProjectWebApiCommon.Models
 
     public override int GetHashCode() { return 0; }
   }
-
 }
