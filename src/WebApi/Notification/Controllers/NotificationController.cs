@@ -214,13 +214,15 @@ namespace VSS.Raptor.Service.WebApi.Notification
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
         customHeaders.Add("X-VisionLink-ClearCache", "true");
 
-      var fileUidList = fileUids.Select(f => f.ToString());
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      /*
+      var fileUidList = fileUids.Select(f => f.ToString());
       var files = fileList.Where(f => fileUidList.Contains(f.ImportedFileUid)).ToList();
       var fileTypes = files.Select(f => f.ImportedFileType).Distinct();
  
       //Clear response cache for tiles for this project and file type(s)
       //TODO: Implement this
+      */
    
       return true;
     }
