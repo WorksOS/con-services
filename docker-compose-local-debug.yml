@@ -7,8 +7,14 @@ services:
     depends_on:
      - masterdataschema
      - db     
+  mockprojectwebapi:
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
+    env_file:
+     - docker-compose-local-debug.env
+    ports:
+     - "5001:5001"
   masterdataschema:
-    build: C:\Nighthawk2\NextGenCode\MerinoSandbox\MerinoSandbox\MasterDataConsumers\database  
+    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     env_file:
      - docker-compose-local-debug.env
     depends_on:

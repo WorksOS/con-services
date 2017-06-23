@@ -10,10 +10,11 @@ using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
 using Repositories.DBModels;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
-using System.Security.Principal;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using TCCFileAccess;
@@ -23,6 +24,12 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Controllers
 {
+  public class ReqDto
+  {
+    public string ProjectUid { get; set; }
+    public ImmutableList<ActivatedFileDescriptor> ImportedFileDescriptors { get; set; }
+  }
+
   /// <summary>
   /// File Import controller v4
   /// </summary>
@@ -71,16 +78,24 @@ namespace Controllers
     /// <summary>
     /// Sets activated state on one or more imported files.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileUids">Collection of file Uids to set the activated state on</param>
-    /// <returns></returns>
+    /// <param name="projectUid">Project identifier</param>
+    /// <param name="importFilesRequest">Collection of file Uids to set the activated state on</param>
     [Route("api/v4/importedfiles")]
     [HttpPut]
-    protected async Task<ImmutableList<ActivatedFileDescriptor>> PutImportedFilesV4([FromQuery] string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileUids)
+    public async Task<IActionResult> UpdateImportedFileActivationStateV4(string projectUid, [FromBody] ActivatedImportFilesRequest importFilesRequest)
     {
+      const string functionId = "SetImportedFileActivatedStateV4";
       log.LogInformation("ActivateFiles");
 
-      throw new NotImplementedException();
+      if (importFilesRequest == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(40),
+            contractExecutionStatesEnum.FirstNameWithOffset(40)));
+      }
+      log.LogInformation($"{functionId}. projectRequest: {0}", JsonConvert.SerializeObject(importFilesRequest));
+
+      return Ok(new { code = HttpStatusCode.OK, message = "Success" });
     }
 
     /// <summary>
@@ -224,7 +239,7 @@ namespace Controllers
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
-        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {
@@ -251,7 +266,7 @@ namespace Controllers
       }
       if (existing == null)
         log.LogInformation(
-          $"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+          $"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
       else
         log.LogInformation(
           $"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
