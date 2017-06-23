@@ -1,9 +1,8 @@
 ﻿using System;
-using System.IO;
 
 namespace TestRun
 {
-    public class Program
+  public class Program
     {
         public static void Main(string[] args)
         {

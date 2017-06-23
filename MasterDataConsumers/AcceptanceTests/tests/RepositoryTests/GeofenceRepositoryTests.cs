@@ -1,41 +1,29 @@
-﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using log4netExtensions;
-using VSS.GenericConfiguration;
-using Repositories.DBModels;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Repositories;
+using Repositories.DBModels;
+using RepositoryTests.Internal;
+using System;
+using System.Linq;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {
   [TestClass]
-  public class GeofenceRepositoryTests
+  public class GeofenceRepositoryTests : TestControllerBase
   {
-    IServiceProvider serviceProvider = null;
     GeofenceRepository geofenceContext = null;
     ProjectRepository projectContext = null;
 
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
-      Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
+      SetupLogging();
 
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      serviceProvider = new ServiceCollection()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
-        .BuildServiceProvider();
-      geofenceContext = new GeofenceRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
-      projectContext = new ProjectRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
+      geofenceContext = new GeofenceRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
+      projectContext = new ProjectRepository(ServiceProvider.GetService<IConfigurationStore>(), ServiceProvider.GetService<ILoggerFactory>());
     }
 
     #region Geofence
@@ -55,6 +43,41 @@ namespace RepositoryTests
         GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
+        GeofenceType = GeofenceType.Borrow.ToString(),
+        FillColor = 16744448,
+        IsTransparent = true,
+        GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
+        CustomerUID = customerUid,
+        UserUID = Guid.NewGuid(),
+        ActionUTC = actionUtc
+      };
+
+      var s = geofenceContext.StoreEvent(createGeofenceEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Unable to store geofence");
+
+      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      g.Wait();
+      var projectGeofences = g.Result.ToList();
+      Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
+      Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
+    }
+
+    /// <summary>
+    /// Create Geofence - Happy path 
+    ///   null description
+    /// </summary>
+    [TestMethod]
+    public void CreateGeofence_NullDescription()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUid = Guid.NewGuid();
+
+      var createGeofenceEvent = new CreateGeofenceEvent()
+      {
+        GeofenceUID = Guid.NewGuid(),
+        GeofenceName = "Test Geofence",
+        Description = null,
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
@@ -295,8 +318,6 @@ namespace RepositoryTests
 
     #endregion
 
-
-
     #region AssociateGeofenceWithProject
 
     /// <summary>
@@ -391,9 +412,5 @@ namespace RepositoryTests
     }
 
     #endregion
-
   }
-
 }
- 
- 

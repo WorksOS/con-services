@@ -25,11 +25,19 @@ namespace MasterDataProxies.Models
     public string ImportedFileUid { get; set; }
 
     /// <summary>
+    /// Gets or sets a unique file identifier's value from legacy VisionLink.
+    /// </summary>
+    /// <value>
+    /// The file id.
+    /// </value>
+    public long LegacyFileId { get; set; }
+    /// <summary>
     /// Gets or sets the customer uid.
     /// </summary>
     /// <value>
     /// The customer uid.
     /// </value>
+    
     public string CustomerUid { get; set; }
 
     /// <summary>
@@ -97,6 +105,10 @@ namespace MasterDataProxies.Models
     /// </value>
     public DateTime ImportedUtc { get; set; }
 
+    /// <summary>
+    /// Gets or sets the Activation State of the imported file.
+    /// </summary>
+    public bool IsActivated { get; set; }
     /// <summary>
     /// Gets the path of the imported file
     /// </summary>

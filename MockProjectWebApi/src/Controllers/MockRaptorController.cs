@@ -78,13 +78,13 @@ namespace MockProjectWebApi.Controllers
     [Route("api/v2/notification/addfile")]
     [HttpGet]
     public ContractExecutionResult DummyAddFileGet(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long importedFileId)
     {
       var res = new ContractExecutionResult();
-      var message = $"DummyAddFileGet: res {res}. projectId {projectId} projectUid {projectUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}";
+      var message = $"DummyAddFileGet: res {res}. projectUid {projectUid} fileUid {fileUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}";
       Console.WriteLine(message);
       return res;
     }
@@ -95,13 +95,28 @@ namespace MockProjectWebApi.Controllers
     [Route("api/v2/notification/deletefile")]
     [HttpGet]
     public ContractExecutionResult DummyDeleteFileGet(
-      [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long importedFileId)
     {
       var res = new ContractExecutionResult();
-      var message = $"DummyDeleteFileGet: res {res}. projectId {projectId} projectUid {projectUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}";
+      var message = $"DummyDeleteFileGet: res {res}. projectUid {projectUid} fileUid {fileUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}";
+      Console.WriteLine(message);
+      return res;
+    }
+
+    /// <summary>
+    /// Dummies the update.
+    /// </summary>
+    [Route("api/v2/notification/updatefiles")]
+    [HttpGet]
+    public ContractExecutionResult DummyUpdateFilesGet(
+      [FromQuery] Guid projectUid,
+      [FromQuery] Guid[] fileUids)
+    {
+      var res = new ContractExecutionResult();
+      var message = $"DummyUpdateFilesGet: res {res}. projectUid {projectUid} fileUids {fileUids}";
       Console.WriteLine(message);
       return res;
     }
