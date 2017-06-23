@@ -37,17 +37,19 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
       }
     }
 
-    public static Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, List<MachineDetails> machines)
+    public static Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType, 
+      int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds)
     {
-      bool haveFilter = startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue ||
-                  vibeStateOn.HasValue || elevationType.HasValue || layerNumber.HasValue || (machines != null && machines.Count > 0);
+      bool haveFilter = 
+        startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue || vibeStateOn.HasValue || elevationType.HasValue || 
+        layerNumber.HasValue || (machines != null && machines.Count > 0) || (excludedSurveyedSurfaceIds != null && excludedSurveyedSurfaceIds.Count > 0);
 
       var layerMethod = layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
       return haveFilter ? 
         Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
          null, null, null, null, null, null, null, null, null, layerMethod, null, null, layerNumber, null, machines, 
-         null, null, null, null, null, null, null) 
+         excludedSurveyedSurfaceIds, null, null, null, null, null, null) 
          : null;
     }
 
