@@ -43,7 +43,7 @@ namespace KafkaConsumer.Kafka
                 if (result.HasValue)
                     if (result.Value.Error == ErrorCode.NO_ERROR)
                         return new Message(new List<byte[]>() {result.Value.Message.Payload},
-                            Error.NO_ERROR);
+                            Error.NO_ERROR,result.Value.Message.Offset, result.Value.Message.Partition);
                     else
                         return new Message(null, (Error) (int) result.Value.Error);
                 else

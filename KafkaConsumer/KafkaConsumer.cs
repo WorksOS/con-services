@@ -22,16 +22,17 @@ namespace KafkaConsumer
 
     private string topicName;
     private CancellationTokenSource stopToken;
-    private int batchSize = 100;
+    private int requestTime = 2000;
 
-    public KafkaConsumer(IConfigurationStore config, IKafka driver, IRepositoryFactory repositoryFactory, IMessageTypeResolver resolver, ILoggerFactory logger)
+    public KafkaConsumer(IConfigurationStore config, IKafka driver, IRepositoryFactory repositoryFactory,
+      IMessageTypeResolver resolver, ILoggerFactory logger)
     {
       kafkaDriver = driver;
       configurationStore = config;
       dbRepositoryFactory = repositoryFactory;
       messageResolver = resolver;
-      batchSize = configurationStore.GetValueInt("KAFKA_BATCH_SIZE");
-      Console.WriteLine("KafkaConsumer:KAFKA_BATCH_SIZE " + batchSize);
+      if (configurationStore.GetValueInt("KAFKA_REQUEST_TIME") > 0)
+        requestTime = configurationStore.GetValueInt("KAFKA_REQUEST_TIME");
       log = logger.CreateLogger<KafkaConsumer<T>>();
     }
 
@@ -41,13 +42,17 @@ namespace KafkaConsumer
       topicName = topic;
       kafkaDriver.InitConsumer(configurationStore);
       log.LogDebug("KafkaConsumer: " + topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX"));
-      kafkaDriver.Subscribe(new List<string>() {(topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim()});
+      kafkaDriver.Subscribe(new List<string>()
+      {
+        (topic + configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim()
+      });
     }
 
     public async Task<Task> StartProcessingAsync(CancellationTokenSource token)
     {
       log.LogDebug("KafkaConsumer: StartProcessingAsync");
       stopToken = token;
+      log.LogDebug("KafkaConsumer: StartProcessingAsync has been cancelled");
       return await Task.Factory.StartNew(async () =>
       {
         while (!token.IsCancellationRequested)
@@ -55,9 +60,6 @@ namespace KafkaConsumer
           await ProcessMessage();
         }
       }, TaskCreationOptions.LongRunning);
-
-      log.LogDebug("KafkaConsumer: StartProcessingAsync has been cancelled");
-
     }
 
     /// <summary>
@@ -65,16 +67,15 @@ namespace KafkaConsumer
     /// </summary>
     public void StartProcessingSync()
     {
-       ProcessMessage().Wait();
+      ProcessMessage().Wait();
     }
 
-
-    private int batchCounter = 0;
     private async Task ProcessMessage()
     {
 //      log.LogTrace("Kafka Consuming");
-      var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(500));
+      var messages = kafkaDriver.Consume(TimeSpan.FromMilliseconds(requestTime));
       if (messages.message == Error.NO_ERROR)
+      {
         foreach (var message in messages.payload)
         {
           try
@@ -83,36 +84,24 @@ namespace KafkaConsumer
             //Debugging only
             log.LogDebug("KafkaConsumer: " + typeof(T) + " : " + bytesAsString);
             var deserializedObject = JsonConvert.DeserializeObject<T>(bytesAsString,
-                messageResolver.GetConverter<T>());
+              messageResolver.GetConverter<T>());
             log.LogDebug("KafkaConsumer: Saving");
             await dbRepositoryFactory.GetRepository<T>().StoreEvent(deserializedObject);
           }
           catch (Exception ex)
           {
-            log.LogDebug("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}", ex.Message, ex.StackTrace);
+            log.LogDebug("KafkaConsumer: An unexpected error occured in KafkaConsumer: {0}; stacktrace: {1}",
+              ex.Message, ex.StackTrace);
             if (ex.InnerException != null)
-            {   
-              log.LogDebug("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message, ex.InnerException.StackTrace);
-            }
-          }
-          finally
-          {
-            log.LogDebug("Kafka Commiting");
-            if (batchCounter > batchSize)
             {
-              kafkaDriver.Commit();
-              batchCounter = 0;
+              log.LogDebug("KafkaConsumer: Reason: {0}; stacktrace: {1}", ex.InnerException.Message,
+                ex.InnerException.StackTrace);
             }
-            else
-              batchCounter++;
           }
         }
-      if (messages.message == Error.NO_DATA && batchCounter != 0)
-      {
+        log.LogDebug("Kafka Commiting " + "Partition " + messages.partition + " Offset: " + messages.offset);
         kafkaDriver.Commit();
-        batchCounter = 0;
       }
-
     }
 
     public void StopProcessing()
