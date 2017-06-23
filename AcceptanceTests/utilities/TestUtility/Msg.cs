@@ -9,7 +9,8 @@ namespace TestUtility
     {
 
       private const string DASH   = "----------------------------------------------------------------------------------------------------------------------"; 
-      private const string INJECT = "                            Inject Kafka Events                            "; 
+      private const string INJECT = "                            Inject Kafka Events                            ";
+      private const string INJECTWEB = "                        Inject Web API messages                         "; 
       private const string INJSQL = "                            Inject MySql Records                           "; 
       private const string MYSQL  = "MySql Query:"; 
       private const string RSLT  = "Result checking:"; 
@@ -43,7 +44,7 @@ namespace TestUtility
       /// Display all the events in the console 
       /// </summary>
       /// <param name="eventArray"></param>
-      public void DisplayEventsToConsole(string[] eventArray)
+      public void DisplayEventsToConsoleKafka(string[] eventArray)
       {
           Console.WriteLine(DASH);
           Console.WriteLine(INJECT);
@@ -55,7 +56,22 @@ namespace TestUtility
           Console.WriteLine(DASH);
       }
 
-      public void DisplayEventsForDbInjectToConsole(string[] eventArray)
+      /// <summary>
+      /// Display all the events in the console 
+      /// </summary>
+      /// <param name="eventArray"></param>
+      public void DisplayEventsToConsoleWeb(string[] eventArray)
+      {
+        Console.WriteLine(DASH);
+        Console.WriteLine(INJECTWEB);
+        Console.WriteLine(DASH);
+        foreach (var row in eventArray)
+        {
+          Console.WriteLine(row);
+        }
+        Console.WriteLine(DASH);
+      }
+    public void DisplayEventsForDbInjectToConsole(string[] eventArray)
       {
           Console.WriteLine(DASH);
           Console.WriteLine(INJSQL);

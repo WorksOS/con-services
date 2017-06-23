@@ -49,27 +49,33 @@ namespace ProjectWebApi.Filters
     /// <returns></returns>
     public async Task Invoke(HttpContext context)
     {
-      if (!context.Request.Path.Value.Contains("swagger"))
+      if (!context.Request.Path.Value.Contains("/swagger/"))
       {
-        bool requiresCustomerUid =
-          !(context.Request.Path.Value.Contains("v3") && context.Request.Method.ToUpper() != "GET");
+        bool isApplicationContext = false;
+        string applicationName = "";
+        string userUid = "";
+        string userEmail = "";
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
         string customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
 
         // If no authorization header found, nothing to process further
-        if (string.IsNullOrEmpty(authorization) || (requiresCustomerUid && string.IsNullOrEmpty(customerUid)))
+        if (string.IsNullOrEmpty(authorization) || string.IsNullOrEmpty(customerUid))
         {
           log.LogWarning("No account selected for the request");
           await SetResult("No account selected", context);
           return;
         }
-
+        //log.LogTrace("JWT token used: {0}", authorization);
         try
         {
           var jwtToken = new TPaaSJWT(authorization);
-          var identity = new GenericIdentity(jwtToken.UserUid.ToString());
-          context.User = new TIDCustomPrincipal(identity, customerUid, jwtToken.EmailAddress);
+          isApplicationContext = jwtToken.IsApplicationToken;
+          applicationName = jwtToken.ApplicationName;
+          userEmail = jwtToken.EmailAddress;
+          userUid = isApplicationContext
+            ? jwtToken.ApplicationId
+            : jwtToken.UserUid.ToString();
         }
         catch (Exception e)
         {
@@ -78,33 +84,46 @@ namespace ProjectWebApi.Filters
           return;
         }
 
-        // User must have be authenticated against this customer
-        if (!string.IsNullOrEmpty(customerUid))
+        //Set calling context Principal
+        context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail, isApplicationContext);
+
+        //If this is an application context do not validate user-customer
+        if (isApplicationContext)
         {
-          try
+          log.LogInformation(
+            "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
+            customerUid, userUid, applicationName);
+          await _next.Invoke(context);
+          return;
+        }
+
+        // User must have be authenticated against this customer
+        try
+        {
+          CustomerDataResult customerResult =
+            await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+          if (customerResult.status != 200 || customerResult.customer == null ||
+              customerResult.customer.Count < 1 ||
+              !customerResult.customer.Exists(x => x.uid == customerUid))
           {
-            var userUid = ((context.User as TIDCustomPrincipal).Identity as GenericIdentity).Name;
-            CustomerDataResult customerResult =
-              await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
-            if (customerResult.status != 200 || customerResult.customer == null || customerResult.customer.Count < 1 ||
-                !customerResult.customer.Exists(x => x.uid == customerUid))
-            {
-              var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
-              log.LogWarning(error);
-              await SetResult(error, context);
-              return;
-            }
-          }
-          catch (Exception e)
-          {
-            log.LogWarning($"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
-            await SetResult("Failed authentication", context);
+            var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
+            log.LogWarning(error);
+            await SetResult(error, context);
             return;
           }
         }
-        log.LogInformation("Authorization: for Customer: {0} userUid: {1} allowed", customerUid,
-          Guid.Parse(((context.User as TIDCustomPrincipal).Identity as GenericIdentity).Name));
+        catch (Exception e)
+        {
+          log.LogWarning(
+            $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
+          await SetResult("Failed authentication", context);
+          return;
+        }
+
+        log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
+          userEmail);
       }
+
       await _next.Invoke(context);
     }
 
