@@ -66,16 +66,16 @@ namespace ProjectWebApi.Filters
           await SetResult("No account selected", context);
           return;
         }
-        log.LogTrace("JWT token used: {0}", authorization);
+        //log.LogTrace("JWT token used: {0}", authorization);
         try
         {
           var jwtToken = new TPaaSJWT(authorization);
           isApplicationContext = jwtToken.IsApplicationToken;
           applicationName = jwtToken.ApplicationName;
           userEmail = jwtToken.EmailAddress;
-          userUid = //isApplicationContext
-          //  ? jwtToken.ApplicationId
-           /* :*/ jwtToken.UserUid.ToString();
+          userUid = isApplicationContext
+            ? jwtToken.ApplicationId
+            : jwtToken.UserUid.ToString();
         }
         catch (Exception e)
         {
@@ -88,14 +88,14 @@ namespace ProjectWebApi.Filters
         context.User = new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, userEmail, isApplicationContext);
 
         //If this is an application context do not validate user-customer
-        /*if (isApplicationContext)
+        if (isApplicationContext)
         {
           log.LogInformation(
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
           await _next.Invoke(context);
           return;
-        }*/
+        }
 
         // User must have be authenticated against this customer
         try
