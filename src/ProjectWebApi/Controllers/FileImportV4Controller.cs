@@ -130,13 +130,15 @@ namespace Controllers
 
       if (!filesToUpdate.Any())
       {
-        return Ok(new { code = HttpStatusCode.NoContent, message = "No files eligible for activation state change." });
+        return Ok(new { code = HttpStatusCode.OK, message = "No files eligible for activation state change." });
       }
 
       try
       {
+        var projectUidGuid = new Guid(projectUid);
 
-        await SetFileActivatedState(new Guid(projectUid), filesToUpdate);
+        await SetFileActivatedState(projectUidGuid, filesToUpdate);
+        await NotifyRaptorUpdateFile(projectUidGuid, filesToUpdate.Select(x => x.Key));
 
         return Ok(new {code = HttpStatusCode.OK, message = "Success"});
       }

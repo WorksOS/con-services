@@ -388,9 +388,21 @@ namespace Controllers
     /// <summary>
     /// Notify raptor of an updated import file.
     /// </summary>
-    protected async Task<IEnumerable<UpdateImportedFileEvent>> NotifyRaptorUpdateFile(Guid projectUid, string fileDescriptor, long importedFileId)
+    protected async Task NotifyRaptorUpdateFile(Guid projectUid, IEnumerable<Guid> updatedFileUids)
     {
-      throw new NotImplementedException();
+      var notificationResult = await raptorProxy.UpdateFiles(projectUid, updatedFileUids);
+
+      log.LogDebug(
+        $"FileImport UpdateFiles in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+
+      if (notificationResult != null && notificationResult.Code != 0)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
+            string.Format(contractExecutionStatesEnum.FirstNameWithOffset(54), notificationResult.Code,
+              notificationResult.Message ?? "null")
+          ));
+      }
     }
 
     /// <summary>
