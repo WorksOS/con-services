@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using TCCFileAccess;
@@ -79,23 +78,72 @@ namespace Controllers
     /// Sets activated state on one or more imported files.
     /// </summary>
     /// <param name="projectUid">Project identifier</param>
-    /// <param name="importFilesRequest">Collection of file Uids to set the activated state on</param>
+    /// <param name="request">Collection of file Uids to set the activated state on</param>
     [Route("api/v4/importedfiles")]
     [HttpPut]
-    public async Task<IActionResult> UpdateImportedFileActivationStateV4(string projectUid, [FromBody] ActivatedImportFilesRequest importFilesRequest)
+    public async Task<IActionResult> UpdateImportedFileActivationStateV4(string projectUid, [FromBody] ActivatedImportFilesRequest request)
     {
       const string functionId = "SetImportedFileActivatedStateV4";
       log.LogInformation("ActivateFiles");
 
-      if (importFilesRequest == null)
+      await ValidateProjectId(projectUid);
+
+      if (request == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(40),
             contractExecutionStatesEnum.FirstNameWithOffset(40)));
       }
-      log.LogInformation($"{functionId}. projectRequest: {0}", JsonConvert.SerializeObject(importFilesRequest));
 
-      return Ok(new { code = HttpStatusCode.OK, message = "Success" });
+      var fileIds = string.Join(",", request.ImportedFileDescriptors.Select(x => x.ImportedFileUid));
+      log.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
+
+      var importedFiles = await GetImportedFiles(projectUid);
+      if (!importedFiles.Any())
+      {
+        return Ok(new { code= HttpStatusCode.InternalServerError, message = "Project contains no imported files." });
+      }
+
+      var filesToUpdate = new Dictionary<Guid, bool>();
+
+      foreach (var activatedFileDescriptor in request.ImportedFileDescriptors)
+      {
+        var existingFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == activatedFileDescriptor.ImportedFileUid);
+        if (existingFile == null)
+        {
+          log.LogInformation(
+            $"{functionId}. File doesn't exist. projectUid {projectUid}, fileUid: {activatedFileDescriptor.ImportedFileUid}");
+          continue;
+        }
+
+        if (existingFile.IsActivated == activatedFileDescriptor.IsActivated)
+        {
+          log.LogInformation(
+            $"{functionId}. File activation state is already set to {existingFile.IsActivated}. No changes required. {existingFile.ImportedFileUid}");
+          continue;
+        }
+
+        log.LogInformation(
+          $"{functionId}. File queued for updating: {JsonConvert.SerializeObject(existingFile)}");
+        filesToUpdate.Add(new Guid(activatedFileDescriptor.ImportedFileUid), activatedFileDescriptor.IsActivated);
+      }
+
+      if (!filesToUpdate.Any())
+      {
+        return Ok(new { code = HttpStatusCode.NoContent, message = "No files eligible for activation state change." });
+      }
+
+      try
+      {
+
+        await SetFileActivatedState(new Guid(projectUid), filesToUpdate);
+
+        return Ok(new {code = HttpStatusCode.OK, message = "Success"});
+      }
+      catch (Exception exception)
+      {
+        return new JsonResult(new {code = HttpStatusCode.InternalServerError, message = exception.GetBaseException().Message});
+      }
     }
 
     /// <summary>
@@ -108,7 +156,6 @@ namespace Controllers
     {
       return new NoContentResult();
     }
-
 
     // POST: api/v4/importedfile
     /// <summary>
@@ -154,8 +201,7 @@ namespace Controllers
             contractExecutionStatesEnum.FirstNameWithOffset(55)));
       }
 
-      //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
+      await ValidateProjectId(projectUid.ToString());
 
       var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
       ImportedFileDescriptor importedFileDescriptor = null;
@@ -248,8 +294,7 @@ namespace Controllers
             contractExecutionStatesEnum.FirstNameWithOffset(55)));
       }
 
-      //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
+      await ValidateProjectId(projectUid.ToString());
 
       var importedFiles = await GetImportedFiles(projectUid.ToString()).ConfigureAwait(false);
       ImportedFile existing = null;
@@ -328,8 +373,7 @@ namespace Controllers
     {
       log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
 
-      //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
+      await ValidateProjectId(projectUid.ToString());
 
       var importedFiles = await GetImportedFiles(projectUid.ToString()).ConfigureAwait(false);
       ImportedFile importedFile = null;

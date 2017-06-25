@@ -75,13 +75,12 @@ namespace Controllers
                        store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
-
     /// <summary>
-    /// Gets the project.
+    /// Validates a project identifier.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
-    protected async Task<Project> GetProject(string projectUid)
+    protected async Task ValidateProjectId(string projectUid)
     {
       var customerUid = LogCustomerDetails("GetProject", projectUid);
 
@@ -96,7 +95,6 @@ namespace Controllers
       }
 
       log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
-      return project;
     }
 
     /// <summary>
@@ -120,7 +118,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
     {
-       LogCustomerDetails("GetImportedFileList", projectUid);
+      LogCustomerDetails("GetImportedFileList", projectUid);
 
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
@@ -390,7 +388,7 @@ namespace Controllers
     /// <summary>
     /// Notify raptor of an updated import file.
     /// </summary>
-    protected async Task NotifyRaptorUpdateFile(Guid projectUid, string fileDescriptor, long importedFileId)
+    protected async Task<IEnumerable<UpdateImportedFileEvent>> NotifyRaptorUpdateFile(Guid projectUid, string fileDescriptor, long importedFileId)
     {
       throw new NotImplementedException();
     }
@@ -398,78 +396,45 @@ namespace Controllers
     /// <summary>
     /// Sets activated state for imported files.
     /// </summary>
-    protected async Task<UpdateImportedFileEvent> SetFileActivatedState(Guid projectUid, IEnumerable<Guid> fileUids, string fileDescriptor)
+    protected async Task<IEnumerable<UpdateImportedFileEvent>> SetFileActivatedState(Guid projectUid, Dictionary<Guid, bool> fileUids)
     {
-      throw new NotImplementedException();
-      //  var notificationResult = await raptorProxy.UpdateFiles(projectUid, fileUids, Request.Headers.GetCustomHeaders());
+      var result = new List<UpdateImportedFileEvent>();
 
-      //  log.LogDebug(
-      //    $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
-      //  if (notificationResult != null && notificationResult.Code != 0)
-      //  {
-      //    throw new ServiceException(HttpStatusCode.BadRequest,
-      //      new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
-      //        string.Format(contractExecutionStatesEnum.FirstNameWithOffset(54), (notificationResult?.Code ?? -1),
-      //          notificationResult?.Message ?? "null")
-      //      ));
-      //  }
+      foreach (var uid in fileUids)
+      {
+        var file = await projectService.GetImportedFile(uid.Key.ToString());
+        if (file == null)
+        {
+          continue;
+        }
 
-      //log.LogInformation($"ActivateFile list contains {importedFileUids.Count} importedFiles");
+        file.IsActivated = uid.Value;
 
-      //  var nowUtc = DateTime.UtcNow;
-      //  var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(existing);
-      //  updateImportedFileEvent.ActionUTC = nowUtc;
-      //  updateImportedFileEvent.ReceivedUTC = nowUtc;
+        var nowUtc = DateTime.UtcNow;
+        var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(file);
+        updateImportedFileEvent.ActionUTC = nowUtc;
+        updateImportedFileEvent.ReceivedUTC = nowUtc;
 
-      //  var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
+        var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
+        producer.Send(kafkaTopicName,
+          new List<KeyValuePair<string, string>>
+          {
+            new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
+          });
 
-      //  producer.Send(kafkaTopicName,
-      //    new List<KeyValuePair<string, string>>
-      //    {
-      //      new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-      //    });
+        if (await projectService.StoreEvent(updateImportedFileEvent) == 1)
+        {
+          result.Add(updateImportedFileEvent);
+        }
+        else
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(52),
+              contractExecutionStatesEnum.FirstNameWithOffset(52)));
+        }
+      }
 
-      //  if (await projectService.StoreEvent(updateImportedFileEvent).ConfigureAwait(false) == 1)
-      //  {
-      //    return updateImportedFileEvent;
-      //  }
-
-      //  throw new ServiceException(HttpStatusCode.BadRequest,
-      //    new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(52),
-      //      contractExecutionStatesEnum.FirstNameWithOffset(52)));
-
-
-
-
-      //        var fileStream = new FileStream(pathAndFileName, FileMode.Open);
-      //  var tccPath = $"/{customerUid}/{projectUid}";
-      //  string tccFileName = Path.GetFileName(pathAndFileName);
-
-      //  if (importedFileType == ImportedFileType.SurveyedSurface)
-      //    if (surveyedUtc != null) // validation should prevent this
-      //      tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
-      //        Path.GetExtension(tccFileName));
-
-      //  log.LogInformation(
-      //    $"WriteFileToRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
-      //  // check for exists first to avoid an misleading exception in our logs.
-      //  var folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
-      //  if (folderAlreadyExists == false)
-      //    await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
-
-      //  // this does an upsert
-      //  var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length)
-      //    .ConfigureAwait(false);
-      //  if (ccPutFileResult == false)
-      //  {
-      //    throw new ServiceException(HttpStatusCode.InternalServerError,
-      //      new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(53),
-      //        contractExecutionStatesEnum.FirstNameWithOffset(53)));
-      //  }
-
-      //  log.LogInformation(
-      //    $"WriteFileToRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
-      //  return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
+      return result;
     }
 
     #region private
@@ -488,7 +453,6 @@ namespace Controllers
     private string LogCustomerDetails(string functionName, string projectUid)
     {
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-     // var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       log.LogInformation($"{functionName}: CustomerUID={customerUid} and projectUid={projectUid}");
 
       return customerUid;
