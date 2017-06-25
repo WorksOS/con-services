@@ -78,10 +78,18 @@ namespace Controllers
       };
     }
 
+    /// <summary>
+    /// Sets activated state on one or more imported files.
+    /// </summary>
     /// <param name="projectUid">Project identifier</param>
     /// <param name="importFilesRequest">Collection of file Uids to set the activated state on</param>
+    [Route("api/v4/importedfiles")]
+    [HttpPut]
     public async Task<IActionResult> UpdateImportedFileActivationStateV4(string projectUid, [FromBody] ActivatedImportFilesRequest importFilesRequest)
+    {
       const string functionId = "SetImportedFileActivatedStateV4";
+      log.LogInformation("ActivateFiles");
+
       if (importFilesRequest == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -91,6 +99,8 @@ namespace Controllers
       log.LogInformation($"{functionId}. projectRequest: {0}", JsonConvert.SerializeObject(importFilesRequest));
 
       return Ok(new { code = HttpStatusCode.OK, message = "Success" });
+    }
+
 
     /// <summary>
     /// Used as a callback by Flow.JS

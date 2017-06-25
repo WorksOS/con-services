@@ -362,15 +362,20 @@ namespace Controllers
       }
     }
 
+    /// <summary>
     /// Notify raptor of an updated import file.
+    /// </summary>
     protected async Task NotifyRaptorUpdateFile(Guid projectUid, string fileDescriptor, long importedFileId)
+    {
       throw new NotImplementedException();
     }
+
     /// <summary>
     /// Sets activated state for imported files.
     /// </summary>
     protected async Task<UpdateImportedFileEvent> SetFileActivatedState(Guid projectUid, IEnumerable<Guid> fileUids, string fileDescriptor)
     {
+      throw new NotImplementedException();
       //  var notificationResult = await raptorProxy.UpdateFiles(projectUid, fileUids, Request.Headers.GetCustomHeaders());
 
       //  log.LogDebug(
@@ -440,6 +445,9 @@ namespace Controllers
       //  log.LogInformation(
       //    $"WriteFileToRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
       //  return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
+    }
+
+
     #region private
 
     private static string GeneratedFileName(string fileName, string suffix, string extension)
