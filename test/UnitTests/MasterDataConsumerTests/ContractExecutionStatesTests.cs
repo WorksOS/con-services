@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 
 namespace MasterDataConsumerTests

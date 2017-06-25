@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProjectWebApi.Filters;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -12,7 +13,6 @@ using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using ProjectWebApi.Filters;
 using ProjectWebApiCommon.Models;
 using Repositories;
 using VSS.GenericConfiguration;
@@ -362,6 +362,84 @@ namespace Controllers
       }
     }
 
+    /// Notify raptor of an updated import file.
+    protected async Task NotifyRaptorUpdateFile(Guid projectUid, string fileDescriptor, long importedFileId)
+      throw new NotImplementedException();
+    }
+    /// <summary>
+    /// Sets activated state for imported files.
+    /// </summary>
+    protected async Task<UpdateImportedFileEvent> SetFileActivatedState(Guid projectUid, IEnumerable<Guid> fileUids, string fileDescriptor)
+    {
+      //  var notificationResult = await raptorProxy.UpdateFiles(projectUid, fileUids, Request.Headers.GetCustomHeaders());
+
+      //  log.LogDebug(
+      //    $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+      //  if (notificationResult != null && notificationResult.Code != 0)
+      //  {
+      //    throw new ServiceException(HttpStatusCode.BadRequest,
+      //      new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
+      //        string.Format(contractExecutionStatesEnum.FirstNameWithOffset(54), (notificationResult?.Code ?? -1),
+      //          notificationResult?.Message ?? "null")
+      //      ));
+      //  }
+
+      //log.LogInformation($"ActivateFile list contains {importedFileUids.Count} importedFiles");
+
+      //  var nowUtc = DateTime.UtcNow;
+      //  var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(existing);
+      //  updateImportedFileEvent.ActionUTC = nowUtc;
+      //  updateImportedFileEvent.ReceivedUTC = nowUtc;
+
+      //  var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
+
+      //  producer.Send(kafkaTopicName,
+      //    new List<KeyValuePair<string, string>>
+      //    {
+      //      new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
+      //    });
+
+      //  if (await projectService.StoreEvent(updateImportedFileEvent).ConfigureAwait(false) == 1)
+      //  {
+      //    return updateImportedFileEvent;
+      //  }
+
+      //  throw new ServiceException(HttpStatusCode.BadRequest,
+      //    new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(52),
+      //      contractExecutionStatesEnum.FirstNameWithOffset(52)));
+
+
+
+
+      //        var fileStream = new FileStream(pathAndFileName, FileMode.Open);
+      //  var tccPath = $"/{customerUid}/{projectUid}";
+      //  string tccFileName = Path.GetFileName(pathAndFileName);
+
+      //  if (importedFileType == ImportedFileType.SurveyedSurface)
+      //    if (surveyedUtc != null) // validation should prevent this
+      //      tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
+      //        Path.GetExtension(tccFileName));
+
+      //  log.LogInformation(
+      //    $"WriteFileToRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
+      //  // check for exists first to avoid an misleading exception in our logs.
+      //  var folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
+      //  if (folderAlreadyExists == false)
+      //    await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
+
+      //  // this does an upsert
+      //  var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length)
+      //    .ConfigureAwait(false);
+      //  if (ccPutFileResult == false)
+      //  {
+      //    throw new ServiceException(HttpStatusCode.InternalServerError,
+      //      new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(53),
+      //        contractExecutionStatesEnum.FirstNameWithOffset(53)));
+      //  }
+
+      //  log.LogInformation(
+      //    $"WriteFileToRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
+      //  return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
     #region private
 
     private static string GeneratedFileName(string fileName, string suffix, string extension)

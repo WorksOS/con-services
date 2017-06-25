@@ -184,7 +184,13 @@ namespace TestUtility
     {
       try
       {
-        msg.DisplayEventsToConsole(eventArray);
+        if (IsPublishToWebApi)
+        { msg.DisplayEventsToConsoleWeb(eventArray); }
+        else if (IsPublishToKafka)
+        { msg.DisplayEventsToConsoleKafka(eventArray);}
+        else
+        { msg.DisplayEventsForDbInjectToConsole(eventArray); }
+
         var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
         var kafkaDriver = new RdKafkaDriver();
         for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
@@ -230,7 +236,7 @@ namespace TestUtility
     {
       try
       {
-        msg.DisplayEventsToConsole(eventArray);
+        msg.DisplayEventsToConsoleWeb(eventArray);
         var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
         var eventRow = eventArray.ElementAt(1).Split(SEPARATOR);
         dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
@@ -258,7 +264,7 @@ namespace TestUtility
 
     public ImportedFileDescriptor ConvertImportFileArrayToObject(string[] importFileArray, int row)
     {
-        msg.DisplayEventsToConsole(importFileArray);
+        msg.DisplayEventsToConsoleWeb(importFileArray);
         var allColumnNames = importFileArray.ElementAt(0).Split(SEPARATOR);
         var eventRow = importFileArray.ElementAt(row).Split(SEPARATOR);
         dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
@@ -276,7 +282,7 @@ namespace TestUtility
     private string CallWebApiWithProject(string jsonString, string eventType, string customerUid)
     {
       var response = string.Empty;
-      Thread.Sleep(2000);
+      Thread.Sleep(500);
       switch (eventType)
       {
         case "CreateProjectEvent":
@@ -291,7 +297,7 @@ namespace TestUtility
           response = CallProjectWebApiV4("api/v4/project/" + ProjectUid, HttpMethod.Delete.ToString(), jsonString, customerUid);
           break;
       }
-      Thread.Sleep(2000);
+      //Thread.Sleep(500);
       Console.WriteLine(response);
       var jsonResponse = JsonConvert.DeserializeObject<ProjectV4DescriptorsSingleResult>(response);
       if (jsonResponse.Code == 0)
@@ -648,7 +654,7 @@ namespace TestUtility
             {
               continue;
             }
-            if (expectedValue.ToString() == "0" || expectedValue.ToString() == "1/01/0001 12:00:00 AM")
+            if (expectedValue.ToString() == "0" || expectedValue.ToString().Contains("1/01/0001"))
             {
               continue;
             }

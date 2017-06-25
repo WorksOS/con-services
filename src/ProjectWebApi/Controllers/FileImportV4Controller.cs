@@ -16,6 +16,8 @@ using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
 using Repositories.DBModels;
+using System.Collections.Generic;
+using System.Net.Http;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -24,6 +26,12 @@ using MasterDataProxies.Interfaces;
 
 namespace Controllers
 {
+  public class ReqDto
+  {
+    public string ProjectUid { get; set; }
+    public ImmutableList<ActivatedFileDescriptor> ImportedFileDescriptors { get; set; }
+  }
+
   /// <summary>
   /// File Import controller v4
   /// </summary>
@@ -70,6 +78,19 @@ namespace Controllers
       };
     }
 
+    /// <param name="projectUid">Project identifier</param>
+    /// <param name="importFilesRequest">Collection of file Uids to set the activated state on</param>
+    public async Task<IActionResult> UpdateImportedFileActivationStateV4(string projectUid, [FromBody] ActivatedImportFilesRequest importFilesRequest)
+      const string functionId = "SetImportedFileActivatedStateV4";
+      if (importFilesRequest == null)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(40),
+            contractExecutionStatesEnum.FirstNameWithOffset(40)));
+      }
+      log.LogInformation($"{functionId}. projectRequest: {0}", JsonConvert.SerializeObject(importFilesRequest));
+
+      return Ok(new { code = HttpStatusCode.OK, message = "Success" });
 
     /// <summary>
     /// Used as a callback by Flow.JS
@@ -218,7 +239,7 @@ namespace Controllers
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
-        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+        $"UpdateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {
@@ -245,7 +266,7 @@ namespace Controllers
       }
       if (existing == null)
         log.LogInformation(
-          $"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+          $"UpdateImportedFileV4. file doesn't exist already in DB: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
       else
         log.LogInformation(
           $"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
