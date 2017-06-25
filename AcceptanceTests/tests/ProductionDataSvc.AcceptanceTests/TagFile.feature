@@ -26,6 +26,7 @@ Scenario Outline: TagFile - Bad Request
 	| NullData         | -2   |
 	#| NullProjectId    | -1   |
 	| NullBoundary     | -2   |
-	| NullMachineId    | 108  |
+#this is valid - machine ID can be null if not overriden
+#| NullMachineId    | 108  |
 	| InvalidProjectId | -2   |
 	| FilenameTooLong  | -2   |
