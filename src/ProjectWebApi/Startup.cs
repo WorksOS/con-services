@@ -1,24 +1,24 @@
-using System;
-using System.Diagnostics;
-using System.IO;
+using KafkaConsumer.Kafka;
+using log4netExtensions;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProjectWebApi.Filters;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using log4netExtensions;
-using KafkaConsumer.Kafka;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
-using Repositories;
-using VSS.GenericConfiguration;
+using ProjectWebApi.Internal;
 using ProjectWebApiCommon.ResultsHandling;
-using Swashbuckle.Swagger.Model;
 using ProjectWebApiCommon.Utilities;
+using Repositories;
+using Swashbuckle.Swagger.Model;
+using System.Diagnostics;
+using System.IO;
 using TCCFileAccess;
+using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Proxies;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace ProjectWebApi
 {
@@ -92,6 +92,7 @@ namespace ProjectWebApi
       services.AddTransient<IGeofenceProxy, GeofenceProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
 
       // todo temp to determine which to use for testing and lower environs
       var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
@@ -106,7 +107,7 @@ namespace ProjectWebApi
         {
           config.Filters.Add(new ValidationFilterAttribute());
         }
-        );      
+        );
       //Configure swagger
       services.AddSwaggerGen();
 
@@ -120,17 +121,17 @@ namespace ProjectWebApi
           TermsOfService = "None"
         });
 
-        string pathToXml="";
-        if (File.Exists(Path.Combine(System.IO.Directory.GetCurrentDirectory(),"ProjectWebApi.xml")))
-          pathToXml = System.IO.Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory,"ProjectWebApi.xml")))
+        string pathToXml = "";
+        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "ProjectWebApi.xml")))
+          pathToXml = Directory.GetCurrentDirectory();
+        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, "ProjectWebApi.xml")))
           pathToXml = System.AppContext.BaseDirectory;
         else
         {
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
           pathToXml = Path.GetDirectoryName(pathToExe);
         }
-        options.IncludeXmlComments(Path.Combine(pathToXml,"ProjectWebApi.xml"));
+        options.IncludeXmlComments(Path.Combine(pathToXml, "ProjectWebApi.xml"));
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });

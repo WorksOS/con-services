@@ -1,16 +1,16 @@
-﻿using System;
+﻿using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using ProjectWebApi.Filters;
+using ProjectWebApi.Internal;
+using ProjectWebApiCommon.Models;
+using Repositories;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using KafkaConsumer.Kafka;
-using MasterDataProxies.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using ProjectWebApi.Filters;
-using ProjectWebApiCommon.Models;
-using ProjectWebApiCommon.ResultsHandling;
-using Repositories;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -22,7 +22,6 @@ namespace Controllers
   /// </summary>
   public class ProjectV3Controller : ProjectBaseController
   {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectV3Controller"/> class.
     /// </summary>
@@ -34,10 +33,11 @@ namespace Controllers
     /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     public ProjectV3Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
-      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger)
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger, serviceExceptionHandler)
     {
     }
 
@@ -51,27 +51,27 @@ namespace Controllers
     [HttpGet]
     public async Task<ImmutableDictionary<int, ProjectDescriptor>> GetProjectsV3()
     {
-        log.LogInformation("GetProjectsV3");
-        var projects = (await GetProjectList());
-        var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-          log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-          return projects.Where(p => p.CustomerUID == customerUid).ToImmutableDictionary(key => key.LegacyProjectID, project =>
-              new ProjectDescriptor()
-              {
-                  ProjectType = project.ProjectType,
-                  Name = project.Name,
-                  ProjectTimeZone = project.ProjectTimeZone,
-                  IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
-                  StartDate = project.StartDate.ToString("O"),
-                  EndDate = project.EndDate.ToString("O"),
-                  ProjectUid = project.ProjectUID,
-                  LegacyProjectId = project.LegacyProjectID,
-                  ProjectGeofenceWKT = project.GeometryWKT,
-                  CustomerUID = project.CustomerUID,
-                  LegacyCustomerId = project.LegacyCustomerID.ToString(),
-                  CoordinateSystemFileName = project.CoordinateSystemFileName
-              }
-          );
+      log.LogInformation("GetProjectsV3");
+      var projects = (await GetProjectList());
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
+      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      return projects.Where(p => p.CustomerUID == customerUid).ToImmutableDictionary(key => key.LegacyProjectID, project =>
+          new ProjectDescriptor
+          {
+            ProjectType = project.ProjectType,
+            Name = project.Name,
+            ProjectTimeZone = project.ProjectTimeZone,
+            IsArchived = project.IsDeleted || project.SubscriptionEndDate < DateTime.UtcNow,
+            StartDate = project.StartDate.ToString("O"),
+            EndDate = project.EndDate.ToString("O"),
+            ProjectUid = project.ProjectUID,
+            LegacyProjectId = project.LegacyProjectID,
+            ProjectGeofenceWKT = project.GeometryWKT,
+            CustomerUID = project.CustomerUID,
+            LegacyCustomerId = project.LegacyCustomerID.ToString(),
+            CoordinateSystemFileName = project.CoordinateSystemFileName
+          }
+      );
     }
 
     // POST: api/project
@@ -141,9 +141,7 @@ namespace Controllers
     {
       if (customerProject.LegacyCustomerID <= 0)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(38),
-            contractExecutionStatesEnum.FirstNameWithOffset(38)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 38);
       }
       await AssociateProjectCustomer(customerProject);
     }
@@ -175,7 +173,5 @@ namespace Controllers
     {
       await AssociateGeofenceProject(geofenceProject);
     }
-
   }
 }
-

@@ -16,6 +16,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using ProjectWebApi.Internal;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -45,15 +46,16 @@ namespace Controllers
     /// <param name="raptorProxy"></param>
     /// <param name="fileRepo"></param>
     /// <param name="logger"></param>
+    /// <param name="serviceExceptionHandler"></param>
     public FileImportV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
-      IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
-      : base(producer, projectRepo, store, raptorProxy, fileRepo, logger)
+      IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+      : base(producer, projectRepo, store, raptorProxy, fileRepo, logger, serviceExceptionHandler)
     {
       Logger = logger;
       fileSpaceId = store.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(fileSpaceId))
       {
-        ThrowServiceException(HttpStatusCode.InternalServerError, 48);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
       }
     }
 
@@ -90,7 +92,7 @@ namespace Controllers
 
       if (request == null)
       {
-        throw ThrowServiceException(HttpStatusCode.InternalServerError, 40);
+        throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
 
       var fileIds = string.Join(",", request.ImportedFileDescriptors.Select(x => x.ImportedFileUid));
@@ -203,7 +205,7 @@ namespace Controllers
 
       if (!System.IO.File.Exists(file.path))
       {
-        ThrowServiceException(HttpStatusCode.InternalServerError, 55);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
       }
 
       await ValidateProjectId(projectUid.ToString());
@@ -223,7 +225,7 @@ namespace Controllers
       {
         var message = $"CreateImportedFileV4. File: {file.flowFilename} has already been imported.";
         log.LogError(message);
-        ThrowServiceException(HttpStatusCode.BadRequest, 58);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 58);
       }
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
@@ -292,7 +294,7 @@ namespace Controllers
 
       if (!System.IO.File.Exists(file.path))
       {
-        ThrowServiceException(HttpStatusCode.BadRequest, 55);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 55);
       }
 
       await ValidateProjectId(projectUid.ToString());
@@ -381,7 +383,7 @@ namespace Controllers
         importedFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
       if (importedFile == null)
       {
-        ThrowServiceException(HttpStatusCode.BadRequest, 56);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
       }
 
       await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))

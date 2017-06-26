@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ProjectWebApi.Internal;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -34,20 +35,17 @@ namespace Controllers
     /// The log
     /// </summary>
     protected readonly ILogger log;
+    protected IServiceExceptionHandler ServiceExceptionHandler;
     private readonly IRaptorProxy raptorProxy;
     private readonly IFileRepository fileRepo;
     private readonly ProjectRepository projectService;
     private readonly IKafka producer;
     private readonly string kafkaTopicName;
+
     /// <summary>
     /// The file space identifier
     /// </summary>
     protected string fileSpaceId;
-    /// <summary>
-    /// The contract execution states enum
-    /// </summary>
-    protected readonly ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
@@ -58,9 +56,10 @@ namespace Controllers
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="fileRepo">For TCC file transfer</param>
+    /// <param name="serviceExceptionHandler">For correctly throwing ServiceException errors</param>
     public FileImportBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IConfigurationStore store, IRaptorProxy raptorProxy,
-      IFileRepository fileRepo, ILoggerFactory logger)
+      IFileRepository fileRepo, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
     {
       log = logger.CreateLogger<FileImportBaseController>();
       this.producer = producer;
@@ -70,6 +69,8 @@ namespace Controllers
       projectService = projectRepo as ProjectRepository;
       this.raptorProxy = raptorProxy;
       this.fileRepo = fileRepo;
+
+      ServiceExceptionHandler = serviceExceptionHandler;
 
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
@@ -89,7 +90,7 @@ namespace Controllers
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
       if (project == null)
       {
-        ThrowServiceException(HttpStatusCode.BadRequest, 1);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }
 
       log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
@@ -159,7 +160,7 @@ namespace Controllers
       var isCreated = await projectService.StoreEvent(createImportedFileEvent).ConfigureAwait(false);
       if (isCreated == 0)
       {
-        ThrowServiceException(HttpStatusCode.BadRequest, 49);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 49);
       }
 
       log.LogDebug($"Created the ImportedFile in DB. ImportedFile {filename} for project {projectUid}.");
@@ -171,7 +172,7 @@ namespace Controllers
         createImportedFileEvent.ImportedFileID = existing.ImportedFileId;
       else
       {
-        ThrowServiceException(HttpStatusCode.InternalServerError, 50);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 50);
       }
 
       log.LogDebug(
@@ -212,7 +213,7 @@ namespace Controllers
       if (await projectService.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
         return;
 
-      ThrowServiceException(HttpStatusCode.BadRequest, 51);
+      ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 51);
     }
 
     /// <summary>
@@ -252,7 +253,7 @@ namespace Controllers
       if (await projectService.StoreEvent(updateImportedFileEvent).ConfigureAwait(false) == 1)
         return updateImportedFileEvent;
 
-      throw ThrowServiceException(HttpStatusCode.BadRequest, 52);
+      throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 52);
     }
 
     /// <summary>
@@ -282,7 +283,7 @@ namespace Controllers
       var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
       if (ccPutFileResult == false)
       {
-        ThrowServiceException(HttpStatusCode.InternalServerError, 53);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
       }
 
       log.LogInformation(
@@ -308,7 +309,7 @@ namespace Controllers
           .ConfigureAwait(false);
         if (ccDeleteFileResult == false)
         {
-          ThrowServiceException(HttpStatusCode.InternalServerError, 54);
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 54);
         }
       }
       else
@@ -337,14 +338,14 @@ namespace Controllers
         var error =
           $"FileImport AddFile in RaptorServices failed. projectUid:{projectUid} importedFileUid:{importedFileUid} fileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}.";
         log.LogError(error);
-        throw ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.AddFile", e.Message);
+        throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.AddFile", e.Message);
       }
       log.LogDebug(
         $"NotifyRaptorAddFile: projectUid: {projectUid}, importedFileUid: {importedFileUid}, fileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
       {
         var error =
-          $"FileImport AddFile in RaptorServices failed. projectUid:{projectUid} fileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}. ";
+          $"FileImport AddFile in RaptorServices failed. projectUid:{projectUid} fileDescriptor:{fileDescriptor}. Reason: {notificationResult.Code} {notificationResult.Message ?? "null"}. ";
         log.LogError(error);
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(notificationResult.Code, notificationResult.Message));
@@ -365,7 +366,7 @@ namespace Controllers
         $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        ThrowServiceException(HttpStatusCode.BadRequest, 54, notificationResult.Code.ToString(), notificationResult.Message);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 54, notificationResult.Code, notificationResult.Message);
       }
     }
 
@@ -381,7 +382,7 @@ namespace Controllers
 
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        ThrowServiceException(HttpStatusCode.BadRequest, 54, notificationResult.Code.ToString(), notificationResult.Message);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 54, notificationResult.Code, notificationResult.Message);
       }
     }
 
@@ -420,21 +421,11 @@ namespace Controllers
         }
         else
         {
-          ThrowServiceException(HttpStatusCode.BadRequest, 52);
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 52);
         }
       }
 
       return result;
-    }
-
-    /// <summary>
-    /// Common ServiceException handler.
-    /// </summary>
-    protected ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, string resultCode = null, string errorMessage = null)
-    {
-      throw new ServiceException(statusCode,
-        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(errorNumber),
-          string.Format(contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage ?? "null")));
     }
 
     #region private

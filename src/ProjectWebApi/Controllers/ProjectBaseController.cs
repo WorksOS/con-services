@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ProjectWebApi.Filters;
+using ProjectWebApi.Internal;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
@@ -26,12 +27,6 @@ namespace Controllers
   /// </summary>
   public class ProjectBaseController : Controller
   {
-    /// <summary>
-    /// The contract execution states enum
-    /// </summary>
-    protected static readonly ContractExecutionStatesEnum contractExecutionStatesEnum =
-      new ContractExecutionStatesEnum();
-
     /// <summary>
     /// The geofence proxy
     /// </summary>
@@ -56,6 +51,8 @@ namespace Controllers
     /// The raptor proxy
     /// </summary>
     protected readonly IRaptorProxy raptorProxy;
+    protected IServiceExceptionHandler ServiceExceptionHandler;
+
     private readonly ISubscriptionProxy subsProxy;
     private readonly SubscriptionRepository subsService;
 
@@ -70,9 +67,10 @@ namespace Controllers
     /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     public ProjectBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
     {
       log = logger.CreateLogger<ProjectBaseController>();
       this.producer = producer;
@@ -129,27 +127,28 @@ namespace Controllers
     {
       var availableSubscriptions =
         (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
-        .Where(s => s.ServiceTypeID == (int) type.MatchSubscriptionType()).ToImmutableList();
+        .Where(s => s.ServiceTypeID == (int)type.MatchSubscriptionType()).ToImmutableList();
       log.LogDebug(
-        $"Receieved {availableSubscriptions.Count()} subscriptions with contents {JsonConvert.SerializeObject(availableSubscriptions)}");
+        $"Receieved {availableSubscriptions.Count} subscriptions with contents {JsonConvert.SerializeObject(availableSubscriptions)}");
       var projects =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
-      log.LogDebug($"Receieved {projects.Count()} projects with contents {JsonConvert.SerializeObject(projects)}");
+      log.LogDebug($"Receieved {projects.Count} projects with contents {JsonConvert.SerializeObject(projects)}");
 
       var availableFreSub = availableSubscriptions
         .Where(s => !projects
                       .Where(p => p.ProjectType == type && !p.IsDeleted)
                       .Select(p => p.SubscriptionUID)
                       .Contains(s.SubscriptionUID) &&
-                    s.ServiceTypeID == (int) type.MatchSubscriptionType())
+                    s.ServiceTypeID == (int)type.MatchSubscriptionType())
         .ToImmutableList();
       log.LogDebug(
         $"We have {availableFreSub.Count} free subscriptions for the selected project type {type}");
       if (!availableFreSub.Any())
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(37),
-            contractExecutionStatesEnum.FirstNameWithOffset(37)));
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
+      }
+
       return availableFreSub;
     }
 
@@ -162,8 +161,8 @@ namespace Controllers
     {
       var availableSubscriptions =
         (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
-        .Where(s => s.ServiceTypeID == (int) ServiceTypeEnum.Landfill ||
-                    s.ServiceTypeID == (int) ServiceTypeEnum.ProjectMonitoring);
+        .Where(s => s.ServiceTypeID == (int)ServiceTypeEnum.Landfill ||
+                    s.ServiceTypeID == (int)ServiceTypeEnum.ProjectMonitoring);
       var projects = await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
 
       var availableFreSub = availableSubscriptions
@@ -187,7 +186,7 @@ namespace Controllers
       log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
       var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
-      log.LogInformation($"Project list contains {projects.Count()} projects");
+      log.LogInformation($"Project list contains {projects.Count} projects");
       return projects;
     }
 
@@ -207,9 +206,7 @@ namespace Controllers
       if (project == null)
       {
         log.LogWarning($"User doesn't have access to {projectUid}");
-        throw new ServiceException(HttpStatusCode.Forbidden,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(1),
-            contractExecutionStatesEnum.FirstNameWithOffset(1)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
       }
 
       log.LogInformation($"Project {projectUid} retrieved");
@@ -227,7 +224,7 @@ namespace Controllers
       ProjectDataValidator.Validate(project, projectService);
       project.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
+      var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = project });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
@@ -251,14 +248,15 @@ namespace Controllers
     {
       ProjectDataValidator.Validate(project, projectService);
       if (project.ProjectID <= 0)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(44),
-            contractExecutionStatesEnum.FirstNameWithOffset(44)));
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 44);
+      }
+
       project.ReceivedUTC = DateTime.UtcNow;
 
       //Send boundary as old format on kafka queue
       project.ProjectBoundary = kafkaProjectBoundary;
-      var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
+      var messagePayload = JsonConvert.SerializeObject(new { CreateProjectEvent = project });
       await producer.Send(kafkaTopicName,
         new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload));
       //Save boundary as WKT
@@ -276,7 +274,7 @@ namespace Controllers
       ProjectDataValidator.Validate(customerProject, projectService);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
+      var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
@@ -295,7 +293,7 @@ namespace Controllers
       ProjectDataValidator.Validate(customerProject, projectService);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectCustomer = customerProject});
+      var messagePayload = JsonConvert.SerializeObject(new { DissociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
@@ -314,7 +312,7 @@ namespace Controllers
       ProjectDataValidator.Validate(geofenceProject, projectService);
       geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
+      var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
@@ -333,7 +331,7 @@ namespace Controllers
       ProjectDataValidator.Validate(project, projectService);
       project.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
+      var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {

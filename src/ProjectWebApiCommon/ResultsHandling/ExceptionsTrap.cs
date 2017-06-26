@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using ProjectWebApiCommon.ResultsHandling;
 
 namespace ProjectWebApiCommon.ResultsHandling
 {
@@ -17,7 +17,7 @@ namespace ProjectWebApiCommon.ResultsHandling
     public ExceptionsTrap(RequestDelegate next, ILogger<ExceptionsTrap> logger)
     {
       _next = next;
-      log = logger; // .CreateLogger<ExceptionsTrap>();
+      log = logger;
     }
 
     public async Task Invoke(HttpContext context)
@@ -28,7 +28,7 @@ namespace ProjectWebApiCommon.ResultsHandling
       }
       catch (AuthenticationException)
       {
-        context.Response.StatusCode = 401;
+        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
       }
       catch (ServiceException ex)
       {
@@ -40,7 +40,7 @@ namespace ProjectWebApiCommon.ResultsHandling
       {
         try
         {
-          context.Response.StatusCode = 500;
+          context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
           await context.Response.WriteAsync(ex.Message);
         }
         finally
