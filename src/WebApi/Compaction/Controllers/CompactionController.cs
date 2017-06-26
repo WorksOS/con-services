@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using ASNodeDecls;
 using Common.Executors;
 using Common.Filters.Authentication.Models;
 using MasterDataProxies;
@@ -33,6 +35,7 @@ using VSS.Raptor.Service.WebApiModels.Report.Models;
 using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using WebApiModels.Compaction.Executors;
+using WebApiModels.Compaction.Helpers;
 using WebApiModels.Compaction.Models;
 using WebApiModels.Notification.Helpers;
 using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.ColorValue;
@@ -1442,16 +1445,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort) WIDTH, (ushort) HEIGHT, GetBoundingBox(BBOX));
-      if (tileResult != null)
-      {
-        Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-        //AddCacheResponseHeaders();  //done by middleware               
-        return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
-      }
-
-      throw new ServiceException(HttpStatusCode.NoContent,
-        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "Raptor failed to return a tile"));
+      Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+      //AddCacheResponseHeaders();  //done by middleware               
+      return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 
     /// <summary>
@@ -1554,15 +1550,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       request.Validate();
       var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
-      if (result != null && result.TileData != null)
-      {
-        //AddCacheResponseHeaders();  //done by middleware               
-        return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
-      }
-
-      throw new ServiceException(HttpStatusCode.NoContent,
-        new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-          "No tile found"));
+      //AddCacheResponseHeaders();  //done by middleware               
+      return new FileStreamResult(new MemoryStream(result.TileData), "image/png");     
     }
 
     /// <summary>
@@ -1655,30 +1644,28 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         
       //Get all the imported files for the project
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
-      if (fileList == null || fileList.Count == 0)
+      if (fileList == null)
       {
-        throw new ServiceException(HttpStatusCode.NoContent,
-          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-            "No imported files"));
+        fileList = new List<FileData>();
       }
       //Select the required ones from the list
       return fileList.Where(f => f.ImportedFileType == importedFileType && f.IsActivated).ToList();
     }
 
-  /*
-    /// <summary>
-    /// Adds caching headers to the http response
-    /// </summary>
-    private void AddCacheResponseHeaders()
-    {
-      if (!Response.Headers.ContainsKey("Cache-Control"))
+    /*
+      /// <summary>
+      /// Adds caching headers to the http response
+      /// </summary>
+      private void AddCacheResponseHeaders()
       {
-        Response.Headers.Add("Cache-Control", "public");
+        if (!Response.Headers.ContainsKey("Cache-Control"))
+        {
+          Response.Headers.Add("Cache-Control", "public");
+        }
+        Response.Headers.Add("Expires",
+          DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
       }
-      Response.Headers.Add("Expires",
-        DateTime.Now.AddMinutes(15).ToUniversalTime().ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'"));
-    }
-    */
+      */
 
     /// <summary>
     /// Gets the list of contributing machines from the query parameters
@@ -1799,6 +1786,14 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       tileRequest.Validate();
       var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null)
           .Process(tileRequest) as TileResult;
+      if (tileResult == null)
+      {
+        //Return en empty tile
+        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
+        {
+          tileResult = TileResult.CreateTileResult(bitmap.BitmapToByteArray(), TASNodeErrorStatus.asneOK);
+        }        
+      }
       return tileResult;
     }
     

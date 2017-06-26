@@ -14,6 +14,7 @@ using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using WebApiModels.Compaction.Helpers;
 using WebApiModels.Compaction.Models;
 using WebApiModels.Notification.Helpers;
 using Point = WebApiModels.Notification.Helpers.Point;
@@ -102,26 +103,23 @@ namespace WebApiModels.Compaction.Executors
           }
         }
 
-        //Overlay the tiles
+        //Overlay the tiles. Return an empty tile if none to overlay.
         log.LogDebug("DxfTileExecutor: Overlaying {0} tiles", tileList.Count);
         byte[] overlayData = null;
-        if (tileList.Count > 0)
+        System.Drawing.Point origin = new System.Drawing.Point(0, 0);
+        using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
+        using (Graphics g = Graphics.FromImage(bitmap))
         {
-          System.Drawing.Point origin = new System.Drawing.Point(0, 0);
-          using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
-          using (Graphics g = Graphics.FromImage(bitmap))
+          foreach (byte[] tileData in tileList)
           {
-            foreach (byte[] tileData in tileList)
+            using (var tileStream = new MemoryStream(tileData))
             {
-              using (var tileStream = new MemoryStream(tileData))
-              {
-                Image image = Image.FromStream(tileStream);
-                g.DrawImage(image, origin);
-              }
+              Image image = Image.FromStream(tileStream);
+              g.DrawImage(image, origin);
             }
-            overlayData = BitmapToByteArray(bitmap);
           }
-        }
+          overlayData = bitmap.BitmapToByteArray();
+        }      
 
         return TileResult.CreateTileResult(overlayData, TASNodeErrorStatus.asneOK);
 
@@ -131,25 +129,6 @@ namespace WebApiModels.Compaction.Executors
         
       }
 
-    }
-
-    /// <summary>
-    /// Converts a bitmap to an array of bytes representing the image
-    /// </summary>
-    /// <param name="bitmap">The bitmap to convert</param>
-    /// <returns>An array of bytes</returns>
-    private byte[] BitmapToByteArray(Bitmap bitmap)
-    {
-      byte[] data;
-      using (var bitmapStream = new MemoryStream())
-      {
-        bitmap.Save(bitmapStream, ImageFormat.Png);
-        bitmapStream.Position = 0;
-        data = new byte[bitmapStream.Length];
-        bitmapStream.Read(data, 0, (int)bitmapStream.Length);
-        bitmapStream.Close();
-      }
-      return data;
     }
 
     /// <summary>
