@@ -140,7 +140,7 @@ namespace Controllers
 
       /*** now making changes, potentially needing rollback ***/
       project = await CreateProjectInDb(project, customerProject).ConfigureAwait(false);
-      await CreateCoordSystemInRaptor(project.CustomerUID, project.ProjectUID, project.ProjectID, project.CoordinateSystemFileName, project.CoordinateSystemFileContent, true).ConfigureAwait(false);
+      await CreateCoordSystemInRaptor(project.ProjectUID, project.ProjectID, project.CoordinateSystemFileName, project.CoordinateSystemFileContent, true).ConfigureAwait(false);
       await AssociateProjectSubscriptionInGeofenceservice(project).ConfigureAwait(false);
       await CreateGeofenceInGeofenceService(project).ConfigureAwait(false);
 
@@ -185,7 +185,7 @@ namespace Controllers
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var projectWithLegacyProjectId = projectService.GetProjectOnly(project.ProjectUID.ToString()).Result;
-        await CreateCoordSystemInRaptor(Guid.Parse(projectWithLegacyProjectId.CustomerUID), project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID, 
+        await CreateCoordSystemInRaptor(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID, 
           project.CoordinateSystemFileName, project.CoordinateSystemFileContent, false).ConfigureAwait(false);
       }
 
@@ -401,7 +401,7 @@ namespace Controllers
       return project; // legacyID may have been added
     }
 
-    private async Task CreateCoordSystemInRaptor(Guid customerUid, Guid projectUid, int legacyProjectId, string coordinateSystemFileName, byte[] coordinateSystemFileContent, bool isCreate)
+    private async Task CreateCoordSystemInRaptor(Guid projectUid, int legacyProjectId, string coordinateSystemFileName, byte[] coordinateSystemFileContent, bool isCreate)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
@@ -422,7 +422,7 @@ namespace Controllers
             coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
           if (isCreate)
-            await DeleteProjectPermanentlyInDb(customerUid, projectUid).ConfigureAwait(false);
+            await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(41),
               string.Format(contractExecutionStatesEnum.FirstNameWithOffset(41),
