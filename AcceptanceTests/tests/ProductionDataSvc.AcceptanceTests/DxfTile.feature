@@ -1,6 +1,7 @@
 ﻿Feature: DxfTile
 	I should be able to request DXF tiles
 
+@ignore
 Scenario: Dxf Tile - Good Request 
 	Given the Dxf Tile service URI "/api/v2/compaction/lineworktiles" 
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
