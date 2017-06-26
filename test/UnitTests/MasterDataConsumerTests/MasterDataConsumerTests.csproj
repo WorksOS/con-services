@@ -29,7 +29,7 @@
     <PackageReference Include="Moq" Version="4.7.10" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="KafkaConsumer.netcore" Version="1.0.21" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.72" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.74" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
   </ItemGroup>
 

@@ -76,7 +76,13 @@ namespace ProjectWebApiCommon.Models
     /// The file uid.
     /// </value>
     public string ImportedFileUid { get; set; }
-
+    /// <summary>
+    /// Gets or sets a unique file identifier's value from legacy VisionLink.
+    /// </summary>
+    /// <value>
+    /// The file id.
+    /// </value>
+    public long LegacyFileId { get; set; }
     /// <summary>
     /// Gets or sets the customer uid.
     /// </summary>
@@ -173,6 +179,7 @@ namespace ProjectWebApiCommon.Models
       var otherImportedFile = obj as ImportedFileDescriptor;
       if (otherImportedFile == null) return false;
       return otherImportedFile.ImportedFileUid == this.ImportedFileUid
+             && otherImportedFile.LegacyFileId == this.LegacyFileId
              && otherImportedFile.CustomerUid == this.CustomerUid
              && otherImportedFile.ProjectUid == this.ProjectUid
              && otherImportedFile.ImportedFileType == this.ImportedFileType
