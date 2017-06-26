@@ -25,7 +25,6 @@ using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
-using VSS.Raptor.Service.WebApiModels.Compaction.Models;
 using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
 using VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling;
 using VSS.Raptor.Service.WebApiModels.Report.Executors;
@@ -43,6 +42,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 {
 
   //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
   public class CompactionController : Controller
   {
     /// <summary>
