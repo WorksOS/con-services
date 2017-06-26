@@ -63,7 +63,7 @@ namespace MockProjectWebApi.Controllers
           }
         };
       }
-      return new FileDataResult { FileDescriptors = fileList};
+      return new FileDataResult { ImportedFileDescriptors = fileList};
     }
 
     private List<ProjectData>  projectList = new List<ProjectData>
