@@ -338,7 +338,7 @@ namespace Controllers
         importedFileUid = createImportedFileEvent.ImportedFileUID.ToString();
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
-
+      
       await NotifyRaptorAddFile(projectUid, fileDescriptor, importedFileId.Value, Guid.Parse(importedFileUid))
         .ConfigureAwait(false);
 
