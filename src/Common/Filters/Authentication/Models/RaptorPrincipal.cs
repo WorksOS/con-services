@@ -68,7 +68,7 @@ namespace Common.Filters.Authentication.Models
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
       }
-      var projectDescr = Projects.Where(p => p.projectUid == projectUid).FirstOrDefault();
+      var projectDescr = Projects.Where(p => string.Equals(p.projectUid, projectUid, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
       if (projectDescr == null)
       {
         throw new ServiceException(HttpStatusCode.Unauthorized,
