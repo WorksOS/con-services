@@ -52,9 +52,9 @@ namespace Controllers
       Logger = logger;
       fileSpaceId = store.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(fileSpaceId))
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(48),
-            contractExecutionStatesEnum.FirstNameWithOffset(48)));
+      {
+        ThrowServiceException(48);
+      }
     }
 
 
@@ -90,9 +90,7 @@ namespace Controllers
 
       if (request == null)
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(40),
-            contractExecutionStatesEnum.FirstNameWithOffset(40)));
+        ThrowServiceException(40);
       }
 
       var fileIds = string.Join(",", request.ImportedFileDescriptors.Select(x => x.ImportedFileUid));
@@ -101,7 +99,7 @@ namespace Controllers
       var importedFiles = await GetImportedFiles(projectUid);
       if (!importedFiles.Any())
       {
-        return Ok(new { code= HttpStatusCode.InternalServerError, message = "Project contains no imported files." });
+        return Ok(new { code = HttpStatusCode.InternalServerError, message = "Project contains no imported files." });
       }
 
       var filesToUpdate = new Dictionary<Guid, bool>();
@@ -140,11 +138,11 @@ namespace Controllers
         await SetFileActivatedState(projectUidGuid, filesToUpdate);
         await NotifyRaptorUpdateFile(projectUidGuid, filesToUpdate.Select(x => x.Key));
 
-        return Ok(new {code = HttpStatusCode.OK, message = "Success"});
+        return Ok(new { code = HttpStatusCode.OK, message = "Success" });
       }
       catch (Exception exception)
       {
-        return new JsonResult(new {code = HttpStatusCode.InternalServerError, message = exception.GetBaseException().Message});
+        return new JsonResult(new { code = HttpStatusCode.InternalServerError, message = exception.GetBaseException().Message });
       }
     }
 
@@ -178,7 +176,7 @@ namespace Controllers
     [Route("api/v4/importedfile")]
     [HttpPost]
     [ActionName("Upload")]
-    [FlowUpload(Extensions = new string[]
+    [FlowUpload(Extensions = new[]
     {
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
@@ -198,9 +196,7 @@ namespace Controllers
 
       if (!System.IO.File.Exists(file.path))
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(55),
-            contractExecutionStatesEnum.FirstNameWithOffset(55)));
+        ThrowServiceException(55);
       }
 
       await ValidateProjectId(projectUid.ToString());
@@ -212,17 +208,15 @@ namespace Controllers
           f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
                && f.ImportedFileType == importedFileType
                && (
-                 (importedFileType == ImportedFileType.SurveyedSurface &&
-                  f.SurveyedUtc == surveyedUtc) ||
-                 (importedFileType != ImportedFileType.SurveyedSurface)
+                 importedFileType == ImportedFileType.SurveyedSurface &&
+                 f.SurveyedUtc == surveyedUtc ||
+                 importedFileType != ImportedFileType.SurveyedSurface
                ));
       if (importedFileDescriptor != null)
       {
         var message = $"CreateImportedFileV4. File: {file.flowFilename} has already been imported.";
         log.LogError(message);
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(58),
-            contractExecutionStatesEnum.FirstNameWithOffset(58)));
+        ThrowServiceException(58);
       }
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
@@ -237,7 +231,7 @@ namespace Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(projectUid, fileDescriptor, createImportedFileEvent.ImportedFileID, 
+      await NotifyRaptorAddFile(projectUid, fileDescriptor, createImportedFileEvent.ImportedFileID,
         createImportedFileEvent.ImportedFileUID).ConfigureAwait(false);
 
       // FlowJS has this locked so can't delete it here
@@ -272,7 +266,7 @@ namespace Controllers
     [Route("api/v4/importedfile")]
     [HttpPut]
     [ActionName("Upload")]
-    [FlowUpload(Extensions = new string[]
+    [FlowUpload(Extensions = new[]
     {
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
@@ -291,9 +285,7 @@ namespace Controllers
 
       if (!System.IO.File.Exists(file.path))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(55),
-            contractExecutionStatesEnum.FirstNameWithOffset(55)));
+        ThrowServiceException(55);
       }
 
       await ValidateProjectId(projectUid.ToString());
@@ -306,9 +298,9 @@ namespace Controllers
           f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
                && f.ImportedFileType == importedFileType
                && (
-                 (importedFileType == ImportedFileType.SurveyedSurface &&
-                  f.SurveyedUtc == surveyedUtc) ||
-                 (importedFileType != ImportedFileType.SurveyedSurface)
+                 importedFileType == ImportedFileType.SurveyedSurface &&
+                 f.SurveyedUtc == surveyedUtc ||
+                 importedFileType != ImportedFileType.SurveyedSurface
                ));
       }
       if (existing == null)
@@ -317,7 +309,6 @@ namespace Controllers
       else
         log.LogInformation(
           $"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
-
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
       // this may be a create or update, so ok if it already exists in our DB
@@ -383,9 +374,7 @@ namespace Controllers
         importedFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
       if (importedFile == null)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(56),
-            contractExecutionStatesEnum.FirstNameWithOffset(56)));
+        ThrowServiceException(56);
       }
 
       await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))

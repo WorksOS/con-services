@@ -427,6 +427,16 @@ namespace Controllers
       return result;
     }
 
+    /// <summary>
+    /// Common ServiceException handler.
+    /// </summary>
+    protected ServiceException ThrowServiceException(int errorNumber, string resultCode = null, string errorMessage = null)
+    {
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(errorNumber),
+          string.Format(contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage ?? "null")));
+    }
+
     #region private
 
     private static string GeneratedFileName(string fileName, string suffix, string extension)
@@ -446,13 +456,6 @@ namespace Controllers
       log.LogInformation($"{functionName}: CustomerUID={customerUid} and projectUid={projectUid}");
 
       return customerUid;
-    }
-
-    private ServiceException ThrowServiceException(int errorNumber, string resultCode = null, string errorMessage = null)
-    {
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(errorNumber),
-         string.Format(contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage ?? "null")));
     }
 
     #endregion
