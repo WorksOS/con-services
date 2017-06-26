@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using ASNodeDecls;
 using Common.Executors;
@@ -21,7 +20,6 @@ using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.Proxies;
@@ -39,12 +37,12 @@ using WebApiModels.Compaction.Helpers;
 using WebApiModels.Compaction.Models;
 using WebApiModels.Notification.Helpers;
 using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.ColorValue;
-using ProjectID = VSS.Raptor.Service.Common.Models.ProjectID;
+
 
 namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
 {
 
-  [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
+  //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class CompactionController : Controller
   {
     /// <summary>
@@ -1472,7 +1470,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
+    //[ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
     public async Task<TileResult> GetLineworkTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -1524,7 +1522,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
+    //[ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
     public async Task<FileResult> GetLineworkTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
