@@ -89,9 +89,7 @@ namespace Controllers
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
       if (project == null)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(1),
-            contractExecutionStatesEnum.FirstNameWithOffset(1)));
+        ThrowServiceException(1);
       }
 
       log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
@@ -160,9 +158,9 @@ namespace Controllers
 
       var isCreated = await projectService.StoreEvent(createImportedFileEvent).ConfigureAwait(false);
       if (isCreated == 0)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(49),
-            contractExecutionStatesEnum.FirstNameWithOffset(49)));
+      {
+        ThrowServiceException(49);
+      }
 
       log.LogDebug($"Created the ImportedFile in DB. ImportedFile {filename} for project {projectUid}.");
 
@@ -172,9 +170,9 @@ namespace Controllers
       if (existing != null && existing.ImportedFileId > 0)
         createImportedFileEvent.ImportedFileID = existing.ImportedFileId;
       else
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(50),
-            contractExecutionStatesEnum.FirstNameWithOffset(50)));
+      {
+        ThrowServiceException(50);
+      }
 
       log.LogDebug(
         $"Using Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
@@ -214,9 +212,7 @@ namespace Controllers
       if (await projectService.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
         return;
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(51),
-          contractExecutionStatesEnum.FirstNameWithOffset(51)));
+      ThrowServiceException(51);
     }
 
     /// <summary>
@@ -256,9 +252,7 @@ namespace Controllers
       if (await projectService.StoreEvent(updateImportedFileEvent).ConfigureAwait(false) == 1)
         return updateImportedFileEvent;
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(52),
-          contractExecutionStatesEnum.FirstNameWithOffset(52)));
+      throw ThrowServiceException(52);
     }
 
     /// <summary>
@@ -288,9 +282,7 @@ namespace Controllers
       var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
       if (ccPutFileResult == false)
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(53),
-            contractExecutionStatesEnum.FirstNameWithOffset(53)));
+        ThrowServiceException(53);
       }
 
       log.LogInformation(
@@ -316,9 +308,7 @@ namespace Controllers
           .ConfigureAwait(false);
         if (ccDeleteFileResult == false)
         {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
-              contractExecutionStatesEnum.FirstNameWithOffset(54)));
+          ThrowServiceException(54);
         }
       }
       else
@@ -347,9 +337,7 @@ namespace Controllers
         var error =
           $"FileImport AddFile in RaptorServices failed. projectUid:{projectUid} importedFileUid:{importedFileUid} fileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}.";
         log.LogError(error);
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
-            string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57), "raptorProxy.AddFile", e.Message)));
+        throw ThrowServiceException(57, "raptorProxy.AddFile", e.Message);
       }
       log.LogDebug(
         $"NotifyRaptorAddFile: projectUid: {projectUid}, importedFileUid: {importedFileUid}, fileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
@@ -377,11 +365,7 @@ namespace Controllers
         $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
-            string.Format(contractExecutionStatesEnum.FirstNameWithOffset(54), (notificationResult?.Code ?? -1),
-              (notificationResult?.Message ?? "null"))
-          ));
+        ThrowServiceException(54, notificationResult.Code.ToString(), notificationResult.Message);
       }
     }
 
@@ -397,11 +381,7 @@ namespace Controllers
 
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
-            string.Format(contractExecutionStatesEnum.FirstNameWithOffset(54), notificationResult.Code,
-              notificationResult.Message ?? "null")
-          ));
+        ThrowServiceException(54, notificationResult.Code.ToString(), notificationResult.Message);
       }
     }
 
@@ -440,9 +420,7 @@ namespace Controllers
         }
         else
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(52),
-              contractExecutionStatesEnum.FirstNameWithOffset(52)));
+          ThrowServiceException(52);
         }
       }
 
@@ -470,7 +448,13 @@ namespace Controllers
       return customerUid;
     }
 
-    #endregion
+    private ServiceException ThrowServiceException(int errorNumber, string resultCode = null, string errorMessage = null)
+    {
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(errorNumber),
+         string.Format(contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage ?? "null")));
+    }
 
+    #endregion
   }
 }
