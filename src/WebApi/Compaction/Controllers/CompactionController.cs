@@ -1649,7 +1649,9 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         fileList = new List<FileData>();
       }
       //Select the required ones from the list
-      return fileList.Where(f => f.ImportedFileType == importedFileType && f.IsActivated).ToList();
+      var filesOfType = fileList.Where(f => f.ImportedFileType == importedFileType && f.IsActivated).ToList();
+      log.LogInformation("Found {0} files of type {1} from a total of {2}", filesOfType.Count, fileType, fileList.Count);
+      return filesOfType;
     }
 
     /*
