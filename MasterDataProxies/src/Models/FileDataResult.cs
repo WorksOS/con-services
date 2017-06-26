@@ -29,6 +29,6 @@ namespace MasterDataProxies.Models
     /// <value>
     /// The file descriptors.
     /// </value>
-    public List<FileData> FileDescriptors { get; set; }
+    public List<FileData> ImportedFileDescriptors { get; set; }
   }
 }

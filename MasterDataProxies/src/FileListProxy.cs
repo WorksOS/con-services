@@ -25,7 +25,7 @@ namespace MasterDataProxies
         string.Format("?projectUid={0}", projectUid));
       if (result.Code == 0)
       {
-        return result.FileDescriptors;
+        return result.ImportedFileDescriptors;
       }
       else
       {
