@@ -53,7 +53,7 @@ namespace Controllers
       fileSpaceId = store.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(fileSpaceId))
       {
-        ThrowServiceException(48);
+        ThrowServiceException(HttpStatusCode.InternalServerError, 48);
       }
     }
 
@@ -90,16 +90,23 @@ namespace Controllers
 
       if (request == null)
       {
-        ThrowServiceException(40);
+        throw ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
 
       var fileIds = string.Join(",", request.ImportedFileDescriptors.Select(x => x.ImportedFileUid));
+      if (string.IsNullOrEmpty(fileIds))
+      {
+        return Ok(new { Code = HttpStatusCode.BadRequest, Message = "Request contains no imported file IDs." });
+      }
+
       log.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
 
       var importedFiles = await GetImportedFiles(projectUid);
       if (!importedFiles.Any())
       {
-        return Ok(new { code = HttpStatusCode.InternalServerError, message = "Project contains no imported files." });
+        log.LogInformation($"{functionId}. Attempt to set file activation state when project contains no files");
+
+        return Ok(new { Code = HttpStatusCode.BadRequest, Message = "Project contains no imported files." });
       }
 
       var filesToUpdate = new Dictionary<Guid, bool>();
@@ -128,7 +135,7 @@ namespace Controllers
 
       if (!filesToUpdate.Any())
       {
-        return Ok(new { code = HttpStatusCode.OK, message = "No files eligible for activation state change." });
+        return Ok(new { Code = HttpStatusCode.BadRequest, Message = "No files eligible for activation state change." });
       }
 
       try
@@ -138,11 +145,11 @@ namespace Controllers
         await SetFileActivatedState(projectUidGuid, filesToUpdate);
         await NotifyRaptorUpdateFile(projectUidGuid, filesToUpdate.Select(x => x.Key));
 
-        return Ok(new { code = HttpStatusCode.OK, message = "Success" });
+        return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
       }
       catch (Exception exception)
       {
-        return new JsonResult(new { code = HttpStatusCode.InternalServerError, message = exception.GetBaseException().Message });
+        return new JsonResult(new { Code = HttpStatusCode.InternalServerError, Message = exception.GetBaseException().Message });
       }
     }
 
@@ -196,7 +203,7 @@ namespace Controllers
 
       if (!System.IO.File.Exists(file.path))
       {
-        ThrowServiceException(55);
+        ThrowServiceException(HttpStatusCode.InternalServerError, 55);
       }
 
       await ValidateProjectId(projectUid.ToString());
@@ -216,7 +223,7 @@ namespace Controllers
       {
         var message = $"CreateImportedFileV4. File: {file.flowFilename} has already been imported.";
         log.LogError(message);
-        ThrowServiceException(58);
+        ThrowServiceException(HttpStatusCode.BadRequest, 58);
       }
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
@@ -285,7 +292,7 @@ namespace Controllers
 
       if (!System.IO.File.Exists(file.path))
       {
-        ThrowServiceException(55);
+        ThrowServiceException(HttpStatusCode.BadRequest, 55);
       }
 
       await ValidateProjectId(projectUid.ToString());
@@ -374,7 +381,7 @@ namespace Controllers
         importedFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
       if (importedFile == null)
       {
-        ThrowServiceException(56);
+        ThrowServiceException(HttpStatusCode.BadRequest, 56);
       }
 
       await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))

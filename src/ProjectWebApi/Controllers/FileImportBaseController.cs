@@ -89,7 +89,7 @@ namespace Controllers
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
       if (project == null)
       {
-        ThrowServiceException(1);
+        ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }
 
       log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
@@ -159,7 +159,7 @@ namespace Controllers
       var isCreated = await projectService.StoreEvent(createImportedFileEvent).ConfigureAwait(false);
       if (isCreated == 0)
       {
-        ThrowServiceException(49);
+        ThrowServiceException(HttpStatusCode.BadRequest, 49);
       }
 
       log.LogDebug($"Created the ImportedFile in DB. ImportedFile {filename} for project {projectUid}.");
@@ -171,7 +171,7 @@ namespace Controllers
         createImportedFileEvent.ImportedFileID = existing.ImportedFileId;
       else
       {
-        ThrowServiceException(50);
+        ThrowServiceException(HttpStatusCode.InternalServerError, 50);
       }
 
       log.LogDebug(
@@ -212,7 +212,7 @@ namespace Controllers
       if (await projectService.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
         return;
 
-      ThrowServiceException(51);
+      ThrowServiceException(HttpStatusCode.BadRequest, 51);
     }
 
     /// <summary>
@@ -252,7 +252,7 @@ namespace Controllers
       if (await projectService.StoreEvent(updateImportedFileEvent).ConfigureAwait(false) == 1)
         return updateImportedFileEvent;
 
-      throw ThrowServiceException(52);
+      throw ThrowServiceException(HttpStatusCode.BadRequest, 52);
     }
 
     /// <summary>
@@ -282,7 +282,7 @@ namespace Controllers
       var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
       if (ccPutFileResult == false)
       {
-        ThrowServiceException(53);
+        ThrowServiceException(HttpStatusCode.InternalServerError, 53);
       }
 
       log.LogInformation(
@@ -308,7 +308,7 @@ namespace Controllers
           .ConfigureAwait(false);
         if (ccDeleteFileResult == false)
         {
-          ThrowServiceException(54);
+          ThrowServiceException(HttpStatusCode.InternalServerError, 54);
         }
       }
       else
@@ -337,7 +337,7 @@ namespace Controllers
         var error =
           $"FileImport AddFile in RaptorServices failed. projectUid:{projectUid} importedFileUid:{importedFileUid} fileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}.";
         log.LogError(error);
-        throw ThrowServiceException(57, "raptorProxy.AddFile", e.Message);
+        throw ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.AddFile", e.Message);
       }
       log.LogDebug(
         $"NotifyRaptorAddFile: projectUid: {projectUid}, importedFileUid: {importedFileUid}, fileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
@@ -365,7 +365,7 @@ namespace Controllers
         $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        ThrowServiceException(54, notificationResult.Code.ToString(), notificationResult.Message);
+        ThrowServiceException(HttpStatusCode.BadRequest, 54, notificationResult.Code.ToString(), notificationResult.Message);
       }
     }
 
@@ -381,7 +381,7 @@ namespace Controllers
 
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        ThrowServiceException(54, notificationResult.Code.ToString(), notificationResult.Message);
+        ThrowServiceException(HttpStatusCode.BadRequest, 54, notificationResult.Code.ToString(), notificationResult.Message);
       }
     }
 
@@ -420,7 +420,7 @@ namespace Controllers
         }
         else
         {
-          ThrowServiceException(52);
+          ThrowServiceException(HttpStatusCode.BadRequest, 52);
         }
       }
 
@@ -430,9 +430,9 @@ namespace Controllers
     /// <summary>
     /// Common ServiceException handler.
     /// </summary>
-    protected ServiceException ThrowServiceException(int errorNumber, string resultCode = null, string errorMessage = null)
+    protected ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, string resultCode = null, string errorMessage = null)
     {
-      throw new ServiceException(HttpStatusCode.BadRequest,
+      throw new ServiceException(statusCode,
         new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(errorNumber),
           string.Format(contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage ?? "null")));
     }
