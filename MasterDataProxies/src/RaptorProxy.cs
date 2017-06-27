@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using MasterDataProxies.Interfaces;
+using MasterDataProxies.Models;
+using MasterDataProxies.ResultHandling;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.GenericConfiguration;
-using MasterDataProxies.Models;
-using MasterDataProxies.Interfaces;
-using MasterDataProxies.ResultHandling;
 
 namespace MasterDataProxies
 {
@@ -29,7 +29,7 @@ namespace MasterDataProxies
     public async Task<CoordinateSystemSettings> CoordinateSystemValidate(byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.CoordinateSystemValidate: coordinateSystemFileContent: {coordinateSystemFileContent} coordinateSystemFileName: {coordinateSystemFileName}");
-      var payLoadToSend = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName );
+      var payLoadToSend = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName);
       //log.LogDebug("RaptorProxy.CoordinateSystemValidate: payLoadToSend: {0}", payLoadToSend == null ? null : JsonConvert.SerializeObject(payLoadToSend));
 
       return await CoordSystemPost(JsonConvert.SerializeObject(payLoadToSend), customHeaders, "/validation");
@@ -97,7 +97,7 @@ namespace MasterDataProxies
     public async Task<ContractExecutionResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.UpdateFiles: projectUid: {projectUid} fileUids: {fileUids}");
-      var queryParams = $"?projectUid={projectUid}&fileUids={fileUids}";
+      var queryParams = $"?projectUid={projectUid}&fileUids={string.Join("&fileUids=", fileUids)}";
       //log.LogDebug($"RaptorProxy.UpdateFiles: queryParams: {JsonConvert.SerializeObject(queryParams)}");
 
       return await NotifyFile("/updatefiles", queryParams, customHeaders);

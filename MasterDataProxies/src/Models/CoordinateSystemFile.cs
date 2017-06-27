@@ -1,5 +1,4 @@
-﻿using MasterDataProxies.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace MasterDataProxies.Models
 {
@@ -33,11 +32,12 @@ namespace MasterDataProxies.Models
 
     public static CoordinateSystemFile CreateCoordinateSystemFile(long projectId, byte[] csFileContent, string csFileName)
     {
-      CoordinateSystemFile tempCS = new CoordinateSystemFile();
-
-      tempCS.projectId = projectId;
-      tempCS.csFileName = csFileName;
-      tempCS.csFileContent = csFileContent;
+      CoordinateSystemFile tempCS = new CoordinateSystemFile
+      {
+        projectId = projectId,
+        csFileName = csFileName,
+        csFileContent = csFileContent
+      };
 
       return tempCS;
     }
@@ -45,7 +45,7 @@ namespace MasterDataProxies.Models
     /// <summary>
     /// Validation method.
     /// </summary>
-    public void Validate()
+    public new void Validate()
     {
       // Validation rules might be placed in here...
       // throw new NotImplementedException();
