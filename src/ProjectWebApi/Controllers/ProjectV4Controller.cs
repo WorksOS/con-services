@@ -221,9 +221,7 @@ namespace Controllers
     [HttpDelete]
     public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromUri] string projectUid)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation($"DeleteProjectV4. customerUid: {customerUid} Project: {projectUid}");
-
+      LogCustomerDetails("DeleteProjectV4", projectUid);
       var project = new DeleteProjectEvent()
       {
         ProjectUID = Guid.Parse(projectUid),
@@ -268,9 +266,7 @@ namespace Controllers
     [HttpGet]
     public async Task<SubscriptionsListResult> GetSubscriptionsV4()
     {
-      log.LogInformation("GetSubscriptionsV4");
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      var customerUid = LogCustomerDetails("GetSubscriptionsV4");
 
       //returns empty list if no subscriptions available
       return new SubscriptionsListResult()
@@ -545,7 +541,7 @@ namespace Controllers
         (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
         .Where(s => s.ServiceTypeID == (int) type.MatchSubscriptionType()).ToImmutableList();
       log.LogDebug(
-        $"Receieved {availableSubscriptions.Count()} subscriptions with contents {JsonConvert.SerializeObject(availableSubscriptions)}");
+        $"Receieved {availableSubscriptions.Count()} subscriptions for projectType {type} matchedServiceType {type.MatchSubscriptionType()}. Contents {JsonConvert.SerializeObject(availableSubscriptions)}");
       var projects =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
@@ -563,7 +559,7 @@ namespace Controllers
       if (!availableFreSub.Any())
       {
         // only called for Create, not update
-        await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
+        // await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(37),
             contractExecutionStatesEnum.FirstNameWithOffset(37)));
@@ -601,8 +597,7 @@ namespace Controllers
     /// <returns></returns>
     private async Task AssociateProjectSubscriptionInSubscriptionService(CreateProjectEvent project)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogDebug($"AssociateProjectSubscriptionInSubscriptionService: CustomerUID ={customerUid} and user={User}");
+      var customerUid = LogCustomerDetails("AssociateProjectSubscriptionInSubscriptionService", project.ProjectUID.ToString());
 
       if (project.ProjectType == ProjectType.LandFill || project.ProjectType == ProjectType.ProjectMonitoring)
       {
@@ -633,8 +628,7 @@ namespace Controllers
     /// <returns></returns>
     private async Task DissociateProjectSubscription(Guid projectUid, Guid subscriptionUidAssigned)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogDebug($"DissociateProjectSubscription: CustomerUID ={customerUid} and user={User}");
+      var customerUid = LogCustomerDetails("DissociateProjectSubscription", projectUid.ToString());
 
       if (subscriptionUidAssigned != Guid.Empty)
       {
@@ -652,6 +646,7 @@ namespace Controllers
     {
       log.LogDebug($"Creating a geofence for project: {project.ProjectName}");
       var userUid = ((User as TIDCustomPrincipal).Identity as GenericIdentity).Name;
+
       try
       {
         geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",

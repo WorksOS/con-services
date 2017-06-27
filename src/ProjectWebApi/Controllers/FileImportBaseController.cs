@@ -464,7 +464,6 @@ namespace Controllers
     private string LogCustomerDetails(string functionName, string projectUid)
     {
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      // var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       log.LogInformation($"{functionName}: CustomerUID={customerUid} and projectUid={projectUid}");
 
       return customerUid;

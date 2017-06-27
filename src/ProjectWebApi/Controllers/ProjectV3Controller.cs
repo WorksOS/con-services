@@ -55,8 +55,9 @@ namespace Controllers
     {
       log.LogInformation("GetProjectsV3");
       var projects = (await GetProjectList());
-        var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      var customerUid = LogCustomerDetails("GetProjectsV3");
+
+
       return projects.Where(p => p.CustomerUID == customerUid).ToImmutableDictionary(key => key.LegacyProjectID,
         project =>
           new ProjectDescriptor()

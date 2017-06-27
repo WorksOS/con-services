@@ -82,8 +82,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      var customerUid = LogCustomerDetails("GetProjectList");
       var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
       log.LogInformation($"Project list contains {projects.Count()} projects");
@@ -97,8 +96,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
-      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      var customerUid = LogCustomerDetails("GetProject", projectUid);
       var project =
         (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
@@ -113,6 +111,21 @@ namespace Controllers
 
       log.LogInformation($"Project {projectUid} retrieved");
       return project;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="functionName"></param>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
+    protected string LogCustomerDetails(string functionName, string projectUid = "")
+    {
+      var customerUid = (User as TIDCustomPrincipal).CustomerUid;
+      var userUid = ((User as TIDCustomPrincipal).Identity as GenericIdentity).Name;
+      log.LogInformation($"{functionName}: UserUID={userUid}, CustomerUID={customerUid}  and projectUid={projectUid}");
+
+      return customerUid;
     }
   }
 }
