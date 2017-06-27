@@ -35,7 +35,12 @@ namespace Controllers
     /// The log
     /// </summary>
     protected readonly ILogger log;
+
+    /// <summary>
+    /// The ServiceException handler.
+    /// </summary>
     protected IServiceExceptionHandler ServiceExceptionHandler;
+
     private readonly IRaptorProxy raptorProxy;
     private readonly IFileRepository fileRepo;
     private readonly ProjectRepository projectService;
@@ -141,7 +146,7 @@ namespace Controllers
     {
       log.LogDebug($"Creating the ImportedFile {filename} for project {projectUid}.");
       var nowUtc = DateTime.UtcNow;
-      var createImportedFileEvent = new CreateImportedFileEvent()
+      var createImportedFileEvent = new CreateImportedFileEvent
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
@@ -180,7 +185,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
@@ -195,7 +200,7 @@ namespace Controllers
     protected async Task DeleteImportedFile(Guid projejctUid, Guid importedFileUid)
     {
       var nowUtc = DateTime.UtcNow;
-      var deleteImportedFileEvent = new DeleteImportedFileEvent()
+      var deleteImportedFileEvent = new DeleteImportedFileEvent
       {
         ProjectUID = projejctUid,
         ImportedFileUID = importedFileUid,
@@ -205,7 +210,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(deleteImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
@@ -245,7 +250,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
@@ -421,7 +426,7 @@ namespace Controllers
         }
         else
         {
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 52);
+          log.LogInformation($"SetFileActivatedState: Failed to set activation state to {updateImportedFileEvent.IsActivated} on ImportFile '{updateImportedFileEvent.ImportedFileUID}'.");
         }
       }
 

@@ -51,6 +51,10 @@ namespace Controllers
     /// The raptor proxy
     /// </summary>
     protected readonly IRaptorProxy raptorProxy;
+
+    /// <summary>
+    /// The ServiceException handler.
+    /// </summary>
     protected IServiceExceptionHandler ServiceExceptionHandler;
 
     private readonly ISubscriptionProxy subsProxy;
@@ -83,6 +87,8 @@ namespace Controllers
       this.subsProxy = subsProxy;
       this.geofenceProxy = geofenceProxy;
       this.raptorProxy = raptorProxy;
+
+      ServiceExceptionHandler = serviceExceptionHandler;
 
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");

@@ -192,27 +192,6 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Send a PUT request to the api/v4 API.
-    /// </summary>
-    public object SendPutRequestToWebApi(TestSupport ts, string projectUid, string requestBody, string method = "PUT")
-    {
-      var uri = ts.GetBaseUri() + $"api/v4/importedfile?projectUid={projectUid}";
-      var response = DoHttpRequest(uri, "PUT", requestBody);
-
-      try
-      {
-        return JsonConvert.DeserializeObject(response);
-      }
-      catch (Exception)
-      {
-        Console.WriteLine(response);
-        Assert.Fail(response);
-      }
-
-      return null;
-    }
-
-    /// <summary>
     /// File upload
     /// </summary>
     /// <param name="filestream"></param>

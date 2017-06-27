@@ -144,14 +144,14 @@ namespace Controllers
       {
         var projectUidGuid = new Guid(projectUid);
 
-        await SetFileActivatedState(projectUidGuid, filesToUpdate);
-        await NotifyRaptorUpdateFile(projectUidGuid, filesToUpdate.Select(x => x.Key));
+        var dbUpdateResult = await SetFileActivatedState(projectUidGuid, filesToUpdate);
+        await NotifyRaptorUpdateFile(projectUidGuid, dbUpdateResult.Select(x => x.ImportedFileUID));
 
         return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
       }
       catch (Exception exception)
       {
-        return new JsonResult(new { Code = HttpStatusCode.InternalServerError, Message = exception.GetBaseException().Message });
+        return new JsonResult(new { Code = HttpStatusCode.InternalServerError, exception.GetBaseException().Message });
       }
     }
 
