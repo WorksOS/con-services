@@ -9,7 +9,6 @@ using TestUtility;
 namespace WebApiTests.FileImport
 {
   [TestClass]
-  [Ignore]
   public class FileActivationTests
   {
     private readonly Msg _msg = new Msg();
