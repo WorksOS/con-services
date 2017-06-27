@@ -85,15 +85,17 @@ namespace WebApiModels.Compaction.Executors
             //Download the tile
             if (await fileRepo.FileExists(filespaceId, fullTileName))
             {
-              Stream stream = await fileRepo.GetFile(filespaceId, fullTileName);
-              log.LogDebug("DxfTileExecutor: tile downloaded with size of {0} bytes", stream.Length);
-
-              if (stream.Length > 0)
+              using (Stream stream = await fileRepo.GetFile(filespaceId, fullTileName))
               {
-                stream.Position = 0;
-                byte[] tileData = new byte[stream.Length];
-                stream.Read(tileData, 0, (int)stream.Length);
-                tileList.Add(tileData);
+                log.LogDebug("DxfTileExecutor: tile downloaded with size of {0} bytes", stream.Length);
+
+                if (stream.Length > 0)
+                {
+                  stream.Position = 0;
+                  byte[] tileData = new byte[stream.Length];
+                  stream.Read(tileData, 0, (int) stream.Length);
+                  tileList.Add(tileData);
+                }
               }
             }
             else
