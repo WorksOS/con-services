@@ -659,6 +659,10 @@ namespace TestUtility
             continue;
           }
         }
+        if (actualValue is DateTime)
+        {
+          actualValue = ((DateTime)actualValue).ToUniversalTime();
+        }
         if (!Equals(expectedValue, actualValue))
         {
           Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue);
