@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ProjectWebApi.Internal;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -34,20 +35,22 @@ namespace Controllers
     /// The log
     /// </summary>
     protected readonly ILogger log;
+
+    /// <summary>
+    /// The ServiceException handler.
+    /// </summary>
+    protected IServiceExceptionHandler ServiceExceptionHandler;
+
     private readonly IRaptorProxy raptorProxy;
     private readonly IFileRepository fileRepo;
     private readonly ProjectRepository projectService;
     private readonly IKafka producer;
     private readonly string kafkaTopicName;
+
     /// <summary>
     /// The file space identifier
     /// </summary>
     protected string fileSpaceId;
-    /// <summary>
-    /// The contract execution states enum
-    /// </summary>
-    protected readonly ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
@@ -58,9 +61,10 @@ namespace Controllers
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="fileRepo">For TCC file transfer</param>
+    /// <param name="serviceExceptionHandler">For correctly throwing ServiceException errors</param>
     public FileImportBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IConfigurationStore store, IRaptorProxy raptorProxy,
-      IFileRepository fileRepo, ILoggerFactory logger)
+      IFileRepository fileRepo, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
     {
       log = logger.CreateLogger<FileImportBaseController>();
       this.producer = producer;
@@ -71,17 +75,18 @@ namespace Controllers
       this.raptorProxy = raptorProxy;
       this.fileRepo = fileRepo;
 
+      ServiceExceptionHandler = serviceExceptionHandler;
+
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
-
     /// <summary>
-    /// Gets the project.
+    /// Validates a project identifier.
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
-    protected async Task<Project> GetProject(string projectUid)
+    protected async Task ValidateProjectId(string projectUid)
     {
       var customerUid = LogCustomerDetails("GetProject", projectUid);
 
@@ -90,13 +95,10 @@ namespace Controllers
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
       if (project == null)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(1),
-            contractExecutionStatesEnum.FirstNameWithOffset(1)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }
 
       log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
-      return project;
     }
 
     /// <summary>
@@ -120,7 +122,7 @@ namespace Controllers
     /// <returns></returns>
     protected async Task<ImmutableList<ImportedFileDescriptor>> GetImportedFileList(string projectUid)
     {
-       LogCustomerDetails("GetImportedFileList", projectUid);
+      LogCustomerDetails("GetImportedFileList", projectUid);
 
       var importedFiles = (await projectService.GetImportedFiles(projectUid).ConfigureAwait(false))
         .ToImmutableList();
@@ -144,7 +146,7 @@ namespace Controllers
     {
       log.LogDebug($"Creating the ImportedFile {filename} for project {projectUid}.");
       var nowUtc = DateTime.UtcNow;
-      var createImportedFileEvent = new CreateImportedFileEvent()
+      var createImportedFileEvent = new CreateImportedFileEvent
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
@@ -162,9 +164,9 @@ namespace Controllers
 
       var isCreated = await projectService.StoreEvent(createImportedFileEvent).ConfigureAwait(false);
       if (isCreated == 0)
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(49),
-            contractExecutionStatesEnum.FirstNameWithOffset(49)));
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 49);
+      }
 
       log.LogDebug($"Created the ImportedFile in DB. ImportedFile {filename} for project {projectUid}.");
 
@@ -174,16 +176,16 @@ namespace Controllers
       if (existing != null && existing.ImportedFileId > 0)
         createImportedFileEvent.ImportedFileID = existing.ImportedFileId;
       else
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(50),
-            contractExecutionStatesEnum.FirstNameWithOffset(50)));
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 50);
+      }
 
       log.LogDebug(
         $"Using Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
 
       var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
@@ -198,7 +200,7 @@ namespace Controllers
     protected async Task DeleteImportedFile(Guid projejctUid, Guid importedFileUid)
     {
       var nowUtc = DateTime.UtcNow;
-      var deleteImportedFileEvent = new DeleteImportedFileEvent()
+      var deleteImportedFileEvent = new DeleteImportedFileEvent
       {
         ProjectUID = projejctUid,
         ImportedFileUID = importedFileUid,
@@ -208,7 +210,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(deleteImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
@@ -216,9 +218,7 @@ namespace Controllers
       if (await projectService.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
         return;
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(51),
-          contractExecutionStatesEnum.FirstNameWithOffset(51)));
+      ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 51);
     }
 
     /// <summary>
@@ -250,7 +250,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
@@ -258,9 +258,7 @@ namespace Controllers
       if (await projectService.StoreEvent(updateImportedFileEvent).ConfigureAwait(false) == 1)
         return updateImportedFileEvent;
 
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(52),
-          contractExecutionStatesEnum.FirstNameWithOffset(52)));
+      throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 52);
     }
 
     /// <summary>
@@ -290,9 +288,7 @@ namespace Controllers
       var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length).ConfigureAwait(false);
       if (ccPutFileResult == false)
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(53),
-            contractExecutionStatesEnum.FirstNameWithOffset(53)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
       }
 
       log.LogInformation(
@@ -318,9 +314,7 @@ namespace Controllers
           .ConfigureAwait(false);
         if (ccDeleteFileResult == false)
         {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
-              contractExecutionStatesEnum.FirstNameWithOffset(54)));
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 54);
         }
       }
       else
@@ -349,16 +343,14 @@ namespace Controllers
         var error =
           $"FileImport AddFile in RaptorServices failed. projectUid:{projectUid} importedFileUid:{importedFileUid} fileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}.";
         log.LogError(error);
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
-            string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57), "raptorProxy.AddFile", e.Message)));
+        throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.AddFile", e.Message);
       }
       log.LogDebug(
         $"NotifyRaptorAddFile: projectUid: {projectUid}, importedFileUid: {importedFileUid}, fileDescriptor: {JsonConvert.SerializeObject(fileDescriptor)}. RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
       {
         var error =
-          $"FileImport AddFile in RaptorServices failed. projectUid:{projectUid} fileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}. ";
+          $"FileImport AddFile in RaptorServices failed. projectUid:{projectUid} fileDescriptor:{fileDescriptor}. Reason: {notificationResult.Code} {notificationResult.Message ?? "null"}. ";
         log.LogError(error);
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(notificationResult.Code, notificationResult.Message));
@@ -379,97 +371,66 @@ namespace Controllers
         $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
       if (notificationResult != null && notificationResult.Code != 0)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
-            string.Format(contractExecutionStatesEnum.FirstNameWithOffset(54), (notificationResult?.Code ?? -1),
-              (notificationResult?.Message ?? "null"))
-          ));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 54, notificationResult.Code, notificationResult.Message);
       }
     }
 
     /// <summary>
     /// Notify raptor of an updated import file.
     /// </summary>
-    protected async Task NotifyRaptorUpdateFile(Guid projectUid, string fileDescriptor, long importedFileId)
+    protected async Task NotifyRaptorUpdateFile(Guid projectUid, IEnumerable<Guid> updatedFileUids)
     {
-      throw new NotImplementedException();
+      var notificationResult = await raptorProxy.UpdateFiles(projectUid, updatedFileUids);
+
+      log.LogDebug(
+        $"FileImport UpdateFiles in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
+
+      if (notificationResult != null && notificationResult.Code != 0)
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 54, notificationResult.Code, notificationResult.Message);
+      }
     }
 
     /// <summary>
     /// Sets activated state for imported files.
     /// </summary>
-    protected async Task<UpdateImportedFileEvent> SetFileActivatedState(Guid projectUid, IEnumerable<Guid> fileUids, string fileDescriptor)
+    protected async Task<IEnumerable<UpdateImportedFileEvent>> SetFileActivatedState(Guid projectUid, Dictionary<Guid, bool> fileUids)
     {
-      throw new NotImplementedException();
-      //  var notificationResult = await raptorProxy.UpdateFiles(projectUid, fileUids, Request.Headers.GetCustomHeaders());
+      var result = new List<UpdateImportedFileEvent>();
 
-      //  log.LogDebug(
-      //    $"FileImport DeleteFile in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
-      //  if (notificationResult != null && notificationResult.Code != 0)
-      //  {
-      //    throw new ServiceException(HttpStatusCode.BadRequest,
-      //      new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(54),
-      //        string.Format(contractExecutionStatesEnum.FirstNameWithOffset(54), (notificationResult?.Code ?? -1),
-      //          notificationResult?.Message ?? "null")
-      //      ));
-      //  }
+      foreach (var uid in fileUids)
+      {
+        var file = await projectService.GetImportedFile(uid.Key.ToString());
+        if (file == null)
+        {
+          continue;
+        }
 
-      //log.LogInformation($"ActivateFile list contains {importedFileUids.Count} importedFiles");
+        file.IsActivated = uid.Value;
 
-      //  var nowUtc = DateTime.UtcNow;
-      //  var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(existing);
-      //  updateImportedFileEvent.ActionUTC = nowUtc;
-      //  updateImportedFileEvent.ReceivedUTC = nowUtc;
+        var nowUtc = DateTime.UtcNow;
+        var updateImportedFileEvent = AutoMapperUtility.Automapper.Map<UpdateImportedFileEvent>(file);
+        updateImportedFileEvent.ActionUTC = nowUtc;
+        updateImportedFileEvent.ReceivedUTC = nowUtc;
 
-      //  var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
+        var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
+        producer.Send(kafkaTopicName,
+          new List<KeyValuePair<string, string>>
+          {
+            new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
+          });
 
-      //  producer.Send(kafkaTopicName,
-      //    new List<KeyValuePair<string, string>>
-      //    {
-      //      new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-      //    });
+        if (await projectService.StoreEvent(updateImportedFileEvent) == 1)
+        {
+          result.Add(updateImportedFileEvent);
+        }
+        else
+        {
+          log.LogInformation($"SetFileActivatedState: Failed to set activation state to {updateImportedFileEvent.IsActivated} on ImportFile '{updateImportedFileEvent.ImportedFileUID}'.");
+        }
+      }
 
-      //  if (await projectService.StoreEvent(updateImportedFileEvent).ConfigureAwait(false) == 1)
-      //  {
-      //    return updateImportedFileEvent;
-      //  }
-
-      //  throw new ServiceException(HttpStatusCode.BadRequest,
-      //    new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(52),
-      //      contractExecutionStatesEnum.FirstNameWithOffset(52)));
-
-
-
-
-      //        var fileStream = new FileStream(pathAndFileName, FileMode.Open);
-      //  var tccPath = $"/{customerUid}/{projectUid}";
-      //  string tccFileName = Path.GetFileName(pathAndFileName);
-
-      //  if (importedFileType == ImportedFileType.SurveyedSurface)
-      //    if (surveyedUtc != null) // validation should prevent this
-      //      tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
-      //        Path.GetExtension(tccFileName));
-
-      //  log.LogInformation(
-      //    $"WriteFileToRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
-      //  // check for exists first to avoid an misleading exception in our logs.
-      //  var folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
-      //  if (folderAlreadyExists == false)
-      //    await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
-
-      //  // this does an upsert
-      //  var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length)
-      //    .ConfigureAwait(false);
-      //  if (ccPutFileResult == false)
-      //  {
-      //    throw new ServiceException(HttpStatusCode.InternalServerError,
-      //      new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(53),
-      //        contractExecutionStatesEnum.FirstNameWithOffset(53)));
-      //  }
-
-      //  log.LogInformation(
-      //    $"WriteFileToRepository: tccFileName {tccFileName} written to TCC. folderAlreadyExists {folderAlreadyExists}");
-      //  return FileDescriptor.CreateFileDescriptor(fileSpaceId, tccPath, tccFileName);
+      return result;
     }
 
     #region private
@@ -488,13 +449,11 @@ namespace Controllers
     private string LogCustomerDetails(string functionName, string projectUid)
     {
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-     // var customerUid = ((User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       log.LogInformation($"{functionName}: CustomerUID={customerUid} and projectUid={projectUid}");
 
       return customerUid;
     }
 
     #endregion
-
   }
 }

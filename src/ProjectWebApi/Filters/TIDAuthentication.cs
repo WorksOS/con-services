@@ -1,13 +1,12 @@
-﻿using System;
-using System.Net;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using MasterDataProxies;
+﻿using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using MasterDataProxies.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Security.Principal;
+using System.Threading.Tasks;
 using VSS.Authentication.JWT;
 using VSS.GenericConfiguration;
 

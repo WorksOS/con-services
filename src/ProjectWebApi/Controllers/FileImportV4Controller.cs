@@ -14,9 +14,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using ProjectWebApi.Internal;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -46,16 +46,17 @@ namespace Controllers
     /// <param name="raptorProxy"></param>
     /// <param name="fileRepo"></param>
     /// <param name="logger"></param>
+    /// <param name="serviceExceptionHandler"></param>
     public FileImportV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
-      IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger)
-      : base(producer, projectRepo, store, raptorProxy, fileRepo, logger)
+      IConfigurationStore store, IRaptorProxy raptorProxy, IFileRepository fileRepo, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+      : base(producer, projectRepo, store, raptorProxy, fileRepo, logger, serviceExceptionHandler)
     {
       Logger = logger;
       fileSpaceId = store.GetValueString("TCCFILESPACEID");
       if (string.IsNullOrEmpty(fileSpaceId))
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(48),
-            contractExecutionStatesEnum.FirstNameWithOffset(48)));
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 48);
+      }
     }
 
 
@@ -79,23 +80,79 @@ namespace Controllers
     /// Sets activated state on one or more imported files.
     /// </summary>
     /// <param name="projectUid">Project identifier</param>
-    /// <param name="importFilesRequest">Collection of file Uids to set the activated state on</param>
+    /// <param name="request">Collection of file Uids to set the activated state on</param>
     [Route("api/v4/importedfiles")]
     [HttpPut]
-    public async Task<IActionResult> UpdateImportedFileActivationStateV4(string projectUid, [FromBody] ActivatedImportFilesRequest importFilesRequest)
+    public async Task<IActionResult> UpdateImportedFileActivationStateV4(string projectUid, [FromBody] ActivatedImportFilesRequest request)
     {
       const string functionId = "SetImportedFileActivatedStateV4";
       log.LogInformation("ActivateFiles");
 
-      if (importFilesRequest == null)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(40),
-            contractExecutionStatesEnum.FirstNameWithOffset(40)));
-      }
-      log.LogInformation($"{functionId}. projectRequest: {0}", JsonConvert.SerializeObject(importFilesRequest));
+      await ValidateProjectId(projectUid);
 
-      return Ok(new { code = HttpStatusCode.OK, message = "Success" });
+      if (request == null)
+      {
+        throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
+      }
+
+      var fileIds = string.Join(",", request.ImportedFileDescriptors.Select(x => x.ImportedFileUid));
+      if (string.IsNullOrEmpty(fileIds))
+      {
+        return Ok(new { Code = HttpStatusCode.BadRequest, Message = "Request contains no imported file IDs." });
+      }
+
+      log.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
+
+      var importedFiles = await GetImportedFiles(projectUid);
+      if (!importedFiles.Any())
+      {
+        log.LogInformation($"{functionId}. Attempt to set file activation state when project contains no files");
+
+        return Ok(new { Code = HttpStatusCode.BadRequest, Message = "Project contains no imported files." });
+      }
+
+      var filesToUpdate = new Dictionary<Guid, bool>();
+
+      foreach (var activatedFileDescriptor in request.ImportedFileDescriptors)
+      {
+        var existingFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == activatedFileDescriptor.ImportedFileUid);
+        if (existingFile == null)
+        {
+          log.LogInformation(
+            $"{functionId}. File doesn't exist. projectUid {projectUid}, fileUid: {activatedFileDescriptor.ImportedFileUid}");
+          continue;
+        }
+
+        if (existingFile.IsActivated == activatedFileDescriptor.IsActivated)
+        {
+          log.LogInformation(
+            $"{functionId}. File activation state is already set to {existingFile.IsActivated}. No changes required. {existingFile.ImportedFileUid}");
+          continue;
+        }
+
+        log.LogInformation(
+          $"{functionId}. File queued for updating: {JsonConvert.SerializeObject(existingFile)}");
+        filesToUpdate.Add(new Guid(activatedFileDescriptor.ImportedFileUid), activatedFileDescriptor.IsActivated);
+      }
+
+      if (!filesToUpdate.Any())
+      {
+        return Ok(new { Code = HttpStatusCode.BadRequest, Message = "No files eligible for activation state change." });
+      }
+
+      try
+      {
+        var projectUidGuid = new Guid(projectUid);
+
+        var dbUpdateResult = await SetFileActivatedState(projectUidGuid, filesToUpdate);
+        await NotifyRaptorUpdateFile(projectUidGuid, dbUpdateResult.Select(x => x.ImportedFileUID));
+
+        return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
+      }
+      catch (Exception exception)
+      {
+        return new JsonResult(new { Code = HttpStatusCode.InternalServerError, exception.GetBaseException().Message });
+      }
     }
 
     /// <summary>
@@ -108,7 +165,6 @@ namespace Controllers
     {
       return new NoContentResult();
     }
-
 
     // POST: api/v4/importedfile
     /// <summary>
@@ -129,7 +185,7 @@ namespace Controllers
     [Route("api/v4/importedfile")]
     [HttpPost]
     [ActionName("Upload")]
-    [FlowUpload(Extensions = new string[]
+    [FlowUpload(Extensions = new[]
     {
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
@@ -149,13 +205,10 @@ namespace Controllers
 
       if (!System.IO.File.Exists(file.path))
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(55),
-            contractExecutionStatesEnum.FirstNameWithOffset(55)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
       }
 
-      //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
+      await ValidateProjectId(projectUid.ToString());
 
       var importedFileList = await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false);
       ImportedFileDescriptor importedFileDescriptor = null;
@@ -164,17 +217,15 @@ namespace Controllers
           f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
                && f.ImportedFileType == importedFileType
                && (
-                 (importedFileType == ImportedFileType.SurveyedSurface &&
-                  f.SurveyedUtc == surveyedUtc) ||
-                 (importedFileType != ImportedFileType.SurveyedSurface)
+                 importedFileType == ImportedFileType.SurveyedSurface &&
+                 f.SurveyedUtc == surveyedUtc ||
+                 importedFileType != ImportedFileType.SurveyedSurface
                ));
       if (importedFileDescriptor != null)
       {
         var message = $"CreateImportedFileV4. File: {file.flowFilename} has already been imported.";
         log.LogError(message);
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(58),
-            contractExecutionStatesEnum.FirstNameWithOffset(58)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 58);
       }
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
@@ -189,7 +240,7 @@ namespace Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(projectUid, fileDescriptor, createImportedFileEvent.ImportedFileID, 
+      await NotifyRaptorAddFile(projectUid, fileDescriptor, createImportedFileEvent.ImportedFileID,
         createImportedFileEvent.ImportedFileUID).ConfigureAwait(false);
 
       // FlowJS has this locked so can't delete it here
@@ -224,7 +275,7 @@ namespace Controllers
     [Route("api/v4/importedfile")]
     [HttpPut]
     [ActionName("Upload")]
-    [FlowUpload(Extensions = new string[]
+    [FlowUpload(Extensions = new[]
     {
       "svl", "dxf", "ttm"
     }, Size = 1000000000)]
@@ -243,13 +294,10 @@ namespace Controllers
 
       if (!System.IO.File.Exists(file.path))
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(55),
-            contractExecutionStatesEnum.FirstNameWithOffset(55)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 55);
       }
 
-      //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
+      await ValidateProjectId(projectUid.ToString());
 
       var importedFiles = await GetImportedFiles(projectUid.ToString()).ConfigureAwait(false);
       ImportedFile existing = null;
@@ -259,9 +307,9 @@ namespace Controllers
           f => string.Equals(f.Name, file.flowFilename, StringComparison.OrdinalIgnoreCase)
                && f.ImportedFileType == importedFileType
                && (
-                 (importedFileType == ImportedFileType.SurveyedSurface &&
-                  f.SurveyedUtc == surveyedUtc) ||
-                 (importedFileType != ImportedFileType.SurveyedSurface)
+                 importedFileType == ImportedFileType.SurveyedSurface &&
+                 f.SurveyedUtc == surveyedUtc ||
+                 importedFileType != ImportedFileType.SurveyedSurface
                ));
       }
       if (existing == null)
@@ -270,7 +318,6 @@ namespace Controllers
       else
         log.LogInformation(
           $"UpdateImportedFileV4. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
-
 
       // write file to TCC, returning filespaceID; path and filename which identifies it uniquely in TCC
       // this may be a create or update, so ok if it already exists in our DB
@@ -291,7 +338,7 @@ namespace Controllers
         importedFileUid = createImportedFileEvent.ImportedFileUID.ToString();
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
-
+      
       await NotifyRaptorAddFile(projectUid, fileDescriptor, importedFileId.Value, Guid.Parse(importedFileUid))
         .ConfigureAwait(false);
 
@@ -328,8 +375,7 @@ namespace Controllers
     {
       log.LogInformation($"DeleteImportedFileV4. projectUid {projectUid} importedFileUid: {importedFileUid}");
 
-      //validate customer-project relationship. if it fails, exception will be thrown from within the method
-      var project = await GetProject(projectUid.ToString()).ConfigureAwait(false);
+      await ValidateProjectId(projectUid.ToString());
 
       var importedFiles = await GetImportedFiles(projectUid.ToString()).ConfigureAwait(false);
       ImportedFile importedFile = null;
@@ -337,9 +383,7 @@ namespace Controllers
         importedFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == importedFileUid.ToString());
       if (importedFile == null)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(56),
-            contractExecutionStatesEnum.FirstNameWithOffset(56)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
       }
 
       await DeleteFileFromRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))
