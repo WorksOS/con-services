@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using ProjectWebApi.Filters;
+using ProjectWebApi.Internal;
+using ProjectWebApiCommon.Models;
+using Repositories;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using KafkaConsumer.Kafka;
-using MasterDataProxies.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using ProjectWebApi.Filters;
-using ProjectWebApiCommon.Models;
-using ProjectWebApiCommon.ResultsHandling;
-using Repositories;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -24,7 +24,6 @@ namespace Controllers
   /// </summary>
   public class ProjectV3Controller : ProjectBaseController
   {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectV3Controller"/> class.
     /// </summary>
@@ -36,10 +35,11 @@ namespace Controllers
     /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     public ProjectV3Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
-      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger)
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger, serviceExceptionHandler)
     {
     }
 
@@ -150,9 +150,7 @@ namespace Controllers
     {
       if (customerProject.LegacyCustomerID <= 0)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(38),
-            contractExecutionStatesEnum.FirstNameWithOffset(38)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 38);
       }
       await AssociateProjectCustomer(customerProject);
     }
@@ -185,7 +183,6 @@ namespace Controllers
       await AssociateGeofenceProject(geofenceProject);
     }
 
-
     #region private
 
     /// <summary>
@@ -199,22 +196,15 @@ namespace Controllers
     {
       ProjectDataValidator.Validate(project, projectService);
       if (project.ProjectID <= 0)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(44),
-            contractExecutionStatesEnum.FirstNameWithOffset(44)));
-      }
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 44);
+      
       project.ReceivedUTC = DateTime.UtcNow;
 
       //Save boundary as WKT
       project.ProjectBoundary = databaseProjectBoundary;
       var isCreated = await projectService.StoreEvent(project).ConfigureAwait(false);
       if (isCreated == 0)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(61),
-            contractExecutionStatesEnum.FirstNameWithOffset(61)));
-      }
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61);
 
       //Send boundary as old format on kafka queue
       project.ProjectBoundary = kafkaProjectBoundary;
@@ -235,11 +225,7 @@ namespace Controllers
 
       var isUpdated = await projectService.StoreEvent(project).ConfigureAwait(false);
       if (isUpdated == 0)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(62),
-            contractExecutionStatesEnum.FirstNameWithOffset(62)));
-      }
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62);
 
       var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = project });
       producer.Send(kafkaTopicName,
@@ -261,12 +247,8 @@ namespace Controllers
 
       var isUpdated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
       if (isUpdated == 0)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(63),
-            contractExecutionStatesEnum.FirstNameWithOffset(63)));
-      }
-
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
+      
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
@@ -287,11 +269,7 @@ namespace Controllers
 
       var isUpdated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
       if (isUpdated == 0)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(64),
-            contractExecutionStatesEnum.FirstNameWithOffset(64)));
-      }
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 64);
 
       var messagePayload = JsonConvert.SerializeObject(new { DissociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
@@ -313,11 +291,8 @@ namespace Controllers
 
       var isUpdated = await projectService.StoreEvent(geofenceProject).ConfigureAwait(false);
       if (isUpdated == 0)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(65),
-            contractExecutionStatesEnum.FirstNameWithOffset(65)));
-      }
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 65);
+
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
@@ -338,11 +313,7 @@ namespace Controllers
 
       var isDeleted = await projectService.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(66),
-            contractExecutionStatesEnum.FirstNameWithOffset(66)));
-      }
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
       producer.Send(kafkaTopicName,
@@ -355,4 +326,3 @@ namespace Controllers
     #endregion private
   }
 }
-

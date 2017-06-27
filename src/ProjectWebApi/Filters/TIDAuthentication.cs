@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Security.Principal;
-using System.Threading.Tasks;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using MasterDataProxies.Models;
@@ -11,6 +9,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ProjectWebApiCommon.ResultsHandling;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using ProjectWebApi.Internal;
 using VSS.Authentication.JWT;
 using VSS.GenericConfiguration;
 
@@ -25,7 +26,7 @@ namespace ProjectWebApi.Filters
     private ILogger<TIDAuthentication> log;
     private readonly ICustomerProxy customerProxy;
     private readonly IConfigurationStore store;
-    private static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected IServiceExceptionHandler ServiceExceptionHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TIDAuthentication"/> class.
@@ -37,12 +38,14 @@ namespace ProjectWebApi.Filters
     public TIDAuthentication(RequestDelegate next,
       ICustomerProxy customerProxy,
       IConfigurationStore store,
-      ILoggerFactory logger)
+      ILoggerFactory logger,
+      IServiceExceptionHandler serviceExceptionHandler)
     {
       log = logger.CreateLogger<TIDAuthentication>();
       this.customerProxy = customerProxy;
       _next = next;
       this.store = store;
+      ServiceExceptionHandler = serviceExceptionHandler;
     }
 
     /// <summary>
@@ -100,9 +103,7 @@ namespace ProjectWebApi.Filters
           if (context.Request.Method == HttpMethod.Get.Method)
             await _next.Invoke(context);
           else
-            throw new ServiceException(HttpStatusCode.InternalServerError,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(60),
-                contractExecutionStatesEnum.FirstNameWithOffset(60)));
+            ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 60);
           return;
         }
 

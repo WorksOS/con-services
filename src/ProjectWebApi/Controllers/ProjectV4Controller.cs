@@ -14,6 +14,7 @@ using MasterDataProxies.ResultHandling;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApi.Filters;
+using ProjectWebApi.Internal;
 using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using ProjectWebApiCommon.Utilities;
@@ -42,10 +43,11 @@ namespace Controllers
     /// <param name="geofenceProxy"></param>
     /// <param name="raptorProxy"></param>
     /// <param name="logger"></param>
+    /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     public ProjectV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
-      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger)
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger, serviceExceptionHandler)
     {
     }
 
@@ -63,7 +65,7 @@ namespace Controllers
       log.LogInformation("GetProjectsV4");
 
       var projects = await GetProjectList().ConfigureAwait(false);
-      return new ProjectV4DescriptorsListResult()
+      return new ProjectV4DescriptorsListResult
       {
         ProjectDescriptors = projects.Select(project =>
             AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project))
@@ -100,9 +102,7 @@ namespace Controllers
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       if (projectRequest == null)
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(39),
-            contractExecutionStatesEnum.FirstNameWithOffset(39)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
@@ -115,9 +115,7 @@ namespace Controllers
       ProjectDataValidator.Validate(project, projectService);
       if (project.CustomerUID.ToString() != customerUid)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(18),
-            contractExecutionStatesEnum.FirstNameWithOffset(18)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
       }
 
       await ValidateCoordSystemInRaptor(project).ConfigureAwait(false);
@@ -125,7 +123,7 @@ namespace Controllers
       log.LogDebug($"Testing if there are overlapping projects for project {project.ProjectName}");
       await DoesProjectOverlap(project, project.ProjectBoundary);
 
-      AssociateProjectCustomer customerProject = new AssociateProjectCustomer()
+      AssociateProjectCustomer customerProject = new AssociateProjectCustomer
       {
         CustomerUID = project.CustomerUID,
         LegacyCustomerID = project.CustomerID,
@@ -166,9 +164,7 @@ namespace Controllers
     {
       if (projectRequest == null)
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(40),
-            contractExecutionStatesEnum.FirstNameWithOffset(40)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
       log.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
@@ -189,15 +185,11 @@ namespace Controllers
 
       var isUpdated = await projectService.StoreEvent(project).ConfigureAwait(false);
       if (isUpdated == 0)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(62),
-            contractExecutionStatesEnum.FirstNameWithOffset(62)));
-      }
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62);
 
       var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
         });
@@ -222,7 +214,7 @@ namespace Controllers
     public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromUri] string projectUid)
     {
       LogCustomerDetails("DeleteProjectV4", projectUid);
-      var project = new DeleteProjectEvent()
+      var project = new DeleteProjectEvent
       {
         ProjectUID = Guid.Parse(projectUid),
         DeletePermanently = false,
@@ -234,14 +226,10 @@ namespace Controllers
       var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
       var isDeleted = await projectService.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(66),
-            contractExecutionStatesEnum.FirstNameWithOffset(66)));
-      }
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
 
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
         });
@@ -269,7 +257,7 @@ namespace Controllers
       var customerUid = LogCustomerDetails("GetSubscriptionsV4");
 
       //returns empty list if no subscriptions available
-      return new SubscriptionsListResult()
+      return new SubscriptionsListResult
       {
         SubscriptionDescriptors =
           (await GetFreeSubs(customerUid).ConfigureAwait(false)).Select(
@@ -295,11 +283,8 @@ namespace Controllers
         await projectService.DoesPolygonOverlap(project.CustomerUID.ToString(), databaseProjectBoundary,
           project.ProjectStartDate, project.ProjectEndDate).ConfigureAwait(false);
       if (overlaps)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(43),
-            contractExecutionStatesEnum.FirstNameWithOffset(43)));
-      }
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
+
       log.LogDebug($"No overlapping projects for {project.ProjectName}");
       return overlaps;
     }
@@ -319,9 +304,7 @@ namespace Controllers
             && (string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName)
                 || projectEvent.CoordinateSystemFileContent == null)
         )
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(45),
-              contractExecutionStatesEnum.FirstNameWithOffset(45)));
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
       }
 
       if (project is CreateProjectEvent)
@@ -345,23 +328,15 @@ namespace Controllers
         }
         catch (Exception e)
         {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
-              string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57),
-                "raptorProxy.CoordinateSystemValidate", e.Message)));
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemValidate", e.Message);
         }
         if (coordinateSystemSettingsResult == null)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(46),
-              contractExecutionStatesEnum.FirstNameWithOffset(46)));
-        }
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 46);
+
         if (coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(47),
-              string.Format(contractExecutionStatesEnum.FirstNameWithOffset(47), coordinateSystemSettingsResult.Code,
-                coordinateSystemSettingsResult.Message)));
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 47, coordinateSystemSettingsResult.Code,
+            coordinateSystemSettingsResult.Message);
         }
       }
       return true;
@@ -384,11 +359,8 @@ namespace Controllers
 
       var isCreated = await projectService.StoreEvent(project).ConfigureAwait(false);
       if (isCreated == 0)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(61),
-            contractExecutionStatesEnum.FirstNameWithOffset(61)));
-      }
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61);
+
       log.LogDebug($"Created the project in DB. IsCreated: {isCreated}. projectUid: {project.ProjectUID} legacyprojectID: {project.ProjectID}");
 
       if (project.ProjectID <= 0)
@@ -398,9 +370,7 @@ namespace Controllers
           project.ProjectID = existing.LegacyProjectID;
         else
         {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(42),
-              contractExecutionStatesEnum.FirstNameWithOffset(42)));
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 42);
         }
       }
       log.LogDebug($"Using Legacy projectId {project.ProjectID} for project {project.ProjectName}");
@@ -408,14 +378,9 @@ namespace Controllers
       // this is needed so that when ASNode (raptor client), which is called from CoordinateSystemPost, can retrieve the just written project+cp
       isCreated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
       if (isCreated == 0)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(63),
-            contractExecutionStatesEnum.FirstNameWithOffset(63)));
-      }
-
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
+ 
       log.LogDebug($"Created CustomerProject in DB {customerProject}");
-
       return project; // legacyID may have been added
     }
 
@@ -423,7 +388,7 @@ namespace Controllers
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
-        var customHeaders = (Request.Headers.GetCustomHeaders());
+        var customHeaders = Request.Headers.GetCustomHeaders();
         string caching = null;
         customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
         if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
@@ -443,22 +408,16 @@ namespace Controllers
           {
             if (isCreate)
               await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(41),
-                string.Format(contractExecutionStatesEnum.FirstNameWithOffset(41),
-                  coordinateSystemSettingsResult?.Code ?? -1,
-                  coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"
-                )));
+
+            throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1), (coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"));
           }
         }
         catch (Exception e)
         {
           if (isCreate)
             await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
-              string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57),
-                "raptorProxy.CoordinateSystemPost", e.Message)));
+
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.CoordinateSystemPost", e.Message);
         }
       }
     }
@@ -510,7 +469,7 @@ namespace Controllers
 
       var messagePayloadProject = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayloadProject)
         });
@@ -521,7 +480,7 @@ namespace Controllers
         $"AssociateCustomerProjectEvent on kafka queue {customerProject.ProjectUID} with Customer {customerProject.CustomerUID}");
       var messagePayloadCustomerProject = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayloadCustomerProject)
         });
@@ -560,9 +519,7 @@ namespace Controllers
       {
         // only called for Create, not update
         // await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(37),
-            contractExecutionStatesEnum.FirstNameWithOffset(37)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
       }
       return availableFreSub;
     }
@@ -614,10 +571,8 @@ namespace Controllers
         {
           // this is only called from a Create, so no need to consider Update
           await DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID).ConfigureAwait(false);
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
-              string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57),
-                "subsProxy.AssociateProjectSubscriptionInSubscriptionService", e.Message)));
+
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "subsProxy.AssociateProjectSubscriptionInSubscriptionService", e.Message);
         }
       }
     }
@@ -657,23 +612,20 @@ namespace Controllers
       {
         await DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID).ConfigureAwait(false);
         await DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned).ConfigureAwait(false);
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
-            string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57), "geofenceProxy.CreateGeofenceInGeofenceService",
-              e.Message)));
+
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
+          "geofenceProxy.CreateGeofenceInGeofenceService",
+          e.Message);
       }
       if (geofenceUidCreated == Guid.Empty)
       {
         await DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID).ConfigureAwait(false);
         await DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned).ConfigureAwait(false);
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(59),
-            contractExecutionStatesEnum.FirstNameWithOffset(59)));
+
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 59);
       }
     }
 
     #endregion private
-
   }
 }
-

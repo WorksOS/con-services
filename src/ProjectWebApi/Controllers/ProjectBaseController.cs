@@ -12,6 +12,7 @@ using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ProjectWebApi.Filters;
+using ProjectWebApi.Internal;
 using ProjectWebApiCommon.Models;
 using Repositories;
 using Repositories.DBModels;
@@ -37,7 +38,7 @@ namespace Controllers
     protected readonly IConfigurationStore store;
     protected readonly string kafkaTopicName;
     protected readonly SubscriptionRepository subsService;
-    protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected IServiceExceptionHandler ServiceExceptionHandler;
 
     // save for potential rollback
     protected Guid subscriptionUidAssigned = Guid.Empty;
@@ -55,9 +56,10 @@ namespace Controllers
     /// <param name="geofenceProxy">The geofence proxy.</param>
     /// <param name="raptorProxy">The raptorServices proxy.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="serviceExceptionHandler">The ServiceException handler</param>
     public ProjectBaseController(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger)
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
     {
       log = logger.CreateLogger<ProjectBaseController>();
       this.producer = producer;
@@ -72,11 +74,14 @@ namespace Controllers
       this.raptorProxy = raptorProxy;
       this.store = store;
 
+      ServiceExceptionHandler = serviceExceptionHandler;
+
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
     /// <summary>
+
     /// Gets the project list for a customer
     /// </summary>
     /// <returns></returns>
@@ -85,7 +90,7 @@ namespace Controllers
       var customerUid = LogCustomerDetails("GetProjectList");
       var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
-      log.LogInformation($"Project list contains {projects.Count()} projects");
+      log.LogInformation($"Project list contains {projects.Count} projects");
       return projects;
     }
 
@@ -104,9 +109,7 @@ namespace Controllers
       if (project == null)
       {
         log.LogWarning($"User doesn't have access to {projectUid}");
-        throw new ServiceException(HttpStatusCode.Forbidden,
-          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(1),
-            contractExecutionStatesEnum.FirstNameWithOffset(1)));
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
       }
 
       log.LogInformation($"Project {projectUid} retrieved");
@@ -118,6 +121,7 @@ namespace Controllers
     /// </summary>
     /// <param name="functionName"></param>
     /// <param name="projectUid"></param>
+
     /// <returns></returns>
     protected string LogCustomerDetails(string functionName, string projectUid = "")
     {
