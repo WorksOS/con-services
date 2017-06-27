@@ -132,7 +132,7 @@ namespace Controllers
     /// Creates an imported file in Db.
     /// </summary>
     /// <returns />
-    protected async Task<CreateImportedFileEvent> CreateImportedFile(Guid customerUid, Guid projectUid,
+    protected async Task<CreateImportedFileEvent> CreateImportedFileinDb(Guid customerUid, Guid projectUid,
       ImportedFileType importedFileType, string filename, DateTime? surveyedUtc,
       string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy)
     {
@@ -173,7 +173,7 @@ namespace Controllers
             contractExecutionStatesEnum.FirstNameWithOffset(50)));
 
       log.LogDebug(
-        $"CreateImportedFile: Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
+        $"CreateImportedFileinDb: Legacy importedFileId {createImportedFileEvent.ImportedFileID} for ImportedFile {filename} for project {projectUid}.");
       return createImportedFileEvent;
     }
 
@@ -187,7 +187,7 @@ namespace Controllers
     /// <param name="fileUpdatedUtc"></param>
     /// <param name="importedBy"></param>
     /// <returns></returns>
-    protected async Task<UpdateImportedFileEvent> UpdateImportedFile(
+    protected async Task<UpdateImportedFileEvent> UpdateImportedFileInDb(
       ImportedFile existing,
       string fileDescriptor, DateTime? surveyedUtc,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy)
@@ -321,7 +321,7 @@ namespace Controllers
       {
         log.LogError($"FileImport AddFile in RaptorServices failed with exception. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. isCreate: {isCreate}. Exception Thrown: {e.Message}. ");
         if (isCreate)
-          await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
+          await DeleteImportedFile(projectUid, importedFileUid, true).ConfigureAwait(false);
 
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
@@ -334,7 +334,7 @@ namespace Controllers
       {
         log.LogError($"FileImport AddFile in RaptorServices failed. projectId:{projectId} projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"} isCreate: {isCreate}. ");
         if (isCreate)
-          await DeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
+          await DeleteImportedFile(projectUid, importedFileUid, true).ConfigureAwait(false);
 
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(notificationResult.Code, notificationResult.Message));

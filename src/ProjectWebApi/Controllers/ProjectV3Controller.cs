@@ -89,6 +89,7 @@ namespace Controllers
     [HttpPost]
     public async Task CreateProjectV3([FromBody] CreateProjectEvent project)
     {
+      log.LogInformation("CreateProjectV3. project: {0}", JsonConvert.SerializeObject(project));
       ProjectBoundaryValidator.ValidateWKT(project.ProjectBoundary);
       string wktBoundary = project.ProjectBoundary;
 
@@ -113,6 +114,8 @@ namespace Controllers
     [HttpPut]
     public async Task UpdateProjectV3([FromBody] UpdateProjectEvent project)
     {
+      log.LogInformation("UpdateProjectV3. project: {0}", JsonConvert.SerializeObject(project));
+
       await UpdateProject(project);
     }
 
@@ -128,6 +131,8 @@ namespace Controllers
     [HttpDelete]
     public async Task DeleteProjectV3([FromBody] DeleteProjectEvent project)
     {
+      log.LogInformation("DeleteProjectV3. project: {0}", JsonConvert.SerializeObject(project));
+
       await DeleteProject(project);
     }
 
@@ -200,14 +205,21 @@ namespace Controllers
       }
       project.ReceivedUTC = DateTime.UtcNow;
 
+      //Save boundary as WKT
+      project.ProjectBoundary = databaseProjectBoundary;
+      var isCreated = await projectService.StoreEvent(project).ConfigureAwait(false);
+      if (isCreated == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(61),
+            contractExecutionStatesEnum.FirstNameWithOffset(61)));
+      }
+
       //Send boundary as old format on kafka queue
       project.ProjectBoundary = kafkaProjectBoundary;
       var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
       await producer.Send(kafkaTopicName,
         new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload));
-      //Save boundary as WKT
-      project.ProjectBoundary = databaseProjectBoundary;
-      await projectService.StoreEvent(project).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -220,13 +232,20 @@ namespace Controllers
       ProjectDataValidator.Validate(project, projectService);
       project.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
+      var isUpdated = await projectService.StoreEvent(project).ConfigureAwait(false);
+      if (isUpdated == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(62),
+            contractExecutionStatesEnum.FirstNameWithOffset(62)));
+      }
+
+      var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = project });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
         });
-      await projectService.StoreEvent(project).ConfigureAwait(false);
     }
     
     /// <summary>
@@ -239,13 +258,20 @@ namespace Controllers
       ProjectDataValidator.Validate(customerProject, projectService);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
+      var isUpdated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+      if (isUpdated == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(63),
+            contractExecutionStatesEnum.FirstNameWithOffset(63)));
+      }
+
+      var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
         });
-      await projectService.StoreEvent(customerProject).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -258,13 +284,20 @@ namespace Controllers
       ProjectDataValidator.Validate(customerProject, projectService);
       customerProject.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new {DissociateProjectCustomer = customerProject});
+      var isUpdated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+      if (isUpdated == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(64),
+            contractExecutionStatesEnum.FirstNameWithOffset(64)));
+      }
+
+      var messagePayload = JsonConvert.SerializeObject(new { DissociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayload)
         });
-      await projectService.StoreEvent(customerProject).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -277,13 +310,19 @@ namespace Controllers
       ProjectDataValidator.Validate(geofenceProject, projectService);
       geofenceProject.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new {AssociateProjectGeofence = geofenceProject});
+      var isUpdated = await projectService.StoreEvent(geofenceProject).ConfigureAwait(false);
+      if (isUpdated == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(65),
+            contractExecutionStatesEnum.FirstNameWithOffset(65)));
+      }
+      var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectGeofence = geofenceProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
           new KeyValuePair<string, string>(geofenceProject.ProjectUID.ToString(), messagePayload)
         });
-      await projectService.StoreEvent(geofenceProject).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -296,13 +335,20 @@ namespace Controllers
       ProjectDataValidator.Validate(project, projectService);
       project.ReceivedUTC = DateTime.UtcNow;
 
-      var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
+      var isDeleted = await projectService.StoreEvent(project).ConfigureAwait(false);
+      if (isDeleted == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(66),
+            contractExecutionStatesEnum.FirstNameWithOffset(66)));
+      }
+
+      var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
         {
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
         });
-      await projectService.StoreEvent(project).ConfigureAwait(false);
     }
 
     #endregion private

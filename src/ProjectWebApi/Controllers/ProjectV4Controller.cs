@@ -97,7 +97,6 @@ namespace Controllers
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
-      /*** validation ***/
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       if (projectRequest == null)
       {
@@ -141,7 +140,7 @@ namespace Controllers
       /*** now making changes, potentially needing rollback ***/
       project = await CreateProjectInDb(project, customerProject).ConfigureAwait(false);
       await CreateCoordSystemInRaptor(project.ProjectUID, project.ProjectID, project.CoordinateSystemFileName, project.CoordinateSystemFileContent, true).ConfigureAwait(false);
-      await AssociateProjectSubscriptionInGeofenceservice(project).ConfigureAwait(false);
+      await AssociateProjectSubscriptionInSubscriptionService(project).ConfigureAwait(false);
       await CreateGeofenceInGeofenceService(project).ConfigureAwait(false);
 
       // doing this as late as possible in case something fails. We can't cleanup kafka que.
@@ -165,7 +164,6 @@ namespace Controllers
     [HttpPut]
     public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest)
     {
-      /*** validation ***/
       if (projectRequest == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -189,7 +187,13 @@ namespace Controllers
           project.CoordinateSystemFileName, project.CoordinateSystemFileContent, false).ConfigureAwait(false);
       }
 
-      await projectService.StoreEvent(project).ConfigureAwait(false);
+      var isUpdated = await projectService.StoreEvent(project).ConfigureAwait(false);
+      if (isUpdated == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(62),
+            contractExecutionStatesEnum.FirstNameWithOffset(62)));
+      }
 
       var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
       producer.Send(kafkaTopicName,
@@ -217,9 +221,8 @@ namespace Controllers
     [HttpDelete]
     public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromUri] string projectUid)
     {
-      var userUid = ((User as TIDCustomPrincipal).Identity as GenericIdentity).Name;
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogInformation($"DeleteProjectV4. UserUid: {userUid} customerUid: {customerUid} Project: {projectUid}");
+      log.LogInformation($"DeleteProjectV4. customerUid: {customerUid} Project: {projectUid}");
 
       var project = new DeleteProjectEvent()
       {
@@ -231,7 +234,13 @@ namespace Controllers
       ProjectDataValidator.Validate(project, projectService);
 
       var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
-      await projectService.StoreEvent(project).ConfigureAwait(false);
+      var isDeleted = await projectService.StoreEvent(project).ConfigureAwait(false);
+      if (isDeleted == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(66),
+            contractExecutionStatesEnum.FirstNameWithOffset(66)));
+      }
 
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
@@ -375,10 +384,16 @@ namespace Controllers
     /// <returns></returns>
     private async Task<CreateProjectEvent> CreateProjectInDb(CreateProjectEvent project, AssociateProjectCustomer customerProject)
     {
-      log.LogDebug($"Creating the project {project.ProjectName}");
+      log.LogDebug($"Creating the project in the DB {JsonConvert.SerializeObject(project)} and customerProject {JsonConvert.SerializeObject(customerProject)}");
 
       var isCreated = await projectService.StoreEvent(project).ConfigureAwait(false);
-      log.LogDebug($"Created the project in DB. IsCreated: {isCreated}. proejctUid: {project.ProjectUID} legacyprojectID: {project.ProjectID}");
+      if (isCreated == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(61),
+            contractExecutionStatesEnum.FirstNameWithOffset(61)));
+      }
+      log.LogDebug($"Created the project in DB. IsCreated: {isCreated}. projectUid: {project.ProjectUID} legacyprojectID: {project.ProjectID}");
 
       if (project.ProjectID <= 0)
       {
@@ -395,8 +410,15 @@ namespace Controllers
       log.LogDebug($"Using Legacy projectId {project.ProjectID} for project {project.ProjectName}");
 
       // this is needed so that when ASNode (raptor client), which is called from CoordinateSystemPost, can retrieve the just written project+cp
-      await projectService.StoreEvent(customerProject).ConfigureAwait(false);
-      log.LogDebug($"Created CustomerProject {customerProject}");
+      isCreated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+      if (isCreated == 0)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(63),
+            contractExecutionStatesEnum.FirstNameWithOffset(63)));
+      }
+
+      log.LogDebug($"Created CustomerProject in DB {customerProject}");
 
       return project; // legacyID may have been added
     }
@@ -411,24 +433,36 @@ namespace Controllers
         if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
           customHeaders.Add("X-VisionLink-ClearCache", "true");
 
-        var coordinateSystemSettingsResult = await raptorProxy
-          .CoordinateSystemPost(legacyProjectId, coordinateSystemFileContent,
-            coordinateSystemFileName, customHeaders).ConfigureAwait(false);
-        var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
-          coordinateSystemSettingsResult?.Code ?? -1,
-          coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
-        log.LogDebug(message);
-        if (coordinateSystemSettingsResult == null ||
-            coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
+        try
+        {
+          var coordinateSystemSettingsResult = await raptorProxy
+            .CoordinateSystemPost(legacyProjectId, coordinateSystemFileContent,
+              coordinateSystemFileName, customHeaders).ConfigureAwait(false);
+          var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
+            coordinateSystemSettingsResult?.Code ?? -1,
+            coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
+          log.LogDebug(message);
+          if (coordinateSystemSettingsResult == null ||
+              coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
+          {
+            if (isCreate)
+              await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(41),
+                string.Format(contractExecutionStatesEnum.FirstNameWithOffset(41),
+                  coordinateSystemSettingsResult?.Code ?? -1,
+                  coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"
+                )));
+          }
+        }
+        catch (Exception e)
         {
           if (isCreate)
             await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(41),
-              string.Format(contractExecutionStatesEnum.FirstNameWithOffset(41),
-                coordinateSystemSettingsResult?.Code ?? -1,
-                coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"
-              )));
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
+              string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57),
+                "raptorProxy.CoordinateSystemPost", e.Message)));
         }
       }
     }
@@ -450,7 +484,7 @@ namespace Controllers
         DeletePermanently = true,
         ActionUTC = DateTime.UtcNow
       };
-      var isDeleted = await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
+      await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
 
       await projectService.StoreEvent(new DissociateProjectCustomer()
       {
@@ -505,7 +539,7 @@ namespace Controllers
     /// <returns></returns>
     /// <exception cref="ServiceException"></exception>
     /// <exception cref="ContractExecutionResult">No available subscriptions for the selected customer</exception>
-    private async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type)
+    private async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type, Guid projectUid)
     {
       var availableSubscriptions =
         (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
@@ -528,6 +562,8 @@ namespace Controllers
         $"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
       if (!availableFreSub.Any())
       {
+        // only called for Create, not update
+        await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(37),
             contractExecutionStatesEnum.FirstNameWithOffset(37)));
@@ -563,14 +599,14 @@ namespace Controllers
     /// </summary>
     /// <param name="project">The project.</param>
     /// <returns></returns>
-    private async Task AssociateProjectSubscriptionInGeofenceservice(CreateProjectEvent project)
+    private async Task AssociateProjectSubscriptionInSubscriptionService(CreateProjectEvent project)
     {
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
-      log.LogDebug($"AssociateProjectSubscriptionInGeofenceservice: CustomerUID ={customerUid} and user={User}");
+      log.LogDebug($"AssociateProjectSubscriptionInSubscriptionService: CustomerUID ={customerUid} and user={User}");
 
       if (project.ProjectType == ProjectType.LandFill || project.ProjectType == ProjectType.ProjectMonitoring)
       {
-        subscriptionUidAssigned = Guid.Parse((await GetFreeSubs(customerUid, project.ProjectType)).First()
+        subscriptionUidAssigned = Guid.Parse((await GetFreeSubs(customerUid, project.ProjectType, project.ProjectUID)).First()
           .SubscriptionUID);
         log.LogDebug($"Receieved {subscriptionUidAssigned} subscription");
         //Assign a new project to a subscription
@@ -581,11 +617,12 @@ namespace Controllers
         }
         catch (Exception e)
         {
+          // this is only called from a Create, so no need to consider Update
           await DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID).ConfigureAwait(false);
           throw new ServiceException(HttpStatusCode.InternalServerError,
             new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(57),
               string.Format(contractExecutionStatesEnum.FirstNameWithOffset(57),
-                "subsProxy.AssociateProjectSubscriptionInGeofenceservice", e.Message)));
+                "subsProxy.AssociateProjectSubscriptionInSubscriptionService", e.Message)));
         }
       }
     }
@@ -614,12 +651,12 @@ namespace Controllers
     private async Task CreateGeofenceInGeofenceService(CreateProjectEvent project)
     {
       log.LogDebug($"Creating a geofence for project: {project.ProjectName}");
-      var userUid = Guid.Parse(((User as TIDCustomPrincipal).Identity as GenericIdentity).Name);
+      var userUid = ((User as TIDCustomPrincipal).Identity as GenericIdentity).Name;
       try
       {
         geofenceUidCreated = await geofenceProxy.CreateGeofence(project.CustomerUID, project.ProjectName, "", "Project",
           project.ProjectBoundary,
-          0, true, userUid, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
+          0, true, Guid.Parse(userUid), Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
       }
       catch (Exception e)
       {

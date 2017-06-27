@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using MasterDataProxies;
@@ -7,7 +8,9 @@ using MasterDataProxies.Interfaces;
 using MasterDataProxies.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ProjectWebApiCommon.ResultsHandling;
 using VSS.Authentication.JWT;
 using VSS.GenericConfiguration;
 
@@ -22,7 +25,7 @@ namespace ProjectWebApi.Filters
     private ILogger<TIDAuthentication> log;
     private readonly ICustomerProxy customerProxy;
     private readonly IConfigurationStore store;
-
+    private static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TIDAuthentication"/> class.
@@ -93,7 +96,13 @@ namespace ProjectWebApi.Filters
           log.LogInformation(
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
-          await _next.Invoke(context);
+
+          if (context.Request.Method == HttpMethod.Get.Method)
+            await _next.Invoke(context);
+          else
+            throw new ServiceException(HttpStatusCode.InternalServerError,
+              new ContractExecutionResult(contractExecutionStatesEnum.GetErrorNumberwithOffset(60),
+                contractExecutionStatesEnum.FirstNameWithOffset(60)));
           return;
         }
 

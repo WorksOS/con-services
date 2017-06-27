@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
 using FlowUploadFilter;
@@ -16,8 +15,6 @@ using ProjectWebApiCommon.Models;
 using ProjectWebApiCommon.ResultsHandling;
 using Repositories;
 using Repositories.DBModels;
-using System.Collections.Generic;
-using System.Net.Http;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -187,7 +184,7 @@ namespace Controllers
         .ConfigureAwait(false);
 
       // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
-      CreateImportedFileEvent createImportedFileEvent = await CreateImportedFile(Guid.Parse(customerUid), projectUid,
+      CreateImportedFileEvent createImportedFileEvent = await CreateImportedFileinDb(Guid.Parse(customerUid), projectUid,
           importedFileType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
@@ -203,7 +200,8 @@ namespace Controllers
           new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
 
-      System.IO.File.Delete(file.path);
+      // Flow has it attached. Trying to delete results in 'The process cannot access the file '...' because it is being used by another process'
+      //System.IO.File.Delete(file.path);
 
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))
@@ -293,7 +291,7 @@ namespace Controllers
       if (existing == null)
       {
         // need to write to Db prior to notifying raptor, as raptor needs the legacyImportedFileID 
-        createImportedFileEvent = await CreateImportedFile(Guid.Parse(customerUid), projectUid,
+        createImportedFileEvent = await CreateImportedFileinDb(Guid.Parse(customerUid), projectUid,
             importedFileType, file.flowFilename, surveyedUtc, JsonConvert.SerializeObject(fileDescriptor),
             fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
           .ConfigureAwait(false);
@@ -308,7 +306,7 @@ namespace Controllers
       // if all succeeds, update Db (if not Create) and send create/update to kafka que
       if (existing != null) // update
       {
-        var updateImportedFileEvent = await UpdateImportedFile(existing, JsonConvert.SerializeObject(fileDescriptor),
+        var updateImportedFileEvent = await UpdateImportedFileInDb(existing, JsonConvert.SerializeObject(fileDescriptor),
             surveyedUtc,
             fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
           .ConfigureAwait(false);
@@ -330,7 +328,8 @@ namespace Controllers
           });
       }
 
-      System.IO.File.Delete(file.path);
+      // Flow has it attached. Trying to delete results in 'The process cannot access the file '...' because it is being used by another process'
+      //System.IO.File.Delete(file.path);
 
       var importedFile = new ImportedFileDescriptorSingleResult(
         (await GetImportedFileList(projectUid.ToString()).ConfigureAwait(false))

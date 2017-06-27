@@ -131,6 +131,13 @@ namespace ProjectWebApiCommon.ResultsHandling
       DynamicAddwithOffset("Unable to access {0} endpoint. Exception: {1}", 57);
       DynamicAddwithOffset("CreateImportedFileV4. The file has already been created.", 58);
       DynamicAddwithOffset("GeofenceService CreateGeofence failed. No geofenceUid returned.", 59);
+      DynamicAddwithOffset("Application calling context supports only HttpGet endpoints.", 60);
+      DynamicAddwithOffset("Unable to create project.", 61);
+      DynamicAddwithOffset("Unable to update project.", 62);
+      DynamicAddwithOffset("Unable to associate project with customer.", 63);
+      DynamicAddwithOffset("Unable to disassociate project from customer.", 64);
+      DynamicAddwithOffset("Unable to associate project with geofence.", 65);
+      DynamicAddwithOffset("Unable to delete project.", 66);
     }
 
     /// <summary>
