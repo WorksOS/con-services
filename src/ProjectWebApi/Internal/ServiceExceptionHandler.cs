@@ -23,6 +23,9 @@ namespace ProjectWebApi.Internal
           string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(errorNumber), resultCode, errorMessage ?? "null")));
     }
 
+    /// <summary>
+    /// Correctly throw ServiceException for controller types.
+    /// </summary>
     public ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, int resultCode,
       string errorMessage = null)
     {
