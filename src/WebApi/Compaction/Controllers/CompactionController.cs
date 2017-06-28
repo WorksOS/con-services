@@ -97,8 +97,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<CompactionController>();
-      this.elevationExtentsCache = cache;
+      log = logger.CreateLogger<CompactionController>();
+      elevationExtentsCache = cache;
       this.fileListProxy = fileListProxy;
       this.configStore = configStore;
       this.fileRepo = fileRepo;
@@ -1090,9 +1090,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Elevation statistics</returns>
     private ElevationStatisticsResult GetElevationRange(long projectId, Filter filter)
     {
-      ElevationStatisticsResult result = null;
       string cacheKey = ElevationCacheKey(projectId, filter);
-      if (!this.elevationExtentsCache.TryGetValue(cacheKey, out result))
+      if (!elevationExtentsCache.TryGetValue(cacheKey, out ElevationStatisticsResult result))
       {
         LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
 
@@ -1159,8 +1158,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
       string machineName, bool? isJohnDoe, List<long> excludedSurveyedSurfaceIds)
     {
-      var key = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}", projectId, startUtc, endUtc, vibeStateOn,
-        elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      var key =
+        $"{projectId},{startUtc},{endUtc},{vibeStateOn},{elevationType},{layerNumber},{onMachineDesignId},{assetID},{machineName},{isJohnDoe}";
       if (excludedSurveyedSurfaceIds == null || excludedSurveyedSurfaceIds.Count == 0)
       {
         key += ",null";
@@ -1169,7 +1168,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         foreach (long id in excludedSurveyedSurfaceIds)
         {
-          key = string.Format("{0},{1}", key, id);
+          key = $"{key},{id}";
         }
       }
       return key;
@@ -1620,8 +1619,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             "Missing file type"));
       }
       //Check file type is valid
-      ImportedFileType importedFileType;
-      if (Enum.TryParse(fileType, true, out importedFileType))
+      if (Enum.TryParse(fileType, true, out ImportedFileType importedFileType))
       {
         if (importedFileType != ImportedFileType.Linework &&
             importedFileType != ImportedFileType.Alignment &&
@@ -1704,9 +1702,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       int count = 0;
       foreach (string s in bbox.Split(','))
       {
-        double num;
-
-        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out num))
+        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out double num))
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

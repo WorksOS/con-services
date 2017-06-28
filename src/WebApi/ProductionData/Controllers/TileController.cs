@@ -8,7 +8,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
+namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class TileController : Controller, ITileContract
@@ -37,7 +37,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<TileController>();
+      log = logger.CreateLogger<TileController>();
     }
 
     /// <summary>
