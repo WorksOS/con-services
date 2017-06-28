@@ -130,7 +130,7 @@ namespace WebApiModels.Notification.Helpers
         string fileId = null;
         while (!done)
         {
-          Thread.Sleep(waitInterval);
+          await Task.Delay(waitInterval);
           log.LogDebug("Before CheckFileJobStatus: JobId={0}", jobId);
           var checkStatusResult = await fileRepo.CheckFileJobStatus(jobId);
           log.LogDebug("After CheckFileJobStatus: Status={0}",
@@ -305,7 +305,7 @@ namespace WebApiModels.Notification.Helpers
 
               while (!done)
               {
-                Thread.Sleep(waitInterval);
+                await Task.Delay(waitInterval);
                 log.LogDebug("Before CheckExportJob: JobId={0}", exportJobId);
                 var jobStatus = await fileRepo.CheckExportJob(exportJobId);
                 done = string.IsNullOrEmpty(jobStatus) || jobStatus == "COMPLETED";
