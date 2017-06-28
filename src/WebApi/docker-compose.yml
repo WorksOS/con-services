@@ -1,8 +1,8 @@
 version: '2.1'
 
 services:
-  vss.raptor.service.webapi:
-    image: username/vss.raptor.service.webapi
+  vss.productivity3d.webapi:
+    image: username/vss.productivity3d.webapi
     build:
       context: .
       dockerfile: Dockerfile

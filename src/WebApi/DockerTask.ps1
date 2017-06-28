@@ -143,7 +143,7 @@ $launchURLPath = "api/v1/compaction"
 $ProjectName = $ProjectName -replace "[^a-zA-Z0-9]", ""
 
 # The name of the image created by the compose file
-$ImageName = "username/vss.raptor.service.webapi"
+$ImageName = "username/vss.productivity3d.webapi"
 
 # Calculate the name of the container created by the compose file
 $ContainerName = "${ProjectName}_vss.productivity3d.webapi"
