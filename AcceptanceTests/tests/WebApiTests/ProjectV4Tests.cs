@@ -124,28 +124,6 @@ namespace WebApiTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
     }
 
-    [TestMethod] [Ignore]
-    public void CreateProjectWithoutLegacyCustomerId()
-    {
-      msg.Title("Project v4 test 5", "Create standard project with out legacy customer id");
-      var ts = new TestSupport(); 
-      var projectUid = Guid.NewGuid().ToString();
-      var customerUid = Guid.NewGuid();
-      var startDateTime = ts.FirstEventDate;
-      var endDateTime = new DateTime(9999, 12, 31);
-      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
-      var customerEventArray = new[] {
-       "| TableName | EventDate   | Name            | fk_CustomerTypeID | CustomerUID   |",
-      $"| Customer  | 0d+09:00:00 | Boundary Test 5 | 1                 | {customerUid} |"};
-      ts.PublishEventCollection(customerEventArray);
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType          | EventDate   | ProjectUID   | ProjectName     | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | IsArchived | ",
-      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Boundary Test 5 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | false      |"};
-      ts.PublishEventCollection(projectEventArray);
-      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-    }
-
     [TestMethod]
     public void Create2SubscriptionsFoLandfillAndCreateProjects()
     {

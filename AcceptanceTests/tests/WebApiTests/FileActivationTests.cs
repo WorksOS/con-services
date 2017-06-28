@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Net;
 using TestUtility;
 
-namespace WebApiTests.FileImport
+namespace WebApiTests
 {
   [TestClass]
   [Ignore]

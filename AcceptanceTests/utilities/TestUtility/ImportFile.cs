@@ -35,7 +35,6 @@ namespace TestUtility
     /// </summary>
     /// <param name="uri"></param>
     /// <param name="customerUid"></param>
-    /// <param name="projectUid"></param>
     public ImportedFileDescriptorListResult GetImportedFilesFromWebApi(string uri, Guid customerUid)
     {
       var response = CallWebApi(uri, HttpMethod.Get.ToString(), null, customerUid.ToString());
