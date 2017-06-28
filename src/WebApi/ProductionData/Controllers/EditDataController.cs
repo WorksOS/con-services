@@ -16,6 +16,9 @@ using VSS.Productivity3D.WebApiModels.Report.Executors;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
+  /// <summary>
+  /// 
+  /// </summary>
   [ResponseCache(NoStore = true)]
   public class EditDataController : Controller, IEditDataContract
   {

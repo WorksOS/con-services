@@ -9,6 +9,9 @@ using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
+  /// <summary>
+  /// 
+  /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class ProjectExtentsController : Controller, IProjectExtentsContract
   {

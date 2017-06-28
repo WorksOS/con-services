@@ -39,7 +39,9 @@ using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.Co
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
-
+  /// <summary>
+  /// 
+  /// </summary>
   //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
   public class CompactionController : Controller
@@ -251,7 +253,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result =
-            RequestExecutorContainer.Build<SummaryCMVExecutor>(logger, raptorClient, null).Process(request) as
+            RequestExecutorContainer.Build<SummaryCMVExecutor>(logger, raptorClient).Process(request) as
                 CMVSummaryResult;
         var returnResult = CompactionCmvSummaryResult.CreateCmvSummaryResult(result, request.cmvSettings);
         log.LogInformation("GetCmvSummary result: " + JsonConvert.SerializeObject(returnResult));
@@ -329,7 +331,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       try
       {
-        var result = RequestExecutorContainer.Build<SummaryMDPExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainer.Build<SummaryMDPExecutor>(logger, raptorClient)
             .Process(request) as MDPSummaryResult;
         var returnResult = CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
         log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
@@ -397,7 +399,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainer.Build<SummaryPassCountsExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainer.Build<SummaryPassCountsExecutor>(logger, raptorClient)
             .Process(request) as PassCountSummaryResult;
         var returnResult = CompactionPassCountSummaryResult.CreatePassCountSummaryResult(result);
         log.LogInformation("GetPassCountSummary result: " + JsonConvert.SerializeObject(returnResult));
@@ -476,7 +478,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var result =
-            RequestExecutorContainer.Build<SummaryTemperatureExecutor>(logger, raptorClient, null)
+            RequestExecutorContainer.Build<SummaryTemperatureExecutor>(logger, raptorClient)
                 .Process(request) as TemperatureSummaryResult;
         var returnResult = CompactionTemperatureSummaryResult.CreateTemperatureSummaryResult(result);
         log.LogInformation("GetTemperatureSummary result: " + JsonConvert.SerializeObject(returnResult));
@@ -554,7 +556,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       try
       {
-        var result = RequestExecutorContainer.Build<SummarySpeedExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainer.Build<SummarySpeedExecutor>(logger, raptorClient)
             .Process(request) as SummarySpeedResult;
         var returnResult =
             CompactionSpeedSummaryResult.CreateSpeedSummaryResult(result, liftSettings.machineSpeedTarget);
@@ -632,7 +634,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       request.Validate();
       try
       {
-        var result = RequestExecutorContainer.Build<CMVChangeSummaryExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainer.Build<CMVChangeSummaryExecutor>(logger, raptorClient)
             .Process(request) as CMVChangeSummaryResult;
         var returnResult = CompactionCmvPercentChangeResult.CreateCmvPercentChangeResult(result);
         log.LogInformation("GetCmvPercentChange result: " + JsonConvert.SerializeObject(returnResult));
@@ -704,7 +706,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainer.Build<DetailedCMVExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainer.Build<DetailedCMVExecutor>(logger, raptorClient)
             .Process(request) as CMVDetailedResult;
         var returnResult = CompactionCmvDetailedResult.CreateCmvDetailedResult(result);
 
@@ -774,7 +776,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = RequestExecutorContainer.Build<DetailedPassCountExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainer.Build<DetailedPassCountExecutor>(logger, raptorClient)
             .Process(request) as PassCountDetailedResult;
         var returnResult = CompactionPassCountDetailedResult.CreatePassCountDetailedResult(result);
         log.LogInformation("GetPassCountDetails result: " + JsonConvert.SerializeObject(returnResult));
@@ -804,7 +806,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <returns>Color palettes for all display types</returns>
     [Route("api/v2/compaction/colorpalettes")]
     [HttpGet]
-    public async Task<CompactionColorPalettesResult> GetColorPalettes(
+    public CompactionColorPalettesResult GetColorPalettes(
       [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid)
     {
@@ -933,8 +935,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
                 compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
             break;
         }
-
       }
+
       return CompactionColorPalettesResult.CreateCompactionColorPalettesResult(
           elevationPalette, cmvDetailPalette, passCountDetailPalette, passCountSummaryPalette, cutFillPalette,
           temperatureSummaryPalette,
@@ -1101,7 +1103,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         statsRequest.Validate();
 
         result =
-            RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient, null)
+            RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient)
                 .Process(statsRequest) as ElevationStatisticsResult;
 
         var opts = new MemoryCacheEntryOptions
@@ -1187,14 +1189,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/projectstatistics")]
     [HttpPost]
-    public async Task<ProjectStatisticsResult> PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
+    public ProjectStatisticsResult PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
     {
       log.LogInformation("PostProjectStatistics: " + JsonConvert.SerializeObject(request));
       request.Validate();
       try
       {
         var returnResult =
-            RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null)
+            RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient)
                     .Process(request) as ProjectStatisticsResult;
         log.LogInformation("PostProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
@@ -1241,7 +1243,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var returnResult =
-          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null)
+          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient)
             .Process(request) as ProjectStatisticsResult;
         log.LogInformation("GetProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
         return returnResult;
@@ -1779,7 +1781,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           filter == null ? FilterLayerMethod.None : filter.layerType.Value,
           bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, false);
       tileRequest.Validate();
-      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null)
+      var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient)
           .Process(tileRequest) as TileResult;
       if (tileResult == null)
       {

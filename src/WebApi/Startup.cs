@@ -22,13 +22,24 @@ using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 
 namespace VSS.Productivity3D.WebApi
 {
+  /// <summary>
+  /// 
+  /// </summary>
   public class Startup
   {
+    /// <summary>
+    /// 
+    /// </summary>
+    public IConfigurationRoot Configuration { get; }
 
     private readonly string loggerRepoName = "WebApi";
-    private bool isDevEnv = false;
-    IServiceCollection serviceCollection;
+    private readonly bool isDevEnv;
+    private IServiceCollection serviceCollection;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="env"></param>
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
@@ -48,10 +59,11 @@ namespace VSS.Productivity3D.WebApi
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
     }
-
-    public IConfigurationRoot Configuration { get; }
-
-    // This method gets called by the runtime. Use this method to add services to the container
+    
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to add services to the container
+    /// </summary>
+    /// <param name="services"></param>
     public void ConfigureServices(IServiceCollection services)
     {
       //Configure CORS
@@ -105,14 +117,19 @@ namespace VSS.Productivity3D.WebApi
       serviceCollection = services;
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline
+    /// </summary>
+    /// <param name="app"></param>
+    /// <param name="env"></param>
+    /// <param name="loggerFactory"></param>
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
       loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton(loggerFactory);
       var serviceProvider = serviceCollection.BuildServiceProvider();
       app.UseFilterMiddleware<ExceptionsTrap>();
       //Enable CORS before TID so OPTIONS works without authentication
@@ -135,8 +152,7 @@ namespace VSS.Productivity3D.WebApi
       log.LogInformation("Testing Raptor configuration with sending config request");
       try
       {
-        string config;
-        serviceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out config);
+        serviceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out string config);
         log.LogTrace("Received config {0}", config);
         if (config.Contains("Error retrieving Raptor config"))
           throw new Exception(config);

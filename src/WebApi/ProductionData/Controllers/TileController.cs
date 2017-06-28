@@ -10,6 +10,9 @@ using VSS.Productivity3D.Common.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
+  /// <summary>
+  /// 
+  /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class TileController : Controller, ITileContract
   {
@@ -76,13 +79,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public FileResult PostRaw([FromBody] TileRequest request)
     {
       request.Validate();
-      var tileResult =
-          RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
-      if (tileResult != null)
+      if (RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient).Process(request) is TileResult tileResult)
       {
         Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
+
         return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
       }
+
       return null;
     }
   }

@@ -14,6 +14,9 @@ using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
+  /// <summary>
+  /// 
+  /// </summary>
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class ReportController : Controller, IReportSvc
   {
@@ -32,13 +35,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </summary>
     private readonly ILoggerFactory logger;
 
-    private IConfigurationStore configStore;
+    private readonly IConfigurationStore configStore;
 
     /// <summary>
     /// Constructor with injected raptor client and logger
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
+    /// <param name="configStore"></param>
     public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore)
     {
       this.raptorClient = raptorClient;
@@ -51,7 +55,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Pings the export service root
     /// </summary>
-    /// <param name="request"></param>
     /// <returns></returns>
     [Route("api/v1/export/ping")]
     [HttpPost]
@@ -83,11 +86,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
     #region PassCounts reports
 
-    /*[ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
-    [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]*/
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [Route("api/v1/export")]
     [HttpPost]
 

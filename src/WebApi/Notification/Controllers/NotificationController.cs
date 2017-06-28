@@ -21,6 +21,9 @@ using VSS.Productivity3D.WebApiModels.Notification.Models;
 
 namespace VSS.Productivity3D.WebApi.Notification.Controllers
 {
+  /// <summary>
+  /// 
+  /// </summary>
   [ResponseCache(NoStore = true)]
   public class NotificationController : Controller
   {
@@ -68,6 +71,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="fileRepo">Imported file repository</param>
+    /// <param name="configStore"></param>
     /// <param name="prefProxy">Proxy for user preferences</param>
     /// <param name="tileGenerator">DXF tile generator</param>
     /// <param name="fileListProxy">File list proxy</param>

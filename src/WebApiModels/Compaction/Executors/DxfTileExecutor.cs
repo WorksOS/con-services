@@ -78,7 +78,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
             //Work out tile location
             var suffix = FileUtils.GeneratedFileSuffix(file.ImportedFileType);
             string generatedName = FileUtils.GeneratedFileName(file.Name, suffix, FileUtils.DXF_FILE_EXTENSION);
-            string fullTileName = string.Format("{0}/{1}/{2}.png", FileUtils.ZoomPath(FileUtils.TilePath(file.Path, generatedName), zoomLevel), topLeftTile.y, topLeftTile.x);
+            string fullTileName =
+              $"{FileUtils.ZoomPath(FileUtils.TilePath(file.Path, generatedName), zoomLevel)}/{topLeftTile.y}/{topLeftTile.x}.png";
             log.LogDebug("DxfTileExecutor: looking for requested tile {0}", fullTileName);
 
             //Download the tile

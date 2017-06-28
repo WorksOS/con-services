@@ -146,7 +146,7 @@ $ProjectName = $ProjectName -replace "[^a-zA-Z0-9]", ""
 $ImageName = "username/vss.raptor.service.webapi"
 
 # Calculate the name of the container created by the compose file
-$ContainerName = "${ProjectName}_vss.raptor.service.webapi"
+$ContainerName = "${ProjectName}_vss.productivity3d.webapi"
 
 # .net core runtime ID for the container (used to publish the app correctly)
 $RuntimeID = "debian.8-x64"

@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Common.Interfaces
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
   ///   from controller logic for testability and possible executor versioning.
   /// </summary>
-  public abstract class RequestExecutorContainer 
+  public abstract class RequestExecutorContainer
   {
     /// <summary>
     /// Raptor client used in ProcessEx
@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// <summary>
     /// Tag processor client interface used in ProcessEx
     /// </summary>
-    protected ITagProcessor tagProcessor { get; set; }
+    protected ITagProcessor tagProcessor;
 
     /// <summary>
     /// Logger for logging
@@ -70,7 +70,13 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// <returns></returns>
     protected abstract ContractExecutionResult ProcessEx<T>(T item);
 
-    protected virtual async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    protected virtual Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       throw new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Missing asynchronous executor process method override"));
@@ -108,11 +114,19 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected ContractExecutionStatesEnum ContractExecutionStates { get; }
 
     /// <summary>
+    /// Default constructor which creates all structures necessary for error handling.
+    /// </summary>
+    protected RequestExecutorContainer()
+    {
+      ContractExecutionStates = new ContractExecutionStatesEnum();
+      ProcessErrorCodes();
+    }
+
+    /// <summary>
     /// Dynamically defines new error codes for the executor instance. Don't forget to clean them up after exit.
     /// </summary>
     protected virtual void ProcessErrorCodes()
-    {
-    }
+    { }
 
     /// <summary>
     /// Injected constructor for mocking.
@@ -121,7 +135,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     {
       this.raptorClient = raptorClient;
       if (logger != null)
-        this.log = logger.CreateLogger<RequestExecutorContainer>();
+        log = logger.CreateLogger<RequestExecutorContainer>();
     }
 
     /// <summary>
@@ -132,7 +146,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
       if (logger != null)
-        this.log = logger.CreateLogger<RequestExecutorContainer>();
+        log = logger.CreateLogger<RequestExecutorContainer>();
     }
 
     /// <summary>
@@ -140,11 +154,11 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore) : this()
     {
-        this.raptorClient = raptorClient;
-        this.tagProcessor = tagProcessor;
-        if (logger != null)
-            this.log = logger.CreateLogger<RequestExecutorContainer>();
-        this.configStore = configStore;
+      this.raptorClient = raptorClient;
+      this.tagProcessor = tagProcessor;
+      if (logger != null)
+        log = logger.CreateLogger<RequestExecutorContainer>();
+      this.configStore = configStore;
     }
 
     /// <summary>
@@ -155,19 +169,10 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
       if (logger != null)
-        this.log = logger.CreateLogger<RequestExecutorContainer>();
+        log = logger.CreateLogger<RequestExecutorContainer>();
       this.configStore = configStore;
       this.fileRepo = fileRepo;
       this.tileGenerator = tileGenerator;
-    }
-
-    /// <summary>
-    /// Default constructor which creates all structures necessary for error handling.
-    /// </summary>
-    protected RequestExecutorContainer()
-    {
-      ContractExecutionStates = new ContractExecutionStatesEnum();
-      ProcessErrorCodes();
     }
 
     //TODO: Check if this works
@@ -176,10 +181,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     ~RequestExecutorContainer()
     {
-      if (ContractExecutionStates != null)
-      {
-        ContractExecutionStates.ClearDynamic();
-      }
+      ContractExecutionStates?.ClearDynamic();
     }
 
     /// <summary>
@@ -187,10 +189,10 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor=null, IConfigurationStore configStore=null, IFileRepository fileRepo=null, ITileGenerator tileGenerator=null) 
+    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor = null, IConfigurationStore configStore = null, IFileRepository fileRepo = null, ITileGenerator tileGenerator = null)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() {raptorClient = raptorClient, tagProcessor = tagProcessor, log = logger.CreateLogger<TExecutor>(), configStore = configStore, fileRepo = fileRepo, tileGenerator = tileGenerator};
+      var executor = new TExecutor() { raptorClient = raptorClient, tagProcessor = tagProcessor, log = logger.CreateLogger<TExecutor>(), configStore = configStore, fileRepo = fileRepo, tileGenerator = tileGenerator };
       return executor;
     }
 

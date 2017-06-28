@@ -6,6 +6,9 @@ using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
+  /// <summary>
+  /// 
+  /// </summary>
   [ResponseCache(NoStore = true)]
   public class ConfigController : Controller
   {
