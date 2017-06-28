@@ -36,6 +36,10 @@ namespace TCCFileAccess
 
     private string ticket = String.Empty;
 
+
+    /// <summary>
+    /// The file cache - contains byte array for PNGs as a value and a full filename as a key. It shoudl persist across session so static. This class is thread-safe
+    /// </summary>
     private static readonly MemoryCache fileCache =
       new MemoryCache(new MemoryCacheOptions()
       {
@@ -43,6 +47,9 @@ namespace TCCFileAccess
         ExpirationScanFrequency = TimeSpan.FromMinutes(10)
       });
 
+    /// <summary>
+    /// The cache lookup class to support fast keys lookup in cache by filename, not the full path as there are a lot of tiles per a file
+    /// </summary>
     private CacheLookup cacheLookup = new CacheLookup();
 
     private string Ticket
@@ -238,7 +245,7 @@ namespace TCCFileAccess
 
       try
       {
-        if (FileCacheable(fullName))
+        if (!FileCacheable(fullName))
           return await gracefulClient.ExecuteRequest(requestString, "GET", headers);
 
         using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers))
@@ -247,7 +254,7 @@ namespace TCCFileAccess
           file = new byte[responseStream.Length];
           responseStream.Read(file, 0, file.Length);
           fileCache.Set(GetFullPath(filespaceId, fullName), file, DateTimeOffset.MaxValue);
-          cacheLookup.AddFile(fullName, GetFullPath(filespaceId, fullName));
+          cacheLookup.AddFile(TCCFile.ExtractFilenameFromTileFullName(fullName), GetFullPath(filespaceId, fullName));
           return new MemoryStream(file);
         }
       }
@@ -675,13 +682,14 @@ namespace TCCFileAccess
         {
           if (jobResult.success)
           {
-            var filenames = cacheLookup.RetrieveCacheKeys(path.Split('/', '.')[1]);
+            //TODO
+            /*var filenames = cacheLookup.RetrieveCacheKeys()
             if (filenames != null)
             {
               Log.LogDebug($"Removing files for {path} from cachelookup and dropping cache");
               filenames.ForEach(s => fileCache.Remove(s));
               filenames.Clear();
-            }
+            }*/
             return jobResult.jobId;
           }
           CheckForInvalidTicket(jobResult, "CreateFileJob");
