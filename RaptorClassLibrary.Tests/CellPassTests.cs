@@ -4,6 +4,7 @@ using VSS.VisionLink.Raptor.Types;
 using System.IO;
 using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.Cells;
+using System.Text;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {
@@ -179,12 +180,12 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
         {
             CellPass cp1 = ATestCellPass();
             MemoryStream ms = new MemoryStream();
-            BinaryWriter bw = new BinaryWriter(ms);
+            BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
             cp1.Write(bw);
 
             ms.Position = 0;
-            BinaryReader br = new BinaryReader(ms);
+            BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             CellPass cp2 = new CellPass();
 
             cp2.Read(br);
@@ -196,12 +197,12 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 
             cp2 = ATestCellPass2();
             MemoryStream ms2 = new MemoryStream();
-            BinaryWriter bw2 = new BinaryWriter(ms2);
+            BinaryWriter bw2 = new BinaryWriter(ms2, Encoding.UTF8, true);
 
             cp2.Write(bw2);
 
             ms2.Position = 0;
-            BinaryReader br2 = new BinaryReader(ms2);
+            BinaryReader br2 = new BinaryReader(ms2, Encoding.UTF8, true);
 
             cp2.Read(br2);
 

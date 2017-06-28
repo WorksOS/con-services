@@ -293,5 +293,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             return CellPasses[PassData[X, Y].CellPassOffset + passIndex];
         }
+
+        public CellPass[,][] GetState()
+        {
+            throw new NotImplementedException("Does not support GetState()");
+        }
     }
 }

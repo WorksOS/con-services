@@ -70,6 +70,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             leafEndTime = DateTime.MinValue;
         }
 
+        /// <summary>
+        /// Clears the state of the segment to be empty, with a null date range, no cells and no segments
+        /// </summary>
         public override void Clear()
         {
             InitialiseStartEndTime();
@@ -364,11 +367,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                                         out bool MDPFromLatestCellPass,
                                                         out bool CCAFromLatestCellPass)
         {
-            int LastPassIndex;
-
             Debug.Assert(CellPasses.Length > 0, "CalculateLatestPassDataForPassStack called with a cell pass stack containing no passes");
 
-            LastPassIndex = (int)CellPasses.Length - 1;
+            int LastPassIndex = (int)CellPasses.Length - 1;
 
             LatestData.Time = CellPasses[LastPassIndex].Time;
             LatestData.MachineID = CellPasses[LastPassIndex].MachineID;
@@ -546,8 +547,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
 
             _GlobalLatestCells.Clear();
-            _GlobalLatestCells.AssignValuesFromLastPassFlags(_LatestPasses);
-            _GlobalLatestCells.PassDataExistanceMap.Assign(_LatestPasses.PassDataExistanceMap);
+            _GlobalLatestCells.Assign(_LatestPasses);
+//            _GlobalLatestCells.AssignValuesFromLastPassFlags(_LatestPasses);
+//            _GlobalLatestCells.PassDataExistanceMap.Assign(_LatestPasses.PassDataExistanceMap);
 
             Segment.LatestPasses.PassDataExistanceMap.ForEachSetBit((x, y) => ((SubGridCellLatestPassDataWrapper_NonStatic)_GlobalLatestCells).PassData[x, y] = ((SubGridCellLatestPassDataWrapper_NonStatic)_LatestPasses).PassData[x, y]);
         }
@@ -555,10 +557,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public void ComputeLatestPassInformation(/*IStorageProxy storageProxy, */bool fullRecompute)
         {
             //            SubGridCellPassesDataSegment Segment;
-            SubGridCellPassesDataSegment LastSegment;
-            SubGridCellPassesDataSegmentInfo SeedSegmentInfo;
-            SubGridSegmentIterator Iterator;
-            int NumProcessedSegments;
 
             /* TODO Review when locking model established
              *  if not Flocked then
@@ -575,19 +573,19 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 return;
             }
 
-            Iterator = new SubGridSegmentIterator(this, Directory);
+            SubGridSegmentIterator Iterator = new SubGridSegmentIterator(this, Directory);
             Iterator.IterationDirection = IterationDirection.Forwards;
             Iterator.ReturnDirtyOnly = !fullRecompute;
 
-            NumProcessedSegments = 0;
+            int NumProcessedSegments = 0;
 
             // We are in the process of recalculating latest data, so don't ask the iterator to
             // read the latest data information as it will be reconstructed here. The full cell pass
             // stacks are required though...
             Iterator.RetrieveAllPasses = true;
 
-            SeedSegmentInfo = null;
-            LastSegment = null;
+            SubGridCellPassesDataSegmentInfo SeedSegmentInfo = null;
+            SubGridCellPassesDataSegment LastSegment = null;
 
             // Locate the segment immediately previous to the first dirty segment in the
             // list of segments
@@ -624,7 +622,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 if (SeedSegmentInfo.Segment != null)
                 {
                     if (((ServerSubGridTree)Owner).LoadLeafSubGridSegment(new SubGridCellAddress(OriginX, OriginY), true, false,
-                                                                          this, SeedSegmentInfo.Segment, null))
+                                                                          this, SeedSegmentInfo.Segment /*, null*/))
                     {
                         LastSegment = SeedSegmentInfo.Segment;
                     }
@@ -650,7 +648,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 Iterator.ReturnDirtyOnly = false;
             }
 
-            /* Delphi style of iterator iteration - coudl look at morphing this into C# style iterator
+            /* TODO Delphi style of iterator iteration - could look at morphing this into C# style iterator
             // Iterate through all segments including and after the first dirty segment in the segment list for the subgrid.
             for Segment In Iterator do
                 {
@@ -679,7 +677,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             latestCellPassesOutOfDate = false;
         }
 
-        public bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, SubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses, SiteModel SiteModelReference)
+        public bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, SubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses /*, SiteModel SiteModelReference*/)
         {
             FileSystemErrorStatus FSError;
             uint StoreGranuleIndex;
@@ -699,7 +697,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
                 FSError = storageProxy.ReadSpatialStreamFromPersistentStore
                             (Owner.ID, FileName, OriginX, OriginY,
-                             FileSystemSpatialStreamType.SubGridSegment, Segment.SegmentInfo.FSGranuleIndex, out SMS,
+                             FileSystemStreamType.SubGridSegment, Segment.SegmentInfo.FSGranuleIndex, out SMS,
                              out StoreGranuleIndex, out StoreGranuleCount);
 
                 Result = FSError == FileSystemErrorStatus.OK;
@@ -723,9 +721,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 }
 
                 // TODO: Hook into the Ignite caching layer to extract the data to be streamed from using Ignite based serialisation
+                // --> Already implemented via persistent store read hook above
                 //                              Result = LoadFromStream(SMS, Segment, loadLatestData, loadAllPasses, SiteModelReference);
                 SMS.Position = 0;
-                Result = Segment.LoadFromStream(SMS, loadLatestData, loadAllPasses, SiteModelReference);
+                using (var reader = new BinaryReader(SMS, Encoding.UTF8, true))
+                {
+                    Result = Segment.Read(reader, loadLatestData, loadAllPasses /*, SiteModelReference*/);
+                }
             }
             catch (Exception E)
             {
@@ -741,7 +743,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public bool SaveDirectoryToStream(Stream stream)
         {
             bool Result = false;
-            BinaryWriter writer = new BinaryWriter(stream);
+            BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true);
 
             SubGridStreamHeader Header = new SubGridStreamHeader()
             {
@@ -782,7 +784,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             Result = storage.WriteSpatialStreamToPersistentStore
              (Owner.ID, FileName, OriginX, OriginY, //AInvalidatedSpatialStreams,
-              FileSystemSpatialStreamType.SubGridDirectory, out StoreGranuleIndex, out StoreGranuleCount, MStream) == FileSystemErrorStatus.OK;
+              FileSystemStreamType.SubGridDirectory, out StoreGranuleIndex, out StoreGranuleCount, MStream) == FileSystemErrorStatus.OK;
             if (Result)
             {
                 // update new index location and size
@@ -800,7 +802,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public bool LoadDirectoryFromStream(Stream stream)
         {
-            BinaryReader reader = new BinaryReader(stream);
+            BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true);
             SubGridStreamHeader Header = new SubGridStreamHeader(reader);
 
             // LatestPassData: TICSubGridCellLatestPassData;
@@ -833,7 +835,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             leafEndTime = Header.EndTime;
 
             // Global latest cell passes are always read in from the subgrid directory, even if the 'latest
-            // cells' storage class is not contained in the leaf sorage classes. This is currently done due
+            // cells' storage class is not contained in the leaf storage classes. This is currently done due
             // to some operations (namely aggregation of processed cell passes into the production
             // data model) may request subgrids that have not yet been persisted to the data store.
             // Ultimately such requests result in the subgrid being read from disk if the storage classes
@@ -895,7 +897,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             IStorageProxy storage = StorageProxy.SpatialInstance(SubGridCellAddress.ToSpatialDivisionDescriptor(OriginX, OriginY, RaptorConfig.numSpatialProcessingDivisions));
 
             FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY,
-                                                                                         FileSystemSpatialStreamType.SubGridDirectory, 0, out SMS, out StoreGranuleIndex, out StoreGranuleCount);
+                                                                                         FileSystemStreamType.SubGridDirectory, 0, out SMS, out StoreGranuleIndex, out StoreGranuleCount);
 
             bool Result = FSError == FileSystemErrorStatus.OK;
 

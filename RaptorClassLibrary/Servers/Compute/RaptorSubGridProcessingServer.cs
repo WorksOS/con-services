@@ -22,14 +22,24 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.UserAttributes.Add("Role", "PSNode");
         }
 
-        public override void ConfigureRaptorCache(CacheConfiguration cfg)
+        public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
         {
-            base.ConfigureRaptorCache(cfg);
+            base.ConfigureNonSpatialMutableCache(cfg);
         }
 
-        public override void ConfigureSpatialCache(CacheConfiguration cfg)
+        public override void ConfigureNonSpatialImmutableCache(CacheConfiguration cfg)
         {
-            base.ConfigureSpatialCache(cfg);
+            base.ConfigureNonSpatialImmutableCache(cfg);
+        }
+
+        public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
+        {
+            base.ConfigureMutableSpatialCache(cfg);
+        }
+
+        public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
+        {
+            base.ConfigureImmutableSpatialCache(cfg);
         }
 
         /// <summary>

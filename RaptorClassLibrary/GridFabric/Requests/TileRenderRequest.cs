@@ -14,6 +14,7 @@ using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Types;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Requests
@@ -79,7 +80,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             // Decorate the supplied argument with the RaptorNodeID of the node currenrlt executing this code
 
             // Get a reference to the Ignite cluster
-            IIgnite ignite = Ignition.GetIgnite("Raptor");
+            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
 
             // Get a reference to the compute cluster group and send the request to it for processing
             // Note: Broadcast will block until all compute nodes receiving the request have responded, or

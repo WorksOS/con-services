@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.Servers.Client
 {
@@ -24,7 +25,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
             if (raptorGrid == null)
             {
                 // Attempt to attach to an already existing Ignite instance
-                raptorGrid = Ignition.TryGetIgnite("Raptor");
+                raptorGrid = Ignition.TryGetIgnite(RaptorGrids.RaptorGridName());
 
                 // If there was no connection obtained, attempt to create a new instance
                 if (raptorGrid == null)
@@ -35,7 +36,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
 
                     IgniteConfiguration cfg = new IgniteConfiguration()
                     {
-                        GridName = "Raptor",
+                        GridName = RaptorGrids.RaptorGridName(),
                         ClientMode = true,
                         UserAttributes = new Dictionary<string, object>() { { "Role", role }, { "RaptorNodeID", RaptorNodeID } }
                     };

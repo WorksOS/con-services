@@ -166,7 +166,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             MemoryStream ms = new MemoryStream();
 
             // Write to the stream...
-            BinaryWriter writer = new BinaryWriter(ms);
+            BinaryWriter writer = new BinaryWriter(ms, Encoding.UTF8, true);
             item1.SetState(cellPasses);
             item1.Write(writer);
 
@@ -174,7 +174,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
             ISubGridCellSegmentPassesDataWrapper item2 = new SubGridCellSegmentPassesDataWrapper_NonStatic();
 
             ms.Position = 0;
-            BinaryReader reader = new BinaryReader(ms);
+            BinaryReader reader = new BinaryReader(ms, Encoding.UTF8, true);
             item2.Read(reader);
 
             SubGridUtilities.SubGridDimensionalIterator((col, row) =>

@@ -19,7 +19,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
             SubGridTreeBitMask masktree = new SubGridTreeBitMask();
             MemoryStream MS = new MemoryStream();
 
-            Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS)), "SubGridTreePersistor.Write failed");
+            Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
             Assert.IsTrue(MS.Length == 38, "Stream length not 38 bytes as expected, is it {0} bytes", MS.Length);
         }
 
@@ -32,7 +32,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
 
             MemoryStream MS = new MemoryStream();
 
-            Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS)), "SubGridTreePersistor.Write failed");
+            Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
             Assert.IsTrue(MS.Length == 175, "Stream length not 175 bytes as expected, is it {0} bytes", MS.Length);
         }
 
@@ -43,18 +43,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
             SubGridTreeBitMask masktree = new SubGridTreeBitMask();
             MemoryStream MS = new MemoryStream();
 
-            Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS)), "SubGridTreePersistor.Write failed");
+            Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
 
             SubGridTreeBitMask newtree = new SubGridTreeBitMask();
 
             MS.Position = 0;
-            Assert.IsFalse(SubGridTreePersistor.Read(newtree, "ExistanceXXX", 1, new BinaryReader(MS)), "Incorrect header did not cause failure");
+            Assert.IsFalse(SubGridTreePersistor.Read(newtree, "ExistanceXXX", 1, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect header did not cause failure");
 
             MS.Position = 0;
-            Assert.IsFalse(SubGridTreePersistor.Read(newtree, "Existance", 2, new BinaryReader(MS)), "Incorrect version did not cause failure");
+            Assert.IsFalse(SubGridTreePersistor.Read(newtree, "Existance", 2, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect version did not cause failure");
 
             MS.Position = 0;
-            Assert.IsTrue(SubGridTreePersistor.Read(newtree, "Existance", 1, new BinaryReader(MS)), "SubGridTreePersistor.Read failed");
+            Assert.IsTrue(SubGridTreePersistor.Read(newtree, "Existance", 1, new BinaryReader(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Read failed");
         }
 
         [TestMethod()]
@@ -66,18 +66,18 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Tests
 
             MemoryStream MS = new MemoryStream();
 
-            Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS)), "SubGridTreePersistor.Write failed");
+            Assert.IsTrue(SubGridTreePersistor.Write(masktree, "Existance", 1, new BinaryWriter(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Write failed");
 
             SubGridTreeBitMask newtree = new SubGridTreeBitMask();
 
             MS.Position = 0;
-            Assert.IsFalse(SubGridTreePersistor.Read(newtree, "ExistanceXXX", 1, new BinaryReader(MS)), "Incorrect header did not cause failure");
+            Assert.IsFalse(SubGridTreePersistor.Read(newtree, "ExistanceXXX", 1, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect header did not cause failure");
 
             MS.Position = 0;
-            Assert.IsFalse(SubGridTreePersistor.Read(newtree, "Existance", 2, new BinaryReader(MS)), "Incorrect version did not cause failure");
+            Assert.IsFalse(SubGridTreePersistor.Read(newtree, "Existance", 2, new BinaryReader(MS, Encoding.UTF8, true)), "Incorrect version did not cause failure");
 
             MS.Position = 0;
-            Assert.IsTrue(SubGridTreePersistor.Read(newtree, "Existance", 1, new BinaryReader(MS)), "SubGridTreePersistor.Read failed");
+            Assert.IsTrue(SubGridTreePersistor.Read(newtree, "Existance", 1, new BinaryReader(MS, Encoding.UTF8, true)), "SubGridTreePersistor.Read failed");
 
             Assert.IsTrue(newtree.CountBits() == 1, "New tree does not have a single bit set, it has {0} bits set", newtree.CountBits());
             Assert.IsTrue(newtree.GetCell(100, 100) == true, "Bit at (100, 100) not set as expected");

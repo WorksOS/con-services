@@ -50,7 +50,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Listeners
                 IClientLeafSubGrid ClientGrid = ClientLeafSubGridFactory.GetSubGrid(Task.GridDataType);
 
                 message.Position = 0;
-                ClientGrid.Read(new BinaryReader(message));
+                ClientGrid.Read(new BinaryReader(message, Encoding.UTF8, true));
 
                 int thisResponseCount = ++responseCounter;
 

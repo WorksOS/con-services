@@ -44,7 +44,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             Identifier = reader.ReadBytes(8);
             MajorVersion = reader.ReadByte();
             MinorVersion = reader.ReadByte();
+
             Flags = reader.ReadInt32();
+
             StartTime = DateTime.FromBinary(reader.ReadInt64());
             EndTime = DateTime.FromBinary(reader.ReadInt64());
             LastUpdateTimeUTC = DateTime.FromBinary(reader.ReadInt64());

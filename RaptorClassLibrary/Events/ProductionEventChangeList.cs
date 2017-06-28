@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Events.Interfaces;
 using VSS.VisionLink.Raptor.Interfaces;
+using VSS.VisionLink.Raptor.Types;
 using VSS.VisionLink.Raptor.Utilities;
 
 namespace VSS.VisionLink.Raptor.Events
@@ -379,7 +380,7 @@ namespace VSS.VisionLink.Raptor.Events
 
         public void SaveToStream(Stream stream)
         {
-            BinaryWriter writer = new BinaryWriter(stream);
+            BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, true);
             Write(writer);
         }
 
@@ -397,13 +398,17 @@ namespace VSS.VisionLink.Raptor.Events
         {
             MemoryStream MS = null;
 
-            storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), out MS);
+            storageProxy.ReadStreamFromPersistentStoreDirect(SiteModelID, EventChangeListPersistantFileName(), FileSystemStreamType.Events, out MS);
 
             if (MS != null)
             {
                 MS.Position = 0;
-                IProductionEventChangeList Result = Read(new BinaryReader(MS));
-                return Result != null ? Result : this;
+
+                using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
+                {
+                    IProductionEventChangeList Result = Read(reader);
+                    return Result != null ? Result : this;
+                }
             }
             else
             {

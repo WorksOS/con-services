@@ -15,10 +15,11 @@ namespace VSS.VisionLink.Raptor.Servers
     /// </summary>
     public class RaptorIgniteServer
     {
-//        protected IIgnite spatialGrid /*ignite*/ = null;
-        protected IIgnite raptorGrid /*ignite*/ = null;
-        protected static ICache<String, MemoryStream> raptorCache = null;
-        protected static ICache<String, MemoryStream> spatialCache = null;
+        protected IIgnite raptorGrid = null;
+        protected static ICache<String, MemoryStream> NonSpatialMutableCache = null;
+        protected static ICache<String, MemoryStream> NonSpatialImmutableCache = null;
+        protected static ICache<String, MemoryStream> SpatialMutableCache = null;
+        protected static ICache<String, MemoryStream> SpatialImmutableCache = null;
 
         /// <summary>
         /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging

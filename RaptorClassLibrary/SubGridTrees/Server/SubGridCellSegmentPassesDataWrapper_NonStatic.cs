@@ -33,6 +33,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public void AddPass(uint X, uint Y, CellPass pass, int position = -1)
         {
             PassData[X, Y].AddPass(pass, position);
+
+            SegmentPassCount++;
         }
 
         public void ReplacePass(uint X, uint Y, int position, CellPass pass)
@@ -208,5 +210,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
            SubGridUtilities.SubGridDimensionalIterator((x, y) => PassData[x, y].Passes = cellPasses[x, y]);
         }
+
+        public CellPass[,][] GetState()
+        {
+            CellPass[,][] result = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension][];
+
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => result[x, y] = PassData[x, y].Passes);
+
+            return result;
+        }
+
     }
 }

@@ -4,6 +4,7 @@ using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor;
 using System.IO;
 using VSS.VisionLink.Raptor.Geometry;
+using System.Text;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {
@@ -110,10 +111,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             SubGridTreeBitmapSubGridBits bits = SubGridTreeBitmapSubGridBits.FullMask;
 
             MemoryStream ms = new MemoryStream();
-            BinaryWriter bw = new BinaryWriter(ms);
+            BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
             bits.Write(bw);
-            BinaryReader br = new BinaryReader(ms);
+            BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
             SubGridTreeBitmapSubGridBits bits2 = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
@@ -129,10 +130,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             SubGridTreeBitmapSubGridBits bits = new SubGridTreeBitmapSubGridBits(SubGridTreeBitmapSubGridBits.SubGridBitsCreationOptions.Unfilled);
 
             MemoryStream ms = new MemoryStream();
-            BinaryWriter bw = new BinaryWriter(ms);
+            BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
             bits.Write(bw);
-            BinaryReader br = new BinaryReader(ms);
+            BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
             SubGridTreeBitmapSubGridBits bits2 = SubGridTreeBitmapSubGridBits.FullMask;
@@ -152,10 +153,10 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             bits.SetBit(31, 31);
 
             MemoryStream ms = new MemoryStream();
-            BinaryWriter bw = new BinaryWriter(ms);
+            BinaryWriter bw = new BinaryWriter(ms, Encoding.UTF8, true);
 
             bits.Write(bw);
-            BinaryReader br = new BinaryReader(ms);
+            BinaryReader br = new BinaryReader(ms, Encoding.UTF8, true);
             ms.Position = 0;
 
             SubGridTreeBitmapSubGridBits bits2 = SubGridTreeBitmapSubGridBits.FullMask;

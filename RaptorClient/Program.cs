@@ -104,7 +104,7 @@ namespace VSS.VisionLink.Raptor.Client
             SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(2, true);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
-            // Convert a TAG file usign a TAGFileConverter into a mini-site model
+            // Convert a TAG file using a TAGFileConverter into a mini-site model
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
             TAGFileConverter converter = new TAGFileConverter();
 

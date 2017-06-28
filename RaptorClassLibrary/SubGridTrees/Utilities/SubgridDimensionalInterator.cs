@@ -15,9 +15,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Utilities
         /// <param name="functor"></param>
         public static void SubGridDimensionalIterator(Action<uint, uint> functor)
         {
-            for (uint I = 0; I < SubGridTree.SubGridTreeDimension - 1; I++)
+            for (uint I = 0; I < SubGridTree.SubGridTreeDimension; I++)
             {
-                for (uint J = 0; J < SubGridTree.SubGridTreeDimension - 1; J++)
+                for (uint J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                 {
                     functor(I, J);
                 }

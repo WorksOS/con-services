@@ -23,12 +23,25 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <returns></returns>
         public ISubGridCellSegmentPassesDataWrapper NewWrapper()
         {
-            if (RaptorServerConfig.Instance().UseMutableCellPassSegments)
+            return NewWrapper(RaptorServerConfig.Instance().UseMutableSpatialData,
+                              RaptorServerConfig.Instance().CompressImmutableSpatialData);
+        }
+
+        /// <summary>
+        /// Chooses which of the three segment cell pass wrappers should be created:
+        ///  - NonStatic: Fully mutable high fidelity representation (most memory blocks allocated)
+        ///  - Static: Immutable high fidelity representation (few memory blocks allocated)
+        ///  - StaticCompressed: Immutable, compressed (with trivial loss level), few memory block allocated
+        /// </summary>
+        /// <returns></returns>
+        public ISubGridCellSegmentPassesDataWrapper NewWrapper(bool useMutableSpatialData, bool compressImmutableSpatialData)
+        {
+            if (useMutableSpatialData)
             {
                 return new SubGridCellSegmentPassesDataWrapper_NonStatic();
             }
 
-            if (RaptorServerConfig.Instance().CompressImmutableCellPassSegments)
+            if (compressImmutableSpatialData)
             {
                 return new SubGridCellSegmentPassesDataWrapper_StaticCompressed();
             }
@@ -36,6 +49,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return new SubGridCellSegmentPassesDataWrapper_Static();
         }
 
+        /// <summary>
+        /// Returns the singleton factory instance
+        /// </summary>
+        /// <returns></returns>
         public static SubGridCellSegmentPassesDataWrapperFactory Instance()
         {
             if (instance == null)

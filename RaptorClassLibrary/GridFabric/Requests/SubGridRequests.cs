@@ -14,6 +14,7 @@ using VSS.VisionLink.Raptor.Executors.Tasks.Interfaces;
 using VSS.VisionLink.Raptor.Filters;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
 using VSS.VisionLink.Raptor.GridFabric.ComputeFuncs;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.GridFabric.Listeners;
 using VSS.VisionLink.Raptor.GridFabric.Responses;
 using VSS.VisionLink.Raptor.SubGridTrees;
@@ -95,7 +96,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
         {
             MemoryStream MS = new MemoryStream();
 
-            SubGridTreePersistor.Write(Mask, new BinaryWriter(MS));
+            SubGridTreePersistor.Write(Mask, new BinaryWriter(MS, Encoding.UTF8, true));
             MS.Position = 0;
              
             return new SubGridsRequestArgument(SiteModelID, RequestID, RequestedGridDataType, MS, Filters, String.Format("SubGridRequest:{0}", RequestID), RaptorNodeID);
@@ -127,7 +128,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Requests
             IComputeFunc<SubGridsRequestArgument, SubGridRequestsResponse> func = new SubGridsRequestComputeFunc();
 
             // Get a reference to the Ignite cluster
-            IIgnite ignite = Ignition.GetIgnite("Raptor");
+            IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
 
             // Get a reference to the compute cluster group and send the request to it for processing
             IClusterGroup group = ignite.GetCluster().ForRemotes().ForServers().ForAttribute("Role", "PSNode");

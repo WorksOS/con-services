@@ -17,8 +17,10 @@ namespace VSS.VisionLink.Raptor.Compression
         public bool AllValuesAreNull;
 
         // OffsetBits notes the number of bits from the start of the record this field begins
-        public byte OffsetBits;
+        public ushort OffsetBits;
         public byte RequiredBits;
+
+        public int NumValues => MaxValue - MinValue + 1;
 
         public void Init()
         {
@@ -34,7 +36,6 @@ namespace VSS.VisionLink.Raptor.Compression
 
         public void Write(BinaryWriter writer)
         {
-            writer.Write((long)NativeNullValue);
             writer.Write((long)NativeNullValue);
             writer.Write((long)EncodedNullValue);
             writer.Write((long)MinValue);
@@ -53,9 +54,11 @@ namespace VSS.VisionLink.Raptor.Compression
             EncodedNullValue = (int)reader.ReadInt64();
             MinValue = (int)reader.ReadInt64();
             MaxValue = (int)reader.ReadInt64();
+
             Nullable = reader.ReadBoolean();
             AllValuesAreNull = reader.ReadBoolean();
-            OffsetBits = reader.ReadByte();
+
+            OffsetBits = reader.ReadUInt16();
             RequiredBits = reader.ReadByte();
         }
 

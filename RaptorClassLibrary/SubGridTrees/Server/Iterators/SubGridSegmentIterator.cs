@@ -114,8 +114,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
                                 (new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
                                  RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
                                  IterationState.SubGrid,
-                                 Result,
-                                 SiteModelReference))
+                                 Result /*,
+                                 SiteModelReference*/))
                             {
                                 /* TODO: no separate cache - it is in ignite
                                 // The segment is now loaded and available for use and should be touched
@@ -189,7 +189,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators
             return Result;
         }
 
-        public SiteModel SiteModelReference { get; set; } = null;
+//        public SiteModel SiteModelReference { get; set; } = null;
+
         public SubGridCellPassesDataSegment CurrentSubGridSegment { get; set; } = null;
         //        property StorageClasses : TICSubGridCellStorageClasses read FStorageClasses write FStorageClasses;
 

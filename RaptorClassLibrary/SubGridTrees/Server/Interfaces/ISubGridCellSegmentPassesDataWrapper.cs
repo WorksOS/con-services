@@ -135,5 +135,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         /// </summary>
         /// <param name="cellPasses"></param>
         void SetState(CellPass[,][] cellPasses);
+
+        /// <summary>
+        /// Allows a caller to query the set of all cell passes in the wrapper as a subgrid array 
+        /// of cell pass stacks. Warning: Not all derivates may implement this behaviour with those that
+        /// do no throwing NotImplemented exceptions.
+        /// </summary>
+        /// <returns></returns>
+        CellPass[,][] GetState();
     }
 }

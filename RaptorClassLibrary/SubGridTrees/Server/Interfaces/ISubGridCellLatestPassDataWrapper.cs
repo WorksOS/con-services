@@ -23,7 +23,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         SubGridTreeBitmapSubGridBits CCAValuesAreFromLastPass { get; set; }
 
         void Clear();
-        void AssignValuesFromLastPassFlags(ISubGridCellLatestPassDataWrapper Source);
+//        void AssignValuesFromLastPassFlags(ISubGridCellLatestPassDataWrapper Source);
+
+        void Assign(ISubGridCellLatestPassDataWrapper Source);
 
         /// <summary>
         /// An indexer supporting accessing the 2D array of 'last' pass information for the cell in a subgrid or segment

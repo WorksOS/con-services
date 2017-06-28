@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -348,10 +349,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             Result.MachineSpeed = (ushort)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.MachineSpeed));
             Result.RadioLatency = (byte)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.RadioLatency));
 
-            byte gpsStore = (byte)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.GPSModeStore));
-            Result.gpsMode = (GPSMode)(gpsStore & 0x0F);
-            Result.passType = CellPass.PassTypeHelper.GetPassType(gpsStore);
-            Result.halfPass = (gpsStore & (1 << (int)GPSFlagBits.GPSSBitHalfPass)) != 0;
+            Result.GPSModeStore = (byte)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.GPSModeStore)); ;
 
             Result.Frequency = (ushort)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Frequency));
             Result.Amplitude = (ushort)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Amplitude));
@@ -471,9 +469,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// the static compressed cell pass segment
         /// </summary>
         /// <param name="cellPasses"></param>
-        public void PerformEncodingStaticCompressedCache(CellPass[,][] cellPasses)
+        private void PerformEncodingStaticCompressedCache(CellPass[,][] cellPasses)
         {
-            int segmentPassCount = 0;
             BitFieldArrayRecordsDescriptor[] recordDescriptors;
             int[] ColFirstCellPassIndexes = new int[SubGridTree.SubGridTreeDimension];
             int[,] PerCellColRelativeFirstCellPassIndexes = new int[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
@@ -495,6 +492,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             //TODO: Not handling machines yet...
             //    SetLength(FMachineIDs, 0); 
 
+            SegmentPassCount = 0;
+            SubGridUtilities.SubGridDimensionalIterator((x, y) => SegmentPassCount += cellPasses[x, y].Length);
+
             // Construct the first cell pass index map for the segment
             // First calculate the values of the first cell pass index for each column in the segment
             ColFirstCellPassIndexes[0] = 0;
@@ -504,18 +504,17 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
                 for (int Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
                 {
-                    segmentPassCount += cellPasses[Col, Row].Length;
                     ColFirstCellPassIndexes[Col + 1] += cellPasses[Col, Row].Length;
                 }
             }
 
             // Next modify the cell passes array to hold first cell pass indices relative to the
             // 'per column' first cell pass indices
-            for (int Col = 0; Col < SubGridTree.SubGridTreeDimension - 1; Col++)
+            for (int Col = 0; Col < SubGridTree.SubGridTreeDimension; Col++)
             {
                 PerCellColRelativeFirstCellPassIndexes[Col, 0] = 0;
 
-                for (int Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
+                for (int Row = 1; Row < SubGridTree.SubGridTreeDimension; Row++)
                 {
                     PerCellColRelativeFirstCellPassIndexes[Col, Row] = PerCellColRelativeFirstCellPassIndexes[Col, Row - 1] + cellPasses[Col, Row - 1].Length;
                 }
@@ -524,22 +523,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Compute the value range and number of bits required to store the column first cell passes indices
             PassCountEncodedFieldDescriptor.Init();
 
-            PassCountEncodedFieldDescriptor.MinValue = int.MaxValue;
-            PassCountEncodedFieldDescriptor.MaxValue = 0;
-
-            for (int Col = 0; Col < SubGridTree.SubGridTreeDimension - 1; Col++)
-            {
-                cellPassIndex = ColFirstCellPassIndexes[Col];
-
-                if (cellPassIndex < PassCountEncodedFieldDescriptor.MinValue)
-                {
-                    PassCountEncodedFieldDescriptor.MinValue = cellPassIndex;
-                }
-                if (cellPassIndex > PassCountEncodedFieldDescriptor.MaxValue)
-                {
-                    PassCountEncodedFieldDescriptor.MaxValue = cellPassIndex;
-                }
-            }
+            PassCountEncodedFieldDescriptor.MinValue = ColFirstCellPassIndexes.Min(x => x);
+            PassCountEncodedFieldDescriptor.MaxValue = ColFirstCellPassIndexes.Max(x => x);
 
             PassCountEncodedFieldDescriptor.CalculateRequiredBitFieldSize();
             EncodedColPassCountsBits = PassCountEncodedFieldDescriptor.RequiredBits;
@@ -685,7 +670,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Note:
             // Time - based on the longword, second accurate times overriding the TDateTime times
             // Height - based on the longword, millimeter accurate elevations overriding the IEEE double elevations
-            // GPSMode - take the least significant 4 bits of the GPSModeStore
 
             // TODO Machines are not supported yet
             // AttributeValueRangeCalculator.CalculateAttributeValueRange(ModifiedMachines, 0xffffffff, 0, false, ref EncodedFieldDescriptors[EncodedFieldType.MachineIDIndex]);
@@ -695,7 +679,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RMV).ToArray(), 0xffffffff, CellPass.NullRMV, true, ref EncodedFieldDescriptors.RMV);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MDP).ToArray(), 0xffffffff, CellPass.NullMDP, true, ref EncodedFieldDescriptors.MDP);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MaterialTemperature).ToArray(), 0xffffffff, CellPass.NullMaterialTemp, true, ref EncodedFieldDescriptors.MaterialTemperature);
-            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => AttributeValueModifiers.ModifiedGPSMode(x.gpsMode)).ToArray(), 0xff, (int)CellPass.NullGPSMode, true, ref EncodedFieldDescriptors.GPSModeStore);
+            AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.GPSModeStore).ToArray(), 0xff, (int)CellPass.NullGPSMode, true, ref EncodedFieldDescriptors.GPSModeStore);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.MachineSpeed).ToArray(), 0xffffffff, CellPass.NullMachineSpeed, true, ref EncodedFieldDescriptors.MachineSpeed);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.RadioLatency).ToArray(), 0xffffffff, CellPass.NullRadioLatency, true, ref EncodedFieldDescriptors.RadioLatency);
             AttributeValueRangeCalculator.CalculateAttributeValueRange(allCellPassesArray.Select(x => (int)x.Frequency).ToArray(), 0xffffffff, CellPass.NullFrequency, true, ref EncodedFieldDescriptors.Frequency);
@@ -723,7 +707,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 }
 
                 // Write the cell pass count for each cell relative to the column based cell pass count
-                SubGridUtilities.SubGridDimensionalIterator((col, row) => BF_PassCounts.StreamWrite(PerCellColRelativeFirstCellPassIndexes[col, row], PassCountEncodedFieldDescriptor.RequiredBits));
+                SubGridUtilities.SubGridDimensionalIterator((col, row) =>
+                {
+                    BF_PassCounts.StreamWrite(PerCellColRelativeFirstCellPassIndexes[col, row], PassCountEncodedFieldDescriptor.RequiredBits);
+                });
             }
             finally
             {
@@ -742,7 +729,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 foreach (CellPass pass in allCellPassesArray)
                 {
-                    // TODO Machine are not yet supported
+                    // TODO Machines are not yet supported
                     // BF_CellPasses.StreamWrite(ModifiedMachineIDs, EncodedFieldDescriptors.MachineIDIndex);
 
                     BF_CellPasses.StreamWrite(AttributeValueModifiers.ModifiedTime(pass.Time, FirstRealCellPassTime), EncodedFieldDescriptors.Time);
@@ -800,6 +787,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             // Convert the supplied cell passes into the appropriate bit field arrays
             PerformEncodingStaticCompressedCache(cellPasses);
+        }
+
+        public CellPass[,][] GetState()
+        {
+            throw new NotImplementedException("Does not support GetState()");
         }
     }
 }

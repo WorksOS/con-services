@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using VSS.VisionLink.Raptor.Executors;
 using VSS.VisionLink.Raptor.Geometry;
 using VSS.VisionLink.Raptor.GridFabric.Arguments;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
@@ -32,7 +33,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             {
                 // Supply the Raptor OF the Ignite node currently running this code to permit processing contexts to send
                 // subgrid results to it.
-                arg.RaptorNodeID = Ignition.GetIgnite("Raptor").GetCluster().GetLocalNode().GetAttribute<string>("RaptorNodeID");
+                arg.RaptorNodeID = Ignition.GetIgnite(RaptorGrids.RaptorGridName()).GetCluster().GetLocalNode().GetAttribute<string>("RaptorNodeID");
 
                 Log.InfoFormat("Assigned RaptorNodeID from local node is {0}", arg.RaptorNodeID);
 

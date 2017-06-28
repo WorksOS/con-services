@@ -53,11 +53,15 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AttributeValueRangeCalculatorTests.cs" />
+    <Compile Include="BitFieldArrayTests.cs" />
     <Compile Include="CellPassAttributeFilterTests.cs" />
     <Compile Include="CellPassTests.cs" />
     <Compile Include="CellSpatialFilterTests.cs" />
+    <Compile Include="EncodedBitFieldDescriptorTests.cs" />
     <Compile Include="Geometry\FencePointTests.cs" />
     <Compile Include="Geometry\FenceTests.cs" />
+    <Compile Include="MutabilityConverterTests.cs" />
     <Compile Include="RenderOverlayTileTests.cs" />
     <Compile Include="ServerSubGridTreeLeafTests.cs" />
     <Compile Include="StorageProxy_IgniteTests.cs" />
@@ -68,6 +72,7 @@
     <Compile Include="SubGridTreeBitMaskTests.cs" />
     <Compile Include="SubGridTreeLeafBitmapSubGridTests.cs" />
     <Compile Include="SubGridTreePersistorTests.cs" />
+    <Compile Include="SubGridUtilitiesTests.cs" />
     <Compile Include="UTMCoordPointPairTests.cs" />
     <Compile Include="Utility\GPSTests.cs" />
     <Compile Include="Geometry\LineIntersectionTests.cs" />

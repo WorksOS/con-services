@@ -5,6 +5,7 @@ using System.IO;
 using VSS.VisionLink.Raptor.SubGridTrees;
 using VSS.VisionLink.Raptor;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
+using System.Text;
 
 namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
 {
@@ -38,7 +39,7 @@ namespace VSS.VisionLink.Raptor.RaptorClassLibrary.Tests
             // This is not implemented and should throw an exception. Override to implement...
             try
             {
-                subgrid.Read(new BinaryReader(new MemoryStream()));
+                subgrid.Read(new BinaryReader(new MemoryStream(), Encoding.UTF8, true));
                 Assert.Fail("Read with BinaryReader did not throw an exception");
             }
             catch (Exception)

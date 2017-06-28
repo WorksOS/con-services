@@ -85,7 +85,7 @@ namespace VSS.VisionLink.Raptor.Compression
         /// MemorySize returns the total number of bytes occupied by the array of bitfield records
         /// </summary>
         /// <returns></returns>
-        public uint MemorySize() => (FNumBits & 0x7) != 0 ? FNumBits >> kBitLocationToBlockShift + 1 : FNumBits >> kBitLocationToBlockShift;
+        public uint MemorySize() => (FNumBits & 0x7) != 0 ? (FNumBits >> 3) + 1 : FNumBits >> 3;
 
         /// <summary>
         /// Initialise the bit field array ready to store NumRecords each requiring BitsPerRecord storage
@@ -112,11 +112,11 @@ namespace VSS.VisionLink.Raptor.Compression
 
         public void Write(BinaryWriter writer)
         {
-            writer.Write((long)FNumBits);
+            writer.Write(FNumBits);
 
             if (FNumBits > 0)
             {
-                writer.Write((long)MemorySize());
+                writer.Write((int)MemorySize());
                 writer.Write(Storage);
             }
         }
@@ -124,11 +124,11 @@ namespace VSS.VisionLink.Raptor.Compression
         public void Read(BinaryReader reader)
         {
             Storage = null;
-            FNumBits = (uint)reader.ReadInt64();
+            FNumBits = reader.ReadUInt32();
 
             if (FNumBits > 0)
             {
-                int NumBytes = (int)reader.ReadInt64();
+                int NumBytes = reader.ReadInt32();
                 Storage = reader.ReadBytes(NumBytes);
             }
         }
@@ -310,7 +310,7 @@ namespace VSS.VisionLink.Raptor.Compression
             // Read initial bits from storage byte
             if (RemainingBitsInCurrentStorageBlock >= ValueBits)
             {
-                Result = Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - ValueBits) & ((1 << ValueBits) - 1);
+                Result = (Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - ValueBits)) & ((1 << ValueBits) - 1);
             }
             else
             {

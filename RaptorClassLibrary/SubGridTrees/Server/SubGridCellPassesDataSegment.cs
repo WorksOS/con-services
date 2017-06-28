@@ -19,6 +19,9 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
     {
         public bool Dirty { get; set; } = false;
 
+        private DateTime _StartTime = DateTime.MinValue;
+        private DateTime _EndTime = DateTime.MaxValue;
+
         public ISubGrid Owner = null;
 
         public bool HasAllPasses { get; set; } = false;
@@ -32,6 +35,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
         public SubGridCellPassesDataSegment()
         {
+        }
+
+        public SubGridCellPassesDataSegment(ISubGridCellLatestPassDataWrapper latestPasses, ISubGridCellSegmentPassesDataWrapper passesData)
+        {
+            LatestPasses = latestPasses;
+            HasLatestData = LatestPasses != null;
+
+            PassesData = passesData;
+            HasAllPasses = PassesData != null;
         }
 
         public bool SegmentMatches(DateTime time) => (time >= SegmentInfo.StartTime) && (time < SegmentInfo.EndTime);
@@ -130,13 +142,15 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return true;
         }
 
-        public bool LoadFromStream(Stream stream,
-                                   bool loadLatestData, bool loadAllPasses,
-                                   SiteModel SiteModelReference)
+        public bool Read(BinaryReader reader, //Stream stream,
+                         bool loadLatestData, bool loadAllPasses /*
+                         SiteModel SiteModelReference*/)
         {
-            BinaryReader reader = new BinaryReader(stream);
-
             SubGridStreamHeader Header = new SubGridStreamHeader(reader);
+
+            _StartTime = Header.StartTime;
+            _EndTime = Header.EndTime;
+
             SubGridCellPassCountRecord[,] CellPassCounts = new SubGridCellPassCountRecord[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
             CellPass[,] LatestPassData = new CellPass[SubGridTree.SubGridTreeDimension, SubGridTree.SubGridTreeDimension];
 
@@ -210,10 +224,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             return Result;
         }
 
-        public bool SaveToStream(Stream stream)
+        public bool Write(BinaryWriter writer /*Stream stream*/)
         {
-            BinaryWriter writer = new BinaryWriter(stream);
-
             // Write the version to the stream
             SubGridStreamHeader Header = new SubGridStreamHeader()
             {
@@ -221,8 +233,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 MinorVersion = SubGridStreamHeader.kSubGridMinorVersion_Latest,
                 Identifier = SubGridStreamHeader.kICServerSubgridLeafFileMoniker,
                 Flags = SubGridStreamHeader.kSubGridHeaderFlag_IsSubgridSegmentFile,
-                StartTime = SegmentInfo.StartTime,
-                EndTime = SegmentInfo.EndTime,
+                StartTime = SegmentInfo == null ? _StartTime : SegmentInfo.StartTime,
+                EndTime = SegmentInfo == null ? _EndTime : SegmentInfo.EndTime,
                 LastUpdateTimeUTC = DateTime.Now - Time.GPS.GetLocalGMTOffset()
             };
 
@@ -274,7 +286,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                string FileName,
                                ref FileSystemErrorStatus FSError)
         {
-            MemoryStream MStream = new MemoryStream();
             //            int TotalPasses = 0, MaxPasses = 0;
             uint StoreGranuleIndex = 0;
             uint StoreGranuleCount = 0;
@@ -308,9 +319,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
             */
 
-            if (!SaveToStream(MStream))
+            MemoryStream MStream = new MemoryStream();
+            using (var writer = new BinaryWriter(MStream, Encoding.UTF8, true))
             {
-                return false;
+                if (!Write(writer))
+                {
+                    return false;
+                }
             }
 
             //            SetLength(InvalidatedSpatialStreams, 0);
@@ -319,7 +334,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
            FileName,
            Owner.OriginX, Owner.OriginY,
            //           InvalidatedSpatialStreams,
-           FileSystemSpatialStreamType.SubGridSegment,
+           FileSystemStreamType.SubGridSegment,
            out StoreGranuleIndex,
            out StoreGranuleCount,
            MStream);

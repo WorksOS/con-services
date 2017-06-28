@@ -21,6 +21,7 @@ using VSS.VisionLink.Raptor.Interfaces;
 using log4net;
 using System.Reflection;
 using Apache.Ignite.Core.Cluster;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 
 namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 {
@@ -89,7 +90,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
             // Unpack the mask from the argument
             mask = new SubGridTreeBitMask();
             arg.MaskStream.Position = 0;
-            SubGridTreePersistor.Read(mask, new BinaryReader(arg.MaskStream));
+            SubGridTreePersistor.Read(mask, new BinaryReader(arg.MaskStream, Encoding.UTF8, true));
         }
 
         /// <summary>
@@ -139,7 +140,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                 {
                     // Package the resulting subgrid in to a MemoryStream
                     MemoryStream MS = new MemoryStream();
-                    ClientGrid.Write(new BinaryWriter(MS));
+                    ClientGrid.Write(new BinaryWriter(MS, Encoding.UTF8, true));
 
                     // ... and send it to the message topic in the compute func
                     try
@@ -190,7 +191,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             // TODO Perform implementation here and craft appropriate modified result
 
-            ignite = Ignition.GetIgnite("Raptor");
+            ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
             group = ignite.GetCluster().ForAttribute("RaptorNodeID", raptorNodeIDAsString);
 
             Log.InfoFormat("Message group has {0} members", group.GetNodes().Count);

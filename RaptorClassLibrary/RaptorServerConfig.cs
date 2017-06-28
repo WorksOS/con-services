@@ -44,12 +44,23 @@ namespace VSS.VisionLink.Raptor
         /// that permits addition/removal of cell passes (eg: in the context of processing in-bound TAG files and other 
         /// changes), or an immutable structure that favours memory allocation efficiency given read-only operations
         /// </summary>
-        public bool UseMutableCellPassSegments { get; set; } = true;
+        public bool UseMutableSpatialData { get; set; } = true;
 
         /// <summary>
-        /// Defines whether cell pass sets for subgrid segments should be compressed
+        /// Defines whether spatial data (eg: cell pass sets for subgrid segments) should be compressed
         /// </summary>
-        public bool CompressImmutableCellPassSegments { get; set; } = true;
+        public bool CompressImmutableSpatialData { get; set; } = true;
 
+        /// <summary>
+        /// UseMutableSpatialData controls whether the event list and other non-spatial information in a datamodel
+        /// use a mutable structure that permits addition/removal of non-spatial information or an immutable structure 
+        /// that favours memory allocation efficiency given read-only operations
+        /// </summary>
+        public bool UseMutableNonSpatialData { get; set; } = true;
+
+        /// <summary>
+        /// Defines whether non spatial data should be compressed in it's immutable form
+        /// </summary>
+        public bool CompressImmutableNonSpatialData { get; set; } = true;
     }
 }

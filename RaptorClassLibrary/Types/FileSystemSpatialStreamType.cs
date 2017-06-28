@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace VSS.VisionLink.Raptor.Types
 {
     /// <summary>
-    ///  The types of data held in an FS file: Spatial Directory and segmetn information and event and event directory
+    ///  The types of data held in an FS file: Spatial Directory and segment information, events and ProductionDataXML
     /// </summary>
-    public enum FileSystemSpatialStreamType
+    public enum FileSystemStreamType
     {
         SubGridSegment,
         SubGridDirectory,
         Events,
-        EventDirectory
+        ProductionDataXML
     }
 }

@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         bool RetrieveLatestData { get; set; }
         bool ReturnCachedItemsOnly { get; set; }
         bool ReturnDirtyOnly { get; set; }
-        SiteModel SiteModelReference { get; set; }
+//        SiteModel SiteModelReference { get; set; }
         ServerSubGridTreeLeaf SubGrid { get; set; }
 
         void CurrentSubgridSegmentDestroyed();

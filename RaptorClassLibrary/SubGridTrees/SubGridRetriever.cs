@@ -17,6 +17,7 @@ using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.SubGridTrees.Client;
 using VSS.VisionLink.Raptor.SubGridTrees.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server;
+using VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces;
 using VSS.VisionLink.Raptor.SubGridTrees.Server.Iterators;
 using VSS.VisionLink.Raptor.SubGridTrees.Utilities;
 using VSS.VisionLink.Raptor.Types;
@@ -102,7 +103,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             */
         }
 
-        /* TODO GetTargetValues only called by non-supproted contexts in the code below
+        /* TODO GetTargetValues only called by non-supported contexts in the code below
         private ProductionEventChanges GetTargetValues(long ForMachineID)
         {
             if (ForMachineID == -1)
@@ -213,7 +214,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             try
             {
-                //with ClientGrid do
                 CanUseGlobalLatestCells = Filter.AttributeFilter.LastRecordedCellPassSatisfiesFilter;
                 /* TODO Readd when LiftBuildSettings in implemented
                  &&
@@ -227,6 +227,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                             icdtCCVPercentChange,
                                             icdtMachineSpeedTarget,
                                             icdtCCVPercentChangeIgnoredTopNullValue]); */
+
+                ISubGridCellLatestPassDataWrapper _GlobalLatestCells = _SubGridAsLeaf.Directory.GlobalLatestCells;
 
                 for (byte J = 0; J < SubGridTree.SubGridTreeDimension; J++)
                 {
@@ -253,49 +255,37 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                     switch (ClientGrid.GridDataType)
                     {
                         case GridDataType.CCV:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
+                            if (_GlobalLatestCells.ReadCCV(StripeIndex, J) == CellPass.NullCCV)
                             { continue; }
                             break;
                         case GridDataType.RMV:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadRMV(StripeIndex, J) == CellPass.NullRMV)
+                            if (_GlobalLatestCells.ReadRMV(StripeIndex, J) == CellPass.NullRMV)
                             { continue; }
                             break;
                         case GridDataType.Frequency:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadFrequency(StripeIndex, J) == CellPass.NullFrequency)
+                            if (_GlobalLatestCells.ReadFrequency(StripeIndex, J) == CellPass.NullFrequency)
                             { continue; }
                             break;
                         case GridDataType.Amplitude:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadAmplitude(StripeIndex, J) == CellPass.NullAmplitude)
+                            if (_GlobalLatestCells.ReadAmplitude(StripeIndex, J) == CellPass.NullAmplitude)
                             { continue; }
                             break;
                         case GridDataType.GPSMode:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadGPSMode(StripeIndex, J) == GPSMode.NoGPS)
+                            if (_GlobalLatestCells.ReadGPSMode(StripeIndex, J) == GPSMode.NoGPS)
                             { continue; }
                             break;
                         case GridDataType.MDP:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadMDP(StripeIndex, J) == CellPass.NullMDP)
+                            if (_GlobalLatestCells.ReadMDP(StripeIndex, J) == CellPass.NullMDP)
                             { continue; }
                             break;
                         case GridDataType.CCA:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadCCA(StripeIndex, J) == CellPass.NullCCA)
+                            if (_GlobalLatestCells.ReadCCA(StripeIndex, J) == CellPass.NullCCA)
                             { continue; }
                             break;
                         case GridDataType.Temperature:
-                            if (_SubGridAsLeaf.Directory.GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemp)
+                            if (_GlobalLatestCells.ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemp)
                             { continue; }
                             break; 
-
-                            /*
-                             // This is the static cell pass implementation
-                            case GridDataType.CCV: if (ReadCCV(StripeIndex, J) == CellPass.NullCCV) { continue; } break;
-                            case GridDataType.RMV: if (ReadRMV(StripeIndex, J) == CellPass.NullRMV) { continue; } break;
-                            case GridDataType.Frequency: if (ReadFrequency(StripeIndex, J) == CellPass.NullFrequency) { continue; } break;
-                            case GridDataType.Amplitude: if (ReadAmplitude(StripeIndex, J) == CellPass.NullAmplitude) { continue; } break;
-                            case GridDataType.GPSMode: if (ReadGPSMode(StripeIndex, J) == GPSMode.NoGPS) { continue; } break; 
-                            case GridDataType.MDP: if (ReadMDP(StripeIndex, J) == CellPass.NullMDP) { continue; } break; // ajr115167
-                            case GridDataType.CCA: if (ReadCCA(StripeIndex, J) == CellPass.NullCCA) { continue; } break; 
-                            case GridDataType.Temperature: if (ReadTemperature(StripeIndex, J) == CellPass.NullMaterialTemp) { continue; } break; // ajr115167
-                            */
                     }
 
                     HaveFilteredPass = false;
@@ -366,28 +356,28 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                     switch (ClientGrid.GridDataType)
                                     {
                                         case GridDataType.CCV:
-                                            FilteredValueIsFromLatestCellPass = _SubGridAsLeaf.Directory.GlobalLatestCells.CCVValuesAreFromLastPass.BitSet(StripeIndex, J);
+                                            FilteredValueIsFromLatestCellPass = _GlobalLatestCells.CCVValuesAreFromLastPass.BitSet(StripeIndex, J);
                                             break;
                                         case GridDataType.RMV:
-                                            FilteredValueIsFromLatestCellPass = _SubGridAsLeaf.Directory.GlobalLatestCells.RMVValuesAreFromLastPass.BitSet(StripeIndex, J);
+                                            FilteredValueIsFromLatestCellPass = _GlobalLatestCells.RMVValuesAreFromLastPass.BitSet(StripeIndex, J);
                                             break;
                                         case GridDataType.Frequency:
-                                            FilteredValueIsFromLatestCellPass = _SubGridAsLeaf.Directory.GlobalLatestCells.FrequencyValuesAreFromLastPass.BitSet(StripeIndex, J);
+                                            FilteredValueIsFromLatestCellPass = _GlobalLatestCells.FrequencyValuesAreFromLastPass.BitSet(StripeIndex, J);
                                             break;
                                         case GridDataType.Amplitude:
-                                            FilteredValueIsFromLatestCellPass = _SubGridAsLeaf.Directory.GlobalLatestCells.AmplitudeValuesAreFromLastPass.BitSet(StripeIndex, J);
+                                            FilteredValueIsFromLatestCellPass = _GlobalLatestCells.AmplitudeValuesAreFromLastPass.BitSet(StripeIndex, J);
                                             break;
                                         case GridDataType.Temperature:
-                                            FilteredValueIsFromLatestCellPass = _SubGridAsLeaf.Directory.GlobalLatestCells.TemperatureValuesAreFromLastPass.BitSet(StripeIndex, J);
+                                            FilteredValueIsFromLatestCellPass = _GlobalLatestCells.TemperatureValuesAreFromLastPass.BitSet(StripeIndex, J);
                                             break;
                                         case GridDataType.GPSMode:
-                                            FilteredValueIsFromLatestCellPass = _SubGridAsLeaf.Directory.GlobalLatestCells.GPSModeValuesAreFromLatestCellPass.BitSet(StripeIndex, J);
+                                            FilteredValueIsFromLatestCellPass = _GlobalLatestCells.GPSModeValuesAreFromLatestCellPass.BitSet(StripeIndex, J);
                                             break;
                                         case GridDataType.MDP:
-                                            FilteredValueIsFromLatestCellPass = _SubGridAsLeaf.Directory.GlobalLatestCells.MDPValuesAreFromLastPass.BitSet(StripeIndex, J);
+                                            FilteredValueIsFromLatestCellPass = _GlobalLatestCells.MDPValuesAreFromLastPass.BitSet(StripeIndex, J);
                                             break;
                                         case GridDataType.CCA:
-                                            FilteredValueIsFromLatestCellPass = _SubGridAsLeaf.Directory.GlobalLatestCells.CCAValuesAreFromLastPass.BitSet(StripeIndex, J);
+                                            FilteredValueIsFromLatestCellPass = _GlobalLatestCells.CCAValuesAreFromLastPass.BitSet(StripeIndex, J);
                                             break;
                                         case GridDataType.CCVPercentChange:
                                         case GridDataType.CCVPercentChangeIgnoredTopNullValue:
@@ -634,7 +624,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 SegmentIterator.IterationDirection = IterationDirection.Backwards;
             }
 
-            SegmentIterator.SiteModelReference = SiteModel;
+//            SegmentIterator.SiteModelReference = SiteModel;
             SegmentIterator.SubGrid = _SubGridAsLeaf;
             SegmentIterator.Directory = _SubGridAsLeaf.Directory;
             if (Filter.AttributeFilter.HasMachineFilter)
@@ -897,8 +887,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             return true;
         }
 
-        public ServerRequestResult RetrieveSubGrid(// IStorageProxy storageProxy,
-                                                   CombinedFilter filter,
+        public ServerRequestResult RetrieveSubGrid(CombinedFilter filter,
                                                    int maxNumberOfPassesToReturn,
                                                    bool hasOverrideSpatialCellRestriction,
                                                    BoundingIntegerExtent2D overrideSpatialCellRestriction,

@@ -26,7 +26,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
         void AllocateLeafFullPassStacks();
         void AllocateLeafLatestPassGrid();
 
-        bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, SubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses, SiteModel SiteModelReference);
+        bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, SubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses /*, SiteModel SiteModelReference*/);
 
         void Integrate(ServerSubGridTreeLeaf Source, SubGridSegmentIterator Iterator, bool IntegratingIntoIntermediaryGrid);
     }

@@ -16,7 +16,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <summary>
         /// The SiteModel that this subgrid tree is holding information for
         /// </summary>
-        private SiteModel SiteModelReference { get; set; } = null;
+//        private SiteModel SiteModelReference { get; set; } = null;
 
         public ServerSubGridTree(SiteModel siteModel) :
             base(SubGridTree.SubGridTreeLevels, SubGridTree.DefaultCellSize,
@@ -27,7 +27,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // FIsNewlyCreated := False;
 
             ID = siteModel.ID; // Ensure the ID of the subgrid tree matches the datamodel ID
-            SiteModelReference = siteModel;
+//            SiteModelReference = siteModel;
 
             // FIsValid:= True;
         }
@@ -59,8 +59,8 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                                            bool loadLatestData,
                                            bool loadAllPasses,
                                            IServerLeafSubGrid SubGrid,
-                                           SubGridCellPassesDataSegment Segment,
-                                           SiteModel SiteModelReference)
+                                           SubGridCellPassesDataSegment Segment /*,
+                                           SiteModel SiteModelReference*/)
         {
             string FullFileName;
             bool FileLoaded = false;
@@ -98,7 +98,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             //            Debug.Assert(false, "SubGrid.LoadFromFile not implemented (should usee direct serialisation from Ignite, or serialisation of dumb dinary data from same");
             // Load the cells into it from its file
             FileLoaded = SubGrid.LoadSegmentFromStorage(StorageProxy.SpatialInstance(cellAddress.ToSpatialDivisionDescriptor(RaptorConfig.numSpatialProcessingDivisions)),
-                                                        FullFileName, Segment, needToLoadLatestData, needToLoadAllPasses, SiteModelReference);
+                                                        FullFileName, Segment, needToLoadLatestData, needToLoadAllPasses /*, SiteModelReference*/);
 
             if (!FileLoaded)
             {

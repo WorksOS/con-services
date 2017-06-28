@@ -18,22 +18,22 @@ namespace VSS.VisionLink.Raptor.Storage
         {
         }
 
-        FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(long DataModelID, string StreamName, uint SubgridX, uint SubgridY, FileSystemSpatialStreamType StreamType, uint GranuleIndex, out MemoryStream Stream, out uint StoreGranuleIndex, out uint StoreGranuleCount)
+        FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(long DataModelID, string StreamName, uint SubgridX, uint SubgridY, FileSystemStreamType StreamType, uint GranuleIndex, out MemoryStream Stream, out uint StoreGranuleIndex, out uint StoreGranuleCount)
         {
             throw new NotImplementedException();
         }
 
-        FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStore(long DataModelID, string StreamName, out MemoryStream Stream)
+        FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
         {
             throw new NotImplementedException();
         }
 
-        FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStore(long DataModelID, string StreamName, out MemoryStream Streamout, uint StoreGranuleIndex, out uint StoreGranuleCount)
+        FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStore(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Streamout, uint StoreGranuleIndex, out uint StoreGranuleCount)
         {
             throw new NotImplementedException();
         }
 
-        FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStoreDirect(long DataModelID, string StreamName, out MemoryStream Stream)
+        FileSystemErrorStatus IStorageProxy.ReadStreamFromPersistentStoreDirect(long DataModelID, string StreamName, FileSystemStreamType StreamType, out MemoryStream Stream)
         {
             throw new NotImplementedException();
         }
@@ -43,7 +43,7 @@ namespace VSS.VisionLink.Raptor.Storage
             throw new NotImplementedException();
         }
 
-        FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(long DataModelID, string StreamName, uint SubgridX, uint SubgridY, FileSystemSpatialStreamType StreamType, out uint StoreGranuleIndex, out uint StoreGranuleCount, MemoryStream Stream)
+        FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(long DataModelID, string StreamName, uint SubgridX, uint SubgridY, FileSystemStreamType StreamType, out uint StoreGranuleIndex, out uint StoreGranuleCount, MemoryStream Stream)
         {
             throw new NotImplementedException();
         }

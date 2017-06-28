@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VSS.VisionLink.Raptor.GridFabric.Grids;
 using VSS.VisionLink.Raptor.Interfaces;
 using VSS.VisionLink.Raptor.Storage;
 using VSS.VisionLink.Raptor.Types;
@@ -27,7 +28,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
         {
             if (instance == null)
             {
-                instance = new SiteModels(StorageProxyFactory.Storage("Raptor"));
+                instance = new SiteModels(StorageProxyFactory.Storage(RaptorGrids.RaptorGridName()));
             }
 
             return instance;

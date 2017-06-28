@@ -15,7 +15,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Interfaces
                                     bool loadLatestData,
                                     bool loadAllPasses,
                                     IServerLeafSubGrid SubGrid,
-                                    SubGridCellPassesDataSegment Segment,
-                                    SiteModel SiteModelReference);
+                                    SubGridCellPassesDataSegment Segment /*,
+                                    SiteModel SiteModelReference*/);
     }
 }
