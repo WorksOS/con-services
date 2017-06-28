@@ -1,10 +1,10 @@
 ﻿using System;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Utilities;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
     /// <summary>
     ///     A point specified in WGS 84 latitude/longtitude coordinates
@@ -49,7 +49,7 @@ namespace VSS.Raptor.Service.Common.Models
         {
           get
           {
-            return new WGSPoint()
+            return new WGSPoint
             {
               Lat = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
               Lon = -106.604076 * ConversionConstants.DEGREES_TO_RADIANS

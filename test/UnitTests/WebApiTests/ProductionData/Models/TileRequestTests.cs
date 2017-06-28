@@ -1,25 +1,23 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 
-
-namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
+namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 {
-  [TestClass()]
+  [TestClass]
   public class TileRequestTests
   {
-    [TestMethod()]
+    [TestMethod]
     public void CanCreateTileRequestTest()
     {
-      
+
       var validator = new DataAnnotationsValidator();
       TileRequest request = TileRequest.CreateTileRequest(
-                projectId, callId, DisplayMode.Height, null, liftSettings, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0, 
+                projectId, callId, DisplayMode.Height, null, liftSettings, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, null, 256, 256);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(request, out results));
@@ -42,21 +40,21 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
       //height out of range
       request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, null, 256, 16000);
-      Assert.IsFalse(validator.TryValidate(request, out results));      
+      Assert.IsFalse(validator.TryValidate(request, out results));
 
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateSuccessTest()
     {
       TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.Height, null, liftSettings, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, null, 256, 256);
       request.Validate();
-       
+
     }
 
- 
-    [TestMethod()]
+
+    [TestMethod]
     public void ValidateFailInvalidPaletteNumberTest()
     {
       //wrong number of palettes for display mode
@@ -65,7 +63,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidPaletteOrderTest()
     {
       //palettes out of order
@@ -75,18 +73,18 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
     }
 
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailMissingDesignTest()
     {
       //missing design (for cutfill display mode)
-      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.CutFill, null, liftSettings, 
+      TileRequest request = TileRequest.CreateTileRequest(projectId, callId, DisplayMode.CutFill, null, liftSettings,
         RaptorConverters.VolumesType.BetweenDesignAndFilter, 0.0, null, null, 0, null, 0,
         FilterLayerMethod.None, BoundingBox2DLatLon.HelpSample, null, 256, 256);
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailMissingFilterTest()
     {
       //missing filter (for volumes display mode)
@@ -95,7 +93,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidVolumeTypeTest()
     {
       //Unsupported volume type (for volumes display mode)
@@ -104,7 +102,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailMissingBoundingBoxTest()
     {
       //missing bounding box
@@ -113,7 +111,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailTwoBoundingBoxesTest()
     {
       //Two bounding boxes
@@ -145,6 +143,6 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
 
 
 
-   
+
   }
 }

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
-namespace VSS.Raptor.Service.WebApi
+namespace VSS.Productivity3D.WebApi
 {
     public class Program
     {

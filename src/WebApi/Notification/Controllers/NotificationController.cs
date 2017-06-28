@@ -1,31 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
-using System.Security.Principal;
 using System.Threading.Tasks;
-using Common.Filters.Authentication.Models;
+using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApi.Compaction.Controllers;
-using VSS.Raptor.Service.WebApiModels.Notification.Executors;
-using VSS.Raptor.Service.WebApiModels.Notification.Models;
-using WebApiModels.Notification.Models;
-using MasterDataProxies;
-using WebApiModels.Interfaces;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Compaction.Controllers;
+using VSS.Productivity3D.WebApiModels.Notification.Executors;
+using VSS.Productivity3D.WebApiModels.Notification.Models;
 
-namespace VSS.Raptor.Service.WebApi.Notification
+namespace VSS.Productivity3D.WebApi.Notification.Controllers
 {
   [ResponseCache(NoStore = true)]
   public class NotificationController : Controller
@@ -78,7 +72,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     /// <param name="tileGenerator">DXF tile generator</param>
     /// <param name="fileListProxy">File list proxy</param>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IFileRepository fileRepo, IConfigurationStore configStore, 
+      IFileRepository fileRepo, IConfigurationStore configStore,
       IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy)
     {
       this.raptorClient = raptorClient;
@@ -121,7 +115,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
       var executor = RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       //Do we need to validate fileUid ?
-      await ClearFilesCaches(projectUid, new List<Guid>{fileUid}, customHeaders);
+      await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
       log.LogInformation("GetAddFile returned: " + Response.StatusCode);
       return result;
     }
@@ -151,7 +145,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
       var executor = RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
       var customHeaders = Request.Headers.GetCustomHeaders();
-      await ClearFilesCaches(projectUid, new List<Guid>{fileUid}, customHeaders);
+      await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
     }
@@ -194,7 +188,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     /// <param name="fileUids">The file UIDs of files that have been activated/deactivated</param>
     /// <param name="customHeaders">The custom headers of the notification request</param>
     /// <returns></returns>
-    private async  Task<bool> ClearFilesCaches(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders)
+    private async Task<bool> ClearFilesCaches(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders)
     {
       //Clear file list cache and reload
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
@@ -209,7 +203,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
       //Clear response cache for tiles for this project and file type(s)
       //TODO: Implement this
       */
-   
+
       return true;
     }
 

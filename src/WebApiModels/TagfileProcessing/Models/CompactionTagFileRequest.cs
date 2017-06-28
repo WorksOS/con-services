@@ -1,10 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Filters.Validation;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Filters.Validation;
 
-namespace WebApiModels.TagfileProcessing.Models
+namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
 {
   /// <summary>
   /// TAG file domain object. Model represents TAG file submitted to Raptor.
@@ -53,7 +52,7 @@ namespace WebApiModels.TagfileProcessing.Models
       byte[] data,
       Guid projectUid)
     {
-      return new CompactionTagFileRequest()
+      return new CompactionTagFileRequest
       {
         fileName = fileName,
         data = data,

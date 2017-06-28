@@ -1,8 +1,8 @@
 ﻿using System;
 using VLPDDecls;
-using VSS.Raptor.Service.Common.Contracts;
+using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
     public class LayerIdsExecutionResult : ContractExecutionResult
     {
@@ -22,7 +22,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
                 LayerIdDetails[i].StartDate = layerlist[i].FStartTime;
                 LayerIdDetails[i].EndDate = layerlist[i].FEndTime;
             }
-            return new LayerIdsExecutionResult() {LayerIdDetailsArray = LayerIdDetails};
+            return new LayerIdsExecutionResult {LayerIdDetailsArray = LayerIdDetails};
 
         }
 
@@ -33,7 +33,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
         {
             get
             {
-                return new LayerIdsExecutionResult()
+                return new LayerIdsExecutionResult
                 {
                     LayerIdDetailsArray = new[] { LayerIdDetails.HelpSample, LayerIdDetails.HelpSample }
                 };
@@ -52,8 +52,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
         public static LayerIdDetails HelpSample {
             get
             {
-                return new LayerIdDetails()
-                       {
+                return new LayerIdDetails
+                {
                          AssetId = 1137642418461469,
                          DesignId = 1005,
                          StartDate = DateTime.UtcNow,

@@ -1,6 +1,6 @@
 ﻿
 
-namespace VSS.Raptor.Service.WebApiModels.TagfileProcessing.Models
+namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
 {
     /// <summary>
     /// The set of response codes returned by TAG file submission

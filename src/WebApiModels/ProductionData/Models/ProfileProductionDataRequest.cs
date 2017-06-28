@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.Common.Utilities;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   /// <summary>
   /// The request representation for a linear or alignment based profile request for all thematic types other than summary volumes.
@@ -143,8 +143,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
       bool returnAllPassesAndLayers
       )
     {
-      return new ProfileProductionDataRequest()
-        {
+      return new ProfileProductionDataRequest
+      {
           projectId = projectID,
           callId = callId,
           profileType = profileType,
@@ -169,7 +169,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     {
       get
       {
-        return new ProfileProductionDataRequest()
+        return new ProfileProductionDataRequest
         {
           projectId = 404,
           callId = new Guid(),

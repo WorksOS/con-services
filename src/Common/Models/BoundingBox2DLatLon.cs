@@ -1,13 +1,13 @@
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.Common.Utilities;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Defines a bounding box representing a WGS84 latitude/longitude coordinate area 
@@ -79,8 +79,8 @@ namespace VSS.Raptor.Service.Common.Models
     {
       get
       {
-        return new BoundingBox2DLatLon()
-               {
+        return new BoundingBox2DLatLon
+        {
                    bottomLeftLat = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
                    bottomLeftLon = -106.604076 * ConversionConstants.DEGREES_TO_RADIANS,
                    topRightLat = 35.39012 * ConversionConstants.DEGREES_TO_RADIANS,

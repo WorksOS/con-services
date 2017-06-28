@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.ResultHandling;
-using WebApiModels.Interfaces;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Interfaces
+namespace VSS.Productivity3D.Common.Interfaces
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
@@ -106,7 +105,7 @@ namespace VSS.Raptor.Service.Common.Interfaces
     /// <value>
     /// The contract execution states.
     /// </value>
-    protected ContractExecutionStatesEnum ContractExecutionStates { get; private set; }
+    protected ContractExecutionStatesEnum ContractExecutionStates { get; }
 
     /// <summary>
     /// Dynamically defines new error codes for the executor instance. Don't forget to clean them up after exit.

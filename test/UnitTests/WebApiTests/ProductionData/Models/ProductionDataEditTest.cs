@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
+namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 {
-  [TestClass()]
+  [TestClass]
   public class ProductionDataEditTest
   {
-    [TestMethod()]
+    [TestMethod]
     public void CanCreateEditDataRequestTest()
     {
       var validator = new DataAnnotationsValidator();
@@ -25,7 +25,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
       Assert.IsFalse(validator.TryValidate(dataEdit, out results));
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateSuccessTest()
     {
       ProductionDataEdit dataEdit = ProductionDataEdit.CreateProductionDataEdit(
@@ -33,7 +33,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
       dataEdit.Validate();
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailMissingDataEditTest()
     {
       //missing edit data
@@ -42,7 +42,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
       Assert.ThrowsException<ServiceException>(() => dataEdit.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidDateRangeTest()
     {
       //startUTC > endUTC

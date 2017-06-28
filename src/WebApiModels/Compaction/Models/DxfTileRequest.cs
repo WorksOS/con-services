@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using MasterDataProxies.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-namespace WebApiModels.Compaction.Models
+namespace VSS.Productivity3D.WebApiModels.Compaction.Models
 {
   /// <summary>
   /// The request representation for getting a DXF tile from TCC

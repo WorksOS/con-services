@@ -1,9 +1,9 @@
 ﻿using ASNodeDecls;
 using DesignProfilerDecls;
 using TAGProcServiceDecls;
-using VSS.Raptor.Service.Common.Contracts;
+using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.Common.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
     public class RaptorResult
     {

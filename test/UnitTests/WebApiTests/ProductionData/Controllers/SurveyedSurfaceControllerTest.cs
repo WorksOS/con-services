@@ -1,15 +1,9 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using VSS.Raptor.Service.WebApi.ProductionData.Controllers;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
+namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
   [TestClass]
   public class SurveyedSurfaceControllerTest

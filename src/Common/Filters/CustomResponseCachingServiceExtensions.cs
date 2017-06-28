@@ -1,9 +1,10 @@
 ﻿using System;
 using Microsoft.AspNetCore.ResponseCaching;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace VSS.Productivity3D.Common.Filters
 {
     public static class CustomResponseCachingServiceExtensions
     {

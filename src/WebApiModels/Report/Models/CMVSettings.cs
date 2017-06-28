@@ -2,11 +2,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
   /// <summary>
   /// The parameters for CMV detailed and summary computations
@@ -92,7 +92,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     {
       get
       {
-        return new CMVSettings()
+        return new CMVSettings
         {
           cmvTarget = 400,
           maxCMV = 800,

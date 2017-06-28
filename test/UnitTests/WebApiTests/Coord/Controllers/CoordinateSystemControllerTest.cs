@@ -1,24 +1,17 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
+﻿using System.IO;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VLPDDecls;
-using VSS.Raptor.Service.WebApiModels.Coord.Executors;
-using VSS.Raptor.Service.WebApiModels.Coord.Models;
-using VSS.Raptor.Service.WebApi.Coord.Controllers;
-using VSS.Raptor.Service.WebApiModels.Coord.ResultHandling;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Coord.Executors;
+using VSS.Productivity3D.WebApiModels.Coord.Models;
 
-
-
-namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
+namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
 {
     [TestClass]
     public class CoordinateSystemControllerTest

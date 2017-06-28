@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Contracts
 {
   /// <summary>
   /// The data contract represents CCA data colour palettes requested from Raptor for a single machene.

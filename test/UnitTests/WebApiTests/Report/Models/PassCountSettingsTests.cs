@@ -1,17 +1,15 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Models;
 
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-
-namespace VSS.Raptor.Service.WebApiTests.Report.Models
+namespace VSS.Productivity3D.WebApiTests.Report.Models
 {
-  [TestClass()]
+  [TestClass]
   public class PassCountSettingsTests
   {
-    [TestMethod()]
+    [TestMethod]
     public void CanCreatePassCountSettingsTest()
     {
       var validator = new DataAnnotationsValidator();
@@ -20,14 +18,14 @@ namespace VSS.Raptor.Service.WebApiTests.Report.Models
       Assert.IsTrue(validator.TryValidate(settings, out results));
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateSuccessTest()
     {
       PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] { 1, 3, 5, 10 });
       settings.Validate();
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailLengthTest()
     {
       //empty array
@@ -35,7 +33,7 @@ namespace VSS.Raptor.Service.WebApiTests.Report.Models
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailFirstTest()
     {
       //doesn't start at 0
@@ -43,7 +41,7 @@ namespace VSS.Raptor.Service.WebApiTests.Report.Models
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailOrderTest()
     {
       //pass counts out of order
@@ -52,7 +50,7 @@ namespace VSS.Raptor.Service.WebApiTests.Report.Models
     }
 
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailRangeTest()
     {
       //pass count value > max

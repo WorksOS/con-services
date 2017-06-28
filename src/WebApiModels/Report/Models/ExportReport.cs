@@ -4,10 +4,10 @@ using ASNode.UserPreferences;
 using BoundingExtents;
 using Newtonsoft.Json;
 using VLPDDecls;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
 
   public enum ExportTypes
@@ -175,8 +175,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     {
       get
       {
-        return new ExportReport()
-               {
+        return new ExportReport
+        {
                    projectId = 34,
                    liftBuildSettings = LiftBuildSettings.HelpSample,
                    filter = Filter.HelpSample,

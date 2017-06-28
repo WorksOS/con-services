@@ -1,4 +1,4 @@
-﻿namespace VSS.Raptor.Service.Common.Models
+﻿namespace VSS.Productivity3D.Common.Models
 {
     /// <summary>
     /// The list of 'display modes' that Raptor understans in the context of rendering WMS tiles and other operations

@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   public class MachineStatus : MachineDetails
   {
@@ -85,7 +85,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     {
       get
       {
-        return new MachineStatus()
+        return new MachineStatus
         {
           assetID = 1137642418461469,
           machineName = "VOLVO G946B",

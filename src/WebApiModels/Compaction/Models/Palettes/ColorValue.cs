@@ -1,9 +1,8 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes
+namespace VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes
 {
   /// <summary>
   /// Represents a color and value pair for a palette

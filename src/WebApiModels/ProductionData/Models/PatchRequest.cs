@@ -1,22 +1,21 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.Utilities;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
-    /// <summary>
-    /// The representation of a Patch request. A patch defines a series of subgrids of cell data returned to the caller. patchNumber and patchSize control which patch of
-    /// subgrid and cell data need to be returned within the overall set of patches that comprise the overall data set identified by the thematic dataset, filtering and
-    /// analytics parameters within the request.
-    /// Requesting patch number 0 will additionally return a summation of the total number of patches of the requested size that need to be requested in order to assemble the
-    /// complete data set.
-    /// </summary>
-    public class PatchRequest : RaptorHelper
+  /// <summary>
+  /// The representation of a Patch request. A patch defines a series of subgrids of cell data returned to the caller. patchNumber and patchSize control which patch of
+  /// subgrid and cell data need to be returned within the overall set of patches that comprise the overall data set identified by the thematic dataset, filtering and
+  /// analytics parameters within the request.
+  /// Requesting patch number 0 will additionally return a summation of the total number of patches of the requested size that need to be requested in order to assemble the
+  /// complete data set.
+  /// </summary>
+  public class PatchRequest : RaptorHelper
     {
         /// <summary>
         /// An identifying string from the caller
@@ -173,7 +172,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     {
       get
       {
-        return new PatchRequest()
+        return new PatchRequest
         {
           projectId = 404,
           callId = new Guid(),

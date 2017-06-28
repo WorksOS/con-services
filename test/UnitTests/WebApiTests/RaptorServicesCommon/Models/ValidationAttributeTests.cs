@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.Filters.Validation;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Filters.Validation;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiTests.Common.Modelss
+namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
 {
-    [TestClass()]
+    [TestClass]
     public class ValidationAttributeTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void DecimalIsWithinRangeAttributeTest()
         {
             DecimalIsWithinRangeAttribute attribute = new DecimalIsWithinRangeAttribute(-10, 10);
@@ -16,7 +16,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Modelss
             Assert.IsFalse(attribute.IsValid(20));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void IntIsWithinRangeAttributeTest()
         {
             IntIsWithinRangeAttribute attribute = new IntIsWithinRangeAttribute(-10, 10);
@@ -24,7 +24,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Modelss
             Assert.IsFalse(attribute.IsValid(20));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void MoreThanTwoPointsAttributeTest()
         {
             MoreThanTwoPointsAttribute attribute = new MoreThanTwoPointsAttribute();
@@ -44,7 +44,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Modelss
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ValidFilenameAttributeTest()
         {
             ValidFilenameAttribute attribute = new ValidFilenameAttribute(16);

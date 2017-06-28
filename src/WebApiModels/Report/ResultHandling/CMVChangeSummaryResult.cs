@@ -1,7 +1,7 @@
 
-using VSS.Raptor.Service.Common.Contracts;
+using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Summary CMV Change request
@@ -33,8 +33,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
 
     public static CMVChangeSummaryResult CreateSummarySpeedResult(double[] values, double coverageArea)
     {
-      return new CMVChangeSummaryResult()
-             {
+      return new CMVChangeSummaryResult
+      {
                  Values = values,
                  CoverageArea = coverageArea
              };
@@ -47,8 +47,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     {
       get
       {
-        return new CMVChangeSummaryResult()
-               {
+        return new CMVChangeSummaryResult
+        {
                    Values = new double[] {23, 543, 1233, 633}
                };
       }

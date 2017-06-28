@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.Common.Utilities;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Defines all the filter parameters that may be supplied as a part of a request. Filters control spatial, temporal and attribute aspects of the info
@@ -331,7 +331,7 @@ namespace VSS.Raptor.Service.Common.Models
     {
       get
       {
-        return new Filter()
+        return new Filter
         {
           ID = 1,
           name = "Filter 1",
@@ -397,11 +397,11 @@ namespace VSS.Raptor.Service.Common.Models
       }
 
       //Check date range parts
-      if (this.startUTC.HasValue || this.endUTC.HasValue)
+      if (startUTC.HasValue || endUTC.HasValue)
       {
-        if (this.startUTC.HasValue && this.endUTC.HasValue)
+        if (startUTC.HasValue && endUTC.HasValue)
         {
-          if (this.startUTC.Value > this.endUTC.Value)
+          if (startUTC.Value > endUTC.Value)
           {
             throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -417,17 +417,17 @@ namespace VSS.Raptor.Service.Common.Models
       }
 
       //Check alignment filter parts
-      if (this.alignmentFile != null || this.startStation.HasValue || this.endStation.HasValue ||
-          this.leftOffset.HasValue || this.rightOffset.HasValue)
+      if (alignmentFile != null || startStation.HasValue || endStation.HasValue ||
+          leftOffset.HasValue || rightOffset.HasValue)
       {
-        if (this.alignmentFile == null || !this.startStation.HasValue || !this.endStation.HasValue ||
-          !this.leftOffset.HasValue || !this.rightOffset.HasValue)
+        if (alignmentFile == null || !startStation.HasValue || !endStation.HasValue ||
+          !leftOffset.HasValue || !rightOffset.HasValue)
 
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                   "If using an alignment filter, alignment file, start and end station, left and right offset  must be provided"));
 
-        this.alignmentFile.Validate();        
+        alignmentFile.Validate();        
       }
 
       //Check layer filter parts
@@ -438,16 +438,16 @@ namespace VSS.Raptor.Service.Common.Models
                 "To use the layer number filter, layer type must be specified"));
       }
 
-      if (this.layerType.HasValue)
+      if (layerType.HasValue)
       {
-        switch (this.layerType.Value)
+        switch (layerType.Value)
         {
           case FilterLayerMethod.OffsetFromDesign:
           case FilterLayerMethod.OffsetFromBench:
           case FilterLayerMethod.OffsetFromProfile:
-            if (this.layerType.Value == FilterLayerMethod.OffsetFromBench)
+            if (layerType.Value == FilterLayerMethod.OffsetFromBench)
             {
-              if (!this.benchElevation.HasValue)
+              if (!benchElevation.HasValue)
               {
                 throw new ServiceException(HttpStatusCode.BadRequest,
                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -457,15 +457,15 @@ namespace VSS.Raptor.Service.Common.Models
             }
             else
             {
-              if (this.designOrAlignmentFile == null)
+              if (designOrAlignmentFile == null)
               {
                 throw new ServiceException(HttpStatusCode.BadRequest,
                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                         "If using an offset from design or profile filter, design or alignment file must be provided"));
               }
-              this.designOrAlignmentFile.Validate();
+              designOrAlignmentFile.Validate();
             }
-            if (!this.layerNumber.HasValue || !this.layerThickness.HasValue)
+            if (!layerNumber.HasValue || !layerThickness.HasValue)
             {
                 throw new ServiceException(HttpStatusCode.BadRequest,
                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -473,7 +473,7 @@ namespace VSS.Raptor.Service.Common.Models
             }
             break;
             case FilterLayerMethod.TagfileLayerNumber:
-            if (!this.layerNumber.HasValue)
+            if (!layerNumber.HasValue)
             {
               throw new ServiceException(HttpStatusCode.BadRequest,
                   new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -485,21 +485,21 @@ namespace VSS.Raptor.Service.Common.Models
 
       //Check boundary if provided
       //Raptor handles any weird boundary you give it and automatically closes it if not closed already therefore we just need to check we have at least 3 points
-      if (this.polygonLL != null && this.polygonLL.Count < 3)
+      if (polygonLL != null && polygonLL.Count < 3)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Too few points for filter polygon"));                  
       }
 
-      if (this.polygonGrid != null && this.polygonGrid.Count < 3)
+      if (polygonGrid != null && polygonGrid.Count < 3)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                  "Too few points for filter polygon"));        
       }
 
-      if (this.polygonLL != null && this.polygonLL.Count > 0 && this.polygonGrid != null && this.polygonGrid.Count > 0)
+      if (polygonLL != null && polygonLL.Count > 0 && polygonGrid != null && polygonGrid.Count > 0)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
                  new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

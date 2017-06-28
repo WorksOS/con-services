@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using VSS.Raptor.Service.WebApiModels.TagfileProcessing.Models;
-using VSS.Raptor.Service.WebApiModels.TagfileProcessing.ResultHandling;
+using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;
+using VSS.Productivity3D.WebApiModels.TagfileProcessing.ResultHandling;
 
-
-namespace VSS.Raptor.Service.WebApiModels.TagfileProcessing.Contracts
+namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Contracts
 {
     public interface ITagFileContract
     {

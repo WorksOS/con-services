@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-
-namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
+namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
   [TestClass]
   public class CCAColorPaletteControllerTest

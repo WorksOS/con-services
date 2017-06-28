@@ -1,9 +1,9 @@
 ﻿using DesignProfilerDecls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TAGProcServiceDecls;
-using VSS.Raptor.Service.Common.Contracts;
+using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiTests.Common.Contracts
+namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
 {
     [TestClass]
     public class ContractExecutionStatesEnumTests

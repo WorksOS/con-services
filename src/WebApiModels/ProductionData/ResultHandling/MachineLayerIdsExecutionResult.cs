@@ -1,8 +1,8 @@
-﻿using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.Contracts;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
   public class MachineLayerIdsExecutionResult : ContractExecutionResult
   {
@@ -29,16 +29,9 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
     /// <summary>
     /// Create example instance of MachineLayerIdsExecutionResult to display in Help documentation.
     /// </summary>
-    public static MachineLayerIdsExecutionResult HelpSample
+    public static MachineLayerIdsExecutionResult HelpSample => new MachineLayerIdsExecutionResult
     {
-      get
-      {
-        return new MachineLayerIdsExecutionResult()
-        {
-          MachineLiftDetails = new[] { Models.MachineLiftDetails.HelpSample }
-        };
-      }
-    }
-
+      MachineLiftDetails = new[] { Models.MachineLiftDetails.HelpSample }
+    };
   }
 }

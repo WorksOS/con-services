@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using ASNodeDecls;
-using Common.Executors;
-using Common.Filters.Authentication.Models;
+﻿using ASNodeDecls;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using MasterDataProxies.Models;
@@ -16,29 +6,38 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
-using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
-using VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.Executors;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Executors;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Compaction.Executors;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApiModels.Compaction.Models;
+using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
+using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Notification.Helpers;
+using VSS.Productivity3D.WebApiModels.Report.Executors;
+using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using WebApiModels.Compaction.Executors;
-using WebApiModels.Compaction.Helpers;
-using WebApiModels.Compaction.Models;
-using WebApiModels.Notification.Helpers;
-using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.ColorValue;
+using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.ColorValue;
 
 
-namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
+namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
 
   //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
@@ -93,7 +92,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileRepo">Imported file repository</param>
-    public CompactionController(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache, 
+    public CompactionController(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache,
       IFileListProxy fileListProxy, IConfigurationStore configStore, IFileRepository fileRepo)
     {
       this.raptorClient = raptorClient;
@@ -806,7 +805,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     [Route("api/v2/compaction/colorpalettes")]
     [HttpGet]
     public async Task<CompactionColorPalettesResult> GetColorPalettes(
-      [FromQuery] long? projectId, 
+      [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid)
     {
       log.LogInformation("GetColorPalettes: " + Request.QueryString);
@@ -883,7 +882,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
                   compactionPalette[i].value));
             }
             cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
-              break;
+            break;
           case DisplayMode.PassCount:
             colorValues = new List<ColorValue>();
             for (int i = 0; i < compactionPalette.Count - 1; i++)
@@ -979,7 +978,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe, 
+      [FromQuery] bool? isJohnDoe,
       [FromQuery] bool? includeSurveyedSurfaces)
     {
       log.LogInformation("GetElevationPalette: " + Request.QueryString);
@@ -1004,7 +1003,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       }
       DetailPalette elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
               compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
-           
+
       return CompactionDetailPaletteResult.CreateCompactionDetailPaletteResult(elevationPalette);
     }
 
@@ -1129,14 +1128,14 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           : ElevationCacheKey(projectId, filter.startUTC, filter.endUTC, filter.vibeStateOn,
             filter.elevationType, filter.layerNumber, filter.onMachineDesignID,
             filter.contributingMachines == null || filter.contributingMachines.Count == 0
-              ? (long?) null
+              ? (long?)null
               : filter.contributingMachines[0].assetID,
             //Can only filter by one machine at present
             filter.contributingMachines == null || filter.contributingMachines.Count == 0
               ? null
               : filter.contributingMachines[0].machineName,
             filter.contributingMachines == null || filter.contributingMachines.Count == 0
-              ? (bool?) null
+              ? (bool?)null
               : filter.contributingMachines[0].isJohnDoe,
             filter.surveyedSurfaceExclusionList);
     }
@@ -1154,7 +1153,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
     /// <param name="assetID"></param>
     /// <param name="machineName"></param>
     /// <param name="isJohnDoe"></param>
-    /// <param name="includeSurveyedSurfaces"></param>
+    /// <param name="excludedSurveyedSurfaceIds"></param>
     /// <returns>Cache key</returns>
     private string ElevationCacheKey(long projectId, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
@@ -1176,7 +1175,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       return key;
     }
 
-      #endregion
+    #endregion
 
     // TEMP v2 copy of v1 until we have a simplified contract for Compaction
     /// <summary>
@@ -1352,8 +1351,8 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort) WIDTH, (ushort) HEIGHT, GetBoundingBox(BBOX));
-      return tileResult;                      
+      var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
+      return tileResult;
     }
 
 
@@ -1442,7 +1441,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort) WIDTH, (ushort) HEIGHT, GetBoundingBox(BBOX));
+      var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
       //AddCacheResponseHeaders();  //done by middleware               
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
@@ -1495,7 +1494,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       DxfTileRequest request = DxfTileRequest.CreateTileRequest(requiredFiles, GetBoundingBox(BBOX));
       request.Validate();
       var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
-      var result = await executor.ProcessAsync(request)as TileResult;
+      var result = await executor.ProcessAsync(request) as TileResult;
       return result;
     }
 
@@ -1549,7 +1548,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       var executor = RequestExecutorContainer.Build<DxfTileExecutor>(logger, raptorClient, null, configStore, fileRepo);
       var result = await executor.ProcessAsync(request) as TileResult;
       //AddCacheResponseHeaders();  //done by middleware               
-      return new FileStreamResult(new MemoryStream(result.TileData), "image/png");     
+      return new FileStreamResult(new MemoryStream(result.TileData), "image/png");
     }
 
     /// <summary>
@@ -1573,15 +1572,15 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
       string CRS,
       string STYLES)
     {
-    bool invalid = (!string.IsNullOrEmpty(SERVICE) && SERVICE.ToUpper() != "WMS") ||
-                  (!string.IsNullOrEmpty(VERSION) && VERSION.ToUpper() != "1.3.0") ||
-                  (!string.IsNullOrEmpty(REQUEST) && REQUEST.ToUpper() != "GETMAP") ||
-                  (!string.IsNullOrEmpty(FORMAT) && FORMAT.ToUpper() != "IMAGE/PNG") ||
-                  (!string.IsNullOrEmpty(TRANSPARENT) && TRANSPARENT.ToUpper() != "TRUE") ||
-                  (!string.IsNullOrEmpty(LAYERS) && LAYERS.ToUpper() != "LAYERS") ||
-                  (!string.IsNullOrEmpty(CRS) && CRS.ToUpper() != "EPSG:4326") ||
-                  (!string.IsNullOrEmpty(STYLES));
-       
+      bool invalid = !string.IsNullOrEmpty(SERVICE) && SERVICE.ToUpper() != "WMS" ||
+                    !string.IsNullOrEmpty(VERSION) && VERSION.ToUpper() != "1.3.0" ||
+                    !string.IsNullOrEmpty(REQUEST) && REQUEST.ToUpper() != "GETMAP" ||
+                    !string.IsNullOrEmpty(FORMAT) && FORMAT.ToUpper() != "IMAGE/PNG" ||
+                    !string.IsNullOrEmpty(TRANSPARENT) && TRANSPARENT.ToUpper() != "TRUE" ||
+                    !string.IsNullOrEmpty(LAYERS) && LAYERS.ToUpper() != "LAYERS" ||
+                    !string.IsNullOrEmpty(CRS) && CRS.ToUpper() != "EPSG:4326" ||
+                    !string.IsNullOrEmpty(STYLES);
+
       if (invalid)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -1639,7 +1638,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid file type " + fileType));
       }
-        
+
       //Get all the imported files for the project
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
       if (fileList == null)
@@ -1687,7 +1686,7 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         }
         machine = MachineDetails.CreateMachineDetails(assetID.Value, machineName, isJohnDoe.Value);
       }
-      return machine == null ? null : new List<MachineDetails> {machine};
+      return machine == null ? null : new List<MachineDetails> { machine };
     }
 
     /// <summary>
@@ -1792,11 +1791,11 @@ namespace VSS.Raptor.Service.WebApi.Compaction.Controllers
         using (Bitmap bitmap = new Bitmap(WebMercatorProjection.TILE_SIZE, WebMercatorProjection.TILE_SIZE))
         {
           tileResult = TileResult.CreateTileResult(bitmap.BitmapToByteArray(), TASNodeErrorStatus.asneOK);
-        }        
+        }
       }
       return tileResult;
     }
-    
+
     #endregion
 
     private const int CMV_DETAILS_NUMBER_OF_COLORS = 16;

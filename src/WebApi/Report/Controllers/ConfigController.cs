@@ -1,14 +1,13 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.WebApiModels.Report.Executors;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.WebApiModels.Report.Executors;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApi.Report.Controllers
+namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
-    [ResponseCache(NoStore = true)]
-    public class ConfigController : Controller
+  [ResponseCache(NoStore = true)]
+  public class ConfigController : Controller
   {
     /// <summary>
     /// Raptor client for use by executor

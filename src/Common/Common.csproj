@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
-    <AssemblyName>Common</AssemblyName>
+    <AssemblyName>VSS.Productivity3D.Common</AssemblyName>
     <PackageId>Common</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>VSS.Productivity3D.Common</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

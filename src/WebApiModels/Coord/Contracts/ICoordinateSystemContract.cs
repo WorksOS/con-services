@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using VSS.Raptor.Service.WebApiModels.Coord.Models;
-using VSS.Raptor.Service.WebApiModels.Coord.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Coord.Models;
+using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Coord.Contracts
+namespace VSS.Productivity3D.WebApiModels.Coord.Contracts
 {
     /// <summary>
     /// Data contract representing a coordinate system definition...

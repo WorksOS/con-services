@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+﻿using System;
+using Newtonsoft.Json;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
   /// <summary>
   /// The representation of a elevation statistics request
@@ -57,7 +57,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     {
       get
       {
-        return new ElevationStatisticsRequest()
+        return new ElevationStatisticsRequest
         {
           projectId = 34,
           callId = Guid.NewGuid(),

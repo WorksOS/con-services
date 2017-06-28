@@ -1,10 +1,8 @@
-﻿
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+﻿using Newtonsoft.Json;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   /// <summary>
   /// Request to get manually edited production data changes.
@@ -18,7 +16,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     [JsonProperty(PropertyName = "assetId", Required = Required.Default)]
     public long? assetId { get; private set; }
 
-         /// <summary>
+    /// <summary>
     /// Private constructor
     /// </summary>
     private GetEditDataRequest()
@@ -35,10 +33,10 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
       )
     {
       return new GetEditDataRequest
-             {
-                projectId = projectId,
-                assetId = assetId
-             };
+      {
+        projectId = projectId,
+        assetId = assetId
+      };
     }
 
 
@@ -49,11 +47,11 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     {
       get
       {
-        return new GetEditDataRequest()
-               {
-                   projectId = 1523,
-                   assetId = 753648483
-               };
+        return new GetEditDataRequest
+        {
+          projectId = 1523,
+          assetId = 753648483
+        };
       }
     }
 

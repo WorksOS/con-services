@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
+namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
   /// <summary>
   /// Default settings for compaction end points. For consistency all compaction end points should use these settings.
@@ -89,13 +88,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
       }
     }
 
-    public static PassCountSettings CompactionPassCountSettings
-    {
-      get
-      {
-        return PassCountSettings.CreatePassCountSettings(new int[] {1,2,3,4,5,6,7,8});
-      }
-    }
+    public static PassCountSettings CompactionPassCountSettings => PassCountSettings.CreatePassCountSettings(new int[] {1,2,3,4,5,6,7,8});
 
     public static List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents)
     {

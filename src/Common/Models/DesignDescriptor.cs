@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Description to identify a design file either by id or by its location in TCC.
@@ -56,33 +56,26 @@ namespace VSS.Raptor.Service.Common.Models
     /// <summary>
     /// Create example instance of DesignDescriptor to display in Help documentation.
     /// </summary>
-    public static DesignDescriptor HelpSample
+    public static DesignDescriptor HelpSample => new DesignDescriptor
     {
-      get
-      {
-        return new DesignDescriptor()
-        {
-          id = 1234,
-          file = FileDescriptor.HelpSample,
-          offset = 0
-        };
-      }
-    }
+      id = 1234,
+      file = FileDescriptor.HelpSample,
+      offset = 0
+    };
 
     /// <summary>
     /// Validates all properties
     /// </summary>
     public void Validate()
     {
-      if (this.id <= 0 && this.file == null)
+      if (id <= 0 && file == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                  "Either the design id or file location is required"));        
       }
 
-      if (this.file != null)
-        this.file.Validate();
+      file?.Validate();
     }
   }
 }

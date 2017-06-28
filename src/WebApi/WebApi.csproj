@@ -5,9 +5,10 @@
     <DebugType>portable</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>WebApi</AssemblyName>
+    <AssemblyName>VSS.Productivity3D.WebApi</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>WebApi</PackageId>
+    <RootNamespace>VSS.Productivity3D.WebApi</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

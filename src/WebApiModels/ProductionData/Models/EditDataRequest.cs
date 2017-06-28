@@ -1,13 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   /// <summary>
   /// A representation of an edit request. This request gives a user the ability to correct data that has been recorded wrongly in Machines by Operators.
@@ -64,8 +63,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     {
       get
       {
-        return new EditDataRequest()
-               {
+        return new EditDataRequest
+        {
                    projectId = 1523,
                    undo = false,
                    dataEdit = ProductionDataEdit.HelpSample
@@ -82,7 +81,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
       if (!undo && dataEdit == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                    string.Format("Missing data edit for edit request")));
+                    "Missing data edit for edit request"));
 
       if (dataEdit != null)
         dataEdit.Validate();

@@ -1,12 +1,11 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
     /// <summary>
     /// Defines a bounding box representing a 2D grid coorindate area
@@ -70,7 +69,7 @@ namespace VSS.Raptor.Service.Common.Models
       {
         get
         {
-          return new BoundingBox2DGrid()
+          return new BoundingBox2DGrid
           {
             bottomLeftX = 380646.982394,
             bottomleftY = 812634.205106,

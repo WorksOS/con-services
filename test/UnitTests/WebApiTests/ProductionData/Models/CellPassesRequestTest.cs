@@ -1,13 +1,11 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-
-namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
+namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 {
   [TestClass]
   public class CellPassesRequestTest

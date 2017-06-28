@@ -2,13 +2,11 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.ResultHandling;
 
-
-namespace VSS.Raptor.Service.Common.Filters
+namespace VSS.Productivity3D.Common.Filters
 {
   public class ExceptionsTrap
   {
@@ -58,14 +56,6 @@ namespace VSS.Raptor.Service.Common.Filters
           }
         }
       }
-    }
-  }
-
-  public static class ExceptionsTrapExtensions
-  {
-    public static IApplicationBuilder UseExceptionTrap(this IApplicationBuilder builder)
-    {
-      return builder.UseMiddleware<ExceptionsTrap>();
     }
   }
 }

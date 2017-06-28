@@ -1,8 +1,7 @@
-﻿
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using VSS.VisionLink.Interfaces.Events.Commands.Helpers;
 
-namespace WebApiModels.Notification.Helpers
+namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
 {
   public class Point
   {

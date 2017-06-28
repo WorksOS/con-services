@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
   /// <summary>
   /// The request representation used for a summary CCA request.
@@ -71,7 +71,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     {
       get
       {
-        return new CCARequest()
+        return new CCARequest
         {
           projectId = 735,
           callId = null,

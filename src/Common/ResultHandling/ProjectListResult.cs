@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 
-namespace VSS.Raptor.Service.Common.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
   /// <summary>
   /// Represent response with Project IDs available for a user

@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiTests.Common.Models
+namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
 {
-  [TestClass()]
+  [TestClass]
   public class FileDescriptorTests
   {
-    [TestMethod()]
+    [TestMethod]
     public void CanCreateFileDescriptorTest()
     {
       string bigString = new string('A', 10000);
@@ -35,7 +35,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.IsFalse(validator.TryValidate(file, out results), "too big file name failed");
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateSuccessTest()
     {
       FileDescriptor file = FileDescriptor.CreateFileDescriptor("u72003136-d859-4be8-86de-c559c841bf10",
@@ -43,7 +43,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       file.Validate();
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailEmptyTest()
     {
       //empty file descriptor

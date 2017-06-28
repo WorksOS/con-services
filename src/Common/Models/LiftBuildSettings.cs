@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
+using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// A collection of parameters and configuration information relating to analysis and determination of material layers.
@@ -195,7 +195,7 @@ namespace VSS.Raptor.Service.Common.Models
     {
       get
       {
-        return new LiftBuildSettings()
+        return new LiftBuildSettings
         {
           cCVRange = CCVRangePercentage.HelpSample,
           cCVSummarizeTopLayerOnly = true,
@@ -225,17 +225,17 @@ namespace VSS.Raptor.Service.Common.Models
     public void Validate()
     {
       if (cCVRange != null)
-        this.cCVRange.Validate();
+        cCVRange.Validate();
       if (mDPRange != null)
-        this.mDPRange.Validate();
-      if (this.overridingTemperatureWarningLevels != null)
-        this.overridingTemperatureWarningLevels.Validate();
-      if (this.overridingTargetPassCountRange != null)
-        this.overridingTargetPassCountRange.Validate();
-      if (this.liftThicknessTarget != null)
-        this.liftThicknessTarget.Validate();
-      if (this.machineSpeedTarget != null)
-        this.machineSpeedTarget.Validate();
+        mDPRange.Validate();
+      if (overridingTemperatureWarningLevels != null)
+        overridingTemperatureWarningLevels.Validate();
+      if (overridingTargetPassCountRange != null)
+        overridingTargetPassCountRange.Validate();
+      if (liftThicknessTarget != null)
+        liftThicknessTarget.Validate();
+      if (machineSpeedTarget != null)
+        machineSpeedTarget.Validate();
     }
 
     private const short MIN_TARGET_MDP = 0;
