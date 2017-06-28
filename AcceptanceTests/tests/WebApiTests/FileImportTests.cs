@@ -120,11 +120,11 @@ namespace WebApiTests
       var filesResult = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-      //Thread.Sleep(3000);
+
       var filesResult2 = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 2);
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
-     // Thread.Sleep(3000);
+
       var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
@@ -206,11 +206,11 @@ namespace WebApiTests
       var filesResult = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-     // Thread.Sleep(3000);
+
       var filesResult2 = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 2);
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
-     // Thread.Sleep(3000);
+
       var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
@@ -255,7 +255,7 @@ namespace WebApiTests
     }
 
     [TestMethod]
-public void TestImport2SurveyedSurfaceFiles()
+    public void TestImport2SurveyedSurfaceFiles()
     {
       const string testName = "File Import 5";
       msg.Title(testName, "Create standard project and customer then upload two Surveryed surface files");
@@ -292,11 +292,11 @@ public void TestImport2SurveyedSurfaceFiles()
       var filesResult = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-    //  Thread.Sleep(3000);
+
       var filesResult2 = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 2);
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult2.ImportedFileDescriptor, expectedResult2, true);
-    //  Thread.Sleep(3000);
+
       var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
       Assert.IsTrue(importFileList.ImportedFileDescriptors.Count == 2, "Expected 2 imported files but got " + importFileList.ImportedFileDescriptors.Count);
       ts.CompareTheActualImportFileWithExpected(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
@@ -341,7 +341,7 @@ public void TestImport2SurveyedSurfaceFiles()
       var filesResult = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-    //  Thread.Sleep(3000);
+
       var filesResult2 = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 2);
       Assert.IsTrue(filesResult2.Message == "CreateImportedFileV4. The file has already been created.", "Expecting a message: CreateImportedFileV4.The file has already been created.");
       var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
@@ -387,7 +387,7 @@ public void TestImport2SurveyedSurfaceFiles()
       var filesResult = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-    //  Thread.Sleep(3000);
+
       var filesResult2 = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 2, "PUT");
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
@@ -434,7 +434,7 @@ public void TestImport2SurveyedSurfaceFiles()
       var filesResult = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-   //   Thread.Sleep(3000);
+
       var filesResult2 = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 2, "PUT");
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
@@ -480,7 +480,7 @@ public void TestImport2SurveyedSurfaceFiles()
       var filesResult = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 1);
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-   //   Thread.Sleep(3000);
+
       var filesResult2 = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 2, "PUT");
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);
@@ -529,7 +529,7 @@ public void TestImport2SurveyedSurfaceFiles()
       var expectedResult1 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
       importFile.importedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
-   //   Thread.Sleep(3000);
+
       var filesResult2 = importFile.SendToImportedFilesToWebApi(ts, importFileArray, 1, "DELETE");
       var expectedResult2 = importFile.expectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
       var importFileList = importFile.GetImportedFilesFromWebApi(ts.GetBaseUri() + $"api/v4/importedfiles?projectUid={projectUid}", customerUid);

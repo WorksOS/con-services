@@ -24,12 +24,6 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Controllers
 {
-  public class ReqDto
-  {
-    public string ProjectUid { get; set; }
-    public ImmutableList<ActivatedFileDescriptor> ImportedFileDescriptors { get; set; }
-  }
-
   /// <summary>
   /// File Import controller v4
   /// </summary>
@@ -118,14 +112,14 @@ namespace Controllers
         var existingFile = importedFiles.FirstOrDefault(f => f.ImportedFileUid == activatedFileDescriptor.ImportedFileUid);
         if (existingFile == null)
         {
-          log.LogInformation(
+          log.LogError(
             $"{functionId}. File doesn't exist. projectUid {projectUid}, fileUid: {activatedFileDescriptor.ImportedFileUid}");
           continue;
         }
 
         if (existingFile.IsActivated == activatedFileDescriptor.IsActivated)
         {
-          log.LogInformation(
+          log.LogDebug(
             $"{functionId}. File activation state is already set to {existingFile.IsActivated}. No changes required. {existingFile.ImportedFileUid}");
           continue;
         }
@@ -137,7 +131,9 @@ namespace Controllers
 
       if (!filesToUpdate.Any())
       {
-        return Ok(new { Code = HttpStatusCode.BadRequest, Message = "No files eligible for activation state change." });
+        log.LogInformation($"{functionId}. No files eligible for activation state change.");
+
+        return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
       }
 
       try

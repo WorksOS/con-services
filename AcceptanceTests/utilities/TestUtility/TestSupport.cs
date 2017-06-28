@@ -1,22 +1,22 @@
-﻿using System;
+﻿using Microsoft.CSharp.RuntimeBinder;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using ProjectWebApiCommon.Models;
+using Repositories.DBModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
-using System.Dynamic;
-using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
-using Microsoft.CSharp.RuntimeBinder;
-using Newtonsoft.Json;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApiCommon.Models;
-using Repositories.DBModels;
+using System.Text.RegularExpressions;
+using System.Threading;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TestUtility
 {
@@ -76,7 +76,7 @@ namespace TestUtility
       SetGeofenceUid();
       SetSubscriptionUid();
     }
-    
+
     /// <summary>
     /// Set the legacy asset id
     /// </summary>
@@ -187,7 +187,7 @@ namespace TestUtility
         if (IsPublishToWebApi)
         { msg.DisplayEventsToConsoleWeb(eventArray); }
         else if (IsPublishToKafka)
-        { msg.DisplayEventsToConsoleKafka(eventArray);}
+        { msg.DisplayEventsToConsoleKafka(eventArray); }
         else
         { msg.DisplayEventsForDbInjectToConsole(eventArray); }
 
@@ -264,13 +264,13 @@ namespace TestUtility
 
     public ImportedFileDescriptor ConvertImportFileArrayToObject(string[] importFileArray, int row)
     {
-        msg.DisplayEventsToConsoleWeb(importFileArray);
-        var allColumnNames = importFileArray.ElementAt(0).Split(SEPARATOR);
-        var eventRow = importFileArray.ElementAt(row).Split(SEPARATOR);
-        dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
-        var jsonString = BuildEventIntoObject(eventObject);
-        var expectedResults = JsonConvert.DeserializeObject<ImportedFileDescriptor>(jsonString);
-        return expectedResults;
+      msg.DisplayEventsToConsoleWeb(importFileArray);
+      var allColumnNames = importFileArray.ElementAt(0).Split(SEPARATOR);
+      var eventRow = importFileArray.ElementAt(row).Split(SEPARATOR);
+      dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
+      var jsonString = BuildEventIntoObject(eventObject);
+      var expectedResults = JsonConvert.DeserializeObject<ImportedFileDescriptor>(jsonString);
+      return expectedResults;
     }
 
     /// <summary>
@@ -643,27 +643,33 @@ namespace TestUtility
     /// <param name="actualFile"></param>
     public void CompareTheActualImportFileWithExpected(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
     {
-        var oType = actualFile.GetType();
-        foreach (var oProperty in oType.GetProperties())
+      var oType = actualFile.GetType();
+      foreach (var oProperty in oType.GetProperties())
+      {
+        var expectedValue = oProperty.GetValue(expectedFile, null);
+        var actualValue = oProperty.GetValue(actualFile, null);
+        if (ignoreZeros)
         {
-          var expectedValue = oProperty.GetValue(expectedFile, null);
-          var actualValue = oProperty.GetValue(actualFile, null);
-          if (ignoreZeros)
+          if (expectedValue == null)
           {
-            if (expectedValue == null)
-            {
-              continue;
-            }
-            if (expectedValue.ToString() == "0" || expectedValue.ToString().Contains("1/01/0001"))
-            {
-              continue;
-            }
+            continue;
           }
-          if (!Equals(expectedValue, actualValue))
+          if (expectedValue.ToString() == "0" || expectedValue.ToString().Contains("1/01/0001"))
           {
-            Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue);
+            continue;
           }
         }
+        if (actualValue is DateTime)
+        {
+          // The ExpectedValue is set using the .ToString("o") ISO formatting convention so we must 
+          // convert actualValue to UTC here to ensure we're comparing two UTC values.
+          actualValue = ((DateTime)actualValue).ToUniversalTime();
+        }
+        if (!Equals(expectedValue, actualValue))
+        {
+          Assert.Fail(oProperty.Name + " Expected: " + expectedValue + " is not equal to actual: " + actualValue);
+        }
+      }
     }
 
 
@@ -1350,10 +1356,10 @@ namespace TestUtility
           {
             CustomerUid = eventObject.CustomerUid,
             FileCreatedUtc = DateTime.Parse(eventObject.FileCreatedUtc),
-            FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUtc),             
-            ImportedBy = eventObject.ImportedBy,            
+            FileUpdatedUtc = DateTime.Parse(eventObject.FileUpdatedUtc),
+            ImportedBy = eventObject.ImportedBy,
             ProjectUid = eventObject.ProjectUid,
-            Name = eventObject.Name             
+            Name = eventObject.Name
           };
           if (HasProperty(eventObject, "SurveyedUtc"))
           {
@@ -1391,7 +1397,7 @@ namespace TestUtility
               break;
           }
           jsonString = JsonConvert.SerializeObject(importedFileDescriptor, JsonSettings);
-          break;          
+          break;
       }
       return jsonString;
     }

@@ -12,6 +12,10 @@ namespace ProjectWebApi.Internal
     /// Correctly throw ServiceException for controller types.
     /// </summary>
     ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, string resultCode = null, string errorMessage = null);
+
+    /// <summary>
+    /// Correctly throw ServiceException for controller types.
+    /// </summary>
     ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, int resultCode, string errorMessage = null);
   }
 }

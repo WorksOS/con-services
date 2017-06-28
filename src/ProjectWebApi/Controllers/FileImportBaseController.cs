@@ -380,7 +380,7 @@ namespace Controllers
     /// </summary>
     protected async Task NotifyRaptorUpdateFile(Guid projectUid, IEnumerable<Guid> updatedFileUids)
     {
-      var notificationResult = await raptorProxy.UpdateFiles(projectUid, updatedFileUids);
+      var notificationResult = await raptorProxy.UpdateFiles(projectUid, updatedFileUids, Request.Headers.GetCustomHeaders());
 
       log.LogDebug(
         $"FileImport UpdateFiles in RaptorServices returned code: {notificationResult?.Code ?? -1} Message {notificationResult?.Message ?? "notificationResult == null"}.");
