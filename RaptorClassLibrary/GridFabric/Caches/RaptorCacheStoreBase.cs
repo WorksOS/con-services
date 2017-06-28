@@ -10,28 +10,24 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using Apache.Ignite.Core.Common;
 
-namespace VSS.VisionLink.Raptor.Storage
+namespace VSS.VisionLink.Raptor.GridFabric.Caches
 {
-    /// <summary>
-    /// An implementation of the Ignite read-through/write-through cache persistency interface
-    /// Note: All read and write operations are sending and receiving MemoryStream objects.
-    /// </summary>
-    [Serializable]
-    public class RaptorCacheStoreFactory : IFactory<ICacheStore>
-    {
-        public ICacheStore CreateInstance()
-        {
-            return new RaptorCacheStore();
-        }
-    }
-
     /// <summary>
     /// Implements the Ignite ICacheStore interface
     /// </summary>
     [Serializable]
-    public class RaptorCacheStore : CacheStoreAdapter, ICacheStore
+    public class RaptorCacheStoreBase : CacheStoreAdapter, ICacheStore
     {
-        private const string path = "C:\\Temp\\RaptorIgniteData";
+        protected virtual string MutabilitySuffix() => " (None)";
+
+        private static string path = "C:\\Temp\\RaptorIgniteData";
+
+        public RaptorCacheStoreBase() : base()
+        {
+            path = path + MutabilitySuffix();
+
+            Directory.CreateDirectory(path);
+        }
 
         public override void Delete(object key)
         {

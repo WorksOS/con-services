@@ -113,6 +113,10 @@
     <Compile Include="GridFabric\Arguments\SubGridsRequestArgument.cs" />
     <Compile Include="GridFabric\Arguments\TileRenderRequestArgument.cs" />
     <Compile Include="GridFabric\Caches\RaptorCaches.cs" />
+    <Compile Include="GridFabric\Caches\RaptorImmutableCacheStore.cs" />
+    <Compile Include="GridFabric\Caches\RaptorMutableCacheStore.cs" />
+    <Compile Include="GridFabric\Caches\RaptorImmutableCacheStoreFactory.cs" />
+    <Compile Include="GridFabric\Caches\RaptorMutableCacheStoreFactory.cs" />
     <Compile Include="GridFabric\ComputeFuncs\SubGridsRequestComputeFunc.cs" />
     <Compile Include="GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
     <Compile Include="GridFabric\Grids\RaptorGrids.cs" />
@@ -153,7 +157,7 @@
     <Compile Include="Machines\MachinesList.cs" />
     <Compile Include="SiteModels\SiteModelDesign.cs" />
     <Compile Include="SiteModels\SiteModelDesignList.cs" />
-    <Compile Include="Storage\RaptorCacheStore.cs" />
+    <Compile Include="GridFabric\Caches\RaptorCacheStoreBase.cs" />
     <Compile Include="Storage\StorageProxy.cs" />
     <Compile Include="Storage\StorageProxyFactory.cs" />
     <Compile Include="SubGridTrees\Client\ClientLeafSubgridFactoryFactory.cs" />

@@ -37,13 +37,13 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.CopyOnRead = false;
             cfg.KeepBinaryInStore = false;
             cfg.MemoryMode = CacheMemoryMode.OnheapTiered;
-            cfg.CacheStoreFactory = new RaptorCacheStoreFactory();
+            cfg.CacheStoreFactory = new RaptorMutableCacheStoreFactory();
             cfg.ReadThrough = true;
             cfg.WriteThrough = true;
             cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
             cfg.EvictionPolicy = new LruEvictionPolicy()
             {
-                MaxMemorySize = 250000000
+                MaxMemorySize = 100000000   // 100Mb
             };
             cfg.CacheMode = CacheMode.Replicated;
             cfg.Backups = 0;
@@ -55,13 +55,13 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.CopyOnRead = false;
             cfg.KeepBinaryInStore = false;
             cfg.MemoryMode = CacheMemoryMode.OnheapTiered;
-            cfg.CacheStoreFactory = new RaptorCacheStoreFactory();
+            cfg.CacheStoreFactory = new RaptorImmutableCacheStoreFactory();
             cfg.ReadThrough = true;
             cfg.WriteThrough = true;
             cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
             cfg.EvictionPolicy = new LruEvictionPolicy()
             {
-                MaxMemorySize = 250000000
+                MaxMemorySize = 250000000   // 250Mb
             };
             cfg.CacheMode = CacheMode.Replicated;
             cfg.Backups = 0;
@@ -78,13 +78,13 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.CopyOnRead = false;
             cfg.KeepBinaryInStore = false;
             cfg.MemoryMode = CacheMemoryMode.OnheapTiered;
-            cfg.CacheStoreFactory = new RaptorCacheStoreFactory();
+            cfg.CacheStoreFactory = new RaptorMutableCacheStoreFactory();
             cfg.ReadThrough = true;
             cfg.WriteThrough = true;
             cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
             cfg.EvictionPolicy = new LruEvictionPolicy()
             {
-                MaxMemorySize = 3000000000
+                MaxMemorySize = 500000000 // 500Mb
             };
             cfg.Backups = 0;
             cfg.CacheMode = CacheMode.Partitioned;
@@ -97,13 +97,13 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.CopyOnRead = false;
             cfg.KeepBinaryInStore = false;
             cfg.MemoryMode = CacheMemoryMode.OnheapTiered;
-            cfg.CacheStoreFactory = new RaptorCacheStoreFactory();
+            cfg.CacheStoreFactory = new RaptorImmutableCacheStoreFactory();
             cfg.ReadThrough = true;
             cfg.WriteThrough = true;
             cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
             cfg.EvictionPolicy = new LruEvictionPolicy()
             {
-                MaxMemorySize = 1000000000
+                MaxMemorySize = 1000000000   // 1Gb
             };
             cfg.Backups = 0;
             cfg.CacheMode = CacheMode.Partitioned;
