@@ -248,6 +248,144 @@ Scenario: Compaction Get CMV Summary
     "Message": "success"
   }
 	"""
+  
+  Scenario: Compaction Get Elevation Palette 
+	Given the Compaction Elevation Palette service URI "/api/v2/compaction/elevationpalette"
+  And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
+	When I request Elevation Palette
+	Then the Elevation Palette result should be
+  """
+  {
+    "palette": {
+      "colorValues": [
+        {
+          "color": 16711680,
+          "value": 591.9539794921875
+        },
+        {
+          "color": 14760960,
+          "value": 593.062394766972
+        },
+        {
+          "color": 16734720,
+          "value": 594.17081004175645
+        },
+        {
+          "color": 16744960,
+          "value": 595.279225316541
+        },
+        {
+          "color": 16755200,
+          "value": 596.38764059132541
+        },
+        {
+          "color": 16762880,
+          "value": 597.49605586610994
+        },
+        {
+          "color": 16768000,
+          "value": 598.60447114089436
+        },
+        {
+          "color": 16442880,
+          "value": 599.71288641567889
+        },
+        {
+          "color": 14476800,
+          "value": 600.82130169046332
+        },
+        {
+          "color": 13821440,
+          "value": 601.92971696524785
+        },
+        {
+          "color": 13166080,
+          "value": 603.03813224003238
+        },
+        {
+          "color": 11855360,
+          "value": 604.1465475148168
+        },
+        {
+          "color": 9889280,
+          "value": 605.25496278960134
+        },
+        {
+          "color": 8578560,
+          "value": 606.36337806438576
+        },
+        {
+          "color": 6615040,
+          "value": 607.47179333917029
+        },
+        {
+          "color": 65280,
+          "value": 608.58020861395471
+        },
+        {
+          "color": 61540,
+          "value": 609.68862388873924
+        },
+        {
+          "color": 59010,
+          "value": 610.79703916352366
+        },
+        {
+          "color": 59030,
+          "value": 611.9054544383082
+        },
+        {
+          "color": 59060,
+          "value": 613.01386971309262
+        },
+        {
+          "color": 59080,
+          "value": 614.12228498787715
+        },
+        {
+          "color": 59090,
+          "value": 615.23070026266168
+        },
+        {
+          "color": 56540,
+          "value": 616.33911553744611
+        },
+        {
+          "color": 51430,
+          "value": 617.44753081223064
+        },
+        {
+          "color": 46320,
+          "value": 618.55594608701506
+        },
+        {
+          "color": 38645,
+          "value": 619.66436136179959
+        },
+        {
+          "color": 30970,
+          "value": 620.772776636584
+        },
+        {
+          "color": 23295,
+          "value": 621.88119191136855
+        },
+        {
+          "color": 18175,
+          "value": 622.989607186153
+        },
+        {
+          "color": 255,
+          "value": 624.0980224609375
+        }
+      ],
+      "aboveLastColor": 8388736,
+      "belowFirstColor": 16711935
+    },
+    "Code": 0,
+    "Message": "success"
+  }
+	"""
    
   Scenario: Compaction Get Palettes 
 	Given the Compaction Palettes service URI "/api/v2/compaction/colorpalettes"
