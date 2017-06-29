@@ -56,6 +56,7 @@ namespace MasterDataProxies
                 }
                 log.LogWarning("Error sending data from master data: ", message);
                 log.LogWarning("Stacktrace: ", stacktrace);
+              throw;
             }
             return result;
 

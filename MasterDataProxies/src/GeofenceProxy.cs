@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using MasterDataProxies.Models;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,12 +8,12 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
 
-namespace VSS.Raptor.Service.Common.Proxies
+namespace MasterDataProxies
 {
-    /// <summary>
-    /// Proxy to get geofence data from master data service.
-    /// </summary>
-    public class GeofenceProxy : BaseProxy, IGeofenceProxy
+  /// <summary>
+  /// Proxy to get geofence data from master data service.
+  /// </summary>
+  public class GeofenceProxy : BaseProxy, IGeofenceProxy
     {
         private static readonly TimeSpan geofenceCacheLife = new TimeSpan(0, 15, 0); //TODO: how long to cache ?
 

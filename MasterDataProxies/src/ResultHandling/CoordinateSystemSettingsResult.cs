@@ -6,7 +6,7 @@ namespace MasterDataProxies.ResultHandling
   /// Coordinate system settings result object.
   /// </summary>
   ///    
-  public class CoordinateSystemSettings : ContractExecutionResult, IData
+  public class CoordinateSystemSettingsResult : ContractExecutionResult, IData
   {
     /// <summary>
     /// The coordinate system file name.
@@ -99,7 +99,7 @@ namespace MasterDataProxies.ResultHandling
     public string verticalDatumName { get; set; }
 
     
-    public static CoordinateSystemSettings CreateCoordinateSystemSettings
+    public static CoordinateSystemSettingsResult CreateCoordinateSystemSettings
       (
             string csName,
             string csGroup,
@@ -118,7 +118,7 @@ namespace MasterDataProxies.ResultHandling
             bool unsupportedProjection
         )
     {
-      return new CoordinateSystemSettings()
+      return new CoordinateSystemSettingsResult()
       {
         csName = csName,
         csGroup = csGroup,

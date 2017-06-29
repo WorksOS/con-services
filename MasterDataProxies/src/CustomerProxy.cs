@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
 using MasterDataProxies.Interfaces;
-using MasterDataProxies.Models;
+using MasterDataProxies.ResultHandling;
 
 namespace MasterDataProxies
 {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using MasterDataProxies.Models;
+using MasterDataProxies.ResultHandling;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;

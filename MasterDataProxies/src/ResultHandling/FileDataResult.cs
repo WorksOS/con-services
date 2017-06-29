@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using MasterDataProxies.Models;
 
-namespace MasterDataProxies.Models
+namespace MasterDataProxies.ResultHandling
 {
   /// <summary>
   /// List of file descriptors
