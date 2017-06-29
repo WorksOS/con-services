@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<CompactionController>();
+      this.log = logger.CreateLogger<NotificationController>();
       this.fileRepo = fileRepo;
       this.configStore = configStore;
       this.prefProxy = prefProxy;

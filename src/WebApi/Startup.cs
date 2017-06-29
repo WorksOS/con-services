@@ -18,6 +18,8 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 
 namespace VSS.Productivity3D.WebApi
@@ -27,11 +29,6 @@ namespace VSS.Productivity3D.WebApi
   /// </summary>
   public class Startup
   {
-    /// <summary>
-    /// 
-    /// </summary>
-    public IConfigurationRoot Configuration { get; }
-
     private readonly string loggerRepoName = "WebApi";
     private readonly bool isDevEnv;
     private IServiceCollection serviceCollection;
@@ -59,9 +56,14 @@ namespace VSS.Productivity3D.WebApi
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
     }
-    
+
     /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container
+    /// 
+    /// </summary>
+    public IConfigurationRoot Configuration { get; }
+
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to add services to the container.
     /// </summary>
     /// <param name="services"></param>
     public void ConfigureServices(IServiceCollection services)
@@ -113,6 +115,8 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
       services.AddTransient<ITileGenerator, TileGenerator>();
+      services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
+
 
       serviceCollection = services;
     }
