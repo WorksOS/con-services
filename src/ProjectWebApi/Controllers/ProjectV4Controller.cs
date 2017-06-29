@@ -335,7 +335,7 @@ namespace Controllers
 
         if (coordinateSystemSettingsResult.Code != 0 /* TASNodeErrorStatus.asneOK */)
         {
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 47, coordinateSystemSettingsResult.Code,
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 47, coordinateSystemSettingsResult.Code.ToString(),
             coordinateSystemSettingsResult.Message);
         }
       }
@@ -409,7 +409,7 @@ namespace Controllers
             if (isCreate)
               await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
 
-            throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1), (coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"));
+            throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1).ToString(), (coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"));
           }
         }
         catch (Exception e)

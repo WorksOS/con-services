@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.Net;
 using TestUtility;
 
-namespace WebApiTests.FileImport
+namespace WebApiTests
 {
   [TestClass]
-  [Ignore]
   public class FileActivationTests
   {
     private readonly Msg _msg = new Msg();
@@ -250,8 +249,8 @@ namespace WebApiTests.FileImport
 
       var response = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
 
-      Assert.AreEqual((int)HttpStatusCode.BadRequest, response.code.Value);
-      Assert.AreEqual("No files eligible for activation state change.", response.message.Value);
+      Assert.AreEqual((int)HttpStatusCode.OK, response.code.Value);
+      Assert.AreEqual("Success", response.message.Value);
     }
 
     [TestMethod]
