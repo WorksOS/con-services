@@ -43,8 +43,8 @@
       <HintPath>..\packages\Apache.Ignite.Log4Net.1.9.0\lib\net40\Apache.Ignite.Log4Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Remotion.Linq, Version=2.0.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
@@ -109,6 +109,7 @@
     <Compile Include="Geometry\UTMCoordPointPair.cs" />
     <Compile Include="Geometry\XYZ.cs" />
     <Compile Include="GridFabric\Affinity\RaptorSpatialAffinityFunction.cs" />
+    <Compile Include="GridFabric\Affinity\SubGridSpatialAffinityKey.cs" />
     <Compile Include="GridFabric\Arguments\BaseApplicationServiceRequestArgument.cs" />
     <Compile Include="GridFabric\Arguments\SubGridsRequestArgument.cs" />
     <Compile Include="GridFabric\Arguments\TileRenderRequestArgument.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
     <Compile Include="GridFabric\Grids\RaptorGrids.cs" />
     <Compile Include="GridFabric\Listeners\SubGridListener.cs" />
+    <Compile Include="GridFabric\Logging\Logger.cs" />
     <Compile Include="GridFabric\Requests\SubGridRequests.cs" />
     <Compile Include="GridFabric\Requests\TileRenderRequest.cs" />
     <Compile Include="GridFabric\Responses\SubGridRequestsResponse.cs" />
