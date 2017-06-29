@@ -17,7 +17,6 @@ using System.Diagnostics;
 using System.IO;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Proxies;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace ProjectWebApi

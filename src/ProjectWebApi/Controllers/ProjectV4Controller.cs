@@ -319,7 +319,7 @@ namespace Controllers
       if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
       {
         ProjectDataValidator.ValidateFileName(csFileName);
-        CoordinateSystemSettings coordinateSystemSettingsResult = null;
+        CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
         try
         {
           coordinateSystemSettingsResult = await raptorProxy
@@ -564,6 +564,7 @@ namespace Controllers
         //Assign a new project to a subscription
         try
         {
+          // rethrows any exception
           await subsProxy.AssociateProjectSubscription(subscriptionUidAssigned,
             project.ProjectUID, Request.Headers.GetCustomHeaders()).ConfigureAwait(false);
         }
