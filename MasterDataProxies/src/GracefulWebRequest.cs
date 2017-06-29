@@ -33,13 +33,28 @@ namespace MasterDataProxies
 
           string responseString = null;
 
-          using (var response = await request.GetResponseAsync())
+          WebResponse response = null;
+          try
           {
-            log.LogDebug("GracefulWebRequest.ExecuteRequest6(). response{0}",
-              JsonConvert.SerializeObject(response));
-            responseString = GetStringFromResponseStream(response);
-            log.LogDebug("GracefulWebRequest.ExecuteRequest() : responseString{0}", responseString);
+            response = await request.GetResponseAsync();
+            if (response != null)
+            {
+              responseString = GetStringFromResponseStream(response);
+              log.LogDebug("GracefulWebRequest.ExecuteRequest() : responseString{0}", responseString);
+            }
           }
+          catch (Exception ex)
+          {
+            if (response == null) throw;
+            responseString = GetStringFromResponseStream(response);
+            log.LogDebug("GracefulWebRequest.ExecuteRequestException() : responseString{0}", responseString);
+            throw new Exception($"{ex.Message} {responseString}");
+          }
+          finally
+          {
+            response?.Dispose();
+          }
+
           if (!string.IsNullOrEmpty(responseString))
           {
             var toReturn = JsonConvert.DeserializeObject<T>(responseString);
@@ -165,7 +180,6 @@ namespace MasterDataProxies
           using (var reader = new StreamReader(readStream, Encoding.UTF8))
           {
             var responseString = reader.ReadToEnd();
-            log.LogDebug("Response: {0}", responseString);
             return responseString;
           }
         }
