@@ -18,7 +18,6 @@ using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Models;
 using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApi.Compaction.Controllers;
 using VSS.Raptor.Service.WebApiModels.Notification.Executors;
 using VSS.Raptor.Service.WebApiModels.Notification.Models;
 using WebApiModels.Notification.Models;
@@ -83,7 +82,7 @@ namespace VSS.Raptor.Service.WebApi.Notification
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<CompactionController>();
+      this.log = logger.CreateLogger<NotificationController>();
       this.fileRepo = fileRepo;
       this.configStore = configStore;
       this.prefProxy = prefProxy;

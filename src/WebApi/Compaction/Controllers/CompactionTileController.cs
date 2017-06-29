@@ -578,7 +578,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
       filter?.Validate();
       ElevationStatisticsResult elevExtents =
-        mode == DisplayMode.Height ? elevProxy.GetElevationRange(projectId, filter) : null;
+        mode == DisplayMode.Height ? elevProxy.GetElevationRange(raptorClient, projectId, filter) : null;
       //Fix bug in Raptor - swap elevations if required
       elevExtents?.SwapElevationsIfRequired();
       TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode,

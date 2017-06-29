@@ -20,12 +20,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     private static readonly object lockObject = new object();
 
     /// <summary>
-    /// Raptor client for use by executor
-    /// 
-    /// </summary>
-    private readonly IASNodeClient raptorClient;
-
-    /// <summary>
     /// Logger for logging
     /// </summary>
     private readonly ILogger log;
@@ -52,20 +46,20 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="cache">Elevation extents cache</param>
-    public ElevationExtentsProxy(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache)
+    public ElevationExtentsProxy(ILoggerFactory logger, IMemoryCache cache)
     {
-      this.raptorClient = raptorClient;
       this.logger = logger;
       elevationExtentsCache = cache;
     }
 
     /// <summary>
-    /// Gets the elevation statistics for the given filter
+    /// Gets the elevation statistics for the given filter from Raptor
     /// </summary>
+    /// <param name="raptorClient">Raptor client</param>
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="filter">Compaction filter</param>
     /// <returns>Elevation statistics</returns>
-    public ElevationStatisticsResult GetElevationRange(long projectId, Filter filter)
+    public ElevationStatisticsResult GetElevationRange(IASNodeClient raptorClient, long projectId, Filter filter)
     {
       ElevationStatisticsResult result = null;
       string cacheKey;

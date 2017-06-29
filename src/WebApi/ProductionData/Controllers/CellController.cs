@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Raptor.Service.Common.Contracts;
 using VSS.Raptor.Service.Common.Filters.Authentication;
 using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.WebApi.Compaction.Controllers;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
 using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
 using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;

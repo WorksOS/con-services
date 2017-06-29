@@ -123,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         Filter filter = CompactionSettings.CompactionFilter(
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-        ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId.Value, filter);
+        ElevationStatisticsResult result = elevProxy.GetElevationRange(raptorClient, projectId.Value, filter);
         log.LogInformation("GetElevationRange result: " + JsonConvert.SerializeObject(result));
         return result;
       }
