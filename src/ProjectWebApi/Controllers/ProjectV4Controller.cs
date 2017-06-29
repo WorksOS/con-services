@@ -614,9 +614,7 @@ namespace Controllers
         await DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID).ConfigureAwait(false);
         await DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned).ConfigureAwait(false);
 
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,
-          "geofenceProxy.CreateGeofenceInGeofenceService",
-          e.Message);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,"geofenceProxy.CreateGeofenceInGeofenceService",e.Message);
       }
       if (geofenceUidCreated == Guid.Empty)
       {

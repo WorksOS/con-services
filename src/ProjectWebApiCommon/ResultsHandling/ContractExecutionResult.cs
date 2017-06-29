@@ -128,7 +128,7 @@ namespace ProjectWebApiCommon.ResultsHandling
       DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 54);
       DynamicAddwithOffset("CreateImportedFileV4. The uploaded file is not accessible.", 55);
       DynamicAddwithOffset("DeleteImportedFileV4. The importedFileUid doesn't exist under this project.", 56);
-      DynamicAddwithOffset("Unable to access {0} endpoint. Exception: {1}", 57);
+      DynamicAddwithOffset("A problem occured at the {0} endpoint. Exception: {1}", 57);
       DynamicAddwithOffset("CreateImportedFileV4. The file has already been created.", 58);
       DynamicAddwithOffset("GeofenceService CreateGeofence failed. No geofenceUid returned.", 59);
       DynamicAddwithOffset("Application calling context supports only HttpGet endpoints.", 60);
