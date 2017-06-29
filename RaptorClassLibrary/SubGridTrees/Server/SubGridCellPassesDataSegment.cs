@@ -333,6 +333,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
            Owner.Owner.ID,
            FileName,
            Owner.OriginX, Owner.OriginY,
+           FileName,
            //           InvalidatedSpatialStreams,
            FileSystemStreamType.SubGridSegment,
            out StoreGranuleIndex,

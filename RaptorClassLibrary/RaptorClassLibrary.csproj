@@ -122,7 +122,6 @@
     <Compile Include="GridFabric\ComputeFuncs\TileRenderRequestComputeFunc.cs" />
     <Compile Include="GridFabric\Grids\RaptorGrids.cs" />
     <Compile Include="GridFabric\Listeners\SubGridListener.cs" />
-    <Compile Include="GridFabric\Logging\Logger.cs" />
     <Compile Include="GridFabric\Requests\SubGridRequests.cs" />
     <Compile Include="GridFabric\Requests\TileRenderRequest.cs" />
     <Compile Include="GridFabric\Responses\SubGridRequestsResponse.cs" />
@@ -162,6 +161,8 @@
     <Compile Include="GridFabric\Caches\RaptorCacheStoreBase.cs" />
     <Compile Include="Storage\StorageProxy.cs" />
     <Compile Include="Storage\StorageProxyFactory.cs" />
+    <Compile Include="Storage\StorageProxy_IgniteBase.cs" />
+    <Compile Include="Storage\StorageProxy_Ignite_MutableOnly.cs" />
     <Compile Include="SubGridTrees\Client\ClientLeafSubgridFactoryFactory.cs" />
     <Compile Include="SubGridTrees\Client\SubGridTreeLeafSubGridBaseResult.cs" />
     <Compile Include="SubGridTrees\Server\Interfaces\IServerLeafSubgrid.cs" />

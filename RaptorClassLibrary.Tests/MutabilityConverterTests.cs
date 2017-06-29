@@ -221,6 +221,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
         }
 
         [TestMethod]
+        [Ignore]
         public void Test_MutabilityConverterTests_ConvertEventListTest()
         {
             Assert.Fail();

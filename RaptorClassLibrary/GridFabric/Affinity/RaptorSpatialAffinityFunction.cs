@@ -45,7 +45,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
             }
 
             // Create the (empty) list of node mappings for the affinity partition assignment
-            List<List<IClusterNode>> result = Enumerable.Range(0, (int)RaptorConfig.numSpatialProcessingDivisions - 1).Select(x => new List<IClusterNode>()).ToList();
+            List<List<IClusterNode>> result = Enumerable.Range(0, (int)RaptorConfig.numSpatialProcessingDivisions).Select(x => new List<IClusterNode>()).ToList();
 
             // Assign all nodes to affinity partitions. Spare nodes will be mapped as backups
             int index = 0;
@@ -59,22 +59,23 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 
         public int GetPartition(object key)
         {
-            // Pull the subgrid origin location for the subgrid or segment represented in key and calculate the 
+            // Pull the subgrid origin location for the subgrid or segment represented in the cache key and calculate the 
             // spatial processing division descriptor to use as the partition affinity key
 
-            if (key is ISubGrid)
+            if (!(key is SubGridSpatialAffinityKey ))
             {
-                ISubGrid value = (ISubGrid)key;
-                return (int)SubGridCellAddress.ToSpatialDivisionDescriptor(value.OriginX, value.OriginY, RaptorConfig.numSpatialProcessingDivisions);
+                throw new ArgumentException(String.Format("Unknown key type to compute spatial affinity partition key for: {0}", key.ToString()));
             }
 
-            throw new ArgumentException(String.Format("Unknown key type to compute spatial affinity partition key for: {0}", key.ToString()));
+            SubGridSpatialAffinityKey value = (SubGridSpatialAffinityKey)key;
+
+            return (int)SubGridCellAddress.ToSpatialDivisionDescriptor(value.SubGridX, value.SubGridY, RaptorConfig.numSpatialProcessingDivisions);
         }
 
         public void RemoveNode(Guid nodeId)
         {
             // Don't care at this point, I think...
-            // throw new NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

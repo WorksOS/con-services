@@ -23,7 +23,7 @@ namespace VSS.Raptor.IgnitePOC.TestApp
 {
     public partial class Form1 : Form
     {
-        long ID = 1;
+        long ID = 2;
         BoundingWorldExtent3D extents = BoundingWorldExtent3D.Inverted();
 
         RaptorGenericApplicationServiceServer genericApplicationServiceServer = new RaptorGenericApplicationServiceServer();

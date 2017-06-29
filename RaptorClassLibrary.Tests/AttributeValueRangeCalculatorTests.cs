@@ -19,10 +19,10 @@ namespace VSS.VisionLink.Raptor.Compression.Tests
         [TestMethod]
         public void Test_AttributeValueRangeCalculator_NullRangeHeights()
         { 
-            // Simulate a subgrid contianing the same non-null elevation in every cell, expressed as a single vector
+            // Simulate a subgrid containing the same non-null elevation in every cell, expressed as a single vector
             int value = AttributeValueModifiers.ModifiedHeight(12345.678F);
 
-            int[] values = Enumerable.Range(0, SubGridTree.SubGridTreeCellsPerSubgrid - 1).Select(x => value).ToArray();
+            int[] values = Enumerable.Range(0, SubGridTree.SubGridTreeCellsPerSubgrid).Select(x => value).ToArray();
 
             EncodedBitFieldDescriptor descriptor = new EncodedBitFieldDescriptor();
 

@@ -25,6 +25,7 @@ namespace VSS.VisionLink.Raptor.Interfaces
         FileSystemErrorStatus WriteSpatialStreamToPersistentStore(long DataModelID,
                                               string StreamName,
                                               uint SubgridX, uint SubgridY,
+                                              string SegmentIdentifier,
                                               // Don't implement yet.....
                                               // const AInvalidatedSpatialStreams : TInvalidatedSpatialStreamArray;
                                               FileSystemStreamType StreamType,
@@ -51,6 +52,7 @@ namespace VSS.VisionLink.Raptor.Interfaces
         FileSystemErrorStatus ReadSpatialStreamFromPersistentStore(long DataModelID,
                                                   string StreamName,
                                                   uint SubgridX, uint SubgridY,
+                                                  string SegmentIdentifier,
                                                   FileSystemStreamType StreamType,
                                                   uint GranuleIndex,
                                                   out MemoryStream Stream,

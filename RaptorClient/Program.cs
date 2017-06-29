@@ -202,10 +202,10 @@ namespace VSS.VisionLink.Raptor.Client
                 
             // ProcessMachine10101TAGFiles();
             // ProcessMachine333TAGFiles();
-            ProcessSingleTAGFile(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
+            //ProcessSingleTAGFile(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
             //ProcessSingleTAGFile();
             // Process all TAG files for project 4733:
-            //ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 1");
+            ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 1");
             //ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 2");
             //ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 3");
             //ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 4");

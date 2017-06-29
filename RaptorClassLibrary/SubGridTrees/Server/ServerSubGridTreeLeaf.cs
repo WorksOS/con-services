@@ -696,7 +696,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 MemoryStream SMS = null; // = new MemoryStream();
 
                 FSError = storageProxy.ReadSpatialStreamFromPersistentStore
-                            (Owner.ID, FileName, OriginX, OriginY,
+                            (Owner.ID, FileName, OriginX, OriginY, FileName,
                              FileSystemStreamType.SubGridSegment, Segment.SegmentInfo.FSGranuleIndex, out SMS,
                              out StoreGranuleIndex, out StoreGranuleCount);
 
@@ -783,7 +783,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             }
 
             Result = storage.WriteSpatialStreamToPersistentStore
-             (Owner.ID, FileName, OriginX, OriginY, //AInvalidatedSpatialStreams,
+             (Owner.ID, FileName, OriginX, OriginY, String.Empty, //AInvalidatedSpatialStreams,
               FileSystemStreamType.SubGridDirectory, out StoreGranuleIndex, out StoreGranuleCount, MStream) == FileSystemErrorStatus.OK;
             if (Result)
             {
@@ -896,7 +896,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             IStorageProxy storage = StorageProxy.SpatialInstance(SubGridCellAddress.ToSpatialDivisionDescriptor(OriginX, OriginY, RaptorConfig.numSpatialProcessingDivisions));
 
-            FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY,
+            FileSystemErrorStatus FSError = storage.ReadSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, String.Empty,
                                                                                          FileSystemStreamType.SubGridDirectory, 0, out SMS, out StoreGranuleIndex, out StoreGranuleCount);
 
             bool Result = FSError == FileSystemErrorStatus.OK;

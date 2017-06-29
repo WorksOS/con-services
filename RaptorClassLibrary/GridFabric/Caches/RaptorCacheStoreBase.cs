@@ -18,10 +18,20 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
     [Serializable]
     public class RaptorCacheStoreBase : CacheStoreAdapter, ICacheStore
     {
-        protected virtual string MutabilitySuffix() => " (None)";
+        /// <summary>
+        /// The suffic to append to the filenames used to to Raptor Ignite Path to separate the immutable and immutable cache stores
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string MutabilitySuffix() => "(None)";
 
-        private static string path = "C:\\Temp\\RaptorIgniteData";
+        /// <summary>
+        /// The location to store the files containing the persisted cache entries
+        /// </summary>
+        private string path = "C:\\Temp\\RaptorIgniteData";
 
+        /// <summary>
+        /// Default constructor that adds the mutability suffix to the path to store persisted cache items
+        /// </summary>
         public RaptorCacheStoreBase() : base()
         {
             path = path + MutabilitySuffix();
@@ -29,11 +39,33 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
             Directory.CreateDirectory(path);
         }
 
+        /// <summary>
+        /// Deletes an item in the cache identified by the cache key
+        /// </summary>
+        /// <param name="key"></param>
         public override void Delete(object key)
         {
-            throw new NotImplementedException();
+            // Remove the file representing this element from the file system
+            try
+            {
+                File.Delete(Path.Combine(path, key.ToString()));
+            }
+            catch (FileNotFoundException)
+            {
+                // This is fine, carry on
+            }
+            catch (Exception E)
+            {
+                // This is less fine...
+                throw E;
+            }
         }
 
+        /// <summary>
+        /// Loads an item from the cache identified by the cache key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public override object Load(object key)
         {
             MemoryStream MS = null; // object obj = null;
@@ -74,6 +106,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
             return MS; // obj;        
         }
 
+        /// <summary>
+        /// Full cache load. Not implemented.
+        /// </summary>
+        /// <param name="act"></param>
+        /// <param name="args"></param>
         public void LoadCache(Action<object, object> act, params object[] args)
         {
             throw new NotImplementedException();
@@ -84,6 +121,11 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
             // Nothing to do here
         }
 
+        /// <summary>
+        /// Writes a cache item identitied by the cache key to the persisted store
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="val"></param>
         public override void Write(object key, object val)
         {
             // BinaryFormatter bf = new BinaryFormatter();
@@ -97,11 +139,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
             catch (Exception E)
             {
                 throw;
-            }
-
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
             }
 
             using (FileStream fs = new FileStream(Path.Combine(path, key.ToString()), FileMode.Create))

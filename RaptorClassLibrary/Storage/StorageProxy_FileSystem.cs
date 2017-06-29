@@ -18,7 +18,7 @@ namespace VSS.VisionLink.Raptor.Storage
         {
         }
 
-        FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(long DataModelID, string StreamName, uint SubgridX, uint SubgridY, FileSystemStreamType StreamType, uint GranuleIndex, out MemoryStream Stream, out uint StoreGranuleIndex, out uint StoreGranuleCount)
+        FileSystemErrorStatus IStorageProxy.ReadSpatialStreamFromPersistentStore(long DataModelID, string StreamName, uint SubgridX, uint SubgridY, string segmentIdentifier, FileSystemStreamType StreamType, uint GranuleIndex, out MemoryStream Stream, out uint StoreGranuleIndex, out uint StoreGranuleCount)
         {
             throw new NotImplementedException();
         }
@@ -43,7 +43,7 @@ namespace VSS.VisionLink.Raptor.Storage
             throw new NotImplementedException();
         }
 
-        FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(long DataModelID, string StreamName, uint SubgridX, uint SubgridY, FileSystemStreamType StreamType, out uint StoreGranuleIndex, out uint StoreGranuleCount, MemoryStream Stream)
+        FileSystemErrorStatus IStorageProxy.WriteSpatialStreamToPersistentStore(long DataModelID, string StreamName, uint SubgridX, uint SubgridY, string SegmentIdentifier, FileSystemStreamType StreamType, out uint StoreGranuleIndex, out uint StoreGranuleCount, MemoryStream Stream)
         {
             throw new NotImplementedException();
         }

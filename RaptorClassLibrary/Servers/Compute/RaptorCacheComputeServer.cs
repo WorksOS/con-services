@@ -14,6 +14,9 @@ using Apache.Ignite.Core.Cluster;
 using VSS.VisionLink.Raptor.GridFabric.Affinity;
 using VSS.VisionLink.Raptor.GridFabric.Caches;
 using VSS.VisionLink.Raptor.GridFabric.Grids;
+using Apache.Ignite.Log4Net;
+using log4net;
+using System.Reflection;
 
 namespace VSS.VisionLink.Raptor.Servers.Compute
 {
@@ -23,6 +26,8 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
     /// </summary>
     public class RaptorCacheComputeServer : RaptorIgniteServer
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public virtual void ConfigureRaptorGrid(IgniteConfiguration cfg)
         {
             cfg.GridName = RaptorGrids.RaptorGridName();
@@ -119,6 +124,9 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         {
             IgniteConfiguration cfg = new IgniteConfiguration();
             ConfigureRaptorGrid(cfg);
+
+            // Add the logger to the config so the ignite JVM instance can use it
+            cfg.Logger = new IgniteLog4NetLogger(Log);
 
             raptorGrid = Ignition.Start(cfg);
 

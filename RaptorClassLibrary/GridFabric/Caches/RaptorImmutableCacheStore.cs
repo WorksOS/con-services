@@ -12,6 +12,6 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
     [Serializable]
     public class RaptorImmutableCacheStore : RaptorCacheStoreBase
     {
-        protected override string MutabilitySuffix() => " (Immutable)";
+        protected override string MutabilitySuffix() => "(Immutable)";
     }
 }

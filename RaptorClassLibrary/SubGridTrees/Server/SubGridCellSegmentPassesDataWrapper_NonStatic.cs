@@ -86,10 +86,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             {
                 int PassCount_ = PassCounts[i, j];
 
-                if (PassCounts[i, j] > 0)
+                if (PassCount_ > 0)
                 {
                     // TODO: Revisit static cell pass support for reading contexts
-                    AllocatePasses(i, j, (uint)PassCounts[i, j]);
+                    AllocatePasses(i, j, (uint)PassCount_);
                     Read(i, j, reader);
 
                     SegmentPassCount += PassCount_;
@@ -162,8 +162,14 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 }
             });
 
-            // write all the cells to the stream
-            SubGridUtilities.SubGridDimensionalIterator((i, j) => Write(i, j, writer));
+            // write all the cell passess to the stream, avoiding those cells that do not have any passes
+            SubGridUtilities.SubGridDimensionalIterator((i, j) => 
+            {
+                if (PassCount(i, j) > 0)
+                {
+                    Write(i, j, writer);
+                }
+            });
         }
 
         private void Write(uint X, uint Y, uint passNumber, BinaryWriter writer)

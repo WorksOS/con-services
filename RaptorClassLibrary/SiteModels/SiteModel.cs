@@ -244,9 +244,6 @@ namespace VSS.VisionLink.Raptor.SiteModels
 
         public bool Read(BinaryReader reader)
         {
-            //            BinaryFormatter formatter = new BinaryFormatter();
-            //            return (SiteModel)formatter.Deserialize(reader.BaseStream);
-
             long LocalID;
 
             // Write the SiteModel attributes
@@ -461,7 +458,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
                 MemoryStream MS = new MemoryStream();
                 SubGridTreePersistor.Write(localExistanceMap, "ExistanceMap", 1, new BinaryWriter(MS, Encoding.UTF8, true));
 
-                StorageProxyFactory.Storage(RaptorGrids.RaptorGridName()).WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemGranuleType.SubgridExistenceMap, MS);
+                StorageProxy.RaptorInstance().WriteStreamToPersistentStoreDirect(ID, kSubGridExistanceMapFileName, FileSystemGranuleType.SubgridExistenceMap, MS);
             }
             catch (Exception E)
             {

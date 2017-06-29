@@ -24,7 +24,7 @@ namespace VSS.VisionLink.Raptor.TAGFiles.Classes.Integrator
         public AggregatedDataIntegratorWorker() //(IStorageProxy storageProxy)
         {
             storageProxyRaptor = StorageProxy.RaptorInstance(); // Instance();
-            storageProxySpatial = Enumerable.Range(0, (int)RaptorConfig.numSpatialProcessingDivisions - 1).Select(x => StorageProxy.SpatialInstance((uint)x)).ToArray();
+            storageProxySpatial = Enumerable.Range(0, (int)RaptorConfig.numSpatialProcessingDivisions).Select(x => StorageProxy.SpatialInstance((uint)x)).ToArray();
         }
 
         public AggregatedDataIntegratorWorker(//IStorageProxy storageProxy,
