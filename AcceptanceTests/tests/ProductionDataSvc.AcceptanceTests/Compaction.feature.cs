@@ -437,21 +437,74 @@ this.ScenarioSetup(scenarioInfo);
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Palette")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        public virtual void CompactionGetElevationPalette()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette", ((string[])(null)));
+#line 252
+  this.ScenarioSetup(scenarioInfo);
+#line 253
+ testRunner.Given("the Compaction Elevation Palette service URI \"/api/v2/compaction/elevationpalette" +
+                    "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 254
+  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 255
+ testRunner.When("I request Elevation Palette", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 256
+ testRunner.Then("the Elevation Palette result should be", "{\n  \"palette\": {\n    \"colorValues\": [\n      {\n        \"color\": 16711680,\n        " +
+                    "\"value\": 591.9539794921875\n      },\n      {\n        \"color\": 14760960,\n        \"" +
+                    "value\": 593.062394766972\n      },\n      {\n        \"color\": 16734720,\n        \"va" +
+                    "lue\": 594.17081004175645\n      },\n      {\n        \"color\": 16744960,\n        \"va" +
+                    "lue\": 595.279225316541\n      },\n      {\n        \"color\": 16755200,\n        \"valu" +
+                    "e\": 596.38764059132541\n      },\n      {\n        \"color\": 16762880,\n        \"valu" +
+                    "e\": 597.49605586610994\n      },\n      {\n        \"color\": 16768000,\n        \"valu" +
+                    "e\": 598.60447114089436\n      },\n      {\n        \"color\": 16442880,\n        \"valu" +
+                    "e\": 599.71288641567889\n      },\n      {\n        \"color\": 14476800,\n        \"valu" +
+                    "e\": 600.82130169046332\n      },\n      {\n        \"color\": 13821440,\n        \"valu" +
+                    "e\": 601.92971696524785\n      },\n      {\n        \"color\": 13166080,\n        \"valu" +
+                    "e\": 603.03813224003238\n      },\n      {\n        \"color\": 11855360,\n        \"valu" +
+                    "e\": 604.1465475148168\n      },\n      {\n        \"color\": 9889280,\n        \"value\"" +
+                    ": 605.25496278960134\n      },\n      {\n        \"color\": 8578560,\n        \"value\":" +
+                    " 606.36337806438576\n      },\n      {\n        \"color\": 6615040,\n        \"value\": " +
+                    "607.47179333917029\n      },\n      {\n        \"color\": 65280,\n        \"value\": 608" +
+                    ".58020861395471\n      },\n      {\n        \"color\": 61540,\n        \"value\": 609.68" +
+                    "862388873924\n      },\n      {\n        \"color\": 59010,\n        \"value\": 610.79703" +
+                    "916352366\n      },\n      {\n        \"color\": 59030,\n        \"value\": 611.90545443" +
+                    "83082\n      },\n      {\n        \"color\": 59060,\n        \"value\": 613.013869713092" +
+                    "62\n      },\n      {\n        \"color\": 59080,\n        \"value\": 614.12228498787715\n" +
+                    "      },\n      {\n        \"color\": 59090,\n        \"value\": 615.23070026266168\n   " +
+                    "   },\n      {\n        \"color\": 56540,\n        \"value\": 616.33911553744611\n      " +
+                    "},\n      {\n        \"color\": 51430,\n        \"value\": 617.44753081223064\n      },\n" +
+                    "      {\n        \"color\": 46320,\n        \"value\": 618.55594608701506\n      },\n   " +
+                    "   {\n        \"color\": 38645,\n        \"value\": 619.66436136179959\n      },\n      " +
+                    "{\n        \"color\": 30970,\n        \"value\": 620.772776636584\n      },\n      {\n   " +
+                    "     \"color\": 23295,\n        \"value\": 621.88119191136855\n      },\n      {\n      " +
+                    "  \"color\": 18175,\n        \"value\": 622.989607186153\n      },\n      {\n        \"co" +
+                    "lor\": 255,\n        \"value\": 624.0980224609375\n      }\n    ],\n    \"aboveLastColor" +
+                    "\": 8388736,\n    \"belowFirstColor\": 16711935\n  },\n  \"Code\": 0,\n  \"Message\": \"succ" +
+                    "ess\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Palettes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
         public virtual void CompactionGetPalettes()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Palettes", ((string[])(null)));
-#line 252
+#line 390
   this.ScenarioSetup(scenarioInfo);
-#line 253
+#line 391
  testRunner.Given("the Compaction Palettes service URI \"/api/v2/compaction/colorpalettes\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 254
+#line 392
   testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 255
+#line 393
  testRunner.When("I request Palettes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 256
+#line 394
  testRunner.Then("the Palettes result should be", "{\n  \"elevationPalette\": {\n    \"colorValues\": [\n      {\n        \"color\": 16711680," +
                     "\n        \"value\": 591.9539794921875\n      },\n      {\n        \"color\": 14760960,\n" +
                     "        \"value\": 593.062394766972\n      },\n      {\n        \"color\": 16734720,\n  " +

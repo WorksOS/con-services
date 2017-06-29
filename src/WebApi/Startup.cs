@@ -12,11 +12,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Raptor.Service.Common.Interfaces;
 using VSS.Raptor.Service.Common.Proxies;
 using VSS.Raptor.Service.Common.Filters;
 using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
 using VSS.Raptor.Service.Common.Filters.Validation;
 using WebApiModels.Interfaces;
 using WebApiModels.Notification.Helpers;
@@ -94,7 +95,6 @@ namespace VSS.Raptor.Service.WebApi
 
             //Configure application services
             services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>();
-            services.AddSingleton<IAuthenticatedProjectsStore, AuthenticatedProjectStore>();
             services.AddScoped<IASNodeClient, ASNodeClient>();
             services.AddScoped<ITagProcessor, TagProcessor>();
             services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
@@ -103,8 +103,10 @@ namespace VSS.Raptor.Service.WebApi
             services.AddTransient<IFileRepository, FileRepository>();
             services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
             services.AddTransient<ITileGenerator, TileGenerator>();
+            services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
 
-            serviceCollection = services;
+
+      serviceCollection = services;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

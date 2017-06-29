@@ -209,6 +209,7 @@
     <Compile Include="Models\CompactionCmvPercentChangeResult.cs" />
     <Compile Include="Models\CompactionCmvSummaryResult.cs" />
     <Compile Include="Models\CompactionColorPalettesResult.cs" />
+    <Compile Include="Models\CompactionElevationPaletteResult.cs" />
     <Compile Include="Models\CompactionFilter.cs" />
     <Compile Include="Models\CompactionMdpSummaryResult.cs" />
     <Compile Include="Models\CompactionPassCountDetailedResult.cs" />

@@ -119,7 +119,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
     {
       string generatedName = FileUtils.GeneratedFileName(fileDescr.fileName, suffix, extension);
       log.LogDebug("Deleting generated file {0}", generatedName);
-      string fullName = Path.Combine(fileDescr.path, generatedName);
+      var fullName = string.Format("{0}/{1}", fileDescr.path, generatedName);
       if (await fileRepo.FileExists(fileDescr.filespaceId, fullName))
       {
         if (!await fileRepo.DeleteFile(fileDescr.filespaceId, fullName))
