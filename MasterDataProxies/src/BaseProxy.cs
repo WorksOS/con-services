@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
 using MasterDataProxies.Models;
+using Newtonsoft.Json;
 
 namespace MasterDataProxies
 {
@@ -78,7 +79,7 @@ namespace MasterDataProxies
             {
                 GracefulWebRequest request = new GracefulWebRequest(logger);
                 result = await request.ExecuteRequest<List<T>>(url, "GET", customHeaders);
-                log.LogDebug("Result of get master data list request: {0} items", result.Count);
+                log.LogDebug($"Result of get list request: {JsonConvert.SerializeObject(result)}");
             }
             catch (Exception ex)
             {
@@ -118,7 +119,7 @@ namespace MasterDataProxies
       {
         GracefulWebRequest request = new GracefulWebRequest(logger);
         result = await request.ExecuteRequest<T>(url, "GET", customHeaders);
-        log.LogDebug("Result of get master data item request: {0} items", result);
+        log.LogDebug($"Result of get item request: {JsonConvert.SerializeObject(result)}");
       }
       catch (Exception ex)
       {
