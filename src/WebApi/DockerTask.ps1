@@ -143,10 +143,10 @@ $launchURLPath = "api/v1/compaction"
 $ProjectName = $ProjectName -replace "[^a-zA-Z0-9]", ""
 
 # The name of the image created by the compose file
-$ImageName = "username/webapi"
+$ImageName = "username/vss.productivity3d.webapi"
 
 # Calculate the name of the container created by the compose file
-$ContainerName = "${ProjectName}_vss.webapi"
+$ContainerName = "${ProjectName}_vss.productivity3d.webapi"
 
 # .net core runtime ID for the container (used to publish the app correctly)
 $RuntimeID = "debian.8-x64"
