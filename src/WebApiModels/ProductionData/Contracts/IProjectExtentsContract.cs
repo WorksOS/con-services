@@ -1,9 +1,8 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
+﻿using Microsoft.AspNetCore.Mvc;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Contracts
 {
   public interface IProjectExtentsContract
   {

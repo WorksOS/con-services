@@ -1,107 +1,107 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace VSS.Raptor.Service.WebApiTests.Common.Proxies
+namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Proxies
 {
-    [TestClass()]
+    [TestClass]
     public class RaptorConvertersTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void converMachineDetailsTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertExtentsTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertDesignDescriptorTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void convertWGS84FenceTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertFilterTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertFilterTest1()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertLiftTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertCCVRangeTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertMDPRangeTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertLiftDetectionTypeTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertLiftThicknessTypeTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertTemperatureWarningLevelsTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertElevationTypeTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertLayerMethodTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void DesignDescriptorTest()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void DesignDescriptorTest1()
         {
 
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConvertVolumesTypeTest()
         {
 

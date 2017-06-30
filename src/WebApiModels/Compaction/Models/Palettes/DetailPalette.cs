@@ -1,13 +1,12 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes
+namespace VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes
 {
   /// <summary>
   /// Representation of a palette for details data, both integral (e.g. pass count) and continuous (e.g elevation)

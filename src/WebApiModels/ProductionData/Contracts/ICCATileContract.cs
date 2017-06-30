@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Contracts
 {
   /// <summary>
   ///  Data contract representing CCA tiles of rendered overlays from Raptor

@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Contains a percentage range of observed MDP values with respect to the target MDP value configured on a machine
@@ -58,7 +58,7 @@ namespace VSS.Raptor.Service.Common.Models
     {
       get
       {
-        return new MDPRangePercentage()
+        return new MDPRangePercentage
         {
           min = 80.0,
           max = 130.0
@@ -71,7 +71,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     public void Validate()
     {
-      if (this.min > this.max)
+      if (min > max)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "MDP percentage minimum must be less than MDP percentage maximum"));

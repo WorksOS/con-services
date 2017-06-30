@@ -1,8 +1,7 @@
-﻿
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
+﻿using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Summary Volumes request
@@ -47,8 +46,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
         public static SummaryVolumesResult CreateSummaryVolumesResult(BoundingBox3DGrid convertExtents, double cut,
                 double fill, double totalCoverageArea, double cutArea, double fillArea)
         {
-            return new SummaryVolumesResult()
-                   {
+            return new SummaryVolumesResult
+            {
                            BoundingExtents = convertExtents,
                            Cut = cut,
                            Fill = fill,
@@ -64,8 +63,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
         {
           get
           {
-              return new SummaryVolumesResult()
-                     {
+              return new SummaryVolumesResult
+              {
                              BoundingExtents = BoundingBox3DGrid.HelpSample,
                              Cut = 13.2,
                              Fill = 11.3,

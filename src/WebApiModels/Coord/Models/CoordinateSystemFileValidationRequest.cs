@@ -1,13 +1,10 @@
-﻿
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Filters.Validation;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.WebApiModels.Interfaces;
+using VSS.Productivity3D.Common.Filters.Validation;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.WebApiModels.Interfaces;
 
-namespace VSS.Raptor.Service.WebApiModels.Coord.Models
+namespace VSS.Productivity3D.WebApiModels.Coord.Models
 {
   /// <summary>
   /// Coordinate system (CS) definition file domain object. Model represents a coordinate system definition.
@@ -48,10 +45,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Models
     /// CoordinateSystemFile sample instance.
     /// </summary>
     /// 
-    public new static CoordinateSystemFileValidationRequest HelpSample
-    {
-      get { return new CoordinateSystemFileValidationRequest() { csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 }, csFileName = "CSD Test.DC" }; }
-    }
+    public static CoordinateSystemFileValidationRequest HelpSample => new CoordinateSystemFileValidationRequest { csFileContent = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 }, csFileName = "CSD Test.DC" };
 
     /// <summary>
     /// Creates an instance of the CoordinateSystemFileValidationRequest class.

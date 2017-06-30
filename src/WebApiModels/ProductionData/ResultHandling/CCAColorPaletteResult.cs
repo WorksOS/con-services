@@ -1,10 +1,9 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using VLPDDecls;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Utilities;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
   /// <summary>
   /// The request represents CCA data color palette to be used by a map legend.
@@ -36,27 +35,22 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
     /// 
     public static CCAColorPaletteResult CreateCCAColorPaletteResult(TColourPalette[] colorPalettes)
     {
-      return new CCAColorPaletteResult() { palettes = colorPalettes };
+      return new CCAColorPaletteResult { palettes = colorPalettes };
     }
 
     /// <summary>
     /// Creates CCAColorPaletteResult class sample instance to be displayed in Help documantation.
     /// </summary>
     /// 
-    public static CCAColorPaletteResult HelpSample
+    public static CCAColorPaletteResult HelpSample => new CCAColorPaletteResult
     {
-      get
+      palettes = new[]
       {
-        return new CCAColorPaletteResult()
-        {
-          palettes = new TColourPalette[]
-          {
-            new TColourPalette(CCADataConstants.coverageColors[1], 1),  // 1st pass (Green)...
-            new TColourPalette(CCADataConstants.coverageColors[2], 2),  // 2nd pass (Cyan)...
-            new TColourPalette(CCADataConstants.coverageColors[3], 3),  // 3rd pass (Red)...
-            new TColourPalette(CCADataConstants.coverageColors[4], 4)   // On target (Yellow)...  
-          }
-        };
-      }}
+        new TColourPalette(CCADataConstants.coverageColors[1], 1),  // 1st pass (Green)...
+        new TColourPalette(CCADataConstants.coverageColors[2], 2),  // 2nd pass (Cyan)...
+        new TColourPalette(CCADataConstants.coverageColors[3], 3),  // 3rd pass (Red)...
+        new TColourPalette(CCADataConstants.coverageColors[4], 4)   // On target (Yellow)...  
+      }
+    };
   }
 }

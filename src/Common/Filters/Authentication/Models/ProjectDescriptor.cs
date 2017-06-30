@@ -1,5 +1,4 @@
-
-namespace VSS.Raptor.Service.Common.Filters.Authentication.Models
+namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 {
   /// <summary>
   /// Describes VL project 

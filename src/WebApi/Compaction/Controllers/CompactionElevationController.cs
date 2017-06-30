@@ -1,19 +1,19 @@
-﻿using System;
-using System.Threading.Tasks;
-using Common.Filters.Authentication.Models;
-using MasterDataProxies;
+﻿using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
-using VSS.Raptor.Service.WebApiModels.Report.Executors;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Executors;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {

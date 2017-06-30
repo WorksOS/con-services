@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Common.Filters.Authentication.Models;
-using MasterDataProxies;
+﻿using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
-using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
-using VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
-using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.ColorValue;
+using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
+using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.ColorValue;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<CompactionPaletteController>();
+      log = logger.CreateLogger<CompactionPaletteController>();
       this.fileListProxy = fileListProxy;
       this.elevProxy = elevProxy;
     }

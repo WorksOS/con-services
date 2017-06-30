@@ -1,10 +1,9 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
     /// <summary>
     /// The request to identify the cell, display information and other configuration information to determine a datum value for the cell.
@@ -76,8 +75,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
         LiftBuildSettings liftBuildSettings, 
         DesignDescriptor design)
       {
-        return new CellDatumRequest()
-          {
+        return new CellDatumRequest
+        {
             projectId = projectId,
             displayMode = displayMode,
             llPoint = llPoint,

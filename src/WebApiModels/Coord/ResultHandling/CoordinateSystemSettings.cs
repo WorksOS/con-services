@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.Raptor.Service.Common.Contracts;
+using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiModels.Coord.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
 {
     /// <summary>
     /// Coordinate system settings result object.
@@ -112,7 +112,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.ResultHandling
         {
             get
             {
-                return new CoordinateSystemSettings() 
+                return new CoordinateSystemSettings
                 { 
                     csName = "DatumGrid and Geoid.cal",
                     csGroup = "Projection from Data Collector",
@@ -151,7 +151,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.ResultHandling
                 bool unsupportedProjection
             )
         {
-            return new CoordinateSystemSettings() 
+            return new CoordinateSystemSettings
             {
                 csName = csName, 
                 csGroup = csGroup, 

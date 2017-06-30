@@ -1,10 +1,8 @@
-﻿
+﻿using MasterDataProxies.ResultHandling;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
+using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
 
-
-namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents color palettes result for a palettes request

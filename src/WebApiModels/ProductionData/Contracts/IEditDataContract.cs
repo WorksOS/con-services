@@ -1,10 +1,9 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
-using VSS.Raptor.Service.Common.Contracts;
+﻿using Microsoft.AspNetCore.Mvc;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Contracts
 {
   /// <summary>
   /// Data contract representing an edit applied to production data for a project. 

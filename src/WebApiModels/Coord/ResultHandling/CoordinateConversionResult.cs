@@ -1,8 +1,7 @@
-﻿
-using VSS.Raptor.Service.WebApiModels.Coord.Models;
-using VSS.Raptor.Service.Common.Contracts;
+﻿using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.WebApiModels.Coord.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.Coord.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Coord.ResultHandling
 {
   /// <summary>
   /// Coordinate conversion result class.
@@ -33,7 +32,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.ResultHandling
     /// 
     public static CoordinateConversionResult CreateCoordinateConversionResult(TwoDConversionCoordinate[] conversionCoordinates)
     {
-      return new CoordinateConversionResult() { conversionCoordinates = conversionCoordinates };
+      return new CoordinateConversionResult { conversionCoordinates = conversionCoordinates };
     }
 
     /// <summary>
@@ -42,7 +41,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.ResultHandling
     /// 
     public static CoordinateConversionResult HelpSample
     {
-      get { return new CoordinateConversionResult() { conversionCoordinates = new TwoDConversionCoordinate[] { TwoDConversionCoordinate.HelpSample } }; }
+      get { return new CoordinateConversionResult { conversionCoordinates = new TwoDConversionCoordinate[] { TwoDConversionCoordinate.HelpSample } }; }
     }
   }
 }

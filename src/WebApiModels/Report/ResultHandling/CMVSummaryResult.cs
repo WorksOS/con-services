@@ -1,8 +1,7 @@
-﻿
-using ASNodeDecls;
-using VSS.Raptor.Service.Common.Contracts;
+﻿using ASNodeDecls;
+using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
   /// <summary>
   /// The result representation of a summary CMV request
@@ -82,7 +81,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     {
       get
       {
-        return new CMVSummaryResult()
+        return new CMVSummaryResult
         {
           compactedPercent = 50.0,
           constantTargetCMV = 95,

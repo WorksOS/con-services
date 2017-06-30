@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
   public class CellDatumResponse : ContractExecutionResult
     {
@@ -61,7 +61,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
         {
           get
           {
-            return new CellDatumResponse()
+            return new CellDatumResponse
             {
               displayMode = DisplayMode.CutFill,
               returnCode = 0,

@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Models;
 
-namespace VSS.Raptor.Service.WebApiTests.Report.Models
+namespace VSS.Productivity3D.WebApiTests.Report.Models
 {
-  [TestClass()]
+  [TestClass]
   public class CMVRequestTests
   {
-    [TestMethod()]
+    [TestMethod]
     public void CanCreateCMVRequestTest()
     {
       var validator = new DataAnnotationsValidator();
@@ -28,14 +28,14 @@ namespace VSS.Raptor.Service.WebApiTests.Report.Models
       Assert.IsFalse(validator.TryValidate(request, out results));
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateSuccessTest()
     {
       CMVRequest request = CMVRequest.CreateCMVRequest(projectId, callId, cmvSettings, liftSettings, null, 0, null, null, null);
       request.Validate();
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidOverrideDatesTest()
     {
       //override startUTC > override end UTC
@@ -43,7 +43,7 @@ namespace VSS.Raptor.Service.WebApiTests.Report.Models
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailMissingOverrideDatesTest()
     {
       //missing override end UTC

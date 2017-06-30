@@ -1,15 +1,11 @@
 using System.Net;
 using System.Reflection;
-using System.Security.Principal;
-using Common.Filters.Authentication.Models;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-
-namespace VSS.Raptor.Service.Common.Filters.Authentication
+namespace VSS.Productivity3D.Common.Filters.Authentication
 {
   /// <summary>
   ///   Tests if the project is not archived and has Write access

@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Security.Principal;
-using Common.Filters.Authentication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.WebApiModels.Coord.Contracts;
-using VSS.Raptor.Service.WebApiModels.Coord.Executors;
-using VSS.Raptor.Service.WebApiModels.Coord.Models;
-using VSS.Raptor.Service.WebApiModels.Coord.ResultHandling;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.Coord.Contracts;
+using VSS.Productivity3D.WebApiModels.Coord.Executors;
+using VSS.Productivity3D.WebApiModels.Coord.Models;
+using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApi.Coord.Controllers
+namespace VSS.Productivity3D.WebApi.Coord.Controllers
 {
     /// <summary>
     /// Controller for the CoordinateSystemFile resource.

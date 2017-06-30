@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using VLPDDecls;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   /// <summary>
   /// Executes DELETE method on Surveyed Surfaces resource.

@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
-using VSS.Raptor.Service.WebApiModels.Report.Executors;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Executors;
+using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
@@ -20,15 +19,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     private static readonly object lockObject = new object();
 
     /// <summary>
-    /// Logger for logging
-    /// </summary>
-    private readonly ILogger log;
-
-    /// <summary>
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
-
 
     /// <summary>
     /// Cache for elevation extents
@@ -67,7 +60,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       {
         cacheKey = ElevationCacheKey(projectId, filter);
       }
-      if (!this.elevationExtentsCache.TryGetValue(cacheKey, out result))
+      if (!elevationExtentsCache.TryGetValue(cacheKey, out result))
       {
         LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
 
@@ -125,17 +118,17 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <param name="elevationType"></param>
     /// <param name="layerNumber"></param>
     /// <param name="onMachineDesignId"></param>
-    /// <param name="assetID"></param>
+    /// <param name="assetId"></param>
     /// <param name="machineName"></param>
     /// <param name="isJohnDoe"></param>
     /// <param name="excludedSurveyedSurfaceIds"></param>
     /// <returns>Cache key</returns>
     private string ElevationCacheKey(long projectId, DateTime? startUtc, DateTime? endUtc,
-      bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
+      bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetId,
       string machineName, bool? isJohnDoe, List<long> excludedSurveyedSurfaceIds)
     {
-      var key = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}", projectId, startUtc, endUtc, vibeStateOn,
-        elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
+      var key =
+        $"{projectId},{startUtc},{endUtc},{vibeStateOn},{elevationType},{layerNumber},{onMachineDesignId},{assetId},{machineName},{isJohnDoe}";
       if (excludedSurveyedSurfaceIds == null || excludedSurveyedSurfaceIds.Count == 0)
       {
         key += ",null";
@@ -144,11 +137,10 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       {
         foreach (long id in excludedSurveyedSurfaceIds)
         {
-          key = string.Format("{0},{1}", key, id);
+          key = $"{key},{id}";
         }
       }
       return key;
     }
-
   }
 }

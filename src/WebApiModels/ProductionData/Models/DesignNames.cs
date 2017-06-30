@@ -1,5 +1,5 @@
 ﻿
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
     public class DesignNames 
     {
@@ -20,7 +20,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
 
         public static DesignNames CreateDesignNames(string name, long id)
         {
-            return new DesignNames() {designId = id, designName = name};
+            return new DesignNames {designId = id, designName = name};
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
         {
             get
             {
-                return new DesignNames()
+                return new DesignNames
                 {
                     designName = "The very best design",
                     designId = 1024,

@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Pass Count Summary request for compaction

@@ -1,8 +1,7 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// A 3D spatial extents structure
@@ -54,13 +53,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// <summary>
     /// Get Help sample for the object
     /// </summary>
-    public static BoundingBox3DGrid HelpSample
-    {
-      get
-      {
-        return new BoundingBox3DGrid() {maxX = 100, maxY = 200, maxZ = 300, minX = 50, minY = 45, minZ = 10};
-      }
-    }
+    public static BoundingBox3DGrid HelpSample => new BoundingBox3DGrid {maxX = 100, maxY = 200, maxZ = 300, minX = 50, minY = 45, minZ = 10};
 
     /// <summary>
     /// Prevents a default instance of the <see cref="BoundingBox3DGrid"/> class from being created.
@@ -70,8 +63,8 @@ namespace VSS.Raptor.Service.Common.Models
 
     public static BoundingBox3DGrid CreatBoundingBox3DGrid(double minx, double miny, double minz, double maxx, double maxy, double maxz)
     {
-      return new BoundingBox3DGrid()
-             {
+      return new BoundingBox3DGrid
+      {
                  minX = minx,
                  minY = miny,
                  minZ = minz,
@@ -87,7 +80,7 @@ namespace VSS.Raptor.Service.Common.Models
     /// <returns>A string representation of the 3D extents values</returns>
     public override string ToString()
     {
-      return String.Format("minX:{0}, minY:{1}, minZ:{2}, maxX:{3}, maxY:{4}, maxZ:{5}", minX, minY, minZ, maxX, maxY, maxZ);
+      return $"minX:{minX}, minY:{minY}, minZ:{minZ}, maxX:{maxX}, maxY:{maxY}, maxZ:{maxZ}";
     }
   }
 }

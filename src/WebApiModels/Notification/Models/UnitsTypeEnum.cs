@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WebApiModels.Notification.Models
+﻿namespace VSS.Productivity3D.WebApiModels.Notification.Models
 {
 
   /// <summary>

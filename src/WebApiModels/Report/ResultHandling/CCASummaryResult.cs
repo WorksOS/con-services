@@ -1,7 +1,7 @@
 ﻿using ASNodeDecls;
-using VSS.Raptor.Service.Common.Contracts;
+using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
   /// <summary>
   /// The result representation of a summary CCA request
@@ -67,7 +67,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     {
       get
       {
-        return new CCASummaryResult()
+        return new CCASummaryResult
         {
           completePercent = 50.0,
           overCompletePercent = 12.7,

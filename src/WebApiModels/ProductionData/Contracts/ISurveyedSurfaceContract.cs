@@ -1,11 +1,10 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
-using VSS.Raptor.Service.WebApi.ProductionData.Controllers;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Contracts
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Contracts
 {
   /// <summary>
   /// Data contract representing surveyed surfaces...

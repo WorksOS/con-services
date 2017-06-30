@@ -1,11 +1,11 @@
 ﻿using System;
 using Newtonsoft.Json;
-using SVOSiteVisionDecls;
 using SVOICDecls;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
+using SVOSiteVisionDecls;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
   /// <summary>
   /// The collection of information that describe a cell passes profile, as defined by the collection of cell passes that comprise it.
@@ -90,8 +90,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
         public static CellPassValue HelpSample {
             get
             {
-                return new CellPassValue()
-                       {
+                return new CellPassValue
+                {
                                amplitude = 10,
                                cCV = 12,
                                frequency = 100,
@@ -147,8 +147,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
         public static CellTargetsValue HelpSample {
             get
             {
-                return new CellTargetsValue()
-                       {
+                return new CellTargetsValue
+                {
                                targetCCV = 10,
                                targetMDP = 23,
                                targetPassCount = 50,
@@ -248,8 +248,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
         public static CellEventsValue HelpSample {
             get
             {
-                return new CellEventsValue()
-                       {
+                return new CellEventsValue
+                {
                                eventAutoVibrationState = TICAutoState.asAuto,
                                EventInAvoidZoneState = 1,
                                EventMinElevMapping = true,
@@ -295,8 +295,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
         {
             get
             {
-                return new FilteredPassData()
-                       {
+                return new FilteredPassData
+                {
                                eventsValue = CellEventsValue.HelpSample,
                                filteredPass = CellPassValue.HelpSample,
                                targetsValue = CellTargetsValue.HelpSample,
@@ -477,8 +477,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
           {
               get
               {
-                  return new ProfileLayer()
-                         {
+                  return new ProfileLayer
+                  {
                                  amplitude = 2,
                                  cCV = 32,
                                  cCV_Elev = 43,
@@ -748,7 +748,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
       ProfileLayer[] layers
       )
     {
-      return new CellPassesResult()
+      return new CellPassesResult
       {
         cellCCV = cellCCV,
         cellCCVElev = cellCCVElev,
@@ -790,7 +790,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
     {
       get
       {
-        return new CellPassesResult()
+        return new CellPassesResult
         {
             
             cellCCV = 2,

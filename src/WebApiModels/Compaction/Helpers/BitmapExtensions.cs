@@ -2,7 +2,7 @@
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace WebApiModels.Compaction.Helpers
+namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
   public static class BitmapExtensions
   {
@@ -24,6 +24,5 @@ namespace WebApiModels.Compaction.Helpers
       }
       return data;
     }
-
   }
 }

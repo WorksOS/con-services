@@ -1,20 +1,17 @@
-﻿
-using System;
-using System.IO;
+﻿using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TCCFileAccess;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Notification.Models;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Notification.Helpers;
+using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using WebApiModels.Interfaces;
-using WebApiModels.Notification.Helpers;
 
-namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
+namespace VSS.Productivity3D.WebApiModels.Notification.Executors
 {
   /// <summary>
   /// Processes the request to delete a file.

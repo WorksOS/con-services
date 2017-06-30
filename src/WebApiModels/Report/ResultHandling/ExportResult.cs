@@ -1,6 +1,6 @@
-﻿using VSS.Raptor.Service.Common.Contracts;
+﻿using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
 
   public class ExportResult : ContractExecutionResult
@@ -34,8 +34,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     {
       get
       {
-        return new ExportResult()
-               {
+        return new ExportResult
+        {
                };
       }
     }

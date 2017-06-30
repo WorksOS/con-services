@@ -1,12 +1,10 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.WebApiModels.Coord.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Coord.Models;
 
-namespace VSS.Raptor.Service.WebApiTests.Coord.Controllers
+namespace VSS.Productivity3D.WebApiTests.Coord.Models
 {
     [TestClass]
     public class CoordinateSystemFileTest
