@@ -38,7 +38,9 @@ namespace TCCFileAccess
 
 
     /// <summary>
-    /// The file cache - contains byte array for PNGs as a value and a full filename as a key. It shoudl persist across session so static. This class is thread-safe
+    /// The file cache - contains byte array for PNGs as a value and a full filename (path to the PNG) as a key. 
+    /// It should persist across session so static. This class is thread-safe.
+    /// Caching the tile files improves performance as downloading files from TCC is expensive.
     /// </summary>
     private static readonly MemoryCache fileCache =
       new MemoryCache(new MemoryCacheOptions()
@@ -48,7 +50,8 @@ namespace TCCFileAccess
       });
 
     /// <summary>
-    /// The cache lookup class to support fast keys lookup in cache by filename, not the full path as there are a lot of tiles per a file
+    /// The cache lookup class to support fast keys lookup in cache by filename, not the full path to the PNG as there are a lot of tiles per a file.
+    /// It folder structure in TCC is /customeruid/projectuid/filename_generatedsuffix$.DXF_Tiles$/zoom/ytile/xtile.png
     /// </summary>
     private CacheLookup cacheLookup = new CacheLookup();
 
@@ -189,6 +192,11 @@ namespace TCCFileAccess
       return result;
     }
 
+    /// <summary>
+    /// Determines if the file is to be cached. Only tiles, stored as PNG files, are cached.
+    /// </summary>
+    /// <param name="filename">THe file name to check</param>
+    /// <returns>True if the file is to be cached otherwise false</returns>
     private bool FileCacheable(string filename)
     {
       return filename.Contains(".png");
@@ -223,13 +231,15 @@ namespace TCCFileAccess
     private async Task<Stream> GetFileEx(string filespaceId, string fullName)
     {
       byte[] file = null;
-      if (FileCacheable(fullName))
-        if (fileCache.TryGetValue(GetFullPath(filespaceId, fullName), out file))
+      bool cacheable = FileCacheable(fullName);
+      if (cacheable)
+      {
+        if (fileCache.TryGetValue(fullName, out file))
         {
-          Log.LogDebug("Serving TCC tile request from cache");
+          Log.LogDebug("Serving TCC tile request from cache {0}", fullName);
           return new MemoryStream(file);
         }
-
+      }
 
       GetFileParams getFileParams = new GetFileParams
       {
@@ -245,16 +255,16 @@ namespace TCCFileAccess
 
       try
       {
-        if (!FileCacheable(fullName))
+        if (!cacheable)
           return await gracefulClient.ExecuteRequest(requestString, "GET", headers);
 
         using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers))
         {
-          Log.LogDebug("Adding TCC tile request to cache");
+          Log.LogDebug("Adding TCC tile request to cache {0}", fullName);
           file = new byte[responseStream.Length];
           responseStream.Read(file, 0, file.Length);
-          fileCache.Set(GetFullPath(filespaceId, fullName), file, DateTimeOffset.MaxValue);
-          cacheLookup.AddFile(TCCFile.ExtractFilenameFromTileFullName(fullName), GetFullPath(filespaceId, fullName));
+          fileCache.Set(fullName, file, DateTimeOffset.MaxValue);
+          cacheLookup.AddFile(TCCFile.ExtractFileNameFromTileFullName(fullName), fullName);
           return new MemoryStream(file);
         }
       }
@@ -397,13 +407,8 @@ namespace TCCFileAccess
     {
       object obj = null;
       if (FileCacheable(filename))
-        if (fileCache.TryGetValue(GetFullPath(filespaceId, filename), out obj)) return true;
+        if (fileCache.TryGetValue(filename, out obj)) return true;
       return await PathExists(filespaceId, filename);
-    }
-
-    private string GetFullPath(string filespaceId, string filename)
-    {
-      return $"{filespaceId}/{filename}";
     }
 
     private async Task<bool> PathExists(string filespaceId, string path)
@@ -682,14 +687,17 @@ namespace TCCFileAccess
         {
           if (jobResult.success)
           {
-            //TODO
-            /*var filenames = cacheLookup.RetrieveCacheKeys()
+            //This assumes that we're about to (re)generate tiles for the file
+            //therefore clear the cache for this file if cached tiles exist.
+            var filenames = cacheLookup.RetrieveCacheKeysExact(path);
             if (filenames != null)
             {
               Log.LogDebug($"Removing files for {path} from cachelookup and dropping cache");
               filenames.ForEach(s => fileCache.Remove(s));
               filenames.Clear();
-            }*/
+              cacheLookup.DropCacheKeys(path);
+            }
+            
             return jobResult.jobId;
           }
           CheckForInvalidTicket(jobResult, "CreateFileJob");

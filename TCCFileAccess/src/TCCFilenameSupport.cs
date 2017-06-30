@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using MasterDataProxies.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -165,14 +166,23 @@ namespace TCCFileAccess
     /// <summary>
     /// Extracts the full name of the filename from tile filename.
     /// </summary>
-    /// <param name="fullName">The full name.</param>
-    /// <returns></returns>
+    /// <param name="fullTileName">The full path and name of the tile file.</param>
+    /// <returns>The base file name to which the tiles belong</returns>
     /// <exception cref="System.ArgumentException"></exception>
-    public static string ExtractFilenameFromTileFullName(string fullName)
+    public static string ExtractFileNameFromTileFullName(string fullTileName)
     {
-      if (!fullName.Contains(GENERATED_TILE_FOLDER_SUFFIX))
-        throw new ArgumentException($"Invalid fullname - no expected suffix {fullName}");
-      return fullName.Split('/').First(s => s.Contains(GENERATED_TILE_FOLDER_SUFFIX));
+      if (!fullTileName.Contains(GENERATED_TILE_FOLDER_SUFFIX))
+        throw new ArgumentException($"Invalid fullname - no expected suffix {fullTileName}");
+      var tileFolder = Regex.Split(fullTileName, DXF_FILE_EXTENSION + GENERATED_TILE_FOLDER_SUFFIX, RegexOptions.IgnoreCase)[0];
+      if (tileFolder.Contains(GENERATED_SURFACE_FILE_SUFFIX))
+      {
+        return Regex.Split(tileFolder, GENERATED_SURFACE_FILE_SUFFIX, RegexOptions.IgnoreCase)[0];
+      }
+      if (tileFolder.Contains(GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX))
+      {
+        return Regex.Split(tileFolder, GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX, RegexOptions.IgnoreCase)[0];
+      }
+      return tileFolder;
     }
   }
 
