@@ -264,7 +264,10 @@ namespace TCCFileAccess
           file = new byte[responseStream.Length];
           responseStream.Read(file, 0, file.Length);
           fileCache.Set(fullName, file, DateTimeOffset.MaxValue);
-          cacheLookup.AddFile(TCCFile.ExtractFileNameFromTileFullName(fullName), fullName);
+          Log.LogDebug("About to extract file name for {0}", fullName);
+          var baseFileName = TCCFile.ExtractFileNameFromTileFullName(fullName);
+          Log.LogDebug("Extracted file name is {0}", baseFileName);
+          cacheLookup.AddFile(baseFileName, fullName);
           return new MemoryStream(file);
         }
       }
