@@ -493,7 +493,13 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             //    SetLength(FMachineIDs, 0); 
 
             SegmentPassCount = 0;
-            SubGridUtilities.SubGridDimensionalIterator((x, y) => SegmentPassCount += cellPasses[x, y].Length);
+            foreach (CellPass[] passes in cellPasses)
+            {
+                if (passes != null)
+                {
+                    SegmentPassCount += passes.Length;
+                }
+            }
 
             // Construct the first cell pass index map for the segment
             // First calculate the values of the first cell pass index for each column in the segment
@@ -504,7 +510,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
                 for (int Row = 0; Row < SubGridTree.SubGridTreeDimension; Row++)
                 {
-                    ColFirstCellPassIndexes[Col + 1] += cellPasses[Col, Row].Length;
+                    if (cellPasses[Col, Row] != null)
+                    {
+                        ColFirstCellPassIndexes[Col + 1] += cellPasses[Col, Row].Length;
+                    }
                 }
             }
 
@@ -516,7 +525,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
                 for (int Row = 1; Row < SubGridTree.SubGridTreeDimension; Row++)
                 {
-                    PerCellColRelativeFirstCellPassIndexes[Col, Row] = PerCellColRelativeFirstCellPassIndexes[Col, Row - 1] + cellPasses[Col, Row - 1].Length;
+                    PerCellColRelativeFirstCellPassIndexes[Col, Row] = PerCellColRelativeFirstCellPassIndexes[Col, Row - 1] + (cellPasses[Col, Row - 1] == null ? 0 : cellPasses[Col, Row - 1].Length);
                 }
             }
 
@@ -606,8 +615,12 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             SubGridUtilities.SubGridDimensionalIterator((col, row) =>
             {
                 CellPass[] passes = cellPasses[col, row];
-                Array.Copy(passes, 0, allCellPassesArray, cellPassIndex, passes.Length);
-                cellPassIndex += passes.Length;
+
+                if (passes != null)
+                {
+                    Array.Copy(passes, 0, allCellPassesArray, cellPassIndex, passes.Length);
+                    cellPassIndex += passes.Length;
+                }
             });
 
             // Compute the time of the earliest real cell pass within the segment
