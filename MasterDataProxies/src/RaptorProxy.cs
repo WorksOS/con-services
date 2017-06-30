@@ -26,7 +26,7 @@ namespace MasterDataProxies
     /// <param name="coordinateSystemFileContent">The content of the CS file.</param>
     /// <param name="coordinateSystemFileName">The filename.</param>
     /// <param name="customHeaders">The custom headers.</param>
-    public async Task<CoordinateSystemSettings> CoordinateSystemValidate(byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
+    public async Task<CoordinateSystemSettingsResult> CoordinateSystemValidate(byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.CoordinateSystemValidate: coordinateSystemFileContent: {coordinateSystemFileContent} coordinateSystemFileName: {coordinateSystemFileName}");
       var payLoadToSend = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName);
@@ -42,7 +42,7 @@ namespace MasterDataProxies
     /// <param name="coordinateSystemFileContent">The content of the CS file.</param>
     /// <param name="coordinateSystemFileName">The filename.</param>
     /// <param name="customHeaders">The custom headers.</param>
-    public async Task<CoordinateSystemSettings> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
+    public async Task<CoordinateSystemSettingsResult> CoordinateSystemPost(long legacyProjectId, byte[] coordinateSystemFileContent, string coordinateSystemFileName, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.CoordinateSystemPost: coordinateSystemFileContent: {coordinateSystemFileContent} coordinateSystemFileName: {coordinateSystemFileName}");
       var payLoadToSend = CoordinateSystemFile.CreateCoordinateSystemFile(legacyProjectId, coordinateSystemFileContent, coordinateSystemFileName);
@@ -126,9 +126,9 @@ namespace MasterDataProxies
     /// <param name="customHeaders">Custom request headers</param>
     /// <param name="route">Additional routing to add to the base URL</param>
     /// <returns></returns>
-    private async Task<CoordinateSystemSettings> CoordSystemPost(string payload, IDictionary<string, string> customHeaders, string route)
+    private async Task<CoordinateSystemSettingsResult> CoordSystemPost(string payload, IDictionary<string, string> customHeaders, string route)
     {
-      CoordinateSystemSettings response = await SendRequest<CoordinateSystemSettings>("COORDSYSPOST_API_URL", payload, customHeaders, route);
+      CoordinateSystemSettingsResult response = await SendRequest<CoordinateSystemSettingsResult>("COORDSYSPOST_API_URL", payload, customHeaders, route);
       log.LogDebug("RaptorProxy.CoordSystemPost: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;

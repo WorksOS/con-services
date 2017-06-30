@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using MasterDataProxies.Models;
 
-namespace MasterDataProxies.Models
+namespace MasterDataProxies.ResultHandling
 {
-    public class ProjectDataResult
-    {
+  public class ProjectDataResult
+  {
     /// <summary>
     ///   Defines machine-readable code.
     /// </summary>
