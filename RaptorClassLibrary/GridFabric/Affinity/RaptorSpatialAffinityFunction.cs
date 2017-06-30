@@ -57,8 +57,8 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
 
                 if (PSNodes.Count < RaptorConfig.numSpatialProcessingDivisions)
                 {
-                    Log.InfoFormat("RaptorSpatialAffinityFunction: Insufficient PS nodes to establish affinity. {0} nodes available with {1} configured spatial subdivisions", PSNodes.Count, RaptorConfig.numSpatialProcessingDivisions);                 
-                    return result;  // Return the empty list - no partitioning possible
+                    Log.InfoFormat("RaptorSpatialAffinityFunction: Insufficient PS nodes to establish affinity. {0} nodes available with {1} configured spatial subdivisions, will return partial affinity map.", PSNodes.Count, RaptorConfig.numSpatialProcessingDivisions);                 
+//                    return result;  // Return the empty list - no partitioning possible
                 }
 
                 // Assign all nodes to affinity partitions. Spare nodes will be mapped as backups. 
@@ -79,7 +79,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Affinity
             }
             catch (Exception e)
             {
-                Log.ErrorFormat("RaptorSpatialAffinityFunction: Excpetion: {0}", e);
+                Log.ErrorFormat("RaptorSpatialAffinityFunction: Exception: {0}", e);
                 return new List<List<IClusterNode>>();
             }
 
