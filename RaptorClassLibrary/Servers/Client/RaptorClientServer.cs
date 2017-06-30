@@ -20,7 +20,7 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public RaptorClientServer(string role)
+        public RaptorClientServer(string role) : base()
         {
             if (raptorGrid == null)
             {

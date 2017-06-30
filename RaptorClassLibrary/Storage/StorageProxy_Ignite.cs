@@ -33,84 +33,13 @@ namespace VSS.VisionLink.Raptor.Storage
         }
 
         /// <summary>
-        /// Supports taking a mutable version of a piece of data and transforming it into the immutable form if not present in the immutable cache
-        /// </summary>
-        /// <param name="mutableCache"></param>
-        /// <param name="immutableCache"></param>
-        /// <param name="cacheKey"></param>
-        /// <param name="streamType"></param>
-        /// <returns></returns>
-        private MemoryStream PerformNonSpatialImmutabilityConversion(ICache<String, MemoryStream> mutableCache,
-                                                                     ICache<String, MemoryStream> immutableCache,
-                                                                     string cacheKey, 
-                                                                     FileSystemStreamType streamType)
-        {
-            MemoryStream immutableStream = null;
-            MemoryStream mutableStream = mutableCache.Get(cacheKey);
-
-            // If successfully read, convert from the mutable to the immutable form and store it into the immutable cache
-            if (mutableStream != null)
-            {
-                if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out immutableStream) && (immutableStream != null))
-                {
-                    // Place the converted immutable item into the immutable cache
-                    immutableCache.Put(cacheKey, immutableStream);
-                }
-                else
-                {
-                    // There was no immutable version of the requested information. Allow this to bubble up the stack...
-                    // TODO Log the failure
-
-                    immutableStream = null;
-                }
-            }
-
-            return immutableStream;
-        }
-
-        /// <summary>
-        /// Supports taking a mutable version of a piece of data and transforming it into the immutable form if not present in the immutable cache
-        /// </summary>
-        /// <param name="mutableCache"></param>
-        /// <param name="immutableCache"></param>
-        /// <param name="cacheKey"></param>
-        /// <param name="streamType"></param>
-        /// <returns></returns>
-        private MemoryStream PerformSpatialImmutabilityConversion(ICache<SubGridSpatialAffinityKey, MemoryStream> mutableCache,
-                                                                  ICache<SubGridSpatialAffinityKey, MemoryStream> immutableCache,
-                                                                  SubGridSpatialAffinityKey cacheKey,
-                                                                  FileSystemStreamType streamType)
-        {
-            MemoryStream immutableStream = null;
-            MemoryStream mutableStream = mutableCache.Get(cacheKey);
-
-            // If successfully read, convert from the mutable to the immutable form and store it into the immutable cache
-            if (mutableStream != null)
-            {
-                if (MutabilityConverter.ConvertToImmutable(streamType, mutableStream, out immutableStream) && (immutableStream != null))
-                {
-                    // Place the converted immutable item into the immutable cache
-                    immutableCache.Put(cacheKey, immutableStream);
-                }
-                else
-                {
-                    // There was no immutable version of the requested information. Allow this to bubble up the stack...
-                    // TODO Log the failure
-
-                    immutableStream = null;
-                }
-            }
-
-            return immutableStream;
-        }
-
-        /// <summary>
         /// Supports reading a stream of spatial data from the persistent store via the grid cache
         /// </summary>
         /// <param name="DataModelID"></param>
         /// <param name="StreamName"></param>
         /// <param name="SubgridX"></param>
         /// <param name="SubgridY"></param>
+        /// <param name="SegmentIdentifier"></param>
         /// <param name="StreamType"></param>
         /// <param name="GranuleIndex"></param>
         /// <param name="Stream"></param>
@@ -134,15 +63,25 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
-                try
+                if (ReadFromImmutableDataCaches)
                 {
-                    // First look to see if the immutable item is in the cache
-                    Stream = immutableSpatialCache.Get(new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY));
+                    try
+                    {
+                        // First look to see if the immutable item is in the cache
+                        Stream = immutableSpatialCache.Get(cacheKey);
+                    }
+                    catch (KeyNotFoundException e)
+                    {
+                        Stream = PerformSpatialImmutabilityConversion(mutableSpatialCache, immutableSpatialCache, cacheKey, StreamType);
+                    }
                 }
-                catch (KeyNotFoundException e)
+                else
                 {
-                    Stream = PerformSpatialImmutabilityConversion(mutableSpatialCache, immutableSpatialCache, cacheKey, StreamType);
+                    Stream = mutableSpatialCache.Get(cacheKey);
                 }
+
+                Stream.Position = 0;
+
                 return FileSystemErrorStatus.OK;
             }
             catch (Exception E)
@@ -166,13 +105,20 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 string cacheKey = ComputeNamedStreamCacheKey(DataModelID, StreamName);
 
-                try
+                if (ReadFromImmutableDataCaches)
                 {
-                    Stream = immutableNonSpatialCache.Get(cacheKey);
+                    try
+                    {
+                        Stream = immutableNonSpatialCache.Get(cacheKey);
+                    }
+                    catch (KeyNotFoundException e)
+                    {
+                        Stream = PerformNonSpatialImmutabilityConversion(mutableNonSpatialCache, immutableNonSpatialCache, cacheKey, StreamType);
+                    }
                 }
-                catch (KeyNotFoundException e)
+                else
                 {
-                    Stream = PerformNonSpatialImmutabilityConversion(mutableNonSpatialCache, immutableNonSpatialCache, cacheKey, StreamType);
+                    Stream = mutableNonSpatialCache.Get(cacheKey);
                 }
 
                 Stream.Position = 0;
@@ -359,7 +305,7 @@ namespace VSS.VisionLink.Raptor.Storage
 
                 try
                 {
-                    // Invalidate the immutable version
+                    // Invalidate the immutable version if there is a cache reference
                     immutableNonSpatialCache.GetAndRemove(cacheKey);
                 }
                 catch (Exception e)

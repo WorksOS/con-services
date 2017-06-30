@@ -50,11 +50,6 @@ namespace VSS.VisionLink.Raptor.SiteModels
         /// <summary>
         /// SiteModelExtent records the 3D extents of the data stored in the site model
         /// </summary>
-        private BoundingWorldExtent3D siteModelExtent { get; set; } = BoundingWorldExtent3D.Inverted();
-
-        /// <summary>
-        /// SiteModelExtent records the 3D extents of the data stored in the site model
-        /// </summary>
         public BoundingWorldExtent3D SiteModelExtent = BoundingWorldExtent3D.Inverted();
 
         // ProofingRuns is the set of proofing runs that have been collected in this
@@ -284,7 +279,7 @@ namespace VSS.VisionLink.Raptor.SiteModels
             double SiteModelGridCellSize = reader.ReadDouble();
             if (SiteModelGridCellSize < 0.001)
             {
-                // TODO Read wen logging available
+                // TODO Read when logging available
                 // SIGLogMessage.PublishNoODS(Self, Format('SiteModelGridCellSize is suspicious: %f for datamodel %d, setting to default', [SiteModelGridCellSize, FID]), slmcError);
                 SiteModelGridCellSize = 0.1; // TODO  VLPDSvcLocations.VLPD_DefaultSiteModelGridCellSize;
             }

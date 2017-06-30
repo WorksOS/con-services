@@ -62,5 +62,12 @@ namespace VSS.VisionLink.Raptor
         /// Defines whether non spatial data should be compressed in it's immutable form
         /// </summary>
         public bool CompressImmutableNonSpatialData { get; set; } = true;
+
+        /// <summary>
+        /// Controls whether the immutable cache can be used as the primary source of data to support reads.
+        /// Of true, a cache item is read from the immutable cache. If not present there it will be read from the
+        /// mutable cache and promoted into the immutable cache
+        /// </summary>
+        public bool ReadFromImmutableDataCaches { get; set; } = true;
     }
 }

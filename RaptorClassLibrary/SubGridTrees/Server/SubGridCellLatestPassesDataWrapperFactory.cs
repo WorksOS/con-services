@@ -47,7 +47,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
                 return new SubGridCellLatestPassDataWrapper_StaticCompressed();
             }
 
-            // Note: Static and Static-Compressed  are the same for the latest pass information
+            // Note: Static and Static-Compressed are the same for the latest pass information
             return new SubGridCellLatestPassDataWrapper_StaticCompressed();
         }
 

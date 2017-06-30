@@ -14,6 +14,10 @@ namespace VSS.VisionLink.Raptor.Servers.Client
     /// </summary>
     public class RaptorTileRenderingServer : RaptorApplicationServiceServer
     {
+        public RaptorTileRenderingServer() : base()
+        {
+        }
+
         /// <summary>
         /// Creates a new instance of a tile rendering server. 
         /// </summary>

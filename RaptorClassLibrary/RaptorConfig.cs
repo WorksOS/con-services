@@ -32,6 +32,6 @@ namespace VSS.VisionLink.Raptor
         /// <summary>
         /// The number of spatial processing divisions within the Raptor cluster
         /// </summary>
-        public static uint numSpatialProcessingDivisions = 1;
+        public static uint numSpatialProcessingDivisions = 4;
     }
 }

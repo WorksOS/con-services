@@ -157,7 +157,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         /// Constructor for the Raptor cache compute server node. Responsible for starting all Ignite services and creating the grid
         /// and cache instance in preparation for client access by business logic running on the node.
         /// </summary>
-        public RaptorCacheComputeServer()
+        public RaptorCacheComputeServer() : base()
         {
             if (raptorGrid == null)
             {

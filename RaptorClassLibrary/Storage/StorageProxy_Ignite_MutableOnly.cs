@@ -29,6 +29,7 @@ namespace VSS.VisionLink.Raptor.Storage
         public StorageProxy_Ignite_MutableOnly(string gridName) : base(gridName)
         {
             EstablishMutableCaches();
+            EstablishImmutableCaches();
         }
 
         /// <summary>
@@ -38,6 +39,7 @@ namespace VSS.VisionLink.Raptor.Storage
         /// <param name="StreamName"></param>
         /// <param name="SubgridX"></param>
         /// <param name="SubgridY"></param>
+        /// <param name="SegmentIdentifier"></param>
         /// <param name="StreamType"></param>
         /// <param name="GranuleIndex"></param>
         /// <param name="Stream"></param>
@@ -61,7 +63,7 @@ namespace VSS.VisionLink.Raptor.Storage
             {
                 SubGridSpatialAffinityKey cacheKey = new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY, SegmentIdentifier);
 
-                Stream = mutableSpatialCache.Get(new SubGridSpatialAffinityKey(DataModelID, SubgridX, SubgridY));
+                Stream = mutableSpatialCache.Get(cacheKey);
                 Stream.Position = 0;
 
                 return FileSystemErrorStatus.OK;

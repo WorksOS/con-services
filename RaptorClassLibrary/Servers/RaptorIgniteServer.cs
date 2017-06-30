@@ -25,5 +25,21 @@ namespace VSS.VisionLink.Raptor.Servers
         /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging
         /// </summary>
         public string RaptorNodeID = String.Empty;
+
+        /// <summary>
+        /// Permits configuration of server specific parameters that influence the initialisation of the server type
+        /// </summary>
+        public virtual void SetupServerSpecificConfiguration()
+        {
+        }
+
+        /// <summary>
+        /// Default constructor for the Raptor Ignite Server. This must be called in the base() constructor chain to ensure
+        /// the server operating environment is correctly configured before instantiation of the server inner workings
+        /// </summary>
+        public RaptorIgniteServer()
+        {
+            SetupServerSpecificConfiguration();
+        }
     }
 }
