@@ -31,7 +31,8 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
         public virtual void ConfigureRaptorGrid(IgniteConfiguration cfg)
         {
             cfg.GridName = RaptorGrids.RaptorGridName();
-            cfg.JvmMaxMemoryMb = 4000;
+            cfg.JvmInitialMemoryMb = 512; // Set to minimum advised memory for Ignite grid JVM of 512Mb
+            cfg.JvmMaxMemoryMb = 4 * 1024; // Set max to 4Gb
             cfg.UserAttributes = new Dictionary<String, object>();
             cfg.UserAttributes.Add("Owner", RaptorGrids.RaptorGridName());
         }
