@@ -2,11 +2,11 @@
 using System.Globalization;
 using System.IO;
 using System.Net;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace WebApiModels.Notification.Helpers
+namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
 {
   /// <summary>
   /// Utilities for imported files

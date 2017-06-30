@@ -1,12 +1,9 @@
-﻿
-using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiTests.Common.Contracts
+namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
 {
     [TestClass]
     public class GeneralTests

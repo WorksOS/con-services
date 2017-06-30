@@ -4,25 +4,27 @@ using System.Net;
 using System.Linq;
 using System.Collections.Generic;
 using System.Security.Principal;
-using Common.Filters.Authentication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Contracts;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
 
-namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
+namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
-    [ResponseCache(NoStore = true)]
-    public class MachinesController : Controller, IMachinesContract
+  /// <summary>
+  /// 
+  /// </summary>
+  [ResponseCache(NoStore = true)]
+  public class MachinesController : Controller, IMachinesContract
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -38,7 +40,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
- 
+
     /// <summary>
     /// Constructor with injected raptor client and logger
     /// </summary>
@@ -253,7 +255,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
       return GetMachineLiftsWith(Id, startUtc, endUtc);
     }
-    
+
     private MachineLayerIdsExecutionResult GetMachineLiftsWith(ProjectID Id, string startUtc, string endUtc)
     {
       //Note: we use strings in the uri because the framework converts to local time although we are using UTC format.
@@ -291,7 +293,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
             layerIdsResult.LayerIdDetailsArray.Where(
                 layer =>
                     layer.AssetId == machine.assetID &&
-                    isDateRangeOverlapping(layer.StartDate, layer.EndDate, beginUtc, finishUtc)).ToList();
+                    IsDateRangeOverlapping(layer.StartDate, layer.EndDate, beginUtc, finishUtc)).ToList();
         if (filteredLayers.Count > 0)
         {
           liftDetailsList.Add(MachineLiftDetails.CreateMachineLiftDetails(
@@ -307,7 +309,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     {
       return string.IsNullOrEmpty(utcDate)
             ? (DateTime?)null
-            : DateTime.ParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);      
+            : DateTime.ParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
     }
 
     /// <summary>
@@ -318,7 +320,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <param name="startDate2">Start of second date range</param>
     /// <param name="endDate2">End of second date range</param>
     /// <returns>True if they overlap otherwise false</returns>
-    private bool isDateRangeOverlapping(DateTime startDate1, DateTime endDate1, DateTime? startDate2, DateTime? endDate2)
+    private bool IsDateRangeOverlapping(DateTime startDate1, DateTime endDate1, DateTime? startDate2, DateTime? endDate2)
     {
       if (startDate2.HasValue && endDate2.HasValue)
       {
@@ -327,6 +329,5 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
       }
       return true;
     }
-
   }
 }

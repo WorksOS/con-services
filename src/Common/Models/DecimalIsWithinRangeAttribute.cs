@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   ///     Tests it supplied value is within the specified range
@@ -26,14 +26,14 @@ namespace VSS.Raptor.Service.Common.Models
     /// <value>
     /// The x.
     /// </value>
-    public double X { get; private set; }
+    public double X { get; }
     /// <summary>
     /// Gets the y.
     /// </summary>
     /// <value>
     /// The y.
     /// </value>
-    public double Y { get; private set; }
+    public double Y { get; }
 
     /// <summary>
     /// Validates the specified value with respect to the current validation attribute.
@@ -51,7 +51,8 @@ namespace VSS.Raptor.Service.Common.Models
 
       if (X - EPSILON <= input && input <= Y + EPSILON)
         return ValidationResult.Success;
-      return new ValidationResult(String.Format("Supplied value of {0} should be between {1} and {2}", validationContext!=null?validationContext.DisplayName:String.Empty, X, Y));
+      return new ValidationResult(
+        $"Supplied value of {(validationContext != null ? validationContext.DisplayName : string.Empty)} should be between {X} and {Y}");
     }
   }
 }

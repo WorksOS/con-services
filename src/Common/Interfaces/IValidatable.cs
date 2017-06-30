@@ -1,7 +1,6 @@
-﻿
-using VSS.Raptor.Service.Common.ResultHandling;
+﻿using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Interfaces
+namespace VSS.Productivity3D.Common.Interfaces
 {
     /// <summary>
     /// Defines if a domain object can have business validation

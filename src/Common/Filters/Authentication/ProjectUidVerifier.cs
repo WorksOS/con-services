@@ -1,15 +1,8 @@
-﻿using System;
-using System.Net;
-using System.Reflection;
-using System.Security.Principal;
-using Common.Filters.Authentication.Models;
+﻿using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Filters;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using Microsoft.Extensions.DependencyInjection;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 
-namespace VSS.Raptor.Service.Common.Filters.Authentication
+namespace VSS.Productivity3D.Common.Filters.Authentication
 {
   /// <summary>
   /// 

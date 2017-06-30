@@ -1,17 +1,16 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiTests.Common.Models
+namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
 {
-  [TestClass()]
+  [TestClass]
   public class DesignDescriptorTests
   {
 
-    [TestMethod()]
+    [TestMethod]
     public void CanCreateDesignDescriptorTest()
     {
       var validator = new DataAnnotationsValidator();
@@ -20,7 +19,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.IsTrue(validator.TryValidate(design, out results));
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateSuccessTest()
     {
       DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(1234, null, 0);
@@ -32,14 +31,12 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       design.Validate();
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailEmptyTest()
     {
       //empty design descriptor
       DesignDescriptor design = DesignDescriptor.CreateDesignDescriptor(0, null, 0);
       Assert.ThrowsException<ServiceException>(() => design.Validate());
     }
-
-
   }
 }

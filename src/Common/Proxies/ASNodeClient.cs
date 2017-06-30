@@ -23,9 +23,9 @@ using SVOICProfileCell;
 using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
 using VLPDDecls;
-using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Raptor.Service.Common.Proxies
+namespace VSS.Productivity3D.Common.Proxies
 {
   public class ASNodeClient : IASNodeClient
   {
@@ -34,7 +34,7 @@ namespace VSS.Raptor.Service.Common.Proxies
       client = new Velociraptor.PDSInterface.Client.ASNode.ASNodeClient();
     }
 
-    private Velociraptor.PDSInterface.Client.ASNode.ASNodeClient client { get; set; }
+    private Velociraptor.PDSInterface.Client.ASNode.ASNodeClient client { get; }
 
     public bool GetProductionDataExport(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
         TASNodeUserPreferences UserPreferences, int ExportType, string CallerId, TICFilterSettings Filter,

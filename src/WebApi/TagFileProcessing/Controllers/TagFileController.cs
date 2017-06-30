@@ -1,30 +1,25 @@
 ﻿using System.Linq;
-using System.Net;
-using System.Security.Principal;
-using Common.Filters.Authentication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.TagfileProcessing.Contracts;
-using VSS.Raptor.Service.WebApiModels.TagfileProcessing.Executors;
-using VSS.Raptor.Service.WebApiModels.TagfileProcessing.Models;
-using VSS.Raptor.Service.WebApiModels.TagfileProcessing.ResultHandling;
-using WebApiModels.TagfileProcessing.Models;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.WebApiModels.TagfileProcessing.Contracts;
+using VSS.Productivity3D.WebApiModels.TagfileProcessing.Executors;
+using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;
+using VSS.Productivity3D.WebApiModels.TagfileProcessing.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApi.TagFileProcessing.Controllers
+namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    [ResponseCache(NoStore = true)]
-    public class TagFileController : Controller, ITagFileContract
+  /// <summary>
+  /// 
+  /// </summary>
+  [ResponseCache(NoStore = true)]
+  public class TagFileController : Controller, ITagFileContract
   {
     /// <summary>
     /// Tag processor for use by executor
@@ -45,7 +40,7 @@ namespace VSS.Raptor.Service.WebApi.TagFileProcessing.Controllers
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
- 
+
     /// <summary>
     /// Constructor with injected raptor client and logger
     /// </summary>

@@ -1,20 +1,15 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using VLPDDecls;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-
-using ASNodeDecls;
 using Microsoft.Extensions.Logging;
+using VLPDDecls;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   /// <summary>
   /// Executes POST, PUT,GET and DELETE methods on Surveyed Surfaces resource.

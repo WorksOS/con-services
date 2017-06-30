@@ -1,15 +1,13 @@
-﻿
-using System.Net;
-using VSS.Raptor.Service.WebApiModels.Coord.ResultHandling;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
+﻿using System.Net;
 using ASNodeDecls;
 using Microsoft.Extensions.Logging;
 using VLPDDecls;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Coord.Executors
+namespace VSS.Productivity3D.WebApiModels.Coord.Executors
 {
     /// <summary>
     /// Generic coordinate system definition file executor.

@@ -1,20 +1,15 @@
-﻿using System;
-using ASNode.ExportProductionDataCSV.RPC;
-using ASNode.UserPreferences;
-using BoundingExtents;
-using Newtonsoft.Json;
-using VLPDDecls;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+﻿using Newtonsoft.Json;
+using System;
 using System.Net;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Utilities;
-using static VSS.Raptor.Service.Common.Proxies.RaptorConverters;
+using VLPDDecls;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Nighthawk.ReportSvc.WebApi.Models
+namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
-    public enum GriddedCSVReportType
+  public enum GriddedCSVReportType
     {
         Gridded = 1,
         Alignment = 2,
@@ -226,7 +221,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
             {
                 throw new ServiceException(HttpStatusCode.BadRequest,
                      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                         string.Format("Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: {0}", reportType)));
+                       $"Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: {reportType}"));
             }
 
             if (reportType == GriddedCSVReportType.Alignment)
@@ -237,20 +232,20 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
                 {
                     throw new ServiceException(HttpStatusCode.BadRequest,
                                        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                                           string.Format("Report option for gridded report type must be 1 ('Automatic'), 2 ('Direction') or 3 (EndPoint). Actual value supplied: {0}", reportOption)));
+                                         $"Report option for gridded report type must be 1 ('Automatic'), 2 ('Direction') or 3 (EndPoint). Actual value supplied: {reportOption}"));
                 }
             }
 
             if (reportCutFill == true)
             {
-                ValidateDesign(designFile, DisplayMode.CutFill, VolumesType.None);
+                ValidateDesign(designFile, DisplayMode.CutFill, RaptorConverters.VolumesType.None);
             }
 
             if (interval < 0.1 || interval > 100.00)
             {
                 throw new ServiceException(HttpStatusCode.BadRequest,
                      new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                         string.Format("Interval must be >= 0.1m and <= 100.0m. Actual value: {0}", interval)));
+                       $"Interval must be >= 0.1m and <= 100.0m. Actual value: {interval}"));
             }
 
             if (!(reportPassCount || reportTemperature || reportMDP || reportCutFill || reportCMV || reportElevation))
@@ -266,7 +261,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
                 {
                     throw new ServiceException(HttpStatusCode.BadRequest,
                          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                             string.Format("Direction must be in the range 0..2*PI radians. Actual value: {0}", direction)));
+                           $"Direction must be in the range 0..2*PI radians. Actual value: {direction}"));
                 }
             }
 

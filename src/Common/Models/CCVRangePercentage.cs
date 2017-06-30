@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Contains a percentage range of observed CCV values with respect to the target MDP value configured on a machine
@@ -54,17 +54,11 @@ namespace VSS.Raptor.Service.Common.Models
     /// <summary>
     /// Create example instance of CCVRangePercentage to display in Help documentation.
     /// </summary>
-    public static CCVRangePercentage HelpSample
+    public static CCVRangePercentage HelpSample => new CCVRangePercentage
     {
-      get
-      {
-        return new CCVRangePercentage()
-        {
-          min = 75.0,
-          max = 125.0
-        };
-      }
-    }
+      min = 75.0,
+      max = 125.0
+    };
 
 
     /// <summary>
@@ -73,7 +67,7 @@ namespace VSS.Raptor.Service.Common.Models
     public void Validate()
     {
 
-      if (this.min > this.max)
+      if (min > max)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "CCV percentage minimum must be less than CCV percentage maximum"));      

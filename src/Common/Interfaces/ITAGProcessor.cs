@@ -1,6 +1,6 @@
 ﻿using VSS.Velociraptor.PDSInterface.Client.TAGProcessor;
 
-namespace VSS.Raptor.Service.Common.Interfaces
+namespace VSS.Productivity3D.Common.Interfaces
 {
   /// <summary>
   /// Interface for ITagProcessor

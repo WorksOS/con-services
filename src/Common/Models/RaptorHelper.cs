@@ -1,11 +1,10 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   public abstract class RaptorHelper : ProjectID
   {
@@ -89,7 +88,7 @@ namespace VSS.Raptor.Service.Common.Models
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  string.Format("Palette for overlay type {0} should contain {1} items", mode, count)));
+                $"Palette for overlay type {mode} should contain {count} items"));
         }
 
         for (int i = 1; i < palettes.Count; i++)

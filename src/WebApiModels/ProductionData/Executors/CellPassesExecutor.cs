@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using SVOICFiltersDecls;
 using SVOICFilterSettings;
 using SVOICGridCell;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
 using SVOICProfileCell;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
-
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   public class CellPassesExecutor : RequestExecutorContainer
   {
@@ -172,7 +171,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
     #region Converters
     private CellPassesResult.ProfileLayer ConvertCellLayerItem(TICProfileLayer layer, CellPassesResult.FilteredPassData[] layerPasses)
         {
-          return new CellPassesResult.ProfileLayer()
+          return new CellPassesResult.ProfileLayer
           {
             amplitude = layer.Amplitude,
             cCV = layer.CCV,
@@ -236,7 +235,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
 
         private CellPassesResult.CellEventsValue ConvertCellPassEvents(TICCellEventsValue events)
         {
-          return new CellPassesResult.CellEventsValue()
+          return new CellPassesResult.CellEventsValue
           {
             eventAutoVibrationState = events.EventAutoVibrationState,
             eventDesignNameID = events.EventDesignNameID,
@@ -260,7 +259,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
 
         private CellPassesResult.CellPassValue ConvertCellPass(TICCellPassValue pass)
         {
-          return new CellPassesResult.CellPassValue()
+          return new CellPassesResult.CellPassValue
           {
             amplitude = pass.Amplitude,
             cCV = pass.CCV,
@@ -279,7 +278,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
 
         private CellPassesResult.CellTargetsValue ConvertCellPassTargets(TICCellTargetsValue targets)
         {
-          return new CellPassesResult.CellTargetsValue()
+          return new CellPassesResult.CellTargetsValue
           {
             targetCCV = targets.TargetCCV,
             targetMDP = targets.TargetMDP,
@@ -292,7 +291,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
 
         private CellPassesResult.FilteredPassData ConvertFilteredPassDataItem(TICFilteredPassData pass)
         {
-          return new CellPassesResult.FilteredPassData()
+          return new CellPassesResult.FilteredPassData
           {
             eventsValue = ConvertCellPassEvents(pass.EventValues),
             filteredPass = ConvertCellPass(pass.FilteredPass),

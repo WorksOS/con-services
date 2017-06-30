@@ -1,12 +1,11 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Provides settings for thickness summary requests. Target and tolerance should be specified in meters.
@@ -43,17 +42,12 @@ namespace VSS.Raptor.Service.Common.Models
     [Required]
     public float BelowToleranceLiftThickness { get; set; }
 
-    public static LiftThicknessTarget HelpSample {
-      get
-      {
-        return new LiftThicknessTarget()
-               {
-                   AboveToleranceLiftThickness = (float)0.001,
-                   BelowToleranceLiftThickness = (float)0.002,
-                   TargetLiftThickness = (float)0.05
-               };
-      }
-    }
+    public static LiftThicknessTarget HelpSample => new LiftThicknessTarget
+    {
+      AboveToleranceLiftThickness = (float)0.001,
+      BelowToleranceLiftThickness = (float)0.002,
+      TargetLiftThickness = (float)0.05
+    };
 
     /// <summary>
     /// Private constructor

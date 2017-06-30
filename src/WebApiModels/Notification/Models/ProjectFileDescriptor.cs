@@ -1,19 +1,17 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using WebApiModels.Notification.Models;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Notification.Models
+namespace VSS.Productivity3D.WebApiModels.Notification.Models
 {
   /// <summary>
   /// Request representation fior file notifications
   /// </summary>
-  public class ProjectFileDescriptor : ProjectID, IValidatable
+  public class ProjectFileDescriptor : ProjectID
   {
     /// <summary>
     /// The file details
@@ -45,8 +43,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
     /// Private constructor
     /// </summary>
     private ProjectFileDescriptor()
-    {
-    }
+    { }
 
     /// <summary>
     /// Create instance of ProjectFileDescriptor using ID
@@ -75,10 +72,10 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Models
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public void Validate()
+    public override void Validate()
     {
       base.Validate();
-      this.File.Validate();
+      File.Validate();
 
       if (FileId <= 0)
       {

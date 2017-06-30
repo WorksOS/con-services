@@ -1,10 +1,8 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 
-
-namespace VSS.Raptor.Service.WebApiModels.Coord.Models
+namespace VSS.Productivity3D.WebApiModels.Coord.Models
 {
   /// <summary>
   /// A point specified in WGS84 Latitude/Longitude or North/East geographic Cartesian coordinates.
@@ -54,7 +52,7 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Models
     {
       get
       {
-        return new TwoDConversionCoordinate()
+        return new TwoDConversionCoordinate
         {
           x = 192.35,
           y = 234.12

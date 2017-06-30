@@ -1,12 +1,12 @@
 using System;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
   /// <summary>
   /// Represents speed summary request.
@@ -90,8 +90,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     {
       get
       {
-        return new SummarySpeedRequest()
-               {
+        return new SummarySpeedRequest
+        {
                    projectId = 34,
                    callId = Guid.NewGuid(),
                    liftBuildSettings = LiftBuildSettings.HelpSample,

@@ -1,4 +1,4 @@
-﻿namespace VSS.Raptor.Service.Common.Models
+﻿namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Defines how the material thickness of a layer is to be measured in terms of it being compacted or uncompacted material

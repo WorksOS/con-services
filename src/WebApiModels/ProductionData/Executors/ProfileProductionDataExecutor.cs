@@ -1,20 +1,18 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using SVOICOptionsDecls;
+using System;
 using System.IO;
 using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Helpers;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.Common.Utilities;
-
-using SVOICOptionsDecls;
-
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Executors
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   /// <summary>
   /// Get production data profile calculations executor.

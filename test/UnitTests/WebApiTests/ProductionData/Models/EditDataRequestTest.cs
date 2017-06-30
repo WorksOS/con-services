@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
+namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 {
-   [TestClass()]
+   [TestClass]
   public class EditDataRequestTest
   {
-     [TestMethod()]
+     [TestMethod]
      public void CanCreateEditDataRequestTest()
      {
        var validator = new DataAnnotationsValidator();
@@ -24,7 +24,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
        Assert.IsFalse(validator.TryValidate(request, out results));
      }
 
-     [TestMethod()]
+     [TestMethod]
      public void ValidateSuccessTest()
      {
        EditDataRequest request = EditDataRequest.CreateEditDataRequest(
@@ -32,7 +32,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
        request.Validate();
      }
 
-     [TestMethod()]
+     [TestMethod]
      public void ValidateFailMissingDataEditTest()
      {
        //missing dataEdit

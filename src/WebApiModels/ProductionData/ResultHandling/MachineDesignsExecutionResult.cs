@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using VLPDDecls;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.Contracts;
 using Newtonsoft.Json;
+using VLPDDecls;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
     public class MachineDesignsExecutionResult : ContractExecutionResult
     {
@@ -20,7 +20,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
         
     public static ContractExecutionResult CreateMachineExecutionResult(IEnumerable<TDesignName> designNames)
     {
-        var result  = new MachineDesignsExecutionResult() { Designs = new List<DesignNames>()};
+        var result  = new MachineDesignsExecutionResult { Designs = new List<DesignNames>()};
         foreach (var name in designNames)
         {
             result.Designs.Add(DesignNames.CreateDesignNames(name.FName, name.FID));
@@ -36,9 +36,9 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
     {
         get
         {
-            return new MachineDesignsExecutionResult()
+            return new MachineDesignsExecutionResult
             {
-              Designs = new List<DesignNames>() {DesignNames.HelpSample, DesignNames.HelpSample}
+              Designs = new List<DesignNames> {DesignNames.HelpSample, DesignNames.HelpSample}
             };
         }
     }

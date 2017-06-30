@@ -1,4 +1,4 @@
-﻿namespace VSS.Raptor.Service.Common.Models
+﻿namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// The defined types of automatic lift detection that use information reported from the machine to group cell passes into layers.

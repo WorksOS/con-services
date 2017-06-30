@@ -1,6 +1,6 @@
-﻿using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+﻿using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Interfaces
 {

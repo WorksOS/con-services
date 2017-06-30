@@ -1,9 +1,8 @@
-﻿
-using System.Collections.Generic;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.Contracts;
+﻿using System.Collections.Generic;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
   /// <summary>
   /// The represenation of the results of an edit data request.
@@ -39,7 +38,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
     {
       get
       {
-        return new EditDataResult()
+        return new EditDataResult
         {
           dataEdits = new List<ProductionDataEdit> { ProductionDataEdit.HelpSample }
         };

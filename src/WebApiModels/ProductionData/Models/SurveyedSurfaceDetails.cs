@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   /// <summary>
   /// Representation of Surveyed Surface in a Raptor project.
@@ -53,7 +53,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
       BoundingBox3DGrid extents
       )
     {
-      return new SurveyedSurfaceDetails()
+      return new SurveyedSurfaceDetails
       {
         Id = id,
         SurveyedSurface = surveyedSurface,
@@ -68,7 +68,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// 
     public static SurveyedSurfaceDetails HelpSample
     {
-      get { return new SurveyedSurfaceDetails() { Id = 1, SurveyedSurface = DesignDescriptor.HelpSample, AsAtDate = DateTime.UtcNow }; }
+      get { return new SurveyedSurfaceDetails { Id = 1, SurveyedSurface = DesignDescriptor.HelpSample, AsAtDate = DateTime.UtcNow }; }
     }
 
   }

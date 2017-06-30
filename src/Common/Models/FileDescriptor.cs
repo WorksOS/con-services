@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Validation;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
-using System;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Validation;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Description to identify a file by its location in TCC.
@@ -62,34 +61,30 @@ namespace VSS.Raptor.Service.Common.Models
              };
     }
 
-    public static FileDescriptor EmptyFileDescriptor
+    public static FileDescriptor EmptyFileDescriptor { get; } = new FileDescriptor
     {
-      get { return emptyDescriptor; }
-    }
+      filespaceId = string.Empty,
+      path = string.Empty,
+      fileName = string.Empty
+    };
 
     /// <summary>
     /// Create example instance of FileDescriptor to display in Help documentation.
     /// </summary>
-    public static FileDescriptor HelpSample
+    public static FileDescriptor HelpSample => new FileDescriptor
     {
-      get
-      {
-        return new FileDescriptor()
-        {
-          filespaceId = "u72003136-d859-4be8-86de-c559c841bf10",
-          path = "BC Data/Sites/Integration10/Designs",
-          fileName = "Cycleway.ttm"
-        };
-      }
-    }
+      filespaceId = "u72003136-d859-4be8-86de-c559c841bf10",
+      path = "BC Data/Sites/Integration10/Designs",
+      fileName = "Cycleway.ttm"
+    };
 
     /// <summary>
     /// Validates all properties
     /// </summary>
     public void Validate()
     {
-      if (string.IsNullOrEmpty(this.filespaceId) || string.IsNullOrEmpty(this.path) ||
-          string.IsNullOrEmpty(this.fileName))
+      if (string.IsNullOrEmpty(filespaceId) || string.IsNullOrEmpty(path) ||
+          string.IsNullOrEmpty(fileName))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -103,21 +98,11 @@ namespace VSS.Raptor.Service.Common.Models
     /// </summary>
     public override string ToString()
     {
-      return String.Format("{0}: {1}, {2}", fileName, filespaceId, path);
+      return $"{fileName}: {filespaceId}, {path}";
     }
 
 
     private const int MAX_FILE_NAME = 1024;
     private const int MAX_PATH = 2048;
-
-    private static FileDescriptor emptyDescriptor = new FileDescriptor
-                                                    {
-                                                        filespaceId = string.Empty,
-                                                        path = string.Empty,
-                                                        fileName = string.Empty
-                                                    };
-
-
-
   }
 }

@@ -1,17 +1,20 @@
-﻿using System;
+﻿using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using MasterDataProxies.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
+  /// <summary>
+  /// Extensions for the Compaction controller.
+  /// </summary>
   public static class CompactionControllerExtensions
   {
     /// <summary>
@@ -42,34 +45,36 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the list of contributing machines from the query parameters
     /// </summary>
     /// <param name="controller"></param>
-    /// <param name="assetID">The asset ID</param>
+    /// <param name="assetId">The asset ID</param>
     /// <param name="machineName">The machine name</param>
     /// <param name="isJohnDoe">The john doe flag</param>
     /// <returns>List of machines</returns>
-    public static List<MachineDetails> GetMachines(this Controller controller, long? assetID, string machineName, bool? isJohnDoe)
+    public static List<MachineDetails> GetMachines(this Controller controller, long? assetId, string machineName, bool? isJohnDoe)
     {
       MachineDetails machine = null;
-      if (assetID.HasValue || !string.IsNullOrEmpty(machineName) || isJohnDoe.HasValue)
+      if (assetId.HasValue || !string.IsNullOrEmpty(machineName) || isJohnDoe.HasValue)
       {
-        if (!assetID.HasValue || string.IsNullOrEmpty(machineName) || !isJohnDoe.HasValue)
+        if (!assetId.HasValue || string.IsNullOrEmpty(machineName) || !isJohnDoe.HasValue)
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
               "If using a machine, asset ID machine name and john doe flag must be provided"));
         }
-        machine = MachineDetails.CreateMachineDetails(assetID.Value, machineName, isJohnDoe.Value);
+        machine = MachineDetails.CreateMachineDetails(assetId.Value, machineName, isJohnDoe.Value);
       }
       return machine == null ? null : new List<MachineDetails> { machine };
     }
 
-    public static void ProcessStatusCode(this Controller controller, ServiceException se)
+    /// <summary>
+    /// 
+    /// </summary>
+    public static void ProcessStatusCode(this Controller controller, ServiceException serviceException)
     {
-      if (se.Code == HttpStatusCode.BadRequest &&
-          se.GetResult.Code == ContractExecutionStatesEnum.FailedToGetResults)
+      if (serviceException.Code == HttpStatusCode.BadRequest &&
+          serviceException.GetResult.Code == ContractExecutionStatesEnum.FailedToGetResults)
       {
-        se.Code = HttpStatusCode.NoContent;
+        serviceException.Code = HttpStatusCode.NoContent;
       }
     }
-
   }
 }

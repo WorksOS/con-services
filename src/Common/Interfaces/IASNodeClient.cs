@@ -21,7 +21,7 @@ using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
 using VLPDDecls;
 
-namespace VSS.Raptor.Service.Common.Interfaces
+namespace VSS.Productivity3D.Common.Interfaces
 {
   /// <summary>
   /// Interface for Raptor AS Node

@@ -1,14 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Models;
-using WebApiModels.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-namespace WebApiModels.Notification.Helpers
+namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
 {
   /// <summary>
   /// Generates tiles for a DXF file using Global Mapper in TCC.

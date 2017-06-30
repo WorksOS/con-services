@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace VSS.Raptor.Service.Common.Models
+﻿namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   ///   Contains the address of a cell in a data model defined by it's catersian cell address with respect to the origin
@@ -10,23 +8,18 @@ namespace VSS.Raptor.Service.Common.Models
     /// <summary>
     ///   The cell number on the x axis with respect to the origin
     /// </summary>
-    public Int32 x { get; private set; }
+    public int x { get; private set; }
 
     /// <summary>
     ///   The cell number on the y axis with respect to the origin
     /// </summary>
-    public Int32 y { get; private set; }
+    public int y { get; private set; }
 
-      public static CellAddress HelpSample {
-          get
-          {
-              return new CellAddress()
-                     {
-                             x = 100,
-                             y = 200
-                     };
-          }
-      }
+      public static CellAddress HelpSample => new CellAddress
+      {
+        x = 100,
+        y = 200
+      };
 
     public CellAddress()
     {
@@ -34,7 +27,7 @@ namespace VSS.Raptor.Service.Common.Models
       y = int.MaxValue;
     }
 
-      public static CellAddress CreateCellAddress(Int32 x, Int32 y)
+      public static CellAddress CreateCellAddress(int x, int y)
     {
       return new CellAddress
       {

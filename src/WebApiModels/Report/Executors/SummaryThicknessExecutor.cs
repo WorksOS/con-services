@@ -1,19 +1,19 @@
-﻿using System;
-using System.Net;
-using ASNode.ThicknessSummary.RPC;
+﻿using ASNode.ThicknessSummary.RPC;
 using ASNodeDecls;
 using BoundingExtents;
 using Microsoft.Extensions.Logging;
 using SVOICOptionsDecls;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using System;
+using System.Net;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
   /// <summary>
   /// Builds Summary thickness report from Raptor

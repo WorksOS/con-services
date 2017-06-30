@@ -1,10 +1,9 @@
-
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   /// <summary>
   /// Request to do operations on design file in design cache
@@ -31,7 +30,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// 
     public new static DesignNameRequest HelpSample
     {
-      get { return new DesignNameRequest() { projectId = 1, DesignFilename = "MyDesign.ttm" }; }
+      get { return new DesignNameRequest { projectId = 1, DesignFilename = "MyDesign.ttm" }; }
     }
   }
 }

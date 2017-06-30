@@ -1,25 +1,23 @@
-﻿using System;
+﻿using ASNodeDecls;
+using DesignProfilerDecls;
+using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Notification.Models;
 using System.Text;
 using System.Threading.Tasks;
-using ASNodeDecls;
-using DesignProfilerDecls;
 using TCCFileAccess;
 using VLPDDecls;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Notification.Helpers;
+using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using WebApiModels.Interfaces;
-using WebApiModels.Notification.Helpers;
-using WebApiModels.Notification.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
+namespace VSS.Productivity3D.WebApiModels.Notification.Executors
 {
   /// <summary>
   /// Processes the request to add a file.
@@ -136,7 +134,7 @@ namespace VSS.Raptor.Service.WebApiModels.Notification.Executors
         else if (fileType == ImportedFileType.SurveyedSurface)
         {
           log.LogDebug("Storing ground surface file in Raptor");
-          DesignDescriptor dd = Common.Models.DesignDescriptor.CreateDesignDescriptor(request.FileId, request.File, 0.0);
+          DesignDescriptor dd = Productivity3D.Common.Models.DesignDescriptor.CreateDesignDescriptor(request.FileId, request.File, 0.0);
           ASNode.GroundSurface.RPC.TASNodeServiceRPCVerb_GroundSurface_Args args = ASNode.GroundSurface.RPC.__Global
             .Construct_GroundSurface_Args(
               request.projectId.Value,

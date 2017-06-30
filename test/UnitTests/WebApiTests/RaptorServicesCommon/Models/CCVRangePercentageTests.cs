@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiTests.Common.Models
+namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
 {
-  [TestClass()]
+  [TestClass]
   public class CCVRangePercentageTests
   {
-    [TestMethod()]
+    [TestMethod]
     public void CanCreateCCVRangePercentageTest()
     {
       var validator = new DataAnnotationsValidator();
@@ -22,14 +22,14 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.IsFalse(validator.TryValidate(range, out results));
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateSuccessTest()
     {
       CCVRangePercentage range = CCVRangePercentage.CreateCcvRangePercentage(35.0, 72.5);
       range.Validate();
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailTest()
     {
       //min > max

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   /// <summary>
   /// The request representation for managing of the Raptor’s list of ground/surveyed surfaces.
@@ -51,8 +51,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
       DateTime surveyedUtc
       )
     {
-      return new SurveyedSurfaceRequest() 
-              { 
+      return new SurveyedSurfaceRequest
+      { 
                 projectId = projectId,
                 SurveyedSurface = surveyedSurface,
                 SurveyedUtc = surveyedUtc
@@ -65,7 +65,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// 
     public new static SurveyedSurfaceRequest HelpSample
     {
-      get { return new SurveyedSurfaceRequest() { projectId = 1, SurveyedSurface = DesignDescriptor.HelpSample, SurveyedUtc = DateTime.UtcNow }; }
+      get { return new SurveyedSurfaceRequest { projectId = 1, SurveyedSurface = DesignDescriptor.HelpSample, SurveyedUtc = DateTime.UtcNow }; }
     }
 
     /// <summary>
