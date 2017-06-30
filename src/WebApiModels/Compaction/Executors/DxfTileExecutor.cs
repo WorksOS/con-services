@@ -63,7 +63,7 @@ namespace WebApiModels.Compaction.Executors
         int numTiles = 1 << zoomLevel; //equivalent to 2 to the power of zoomLevel
         Point topLeftLatLng = new Point(WebMercatorProjection.RadiansToDegrees(request.bbox.topRightLat), WebMercatorProjection.RadiansToDegrees(request.bbox.bottomLeftLon));
         Point topLeftTile = WebMercatorProjection.LatLngToTile(topLeftLatLng, numTiles);
-        log.LogDebug("DxfTileExecutor: zoomLevel={0}, numTiles={1}, topLeftTile={2},{3}", zoomLevel, numTiles, topLeftTile.x, topLeftTile.y);
+        log.LogDebug("DxfTileExecutor: zoomLevel={0}, numTiles={1}, xtile={2}, ytile={3}", zoomLevel, numTiles, topLeftTile.x, topLeftTile.y);
 
         log.LogDebug("DxfTileExecutor: {0} files", request.files.Count());
         log.LogDebug(string.Join(",", request.files.Select(f => f.Name).ToList()));
