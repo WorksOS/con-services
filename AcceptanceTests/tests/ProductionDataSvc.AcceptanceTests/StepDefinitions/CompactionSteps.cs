@@ -216,6 +216,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         mode, bbox, width, height);
     }
 
+    [Given(@"a displayMode ""(.*)"" and a bbox ""(.*)"" and a width ""(.*)"" and a height ""(.*)"" and an includeSurveyedSurfaces ""(.*)""")]
+    public void GivenADisplayModeAndABboxAndAWidthAndAHeightAndAnIncludeSurveyedSurfaces(int mode, string bbox, int width, int height, bool includeSurveyedSurfaces)
+    {
+      queryParameters = string.Format("&mode={0}&BBOX={1}&WIDTH={2}&HEIGHT={3}&includeSurveyedSurfaces={4}",
+        mode, bbox, width, height, includeSurveyedSurfaces);
+    }
 
     [When(@"I request a Tile")]
     public void WhenIRequestATile()
