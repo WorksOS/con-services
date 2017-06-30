@@ -114,7 +114,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
 
             ServerRequestResult Result = ServerRequestResult.UnknownError;
 
-            Log.Info("Entering RequestSubGridInternal");
+//            Log.Info("Entering RequestSubGridInternal");
 
             if (AProdDataRequested || ASurveyedSurfaceDataRequested)
             {
@@ -525,7 +525,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
             }
             */
 
-            Log.Info("Exiting RequestSubGridInternal");
+//            Log.Info("Exiting RequestSubGridInternal");
 
             return Result;
         }

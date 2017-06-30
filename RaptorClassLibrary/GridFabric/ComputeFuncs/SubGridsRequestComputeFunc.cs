@@ -111,7 +111,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     return; // This subgrid is the responsibility of another server
                 }
 
-                Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
+//                Log.InfoFormat("Requesting subgrid #{0}:{1}", ++requestCount, address.ToString());
 
                 AreaControlSet AreaControlSet = AreaControlSet.Null();
 
@@ -145,10 +145,10 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
                     // ... and send it to the message topic in the compute func
                     try
                     {
-                        Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
-                                       localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
-                                       rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("Role"),
-                                       rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("RaptorNodeID"));
+//                        Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
+//                                       localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
+//                                       rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("Role"),
+//                                       rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("RaptorNodeID"));
                         rmtMsg.Send(MS, localArg.MessageTopic);
                     }
                     catch (Exception E)

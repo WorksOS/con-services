@@ -904,7 +904,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                                                    ref AreaControlSet areaControlSet,
                                                    ClientHeightLeafSubGrid designElevations)
         {
-            Log.Info("Entering RetrieveSubGrid");
+//            Log.Info("Entering RetrieveSubGrid");
 
             ServerRequestResult Result = ServerRequestResult.UnknownError;
 
@@ -1117,7 +1117,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees
                 throw;
             }
 
-            Log.Info("Exiting RetrieveSubGrid");
+//            Log.Info("Exiting RetrieveSubGrid");
 
             return Result;
         }
