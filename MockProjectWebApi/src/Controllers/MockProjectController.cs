@@ -63,6 +63,63 @@ namespace MockProjectWebApi.Controllers
           }
         };
       }
+      else if (projectUid.ToString() == GOLDEN_DATA_DIMENSIONS_PROJECT_UID)
+      {
+        fileList = new List<FileData>
+        {
+          new FileData
+          {
+            Name = "Original Ground Survey - Dimensions 2012_2016-05-13T000202Z.TTM",
+            ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID,
+            CustomerUid = "SurveyedSurfaceAcceptanceTest",
+            ImportedFileType = ImportedFileType.SurveyedSurface,
+            ImportedFileUid = Guid.NewGuid().ToString(),
+            LegacyFileId = 14177,
+            IsActivated = true
+          },
+          new FileData
+          {
+            Name = "Large Sites Road - Trimble Road_2016-05-13T000000Z.TTM",
+            ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID,
+            CustomerUid = "SurveyedSurfaceAcceptanceTest",
+            ImportedFileType = ImportedFileType.SurveyedSurface,
+            ImportedFileUid = Guid.NewGuid().ToString(),
+            LegacyFileId = 14176,
+            IsActivated = true
+          },
+          new FileData
+          {
+            Name = "Milling - Milling_2016-05-08T234647Z.TTM",
+            ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID,
+            CustomerUid = "SurveyedSurfaceAcceptanceTest",
+            ImportedFileType = ImportedFileType.SurveyedSurface,
+            ImportedFileUid = Guid.NewGuid().ToString(),
+            LegacyFileId = 14175,
+            IsActivated = true
+          },
+          new FileData
+          {
+            Name = "Large Sites Road - Trimble Road_2016-05-08T234455Z.TTM",
+            ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID,
+            CustomerUid = "SurveyedSurfaceAcceptanceTest",
+            ImportedFileType = ImportedFileType.SurveyedSurface,
+            ImportedFileUid = Guid.NewGuid().ToString(),
+            LegacyFileId = 14174,
+            IsActivated = true
+          },
+          new FileData
+          {
+            Name = "Large Sites Road - Trimble Road_2012-06-01T015500Z.TTM",
+            ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID,
+            CustomerUid = "SurveyedSurfaceAcceptanceTest",
+            ImportedFileType = ImportedFileType.SurveyedSurface,
+            ImportedFileUid = Guid.NewGuid().ToString(),
+            LegacyFileId = 14222,
+            IsActivated = true
+          }
+        };
+      }
+
       return new FileDataResult { ImportedFileDescriptors = fileList};
     }
 
@@ -90,6 +147,7 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1001285, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001388, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001544, ProjectUid = Guid.NewGuid().ToString()},
+      new ProjectData {LegacyProjectId = GOLDEN_DATA_DIMENSIONS_PROJECT_ID, ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID},
       new ProjectData {LegacyProjectId = 1009999, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1012413, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1099999, ProjectUid = Guid.NewGuid().ToString()},
@@ -98,5 +156,8 @@ namespace MockProjectWebApi.Controllers
 
     private const int DIMENSIONS_PROJECT_ID = 1001158;
     private const string DIMENSIONS_PROJECT_UID = "ff91dd40-1569-4765-a2bc-014321f76ace";
+
+    private const int GOLDEN_DATA_DIMENSIONS_PROJECT_ID = 1007777;
+    private const string GOLDEN_DATA_DIMENSIONS_PROJECT_UID = "7925f179-013d-4aaf-aff4-7b9833bb06d6";
   }
 }
