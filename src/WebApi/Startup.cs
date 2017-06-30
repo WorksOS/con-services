@@ -99,7 +99,7 @@ namespace VSS.Productivity3D.WebApi
           TermsOfService = "None"
         });
         string path = isDevEnv ? "bin/Debug/net462/" : string.Empty;
-        options.IncludeXmlComments(path + "WebApi.xml");
+        options.IncludeXmlComments(path + "VSS.Productivity3D.WebApi.xml");
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
