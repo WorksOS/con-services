@@ -165,7 +165,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Tests
 
                 double diff = immutableValue - mutableValue;
 
-                Assert.IsTrue(Math.Abs(diff) < 0.001, "Cell height at ({0}, {1}) has unexpected value: {2} vs {3}, diff = {4}",
+                Assert.IsTrue(Math.Abs(diff) <= 0.001, "Cell height at ({0}, {1}) has unexpected value: {2} vs {3}, diff = {4}",
                              x, y, immutableValue, mutableValue, diff);
             });
 

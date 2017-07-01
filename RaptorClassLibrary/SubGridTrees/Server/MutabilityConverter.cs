@@ -23,7 +23,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         /// <returns></returns>
         public static ISubGridCellLatestPassDataWrapper ConvertLatestPassesToImmutable(ISubGridCellLatestPassDataWrapper LatestPasses)
         {
-            if (LatestPasses is SubGridCellLatestPassDataWrapper_StaticCompressed)
+            if (LatestPasses.IsImmutable())
             {
                 return LatestPasses; // It is already immutable
             }

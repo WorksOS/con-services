@@ -19,9 +19,9 @@ namespace VSS.VisionLink.Raptor.Compression
     public struct BitFieldArray
     {
         /// <summary>
-        /// Read this many bytes at a time from the BitFieldArray storage when reading values
+        /// Read this many bytes at a time from the BitFieldArray storage when reading values into elements in the internal storage array
         /// </summary>
-        public const int kNBytesReadAtATime = 1;
+        public const int kNBytesReadAtATime = 8; // was 1
 
         /// <summary>
         /// Read this many bits at a time from the BitFieldArray storage when reading values
@@ -33,18 +33,18 @@ namespace VSS.VisionLink.Raptor.Compression
         /// convert the the bit address into logical blocks (ie: the block size at which bits are read from memory
         /// when reading or writing values)
         /// </summary>
-        public const int kBitLocationToBlockShift = 3; // 1 Byte : 3, 2 Bytes : 4, 4 Bytes : 5
+        public const int kBitLocationToBlockShift = 6; // 1 Byte : 3, 2 Bytes : 4, 4 Bytes : 5, 8 bytes : 6
 
         /// <summary>
         /// The number of bits required to express the power of 2 sized block of bits, eg: a block of 8 bits needs
         /// 3 bits to express the number range 0..7m so the mask if 0x7 (0b111), etc
         /// </summary>
-        public const int kBitsRemainingInStorageBlockMask = 0x7; // 1 Byte : $7, 2 bytes : $f, 4 bytes : $1f
+        public const int kBitsRemainingInStorageBlockMask = 0x3f; // 1 Byte : $7, 2 bytes : $f, 4 bytes : $1f, 8 bytes : $3f
 
         /// <summary>
         /// Storage is the memory allocated to storing the bit field array.
         /// </summary>
-        private byte[] Storage;
+        private ulong[] Storage;
 
         /// <summary>
         /// The current bit address position in a bit field array during a stream write operation into it.
@@ -70,7 +70,7 @@ namespace VSS.VisionLink.Raptor.Compression
                 throw new Exception(String.Format("BitFieldArray.AllocateBuffer limited to 256Mb in size ({0}Mb requested)", MemorySize() / (1024 * 1024)));
             }
 
-            Storage = new byte[MemorySize()];
+            Storage = NewStorage();
 
             if (Storage == null)
             {
@@ -79,13 +79,28 @@ namespace VSS.VisionLink.Raptor.Compression
             }
         }
 
+        /// <summary>
+        /// The total number of bits required to be stored in the bit field array
+        /// </summary>
         public uint NumBits { get { return FNumBits; } }
 
         /// <summary>
-        /// MemorySize returns the total number of bytes occupied by the array of bitfield records
+        /// MemorySize returns the total number of bytes required to store the information in the bit field array
         /// </summary>
         /// <returns></returns>
         public uint MemorySize() => (FNumBits & 0x7) != 0 ? (FNumBits >> 3) + 1 : FNumBits >> 3;
+
+        /// <summary>
+        /// Determines the number of elements required in the storage array depending on the 'read/write block size'
+        /// </summary>
+        /// <returns></returns>
+        public uint NumStorageElements() => MemorySize() % kNBytesReadAtATime == 0 ? MemorySize() / kNBytesReadAtATime : MemorySize() / kNBytesReadAtATime; // FNumBits % kNBitsReadAtATime == 0 ? FNumBits / kNBitsReadAtATime : FNumBits / kNBitsReadAtATime + 1;
+
+        /// <summary>
+        /// Allocates the storage array for storing the block that comprise the bit field array
+        /// </summary>
+        /// <returns></returns>
+        private ulong[] NewStorage() => new ulong[NumStorageElements()];
 
         /// <summary>
         /// Initialise the bit field array ready to store NumRecords each requiring BitsPerRecord storage
@@ -98,6 +113,11 @@ namespace VSS.VisionLink.Raptor.Compression
 
             AllocateBuffer();
         }
+
+        /// <summary>
+        /// Initialise the BitFieldArray using a descriptor that details the number of records and the size in bits of each of the records
+        /// </summary>
+        /// <param name="RecordsArray"></param>
         public void Initialise(BitFieldArrayRecordsDescriptor[] RecordsArray)
         {
             FNumBits = 0;
@@ -110,54 +130,78 @@ namespace VSS.VisionLink.Raptor.Compression
             AllocateBuffer();
         }
 
+        /// <summary>
+        /// Writes the content of the BitFieldArray using the supplied BinaryWriter
+        /// </summary>
+        /// <param name="writer"></param>
         public void Write(BinaryWriter writer)
         {
             writer.Write(FNumBits);
 
-            if (FNumBits > 0)
+            if (FNumBits == 0)
             {
-                writer.Write((int)MemorySize());
-                writer.Write(Storage);
+                return;
+            }
+
+            foreach (ulong item in Storage)
+            {
+                writer.Write(item);
             }
         }
 
+        /// <summary>
+        /// Reads the content of the BitFieldArray using the supplied reader
+        /// </summary>
+        /// <param name="reader"></param>
         public void Read(BinaryReader reader)
         {
             Storage = null;
             FNumBits = reader.ReadUInt32();
 
-            if (FNumBits > 0)
+            if (FNumBits == 0)
             {
-                int NumBytes = reader.ReadInt32();
-                Storage = reader.ReadBytes(NumBytes);
+                return;
+            }
+
+            Storage = NewStorage();
+            for (int i = 0; i < NumStorageElements(); i++)
+            {
+                Storage[i] = reader.ReadUInt64();
             }
         }
 
-        // StreamWriteStart initialise the bit field array for streamed writing from the start of the allocated memory
+        /// <summary>
+        /// StreamWriteStart initialise the bit field array for streamed writing from the start of the allocated memory
+        /// </summary>
         public void StreamWriteStart()
         {
             StreamWriteBitPos = 0;
         }
 
-        // StreamWrite takes a native unsigned integer value (32/64) value depending on OS,
-        // plus a number of bits and write the least significant <ValueBits> of that value
-        // into the bit field array.
-        // The variant that takes a TEncodedBitFieldDescriptor will perform automatic
-        // native to encoded null value conversion and deal with subtracting the minvalue
-        // from the descriptor in the encoded value.
-        // The variant that take an exct number of value bits is a raw version of the write method that
-        // just writes the given value in the given bits.
-        public void StreamWrite(int AValue, EncodedBitFieldDescriptor ADescriptor)
+        /// <summary>
+        /// StreamWrite takes a native unsigned integer value value depending on OS,
+        /// plus a number of bits and writes the least significant <ValueBits> of that value
+        /// into the bit field array.
+        /// The variant that takes a TEncodedBitFieldDescriptor will perform automatic
+        /// native to encoded null value conversion and deal with subtracting the minvalue
+        /// from the descriptor in the encoded value.
+        /// The variant that take an exact number of value bits is a raw version of the write method that
+        /// just writes the given value in the given bits.
+        /// </summary>
+        /// <param name="AValue"></param>
+        /// <param name="ADescriptor"></param>
+        public void StreamWrite(long AValue, EncodedBitFieldDescriptor ADescriptor)
         {
             // Writing occurs in three stages:
-            // 1: Fill the remaining unwritten bits in the byte referenced by FStreamWritePos
-            // 2: If there are still more than 8 remaining bits to be written, then write
-            //    individual bytes from AValue into FStorage until the reminining number of bits
-            //    to be written is less than 8
-            // 3: If there are still (less than 8) bits to be written, then write the remainder
-            //    of the bits into the most significant bits of the next empty byte in FStorage
+            // 1: Fill the remaining unwritten bits in the element referenced by FStreamWritePos
+            // 2: If there are still more than kNBitsReadAtATime remaining bits to be written, then write
+            //    individual elements from AValue into Storage until the reminining number of bits
+            //    to be written is less than kNBitsReadAtATime
+            // 3: If there are still (less than kNBitsReadAtATime) bits to be written, then write the remainder
+            //    of the bits into the most significant bits of the next empty element in Storage
 
             int ValueBits = ADescriptor.RequiredBits;
+
             if (ValueBits == 0) // There's nothing to do!
             {
                 return;
@@ -165,53 +209,64 @@ namespace VSS.VisionLink.Raptor.Compression
 
             AValue = AValue == ADescriptor.NativeNullValue ? ADescriptor.EncodedNullValue - ADescriptor.MinValue : AValue - ADescriptor.MinValue;
 
-            // Be paranoid! Ensure there are no bits set in the high order bits above the
-            // least significant AValueBits in Value
+            // Be paranoid! Ensure there are no bits set in the high order bits above the least significant AValueBits in Value
             AValue = AValue & ((1 << ValueBits) - 1);
 
-            int BytePointer = (int)(StreamWriteBitPos >> kBitLocationToBlockShift);
-            int AvailBitsInCurrentStorageByte = 8 - (byte)(StreamWriteBitPos & 0x7);
+            int StoragePointer = (int)(StreamWriteBitPos >> kBitLocationToBlockShift);
+            int AvailBitsInCurrentStorageElement = kNBitsReadAtATime - (byte)(StreamWriteBitPos & kBitsRemainingInStorageBlockMask);
 
-            // Write initial bits into storage byte
-            if (AvailBitsInCurrentStorageByte >= ValueBits)
+            // Write initial bits into storage element
+            if (AvailBitsInCurrentStorageElement >= ValueBits)
             {
-                Storage[BytePointer] = (byte)(Storage[BytePointer] | (AValue << (AvailBitsInCurrentStorageByte - ValueBits)));
+                Storage[StoragePointer] = Storage[StoragePointer] | (ulong)(AValue << (AvailBitsInCurrentStorageElement - ValueBits));
                 StreamWriteBitPos += (uint)ValueBits;   // Advance the current bit position pointer;
                 return;
             }
 
-            // There are more bits than can fit in AvailBitsInCurrentStorageByte
+            // There are more bits than can fit in AvailBitsInCurrentStorageElement
             // Step 1: Fill remaining bits
-            int RemainingBitsToWrite = ValueBits - AvailBitsInCurrentStorageByte;
-            Storage[BytePointer] = (byte)(Storage[BytePointer] | (AValue >> RemainingBitsToWrite));
+            int RemainingBitsToWrite = ValueBits - AvailBitsInCurrentStorageElement;
+            Storage[StoragePointer] = (Storage[StoragePointer] | (ulong)(AValue >> RemainingBitsToWrite));
 
-            // Step 2: Write whole bytes
-            while (RemainingBitsToWrite > 8)
+            /* When using long elements, there can never be a value stored that is larger that the storage element
+            // Step 2: Write whole elements
+            while (RemainingBitsToWrite > kNBitsReadAtATime)
             {
-                BytePointer++; // Move to the next byte in FStorage;
-                RemainingBitsToWrite -= 8;
-                Storage[BytePointer] = (byte)(AValue >> RemainingBitsToWrite); // Peel of the next byte and place it into storage
+                RemainingBitsToWrite -= kNBitsReadAtATime;
+                Storage[++StoragePointer] = (byte)(AValue >> RemainingBitsToWrite); // Peel of the next element and place it into storage
             }
+            */
 
-            // Step 3: Write remaining bits into next byte in FStorage
+            // Step 3: Write remaining bits into next element in Storage
             if (RemainingBitsToWrite > 0)
             {
-                BytePointer++; // Move to the next byte in FStorage;
-                Storage[BytePointer] = (byte)((AValue & ((1 << RemainingBitsToWrite) - 1)) << (8 - RemainingBitsToWrite)); // Mask out the bits we want...
+                Storage[StoragePointer + 1] = ((ulong)(AValue & ((1 << RemainingBitsToWrite) - 1)) << (kNBitsReadAtATime - RemainingBitsToWrite)); // Mask out the bits we want...
             }
 
-            StreamWriteBitPos += (byte)ValueBits;   // Advance the current bit position pointer;
+            StreamWriteBitPos += (uint)ValueBits;   // Advance the current bit position pointer;
         }
 
-        public void StreamWrite(int AValue, int AValueBits)
+        /// <summary>
+        /// StreamWrite takes a native unsigned integer value value depending on OS,
+        /// plus a number of bits and writes the least significant <ValueBits> of that value
+        /// into the bit field array.
+        /// The variant that takes a TEncodedBitFieldDescriptor will perform automatic
+        /// native to encoded null value conversion and deal with subtracting the minvalue
+        /// from the descriptor in the encoded value.
+        /// The variant that take an exact number of value bits is a raw version of the write method that
+        /// just writes the given value in the given bits.
+        /// </summary>
+        /// <param name="AValue"></param>
+        /// <param name="AValueBits"></param>
+        public void StreamWrite(long AValue, int AValueBits)
         {
             // Writing occurs in three stages:
-            // 1: Fill the remaining unwritten bits in the byte referenced by FStreamWritePos
-            // 2: If there are still more than 8 remaining bits to be written, then write
-            //    individual bytes from AValue into FStorage until the reminining number of bits
-            //    to be written is less than 8
-            // 3: If there are still (less than 8) bits to be written, then write the remainder
-            //    of the bits into the most significant bits of the next empty byte in FStorage
+            // 1: Fill the remaining unwritten bits in the element referenced by FStreamWritePos
+            // 2: If there are still more than kNBitsReadAtATime remaining bits to be written, then write
+            //    individual elements from AValue into Storage until the reminining number of bits
+            //    to be written is less than kNBitsReadAtATime
+            // 3: If there are still (less than kNBitsReadAtATime) bits to be written, then write the remainder
+            //    of the bits into the most significant bits of the next empty element in Storage
 
             if (AValueBits == 0) // There's nothing to do!
             {
@@ -222,35 +277,35 @@ namespace VSS.VisionLink.Raptor.Compression
             // least significant AValueBits in Value
             AValue = AValue & ((1 << AValueBits) - 1);
 
-            uint BytePointer = StreamWriteBitPos >> kBitLocationToBlockShift;
-            int AvailBitsInCurrentStorageByte = (int)(8 - (StreamWriteBitPos & 0x7));
+            uint StoragePointer = StreamWriteBitPos >> kBitLocationToBlockShift;
+            int AvailBitsInCurrentStorageElement = (int)(kNBitsReadAtATime - (StreamWriteBitPos & kBitsRemainingInStorageBlockMask));
 
-            // Write initial bits into storage byte
-            if (AvailBitsInCurrentStorageByte >= AValueBits)
+            // Write initial bits into storage element
+            if (AvailBitsInCurrentStorageElement >= AValueBits)
             {
-                Storage[BytePointer] = (byte)(Storage[BytePointer] | (AValue << (AvailBitsInCurrentStorageByte - AValueBits)));
+                Storage[StoragePointer] = (Storage[StoragePointer] | (ulong)(AValue << (AvailBitsInCurrentStorageElement - AValueBits)));
                 StreamWriteBitPos += (uint)AValueBits;   // Advance the current bit position pointer;
                 return;
             }
 
-            // There are more bits than can fit in AvailBitsInCurrentStorageByte
+            // There are more bits than can fit in AvailBitsInCurrentStorageElement
             // Step 1: Fill remaining bits
-            int RemainingBitsToWrite = AValueBits - AvailBitsInCurrentStorageByte;
-            Storage[BytePointer] = (byte)(Storage[BytePointer] | (AValue >> RemainingBitsToWrite));
+            int RemainingBitsToWrite = AValueBits - AvailBitsInCurrentStorageElement;
+            Storage[StoragePointer] = (ulong)(Storage[StoragePointer] | (ulong)(AValue >> RemainingBitsToWrite));
 
-            // Step 2: Write whole bytes
-            while (RemainingBitsToWrite > 8)
+            /* When using long elements, there can never be a value stored that is larger that the storage element
+            // Step 2: Write whole elements
+            while (RemainingBitsToWrite > kNBitsReadAtATime)
             {
-                BytePointer++; // Move to the next byte in FStorage;
-                RemainingBitsToWrite -= 8;
-                Storage[BytePointer] = (byte)(AValue >> RemainingBitsToWrite); // Peel of the next byte and place it into storage
+                RemainingBitsToWrite -= kNBitsReadAtATime;
+                Storage[++StoragePointer] = (byte)(AValue >> RemainingBitsToWrite); // Peel of the next element and place it into storage
             }
+            */
 
-            // Step 3: Write remaining bits into next byte in FStorage
+            // Step 3: Write remaining bits into next element in Storage
             if (RemainingBitsToWrite > 0)
             {
-                BytePointer++; // Move to the next byte in FStorage;
-                Storage[BytePointer] = (byte)((AValue & ((1 << RemainingBitsToWrite) - 1)) << (8 - RemainingBitsToWrite)); // Mask out the bits we want...
+                Storage[StoragePointer + 1] = ((ulong)(AValue & ((1 << RemainingBitsToWrite) - 1)) << (kNBitsReadAtATime - RemainingBitsToWrite)); // Mask out the bits we want...
             }
 
             StreamWriteBitPos += (uint)AValueBits;   // Advance the current bit position pointer;
@@ -258,27 +313,32 @@ namespace VSS.VisionLink.Raptor.Compression
 
         public void StreamWriteEnd()
         {
-            Debug.Assert(StreamWriteBitPos == FNumBits, String.Format("BitFieldArray.StreamWriteEnd: Stream bit position is not after last bit in FStorage (FStreamWriteBitPos={0}, FNumBits={1})", StreamWriteBitPos, NumBits));
+            Debug.Assert(StreamWriteBitPos == FNumBits, String.Format("BitFieldArray.StreamWriteEnd: Stream bit position is not after last bit in Storage (FStreamWriteBitPos={0}, FNumBits={1})", StreamWriteBitPos, NumBits));
         }
 
-        // ReadBitField reads a single bit-field from the bitfield array. The bitfield is
-        // identified by the bit location and number of bits in the value to be read.
-        // Once the value has been read the value of ABitLocation is set to the next bit after
-        // the end of the value just read.
-        // The variant that takes a TEncodedBitFieldDescriptor will perform automatic
-        // encoded to native null value conversion and deal with adding the minvalue
-        // from the descriptor in the read value.
-        // The variant that take an exct number of value bits is a raw version of the read method that
-        // just reads the value from the given bits.
-        public int ReadBitField(ref int ABitLocation, EncodedBitFieldDescriptor ADescriptor)
+        /// <summary>
+        /// ReadBitField reads a single bit-field from the bitfield array. The bitfield is
+        /// identified by the bit location and number of bits in the value to be read.
+        /// Once the value has been read the value of ABitLocation is set to the next bit after
+        /// the end of the value just read.
+        /// The variant that takes a TEncodedBitFieldDescriptor will perform automatic
+        /// encoded to native null value conversion and deal with adding the minvalue
+        /// from the descriptor in the read value.
+        /// The variant that take an exct number of value bits is a raw version of the read method that
+        /// just reads the value from the given bits.
+        /// </summary>
+        /// <param name="ABitLocation"></param>
+        /// <param name="ADescriptor"></param>
+        /// <returns></returns>
+        public long ReadBitField(ref int ABitLocation, EncodedBitFieldDescriptor ADescriptor)
         {
             // Reading occurs in three stages:
-            // 1: Read the remaining bits in the byte referenced by ABitLocation
+            // 1: Read the remaining bits in the element referenced by ABitLocation
             // 2: If there are still more than kNBitsReadAtATime remaining bits to be read, then read
-            //    individual bytes from FStorage into Result until the reminining number of bits
+            //    individual elements from Storage into Result until the reminining number of bits
             //    to be read is less than kNBitsReadAtATime
             // 3: If there are still (less than kNBitsReadAtATime) bits to be read, then read the remainder
-            //    of the bits from the most significant bits of the next byte in FStorage
+            //    of the bits from the most significant bits of the next element in Storage
 
             int ValueBits = ADescriptor.RequiredBits;
 
@@ -305,36 +365,37 @@ namespace VSS.VisionLink.Raptor.Compression
 
             int BlockPointer = ABitLocation >> BitFieldArray.kBitLocationToBlockShift;
             int RemainingBitsInCurrentStorageBlock = BitFieldArray.kNBitsReadAtATime - (ABitLocation & BitFieldArray.kBitsRemainingInStorageBlockMask);
-            int Result;
+            long Result;
 
-            // Read initial bits from storage byte
+            // Read initial bits from storage element
             if (RemainingBitsInCurrentStorageBlock >= ValueBits)
             {
-                Result = (Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - ValueBits)) & ((1 << ValueBits) - 1);
+                Result = (long)((Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - ValueBits)) & (ulong)(((ulong)1 << ValueBits) - 1));
             }
             else
             {
-                // There are more bits than can fit in RemainingBitsInCurrentStorageByte
+                // There are more bits than can fit in RemainingBitsInCurrentStorageElement
                 // Step 1: Fill remaining bits
-                Result = Storage[BlockPointer] & ((1 << RemainingBitsInCurrentStorageBlock) - 1);
+                Result = (long)Storage[BlockPointer] & ((1 << RemainingBitsInCurrentStorageBlock) - 1);
                 int BitsToRead = ValueBits - RemainingBitsInCurrentStorageBlock;
 
-                // Step 2: Read whole bytes
+                /* When using long elements, there can never be a value stored that is larger that the storage element
+                // Step 2: Read whole elements
                 while (BitsToRead > BitFieldArray.kNBitsReadAtATime)
                 {
-                    BlockPointer++; // Move to the next block in FStorage;
                     BitsToRead -= BitFieldArray.kNBitsReadAtATime;
-                    Result = (Result << BitFieldArray.kNBitsReadAtATime) | Storage[BlockPointer]; // Add the next byte from storage and put it in result
+                    Result = (Result << BitFieldArray.kNBitsReadAtATime) | Storage[++BlockPointer]; // Add the next element from storage and put it in result
                 }
+                */
 
-                // Step 3: Read remaining bits from next block in FStorage
+                // Step 3: Read remaining bits from next block in Storage
                 if (BitsToRead > 0)
                 {
-                    BlockPointer++;  // Move to the next block in FStorage;
-                    Result = (Result << BitsToRead) | (Storage[BlockPointer] >> (BitFieldArray.kNBitsReadAtATime - BitsToRead));
+                    Result = (long)(((ulong)Result << BitsToRead) | (Storage[BlockPointer + 1] >> (BitFieldArray.kNBitsReadAtATime - BitsToRead)));
                 }
             }
 
+            // Compute the true result of the read by taking nullability and the offset of MinValue into account
             Result = ADescriptor.Nullable && (Result == (ADescriptor.EncodedNullValue - ADescriptor.MinValue)) ? ADescriptor.NativeNullValue : Result + ADescriptor.MinValue;
 
             ABitLocation += ValueBits; // Advance the current bit position pointer;
@@ -342,15 +403,29 @@ namespace VSS.VisionLink.Raptor.Compression
             return Result;
         }
 
-        public int ReadBitField(ref int ABitLocation, int AValueBits)
+        /// <summary>
+        /// ReadBitField reads a single bit-field from the bitfield array. The bitfield is
+        /// identified by the bit location and number of bits in the value to be read.
+        /// Once the value has been read the value of ABitLocation is set to the next bit after
+        /// the end of the value just read.
+        /// The variant that takes a TEncodedBitFieldDescriptor will perform automatic
+        /// encoded to native null value conversion and deal with adding the minvalue
+        /// from the descriptor in the read value.
+        /// The variant that take an exct number of value bits is a raw version of the read method that
+        /// just reads the value from the given bits.
+        /// </summary>
+        /// <param name="ABitLocation"></param>
+        /// <param name="AValueBits"></param>
+        /// <returns></returns>
+        public long ReadBitField(ref int ABitLocation, int AValueBits)
         {
             // Reading occurs in three stages:
-            // 1: Read the remaining bits in the byte referenced by ABitLocation
+            // 1: Read the remaining bits in the element referenced by ABitLocation
             // 2: If there are still more than kNBitsReadAtATime remaining bits to be read, then read
-            //    individual bytes from FStorage into Result until the reminining number of bits
+            //    individual elements from Storage into Result until the reminining number of bits
             //    to be read is less than kNBitsReadAtATime
             // 3: If there are still (less than kNBitsReadAtATime) bits to be read, then read the remainder
-            //    of the bits from the most significant bits of the next byte in FStorage
+            //    of the bits from the most significant bits of the next element in Storage
 
             if (AValueBits == 0) // There's nothing to do!
             {
@@ -360,48 +435,48 @@ namespace VSS.VisionLink.Raptor.Compression
 #if DEBUG
             if (Storage == null)
             {
-                // TODO read when logging availabl
+                // TODO read when logging available
                 // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits with no storage allocated', [ABitLocation, AValueBits]), slmcAssert);
                 return 0;
             }
 
             if ((ABitLocation + AValueBits) > FNumBits)
             {
-                // TODO read when logging availabl
+                // TODO read when logging available
                 // SIGLogMessage.PublishNoODS(Nil, Format('BitFieldArray: Read request at %d of %d bits will read past end of data at %d', [ABitLocation, AValueBits, FNumBits]), slmcAssert);
                 return 0;
             }
 #endif
 
-            int Result = 0;
+            long Result = 0;
             int BlockPointer = ABitLocation >> kBitLocationToBlockShift;
             int RemainingBitsInCurrentStorageBlock = BitFieldArray.kNBitsReadAtATime - (ABitLocation & BitFieldArray.kBitsRemainingInStorageBlockMask);
 
             // Read initial bits from storage block
             if (RemainingBitsInCurrentStorageBlock >= AValueBits)
             {
-                Result = (Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - AValueBits)) & ((1 << AValueBits) - 1);
+                Result = (long)(Storage[BlockPointer] >> (RemainingBitsInCurrentStorageBlock - AValueBits)) & ((1 << AValueBits) - 1);
             }
             else
             {
-                // There are more bits than can fit in RemainingBitsInCurrentStorageByte
+                // There are more bits than can fit in RemainingBitsInCurrentStorageElement
                 // Step 1: Fill remaining bits
-                Result = Storage[BlockPointer] & ((1 << RemainingBitsInCurrentStorageBlock) - 1);
+                Result = (long)Storage[BlockPointer] & ((1 << RemainingBitsInCurrentStorageBlock) - 1);
                 int BitsToRead = AValueBits - RemainingBitsInCurrentStorageBlock;
 
-                // Step 2: Read whole bytes
+                /* When using long elements, there can never be a value stored that is larger that the storage element
+                // Step 2: Read whole elements
                 while (BitsToRead > BitFieldArray.kNBitsReadAtATime)
                 {
-                    BlockPointer++; // Move to the next block in FStorage;
                     BitsToRead -= BitFieldArray.kNBitsReadAtATime;
-                    Result = (Result << BitFieldArray.kNBitsReadAtATime) | Storage[BlockPointer]; // Add the next byte from storage and put it in result
+                    Result = (Result << BitFieldArray.kNBitsReadAtATime) | Storage[++BlockPointer]; // Add the next element from storage and put it in result
                 }
+                */
 
-                // Step 3: Read remaining bits from next block in FStorage
+                // Step 3: Read remaining bits from next block in Storage
                 if (BitsToRead > 0)
                 {
-                    BlockPointer++;  // Move to the next block in FStorage;
-                    Result = (Result << BitsToRead) | (Storage[BlockPointer] >> (BitFieldArray.kNBitsReadAtATime - BitsToRead));
+                    Result = (long)(((ulong)Result << BitsToRead) | (Storage[BlockPointer + 1] >> (BitFieldArray.kNBitsReadAtATime - BitsToRead)));
                 }
             }
 

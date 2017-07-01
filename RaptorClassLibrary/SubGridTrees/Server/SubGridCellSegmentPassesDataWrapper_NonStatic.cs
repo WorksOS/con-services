@@ -33,8 +33,6 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         public void AddPass(uint X, uint Y, CellPass pass, int position = -1)
         {
             PassData[X, Y].AddPass(pass, position);
-
-            SegmentPassCount++;
         }
 
         public void ReplacePass(uint X, uint Y, int position, CellPass pass)

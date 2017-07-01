@@ -250,22 +250,22 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             // Remember, the counts are written in column order first in the bit field array.
             int PerColBitFieldLocation = (int)Col * EncodedColPassCountsBits;
-            int PerColFirstCellPassIndex = BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits);
+            int PerColFirstCellPassIndex = (int)BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits);
 
             int PerCellBitFieldLocation = (int)(FirstPerCellPassIndexOffset + ((Col * SubGridTree.SubGridTreeDimension) + Row) * PassCountEncodedFieldDescriptor.RequiredBits);
-            int PerCellFirstCellPassIndexOffset = BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits);
+            int PerCellFirstCellPassIndexOffset = (int)BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits);
 
             Result.FirstCellPass = PerColFirstCellPassIndex + PerCellFirstCellPassIndexOffset;
 
             if (Row < SubGridTree.SubGridTreeDimension - 1)
             {
-                Result.PassCount = BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits) - PerCellFirstCellPassIndexOffset;
+                Result.PassCount = (int)BF_PassCounts.ReadBitField(ref PerCellBitFieldLocation, PassCountEncodedFieldDescriptor.RequiredBits) - PerCellFirstCellPassIndexOffset;
             }
             else
             {
                 if (Col < SubGridTree.SubGridTreeDimension - 1)
                 {
-                    int NextPerColFirstCellPassIndex = BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits);
+                    int NextPerColFirstCellPassIndex = (int)BF_PassCounts.ReadBitField(ref PerColBitFieldLocation, EncodedColPassCountsBits);
                     Result.PassCount = NextPerColFirstCellPassIndex - Result.FirstCellPass;
                 }
                 else
@@ -339,7 +339,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             Result.Time = FirstRealCellPassTime.AddSeconds(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time));
 
-            int IntegerHeight = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Height);
+            long IntegerHeight = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Height);
             Result.Height = IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : IntegerHeight / 1000;
 
             Result.CCV = (short)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCV));
@@ -382,7 +382,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             int BitLocation = (int)(passIndex * NumBitsPerCellPass) + (EncodedFieldDescriptors.Height.OffsetBits);
 
-            int IntegerHeight = BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Height);
+            long IntegerHeight = BF_CellPasses.ReadBitField(ref BitLocation, EncodedFieldDescriptors.Height);
 
             return (IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue) ? Consts.NullHeight : IntegerHeight / 1000;
         }
@@ -806,5 +806,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             throw new NotImplementedException("Does not support GetState()");
         }
+
+        /// <summary>
+        /// Note that this information is immutable
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsImmutable() => true;
     }
 }

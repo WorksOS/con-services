@@ -132,13 +132,16 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             // Given the value range for each attribute, calculate the number of bits required to store the values.
             EncodedFieldDescriptors.Init();
 
-            // Compute the time of the earliest real cell pass within the latest cell passes
+            // Compute the time of the earliest real cell pass within the latest cell passes, and the elevation of the lowest recorded cell
+            // passes in the latest cell passes
             FirstRealCellPassTime = DateTime.MaxValue;
+
             SubGridUtilities.SubGridDimensionalIterator((col, row) =>
             {
                 DateTime time = cellPasses[col, row].Time;
                 FirstRealCellPassTime = time != Cells.CellPass.NullTime && time < FirstRealCellPassTime ? time : FirstRealCellPassTime;
             });
+
 
             // For ease of management convert all the cell passes into a single list for the following operations
             CellPass[] allCellPassesArray = new CellPass[SubGridTree.SubGridTreeCellsPerSubgrid];
@@ -317,10 +320,10 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             Result.MachineID = -1; // No machine IDs supported in latest cell pass data.
 
-            int IntegerTime = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time);
+            long IntegerTime = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Time);
             Result.Time = IntegerTime == EncodedFieldDescriptors.Time.NativeNullValue ? DateTime.MinValue : FirstRealCellPassTime.AddSeconds(IntegerTime);
 
-            int IntegerHeight = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Height);
+            long IntegerHeight = BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.Height);
             Result.Height = IntegerHeight == EncodedFieldDescriptors.Height.NativeNullValue ? Consts.NullHeight : IntegerHeight / 1000;
 
             Result.CCV = (short)(BF_CellPasses.ReadBitField(ref CellPassBitLocation, EncodedFieldDescriptors.CCV));
@@ -375,5 +378,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
 
             writer.Write(NumBitsPerCellPass);
         }
+
+        /// <summary>
+        /// Note that this information is immutable
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsImmutable() => true;
     }
 }

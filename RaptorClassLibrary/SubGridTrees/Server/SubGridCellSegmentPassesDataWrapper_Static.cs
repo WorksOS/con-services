@@ -298,5 +298,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
         {
             throw new NotImplementedException("Does not support GetState()");
         }
+
+        /// <summary>
+        /// Note that this information is immutable
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsImmutable() => true;
     }
 }

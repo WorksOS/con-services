@@ -143,5 +143,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         /// </summary>
         /// <returns></returns>
         CellPass[,][] GetState();
+
+        bool IsImmutable();
     }
 }

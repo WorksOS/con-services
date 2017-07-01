@@ -46,5 +46,7 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server.Interfaces
         GPSMode ReadGPSMode(int Col, int Row);
         short ReadMDP(int Col, int Row);
         ushort ReadTemperature(int Col, int Row);
+
+        bool IsImmutable();
     }
 }

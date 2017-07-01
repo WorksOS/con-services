@@ -31,25 +31,28 @@ namespace VSS.VisionLink.Raptor.GridFabric.ComputeFuncs
 
             try
             {
-                // Supply the Raptor OF the Ignite node currently running this code to permit processing contexts to send
+                // Supply the Raptor ID of the Ignite node currently running this code to permit processing contexts to send
                 // subgrid results to it.
-                arg.RaptorNodeID = Ignition.GetIgnite(RaptorGrids.RaptorGridName()).GetCluster().GetLocalNode().GetAttribute<string>("RaptorNodeID");
+                IIgnite ignite = Ignition.GetIgnite(RaptorGrids.RaptorGridName());
+                {
+                    arg.RaptorNodeID = ignite.GetCluster().GetLocalNode().GetAttribute<string>("RaptorNodeID");
 
-                Log.InfoFormat("Assigned RaptorNodeID from local node is {0}", arg.RaptorNodeID);
+                    Log.InfoFormat("Assigned RaptorNodeID from local node is {0}", arg.RaptorNodeID);
 
-                RenderOverlayTile render = new RenderOverlayTile
-                    (arg.SiteModelID,
-                     arg.Mode,
-                     new XYZ(arg.Extents.MinX, arg.Extents.MinY),
-                     new XYZ(arg.Extents.MaxX, arg.Extents.MaxY),
-                     arg.CoordsAreGrid,
-                     arg.PixelsX, arg.PixelsY,
-                     arg.Filter1, arg.Filter2,
-                     arg.RaptorNodeID);
+                    RenderOverlayTile render = new RenderOverlayTile
+                        (arg.SiteModelID,
+                         arg.Mode,
+                         new XYZ(arg.Extents.MinX, arg.Extents.MinY),
+                         new XYZ(arg.Extents.MaxX, arg.Extents.MaxY),
+                         arg.CoordsAreGrid,
+                         arg.PixelsX, arg.PixelsY,
+                         arg.Filter1, arg.Filter2,
+                         arg.RaptorNodeID);
 
-                Log.Info("Executing render.Execute()");
+                    Log.Info("Executing render.Execute()");
 
-                return render.Execute();
+                    return render.Execute();
+                }
             }
             finally
             {

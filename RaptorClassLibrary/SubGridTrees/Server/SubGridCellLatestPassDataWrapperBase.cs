@@ -118,5 +118,11 @@ namespace VSS.VisionLink.Raptor.SubGridTrees.Server
             MDPValuesAreFromLastPass.Write(writer);
             CCAValuesAreFromLastPass.Write(writer);
         }
+
+        /// <summary>
+        /// Is the information contained in this wrapper mutable, or has is been converted to an immutable form from the base mutable data
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsImmutable() => false;
     }
 }
