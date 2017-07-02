@@ -65,7 +65,8 @@ node('Ubuntu_Slave') {
     if (currentBuild.result=='SUCCESS' && !branch.contains("master")) {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Get ecr login, push image to Repo'
-       sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
+	   sh "bash ./awslogin.sh"
+     //  sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
 
 	if (branch.contains("release"))
 	{
