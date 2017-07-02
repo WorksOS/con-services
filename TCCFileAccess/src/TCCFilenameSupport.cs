@@ -174,14 +174,6 @@ namespace TCCFileAccess
       if (!fullTileName.Contains(GENERATED_TILE_FOLDER_SUFFIX))
         throw new ArgumentException($"Invalid fullname - no expected suffix {fullTileName}");
       var tileFolder = Regex.Split(fullTileName, DXF_FILE_EXTENSION + GENERATED_TILE_FOLDER_SUFFIX, RegexOptions.IgnoreCase)[0];
-      if (tileFolder.Contains(GENERATED_SURFACE_FILE_SUFFIX))
-      {
-        return Regex.Split(tileFolder, GENERATED_SURFACE_FILE_SUFFIX, RegexOptions.IgnoreCase)[0];
-      }
-      if (tileFolder.Contains(GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX))
-      {
-        return Regex.Split(tileFolder, GENERATED_ALIGNMENT_CENTERLINE_FILE_SUFFIX, RegexOptions.IgnoreCase)[0];
-      }
       return tileFolder;
     }
   }
