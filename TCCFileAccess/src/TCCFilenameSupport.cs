@@ -26,21 +26,24 @@ namespace TCCFileAccess
     public string FilePath { get; private set; }
     public DateTime? SurveyedSurfaceTimestamp { get; private set; } = null;
     public string TilesPath => TilePath(FilePath, GeneratedName);
+
     /// <summary>
     /// Gets the name of the generated in TCC.
     /// </summary>
     /// <value>
     /// The name of the generated.
     /// </value>
-    public string GeneratedName  => Path.GetFileNameWithoutExtension(FileName) + GeneratedFileSuffix(FileType) + DXF_FILE_EXTENSION;
+    public string GeneratedName => Path.GetFileNameWithoutExtension(FileName) + GeneratedFileSuffix(FileType) +
+                                   DXF_FILE_EXTENSION;
 
     public TCCFile(ImportedFileType fileType, string fileName, string path)
     {
       FileType = fileType;
       FileName = fileName;
       FilePath = path;
-      if (fileType!=GetFileType(fileName))
-        throw new ArgumentException("File extension does not match file type", $"Filename: {fileName} Filetype: {fileType}");
+      if (fileType != GetFileType(fileName))
+        throw new ArgumentException("File extension does not match file type",
+          $"Filename: {fileName} Filetype: {fileType}");
       if (fileType == ImportedFileType.SurveyedSurface)
         SurveyedSurfaceTimestamp = SurveyedSurfaceUtc(fileName);
     }
@@ -63,7 +66,8 @@ namespace TCCFileAccess
     /// <returns></returns>
     public string GetTileFileName(int zoomLevel, int topLeftTileY, int topLeftTileX)
     {
-      return string.Format("{0}/{1}/{2}.png", ZoomPath(TilePath(FilePath, GeneratedName), zoomLevel), topLeftTileY, topLeftTileX);
+      return string.Format("{0}/{1}/{2}.png", ZoomPath(TilePath(FilePath, GeneratedName), zoomLevel), topLeftTileY,
+        topLeftTileX);
     }
 
     /// <summary>
@@ -90,7 +94,7 @@ namespace TCCFileAccess
         return ImportedFileType.MassHaulPlan;
 
       //Reference surface does not have it's own file. It is an offset wrt an existing design surface.
-        throw new ArgumentException("Unsupported file type", fileName);
+      throw new ArgumentException("Unsupported file type", fileName);
     }
 
 
@@ -104,9 +108,9 @@ namespace TCCFileAccess
       var shortFileName = Path.GetFileNameWithoutExtension(fileName);
       var format = "yyyy-MM-ddTHH:mm:ssZ";
       if (shortFileName.Length <= format.Length)
-        return (DateTime?)null;
+        return (DateTime?) null;
       DateTime dateTime = shortFileName.Substring(shortFileName.Length - format.Length).IsDateTimeISO8601(format);
-      return dateTime == DateTime.MinValue ? (DateTime?)null : dateTime;
+      return dateTime == DateTime.MinValue ? (DateTime?) null : dateTime;
     }
 
     /// <summary>
@@ -173,8 +177,18 @@ namespace TCCFileAccess
     {
       if (!fullTileName.Contains(GENERATED_TILE_FOLDER_SUFFIX))
         throw new ArgumentException($"Invalid fullname - no expected suffix {fullTileName}");
-      var tileFolder = Regex.Split(fullTileName, DXF_FILE_EXTENSION + GENERATED_TILE_FOLDER_SUFFIX, RegexOptions.IgnoreCase)[0];
-      return tileFolder;
+      var filename = fullTileName.Split(new string[] {GENERATED_TILE_FOLDER_SUFFIX}, StringSplitOptions.None)[0];
+      return filename;
+    }
+
+    /// <summary>
+    /// Determines if the file is to be cached. Only tiles, stored as PNG files, are cached.
+    /// </summary>
+    /// <param name="filename">The file name to check</param>
+    /// <returns>True if the file is to be cached otherwise false</returns>
+    public static bool FileCacheable(string filename)
+    {
+      return filename.Contains(GENERATED_TILE_FOLDER_SUFFIX) && filename.Contains(".png");
     }
   }
 

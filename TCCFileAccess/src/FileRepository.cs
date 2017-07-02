@@ -193,16 +193,6 @@ namespace TCCFileAccess
     }
 
     /// <summary>
-    /// Determines if the file is to be cached. Only tiles, stored as PNG files, are cached.
-    /// </summary>
-    /// <param name="filename">THe file name to check</param>
-    /// <returns>True if the file is to be cached otherwise false</returns>
-    private bool FileCacheable(string filename)
-    {
-      return filename.Contains(".png");
-    }
-
-    /// <summary>
     /// Gets the file. The resulting stream should be disposed after read completed
     /// </summary>
     /// <param name="org">The org.</param>
@@ -231,7 +221,7 @@ namespace TCCFileAccess
     private async Task<Stream> GetFileEx(string filespaceId, string fullName)
     {
       byte[] file = null;
-      bool cacheable = FileCacheable(fullName);
+      bool cacheable = TCCFile.FileCacheable(fullName);
       if (cacheable)
       {
         if (fileCache.TryGetValue(fullName, out file))
@@ -409,7 +399,7 @@ namespace TCCFileAccess
     public async Task<bool> FileExists(string filespaceId, string filename)
     {
       object obj = null;
-      if (FileCacheable(filename))
+      if (TCCFile.FileCacheable(filename))
         if (fileCache.TryGetValue(filename, out obj)) return true;
       return await PathExists(filespaceId, filename);
     }

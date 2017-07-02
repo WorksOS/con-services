@@ -18,6 +18,8 @@ namespace UnitTests
   public class TCCFileAccessTests
   {
     public IServiceProvider serviceProvider = null;
+    private ILogger<TCCFileAccessTests> Log;
+
 
     [TestInitialize]
     public virtual void InitTest()
@@ -34,9 +36,11 @@ namespace UnitTests
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
-      serviceCollection.AddSingleton<IConfigurationStore, VSS.GenericConfiguration.GenericConfiguration>();
+      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddTransient<IFileRepository, FileRepository>();
       serviceProvider = serviceCollection.BuildServiceProvider();
+
+      Log = loggerFactory.CreateLogger<TCCFileAccessTests>();
     }
 
 
@@ -259,6 +263,41 @@ namespace UnitTests
 
       var exportStatus = await fileaccess.CheckExportJob(jobId);
       Assert.IsNotNull(exportStatus, "Failed to check export job");
+    }
+
+    [TestMethod]
+    public async Task CanCacheTileFile()
+    {
+      const string filename = "/barney/CacheUnitTest.DXF_Tiles$/Z14/6420/2960.png";
+
+      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var filespaceId = configuration.GetValueString("TCCFILESPACEID");
+      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      //First time not cached
+      var downloadFileResult = await fileaccess.GetFile(filespaceId, filename);
+      //Second time cached
+      downloadFileResult = await fileaccess.GetFile(filespaceId, filename);
+    }
+
+    [TestMethod]
+    public void FileIsCacheable()
+    {
+      const string cacheableFileName = "/barney/CacheUnitTest.DXF_Tiles$/Z14/6420/2960.png";
+      const string nonCacheableFileName = "/barney/dummy.png";
+
+      Assert.IsTrue(TCCFile.FileCacheable(cacheableFileName), "File should be cacheable");
+      Assert.IsFalse(TCCFile.FileCacheable(nonCacheableFileName), "File should not be cacheable");
+    }
+
+    [TestMethod]
+    public void CanExtractFileName()
+    {
+      const string baseFileName = "/barney/CacheUnitTest.DXF";     
+      const string cacheableFileName = baseFileName + "_Tiles$/Z14/6420/2960.png";
+      const string nonCacheableFileName = "/barney/dummy.png";
+
+      Assert.AreEqual(baseFileName, TCCFile.ExtractFileNameFromTileFullName(cacheableFileName), "Wrong extracted file name");
+      Assert.ThrowsException<ArgumentException>(() => TCCFile.ExtractFileNameFromTileFullName(nonCacheableFileName));
     }
 
   }
