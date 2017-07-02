@@ -22,6 +22,7 @@ namespace MasterDataProxies
     public async Task<T> ExecuteRequest<T>(string endpoint, string method, IDictionary<string, string> customHeaders = null, 
       string payloadData = null, int retries = 3, bool suppressExceptionLogging=false)
     {
+      log.LogDebug($"ExecuteRequest() T : endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))} payloadData {payloadData}");
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -29,29 +30,45 @@ namespace MasterDataProxies
         .ExecuteAndCaptureAsync(async () =>
         {
           var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
-          log.LogDebug("GracefulWebRequest.ExecuteRequest() : request{0}", JsonConvert.SerializeObject(request));
 
           string responseString = null;
-
-          using (var response = await request.GetResponseAsync())
+          try
           {
-            log.LogDebug("GracefulWebRequest.ExecuteRequest6(). response{0}",
-              JsonConvert.SerializeObject(response));
-            responseString = GetStringFromResponseStream(response);
-            log.LogDebug("GracefulWebRequest.ExecuteRequest() : responseString{0}", responseString);
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+              if (response != null)
+              {
+                responseString = GetStringFromResponseStream(response);
+                log.LogDebug($"ExecuteRequest() T success: responseString{responseString}");
+              }
+            }
           }
+          catch (WebException ex)
+          {
+            using (WebResponse response = ex.Response)
+            {
+              if (response == null) throw;
+              responseString = GetStringFromResponseStream(response);
+              HttpWebResponse httpResponse = (HttpWebResponse) response;
+              log.LogDebug(
+                $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString}");
+              throw new Exception($"{httpResponse.StatusCode} {responseString}");
+            }
+          }
+          catch (Exception ex)
+          {
+            log.LogDebug(
+              $"ExecuteRequestException() T: errorCode: {ex.Message}");
+          }
+
           if (!string.IsNullOrEmpty(responseString))
           {
             var toReturn = JsonConvert.DeserializeObject<T>(responseString);
-            log.LogDebug("GracefulWebRequest.ExecuteRequest(). toReturn:{0}",
-              JsonConvert.SerializeObject(toReturn));
+            log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(toReturn)}");
             return toReturn;
           }
-          log.LogDebug("GracefulWebRequest.ExecuteRequest(). default(T):{0}",
-            JsonConvert.SerializeObject(default(T)));
           var defaultToReturn = default(T);
-          log.LogDebug("GracefulWebRequest.ExecuteRequest(). defaultToReturn:{0}",
-            JsonConvert.SerializeObject(defaultToReturn));
+          log.LogDebug($"ExecuteRequest() T. defaultToReturn:{JsonConvert.SerializeObject(defaultToReturn)}");
           return defaultToReturn;
         });
 
@@ -59,9 +76,7 @@ namespace MasterDataProxies
       {
         if (!suppressExceptionLogging)
         {
-          log.LogDebug(
-            "GracefulWebRequest.ExecuteRequest(). exceptionToRethrow:{0} endpoint: {1} method: {2}, customHeaders: {3} payloadData: {4}",
-            policyResult.FinalException.ToString(), endpoint, method, customHeaders, payloadData);
+          log.LogDebug($"ExecuteRequest() T. exceptionToRethrow:{policyResult.FinalException} endpoint: {endpoint} method: {method}");
         }
         throw policyResult.FinalException;
       }
@@ -73,53 +88,126 @@ namespace MasterDataProxies
     }
 
 
-    public async Task<Stream> ExecuteRequest(string endpoint, string method, IDictionary<string, string> customHeaders = null, 
-      string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
-    {
-      var policyResult = await Policy
-        .Handle<Exception>()
-        .RetryAsync(retries)
-        .ExecuteAndCaptureAsync(async () =>
-        {
-          var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
+    //public async Task<Stream> ExecuteRequest(string endpoint, string method, IDictionary<string, string> customHeaders = null,
+    //  string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
+    //{
+    //  log.LogDebug($"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))} payloadData {payloadData}");
 
-          Stream responseStream = null;
-          using (var response = await request.GetResponseAsync())
-          {
-            responseStream = GetStreamFromResponse(response);
-          }
-          return responseStream;
-        });
+    //  var policyResult = await Policy
+    //    .Handle<Exception>()
+    //    .RetryAsync(retries)
+    //    .ExecuteAndCaptureAsync(async () =>
+    //    {
+    //      var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
 
-      if (policyResult.FinalException != null)
-      {
-        if (!suppressExceptionLogging)
-        {
-          log.LogDebug(
-            "GracefulWebRequest.ExecuteRequest_stream(). exceptionToRethrow:{0} endpoint: {1} method: {2}, customHeaders: {3} payloadData: {4}",
-            policyResult.FinalException.ToString(), endpoint, method, customHeaders, payloadData);
-        }
-        throw policyResult.FinalException;
-      }
-      if (policyResult.Outcome == OutcomeType.Successful)
-      {
-        return policyResult.Result;
-      }
-      return null;
-    }
+    //      Stream responseStream = null;
+    //      try
+    //      {
+    //        using (WebResponse response = await request.GetResponseAsync())
+    //        {
+    //          responseStream = GetStreamFromResponse(response);
+    //        }
+    //      }
+    //      catch (WebException ex)
+    //      {
+    //        using (WebResponse response = ex.Response)
+    //        {
+    //          if (response == null) throw;
+    //          var responseString = GetStringFromResponseStream(response);
+    //          HttpWebResponse httpResponse = (HttpWebResponse)response;
+    //          log.LogDebug($"ExecuteRequestException()  Stream: errorCode: {httpResponse.StatusCode} responseString: {responseString}");
+    //          throw new Exception($"{httpResponse.StatusCode} {responseString}");
+    //        }
+    //      }
+    //      return responseStream;
+    //    });
+
+    //  if (policyResult.FinalException != null)
+    //  {
+    //    if (!suppressExceptionLogging)
+    //    {
+    //      log.LogDebug($"ExecuteRequest() Stream: exceptionToRethrow:{policyResult.FinalException.ToString()} endpoint: {endpoint} method: {method}");
+    //    }
+    //    throw policyResult.FinalException;
+    //  }
+    //  if (policyResult.Outcome == OutcomeType.Successful)
+    //  {
+    //    return policyResult.Result;
+    //  }
+    //  return null;
+    //}
+
+
+    //public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload,
+    //  IDictionary<string, string> customHeaders = null, int retries = 3, bool suppressExceptionLogging = false)
+    //{
+    //  log.LogDebug($"ExecuteRequest() T(no method) : endpoint {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))} payloadData {payloadData}");
+      
+    //  var policyResult = await Policy
+    //    .Handle<Exception>()
+    //    .RetryAsync(retries)
+    //    .ExecuteAndCaptureAsync(async () =>
+    //    {
+    //      var request = WebRequest.Create(endpoint);
+    //      request.Method = "POST";
+    //      if (request is HttpWebRequest)
+    //      {
+    //        var httpRequest = request as HttpWebRequest;
+    //        httpRequest.Accept = "*/*";
+    //        //Add custom headers e.g. JWT, CustomerUid, UserUid
+    //        if (customHeaders != null)
+    //        {
+    //          foreach (var key in customHeaders.Keys)
+    //          {
+    //            if (key == "Content-Type")
+    //            {
+    //              httpRequest.ContentType = customHeaders[key];
+    //            }
+    //            else
+    //            {
+    //              httpRequest.Headers[key] = customHeaders[key];
+    //            }
+    //          }
+    //        }
+    //      }
+    //      using (var writeStream = await request.GetRequestStreamAsync())
+    //      {
+    //        await payload.CopyToAsync(writeStream);
+    //      }
+
+    //      string responseString = null;
+    //      using (var response = await request.GetResponseAsync())
+    //      {
+    //        responseString = GetStringFromResponseStream(response);
+    //      }
+    //      if (!string.IsNullOrEmpty(responseString))
+    //        return JsonConvert.DeserializeObject<T>(responseString);
+    //      return default(T);
+    //    });
+
+    //  if (policyResult.FinalException != null)
+    //  {
+    //    if (!suppressExceptionLogging)
+    //    {
+    //      log.LogDebug(
+    //        "ExecuteRequest_multi(). exceptionToRethrow:{0} endpoint: {1} customHeaders: {2}",
+    //        policyResult.FinalException.ToString(), endpoint, customHeaders);
+    //    }
+    //    throw policyResult.FinalException;
+    //  }
+    //  if (policyResult.Outcome == OutcomeType.Successful)
+    //  {
+    //    return policyResult.Result;
+    //  }
+    //  return default(T);
+    //}
+
 
     private async Task<WebRequest> PrepareWebRequest(string endpoint, string method,
       IDictionary<string, string> customHeaders, string payloadData)
     {
-      log.LogDebug("Requesting data from {0}", endpoint);
-      if (customHeaders != null)
-      {
-        log.LogDebug("Custom Headers:");
-        foreach (var key in customHeaders.Keys)
-        {
-          log.LogDebug("   {0}: {1}", key, customHeaders[key]);
-        }
-      }
+      //log.LogDebug($"PrepareWebRequest: Requesting data from {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))}");
+
       var request = WebRequest.Create(endpoint);
       request.Method = method;
       if (request is HttpWebRequest)
@@ -165,7 +253,6 @@ namespace MasterDataProxies
           using (var reader = new StreamReader(readStream, Encoding.UTF8))
           {
             var responseString = reader.ReadToEnd();
-            log.LogDebug("Response: {0}", responseString);
             return responseString;
           }
         }
@@ -187,99 +274,6 @@ namespace MasterDataProxies
         return null;
       }
     }
-
-
-    public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload,
-      IDictionary<string, string> customHeaders = null, int retries = 3, bool suppressExceptionLogging = false)
-    {
-      log.LogDebug("Requesting project data from {0}", endpoint);
-      if (customHeaders != null)
-      {
-        log.LogDebug("Custom Headers:");
-        foreach (var key in customHeaders.Keys)
-        {
-          log.LogDebug("   {0}: {1}", key, customHeaders[key]);
-        }
-      }
-
-      //var request = WebRequest.Create(endpoint);
-      //request.Method = "POST";
-      //if (request is HttpWebRequest)
-      //{
-      //  var httpRequest = request as HttpWebRequest;
-      //  httpRequest.Accept = "*/*";
-      //  //Add custom headers e.g. JWT, CustomerUid, UserUid
-      //  if (customHeaders != null)
-      //  {
-      //    foreach (var key in customHeaders.Keys)
-      //    {
-      //      httpRequest.Headers[key] = customHeaders[key];
-      //    }
-      //  }
-      //}
-      //using (var writeStream = await request.GetRequestStreamAsync())
-      //{
-      //  await payload.CopyToAsync(writeStream);
-      //}
-
-      var policyResult = await Policy
-        .Handle<Exception>()
-        .RetryAsync(retries)
-        .ExecuteAndCaptureAsync(async () =>
-        {
-          var request = WebRequest.Create(endpoint);
-          request.Method = "POST";
-          if (request is HttpWebRequest)
-          {
-            var httpRequest = request as HttpWebRequest;
-            httpRequest.Accept = "*/*";
-            //Add custom headers e.g. JWT, CustomerUid, UserUid
-            if (customHeaders != null)
-            {
-              foreach (var key in customHeaders.Keys)
-              {
-            if (key == "Content-Type")
-            {
-              httpRequest.ContentType = customHeaders[key];
-            }
-            else
-            {
-            httpRequest.Headers[key] = customHeaders[key];
-            }
-              }
-            }
-          }
-          using (var writeStream = await request.GetRequestStreamAsync())
-          {
-            await payload.CopyToAsync(writeStream);
-          }
-
-          string responseString = null;
-          using (var response = await request.GetResponseAsync())
-          {
-            responseString = GetStringFromResponseStream(response);
-          }
-          if (!string.IsNullOrEmpty(responseString))
-            return JsonConvert.DeserializeObject<T>(responseString);
-          return default(T);
-        });
-
-      if (policyResult.FinalException != null)
-      {
-        if (!suppressExceptionLogging)
-        {
-          log.LogDebug(
-            "GracefulWebRequest.ExecuteRequest_multi(). exceptionToRethrow:{0} endpoint: {1} customHeaders: {2}",
-            policyResult.FinalException.ToString(), endpoint, customHeaders);
-        }
-        throw policyResult.FinalException;
-      }
-      if (policyResult.Outcome == OutcomeType.Successful)
-      {
-        return policyResult.Result;
-      }
-      return default(T);
-    }
-
+    
   }
 }

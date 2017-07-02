@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MasterDataProxies.Interfaces;
 using MasterDataProxies.Models;
+using MasterDataProxies.ResultHandling;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -12,8 +13,8 @@ namespace MasterDataProxies
 {
   public class SubscriptionProxy : BaseProxy, ISubscriptionProxy
   {
-    public SubscriptionProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(
-      configurationStore, logger, cache)
+    public SubscriptionProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) 
+      : base(configurationStore, logger, cache)
     {
     }
 
@@ -32,7 +33,7 @@ namespace MasterDataProxies
         ProjectUID = projectUid,
         SubscriptionUID = subscriptionUid
       };
-      await SendRequest<SubscriptionData>("ASSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
+      await SendRequest<SubscriptionDataResult>("ASSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
         customHeaders);
     }
 
@@ -45,16 +46,14 @@ namespace MasterDataProxies
     public async Task DissociateProjectSubscription(Guid subscriptionUid, Guid projectUid,
       IDictionary<string, string> customHeaders = null)
     {
-      // yes, same requestData
       var payLoadToSend = new AssociateProjectSubscriptionData()
       {
         EffectiveDate = DateTime.UtcNow.Date,
         ProjectUID = projectUid,
         SubscriptionUID = subscriptionUid
       };
-      await SendRequest<SubscriptionData>("DISSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
+      await SendRequest<SubscriptionDataResult>("DISSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
         customHeaders);
-
     }
   }
 }
