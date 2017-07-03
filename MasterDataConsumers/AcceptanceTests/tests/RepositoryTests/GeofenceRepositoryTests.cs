@@ -56,7 +56,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Unable to store geofence");
 
-      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      var g = geofenceContext.GetCustomerGeofences(customerUid.ToString());
       g.Wait();
       var projectGeofences = g.Result.ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
@@ -91,7 +91,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Unable to store geofence");
 
-      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      var g = geofenceContext.GetCustomerGeofences(customerUid.ToString());
       g.Wait();
       var projectGeofences = g.Result.ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
@@ -127,7 +127,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Shouldn't store duplicate, but this is how it is implementd");
 
-      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      var g = geofenceContext.GetCustomerGeofences(customerUid.ToString());
       g.Wait();
       var projectGeofences = g.Result.ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
@@ -176,7 +176,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Unable to update geofence");
 
-      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      var g = geofenceContext.GetCustomerGeofences(customerUid.ToString());
       g.Wait();
       var projectGeofences = g.Result.ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
@@ -223,7 +223,7 @@ namespace RepositoryTests
 
       var s = geofenceContext.StoreEvent(updateGeofenceEvent);
       s.Wait();
-      Assert.AreEqual(0, s.Result, "Unable to update geofence");
+      Assert.AreEqual(1, s.Result, "Should create a minimal geofence");
     }
 
     /// <summary>
@@ -262,7 +262,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Unable to delete geofence");
 
-      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      var g = geofenceContext.GetCustomerGeofences(customerUid.ToString());
       g.Wait();
       Assert.AreEqual(0, g.Result.Count(), "Wrong number of geofences");
 
@@ -306,7 +306,7 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Unable to delete geofence");
 
-      var g = geofenceContext.GetProjectGeofences(customerUid.ToString());
+      var g = geofenceContext.GetCustomerGeofences(customerUid.ToString());
       g.Wait();
       Assert.AreEqual(0, g.Result.Count(), "Wrong number of geofences");
 
@@ -358,9 +358,9 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(1, s.Result, "Unable to associate geofence");
 
-      var g = geofenceContext.GetProjectGeofencesByProjectUID(projectUid.ToString());
+      var g = geofenceContext.GetCustomerGeofences(customerUid.ToString());
       g.Wait();
-      var projectGeofences = g.Result.ToList();
+      var projectGeofences = g.Result.Where(x => x.GeofenceUID == createGeofenceEvent.GeofenceUID.ToString()).ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
       Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
 
@@ -403,9 +403,9 @@ namespace RepositoryTests
       s.Wait();
       Assert.AreEqual(0, s.Result, "Unable to associate geofence");
 
-      var g = geofenceContext.GetProjectGeofencesByProjectUID(projectUid.ToString());
+      var g = geofenceContext.GetCustomerGeofences(customerUid.ToString());
       g.Wait();
-      var projectGeofences = g.Result.ToList();
+      var projectGeofences = g.Result.Where(x => x.GeofenceUID == createGeofenceEvent.GeofenceUID.ToString()).ToList();
       Assert.AreEqual(1, projectGeofences.Count(), "Wrong number of geofences");
       Assert.AreEqual(createGeofenceEvent.GeofenceUID.ToString(), projectGeofences[0].GeofenceUID, "Wrong project geofence returned");
 
