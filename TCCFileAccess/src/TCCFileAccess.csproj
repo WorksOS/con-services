@@ -5,7 +5,7 @@
     <AssemblyTitle>Shared lib to access file from TCC</AssemblyTitle>
     <AssemblyName>TCCFileAccess.netcore</AssemblyName>
     <PackageId>TCCFileAccess.netcore</PackageId>
-    <PackageVersion>1.2.4</PackageVersion>
+    <PackageVersion>1.2.5</PackageVersion>
     <TargetFrameworks>netstandard1.6;net46;net462</TargetFrameworks>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
