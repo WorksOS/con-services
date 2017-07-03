@@ -94,7 +94,7 @@ namespace VSS.VisionLink.Raptor.Compression
         /// Determines the number of elements required in the storage array depending on the 'read/write block size'
         /// </summary>
         /// <returns></returns>
-        public uint NumStorageElements() => MemorySize() % kNBytesReadAtATime == 0 ? MemorySize() / kNBytesReadAtATime : MemorySize() / kNBytesReadAtATime; // FNumBits % kNBitsReadAtATime == 0 ? FNumBits / kNBitsReadAtATime : FNumBits / kNBitsReadAtATime + 1;
+        public uint NumStorageElements() => MemorySize() % kNBytesReadAtATime == 0 ? MemorySize() / kNBytesReadAtATime : (MemorySize() / kNBytesReadAtATime) + 1; // FNumBits % kNBitsReadAtATime == 0 ? FNumBits / kNBitsReadAtATime : FNumBits / kNBitsReadAtATime + 1;
 
         /// <summary>
         /// Allocates the storage array for storing the block that comprise the bit field array
@@ -218,7 +218,7 @@ namespace VSS.VisionLink.Raptor.Compression
             // Write initial bits into storage element
             if (AvailBitsInCurrentStorageElement >= ValueBits)
             {
-                Storage[StoragePointer] = Storage[StoragePointer] | (ulong)(AValue << (AvailBitsInCurrentStorageElement - ValueBits));
+                Storage[StoragePointer] = Storage[StoragePointer] | ((ulong)AValue << (AvailBitsInCurrentStorageElement - ValueBits));
                 StreamWriteBitPos += (uint)ValueBits;   // Advance the current bit position pointer;
                 return;
             }
@@ -226,7 +226,7 @@ namespace VSS.VisionLink.Raptor.Compression
             // There are more bits than can fit in AvailBitsInCurrentStorageElement
             // Step 1: Fill remaining bits
             int RemainingBitsToWrite = ValueBits - AvailBitsInCurrentStorageElement;
-            Storage[StoragePointer] = (Storage[StoragePointer] | (ulong)(AValue >> RemainingBitsToWrite));
+            Storage[StoragePointer] = (Storage[StoragePointer] | ((ulong)AValue >> RemainingBitsToWrite));
 
             /* When using long elements, there can never be a value stored that is larger that the storage element
             // Step 2: Write whole elements
@@ -240,7 +240,7 @@ namespace VSS.VisionLink.Raptor.Compression
             // Step 3: Write remaining bits into next element in Storage
             if (RemainingBitsToWrite > 0)
             {
-                Storage[StoragePointer + 1] = ((ulong)(AValue & ((1 << RemainingBitsToWrite) - 1)) << (kNBitsReadAtATime - RemainingBitsToWrite)); // Mask out the bits we want...
+                Storage[StoragePointer + 1] = ((ulong)AValue & (((ulong)1 << RemainingBitsToWrite) - 1)) << (kNBitsReadAtATime - RemainingBitsToWrite); // Mask out the bits we want...
             }
 
             StreamWriteBitPos += (uint)ValueBits;   // Advance the current bit position pointer;
@@ -283,7 +283,7 @@ namespace VSS.VisionLink.Raptor.Compression
             // Write initial bits into storage element
             if (AvailBitsInCurrentStorageElement >= AValueBits)
             {
-                Storage[StoragePointer] = (Storage[StoragePointer] | (ulong)(AValue << (AvailBitsInCurrentStorageElement - AValueBits)));
+                Storage[StoragePointer] = (Storage[StoragePointer] | ((ulong)AValue << (AvailBitsInCurrentStorageElement - AValueBits)));
                 StreamWriteBitPos += (uint)AValueBits;   // Advance the current bit position pointer;
                 return;
             }
@@ -291,7 +291,7 @@ namespace VSS.VisionLink.Raptor.Compression
             // There are more bits than can fit in AvailBitsInCurrentStorageElement
             // Step 1: Fill remaining bits
             int RemainingBitsToWrite = AValueBits - AvailBitsInCurrentStorageElement;
-            Storage[StoragePointer] = (ulong)(Storage[StoragePointer] | (ulong)(AValue >> RemainingBitsToWrite));
+            Storage[StoragePointer] = (Storage[StoragePointer] | ((ulong)AValue >> RemainingBitsToWrite));
 
             /* When using long elements, there can never be a value stored that is larger that the storage element
             // Step 2: Write whole elements
@@ -305,7 +305,7 @@ namespace VSS.VisionLink.Raptor.Compression
             // Step 3: Write remaining bits into next element in Storage
             if (RemainingBitsToWrite > 0)
             {
-                Storage[StoragePointer + 1] = ((ulong)(AValue & ((1 << RemainingBitsToWrite) - 1)) << (kNBitsReadAtATime - RemainingBitsToWrite)); // Mask out the bits we want...
+                Storage[StoragePointer + 1] = (((ulong)AValue & (((ulong)1 << RemainingBitsToWrite) - 1)) << (kNBitsReadAtATime - RemainingBitsToWrite)); // Mask out the bits we want...
             }
 
             StreamWriteBitPos += (uint)AValueBits;   // Advance the current bit position pointer;

@@ -17,24 +17,6 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
         [TestMethod()]
         public void Test_RenderOverlayTile_Creation()
         {
-            /*
-                    public RenderOverlayTile(long ADataModelID,
-                                              //AExternalDescriptor :TASNodeRequestDescriptor;
-                                              DisplayMode AMode,
-                                             XYZ ABLPoint, // : TWGS84Point;
-                                             XYZ ATRPoint, // : TWGS84Point;
-                                             bool ACoordsAreGrid,
-                                             ushort ANPixelsX,
-                                             ushort ANPixelsY,
-                                             CombinedFilter AFilter1,
-                                             CombinedFilter AFilter2
-                                             //ADesignDescriptor : TVLPDDesignDescriptor;
-                                             //AReferenceVolumeType : TComputeICVolumesType;
-                                             //AColourPalettes: TColourPalettes;
-                                             //AICOptions: TSVOICOptions;
-                                             //ARepresentColor: LongWord
-                                             )
-            */
             RenderOverlayTile render = new RenderOverlayTile(1,
                                                              DisplayMode.Height,
                                                              new XYZ(0, 0),
@@ -49,6 +31,7 @@ namespace VSS.VisionLink.Raptor.Executors.Tests
             Assert.IsTrue(render != null, "Did not create renderer as expected");
         }
 
+        [Ignore] // This requires a running Ignite server which cant run in unit testing framework
         [TestMethod()]
         public void Test_RenderOverlayTile_Execute()
         {
