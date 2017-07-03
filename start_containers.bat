@@ -1,4 +1,4 @@
-aws ecr get-login --region us-west-2 --profile vss-grant > temp.cmd
+aws ecr get-login --region us-west-2  > temp.cmd
 call temp.cmd
 del temp.cmd
 
