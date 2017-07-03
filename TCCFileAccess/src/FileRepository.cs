@@ -251,6 +251,7 @@ namespace TCCFileAccess
         using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers))
         {
           Log.LogDebug("Adding TCC tile request to cache {0}", fullName);
+          responseStream.Position = 0;
           file = new byte[responseStream.Length];
           responseStream.Read(file, 0, file.Length);
           fileCache.Set(fullName, file, DateTimeOffset.MaxValue);
