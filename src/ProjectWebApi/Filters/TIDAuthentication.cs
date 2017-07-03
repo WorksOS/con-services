@@ -21,9 +21,13 @@ namespace VSS.Productivity3D.ProjectWebApi.Filters
   public class TIDAuthentication
   {
     private readonly RequestDelegate _next;
-    private ILogger<TIDAuthentication> log;
+    private readonly ILogger<TIDAuthentication> log;
     private readonly ICustomerProxy customerProxy;
     private readonly IConfigurationStore store;
+
+    /// <summary>
+    /// Service exception handler.
+    /// </summary>
     protected IServiceExceptionHandler ServiceExceptionHandler;
 
     /// <summary>
@@ -33,6 +37,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Filters
     /// <param name="customerProxy">The customer proxy.</param>
     /// <param name="store">The store.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="serviceExceptionHandler"></param>
     public TIDAuthentication(RequestDelegate next,
       ICustomerProxy customerProxy,
       IConfigurationStore store,

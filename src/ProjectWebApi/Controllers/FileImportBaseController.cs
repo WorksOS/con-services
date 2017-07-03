@@ -30,7 +30,9 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
   /// </summary>
   public class FileImportBaseController : Controller
   {
-
+    /// <summary>
+    /// Local log provider.
+    /// </summary>
     protected readonly ILogger log;
 
     /// <summary>
@@ -46,9 +48,16 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     private readonly IRaptorProxy raptorProxy;
     private readonly IFileRepository fileRepo;
     private readonly ProjectRepository projectService;
-    protected readonly IKafka producer;
-    protected readonly string kafkaTopicName;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    protected readonly IKafka producer;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected readonly string kafkaTopicName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
@@ -118,7 +127,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
 
       log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
     }
-    
+
     /// <summary>
     /// Gets the imported file list for a project
     /// </summary>
