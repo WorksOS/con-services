@@ -1,27 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
-using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using ProjectWebApi.Filters;
-using ProjectWebApi.Internal;
-using ProjectWebApiCommon.Models;
+using Microsoft.Extensions.Logging;
 using Repositories;
-using Repositories.DBModels;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Filters;
+using VSS.Productivity3D.ProjectWebApi.Internal;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApiCommon.ResultsHandling;
 
-namespace Controllers
+namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {
   /// <summary>
   /// Project Base for all Project controllers
@@ -81,7 +74,6 @@ namespace Controllers
     }
 
     /// <summary>
-
     /// Gets the project list for a customer
     /// </summary>
     /// <returns></returns>

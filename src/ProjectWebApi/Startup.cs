@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.IO;
 using KafkaConsumer.Kafka;
 using log4netExtensions;
 using MasterDataProxies;
@@ -7,19 +9,17 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ProjectWebApi.Filters;
-using ProjectWebApi.Internal;
-using ProjectWebApiCommon.ResultsHandling;
-using ProjectWebApiCommon.Utilities;
 using Repositories;
 using Swashbuckle.Swagger.Model;
-using System.Diagnostics;
-using System.IO;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Filters;
+using VSS.Productivity3D.ProjectWebApi.Internal;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace ProjectWebApi
+namespace VSS.Productivity3D.ProjectWebApi
 {
   /// <summary>
   /// 
@@ -86,14 +86,14 @@ namespace ProjectWebApi
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
-      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
       services.AddTransient<IGeofenceProxy, GeofenceProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
 
-      var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
+      var tccUrl = (new GenericConfiguration.GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
       var useMock = string.IsNullOrEmpty(tccUrl) || tccUrl == "mock";
       if (useMock)
         services.AddTransient<IFileRepository, MockFileRepository>();

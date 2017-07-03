@@ -1,28 +1,29 @@
-﻿using System;
+﻿using FlowUploadFilter;
+using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Repositories;
+using Repositories.DBModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using FlowUploadFilter;
-using Microsoft.Extensions.Logging;
-using KafkaConsumer.Kafka;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using ProjectWebApi.Filters;
-using ProjectWebApiCommon.Models;
-using ProjectWebApiCommon.ResultsHandling;
-using Repositories;
-using Repositories.DBModels;
-using ProjectWebApi.Internal;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Filters;
+using VSS.Productivity3D.ProjectWebApi.Internal;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using MasterDataProxies.Interfaces;
 
-namespace Controllers
+namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {
   /// <summary>
   /// File Import controller v4
@@ -444,5 +445,3 @@ namespace Controllers
     }
   }
 }
-
-

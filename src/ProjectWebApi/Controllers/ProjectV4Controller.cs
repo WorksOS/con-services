@@ -1,4 +1,13 @@
-﻿using System;
+﻿using KafkaConsumer.Kafka;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
+using MasterDataProxies.ResultHandling;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Repositories;
+using Repositories.DBModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -6,26 +15,15 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.Extensions.Logging;
-using KafkaConsumer.Kafka;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
-using MasterDataProxies.ResultHandling;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using ProjectWebApi.Filters;
-using ProjectWebApi.Internal;
-using ProjectWebApiCommon.Models;
-using ProjectWebApiCommon.ResultsHandling;
-using ProjectWebApiCommon.Utilities;
-using Repositories;
-using Repositories.DBModels;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Filters;
+using VSS.Productivity3D.ProjectWebApi.Internal;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ContractExecutionResult = ProjectWebApiCommon.ResultsHandling.ContractExecutionResult;
 
-namespace Controllers
+namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {
   /// <summary>
   /// Project controller v4
@@ -292,7 +290,6 @@ namespace Controllers
     /// <summary>
     /// validate CordinateSystem if provided
     /// </summary>
-    /// <param name=""></param>
     private async Task<bool> ValidateCoordSystemInRaptor(IProjectEvent project)
     {
       // a Creating a landfill must have a CS, else optional
@@ -421,13 +418,14 @@ namespace Controllers
         }
       }
     }
-    
+
     /// <summary>
     /// Used internally, if a step fails, after a project has been CREATED, 
     ///    then delete it permanently i.e. don't just set IsDeleted.
     /// Since v4 CreateProjectInDB also associates projectCustomer then roll this back also.
     /// DissociateProjectCustomer actually deletes the DB ent4ry
     /// </summary>
+    /// <param name="customerUid"></param>
     /// <param name="projectUid"></param>
     /// <returns></returns>
     private async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid)
@@ -485,12 +483,13 @@ namespace Controllers
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayloadCustomerProject)
         });
     }
-    
+
     /// <summary>
     /// Gets the free subs for a project type
     /// </summary>
     /// <param name="customerUid">The customer uid.</param>
     /// <param name="type">The type.</param>
+    /// <param name="projectUid"></param>
     /// <returns></returns>
     /// <exception cref="ServiceException"></exception>
     /// <exception cref="ContractExecutionResult">No available subscriptions for the selected customer</exception>

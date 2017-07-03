@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ProjectWebApiCommon.ResultsHandling;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 
 namespace MasterDataConsumerTests
 {

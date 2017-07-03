@@ -1,10 +1,9 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using ProjectWebApiCommon.ResultsHandling;
 using Repositories.DBModels;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ProjectWebApiCommon.Models
+namespace VSS.Productivity3D.ProjectWebApiCommon.Models
 {
 
   /// <summary>

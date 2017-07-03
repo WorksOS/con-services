@@ -1,7 +1,7 @@
-﻿using ProjectWebApiCommon.ResultsHandling;
-using System.Net;
+﻿using System.Net;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
 
-namespace ProjectWebApi.Internal
+namespace VSS.Productivity3D.ProjectWebApi.Internal
 {
   /// <summary>
   /// Common controller ServiceException handler.
@@ -12,9 +12,5 @@ namespace ProjectWebApi.Internal
     /// Correctly throw ServiceException for controller types.
     /// </summary>
     ServiceException ThrowServiceException(HttpStatusCode statusCode, int errorNumber, string resultCode = null, string errorMessage1 = null, string errorMessage2 = null);
-
-    /// <summary>
-    /// Correctly throw ServiceException for controller types.
-    /// </summary>
   }
 }

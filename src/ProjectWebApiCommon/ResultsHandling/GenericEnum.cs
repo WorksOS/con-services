@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace ProjectWebApiCommon.ResultsHandling
+namespace VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling
 {
 
   public abstract class GenericEnum<T, U> where T : GenericEnum<T, U>, new()

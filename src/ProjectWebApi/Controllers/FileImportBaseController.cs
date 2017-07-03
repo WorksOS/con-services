@@ -1,29 +1,29 @@
-﻿using ProjectWebApi.Filters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using ProjectWebApi.Internal;
 using KafkaConsumer.Kafka;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using ProjectWebApiCommon.Models;
 using Repositories;
-using VSS.GenericConfiguration;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using ProjectWebApiCommon.ResultsHandling;
 using Repositories.DBModels;
 using TCCFileAccess;
+using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Filters;
+using VSS.Productivity3D.ProjectWebApi.Internal;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApiCommon.Utilities;
-using Microsoft.Extensions.Logging;
 
-namespace Controllers
+namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {
   /// <summary>
   /// FileImporter controller

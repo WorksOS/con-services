@@ -1,10 +1,10 @@
 ﻿using System;
 using AutoMapper;
-using ProjectWebApiCommon.Models;
 using Repositories.DBModels;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ProjectWebApiCommon.Utilities
+namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
 {
   public class AutoMapperUtility
   {

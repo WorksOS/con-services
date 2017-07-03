@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Net;
 using Newtonsoft.Json;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 
-namespace ProjectWebApiCommon.ResultsHandling
+namespace VSS.Productivity3D.ProjectWebApiCommon.Models
 {
     /// <summary>
     ///   This is an expected exception and should be ignored by unit test failure methods.

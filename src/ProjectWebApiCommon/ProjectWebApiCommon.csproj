@@ -4,11 +4,12 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <AssemblyName>ProjectWebApiCommon</AssemblyName>
+    <AssemblyName>VSS.Productivity3D.ProjectWebApiCommon</AssemblyName>
     <PackageId>ProjectWebApiCommon</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>VSS.Productivity3D.ProjectWebApiCommon</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
