@@ -15,7 +15,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
@@ -44,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\log4netExtensions\log4netExtensions.Local.csproj" />
     <ProjectReference Include="..\..\..\src\WebApiModels\WebApiModels.Local.csproj" />
   </ItemGroup>
 
