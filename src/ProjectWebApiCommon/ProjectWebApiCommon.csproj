@@ -22,8 +22,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="AutoMapper" Version="6.0.2" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.74" />
-    <PackageReference Include="TCCFileAccess.netcore" Version="*" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.77" />
+    <PackageReference Include="TCCFileAccess.netcore" Version="1.2.6" />
   </ItemGroup>
 
 </Project>

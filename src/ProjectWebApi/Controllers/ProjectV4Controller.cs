@@ -64,7 +64,9 @@ namespace Controllers
     {
       log.LogInformation("GetProjectsV4");
 
-      var projects = await GetProjectList().ConfigureAwait(false);
+      //exclude Landfill Projects for now
+      var projects = (await GetProjectList().ConfigureAwait(false)).Where(prj => prj.ProjectType != ProjectType.LandFill).ToImmutableList();
+
       return new ProjectV4DescriptorsListResult
       {
         ProjectDescriptors = projects.Select(project =>
@@ -104,6 +106,10 @@ namespace Controllers
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
+
+      //Landfill projects are not supported till l&s goes live
+      if (projectRequest?.ProjectType == ProjectType.LandFill)
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(3000, "Landfill projects are not supported"));
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
@@ -166,6 +172,11 @@ namespace Controllers
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
+
+      //Landfill projects are not supported till l&s goes live
+      if (projectRequest?.ProjectType == ProjectType.LandFill)
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(3000, "Landfill projects are not supported"));
+
       log.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
@@ -179,7 +190,7 @@ namespace Controllers
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
         var projectWithLegacyProjectId = projectService.GetProjectOnly(project.ProjectUID.ToString()).Result;
-        await CreateCoordSystemInRaptor(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID, 
+        await CreateCoordSystemInRaptor(project.ProjectUID, projectWithLegacyProjectId.LegacyProjectID,
           project.CoordinateSystemFileName, project.CoordinateSystemFileContent, false).ConfigureAwait(false);
       }
 
@@ -187,7 +198,7 @@ namespace Controllers
       if (isUpdated == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62);
 
-      var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectEvent = project});
+      var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = project });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
@@ -223,7 +234,7 @@ namespace Controllers
       };
       ProjectDataValidator.Validate(project, projectService);
 
-      var messagePayload = JsonConvert.SerializeObject(new {DeleteProjectEvent = project});
+      var messagePayload = JsonConvert.SerializeObject(new { DeleteProjectEvent = project });
       var isDeleted = await projectService.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
@@ -299,7 +310,7 @@ namespace Controllers
       //  if updating a landfill, or other then May have one. Note that a null one doesn't overwrite any existing.
       if (project is CreateProjectEvent)
       {
-        var projectEvent = (CreateProjectEvent) project;
+        var projectEvent = (CreateProjectEvent)project;
         if (projectEvent.ProjectType == ProjectType.LandFill
             && (string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName)
                 || projectEvent.CoordinateSystemFileContent == null)
@@ -308,14 +319,14 @@ namespace Controllers
       }
 
       if (project is CreateProjectEvent)
-        ProjectBoundaryValidator.ValidateWKT(((CreateProjectEvent) project).ProjectBoundary);
+        ProjectBoundaryValidator.ValidateWKT(((CreateProjectEvent)project).ProjectBoundary);
 
       var csFileName = (project is CreateProjectEvent)
-        ? ((CreateProjectEvent) project).CoordinateSystemFileName
-        : ((UpdateProjectEvent) project).CoordinateSystemFileName;
+        ? ((CreateProjectEvent)project).CoordinateSystemFileName
+        : ((UpdateProjectEvent)project).CoordinateSystemFileName;
       var csFileContent = (project is CreateProjectEvent)
-        ? ((CreateProjectEvent) project).CoordinateSystemFileContent
-        : ((UpdateProjectEvent) project).CoordinateSystemFileContent;
+        ? ((CreateProjectEvent)project).CoordinateSystemFileContent
+        : ((UpdateProjectEvent)project).CoordinateSystemFileContent;
       if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
       {
         ProjectDataValidator.ValidateFileName(csFileName);
@@ -389,8 +400,7 @@ namespace Controllers
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
         var customHeaders = Request.Headers.GetCustomHeaders();
-        string caching = null;
-        customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+        customHeaders.TryGetValue("X-VisionLink-ClearCache", out string caching);
         if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
           customHeaders.Add("X-VisionLink-ClearCache", "true");
 
@@ -409,7 +419,7 @@ namespace Controllers
             if (isCreate)
               await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
 
-            throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1).ToString(), (coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"));
+            ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1).ToString(), (coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"));
           }
         }
         catch (Exception e)
@@ -467,7 +477,7 @@ namespace Controllers
         .Replace(',', ';')
         .Replace(' ', ',');
 
-      var messagePayloadProject = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
+      var messagePayloadProject = JsonConvert.SerializeObject(new { CreateProjectEvent = project });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
@@ -478,7 +488,7 @@ namespace Controllers
 
       log.LogDebug(
         $"AssociateCustomerProjectEvent on kafka queue {customerProject.ProjectUID} with Customer {customerProject.CustomerUID}");
-      var messagePayloadCustomerProject = JsonConvert.SerializeObject(new {AssociateProjectCustomer = customerProject});
+      var messagePayloadCustomerProject = JsonConvert.SerializeObject(new { AssociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>
         {
@@ -496,29 +506,14 @@ namespace Controllers
     /// <exception cref="ContractExecutionResult">No available subscriptions for the selected customer</exception>
     private async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type, Guid projectUid)
     {
-      var availableSubscriptions =
-        (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
-        .Where(s => s.ServiceTypeID == (int) type.MatchSubscriptionType()).ToImmutableList();
-      log.LogDebug(
-        $"Receieved {availableSubscriptions.Count()} subscriptions for projectType {type} matchedServiceType {type.MatchSubscriptionType()}. Contents {JsonConvert.SerializeObject(availableSubscriptions)}");
-      var projects =
-        (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
-
-      log.LogDebug($"Receieved {projects.Count()} projects with contents {JsonConvert.SerializeObject(projects)}");
-
-      var availableFreSub = availableSubscriptions
-        .Where(s => !projects
-                      .Where(p => p.ProjectType == type && !p.IsDeleted)
-                      .Select(p => p.SubscriptionUID)
-                      .Contains(s.SubscriptionUID) &&
-                    s.ServiceTypeID == (int) type.MatchSubscriptionType())
-        .ToImmutableList();
-      log.LogDebug(
-        $"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
+      var availableFreSub =
+        (await subsService.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
+        .Where(s => s.ServiceTypeID == (int)type.MatchSubscriptionType()).ToImmutableList();
+      
+      log.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
       if (!availableFreSub.Any())
       {
-        // only called for Create, not update
-        // await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
+        await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
       }
       return availableFreSub;
@@ -531,20 +526,9 @@ namespace Controllers
     /// <returns></returns>
     private async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid)
     {
-      var availableSubscriptions =
-        (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
-        .Where(s => s.ServiceTypeID == (int) ServiceTypeEnum.Landfill ||
-                    s.ServiceTypeID == (int) ServiceTypeEnum.ProjectMonitoring);
-      var projects = await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
-
-      var availableFreSub = availableSubscriptions
-        .Where(s => !projects
-          .Where(p => !p.IsDeleted)
-          .Select(p => p.SubscriptionUID)
-          .Contains(s.SubscriptionUID))
-        .ToImmutableList();
-
-      return availableFreSub;
+      return
+      (await subsService.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date)
+        .ConfigureAwait(false)).ToImmutableList();
     }
 
     /// <summary>
@@ -558,9 +542,8 @@ namespace Controllers
 
       if (project.ProjectType == ProjectType.LandFill || project.ProjectType == ProjectType.ProjectMonitoring)
       {
-        subscriptionUidAssigned = Guid.Parse((await GetFreeSubs(customerUid, project.ProjectType, project.ProjectUID)).First()
-          .SubscriptionUID);
-        log.LogDebug($"Receieved {subscriptionUidAssigned} subscription");
+        subscriptionUidAssigned = Guid.Parse((await GetFreeSubs(customerUid, project.ProjectType, project.ProjectUID)).First().SubscriptionUID);
+        log.LogDebug($"Received {subscriptionUidAssigned} subscription");
         //Assign a new project to a subscription
         try
         {

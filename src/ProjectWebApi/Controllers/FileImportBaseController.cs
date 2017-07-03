@@ -232,7 +232,8 @@ namespace Controllers
       if (await projectService.StoreEvent(updateImportedFileEvent).ConfigureAwait(false) == 1)
         return updateImportedFileEvent;
 
-      throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 52);
+      ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 52);
+      return updateImportedFileEvent;
     }
 
     /// <summary>
@@ -254,7 +255,8 @@ namespace Controllers
       if (await projectService.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
         return deleteImportedFileEvent;
 
-      throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 51);
+      ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 51);
+      return deleteImportedFileEvent;
     }
 
     /// <summary>
@@ -275,16 +277,27 @@ namespace Controllers
           tccFileName = GeneratedFileName(tccFileName, GeneratedSuffix(surveyedUtc.Value),
             Path.GetExtension(tccFileName));
 
-      log.LogInformation(
-        $"WriteFileToTCCRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
-      // check for exists first to avoid an misleading exception in our logs.
-      var folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
-      if (folderAlreadyExists == false)
-        await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
+      bool ccPutFileResult = false;
+      bool folderAlreadyExists = false;
+      try
+      {
+        log.LogInformation(
+          $"WriteFileToTCCRepository: fileSpaceId {fileSpaceId} tccPath {tccPath} tccFileName {tccFileName}");
+        // check for exists first to avoid an misleading exception in our logs.
+        folderAlreadyExists = await fileRepo.FolderExists(fileSpaceId, tccPath).ConfigureAwait(false);
+        if (folderAlreadyExists == false)
+          await fileRepo.MakeFolder(fileSpaceId, tccPath).ConfigureAwait(false);
 
-      // this does an upsert
-      var ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length)
-        .ConfigureAwait(false);
+        // this does an upsert
+        ccPutFileResult = await fileRepo.PutFile(fileSpaceId, tccPath, tccFileName, fileStream, fileStream.Length)
+          .ConfigureAwait(false);
+      }
+      catch (Exception e)
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.PutFile",
+          e.Message);
+      }
+
       if (ccPutFileResult == false)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 53);
