@@ -30,7 +30,9 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
   /// </summary>
   public class FileImportV4Controller : FileImportBaseController
   {
-
+    /// <summary>
+    /// Local log provider.
+    /// </summary>
     protected static ILoggerFactory Logger;
 
     /// <summary>
@@ -55,7 +57,6 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       }
     }
 
-
     // GET: api/v4/importedfiles
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
@@ -66,7 +67,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV4([FromQuery] string projectUid)
     {
       log.LogInformation("GetImportedFilesV4");
-      return new ImportedFileDescriptorListResult()
+      return new ImportedFileDescriptorListResult
       {
         ImportedFileDescriptors = await GetImportedFileList(projectUid).ConfigureAwait(false)
       };
@@ -84,7 +85,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       const string functionId = "SetImportedFileActivatedStateV4";
       log.LogInformation("ActivateFiles");
 
-      await ValidateProjectId(projectUid);
+      await ValidateProjectId(projectUid).ConfigureAwait(false);
 
       if (request == null)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
@@ -97,7 +98,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
 
       log.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
 
-      var importedFiles = await GetImportedFiles(projectUid);
+      var importedFiles = await GetImportedFiles(projectUid).ConfigureAwait(false);
       if (!importedFiles.Any())
       {
         log.LogInformation($"{functionId}. Attempt to set file activation state when project contains no files");
@@ -141,7 +142,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
         var projectUidGuid = new Guid(projectUid);
 
         var dbUpdateResult = await SetFileActivatedState(projectUidGuid, filesToUpdate);
-        await NotifyRaptorUpdateFile(projectUidGuid, dbUpdateResult.Select(x => x.ImportedFileUID));
+        await NotifyRaptorUpdateFile(projectUidGuid, dbUpdateResult.Select(x => x.ImportedFileUID)).ConfigureAwait(false);
 
         return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
       }
@@ -150,7 +151,6 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
         return new JsonResult(new { Code = HttpStatusCode.InternalServerError, exception.GetBaseException().Message });
       }
     }
-
 
     /// <summary>
     /// Used as a callback by Flow.JS
@@ -242,7 +242,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
@@ -259,7 +259,6 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
         $"CreateImportedFileV4. completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       return importedFile;
     }
-
 
     // PUT: api/v4/importedfile
     /// <summary>
@@ -341,7 +340,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
         importedFileUid = createImportedFileEvent.ImportedFileUID.ToString();
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
-      
+
       await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value,
           Guid.Parse(importedFileUid), (existing == null))
         .ConfigureAwait(false);
@@ -354,18 +353,18 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
             fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
           .ConfigureAwait(false);
 
-        var messagePayload = JsonConvert.SerializeObject(new {UpdateImportedFileEvent = updateImportedFileEvent});
+        var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
         producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
+          new List<KeyValuePair<string, string>>
           {
             new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
           });
       }
       else
       {
-        var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
+        var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
         producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
+          new List<KeyValuePair<string, string>>
           {
             new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
           });
@@ -415,33 +414,18 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
 
       await DeleteFileFromTCCRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))
         .ConfigureAwait(false);
-      
+
       var deleteImportedFileEvent = await DeleteImportedFile(projectUid, importedFileUid, false).ConfigureAwait(false);
 
       var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(deleteImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
       log.LogInformation(
         $"DeleteImportedFileV4. Completed succesfully. ProjectUid {projectUid} importedFileUid: {importedFileUid}");
       return new ContractExecutionResult();
-    }
-
-    /// <summary>
-    /// Sets activated state on one or more imported files.
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileUids">Collection of file Uids to set the activated state on</param>
-    /// <returns></returns>
-    [Route("api/v4/importedfiles")]
-    [HttpPut]
-    protected async Task<ImmutableList<ActivatedFileDescriptor>> PutImportedFilesV4([FromQuery] string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileUids)
-    {
-      log.LogInformation("ActivateFiles");
-
-      throw new NotImplementedException();
     }
   }
 }
