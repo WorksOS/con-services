@@ -26,6 +26,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private Getter<ElevationStatisticsResult> elevationRangeRequester;
     private Getter<TileResult> tileRequester;
     private Getter<CompactionColorPalettesResult> paletteRequester;
+    private Getter<CompactionElevationPaletteResult> elevPaletteRequester;
 
     private StatisticsParameters statsRequest;
     private string projectUid;
@@ -226,6 +227,24 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void ThenTheTileResultShouldBe(string multilineText)
     {
       CompareIt<TileResult>(multilineText, tileRequester);
+    }
+
+    [Given(@"the Compaction Elevation Palette service URI ""(.*)""")]
+    public void GivenTheCompactionElevationPaletteServiceURI(string url)
+    {
+      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+    }
+
+    [When(@"I request Elevation Palette")]
+    public void WhenIRequestElevationPalette()
+    {
+      elevPaletteRequester = GetIt<CompactionElevationPaletteResult>();
+    }
+
+    [Then(@"the Elevation Palette result should be")]
+    public void ThenTheElevationPaletteResultShouldBe(string multilineText)
+    {
+      CompareIt<CompactionElevationPaletteResult>(multilineText, elevPaletteRequester);
     }
 
     [Given(@"the Compaction Palettes service URI ""(.*)""")]

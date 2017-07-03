@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
   /// <summary>
   /// The represenation of the results of a detailed pass count request
@@ -64,7 +64,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     {
       get
       {
-        return new PassCountDetailedResult()
+        return new PassCountDetailedResult
         {
           percents = new double[2] {0.1,0.2},
           TotalCoverageArea = 100,

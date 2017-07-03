@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Raptor.Service.Common.Utilities
+namespace VSS.Productivity3D.Common.Utilities
 {
   /// <summary>
   /// Utility class that defines constants used for data conversion.

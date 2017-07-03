@@ -1,15 +1,15 @@
-﻿using System;
-using ASNode.ExportProductionDataCSV.RPC;
-using ASNode.UserPreferences;
-using BoundingExtents;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
+using System.Net;
 using VLPDDecls;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Nighthawk.ReportSvc.WebApi.Models
+namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
-    public enum GriddedCSVReportType
+  public enum GriddedCSVReportType
     {
         Gridded = 1,
         Alignment = 2,
@@ -25,7 +25,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
     /// <summary>
     /// The representation of a pass counts request
     /// </summary>
-    public class ExportGridCSV : ProjectID, IValidatable
+    public class ExportGridCSV : RaptorHelper
     {
         /// <summary>
         /// An identifier from the caller. 
@@ -38,7 +38,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         /// Determines if the coordinates of the points in the emitted CSV file are in Northing and Easting coordinates or 
         /// in Station and Offset coordinates with respect to a road design centerline supplied as a part of the request.
         /// </summary>
-        [JsonProperty(PropertyName = "reportType", Required = Required.Default)]
+        [JsonProperty(PropertyName = "reportType", Required = Required.Always)]
         public GriddedCSVReportType reportType { get; protected set; }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         /// Sets the design file to be used for cut/fill or station/offset calculations
         /// </summary>
         [JsonProperty(PropertyName = "designFile", Required = Required.Default)]
-        public TVLPDDesignDescriptor designFile { get; protected set; }
+        public DesignDescriptor designFile { get; protected set; }
 
         /// <summary>
         /// The filter instance to use in the request
@@ -61,7 +61,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         public Filter filter { get; protected set; }
 
         /// <summary>
-        /// The filter ID to used in the request.
+        /// The filter ID to be used in the request.
         /// May be null.
         /// </summary>
         [JsonProperty(PropertyName = "filterID", Required = Required.Default)]
@@ -74,9 +74,9 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         public LiftBuildSettings liftBuildSettings { get; protected set; }
 
         /// <summary>
-        /// The spacing interval for the sampled points. Setting to 1.0m will cause points to be spaced 1.0 meters apart.
+        /// The spacing interval for the sampled points. Setting to 1.0 will cause points to be spaced 1.0 meters apart.
         /// </summary>
-        [JsonProperty(PropertyName = "interval", Required = Required.Default)]
+        [JsonProperty(PropertyName = "interval", Required = Required.Always)]
         public double interval { get; protected set; }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         public double direction { get; protected set; }
 
         /// <summary>
-        /// Compress the result
+        /// If set to false, the returned file content is an ANSI text representation of the CSV file. If set to true, the returned file content is a ZIP conpressed archive containing a single file with the name 'asbuilt.csv'.
         /// </summary>
         [JsonProperty(PropertyName = "compress", Required = Required.Default)]
         public bool compress { get; protected set; }
@@ -209,6 +209,62 @@ namespace VSS.Nighthawk.ReportSvc.WebApi.Models
         /// </summary>
         public override void Validate()
         {
+            base.Validate();
+
+            //Compaction settings
+            if (liftBuildSettings != null)
+            {
+                liftBuildSettings.Validate();
+            }
+
+            if (!(reportType == GriddedCSVReportType.Alignment || reportType == GriddedCSVReportType.Gridded))
+            {
+                throw new ServiceException(HttpStatusCode.BadRequest,
+                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                       $"Grid report type must be either 1 ('Gridded') or 2 ('Alignment'). Actual value supplied: {reportType}"));
+            }
+
+            if (reportType == GriddedCSVReportType.Alignment)
+            {
+                if (!(reportOption == GriddedCSVReportOption.Automatic ||
+                      reportOption == GriddedCSVReportOption.Direction ||
+                      reportOption == GriddedCSVReportOption.EndPoint))
+                {
+                    throw new ServiceException(HttpStatusCode.BadRequest,
+                                       new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                                         $"Report option for gridded report type must be 1 ('Automatic'), 2 ('Direction') or 3 (EndPoint). Actual value supplied: {reportOption}"));
+                }
+            }
+
+            if (reportCutFill == true)
+            {
+                ValidateDesign(designFile, DisplayMode.CutFill, RaptorConverters.VolumesType.None);
+            }
+
+            if (interval < 0.1 || interval > 100.00)
+            {
+                throw new ServiceException(HttpStatusCode.BadRequest,
+                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                       $"Interval must be >= 0.1m and <= 100.0m. Actual value: {interval}"));
+            }
+
+            if (!(reportPassCount || reportTemperature || reportMDP || reportCutFill || reportCMV || reportElevation))
+            {
+                throw new ServiceException(HttpStatusCode.BadRequest,
+                     new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                         string.Format("There are no selected fields to be reported on")));
+            }
+
+            if (direction < 0 || direction > (2 * Math.PI))
+            {
+                if (!(reportPassCount || reportTemperature || reportMDP || reportCutFill || reportCMV || reportElevation))
+                {
+                    throw new ServiceException(HttpStatusCode.BadRequest,
+                         new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                           $"Direction must be in the range 0..2*PI radians. Actual value: {direction}"));
+                }
+            }
+
             translations = new TTranslation[6];
             translations[0].ID = 0;
             translations[0].Translation = "Problem occured processing export.";

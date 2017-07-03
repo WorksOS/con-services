@@ -1,28 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
-using VSS.Raptor.Service.Common.JsonConverters;
+using VSS.Productivity3D.Common.Extensions;
 
-namespace VSS.Raptor.Service.WebApi
+namespace VSS.Productivity3D.WebApi
 {
+  /// <summary>
+  /// 
+  /// </summary>
   public class ConfigureMvcOptions : IConfigureOptions<MvcOptions>
   {
     private readonly ILogger<MvcOptions> _logger;
     private readonly ObjectPoolProvider _objectPoolProvider;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="objectPoolProvider"></param>
     public ConfigureMvcOptions(ILogger<MvcOptions> logger, ObjectPoolProvider objectPoolProvider)
     {
       _logger = logger;
       _objectPoolProvider = objectPoolProvider;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="options"></param>
     public void Configure(MvcOptions options)
     {
-      options.UseProjectIDJsonInputFormatter(_logger, _objectPoolProvider);
+      options.UseProjectIdJsonInputFormatter(_logger, _objectPoolProvider);
     }
   }
 }

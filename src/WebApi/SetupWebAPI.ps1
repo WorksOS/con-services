@@ -52,7 +52,7 @@ else
 
 
 if ($OKTORUN -eq "OK")
-  {& .\\WebAPI.exe}
+  {& .\\VSS.Productivity3D.WebApi.exe}
 else
-  { Write-host "Error! Not running WebAPI due to setup error. Check Environment variables ASNODEIP, IONODEIP and SHAREUNC are defined"  -ForegroundColor Red;}
+  { Write-host "Error! Not running VSS.Productivity3D.WebApi due to setup error. Check Environment variables ASNODEIP, IONODEIP and SHAREUNC are defined"  -ForegroundColor Red;}
 

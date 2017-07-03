@@ -1,14 +1,11 @@
 using System.Net;
 using System.Reflection;
-using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-
-namespace VSS.Raptor.Service.Common.Filters.Authentication
+namespace VSS.Productivity3D.Common.Filters.Authentication
 {
   /// <summary>
   ///   Tests if the project is not archived and has Write access
@@ -39,18 +36,14 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
       if (!(projectUidValue is long))
         return;
 
-      var authProjectsStore = actionContext.HttpContext.RequestServices.GetRequiredService<IAuthenticatedProjectsStore>();
-      if (authProjectsStore == null)
-        return;
-      var customerUid = ((actionContext.HttpContext.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      var projectsById = authProjectsStore.GetProjectsById(customerUid);
-      if (!projectsById.ContainsKey((long) projectUidValue)) return;
-
-      if (projectsById[(long) projectUidValue].isArchived)
+      var projectDescr = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((string)projectUidValue);
+      if (projectDescr.isArchived)
+      {
         throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
             "Don't have write access to the selected project."
-            ));
+          ));
+      }
     }
   }
 }

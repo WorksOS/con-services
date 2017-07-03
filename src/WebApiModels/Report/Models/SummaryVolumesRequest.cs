@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
-    /// <summary>
-    /// The representation of a summary volumes request
-    /// </summary>
-    public class SummaryVolumesRequest : SummaryParametersBase
+  /// <summary>
+  /// The representation of a summary volumes request
+  /// </summary>
+  public class SummaryVolumesRequest : SummaryParametersBase
     {
     /// <summary>
         /// The type of volume computation to be performed as a summary volumes request
@@ -81,7 +81,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
          {
              get
              {
-                 return new SummaryVolumesRequest()
+                 return new SummaryVolumesRequest
                  {
                      projectId = 34,
                      additionalSpatialFilter = Filter.HelpSample,

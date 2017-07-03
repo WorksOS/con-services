@@ -1,10 +1,9 @@
-﻿
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+﻿using Newtonsoft.Json;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents result returned by MDP Summary request for compaction

@@ -2,24 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Security.Principal;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.Common.Utilities;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Contracts;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Executors;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Utilities;
+using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-
-namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
+namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
     /// <summary>
     /// Controller for supplying CCA data tiles.
@@ -44,24 +43,19 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// Proxy for getting geofences from master data. Used to get boundary for Raptor using given geofenceUid.
     /// </summary>
     private readonly IGeofenceProxy geofenceProxy;
-    /// <summary>
-    /// Used to get list of projects for customer
-    /// </summary>
-    private readonly IAuthenticatedProjectsStore authProjectsStore;
+
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="geofenceProxy">Proxy client for getting geofences for boundaries</param>
     /// <param name="logger">Logger</param>
     /// <param name="raptorClient">Raptor client</param>
-    /// <param name="authProjectsStore">Authenticated projects store</param>
-    public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient, IAuthenticatedProjectsStore authProjectsStore)
+    public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger, IASNodeClient raptorClient)
     {
       this.geofenceProxy = geofenceProxy;
       this.logger = logger;
       this.log = logger.CreateLogger<CCATileController>();
       this.raptorClient = raptorClient;
-      this.authProjectsStore = authProjectsStore;
     }
     /// <summary>
     /// Supplies tiles of rendered CCA data overlays.
@@ -151,11 +145,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      long projectId = ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore);
-
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       var request = CreateAndValidateRequest(projectId, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid);
-
       var tileResult = RequestExecutorContainer.Build<TilesExecutor>(logger, raptorClient, null).Process(request) as TileResult;
       if (tileResult != null)
       {

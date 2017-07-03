@@ -1,10 +1,8 @@
-﻿
-
+﻿using MasterDataProxies.Models;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Raptor.Service.WebApiModels.Compaction.Models
+namespace VSS.Productivity3D.WebApiModels.Compaction.Models
 {
   /// <summary>
   /// The representation of a elevation statistics request

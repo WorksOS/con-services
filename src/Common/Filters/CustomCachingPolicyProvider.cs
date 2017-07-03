@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 
-namespace Microsoft.AspNetCore.ResponseCaching.Internal
+namespace VSS.Productivity3D.Common.Filters
 {
     public class CustomCachingPolicyProvider : ResponseCachingPolicyProvider
     {

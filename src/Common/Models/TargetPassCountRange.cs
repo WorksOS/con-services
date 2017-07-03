@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Contains a range of Target Pass Count values.
@@ -47,7 +47,7 @@ namespace VSS.Raptor.Service.Common.Models
           ushort max
         )
     {
-      return new TargetPassCountRange()
+      return new TargetPassCountRange
       {
         min = min,
         max = max
@@ -61,7 +61,7 @@ namespace VSS.Raptor.Service.Common.Models
     {
       get
       {
-        return new TargetPassCountRange()
+        return new TargetPassCountRange
         {
           min = 2,
           max = 12
@@ -76,7 +76,7 @@ namespace VSS.Raptor.Service.Common.Models
     public void Validate()
     {
 
-      if (this.min > this.max)
+      if (min > max)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Target Pass Count minimum value must be less than Target Pass Count maximum value."));      

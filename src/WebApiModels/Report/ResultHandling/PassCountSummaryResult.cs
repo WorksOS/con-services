@@ -1,8 +1,8 @@
 ﻿using System;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
   /// <summary>
   /// The represenation of the results of a summary pass count request
@@ -81,7 +81,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     {
       get
       {
-        return new PassCountSummaryResult()
+        return new PassCountSummaryResult
         {
         };
       }

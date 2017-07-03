@@ -1,13 +1,11 @@
 using System.Net;
 using System.Reflection;
-using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc.Filters;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using Microsoft.Extensions.DependencyInjection;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Filters.Authentication
+namespace VSS.Productivity3D.Common.Filters.Authentication
 {
   /// <summary>
   /// 
@@ -38,18 +36,14 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
       if (!(projectIdValue is long))
         return;
 
-      var authProjectsStore = actionContext.HttpContext.RequestServices.GetRequiredService<IAuthenticatedProjectsStore>();
-      if (authProjectsStore == null)
-        return;
-      var customerUid = ((actionContext.HttpContext.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      var projectsById = authProjectsStore.GetProjectsById(customerUid);
-      if (!projectsById.ContainsKey((long) projectIdValue)) return;
-
-      if (projectsById[(long) projectIdValue].isLandFill)
+      var projectDescr = (actionContext.HttpContext.User as RaptorPrincipal).GetProject((long)projectIdValue);
+      if (projectDescr.isLandFill)
+      {
         throw new ServiceException(HttpStatusCode.Unauthorized,
           new ContractExecutionResult(ContractExecutionStatesEnum.AuthError,
             "Don't have access to the selected landfill project."
-            ));
+          ));
+      }
     }
   }
 }

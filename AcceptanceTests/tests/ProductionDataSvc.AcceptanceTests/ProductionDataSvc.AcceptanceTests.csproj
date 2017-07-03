@@ -113,6 +113,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Compaction.feature</DependentUpon>
     </Compile>
+    <Compile Include="CompactionTagFile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CompactionTagFile.feature</DependentUpon>
+    </Compile>
     <Compile Include="CoordinateConversion.feature.cs">
       <DependentUpon>CoordinateConversion.feature</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -143,6 +148,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DotOnTheMap.feature</DependentUpon>
     </Compile>
+    <Compile Include="DxfTile.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DxfTile.feature</DependentUpon>
+    </Compile>
     <Compile Include="EditData.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -152,6 +162,11 @@
       <DependentUpon>ElevationStatistics.feature</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="ExportGriddedCSV.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExportGriddedCSV.feature</DependentUpon>
     </Compile>
     <Compile Include="ExportReport.feature.cs">
       <DependentUpon>ExportReport.feature</DependentUpon>
@@ -194,11 +209,13 @@
     <Compile Include="Models\CompactionCmvPercentChangeResult.cs" />
     <Compile Include="Models\CompactionCmvSummaryResult.cs" />
     <Compile Include="Models\CompactionColorPalettesResult.cs" />
+    <Compile Include="Models\CompactionElevationPaletteResult.cs" />
     <Compile Include="Models\CompactionFilter.cs" />
     <Compile Include="Models\CompactionMdpSummaryResult.cs" />
     <Compile Include="Models\CompactionPassCountDetailedResult.cs" />
     <Compile Include="Models\CompactionPassCountSummaryResult.cs" />
     <Compile Include="Models\CompactionSpeedSummaryResult.cs" />
+    <Compile Include="Models\CompactionTagFile.cs" />
     <Compile Include="Models\CompactionTemperatureSummaryResult.cs" />
     <Compile Include="Models\CompactionTileRequest.cs" />
     <Compile Include="Models\ConfigResult.cs" />
@@ -207,6 +224,7 @@
     <Compile Include="Models\DesignNameRequest.cs" />
     <Compile Include="Models\DesignNames.cs" />
     <Compile Include="Models\ElevationStatistics.cs" />
+    <Compile Include="Models\ExportGriddedCSV.cs" />
     <Compile Include="Models\ExportReport.cs" />
     <Compile Include="Models\FiltersResult.cs" />
     <Compile Include="Models\GetMachineDesignResult.cs" />
@@ -228,6 +246,11 @@
     <Compile Include="Models\SurveyedSurfaceRequest.cs" />
     <Compile Include="Models\TAGFile.cs" />
     <Compile Include="Models\TileRequest.cs" />
+    <Compile Include="Notification.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Notification.feature</DependentUpon>
+    </Compile>
     <Compile Include="PassCountDetail.feature.cs">
       <DependentUpon>PassCountDetail.feature</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -270,13 +293,17 @@
     <Compile Include="StepDefinitions\CMVDetailSteps.cs" />
     <Compile Include="StepDefinitions\CMVSummarySteps.cs" />
     <Compile Include="StepDefinitions\CompactionSteps.cs" />
+    <Compile Include="StepDefinitions\CompactionTagFileSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateConversionSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemGetSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemPostSteps.cs" />
     <Compile Include="StepDefinitions\CoordinateSystemPostValidateSteps.cs" />
+    <Compile Include="StepDefinitions\DxfTileSteps.cs" />
     <Compile Include="StepDefinitions\ElevationStatisticsSteps.cs" />
+    <Compile Include="StepDefinitions\ExportGriddedCSVSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportSteps.cs" />
     <Compile Include="StepDefinitions\FileAccessSteps.cs" />
+    <Compile Include="StepDefinitions\NotificationSteps.cs" />
     <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
     <Compile Include="StepDefinitions\PassCountSummarySteps.cs" />
     <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
@@ -305,11 +332,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Tiles.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Tiles.feature</DependentUpon>
-    </Compile>
     <Compile Include="StepDefinitions\DesignCacheSteps.cs" />
     <Compile Include="StepDefinitions\DotOnTheMapSteps.cs" />
     <Compile Include="StepDefinitions\EditDataSteps.cs" />
@@ -329,6 +351,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>SurveyedSurface.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Tiles.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tiles.feature</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -357,6 +384,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Compaction.feature.cs</LastGenOutput>
     </None>
+    <None Include="CompactionTagFile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>CompactionTagFile.feature.cs</LastGenOutput>
+    </None>
     <None Include="CoordinateConversion.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CoordinateConversion.feature.cs</LastGenOutput>
@@ -381,6 +412,10 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>DotOnTheMap.feature.cs</LastGenOutput>
     </None>
+    <None Include="DxfTile.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>DxfTile.feature.cs</LastGenOutput>
+    </None>
     <None Include="EditData.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>EditData.feature.cs</LastGenOutput>
@@ -388,6 +423,10 @@
     <None Include="ElevationStatistics.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ElevationStatistics.feature.cs</LastGenOutput>
+    </None>
+    <None Include="ExportGriddedCSV.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ExportGriddedCSV.feature.cs</LastGenOutput>
     </None>
     <None Include="ExportReport.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -416,6 +455,10 @@
     <None Include="GetRaptorConfig.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>GetRaptorConfig.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Notification.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Notification.feature.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
     <None Include="CellDatum.feature">
@@ -495,6 +538,9 @@
     <None Include="TestData\CMVSummaryResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\CompactionTagFileRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\CoordSysValidationResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -516,7 +562,13 @@
     <None Include="TestData\ElevationStatsResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\ExportGriddedCSVRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\ExportReportRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\ExportGriddedCSVResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\ExportReportResponse.json">

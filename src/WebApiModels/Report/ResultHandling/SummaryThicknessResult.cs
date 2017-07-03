@@ -1,7 +1,7 @@
-﻿using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
+﻿using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
   /// <summary>
   /// Represents result returned by Summary Volumes request
@@ -44,8 +44,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     public static SummaryThicknessResult CreateSummaryThicknessResult(BoundingBox3DGrid convertExtents, double aboveTarget,
         double belowTarget, double matchTarget, double noCoverageArea)
     {
-      return new SummaryThicknessResult()
-             {
+      return new SummaryThicknessResult
+      {
                  BoundingExtents = convertExtents,
                  AboveTarget = aboveTarget,
                  BelowTarget = belowTarget,
@@ -61,8 +61,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     {
       get
       {
-        return new SummaryThicknessResult()
-               {
+        return new SummaryThicknessResult
+        {
                    BoundingExtents = BoundingBox3DGrid.HelpSample,
                    AboveTarget = 13.2,
                    BelowTarget = 11.3,

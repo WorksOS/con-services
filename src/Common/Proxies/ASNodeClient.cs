@@ -11,6 +11,7 @@ using ASNode.Volumes.RPC;
 using ASNodeDecls;
 using ASNodeRPC;
 using BoundingExtents;
+using DesignProfiler.ComputeDesignBoundary.RPC;
 using DesignProfilerDecls;
 using ShineOn.Rtl;
 using SubGridTreesDecls;
@@ -22,9 +23,9 @@ using SVOICProfileCell;
 using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
 using VLPDDecls;
-using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Raptor.Service.Common.Proxies
+namespace VSS.Productivity3D.Common.Proxies
 {
   public class ASNodeClient : IASNodeClient
   {
@@ -33,7 +34,7 @@ namespace VSS.Raptor.Service.Common.Proxies
       client = new Velociraptor.PDSInterface.Client.ASNode.ASNodeClient();
     }
 
-    private Velociraptor.PDSInterface.Client.ASNode.ASNodeClient client { get; set; }
+    private Velociraptor.PDSInterface.Client.ASNode.ASNodeClient client { get; }
 
     public bool GetProductionDataExport(long DataModelID, TASNodeRequestDescriptor ExternalRequestDescriptor,
         TASNodeUserPreferences UserPreferences, int ExportType, string CallerId, TICFilterSettings Filter,
@@ -399,34 +400,71 @@ namespace VSS.Raptor.Service.Common.Proxies
       return client.GetMachineCCAColourPalettes(dataModelId, machineId, startUtc ?? DateTime.MinValue, endUtc ?? DateTime.MinValue, liftId ?? 0, out palettes) == 1/*icsrrNoError*/;
     }
 
-        /// <summary>
-        /// Gets a gridded CSV export of the production data from Raptor
-        /// </summary>
-        /// <param name="DataModelID"></param>
-        /// <param name="ReportType"></param>
-        /// <param name="ExternalDescriptor"></param>
-        /// <param name="DesignFile"></param>
-        /// <param name="Interval"></param>
-        /// <param name="ElevationReport"></param>
-        /// <param name="CutFillReport"></param>
-        /// <param name="CMVReport"></param>
-        /// <param name="MDPReport"></param>
-        /// <param name="PassCountReport"></param>
-        /// <param name="TemperatureReport"></param>
-        /// <param name="ReportOption"></param>
-        /// <param name="StartNorthing"></param>
-        /// <param name="StartEasting"></param>
-        /// <param name="EndNorthing"></param>
-        /// <param name="EndEasting"></param>
-        /// <param name="Direction"></param>
-        /// <param name="Filter"></param>
-        /// <param name="LiftBuildSettings"></param>
-        /// <param name="ICOptions"></param>
-        /// <param name="DataExport"></param>
-        /// <returns></returns>
-        public int GetGriddedOrAlignmentCSVExport(long DataModelID, int ReportType, TASNodeRequestDescriptor ExternalDescriptor, TVLPDDesignDescriptor DesignFile, double Interval, bool ElevationReport, bool CutFillReport, bool CMVReport, bool MDPReport, bool PassCountReport, bool TemperatureReport, int ReportOption, double StartNorthing, double StartEasting, double EndNorthing, double EndEasting, double Direction, TICFilterSettings Filter, TICLiftBuildSettings LiftBuildSettings, TSVOICOptions ICOptions, out MemoryStream DataExport)
-        {
-            return client.GetGriddedOrAlignmentCSVExport(DataModelID, ReportType, ExternalDescriptor, DesignFile, Interval, ElevationReport, CutFillReport, CMVReport, MDPReport, PassCountReport, TemperatureReport, ReportOption, StartNorthing, StartEasting, EndNorthing, EndEasting, Direction, Filter, LiftBuildSettings, ICOptions, out DataExport);
-        }
+    /// <summary>
+    /// Gets PRJ file contents from Raptor for a project using the project coordinate system.
+    /// </summary>
+    /// <param name="dataModelID">Project ID</param>
+    /// <param name="requestedUnits">Metric or US units for the file contents</param>
+    /// <param name="prjFile">Projection file contents</param>
+    /// <returns></returns>
+    public TASNodeErrorStatus GetCoordinateSystemProjectionFile(long dataModelID, TVLPDDistanceUnits requestedUnits,
+      out string prjFile)
+    {
+      return client.GetCoordinateSystemProjectionFile(dataModelID, requestedUnits, out prjFile);
     }
+    /// <summary>
+    /// Gets GM_XFORM file contents from Raptor for a project using the project coordinate system.
+    /// </summary>
+    /// <param name="csFileName">Coordinate system file name</param>
+    /// <param name="dataModelID">Project ID</param>
+    /// <param name="requestedUnits">Metric or US units for the file contents</param>
+    /// <param name="haFile">Horizontal adjustment file contents</param>
+    /// <returns></returns>
+    public TASNodeErrorStatus GetCoordinateSystemHorizontalAdjustmentFile(string csFileName, long dataModelID, TVLPDDistanceUnits requestedUnits, out string haFile)
+    {
+      return client.GetCoordinateSystemHorizontalAdjustmentFile(csFileName, dataModelID, requestedUnits, out haFile);
+    }
+    /// <summary>
+    /// Gets the boundary of a surface as a DXF file.
+    /// </summary>
+    /// <param name="args">Design boundary arguments: The project ID, design surface file design descriptor, type of boundary (DXF),
+    /// units and interval to use</param>
+    /// <param name="dxfContents">The DXF file contents</param>
+    /// <param name="designProfilerResult">The result code (0=success)</param>
+    /// <returns></returns>
+    public bool GetDesignBoundaryAsDXFFile(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args args,
+      out MemoryStream dxfContents, out TDesignProfilerRequestResult designProfilerResult)
+    {
+      return client.GetDesignBoundaryAsDXFFile(args, out dxfContents, out designProfilerResult);
+    }
+    /// <summary>
+    /// Gets a gridded CSV export of the production data from Raptor
+    /// </summary>
+    /// <param name="DataModelID"></param>
+    /// <param name="ReportType"></param>
+    /// <param name="ExternalDescriptor"></param>
+    /// <param name="DesignFile"></param>
+    /// <param name="Interval"></param>
+    /// <param name="ElevationReport"></param>
+    /// <param name="CutFillReport"></param>
+    /// <param name="CMVReport"></param>
+    /// <param name="MDPReport"></param>
+    /// <param name="PassCountReport"></param>
+    /// <param name="TemperatureReport"></param>
+    /// <param name="ReportOption"></param>
+    /// <param name="StartNorthing"></param>
+    /// <param name="StartEasting"></param>
+    /// <param name="EndNorthing"></param>
+    /// <param name="EndEasting"></param>
+    /// <param name="Direction"></param>
+    /// <param name="Filter"></param>
+    /// <param name="LiftBuildSettings"></param>
+    /// <param name="ICOptions"></param>
+    /// <param name="DataExport"></param>
+    /// <returns></returns>
+    public int GetGriddedOrAlignmentCSVExport(long DataModelID, int ReportType, TASNodeRequestDescriptor ExternalDescriptor, TVLPDDesignDescriptor DesignFile, double Interval, bool ElevationReport, bool CutFillReport, bool CMVReport, bool MDPReport, bool PassCountReport, bool TemperatureReport, int ReportOption, double StartNorthing, double StartEasting, double EndNorthing, double EndEasting, double Direction, TICFilterSettings Filter, TICLiftBuildSettings LiftBuildSettings, TSVOICOptions ICOptions, out MemoryStream DataExport)
+    {
+      return client.GetGriddedOrAlignmentCSVExport(DataModelID, ReportType, ExternalDescriptor, DesignFile, Interval, ElevationReport, CutFillReport, CMVReport, MDPReport, PassCountReport, TemperatureReport, ReportOption, StartNorthing, StartEasting, EndNorthing, EndEasting, Direction, Filter, LiftBuildSettings, ICOptions, out DataExport);
+    }
+  }
 }

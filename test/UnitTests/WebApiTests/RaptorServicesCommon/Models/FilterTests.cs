@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.Common.Utilities;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Raptor.Service.WebApiTests.Common.Models
+namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
 {
-  [TestClass()]
+  [TestClass]
   public class FilterTests
   {
-        [TestMethod()]
+        [TestMethod]
     public void CanCreateFilterTest()
     {
       var validator = new DataAnnotationsValidator();
@@ -84,7 +84,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
           
     }
 
-        [TestMethod()]
+        [TestMethod]
         public void ValidateSuccessTest()
         {
           DesignDescriptor desc = DesignDescriptor.CreateDesignDescriptor(1, null, 2.0);
@@ -96,7 +96,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
 
  
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidDateRangeTest()
     {
       //start UTC > end UTC
@@ -106,7 +106,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidAlignmentFilterTest()
     {
       //missing alignment filter fields
@@ -115,7 +115,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidLayerFilterTest()
     {
       //Invalid layer filter
@@ -125,7 +125,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidLatLngPointsTest()
     {
       //too few points
@@ -134,7 +134,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.ThrowsException<ServiceException>(() => filter.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidGridPointsTest()
     {
       //too few points
@@ -144,7 +144,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
 
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidBoundaryFilterTest()
     {
       //both LL and grid points specified

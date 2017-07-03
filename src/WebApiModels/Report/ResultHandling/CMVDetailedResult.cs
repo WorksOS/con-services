@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.Raptor.Service.Common.Contracts;
+using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
   /// <summary>
   /// The result representation of a detailed CMV request
@@ -40,7 +40,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     {
       get
       {
-        return new CMVDetailedResult()
+        return new CMVDetailedResult
         {
           percents = new double[] { 7.5, 21.2, 30.3, 24.1, 16.9 }
         };

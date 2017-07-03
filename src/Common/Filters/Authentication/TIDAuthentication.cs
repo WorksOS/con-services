@@ -1,33 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
 using System.Security.Principal;
-using System.Threading;
 using System.Threading.Tasks;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.Utilities;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-
-namespace VSS.Raptor.Service.Common.Filters.Authentication
+namespace VSS.Productivity3D.Common.Filters.Authentication
 {
-    public class TIDAuthentication
+  public class TIDAuthentication
     {
         private readonly RequestDelegate _next;
-        private readonly IAuthenticatedProjectsStore authProjectsStore;
         private readonly IProjectListProxy projectListProxy;
         private readonly ILogger log;
 
 
-        public TIDAuthentication(RequestDelegate next, IAuthenticatedProjectsStore authProjectsStore, IProjectListProxy projectListProxy, ILoggerFactory logger)
+        public TIDAuthentication(RequestDelegate next, IProjectListProxy projectListProxy, ILoggerFactory logger)
         {
             _next = next;
-            this.authProjectsStore = authProjectsStore;
             this.projectListProxy = projectListProxy;
             log = logger.CreateLogger<TIDAuthentication>();
         }
@@ -55,7 +48,7 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
                 try
                 {
                     var jwtToken = new TPaaSJWT(authorization);
-                    var customerProjects = await projectListProxy.GetProjects(customerUID,
+                    var customerProjects = await projectListProxy.GetProjectsV4(customerUID,
                         context.Request.Headers.GetCustomHeaders());
                     var authProjects = new List<ProjectDescriptor>();
                     if (customerProjects != null)
@@ -67,19 +60,20 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
                                 isLandFill = project.ProjectType == ProjectType.LandFill,
                                 isArchived = project.IsArchived,
                                 projectUid = project.ProjectUid,
-                                projectId = project.LegacyProjectId
+                                projectId = project.LegacyProjectId,                              
+                                coordinateSystemFileName = project.CoordinateSystemFileName,
+                                projectGeofenceWKT = project.ProjectGeofenceWKT
                             };
                             authProjects.Add(projectDesc);
                         }
                     }
-                    authProjectsStore.SetAuthenticatedProjectList(customerUID, authProjects);
                     log.LogDebug("Authorization: for Customer: {0} projectList is: {1}", customerUID,
                         authProjects.Count);
 
                     var identity = string.IsNullOrEmpty(customerUID)
                         ? new GenericIdentity(jwtToken.UserUid.ToString())
                         : new GenericIdentity(jwtToken.UserUid.ToString(), customerUID);
-                    var principal = new GenericPrincipal(identity, new string[] { });
+                    var principal = new RaptorPrincipal(identity, customerUID, authProjects);
                     context.User = principal;
                     //Thread.CurrentPrincipal = principal;
                 }
@@ -97,14 +91,6 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication
         {
             context.Response.StatusCode = 403;
             await context.Response.WriteAsync(message);
-        }
-    }
-
-    public static class TIDAuthenticationExtensions
-    {
-        public static IApplicationBuilder UseTIDAuthentication (this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<TIDAuthentication>();
         }
     }
 }

@@ -1,13 +1,13 @@
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Request representation for requesting project statistics
@@ -37,8 +37,8 @@ namespace VSS.Raptor.Service.Common.Models
 
     public static ProjectStatisticsRequest CreateStatisticsParameters(long ProjectId, long[] ExcludedSurveyedSurfaceIds)
     {
-      return new ProjectStatisticsRequest() 
-             { 
+      return new ProjectStatisticsRequest
+      { 
                  projectId = ProjectId, 
                  excludedSurveyedSurfaceIds = ExcludedSurveyedSurfaceIds
              };
@@ -51,17 +51,10 @@ namespace VSS.Raptor.Service.Common.Models
     /// <summary>
     /// Statistics parameters request help instance
     /// </summary>
-    public new static ProjectStatisticsRequest HelpSample
+    public new static ProjectStatisticsRequest HelpSample => new ProjectStatisticsRequest
     {
-      get
-      {
-        return new ProjectStatisticsRequest()
-               {
-                   projectId = 100,
-                   excludedSurveyedSurfaceIds = new long[] {1, 3, 5 }
-               };
-      }
-    }
-
+      projectId = 100,
+      excludedSurveyedSurfaceIds = new long[] {1, 3, 5 }
+    };
   }
 }

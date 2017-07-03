@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.WebApiModels.Coord.Contracts;
-using VSS.Raptor.Service.WebApiModels.Coord.Executors;
-using VSS.Raptor.Service.WebApiModels.Coord.Models;
-using VSS.Raptor.Service.WebApiModels.Coord.ResultHandling;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.Coord.Contracts;
+using VSS.Productivity3D.WebApiModels.Coord.Executors;
+using VSS.Productivity3D.WebApiModels.Coord.Models;
+using VSS.Productivity3D.WebApiModels.Coord.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApi.Coord.Controllers
+namespace VSS.Productivity3D.WebApi.Coord.Controllers
 {
     /// <summary>
     /// Controller for the CoordinateSystemFile resource.
@@ -36,22 +35,15 @@ namespace VSS.Raptor.Service.WebApi.Coord.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// Used to get list of projects for customer
-    /// </summary>
-    private readonly IAuthenticatedProjectsStore authProjectsStore;
-
-    /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="authProjectsStore">Authenticated projects store</param>
-    public CoordinateSystemController(IASNodeClient raptorClient, ILoggerFactory logger, IAuthenticatedProjectsStore authProjectsStore)
+    public CoordinateSystemController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CoordinateSystemController>();
-      this.authProjectsStore = authProjectsStore;
     }
 
     /// <summary>
@@ -134,9 +126,8 @@ namespace VSS.Raptor.Service.WebApi.Coord.Controllers
     [HttpGet]
     public CoordinateSystemSettings Get([FromRoute] Guid projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID request = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID request = ProjectID.CreateProjectID(projectId, projectUid);
 
       request.Validate();
       return RequestExecutorContainer.Build<CoordinateSystemExecutorGet>(logger, raptorClient, null).Process(request) as CoordinateSystemSettings;

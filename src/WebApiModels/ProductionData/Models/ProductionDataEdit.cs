@@ -2,11 +2,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Validation;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Validation;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   /// <summary>
   /// A representation of an edit applied to production data.
@@ -86,8 +86,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     {
       get
       {
-        return new ProductionDataEdit()
-               {
+        return new ProductionDataEdit
+        {
                    assetId = 8265735274,
                    startUTC = DateTime.UtcNow.AddDays(-5),
                    endUTC = DateTime.UtcNow.AddDays(-3),
@@ -106,14 +106,14 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  string.Format("Invalid override date range")));
+                  "Invalid override date range"));
       }
 
       if (string.IsNullOrEmpty(onMachineDesignName) && !liftNumber.HasValue)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-                  string.Format("Nothing to edit")));
+                  "Nothing to edit"));
       }
     }
   }

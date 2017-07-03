@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace VSS.Raptor.Service.Common.Filters.Validation
+namespace VSS.Productivity3D.Common.Filters.Validation
 {
   /// <summary>
   /// Validates the passed asset ID.

@@ -1,5 +1,4 @@
-
-namespace VSS.Raptor.Service.Common.Filters.Authentication.Models
+namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 {
   /// <summary>
   /// Describes VL project 
@@ -28,5 +27,13 @@ namespace VSS.Raptor.Service.Common.Filters.Authentication.Models
     /// Gets or sets a unique project identifier's value from legacy VisionLink.
     /// </summary>
     public long projectId { get; set; }
+    /// <summary>
+    /// Gets or sets the CoordinateSystem FileName which the project is associated with
+    /// </summary>
+    public string coordinateSystemFileName { get; set; }
+    /// <summary>
+    /// Gets or sets the project boundary as WKT
+    /// </summary>
+    public string projectGeofenceWKT { get; set; }
   }
 }

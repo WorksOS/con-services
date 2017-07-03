@@ -3,10 +3,10 @@ using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Filters.Validation
+namespace VSS.Productivity3D.Common.Filters.Validation
 {
     /// <summary>
     /// Attribute enabling obligatory validation of domain objects upon reception.

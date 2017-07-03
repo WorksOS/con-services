@@ -1,4 +1,4 @@
-﻿namespace VSS.Raptor.Service.Common.Models
+﻿namespace VSS.Productivity3D.Common.Models
 {
     /// <summary>
     /// Provides description of GPS accuracy for the current cell, current machine and current datetime

@@ -10,6 +10,7 @@ using ASNode.Volumes.RPC;
 using ASNodeDecls;
 using ASNodeRPC;
 using BoundingExtents;
+using DesignProfiler.ComputeDesignBoundary.RPC;
 using DesignProfilerDecls;
 using ShineOn.Rtl;
 using SVOICDecls;
@@ -20,7 +21,7 @@ using SVOICStatistics;
 using SVOICVolumeCalculationsDecls;
 using VLPDDecls;
 
-namespace VSS.Raptor.Service.Common.Interfaces
+namespace VSS.Productivity3D.Common.Interfaces
 {
   /// <summary>
   /// Interface for Raptor AS Node
@@ -224,6 +225,10 @@ namespace VSS.Raptor.Service.Common.Interfaces
     bool GetCCASummary(long projectId, TASNodeRequestDescriptor externalRequestDescriptor,
      TICFilterSettings filter, TICLiftBuildSettings liftBuildSettings, out TCCASummary ccaSummary);
 
+    TASNodeErrorStatus GetCoordinateSystemProjectionFile(long DataModelID, TVLPDDistanceUnits RequestedUnits, out string prjFile);
+    TASNodeErrorStatus GetCoordinateSystemHorizontalAdjustmentFile(string CSFileName, long DataModelID, TVLPDDistanceUnits RequestedUnits, out string haFile);
+    bool GetDesignBoundaryAsDXFFile(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args Args, out MemoryStream DXFContents, out TDesignProfilerRequestResult DesignProfilerResult);
+
     bool GetMachineCCAColourPalettes(long dataModelId, long machineId, DateTime? startUtc, DateTime? endUtc, int? liftId, out TColourPalettes palettes);
 
         int GetGriddedOrAlignmentCSVExport(long DataModelID,
@@ -247,5 +252,6 @@ namespace VSS.Raptor.Service.Common.Interfaces
                                            TICLiftBuildSettings LiftBuildSettings,
                                            TSVOICOptions ICOptions,
                                            out MemoryStream DataExport);
+ 
     }
 }

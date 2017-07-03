@@ -1,9 +1,8 @@
-﻿
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
+﻿using Newtonsoft.Json;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
     /// <summary>
     /// A representation of a project extents request
@@ -22,7 +21,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
       public static ExtentRequest CreateExtentRequest(long ProjectId,
           long[] ExcludedSurveyedSurfaceIds)
       {
-        return new ExtentRequest()
+        return new ExtentRequest
         {
           projectId = ProjectId,
           excludedSurveyedSurfaceIds = ExcludedSurveyedSurfaceIds
@@ -41,7 +40,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
       {
         get
         {
-          return new ExtentRequest()
+          return new ExtentRequest
           {
               projectId = 100,
               excludedSurveyedSurfaceIds = new long[]{100,101,201},

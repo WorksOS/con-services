@@ -1,9 +1,7 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
-
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
     /// <summary>
     /// A representation of a machine in a Raptor project
@@ -63,7 +61,7 @@ namespace VSS.Raptor.Service.Common.Models
     {
       get
       {
-        return new MachineDetails()
+        return new MachineDetails
         {
           assetID = 1137642418461469,
           machineName = "VOLVO G946B",

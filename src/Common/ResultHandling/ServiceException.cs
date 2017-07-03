@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using System.Net.Http;
+using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.Common.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
     /// <summary>
     ///   This is an expected exception and should be ignored by unit test failure methods.
@@ -17,7 +16,6 @@ namespace VSS.Raptor.Service.Common.ResultHandling
         /// <param name="code"></param>
         /// <param name="result"></param>
         public ServiceException(HttpStatusCode code, ContractExecutionResult result)
-            : base()
         {
             GetResult = result;
             GetContent = JsonConvert.SerializeObject(result);
@@ -27,12 +25,12 @@ namespace VSS.Raptor.Service.Common.ResultHandling
         /// <summary>
         /// 
         /// </summary>
-        public string GetContent { get; private set; }
+        public string GetContent { get; }
 
         /// <summary>
         /// The result causing the exception
         /// </summary>
-        public ContractExecutionResult GetResult { get; private set; }
+        public ContractExecutionResult GetResult { get; }
 
         /// <summary>
         /// Gets the code.
@@ -41,6 +39,5 @@ namespace VSS.Raptor.Service.Common.ResultHandling
         /// The code.
         /// </value>
         public HttpStatusCode Code { get; set; }
-
     }
 }

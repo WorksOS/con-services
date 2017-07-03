@@ -1,18 +1,18 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
+namespace VSS.Productivity3D.WebApiTests.ProductionData.Models
 {
-  [TestClass()]
+  [TestClass]
   public class PatchRequestTests
   {
-    [TestMethod()]
+    [TestMethod]
     public void CanCreatePatchRequestTest()
     {
 
@@ -32,7 +32,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
       //vol no change tolerance out of range
       request = PatchRequest.CreatePatchRequest(
                       projectId, callId, DisplayMode.Height, null, liftSettings, false, RaptorConverters.VolumesType.None, 10.1, null, null, 0, null, 0,
-                      FilterLayerMethod.None, 5, 50);      
+                      FilterLayerMethod.None, 5, 50);
       Assert.IsFalse(validator.TryValidate(request, out results));
 
       //patch number out of range
@@ -50,18 +50,18 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
     }
 
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidPaletteNumberTest()
     {
       //wrong number of palettes for display mode
       PatchRequest request = PatchRequest.CreatePatchRequest(
                 projectId, callId, DisplayMode.CCVPercent, palettes, liftSettings, false, RaptorConverters.VolumesType.None, 0.0, null, null, 0, null, 0,
                 FilterLayerMethod.None, 5, 50);
-     
+
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidPaletteOrderTest()
     {
       //palettes out of order
@@ -72,7 +72,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
     }
 
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailMissingDesignTest()
     {
       //missing design (for volumes display mode)
@@ -83,7 +83,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
     }
 
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailMissingFilterTest()
     {
       //missing filter (for volumes display mode)
@@ -93,7 +93,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Models
       Assert.ThrowsException<ServiceException>(() => request.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailInvalidVolumeTypeTest()
     {
       //Unsupported volume type (for volumes display mode)

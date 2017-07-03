@@ -21,4 +21,4 @@ EXPOSE 80
 COPY . /app
 
 # If we are launching through a remote debugger wait for it, otherwise start the app
-ENTRYPOINT ["cmd", "-c", "if [ \"$REMOTE_DEBUGGING\" -eq 0 ]; then dotnet WebApi.dll; else sleep infinity; fi"]
+ENTRYPOINT ["cmd", "-c", "if [ \"$REMOTE_DEBUGGING\" -eq 0 ]; then dotnet VSS.Productivity3D.WebApi.dll; else sleep infinity; fi"]

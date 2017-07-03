@@ -1,30 +1,27 @@
-﻿using System;
-using System.Configuration;
-using System.IO;
-using System.Net;
-using ASNode.ExportProductionDataCSV.RPC;
-using ASNode.UserPreferences;
-using ASNodeDecls;
-using SVOICFilterSettings;
-using VLPDDecls;
+﻿using ASNodeDecls;
 using ASNodeRaptorReports;
+using Microsoft.Extensions.Logging;
+using SVOICFilterSettings;
+using System;
 using System.Globalization;
-using System.Text;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Nighthawk.ReportSvc.WebApi.Models;
+using System.IO;
 using System.IO.Compression;
+using System.Net;
+using System.Text;
+using VSS.GenericConfiguration;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
-    /// <summary>
-    /// The executor which passes the summary pass counts request to Raptor
-    /// </summary>
-    public class ExportGridCSVExecutor : RequestExecutorContainer
+  /// <summary>
+  /// The executor which passes the summary pass counts request to Raptor
+  /// </summary>
+  public class ExportGridCSVExecutor : RequestExecutorContainer
     {
         private const double NO_HEIGHT = 1E9;
         private const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
@@ -34,25 +31,18 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
         private const float NULL_SINGLE = DTXModelDecls.__Global.NullSingle;
 
         /// <summary>
-        /// 
+        /// This constructor allows us to mock raptorClient & configStore
         /// </summary>
-        public IASNodeClient client { get; private set; }
-
-        /// <summary>
-        /// This constructor allows us to mock client
-        /// </summary>
-        /// <param name="client"></param>
-        public ExportGridCSVExecutor(IASNodeClient client)
+        /// <param name="raptorClient"></param>
+        public ExportGridCSVExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IConfigurationStore configStore) : base(logger, raptorClient, null, configStore)
         {
-            this.client = client;
         }
 
         /// <summary>
-        /// Default constructor
+        /// Default constructor for RequestExecutorContainer.Build
         /// </summary>
         public ExportGridCSVExecutor()
         {
-            this.client = new ASNodeClient();
         }
 
         /// <summary>
@@ -76,11 +66,13 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                 MemoryStream ResponseData = null;
                 ZipArchive archive = null;
 
-                int Result = client.GetGriddedOrAlignmentCSVExport
+                log.LogDebug("About to call GetGriddedOrAlignmentCSVExport");
+
+                int Result = raptorClient.GetGriddedOrAlignmentCSVExport
                    (request.projectId ?? -1,
                     (int)request.reportType,
                     ASNodeRPC.__Global.Construct_TASNodeRequestDescriptor((Guid)(request.callId ?? Guid.NewGuid()), 0, TASNodeCancellationDescriptorType.cdtProdDataExport),
-                    request.designFile,
+                    RaptorConverters.DesignDescriptor(request.designFile),
                     request.interval,
                     request.reportElevation,
                     request.reportCutFill,
@@ -99,6 +91,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                     new SVOICOptionsDecls.TSVOICOptions(), // ICOptions, need to resolve what this should be
                     out ResponseData);
 
+                log.LogDebug("Completed call to GetGriddedOrAlignmentCSVExport");
+
                 bool success = Result == 1; // icsrrNoError
 
                 if (success)
@@ -107,6 +101,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                     if (request.compress)
                     {
+                        log.LogDebug("Creating compressor for result");
+
                         archive = new ZipArchive(outputStream, ZipArchiveMode.Create, true);
                         writerStream = archive.CreateEntry("asbuilt.csv", CompressionLevel.Optimal).Open();
                     }
@@ -145,6 +141,8 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
                             throw new ArgumentException("Unknown gridded CSV report type");
                         }
                     }
+
+                    log.LogDebug("Retrieving response data");
 
                     ReportPackager.ReadFromStream(ResponseData);
 
@@ -227,11 +225,17 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Executors
 
                 try
                 {
+                    log.LogDebug("Closing stream");
+
                     writerStream.Close();
                     if (request.compress)
                     {
+                        log.LogDebug("Closing compressor");
+
                         archive.Dispose(); // Force ZIPArchive to emit all data to the stream
                     }
+
+                    log.LogDebug("Returning result");
 
                     result = ExportResult.CreateExportDataResult(outputStream.ToArray(), (short)Result);
                 }

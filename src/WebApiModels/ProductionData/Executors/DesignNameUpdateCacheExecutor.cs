@@ -1,12 +1,12 @@
 using System.Net;
 using DesignProfilerDecls;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
   public class DesignNameUpdateCacheExecutor : RequestExecutorContainer
   {

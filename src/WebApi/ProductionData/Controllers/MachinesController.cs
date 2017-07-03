@@ -6,22 +6,25 @@ using System.Collections.Generic;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Contracts;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 
 
-namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
+namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
-    [ResponseCache(NoStore = true)]
-    public class MachinesController : Controller, IMachinesContract
+  /// <summary>
+  /// 
+  /// </summary>
+  [ResponseCache(NoStore = true)]
+  public class MachinesController : Controller, IMachinesContract
   {
     /// <summary>
     /// Raptor client for use by executor
@@ -37,23 +40,17 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// Logger factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
-    /// <summary>
-    /// Used to get list of projects for customer
-    /// </summary>
-    private readonly IAuthenticatedProjectsStore authProjectsStore;
 
     /// <summary>
     /// Constructor with injected raptor client and logger
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="authProjectsStore">Authenticated projects store</param>
-    public MachinesController(IASNodeClient raptorClient, ILoggerFactory logger, IAuthenticatedProjectsStore authProjectsStore)
+    public MachinesController(IASNodeClient raptorClient, ILoggerFactory logger)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<MachinesController>();
-      this.authProjectsStore = authProjectsStore;
     }
 
     // GET: api/Machines
@@ -88,9 +85,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
     public MachineExecutionResult Get([FromRoute] Guid projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID Id = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
       return RequestExecutorContainer.Build<GetMachineIdsExecutor>(logger, raptorClient, null).Process(Id) as MachineExecutionResult;
     }
@@ -132,9 +128,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
     public ContractExecutionResult Get([FromRoute] Guid projectUid, [FromRoute] long machineId)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID Id = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
       MachineExecutionResult result =
           RequestExecutorContainer.Build<GetMachineIdsExecutor>(logger, raptorClient, null).Process(Id) as MachineExecutionResult;
@@ -175,9 +170,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
     public MachineDesignsExecutionResult GetMachineDesigns([FromRoute] Guid projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID Id = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
       return RequestExecutorContainer.Build<GetMachineDesignsExecutor>(logger, raptorClient, null).Process(Id) as MachineDesignsExecutionResult;
     }
@@ -213,9 +207,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
     public LayerIdsExecutionResult GetMachineLayerIds([FromRoute] Guid projectUid)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID Id = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
       return RequestExecutorContainer.Build<GetLayerIdsExecutor>(logger, raptorClient, null).Process(Id) as LayerIdsExecutionResult;
     }
@@ -256,14 +249,13 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
 
     public MachineLayerIdsExecutionResult GetMachineLifts([FromRoute] Guid projectUid, [FromQuery] string startUtc = null, [FromQuery] string endUtc = null)
     {
-      var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-
-      ProjectID Id = ProjectID.CreateProjectID(ProjectID.GetProjectId(customerUid, projectUid, authProjectsStore), projectUid);
+      long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      ProjectID Id = ProjectID.CreateProjectID(projectId, projectUid);
       Id.Validate();
 
       return GetMachineLiftsWith(Id, startUtc, endUtc);
     }
-    
+
     private MachineLayerIdsExecutionResult GetMachineLiftsWith(ProjectID Id, string startUtc, string endUtc)
     {
       //Note: we use strings in the uri because the framework converts to local time although we are using UTC format.
@@ -301,7 +293,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
             layerIdsResult.LayerIdDetailsArray.Where(
                 layer =>
                     layer.AssetId == machine.assetID &&
-                    isDateRangeOverlapping(layer.StartDate, layer.EndDate, beginUtc, finishUtc)).ToList();
+                    IsDateRangeOverlapping(layer.StartDate, layer.EndDate, beginUtc, finishUtc)).ToList();
         if (filteredLayers.Count > 0)
         {
           liftDetailsList.Add(MachineLiftDetails.CreateMachineLiftDetails(
@@ -317,7 +309,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     {
       return string.IsNullOrEmpty(utcDate)
             ? (DateTime?)null
-            : DateTime.ParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);      
+            : DateTime.ParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
     }
 
     /// <summary>
@@ -328,7 +320,7 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <param name="startDate2">Start of second date range</param>
     /// <param name="endDate2">End of second date range</param>
     /// <returns>True if they overlap otherwise false</returns>
-    private bool isDateRangeOverlapping(DateTime startDate1, DateTime endDate1, DateTime? startDate2, DateTime? endDate2)
+    private bool IsDateRangeOverlapping(DateTime startDate1, DateTime endDate1, DateTime? startDate2, DateTime? endDate2)
     {
       if (startDate2.HasValue && endDate2.HasValue)
       {
@@ -337,6 +329,5 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
       }
       return true;
     }
-
   }
 }

@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.TagfileProcessing.Models;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.TagfileProcessing.Models;
 
-namespace VSS.Raptor.Service.WebApiTests.TagfileProcessing.Models
+namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Models
 {
-    [TestClass()]
+    [TestClass]
     public class TAGFileTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void CanCreateTagFileTest()
         {
             var validator = new DataAnnotationsValidator();

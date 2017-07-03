@@ -1,8 +1,7 @@
-﻿
+﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
     /// <summary>
     ///     A fence (or boundary) polygon with vertices expressed as WGS84 points
@@ -17,7 +16,7 @@ namespace VSS.Raptor.Service.Common.Models
         ///     Array of WGS84 points defining the polygon. The polygon is implicitly closed (first and last points are not
         ///     required to be the same).
         /// </summary>
-        [MoreThanTwoPointsAttribute]
+        [MoreThanTwoPoints]
         [JsonProperty(PropertyName = "points", Required = Required.Always)]
         [Required]
         public WGSPoint[] points { get; private set; }

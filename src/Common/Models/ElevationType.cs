@@ -1,4 +1,4 @@
-﻿namespace VSS.Raptor.Service.Common.Models
+﻿namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Controls the source of information from cells for queries depending on their elevation

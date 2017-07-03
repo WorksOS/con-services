@@ -1,9 +1,8 @@
-﻿
+﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// An association of a datum value expressed as a dimensionaless double value, and a colour, expressed as an RGB triplet encoded in an UInt32.
@@ -53,7 +52,7 @@ namespace VSS.Raptor.Service.Common.Models
     {
       get
       {
-        return new ColorPalette()
+        return new ColorPalette
         {
           color = 0xA5BC4E,
           value = 0.2

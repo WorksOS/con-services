@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
+namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
   /// <summary>
   /// Default settings for compaction end points. For consistency all compaction end points should use these settings.
@@ -25,7 +24,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
         try
         {
           return JsonConvert.DeserializeObject<LiftBuildSettings>(
-            "{'liftDetectionType': '4', 'machineSpeedTarget': { 'MinTargetMachineSpeed': '333', 'MaxTargetMachineSpeed': '417'}}");
+            "{'liftDetectionType': '4', 'cCVRange': { 'min': '80', 'max': '120'}, 'mDPRange': { 'min': '80', 'max': '120'}, 'machineSpeedTarget': { 'MinTargetMachineSpeed': '333', 'MaxTargetMachineSpeed': '417'}}");
           //liftDetectionType 4 = None, speeds are cm/sec (12 - 15 km/hr)        
         }
         catch (Exception ex)
@@ -37,17 +36,19 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
       }
     }
 
-    public static Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, List<MachineDetails> machines)
+    public static Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType, 
+      int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds)
     {
-      bool haveFilter = startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue ||
-                  vibeStateOn.HasValue || elevationType.HasValue || layerNumber.HasValue || (machines != null && machines.Count > 0);
+      bool haveFilter = 
+        startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue || vibeStateOn.HasValue || elevationType.HasValue || 
+        layerNumber.HasValue || (machines != null && machines.Count > 0) || (excludedSurveyedSurfaceIds != null && excludedSurveyedSurfaceIds.Count > 0);
 
       var layerMethod = layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
       return haveFilter ? 
         Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
          null, null, null, null, null, null, null, null, null, layerMethod, null, null, layerNumber, null, machines, 
-         null, null, null, null, null, null, null) 
+         excludedSurveyedSurfaceIds, null, null, null, null, null, null) 
          : null;
     }
 
@@ -87,13 +88,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
       }
     }
 
-    public static PassCountSettings CompactionPassCountSettings
-    {
-      get
-      {
-        return PassCountSettings.CreatePassCountSettings(new int[] {1,2,3,4,5,6,7,8});
-      }
-    }
+    public static PassCountSettings CompactionPassCountSettings => PassCountSettings.CreatePassCountSettings(new int[] {1,2,3,4,5,6,7,8});
 
     public static List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents)
     {
@@ -129,12 +124,12 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.cmvMaximum.color, cmvSettings.maxCMV/10.0 + 1));
           */
           const int STEP = 100;
-          // Decimal values: 2971523, 4430812, 12509169, 10341991, 7053374, 3828517, 16174803, 13990524, 12660791, 15105570, 7091331 
-          List<uint> cmvColors = new List<uint> { 0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DCE67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037, 0xE67E22, 0x6C3483 };
+          // Decimal values: 2971523, 4430812, 12509169, 10341991, 7053374, 3828517, 16174803, 13990524, 12660791, 15105570, 14785888, 15190446, 5182823, 9259433, 13740258, 1971179
+          List<uint> cmvColors = new List<uint> { 0x2D5783, 0x439BDC, 0xBEDFF1, 0x9DCE67, 0x6BA03E, 0x3A6B25, 0xF6CED3, 0xD57A7C, 0xC13037, 0xE67E22, 0xE19D60, 0xE7C9AE, 0x4F1567, 0x8D49A9, 0xD1A8E2, 0x1E13EB };
 
           for (int i = 0; i < cmvColors.Count; i++)
           {
-            //The last 11th color and value are for above...
+            //The last 16th color and value are for above...
             palette.Add(ColorPalette.CreateColorPalette(cmvColors[i], i * STEP));
           }
           break;

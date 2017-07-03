@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
   /// <summary>
   /// Base class containing common information relevant to linear and alignment based profile calculations
@@ -222,8 +222,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
       }
     }
 
-      public static ProfileCell HelpSample { get { return new ProfileCell()
-                                                          {
+      public static ProfileCell HelpSample { get { return new ProfileCell
+      {
                                                                   cmvHeight = 10,
                                                                   cmvPercent = 43,
                                                                   station = 11,
@@ -283,7 +283,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
     /// 
     public double lng;
 
-      public static StationLLPoint HelpSample { get {return new StationLLPoint() {lat = 1.23234, lng = 1.3543, station = 1.1};}  }
+      public static StationLLPoint HelpSample { get {return new StationLLPoint {lat = 1.23234, lng = 1.3543, station = 1.1};}  }
   }
 
   /// <summary>
@@ -322,7 +322,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
     {
       get
       {
-        return new ProfileResult()
+        return new ProfileResult
         {
           callId = new Guid(),
           success = true,
@@ -331,8 +331,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
           minHeight = 0,
           maxHeight = 212,
           gridDistanceBetweenProfilePoints = 12,
-          cells = new List<ProfileCell>() { ProfileCell.HelpSample, ProfileCell.HelpSample },
-          alignmentPoints = new List<StationLLPoint>() { StationLLPoint.HelpSample, StationLLPoint.HelpSample}
+          cells = new List<ProfileCell> { ProfileCell.HelpSample, ProfileCell.HelpSample },
+          alignmentPoints = new List<StationLLPoint> { StationLLPoint.HelpSample, StationLLPoint.HelpSample}
         };
       }
     }

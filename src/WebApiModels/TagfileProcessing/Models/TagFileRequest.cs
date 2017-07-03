@@ -1,13 +1,11 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Filters.Validation;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Utilities;
+using VSS.Productivity3D.Common.Filters.Validation;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Utilities;
 
-
-namespace VSS.Raptor.Service.WebApiModels.TagfileProcessing.Models
+namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.Models
 {
   /// <summary>
   /// TAG file domain object. Model represents TAG file submitted to Raptor.
@@ -99,8 +97,8 @@ namespace VSS.Raptor.Service.WebApiModels.TagfileProcessing.Models
         {
             get
             {
-                return new TagFileRequest()
-                       {
+                return new TagFileRequest
+                {
                                fileName = "test.tag",
                                data = new byte[] {0, 1, 2},
                                projectId = 1,
@@ -138,8 +136,8 @@ namespace VSS.Raptor.Service.WebApiModels.TagfileProcessing.Models
             bool convertToCSV,
             bool convertToDXF)
         {
-          return new TagFileRequest()
-                 {
+          return new TagFileRequest
+          {
                      fileName = fileName,
                      data = data,
                      projectId = projectId,

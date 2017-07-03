@@ -2,10 +2,10 @@
 using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 using VSS.Velociraptor.PDSInterface.Client.TAGProcessor;
 
-namespace VSS.Raptor.Service.Common.Proxies
+namespace VSS.Productivity3D.Common.Proxies
 {
   /// <summary>
   /// Production Data Server client implementation

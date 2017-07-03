@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 
-namespace VSS.Raptor.Service.Common.Filters.Validation
+namespace VSS.Productivity3D.Common.Filters.Validation
 {
   /// <summary>
   ///     Tests if supplied string has valid filename
@@ -16,7 +16,7 @@ namespace VSS.Raptor.Service.Common.Filters.Validation
     /// <value>
     /// The maxlength.
     /// </value>
-    public int Maxlength { get; private set; }
+    public int Maxlength { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ValidFilenameAttribute"/> class.
@@ -40,7 +40,8 @@ namespace VSS.Raptor.Service.Common.Filters.Validation
       string filename = (string) value;
 
       if (filename.Length > Maxlength || string.IsNullOrEmpty(filename) || filename.IndexOfAny(Path.GetInvalidPathChars()) > 0 || String.IsNullOrEmpty(Path.GetFileName(filename)) )
-        return new ValidationResult(String.Format("Supplied filename is not valid. Exceeds the length limit of {0}, empty or contains illegal characters.", Maxlength));
+        return new ValidationResult(
+          $"Supplied filename is not valid. Exceeds the length limit of {Maxlength}, empty or contains illegal characters.");
       return ValidationResult.Success;
     }
   }

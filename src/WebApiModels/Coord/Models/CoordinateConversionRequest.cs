@@ -2,12 +2,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Coord.Models
+namespace VSS.Productivity3D.WebApiModels.Coord.Models
 {
   /// <summary>
   /// Coordinate conversion domain object. Model represents a coordinate conversion request.
@@ -48,8 +48,8 @@ namespace VSS.Raptor.Service.WebApiModels.Coord.Models
     /// 
     public new static CoordinateConversionRequest HelpSample
     {
-      get { return new CoordinateConversionRequest() 
-              { projectId = 1, 
+      get { return new CoordinateConversionRequest
+        { projectId = 1, 
                 conversionType = TwoDCoordinateConversionType.NorthEastToLatLon, 
                 conversionCoordinates = new TwoDConversionCoordinate[]
                                         {

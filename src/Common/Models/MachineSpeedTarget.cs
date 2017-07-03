@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Specifies target values for SPeed Summary request
@@ -37,7 +37,7 @@ namespace VSS.Raptor.Service.Common.Models
 
     public void Validate()
     {
-      if (this.MinTargetMachineSpeed > this.MaxTargetMachineSpeed)
+      if (MinTargetMachineSpeed > MaxTargetMachineSpeed)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Target speed minimum must be less than target speed maximum"));
@@ -46,7 +46,7 @@ namespace VSS.Raptor.Service.Common.Models
 
     public static MachineSpeedTarget CreateMachineSpeedTarget(ushort min, ushort max)
     {
-      return new MachineSpeedTarget() { MinTargetMachineSpeed = min, MaxTargetMachineSpeed = max };
+      return new MachineSpeedTarget { MinTargetMachineSpeed = min, MaxTargetMachineSpeed = max };
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ namespace VSS.Raptor.Service.Common.Models
     {
       get
       {
-        return new MachineSpeedTarget()
+        return new MachineSpeedTarget
         {
           MinTargetMachineSpeed = 10,
           MaxTargetMachineSpeed = 55

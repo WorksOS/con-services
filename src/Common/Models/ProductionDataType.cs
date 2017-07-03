@@ -1,5 +1,4 @@
-﻿
-namespace VSS.Raptor.Service.Common.Models
+﻿namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// Underlying data types requestable from the Raptor database in the context of profiles. 
