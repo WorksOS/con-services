@@ -36,8 +36,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for displaying production data and linework.
   /// </summary>
-  //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
   public class CompactionTileController : Controller
   {
     /// <summary>
@@ -137,6 +135,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetProductionDataTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -227,6 +226,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetProductionDataTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -293,7 +293,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
-    //[ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<TileResult> GetLineworkTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -345,7 +345,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
-    //[ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<FileResult> GetLineworkTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
