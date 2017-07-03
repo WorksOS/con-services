@@ -45,6 +45,7 @@ node('Ubuntu_Slave') {
     stage 'Prepare Acceptance tests'
     sh "(cd ./AcceptanceTests/scripts && bash ./deploy_linux.sh)"
     stage 'Compose containers'
+    sh "bash ./awslogin.sh"
     sh "bash ./start_containers.sh"
     stage 'Wait for containers to finish'
     sh "bash ./wait_container.sh testcontainers"
@@ -65,7 +66,8 @@ node('Ubuntu_Slave') {
     if (currentBuild.result=='SUCCESS' && !branch.contains("master")) {
        //Rebuild Image, tag & push to AWS Docker Repo
        stage 'Get ecr login, push image to Repo'
-       sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
+	   sh "bash ./awslogin.sh"
+     //  sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
 
 	if (branch.contains("release"))
 	{

@@ -63,7 +63,7 @@ namespace Controllers
     public async Task<ProjectV4DescriptorsListResult> GetProjectsV4()
     {
       log.LogInformation("GetProjectsV4");
-
+      //exclude Landfill Projects for now
       //exclude Landfill Projects for now
       var projects = (await GetProjectList().ConfigureAwait(false)).Where(prj => prj.ProjectType != ProjectType.LandFill).ToImmutableList();
 
@@ -101,6 +101,7 @@ namespace Controllers
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
+
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       if (projectRequest == null)
       {
@@ -110,6 +111,7 @@ namespace Controllers
       //Landfill projects are not supported till l&s goes live
       if (projectRequest?.ProjectType == ProjectType.LandFill)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(3000, "Landfill projects are not supported"));
+
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 

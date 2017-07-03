@@ -12,6 +12,8 @@ $Cmd = 'aws'
 $Args = 'ecr', 'get-login'
 
 $LoginID = &$Cmd $Args
+
+$LoginID = $LoginID -replace "-e none", " "
 Write $LoginID
 Invoke-Expression $LoginID
 
