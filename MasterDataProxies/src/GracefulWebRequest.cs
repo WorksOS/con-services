@@ -1,36 +1,21 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using log4net;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 
 namespace MasterDataProxies
 {
-
-  public static class Extensions
-  {
-    private static readonly ConditionalWeakTable<object, RefId> _ids = new ConditionalWeakTable<object, RefId>();
-
-    public static Guid GetRefId<T>(this T obj) where T : class
-    {
-      if (obj == null)
-        return default(Guid);
-
-      return _ids.GetOrCreateValue(obj).Id;
-    }
-
-    private class RefId
-    {
-      public Guid Id { get; } = Guid.NewGuid();
-    }
-  }
 
   public class GracefulWebRequest
   {
@@ -40,40 +25,53 @@ namespace MasterDataProxies
     {
       
       log = logger.CreateLogger<GracefulWebRequest>();
-      log.LogDebug($"GracefulWebRequest: Constructor");
     }
 
 
-    private class RequestExecutor<T>
+    private class RequestExecutor
     {
-      private string endpoint;
-      private string method;
-      private IDictionary<string, string> customHeaders;
-      private string payloadData;
+      private readonly string endpoint;
+      private readonly string method;
+      private readonly IDictionary<string, string> customHeaders;
+      private readonly string payloadData;
       private readonly ILogger log;
+      private const int BUFFER_MAX_SIZE = 1024;
 
-      private string GetStringFromResponseStream(WebResponse response)
+      private async Task<string> GetStringFromResponseStream(WebResponse response)
       {
-        using (var readStream = response.GetResponseStream())
+        var readStream = response.GetResponseStream();
+        byte[] buffer= ArrayPool<byte>.Shared.Rent(BUFFER_MAX_SIZE); 
+        string responseString = String.Empty;
+
+        try
         {
-          if (readStream != null)
+          Array.Clear(buffer, 0, buffer.Length);
+          var read = await readStream.ReadAsync(buffer, 0, buffer.Length);
+          responseString = Encoding.ASCII.GetString(buffer);
+          while (read > 0)
           {
-            log.LogDebug($"ReadStream: {readStream.GetRefId()}");
-            using (var reader = new StreamReader(readStream, Encoding.UTF8))
-            {
-              var responseString = reader.ReadToEnd();
-              return responseString;
-            }
+            Array.Clear(buffer, 0, buffer.Length);
+            read = await readStream.ReadAsync(buffer, 0, buffer.Length);
+            responseString += Encoding.ASCII.GetString(buffer);
           }
-          return string.Empty;
         }
+        catch (Exception ex)
+        {
+          log.LogDebug($"ExecuteRequest() T: InOddException {ex.Message}");
+          if (ex.InnerException != null)
+            log.LogDebug($"ExecuteRequestInnerException() T: errorCode: {ex.InnerException.Message}");
+        }
+        finally
+        {
+          readStream?.Dispose();
+          ArrayPool<byte>.Shared.Return(buffer);
+        }
+        return responseString;
       }
 
       private async Task<WebRequest> PrepareWebRequest(string endpoint, string method,
-        IDictionary<string, string> customHeaders, string payloadData)
+        IDictionary<string, string> customHeaders, string payloadData=null, Stream requestStream = null)
       {
-        //log.LogDebug($"PrepareWebRequest: Requesting data from {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))}");
-
         var request = WebRequest.Create(endpoint);
         request.Method = method;
         if (request is HttpWebRequest)
@@ -96,6 +94,14 @@ namespace MasterDataProxies
             }
           }
         }
+        if (requestStream != null)
+        {
+          using (var writeStream = await request.GetRequestStreamAsync())
+          {
+            await requestStream.CopyToAsync(writeStream);
+          }
+        }
+        else
         //Apply payload if any
         if (!String.IsNullOrEmpty(payloadData))
         {
@@ -113,7 +119,6 @@ namespace MasterDataProxies
       public RequestExecutor(string endpoint, string method, IDictionary<string, string> customHeaders,
         string payloadData, ILogger log)
       {
-        log.LogDebug("In contrusctor");
         this.endpoint = endpoint;
         this.method = method;
         this.customHeaders = customHeaders;
@@ -122,44 +127,29 @@ namespace MasterDataProxies
       }
 
 
-
-      public async Task<T> ExecuteActualRequest()
+      public async Task<Stream> ExecuteActualStreamRequest()
       {
-        log.LogDebug("Preparing request");
-        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
-        log.LogDebug($"Request: {request.GetRefId()}");
+        var request = PrepareWebRequest(endpoint, method, customHeaders, payloadData).Result;
 
-
-        string responseString = null;
-        WebResponse mainRresponse = null;
+        WebResponse response = null;
         try
         {
-          mainRresponse = await request.GetResponseAsync();
-          log.LogDebug($"Response: {mainRresponse.GetRefId()}");
-          if (mainRresponse != null)
+          response = await request.GetResponseAsync();
+          if (response != null)
           {
             log.LogDebug($"ExecuteRequest() T executed the request");
-            log.LogDebug($"Content Length: {mainRresponse.ContentLength}");
-
-            var readStream = mainRresponse.GetResponseStream();
-            log.LogDebug($"ReadStream: {readStream.GetRefId()}");
-            var reader = new StreamReader(readStream, Encoding.UTF8);
-            responseString = reader.ReadToEnd();
-            log.LogDebug($"ExecuteRequest() T success: responseString {responseString}");
+            return response.GetResponseStream();
           }
         }
         catch (WebException ex)
         {
           log.LogDebug($"ExecuteRequest() T: InWebException");
-          using (WebResponse response = ex.Response)
+          using (WebResponse exResponse = ex.Response)
           {
-            if (response == null) throw;
-            log.LogDebug("ExecuteRequestException() T: going to read stream");
-            responseString = GetStringFromResponseStream(response);
-            HttpWebResponse httpResponse = (HttpWebResponse) response;
+            HttpWebResponse httpResponse = (HttpWebResponse)exResponse;
             log.LogDebug(
-              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString}");
-            throw new Exception($"{httpResponse.StatusCode} {responseString}");
+              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode}");
+            throw new Exception($"{httpResponse.StatusCode}");
           }
         }
         catch (Exception ex)
@@ -171,20 +161,63 @@ namespace MasterDataProxies
         }
         finally
         {
-          mainRresponse?.Dispose();
+          response?.Dispose();
         }
-
-        if (!string.IsNullOrEmpty(responseString))
-        {
-          var toReturn = JsonConvert.DeserializeObject<T>(responseString);
-          log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(toReturn)}");
-          return toReturn;
-        }
-        var defaultToReturn = default(T);
-        log.LogDebug($"ExecuteRequest() T. defaultToReturn:{JsonConvert.SerializeObject(defaultToReturn)}");
-        return defaultToReturn;
-
+        return null;
       }
+
+      public async Task<T> ExecuteActualRequest<T>(Stream requestSteam = null)
+      {
+          var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, requestSteam);
+          string responseString = null;
+          WebResponse response = null;
+          try
+          {
+            response = await request.GetResponseAsync();
+            if (response != null)
+            {
+              log.LogDebug($"ExecuteRequest() T executed the request");
+              responseString=await GetStringFromResponseStream(response);
+              log.LogDebug($"ExecuteRequest() T success: responseString {responseString}");
+            }
+          }
+          catch (WebException ex)
+          {
+            log.LogDebug($"ExecuteRequest() T: InWebException");
+            using (WebResponse exResponse = ex.Response)
+            {
+              if (exResponse == null) throw;
+              log.LogDebug("ExecuteRequestException() T: going to read stream");
+              responseString = await GetStringFromResponseStream(exResponse);
+              HttpWebResponse httpResponse = (HttpWebResponse) exResponse;
+              log.LogDebug(
+                $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString}");
+              throw new Exception($"{httpResponse.StatusCode} {responseString}");
+            }
+          }
+          catch (Exception ex)
+          {
+            log.LogDebug($"ExecuteRequestException() T: errorCode: {ex.Message}");
+            if (ex.InnerException != null)
+              log.LogDebug($"ExecuteRequestInnerException() T: errorCode: {ex.InnerException.Message}");
+            throw;
+          }
+          finally
+          {
+            response?.Dispose();
+          }
+
+          if (!string.IsNullOrEmpty(responseString))
+          {
+            var toReturn = JsonConvert.DeserializeObject<T>(responseString);
+            log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(toReturn)}");
+            return toReturn;
+          }
+          var defaultToReturn = default(T);
+          log.LogDebug($"ExecuteRequest() T. defaultToReturn:{JsonConvert.SerializeObject(defaultToReturn)}");
+          return defaultToReturn;
+
+        }
     }
 
     public async Task<T> ExecuteRequest<T>(string endpoint, string method, IDictionary<string, string> customHeaders = null, 
@@ -195,11 +228,11 @@ namespace MasterDataProxies
       var policyResult = await Policy
         .Handle<Exception>()
         .RetryAsync(retries)
-        .ExecuteAndCaptureAsync(async () =>
+        .ExecuteAndCaptureAsync( () =>
         {
-          log.LogDebug("Trying to execute request");
-          var executor = new RequestExecutor<T>(endpoint, method, customHeaders, payloadData,log);
-          return await executor.ExecuteActualRequest();
+          log.LogDebug($"Trying to execute request {endpoint}");
+          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData,log);
+          return executor.ExecuteActualRequest<T>();
         });
 
       if (policyResult.FinalException != null)
@@ -228,23 +261,9 @@ namespace MasterDataProxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData);
-
-          Stream responseStream = null;
-          try
-          {
-            using (WebResponse response = await request.GetResponseAsync())
-            {
-              responseStream = GetStreamFromResponse(response);
-              log.LogDebug($"ExecuteRequest() stream success");
-            }
-          }
-          catch (Exception ex)
-          {
-            log.LogDebug($"ExecuteRequestException() stream: errorCode: {ex.Message}");
-            throw;
-          }
-          return responseStream;
+          log.LogDebug($"Trying to execute request {endpoint}");
+          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log);
+          return await executor.ExecuteActualStreamRequest();
         });
 
       if (policyResult.FinalException != null)
@@ -273,42 +292,9 @@ namespace MasterDataProxies
         .RetryAsync(retries)
         .ExecuteAndCaptureAsync(async () =>
         {
-          var request = WebRequest.Create(endpoint);
-          request.Method = "POST";
-          if (request is HttpWebRequest)
-          {
-            var httpRequest = request as HttpWebRequest;
-            httpRequest.Accept = "*/*";
-            //Add custom headers e.g. JWT, CustomerUid, UserUid
-            if (customHeaders != null)
-            {
-              foreach (var key in customHeaders.Keys)
-              {
-                if (key == "Content-Type")
-                {
-                  httpRequest.ContentType = customHeaders[key];
-                }
-                else
-                {
-                  httpRequest.Headers[key] = customHeaders[key];
-                }
-              }
-            }
-          }
-
-          using (var writeStream = await request.GetRequestStreamAsync())
-          {
-            await payload.CopyToAsync(writeStream);
-          }
-
-          string responseString = null;
-          using (var response = await request.GetResponseAsync())
-          {
-            responseString = GetStringFromResponseStream(response);
-          }
-          if (!string.IsNullOrEmpty(responseString))
-            return JsonConvert.DeserializeObject<T>(responseString);
-          return default(T);
+          log.LogDebug($"Trying to execute request {endpoint}");
+          var executor = new RequestExecutor(endpoint, "POST", customHeaders,"",log);
+          return await executor.ExecuteActualRequest<T>(payload);
         });
 
       if (policyResult.FinalException != null)
@@ -327,79 +313,6 @@ namespace MasterDataProxies
       }
       return default(T);
     }
-
-
-    private async Task<WebRequest> PrepareWebRequest(string endpoint, string method,
-      IDictionary<string, string> customHeaders, string payloadData)
-    {
-      //log.LogDebug($"PrepareWebRequest: Requesting data from {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))}");
-
-      var request = WebRequest.Create(endpoint);
-      request.Method = method;
-      if (request is HttpWebRequest)
-      {
-        var httpRequest = request as HttpWebRequest;
-        httpRequest.Accept = "application/json";
-        //Add custom headers e.g. JWT, CustomerUid, UserUid
-        if (customHeaders != null)
-        {
-          foreach (var key in customHeaders.Keys)
-          {
-            if (key == "Content-Type")
-            {
-              httpRequest.ContentType = customHeaders[key];
-            }
-            else
-            {
-              httpRequest.Headers[key] = customHeaders[key];
-            }
-          }
-        }
-      }
-      //Apply payload if any
-      if (!String.IsNullOrEmpty(payloadData))
-      {
-        request.ContentType = "application/json";
-        using (var writeStream = await request.GetRequestStreamAsync())
-        {
-          UTF8Encoding encoding = new UTF8Encoding();
-          byte[] bytes = encoding.GetBytes(payloadData);
-          await writeStream.WriteAsync(bytes, 0, bytes.Length);
-        }
-      }
-      return request;
-    }
-
-    private string GetStringFromResponseStream(WebResponse response)
-    {
-      using (var readStream = response.GetResponseStream())
-      {
-        if (readStream != null)
-        {
-          using (var reader = new StreamReader(readStream, Encoding.UTF8))
-          {
-            var responseString = reader.ReadToEnd();
-            return responseString;
-          }
-        }
-        return string.Empty;
-      }
-    }
-
-    private Stream GetStreamFromResponse(WebResponse response)
-    {
-      using (var readStream = response.GetResponseStream())
-      {
-        var streamFromResponse = new MemoryStream();
-
-        if (readStream != null)
-        {
-          readStream.CopyTo(streamFromResponse);
-          return streamFromResponse;
-        }
-        return null;
-      }
-    }
-    
+   
   }
 }
