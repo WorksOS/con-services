@@ -63,8 +63,8 @@ namespace Controllers
     public async Task<ProjectV4DescriptorsListResult> GetProjectsV4()
     {
       log.LogInformation("GetProjectsV4");
-
-      var projects = await GetProjectList().ConfigureAwait(false);
+      //exclude Landfill Projects for now
+      var projects = (await GetProjectList().ConfigureAwait(false)).Where(prj=>prj.ProjectType!=ProjectType.LandFill).ToImmutableList();
       return new ProjectV4DescriptorsListResult
       {
         ProjectDescriptors = projects.Select(project =>
@@ -99,11 +99,17 @@ namespace Controllers
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
+
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       if (projectRequest == null)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
+
+      //Landfill projects are not supported till l&s goes live
+      if (projectRequest?.ProjectType == ProjectType.LandFill)
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(3000, "Landfill projects are not supported"));
+
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
@@ -166,6 +172,11 @@ namespace Controllers
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
+
+      //Landfill projects are not supported till l&s goes live
+      if (projectRequest?.ProjectType == ProjectType.LandFill)
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(3000, "Landfill projects are not supported"));
+
       log.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
