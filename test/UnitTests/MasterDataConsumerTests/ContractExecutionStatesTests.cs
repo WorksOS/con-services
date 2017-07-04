@@ -10,7 +10,7 @@ namespace MasterDataConsumerTests
     public void DynamicAddwithOffsetTest()
     {
       var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-      Assert.AreEqual(67, contractExecutionStatesEnum.DynamicCount);
+      Assert.AreEqual(68, contractExecutionStatesEnum.DynamicCount);
       Assert.AreEqual("Supplied CoordinateSystem filename is not valid. Exceeds the length limit of 256, is empty, or contains illegal characters.", contractExecutionStatesEnum.FirstNameWithOffset(2));
       Assert.AreEqual("LegacyImportedFileId has not been generated.", contractExecutionStatesEnum.FirstNameWithOffset(50));
     }
