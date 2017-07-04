@@ -42,8 +42,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.Name = RaptorCaches.MutableNonSpatialCacheName();
             cfg.CopyOnRead = false;
             cfg.KeepBinaryInStore = false;
-            cfg.MemoryMode = CacheMemoryMode.OnheapTiered;
-            cfg.CacheStoreFactory = new RaptorMutableCacheStoreFactory();
+            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(false, true);
             cfg.ReadThrough = true;
             cfg.WriteThrough = true;
             cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
@@ -60,8 +59,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.Name = RaptorCaches.ImmutableNonSpatialCacheName();
             cfg.CopyOnRead = false;
             cfg.KeepBinaryInStore = false;
-            cfg.MemoryMode = CacheMemoryMode.OnheapTiered;
-            cfg.CacheStoreFactory = new RaptorImmutableCacheStoreFactory();
+            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(false, false);
             cfg.ReadThrough = true;
             cfg.WriteThrough = true;
             cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
@@ -83,8 +81,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.Name = RaptorCaches.MutableSpatialCacheName();
             cfg.CopyOnRead = false;
             cfg.KeepBinaryInStore = false;
-            cfg.MemoryMode = CacheMemoryMode.OnheapTiered;
-            cfg.CacheStoreFactory = new RaptorMutableCacheStoreFactory();
+            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(true, true);
             cfg.ReadThrough = true;
             cfg.WriteThrough = true;
             cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 
@@ -102,8 +99,7 @@ namespace VSS.VisionLink.Raptor.Servers.Compute
             cfg.Name = RaptorCaches.ImmutableSpatialCacheName();
             cfg.CopyOnRead = false;
             cfg.KeepBinaryInStore = false;
-            cfg.MemoryMode = CacheMemoryMode.OnheapTiered;
-            cfg.CacheStoreFactory = new RaptorImmutableCacheStoreFactory();
+            cfg.CacheStoreFactory = new RaptorCacheStoreFactory(true, false);
             cfg.ReadThrough = true;
             cfg.WriteThrough = true;
             cfg.WriteBehindFlushFrequency = new TimeSpan(0, 0, 30); // 30 seconds 

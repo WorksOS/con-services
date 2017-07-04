@@ -26,7 +26,6 @@ namespace VSS.VisionLink.Raptor.SiteModels
         private const int kMajorVersion = 1;
         private const int kMinorVersion = 0;
 
-        private long id = -1;
         public long ID = -1;
 
         DateTime LastModifiedDate { get; set; } = DateTime.MinValue;

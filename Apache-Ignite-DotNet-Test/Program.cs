@@ -171,7 +171,6 @@ namespace Apache_Ignite_DotNet_Test
                     Name = "TestCache",
                     CopyOnRead = false,
                     KeepBinaryInStore = false,
-                    MemoryMode = CacheMemoryMode.OnheapTiered,
                     CacheStoreFactory = new RaptorCacheStoreFactory(),
                     ReadThrough = true,
                     WriteThrough = true,

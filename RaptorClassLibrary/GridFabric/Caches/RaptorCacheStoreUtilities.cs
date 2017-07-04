@@ -1,6 +1,4 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache.Store;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +6,6 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
-using Apache.Ignite.Core.Common;
 
 namespace VSS.VisionLink.Raptor.GridFabric.Caches
 {
@@ -16,25 +13,19 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
     /// Implements the Ignite ICacheStore interface
     /// </summary>
     [Serializable]
-    public class RaptorCacheStoreBase : CacheStoreAdapter, ICacheStore
+    public class RaptorCacheStoreUtilities 
     {
-        /// <summary>
-        /// The suffic to append to the filenames used to to Raptor Ignite Path to separate the immutable and immutable cache stores
-        /// </summary>
-        /// <returns></returns>
-        protected virtual string MutabilitySuffix() => "(None)";
-
         /// <summary>
         /// The location to store the files containing the persisted cache entries
         /// </summary>
-        private string path = "C:\\Temp\\RaptorIgniteData";
+        protected string path = "C:\\Temp\\RaptorIgniteData";
 
         /// <summary>
         /// Default constructor that adds the mutability suffix to the path to store persisted cache items
         /// </summary>
-        public RaptorCacheStoreBase() : base()
+        public RaptorCacheStoreUtilities(string MutabilitySuffix)
         {
-            path = path + MutabilitySuffix();
+            path = path + MutabilitySuffix;
 
             Directory.CreateDirectory(path);
         }
@@ -43,12 +34,12 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
         /// Deletes an item in the cache identified by the cache key
         /// </summary>
         /// <param name="key"></param>
-        public override void Delete(object key)
+        public void Delete(string key)
         {
             // Remove the file representing this element from the file system
             try
             {
-                File.Delete(Path.Combine(path, key.ToString()));
+                File.Delete(Path.Combine(path, key));
             }
             catch (FileNotFoundException)
             {
@@ -66,23 +57,15 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public override object Load(object key)
+        public MemoryStream Load(string key)
         {
-            MemoryStream MS = null; // object obj = null;
+            MemoryStream MS = null;
             bool ok = false;
             while (!ok)
             {
-                string fileName = Path.Combine(path, key.ToString());
+                string fileName = Path.Combine(path, key);
                 try
                 {
-                    /*
-                    BinaryFormatter bf = new BinaryFormatter();
-                    using (FileStream fs = new FileStream(fileName, FileMode.Open))
-                    {
-                        obj = bf.Deserialize(fs);
-                    }
-                    */
-
                     MS = new MemoryStream();
                     using (FileStream fs = new FileStream(fileName, FileMode.Open))
                     {
@@ -103,22 +86,7 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
                 }
             }
 
-            return MS; // obj;        
-        }
-
-        /// <summary>
-        /// Full cache load. Not implemented.
-        /// </summary>
-        /// <param name="act"></param>
-        /// <param name="args"></param>
-        public void LoadCache(Action<object, object> act, params object[] args)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SessionEnd(bool commit)
-        {
-            // Nothing to do here
+            return MS;
         }
 
         /// <summary>
@@ -126,27 +94,14 @@ namespace VSS.VisionLink.Raptor.GridFabric.Caches
         /// </summary>
         /// <param name="key"></param>
         /// <param name="val"></param>
-        public override void Write(object key, object val)
+        public void Write(string key, MemoryStream val)
         {
-            // BinaryFormatter bf = new BinaryFormatter();
-            MemoryStream MS = new MemoryStream();
-
-            try
-            {
-                // bf.Serialize(ms, val);
-                MS = val as MemoryStream;
-            }
-            catch (Exception E)
-            {
-                throw;
-            }
-
-            using (FileStream fs = new FileStream(Path.Combine(path, key.ToString()), FileMode.Create))
+            using (FileStream fs = new FileStream(Path.Combine(path, key), FileMode.Create))
             {
                 try
                 {
-                    MS.Position = 0;
-                    MS.WriteTo(fs);
+                    val.Position = 0;
+                    val.WriteTo(fs);
                 }
                 finally
                 {

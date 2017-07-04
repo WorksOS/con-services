@@ -25,7 +25,7 @@ namespace Apache_Ignite_DotNet_Test
     /// Implements the Ignite ICacheStore interface
     /// </summary>
     [Serializable]
-    public class RaptorCacheStore : CacheStoreAdapter, ICacheStore
+    public class RaptorCacheStore : CacheStoreAdapter<object, object>, ICacheStore
     {
         private const string path = "C:\\Temp\\RaptorIgniteData";
 
@@ -58,12 +58,12 @@ namespace Apache_Ignite_DotNet_Test
             return obj;        
         }
 
-        public void LoadCache(Action<object, object> act, params object[] args)
+        public override void LoadCache(Action<object, object> act, params object[] args)
         {
             throw new NotImplementedException();
         }
 
-        public void SessionEnd(bool commit)
+        public override void SessionEnd(bool commit)
         {
             // Nothing to do here
         }
