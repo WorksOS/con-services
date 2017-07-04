@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Repo.Extensions;
 using Repositories.DBModels;
+using Repositories.ExtendedModels;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -181,6 +182,17 @@ namespace Repositories
         upsertedCount = await UpsertImportedFile(importedFile, "DeleteImportedFileEvent",
           projectEvent.DeletePermanently);
       }
+      else if (evt is UndeleteImportedFileEvent)
+      {
+        var projectEvent = (UndeleteImportedFileEvent)evt;
+        var importedFile = new ImportedFile
+        {
+          ProjectUid = projectEvent.ProjectUID.ToString(),
+          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
+          LastActionedUtc = projectEvent.ActionUTC
+        };
+        upsertedCount = await UpsertImportedFile(importedFile, "UndeleteImportedFileEvent");
+      }
       return upsertedCount;
     }
 
@@ -298,7 +310,7 @@ namespace Repositories
           upsertedCount = await ExecuteWithAsyncPolicy(update, project);
           log.LogDebug($"ProjectRepository/CreateProject: (updateExisting): updated {upsertedCount} rows");
 
-          return upsertedCount.CalculateUpsertCount();
+          return upsertedCount;
         }
       }
 
@@ -349,8 +361,7 @@ namespace Repositories
             upsertedCount = await ExecuteWithAsyncPolicy(update, project);
             log.LogDebug(
               $"ProjectRepository/UpdateProject: upserted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
-
-            return upsertedCount.CalculateUpsertCount();
+            return upsertedCount;
           }
         }
         else
@@ -391,7 +402,7 @@ namespace Repositories
                     WHERE ProjectUID = @projectUID";
             upsertedCount = await ExecuteWithAsyncPolicy(delete, project);
             log.LogDebug(
-              $"ProjectRepository/DeleteProject: deleted {upsertedCount} rows (1=insert, 2=update) for: projectUid:{project.ProjectUID}");
+              $"ProjectRepository/DeleteProject: deleted {upsertedCount} rows for: projectUid:{project.ProjectUID}");
             return upsertedCount;
           }
           else
@@ -505,7 +516,6 @@ namespace Repositories
         var upsertedCount = await ExecuteWithAsyncPolicy(insert, customerProject);
         log.LogDebug(
           $"ProjectRepository/AssociateProjectCustomer: upserted {upsertedCount} rows (1=insert, 2=update) for: customerProjectUid:{customerProject.CustomerUID}");
-
         return upsertedCount.CalculateUpsertCount();
       }
     }
@@ -598,7 +608,6 @@ namespace Repositories
     {
       var upsertedCount = 0;
 
-
       var existing = (await QueryWithAsyncPolicy<ImportedFile>
       (@"SELECT 
               fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID as CustomerUID,
@@ -618,6 +627,8 @@ namespace Repositories
       if (eventType == "DeleteImportedFileEvent")
         upsertedCount = await DeleteImportedFile(importedFile, existing, isDeletePermanently);
 
+      if (eventType == "UndeleteImportedFileEvent")
+        upsertedCount = await UndeleteImportedFile(importedFile, existing);
 
       return upsertedCount;
     }
@@ -672,7 +683,7 @@ namespace Repositories
           log.LogDebug(
             $"ProjectRepository/CreateImportedFile: (updateExisting): upserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
-          return upsertedCount.CalculateUpsertCount();
+          return upsertedCount;
         }
       }
 
@@ -706,7 +717,7 @@ namespace Repositories
           log.LogDebug(
             $"ProjectRepository/UpdateImportedFile: updated {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
 
-          return upsertedCount.CalculateUpsertCount();
+          return upsertedCount;
         }
 
         log.LogDebug(
@@ -725,7 +736,7 @@ namespace Repositories
     private async Task<int> DeleteImportedFile(ImportedFile importedFile, ImportedFile existing, bool isDeletePermanently)
     {
       log.LogDebug(
-        $"ProjectRepository/DeleteImportedFile: deleting a project: {JsonConvert.SerializeObject(importedFile)} permanent flag:{isDeletePermanently}");
+        $"ProjectRepository/DeleteImportedFile: deleting importedFile: {JsonConvert.SerializeObject(importedFile)} permanent flag:{isDeletePermanently}");
       var upsertedCount = 0;
       if (existing != null)
       {
@@ -734,7 +745,7 @@ namespace Repositories
           if (isDeletePermanently)
           {
             log.LogDebug(
-              $"ProjectRepository/DeleteImportedFile: deleting a project permanently: {importedFile.ImportedFileUid}");
+              $"ProjectRepository/DeleteImportedFile: deleting importedFile permanently: {importedFile.ImportedFileUid}");
             const string delete =
               @"DELETE FROM ImportedFile
                   WHERE ImportedFileUID = @ImportedFileUid";
@@ -755,7 +766,7 @@ namespace Repositories
 
             upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
             log.LogDebug(
-              $"ProjectRepository/DeleteImportedFile: upserted {upsertedCount} rows (1=insert, 2=update) for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
+              $"ProjectRepository/DeleteImportedFile: upserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
             return upsertedCount;
           }
         }
@@ -763,8 +774,34 @@ namespace Repositories
       else
       {
         log.LogDebug(
-          $"ProjectRepository/DeleteImportedFile: can't delete as none existing ignored importedFile={importedFile.ImportedFileUid}. Can't create one as don't have enough info e.g.customerUID / type.");
+          $"ProjectRepository/DeleteImportedFile: can't delete as none existing, ignored. importedFile={importedFile.ImportedFileUid}. Can't create one as don't have enough info e.g.customerUID / type.");
       }
+      return upsertedCount;
+    }
+
+    private async Task<int> UndeleteImportedFile(ImportedFile importedFile, ImportedFile existing)
+    {
+      // this is an interfaces extension model used solely by ProjectMDM to allow a rollback of a DeleteImportedFile
+      log.LogDebug($"ProjectRepository/UndeleteImportedFile: undeleting importedFile: {JsonConvert.SerializeObject(importedFile)}.");
+      var upsertedCount = 0;
+
+      if (existing != null)
+      {
+        log.LogDebug($"ProjectRepository/UndeleteImportedFile: undeleting importedFile {importedFile.ImportedFileUid}");
+
+        const string update =
+          @"UPDATE ImportedFile                               
+                SET IsDeleted = 0
+              WHERE ImportedFileUID = @ImportedFileUid";
+
+        upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
+        log.LogDebug(
+          $"ProjectRepository/UndeleteImportedFile: upserted {upsertedCount} rows for: projectUid:{importedFile.ProjectUid} importedFileUid: {importedFile.ImportedFileUid}");
+        return upsertedCount;
+      }
+
+      log.LogDebug(
+        $"ProjectRepository/UndeleteImportedFile: can't undelete as none existing ignored importedFile={importedFile.ImportedFileUid}.");
       return upsertedCount;
     }
 

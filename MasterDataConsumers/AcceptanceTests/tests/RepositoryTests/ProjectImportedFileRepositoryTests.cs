@@ -5,6 +5,7 @@ using Repositories;
 using RepositoryTests.Internal;
 using System;
 using System.Linq;
+using Repositories.ExtendedModels;
 using VSS.GenericConfiguration;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -248,7 +249,7 @@ namespace RepositoryTests
     }
 
     /// <summary>
-    /// Delete ImportedFile permantly
+    /// Delete ImportedFile permanently
     /// </summary>
     [TestMethod]
     public void DeleteImportedFile_Permanently()
@@ -290,6 +291,65 @@ namespace RepositoryTests
       g = _projectContext.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
       g.Wait();
       Assert.IsNull(g.Result, "Should be able to retrieve ImportedFile from ProjectRepo via GUID ");
+    }
+
+    /// <summary>
+    /// UnDelete ImportedFile used internally by ProjectMDM for rolling back after failure
+    /// </summary>
+    [TestMethod]
+    public void DeleteImportedFile_ThenUndelete()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+
+      var createImportedFileEvent = new CreateImportedFileEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.NewGuid(),
+        ImportedFileID = new Random().Next(1, 1999999),
+        CustomerUID = Guid.NewGuid(),
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        Name = "Test SS type.ttm",
+        FileDescriptor = "fd",
+        FileCreatedUtc = actionUtc,
+        FileUpdatedUtc = actionUtc,
+        ImportedBy = "JoeSmoe",
+        SurveyedUTC = actionUtc.AddDays(-1),
+        ActionUTC = actionUtc
+      };
+
+      var deleteImportedFileEvent = new DeleteImportedFileEvent()
+      {
+        ProjectUID = createImportedFileEvent.ProjectUID,
+        ImportedFileUID = createImportedFileEvent.ImportedFileUID,
+        ActionUTC = actionUtc.AddHours(1)
+      };
+
+      var undeleteImportedFileEvent = new UndeleteImportedFileEvent()
+      {
+        ProjectUID = createImportedFileEvent.ProjectUID,
+        ImportedFileUID = createImportedFileEvent.ImportedFileUID,
+        ActionUTC = actionUtc.AddHours(1)
+      };
+
+       _projectContext.StoreEvent(createImportedFileEvent).Wait();
+
+      var g = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.AreEqual(1, g.Result.Count(), "Should be able to retrieve ImportedFile from ProjectRepo");
+
+      _projectContext.StoreEvent(deleteImportedFileEvent).Wait();
+      g = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.AreEqual(0, g.Result.Count(), "Should not be able to retrieve ImportedFile from ProjectRepo");
+
+      var s = _projectContext.StoreEvent(undeleteImportedFileEvent);
+      s.Wait();
+      Assert.AreEqual(1, s.Result, "Undelete imported file failed");
+
+      g = _projectContext.GetImportedFiles(createImportedFileEvent.ProjectUID.ToString());
+      g.Wait();
+      Assert.AreEqual(1, g.Result.Count(), "Should be able to retrieve ImportedFile from ProjectRepo");
+      Assert.IsFalse(g.Result.ToList()[0].IsDeleted, "imported file deleted flag should be false");
     }
 
     #endregion ImportedFiles
