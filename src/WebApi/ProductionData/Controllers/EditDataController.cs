@@ -62,6 +62,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">The request representation for the operation.</param>
     /// <returns>A list of the edits applied to the production data for the project and machine.</returns>
     /// <executor>GetEditDataExecutor</executor> 
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
@@ -81,7 +83,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="request">The request representation for the operation</param>
     /// <returns></returns>
-    /// <executor>EditDataExecutor</executor> 
+    /// <executor>EditDataExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectWritableVerifier]

@@ -151,6 +151,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="request">The request for statistics request to Raptor</param>
     /// <returns></returns>
     /// <executor>ProjectStatisticsExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/projectstatistics")]
