@@ -138,6 +138,7 @@ namespace ProjectWebApiCommon.ResultsHandling
       DynamicAddwithOffset("Unable to disassociate project from customer.", 64);
       DynamicAddwithOffset("Unable to associate project with geofence.", 65);
       DynamicAddwithOffset("Unable to delete project.", 66);
+      DynamicAddwithOffset("FileImport AddFile in RaptorServices failed. Reason: {0} {1}.", 67);
     }
 
     /// <summary>

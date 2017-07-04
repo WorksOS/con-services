@@ -35,7 +35,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
     }
 
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void CreateLandfillProjectAndSubscriptionThenGetProjectListV4()
     {
       msg.Title("Project v4 test 2", "Create landfill project and customer then read the project list");
@@ -124,7 +124,7 @@ namespace WebApiTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
     }
 
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void Create2SubscriptionsFoLandfillAndCreateProjects()
     {
       msg.Title("Project v4 test 6", "Create landfill project and customer then read the project list");
@@ -201,7 +201,7 @@ namespace WebApiTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
     }
 
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void Create2SubscriptionsForProjectMonitoringAndTryToCreateALandfillProjects()
     {
       msg.Title("Project v4 test 8", "Create 2 subscriptions for project monitoring and try to create a landfill project");
@@ -355,7 +355,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid2, projectEventArray2, true);
     }
 
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void TryCreateLandfillProjectWithNoSubscription()
     {
       msg.Title("Project v4 test 12", "Try to create landfill project with no subscription");
@@ -409,7 +409,7 @@ namespace WebApiTests
       Assert.IsTrue(response1 == "There are no available subscriptions for the selected customer.", "Response is unexpected. Should be There are no available subscriptions for the selected customer. Response: " + response1);
     }
 
-   [TestMethod]
+   [TestMethod] [Ignore]
     public void Create2LandfillProjectsWithOverLappingBoundarys()
     {
       msg.Title("Project v4 test 14", "Create standard project and customer with overlapping boundarys");
@@ -454,7 +454,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid1, projectEventArray1, true);
     }
 
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void CreateLandfillProjectThenUpdateEndDate()
     {
       msg.Title("Project v4 test 15", "Create landfill project and customer then update end date");
@@ -495,7 +495,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
     }
 
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void CreateLandfillProjectThenUpdateProjectNameEndDateAndDescription()
     {
       msg.Title("Project v4 test 16", "Create landfill project and customer then try and update project name, end date and description");
@@ -536,7 +536,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
     }
 
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void CreateLandfillProjectThenUpdateProjectTypeAndCorordinateFile()
     {
       msg.Title("Project v4 test 17", "Create landfill project and customer then update project type and cordinate system file");
@@ -603,7 +603,7 @@ namespace WebApiTests
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
     }
 
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void CreateLandfillProjectWithCoordinateSystemAndSubscriptionThenGetProjectListV4()
     {
       msg.Title("Project v4 test 19", "Create landfill project With CoordinateSystem and customer then read the project list");
@@ -670,7 +670,7 @@ namespace WebApiTests
       ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
       ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
     }
-    [TestMethod]
+    [TestMethod] [Ignore]
     public void TryCreateLandfillProjectWithoutCoordinateSystem()
     {
       msg.Title("Project v4 test 21", "Try to create landfill project without a corordinate system");
