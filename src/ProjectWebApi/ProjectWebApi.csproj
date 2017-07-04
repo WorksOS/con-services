@@ -44,7 +44,7 @@
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
     <PackageReference Include="AutoMapper" Version="6.0.2" />
     <PackageReference Include="MasterDataProxies.netcore" Version="1.2.1" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.77" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.78" />
     <PackageReference Include="TCCFileAccess.netcore" Version="1.2.6" />
     <PackageReference Include="FlowJSHandler.netcore" Version="1.0.6" />
   </ItemGroup>

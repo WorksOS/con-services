@@ -21,6 +21,7 @@ using TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectWebApiCommon.Utilities;
 using Microsoft.Extensions.Logging;
+using Repositories.ExtendedModels;
 
 namespace Controllers
 {
@@ -239,12 +240,12 @@ namespace Controllers
     /// Deletes imported file from the Db.
     /// </summary>
     /// <returns />
-    protected async Task<DeleteImportedFileEvent> DeleteImportedFile(Guid projejctUid, Guid importedFileUid, bool deletePermanently = false)
+    protected async Task<DeleteImportedFileEvent> DeleteImportedFile(Guid projectUid, Guid importedFileUid, bool deletePermanently = false)
     {
       var nowUtc = DateTime.UtcNow;
       var deleteImportedFileEvent = new DeleteImportedFileEvent()
       {
-        ProjectUID = projejctUid,
+        ProjectUID = projectUid,
         ImportedFileUID = importedFileUid,
         DeletePermanently = deletePermanently,
         ActionUTC = nowUtc, // aka importedDate
@@ -254,8 +255,31 @@ namespace Controllers
       if (await projectService.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
         return deleteImportedFileEvent;
 
-      ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 51);
+      ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 51);
       return deleteImportedFileEvent;
+    }
+
+    /// <summary>
+    /// un-deletes imported file from the Db using the Respositories library.
+    /// Used solely for rollback and is never inserted in the kafka que.
+    /// </summary>
+    /// <returns />
+    protected async Task UndeleteImportedFile(Guid projectUid, Guid importedFileUid)
+    {
+      var nowUtc = DateTime.UtcNow;
+      var undeleteImportedFileEvent = new UndeleteImportedFileEvent()
+      {
+        ProjectUID = projectUid,
+        ImportedFileUID = importedFileUid,
+        ActionUTC = nowUtc, 
+        ReceivedUTC = nowUtc
+      };
+
+      if (await projectService.StoreEvent(undeleteImportedFileEvent).ConfigureAwait(false) == 1)
+        return;
+
+      ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 51);
+      return;
     }
 
     /// <summary>
@@ -310,29 +334,54 @@ namespace Controllers
     /// Deletes the importedFile from TCC
     /// </summary>
     /// <returns></returns>
-    protected async Task DeleteFileFromTCCRepository(FileDescriptor fileDescriptor)
+    protected async Task DeleteFileFromTCCRepository(FileDescriptor fileDescriptor, Guid projectUid, Guid importedFileUid)
     {
       log.LogInformation($"DeleteFileFromTCCRepository: fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)}");
       bool ccFileExistsResult = false;
-      
+
       try
       {
-       ccFileExistsResult = await fileRepo
-        .FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName)
-        .ConfigureAwait(false);
+        ccFileExistsResult = await fileRepo
+          .FileExists(fileDescriptor.filespaceId, fileDescriptor.path + '/' + fileDescriptor.fileName)
+          .ConfigureAwait(false);
       }
       catch (Exception e)
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.FileExists", e.Message);
+        log.LogError(
+          $"DeleteFileFromTCCRepository FileExists failed with exception. importedFileUid:{importedFileUid}. Exception Thrown: {e.Message}.");
+
+        await UndeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.FileExists",
+          e.Message);
       }
 
       if (ccFileExistsResult == true)
       {
-        var ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId,
-            fileDescriptor.path + '/' + fileDescriptor.fileName)
-          .ConfigureAwait(false);
+        bool ccDeleteFileResult = false;
+
+        try
+        {
+          ccDeleteFileResult = await fileRepo.DeleteFile(fileDescriptor.filespaceId,
+              fileDescriptor.path + '/' + fileDescriptor.fileName)
+            .ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+          log.LogError(
+            $"DeleteFileFromTCCRepository FileExists failed with exception. importedFileUid:{importedFileUid}. Exception Thrown: {e.Message}.");
+
+          await UndeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
+          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.FileExists",
+            e.Message);
+        }
         if (ccDeleteFileResult == false)
+        {
+          log.LogError(
+            $"DeleteFileFromTCCRepository DeleteFile failed to delete importedFileUid:{importedFileUid}.");
+
+          await UndeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
           ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 54);
+        }
       }
       else
         log.LogInformation(
@@ -394,6 +443,8 @@ namespace Controllers
       {
         log.LogError(
           $"FileImport DeleteFile in RaptorServices failed with exception. projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Exception Thrown: {e.Message}.");
+
+        await UndeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "raptorProxy.DeleteFile", e.Message);
       }
 
@@ -402,6 +453,8 @@ namespace Controllers
       if (notificationResult != null && notificationResult.Code != 0)
       {
         log.LogError($"FileImport DeleteFile in RaptorServices failed. projectUid:{projectUid} FileDescriptor:{fileDescriptor}. Reason: {notificationResult?.Code ?? -1} {notificationResult?.Message ?? "null"}");
+
+        await UndeleteImportedFile(projectUid, importedFileUid).ConfigureAwait(false);
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 54, notificationResult.Code.ToString(), notificationResult.Message);
       }
     }
