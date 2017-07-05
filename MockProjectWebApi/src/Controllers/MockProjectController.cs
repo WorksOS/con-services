@@ -36,8 +36,9 @@ namespace MockProjectWebApi.Controllers
     {
       Console.WriteLine("GetMockImportedFiles: projectUid={0}", projectUid);
 
+      var projectUidStr = projectUid.ToString();
       List<FileData> fileList = null;
-      if (projectUid.ToString() == DIMENSIONS_PROJECT_UID)
+      if (projectUidStr == DIMENSIONS_PROJECT_UID)
       {
         fileList = new List<FileData>
         {
@@ -63,65 +64,73 @@ namespace MockProjectWebApi.Controllers
           }
         };
       }
-      else if (projectUid.ToString() == GOLDEN_DATA_DIMENSIONS_PROJECT_UID)
+      else if (projectUidStr == GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1 ||
+               projectUidStr == GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2)
       {
-        fileList = new List<FileData>
+        fileList = surveyedSurfacesFileList;
+        foreach (var file in fileList)
         {
-          new FileData
-          {
-            Name = "Original Ground Survey - Dimensions 2012_2016-05-13T000202Z.TTM",
-            ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID,
-            CustomerUid = "SurveyedSurfaceAcceptanceTest",
-            ImportedFileType = ImportedFileType.SurveyedSurface,
-            ImportedFileUid = Guid.NewGuid().ToString(),
-            LegacyFileId = 14177,
-            IsActivated = true
-          },
-          new FileData
-          {
-            Name = "Large Sites Road - Trimble Road_2016-05-13T000000Z.TTM",
-            ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID,
-            CustomerUid = "SurveyedSurfaceAcceptanceTest",
-            ImportedFileType = ImportedFileType.SurveyedSurface,
-            ImportedFileUid = Guid.NewGuid().ToString(),
-            LegacyFileId = 14176,
-            IsActivated = true
-          },
-          new FileData
-          {
-            Name = "Milling - Milling_2016-05-08T234647Z.TTM",
-            ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID,
-            CustomerUid = "SurveyedSurfaceAcceptanceTest",
-            ImportedFileType = ImportedFileType.SurveyedSurface,
-            ImportedFileUid = Guid.NewGuid().ToString(),
-            LegacyFileId = 14175,
-            IsActivated = true
-          },
-          new FileData
-          {
-            Name = "Large Sites Road - Trimble Road_2016-05-08T234455Z.TTM",
-            ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID,
-            CustomerUid = "SurveyedSurfaceAcceptanceTest",
-            ImportedFileType = ImportedFileType.SurveyedSurface,
-            ImportedFileUid = Guid.NewGuid().ToString(),
-            LegacyFileId = 14174,
-            IsActivated = true
-          },
-          new FileData
-          {
-            Name = "Large Sites Road - Trimble Road_2012-06-01T015500Z.TTM",
-            ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID,
-            CustomerUid = "SurveyedSurfaceAcceptanceTest",
-            ImportedFileType = ImportedFileType.SurveyedSurface,
-            ImportedFileUid = Guid.NewGuid().ToString(),
-            LegacyFileId = 14222,
-            IsActivated = true
-          }
-        };
+          file.ProjectUid = projectUidStr;
+          file.IsActivated = projectUidStr == GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1;
+        }
       }
 
       return new FileDataResult { ImportedFileDescriptors = fileList};
     }
+
+    private List<FileData> surveyedSurfacesFileList = new List<FileData>
+    {
+      new FileData
+      {
+        Name = "Original Ground Survey - Dimensions 2012_2016-05-13T000202Z.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "SurveyedSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 14177,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Large Sites Road - Trimble Road_2016-05-13T000000Z.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "SurveyedSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 14176,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Milling - Milling_2016-05-08T234647Z.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "SurveyedSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 14175,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Large Sites Road - Trimble Road_2016-05-08T234455Z.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "SurveyedSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 14174,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Large Sites Road - Trimble Road_2012-06-01T015500Z.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "SurveyedSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.SurveyedSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 14222,
+        IsActivated = true
+      }
+    };
 
     private List<ProjectData>  projectList = new List<ProjectData>
     {
@@ -147,7 +156,8 @@ namespace MockProjectWebApi.Controllers
       new ProjectData {LegacyProjectId = 1001285, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001388, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1001544, ProjectUid = Guid.NewGuid().ToString()},
-      new ProjectData {LegacyProjectId = GOLDEN_DATA_DIMENSIONS_PROJECT_ID, ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID},
+      new ProjectData {LegacyProjectId = GOLDEN_DATA_DIMENSIONS_PROJECT_ID_1, ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1},
+      new ProjectData {LegacyProjectId = GOLDEN_DATA_DIMENSIONS_PROJECT_ID_2, ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2},
       new ProjectData {LegacyProjectId = 1009999, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1012413, ProjectUid = Guid.NewGuid().ToString()},
       new ProjectData {LegacyProjectId = 1099999, ProjectUid = Guid.NewGuid().ToString()},
@@ -157,7 +167,9 @@ namespace MockProjectWebApi.Controllers
     private const int DIMENSIONS_PROJECT_ID = 1001158;
     private const string DIMENSIONS_PROJECT_UID = "ff91dd40-1569-4765-a2bc-014321f76ace";
 
-    private const int GOLDEN_DATA_DIMENSIONS_PROJECT_ID = 1007777;
-    private const string GOLDEN_DATA_DIMENSIONS_PROJECT_UID = "7925f179-013d-4aaf-aff4-7b9833bb06d6";
+    private const int GOLDEN_DATA_DIMENSIONS_PROJECT_ID_1 = 1007777;
+    private const string GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1 = "7925f179-013d-4aaf-aff4-7b9833bb06d6";
+    private const int GOLDEN_DATA_DIMENSIONS_PROJECT_ID_2 = 1007778;
+    private const string GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2 = "86a42bbf-9d0e-4079-850f-835496d715c5";
   }
 }
