@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.IO;
 using KafkaConsumer.Kafka;
 using log4netExtensions;
 using MasterDataProxies;
@@ -11,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Repositories;
 using Swashbuckle.Swagger.Model;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApi.Filters;
@@ -119,17 +120,21 @@ namespace VSS.Productivity3D.ProjectWebApi
           TermsOfService = "None"
         });
 
-        string pathToXml = "";
-        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "ProjectWebApi.xml")))
+        string pathToXml;
+
+        var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
+        var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
+
+        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), assemblyName + ".xml")))
           pathToXml = Directory.GetCurrentDirectory();
-        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, "ProjectWebApi.xml")))
+        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, assemblyName + ".xml")))
           pathToXml = System.AppContext.BaseDirectory;
         else
         {
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
           pathToXml = Path.GetDirectoryName(pathToExe);
         }
-        options.IncludeXmlComments(Path.Combine(pathToXml, "ProjectWebApi.xml"));
+        options.IncludeXmlComments(Path.Combine(pathToXml, assemblyName + ".xml"));
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
