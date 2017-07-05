@@ -409,14 +409,15 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
       }
 
+      // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
+      var deleteImportedFileEvent = await DeleteImportedFile(projectUid, importedFileUid, false).ConfigureAwait(false);
+      
       await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor, importedFile.ImportedFileId, Guid.Parse(importedFile.ImportedFileUid))
         .ConfigureAwait(false);
 
-      await DeleteFileFromTCCRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor))
+      await DeleteFileFromTCCRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor), projectUid, importedFileUid)
         .ConfigureAwait(false);
-
-      var deleteImportedFileEvent = await DeleteImportedFile(projectUid, importedFileUid, false).ConfigureAwait(false);
-
+      
       var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>

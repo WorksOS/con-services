@@ -1,7 +1,6 @@
 ﻿using KafkaConsumer.Kafka;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
-using MasterDataProxies.ResultHandling;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -19,6 +18,7 @@ using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApi.Filters;
 using VSS.Productivity3D.ProjectWebApi.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -61,8 +61,10 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     public async Task<ProjectV4DescriptorsListResult> GetProjectsV4()
     {
       log.LogInformation("GetProjectsV4");
+      //exclude Landfill Projects for now
+      //exclude Landfill Projects for now
+      var projects = (await GetProjectList().ConfigureAwait(false)).Where(prj => prj.ProjectType != ProjectType.LandFill).ToImmutableList();
 
-      var projects = await GetProjectList().ConfigureAwait(false);
       return new ProjectV4DescriptorsListResult
       {
         ProjectDescriptors = projects.Select(project =>
@@ -97,11 +99,17 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     [HttpPost]
     public async Task<ProjectV4DescriptorsSingleResult> CreateProjectV4([FromBody] CreateProjectRequest projectRequest)
     {
+
       var customerUid = (User as TIDCustomPrincipal).CustomerUid;
       if (projectRequest == null)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
       }
+
+      //Landfill projects are not supported till l&s goes live
+      if (projectRequest?.ProjectType == ProjectType.LandFill)
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(3000, "Landfill projects are not supported"));
+
 
       log.LogInformation("CreateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
@@ -164,6 +172,11 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
+
+      //Landfill projects are not supported till l&s goes live
+      if (projectRequest?.ProjectType == ProjectType.LandFill)
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(3000, "Landfill projects are not supported"));
+
       log.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
@@ -307,16 +320,16 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       if (project is CreateProjectEvent)
         ProjectBoundaryValidator.ValidateWKT(((CreateProjectEvent)project).ProjectBoundary);
 
-      var csFileName = (project is CreateProjectEvent)
+      var csFileName = project is CreateProjectEvent
         ? ((CreateProjectEvent)project).CoordinateSystemFileName
         : ((UpdateProjectEvent)project).CoordinateSystemFileName;
-      var csFileContent = (project is CreateProjectEvent)
+      var csFileContent = project is CreateProjectEvent
         ? ((CreateProjectEvent)project).CoordinateSystemFileContent
         : ((UpdateProjectEvent)project).CoordinateSystemFileContent;
       if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
       {
         ProjectDataValidator.ValidateFileName(csFileName);
-        CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
+        MasterDataProxies.ResultHandling.CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
         try
         {
           coordinateSystemSettingsResult = await raptorProxy
@@ -405,7 +418,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
             if (isCreate)
               await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
 
-            throw ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1).ToString(), (coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"));
+            ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1).ToString(), coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
           }
         }
         catch (Exception e)
@@ -430,7 +443,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     private async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid)
     {
       log.LogDebug($"DeleteProjectPermanentlyInDB: {projectUid}");
-      var deleteProjectEvent = new DeleteProjectEvent()
+      var deleteProjectEvent = new DeleteProjectEvent
       {
         ProjectUID = projectUid,
         DeletePermanently = true,
@@ -438,7 +451,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       };
       await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
 
-      await projectService.StoreEvent(new DissociateProjectCustomer()
+      await projectService.StoreEvent(new DissociateProjectCustomer
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
@@ -494,29 +507,14 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     /// <exception cref="ContractExecutionResult">No available subscriptions for the selected customer</exception>
     private async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid, ProjectType type, Guid projectUid)
     {
-      var availableSubscriptions =
-        (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
+      var availableFreSub =
+        (await subsService.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
         .Where(s => s.ServiceTypeID == (int)type.MatchSubscriptionType()).ToImmutableList();
-      log.LogDebug(
-        $"Receieved {availableSubscriptions.Count()} subscriptions for projectType {type} matchedServiceType {type.MatchSubscriptionType()}. Contents {JsonConvert.SerializeObject(availableSubscriptions)}");
-      var projects =
-        (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
 
-      log.LogDebug($"Receieved {projects.Count()} projects with contents {JsonConvert.SerializeObject(projects)}");
-
-      var availableFreSub = availableSubscriptions
-        .Where(s => !projects
-                      .Where(p => p.ProjectType == type && !p.IsDeleted)
-                      .Select(p => p.SubscriptionUID)
-                      .Contains(s.SubscriptionUID) &&
-                    s.ServiceTypeID == (int)type.MatchSubscriptionType())
-        .ToImmutableList();
-      log.LogDebug(
-        $"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
+      log.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type}");
       if (!availableFreSub.Any())
       {
-        // only called for Create, not update
-        // await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
+        await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
       }
       return availableFreSub;
@@ -529,20 +527,9 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     /// <returns></returns>
     private async Task<ImmutableList<Subscription>> GetFreeSubs(string customerUid)
     {
-      var availableSubscriptions =
-        (await subsService.GetSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
-        .Where(s => s.ServiceTypeID == (int)ServiceTypeEnum.Landfill ||
-                    s.ServiceTypeID == (int)ServiceTypeEnum.ProjectMonitoring);
-      var projects = await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false);
-
-      var availableFreSub = availableSubscriptions
-        .Where(s => !projects
-          .Where(p => !p.IsDeleted)
-          .Select(p => p.SubscriptionUID)
-          .Contains(s.SubscriptionUID))
-        .ToImmutableList();
-
-      return availableFreSub;
+      return
+      (await subsService.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date)
+        .ConfigureAwait(false)).ToImmutableList();
     }
 
     /// <summary>
@@ -556,9 +543,8 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
 
       if (project.ProjectType == ProjectType.LandFill || project.ProjectType == ProjectType.ProjectMonitoring)
       {
-        subscriptionUidAssigned = Guid.Parse((await GetFreeSubs(customerUid, project.ProjectType, project.ProjectUID)).First()
-          .SubscriptionUID);
-        log.LogDebug($"Receieved {subscriptionUidAssigned} subscription");
+        subscriptionUidAssigned = Guid.Parse((await GetFreeSubs(customerUid, project.ProjectType, project.ProjectUID)).First().SubscriptionUID);
+        log.LogDebug($"Received {subscriptionUidAssigned} subscription");
         //Assign a new project to a subscription
         try
         {
