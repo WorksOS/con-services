@@ -101,10 +101,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       {
         case DisplayMode.Height:
 
-          const int NUMBER_OF_COLORS = 30;
-
-          double step = (elevExtents.MaxElevation - elevExtents.MinElevation) / (NUMBER_OF_COLORS - 1);
-          List<int> colors = RaptorConverters.ElevationPalette();
+          //Compaction elevation palette has 32 colors, original Raptor one had 30 colors
+          List<int> colors = ElevationPalette();
+          double step = (elevExtents.MaxElevation - elevExtents.MinElevation) / (colors.Count - 1);
 
           palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationBelowColor, -1));
           for (int i = 0; i < colors.Count; i++)
@@ -199,6 +198,50 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     }
 
     private const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
+
+    private static int RGBToColor(int r, int g, int b)
+    {
+      return r << 16 | g << 8 | b << 0;
+    }
+
+    private static List<int> ElevationPalette()
+    {
+      return new List<int> {
+        RGBToColor(200,0,0),
+        RGBToColor(255,0,0),
+        RGBToColor(225,60,0),
+        RGBToColor(255,90,0),
+        RGBToColor(255,130,0),
+        RGBToColor(255,170,0),
+        RGBToColor(255,200,0),
+        RGBToColor(255,220,0),
+        RGBToColor(250,230,0),
+        RGBToColor(220,230,0),
+        RGBToColor(210,230,0),
+        RGBToColor(200,230,0),
+        RGBToColor(180,230,0),
+        RGBToColor(150,230,0),
+        RGBToColor(130,230,0),
+        RGBToColor(100,240,0),
+        RGBToColor(0,255,0),
+        RGBToColor(0,240,100),
+        RGBToColor(0,230,130),
+        RGBToColor(0,230,150),
+        RGBToColor(0,230,180),
+        RGBToColor(0,230,200),
+        RGBToColor(0,230,210),
+        RGBToColor(0,220,220),
+        RGBToColor(0,200,230),
+        RGBToColor(0,180,240),
+        RGBToColor(0,150,245),
+        RGBToColor(0,120,250),
+        RGBToColor(0,90,255),
+        RGBToColor(0,70,255),
+        RGBToColor(0,0,255),
+        RGBToColor(0,0,200)
+      };
+    }
+
 
 
   }
