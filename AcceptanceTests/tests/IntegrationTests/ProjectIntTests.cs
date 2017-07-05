@@ -1,9 +1,9 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Repositories.DBModels;
+using System;
+using System.Net;
 using TestUtility;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System.Net;
-using Repositories.DBModels;
 
 
 namespace IntegrationTests

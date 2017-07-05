@@ -4,12 +4,13 @@
     <TargetFrameworks>netcoreapp1.1;net47</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>ProjectWebApi</AssemblyName>
+    <AssemblyName>VSS.Productivity3D.ProjectWebApi</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>ProjectWebApi</PackageId>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
+    <RootNamespace>VSS.Productivity3D.ProjectWebApi</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

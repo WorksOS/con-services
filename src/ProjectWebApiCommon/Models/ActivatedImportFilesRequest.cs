@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ProjectWebApiCommon.Models
+namespace VSS.Productivity3D.ProjectWebApiCommon.Models
 {
   public class ActivatedImportFilesRequest
     {

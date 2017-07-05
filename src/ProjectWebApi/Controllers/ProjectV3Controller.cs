@@ -1,23 +1,23 @@
-﻿using System.Collections.Generic;
-using KafkaConsumer.Kafka;
+﻿using KafkaConsumer.Kafka;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ProjectWebApi.Filters;
-using ProjectWebApi.Internal;
-using ProjectWebApiCommon.Models;
+using Newtonsoft.Json;
 using Repositories;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Internal;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Newtonsoft.Json;
 
-namespace Controllers
+namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {
   /// <summary>
   /// Project controller v3

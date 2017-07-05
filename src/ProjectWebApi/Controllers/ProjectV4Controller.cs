@@ -1,4 +1,12 @@
-﻿using System;
+﻿using KafkaConsumer.Kafka;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Repositories;
+using Repositories.DBModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -6,26 +14,16 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.Extensions.Logging;
-using KafkaConsumer.Kafka;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
-using MasterDataProxies.ResultHandling;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using ProjectWebApi.Filters;
-using ProjectWebApi.Internal;
-using ProjectWebApiCommon.Models;
-using ProjectWebApiCommon.ResultsHandling;
-using ProjectWebApiCommon.Utilities;
-using Repositories;
-using Repositories.DBModels;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Filters;
+using VSS.Productivity3D.ProjectWebApi.Internal;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ContractExecutionResult = ProjectWebApiCommon.ResultsHandling.ContractExecutionResult;
 
-namespace Controllers
+namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {
   /// <summary>
   /// Project controller v4
@@ -187,7 +185,7 @@ namespace Controllers
       ProjectDataValidator.Validate(project, projectService);
       await ValidateCoordSystemInRaptor(project).ConfigureAwait(false);
 
-      
+
       /*** now making changes, potentially needing rollback ***/
       if (!string.IsNullOrEmpty(project.CoordinateSystemFileName))
       {
@@ -305,7 +303,6 @@ namespace Controllers
     /// <summary>
     /// validate CordinateSystem if provided
     /// </summary>
-    /// <param name=""></param>
     private async Task<bool> ValidateCoordSystemInRaptor(IProjectEvent project)
     {
       // a Creating a landfill must have a CS, else optional
@@ -323,16 +320,16 @@ namespace Controllers
       if (project is CreateProjectEvent)
         ProjectBoundaryValidator.ValidateWKT(((CreateProjectEvent)project).ProjectBoundary);
 
-      var csFileName = (project is CreateProjectEvent)
+      var csFileName = project is CreateProjectEvent
         ? ((CreateProjectEvent)project).CoordinateSystemFileName
         : ((UpdateProjectEvent)project).CoordinateSystemFileName;
-      var csFileContent = (project is CreateProjectEvent)
+      var csFileContent = project is CreateProjectEvent
         ? ((CreateProjectEvent)project).CoordinateSystemFileContent
         : ((UpdateProjectEvent)project).CoordinateSystemFileContent;
       if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
       {
         ProjectDataValidator.ValidateFileName(csFileName);
-        CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
+        MasterDataProxies.ResultHandling.CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
         try
         {
           coordinateSystemSettingsResult = await raptorProxy
@@ -392,7 +389,7 @@ namespace Controllers
       isCreated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
       if (isCreated == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
- 
+
       log.LogDebug($"Created CustomerProject in DB {customerProject}");
       return project; // legacyID may have been added
     }
@@ -421,7 +418,7 @@ namespace Controllers
             if (isCreate)
               await DeleteProjectPermanentlyInDb(Guid.Parse((User as TIDCustomPrincipal).CustomerUid), projectUid).ConfigureAwait(false);
 
-            ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1).ToString(), (coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null"));
+            ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 41, (coordinateSystemSettingsResult?.Code ?? -1).ToString(), coordinateSystemSettingsResult?.Message ?? "coordinateSystemSettingsResult == null");
           }
         }
         catch (Exception e)
@@ -433,19 +430,20 @@ namespace Controllers
         }
       }
     }
-    
+
     /// <summary>
     /// Used internally, if a step fails, after a project has been CREATED, 
     ///    then delete it permanently i.e. don't just set IsDeleted.
     /// Since v4 CreateProjectInDB also associates projectCustomer then roll this back also.
     /// DissociateProjectCustomer actually deletes the DB ent4ry
     /// </summary>
+    /// <param name="customerUid"></param>
     /// <param name="projectUid"></param>
     /// <returns></returns>
     private async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid)
     {
       log.LogDebug($"DeleteProjectPermanentlyInDB: {projectUid}");
-      var deleteProjectEvent = new DeleteProjectEvent()
+      var deleteProjectEvent = new DeleteProjectEvent
       {
         ProjectUID = projectUid,
         DeletePermanently = true,
@@ -453,14 +451,14 @@ namespace Controllers
       };
       await projectService.StoreEvent(deleteProjectEvent).ConfigureAwait(false);
 
-      await projectService.StoreEvent(new DissociateProjectCustomer()
+      await projectService.StoreEvent(new DissociateProjectCustomer
       {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ActionUTC = DateTime.UtcNow
       }).ConfigureAwait(false);
     }
-    
+
     /// <summary>
     /// Creates Kafka events.
     /// </summary>
@@ -497,12 +495,13 @@ namespace Controllers
           new KeyValuePair<string, string>(customerProject.ProjectUID.ToString(), messagePayloadCustomerProject)
         });
     }
-    
+
     /// <summary>
     /// Gets the free subs for a project type
     /// </summary>
     /// <param name="customerUid">The customer uid.</param>
     /// <param name="type">The type.</param>
+    /// <param name="projectUid"></param>
     /// <returns></returns>
     /// <exception cref="ServiceException"></exception>
     /// <exception cref="ContractExecutionResult">No available subscriptions for the selected customer</exception>
@@ -511,8 +510,8 @@ namespace Controllers
       var availableFreSub =
         (await subsService.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date).ConfigureAwait(false))
         .Where(s => s.ServiceTypeID == (int)type.MatchSubscriptionType()).ToImmutableList();
-      
-      log.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type.ToString()}");
+
+      log.LogDebug($"We have {availableFreSub.Count} free subscriptions for the selected project type {type}");
       if (!availableFreSub.Any())
       {
         await DeleteProjectPermanentlyInDb(Guid.Parse(customerUid), projectUid).ConfigureAwait(false);
@@ -599,7 +598,7 @@ namespace Controllers
         await DeleteProjectPermanentlyInDb(project.CustomerUID, project.ProjectUID).ConfigureAwait(false);
         await DissociateProjectSubscription(project.ProjectUID, subscriptionUidAssigned).ConfigureAwait(false);
 
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57,"geofenceProxy.CreateGeofenceInGeofenceService",e.Message);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "geofenceProxy.CreateGeofenceInGeofenceService", e.Message);
       }
       if (geofenceUidCreated == Guid.Empty)
       {

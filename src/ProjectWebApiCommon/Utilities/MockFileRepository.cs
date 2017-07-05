@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TCCFileAccess;
 using TCCFileAccess.Models;
 
-namespace ProjectWebApiCommon.Utilities
+namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
 {
   public class MockFileRepository : IFileRepository
   {

@@ -14,4 +14,4 @@ COPY . /app
 VOLUME logs
 
 # Start the app
-ENTRYPOINT dotnet ProjectWebApi.dll
+ENTRYPOINT dotnet VSS.Productivity3D.ProjectWebApi.dll

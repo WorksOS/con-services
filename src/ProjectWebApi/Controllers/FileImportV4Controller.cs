@@ -1,35 +1,38 @@
-﻿using System;
+﻿using FlowUploadFilter;
+using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Repositories;
+using Repositories.DBModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using FlowUploadFilter;
-using Microsoft.Extensions.Logging;
-using KafkaConsumer.Kafka;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using ProjectWebApi.Filters;
-using ProjectWebApiCommon.Models;
-using ProjectWebApiCommon.ResultsHandling;
-using Repositories;
-using Repositories.DBModels;
-using ProjectWebApi.Internal;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Filters;
+using VSS.Productivity3D.ProjectWebApi.Internal;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using MasterDataProxies.Interfaces;
 
-namespace Controllers
+namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {
   /// <summary>
   /// File Import controller v4
   /// </summary>
   public class FileImportV4Controller : FileImportBaseController
   {
-
+    /// <summary>
+    /// Local log provider.
+    /// </summary>
     protected static ILoggerFactory Logger;
 
     /// <summary>
@@ -54,7 +57,6 @@ namespace Controllers
       }
     }
 
-
     // GET: api/v4/importedfiles
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
@@ -65,7 +67,7 @@ namespace Controllers
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV4([FromQuery] string projectUid)
     {
       log.LogInformation("GetImportedFilesV4");
-      return new ImportedFileDescriptorListResult()
+      return new ImportedFileDescriptorListResult
       {
         ImportedFileDescriptors = await GetImportedFileList(projectUid).ConfigureAwait(false)
       };
@@ -83,7 +85,7 @@ namespace Controllers
       const string functionId = "SetImportedFileActivatedStateV4";
       log.LogInformation("ActivateFiles");
 
-      await ValidateProjectId(projectUid);
+      await ValidateProjectId(projectUid).ConfigureAwait(false);
 
       if (request == null)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
@@ -96,7 +98,7 @@ namespace Controllers
 
       log.LogInformation($"{functionId}. projectUid: {projectUid}, fileUids: {fileIds}");
 
-      var importedFiles = await GetImportedFiles(projectUid);
+      var importedFiles = await GetImportedFiles(projectUid).ConfigureAwait(false);
       if (!importedFiles.Any())
       {
         log.LogInformation($"{functionId}. Attempt to set file activation state when project contains no files");
@@ -140,7 +142,7 @@ namespace Controllers
         var projectUidGuid = new Guid(projectUid);
 
         var dbUpdateResult = await SetFileActivatedState(projectUidGuid, filesToUpdate);
-        await NotifyRaptorUpdateFile(projectUidGuid, dbUpdateResult.Select(x => x.ImportedFileUID));
+        await NotifyRaptorUpdateFile(projectUidGuid, dbUpdateResult.Select(x => x.ImportedFileUID)).ConfigureAwait(false);
 
         return Ok(new { Code = HttpStatusCode.OK, Message = "Success" });
       }
@@ -149,7 +151,6 @@ namespace Controllers
         return new JsonResult(new { Code = HttpStatusCode.InternalServerError, exception.GetBaseException().Message });
       }
     }
-
 
     /// <summary>
     /// Used as a callback by Flow.JS
@@ -241,7 +242,7 @@ namespace Controllers
 
       var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
@@ -258,7 +259,6 @@ namespace Controllers
         $"CreateImportedFileV4. completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       return importedFile;
     }
-
 
     // PUT: api/v4/importedfile
     /// <summary>
@@ -340,7 +340,7 @@ namespace Controllers
         importedFileUid = createImportedFileEvent.ImportedFileUID.ToString();
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
-      
+
       await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value,
           Guid.Parse(importedFileUid), (existing == null))
         .ConfigureAwait(false);
@@ -353,18 +353,18 @@ namespace Controllers
             fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
           .ConfigureAwait(false);
 
-        var messagePayload = JsonConvert.SerializeObject(new {UpdateImportedFileEvent = updateImportedFileEvent});
+        var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
         producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
+          new List<KeyValuePair<string, string>>
           {
             new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
           });
       }
       else
       {
-        var messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
+        var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
         producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>()
+          new List<KeyValuePair<string, string>>
           {
             new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
           });
@@ -420,7 +420,7 @@ namespace Controllers
       
       var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
       producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>()
+        new List<KeyValuePair<string, string>>
         {
           new KeyValuePair<string, string>(deleteImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
@@ -428,22 +428,5 @@ namespace Controllers
         $"DeleteImportedFileV4. Completed succesfully. ProjectUid {projectUid} importedFileUid: {importedFileUid}");
       return new ContractExecutionResult();
     }
-
-    /// <summary>
-    /// Sets activated state on one or more imported files.
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <param name="importedFileUids">Collection of file Uids to set the activated state on</param>
-    /// <returns></returns>
-    [Route("api/v4/importedfiles")]
-    [HttpPut]
-    protected async Task<ImmutableList<ActivatedFileDescriptor>> PutImportedFilesV4([FromQuery] string projectUid, ImmutableList<ActivatedFileDescriptor> importedFileUids)
-    {
-      log.LogInformation("ActivateFiles");
-
-      throw new NotImplementedException();
-    }
   }
 }
-
-

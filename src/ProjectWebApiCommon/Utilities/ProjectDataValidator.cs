@@ -1,12 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using Repositories;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApiCommon.ResultsHandling;
-using System.IO;
 
-namespace ProjectWebApiCommon.Models
+namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
 {
   /// <summary>
   /// Validates all project event data sent to the Web API
