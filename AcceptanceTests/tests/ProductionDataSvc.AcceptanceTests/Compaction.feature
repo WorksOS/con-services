@@ -249,10 +249,10 @@ Scenario: Compaction Get CMV Summary
   }
 	"""
   
-  Scenario: Compaction Get Compaction Coverage Tiles With Surveyed Surfaces On
+  Scenario: Compaction Get Compaction Coverage Tiles With Surveyed Surfaces Included
   Given the Compaction Tiles service URI "/api/v2/compaction/productiondatatiles"
   And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
-  And a displayMode "0" and a bbox "36.207437, -115.019999, 36.207473, -115.019959" and a width "256" and a height "256" and an includeSurveyedSurfaces "true"
+  And a displayMode "0" and a bbox "36.207437, -115.019999, 36.207473, -115.019959" and a width "256" and a height "256"
   When I request a Tile
   Then the Tile result should be
   """
@@ -264,10 +264,10 @@ Scenario: Compaction Get CMV Summary
   }  
   """
 
-  Scenario: Compaction Get Compaction Coverage Tiles With Surveyed Surfaces Off
+  Scenario: Compaction Get Compaction Coverage Tiles With Surveyed Surfaces Excluded
   Given the Compaction Tiles service URI "/api/v2/compaction/productiondatatiles"
-  And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
-  And a displayMode "0" and a bbox "36.207437, -115.019999, 36.207473, -115.019959" and a width "256" and a height "256" and an includeSurveyedSurfaces "false"
+  And a projectUid "86a42bbf-9d0e-4079-850f-835496d715c5"
+  And a displayMode "0" and a bbox "36.207437, -115.019999, 36.207473, -115.019959" and a width "256" and a height "256"
   When I request a Tile
   Then the Tile result should be
   """

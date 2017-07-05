@@ -19,25 +19,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   {
     /// <summary>
     /// Gets the ids of the surveyed surfaces to exclude from Raptor calculations. 
-    /// This is either the deactivated ones if includeSurveyedSurfaces is true or all surveyed surfaces if the flag is false.
+    /// This is the deactivated ones.
     /// </summary>
     /// <param name="controller"></param>
     /// <param name="fileListProxy">Proxy client to get list of imported files for the project</param>
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
-    /// <param name="includeSurveyedSurfaces">Flag indicating if surveyed surfaces should be included. Default is true.</param>
     /// <param name="customHeaders">Http request custom headers</param>
     /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
-    public static async Task<List<long>> GetExcludedSurveyedSurfaceIds(this Controller controller, IFileListProxy fileListProxy, Guid projectUid, bool? includeSurveyedSurfaces, IDictionary<string, string> customHeaders)
+    public static async Task<List<long>> GetExcludedSurveyedSurfaceIds(this Controller controller, IFileListProxy fileListProxy, Guid projectUid, IDictionary<string, string> customHeaders)
     {
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
       if (fileList == null || fileList.Count == 0)
         return null;
-      if (!includeSurveyedSurfaces.HasValue)
-      {
-        includeSurveyedSurfaces = true;
-      }
-      return fileList.Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface &&
-                                 (!includeSurveyedSurfaces.Value || !f.IsActivated))
+      return fileList
+        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
         .Select(f => f.LegacyFileId).ToList();
     }
 

@@ -230,8 +230,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
+    /// <param name="isJohnDoe">See assetIDL</param>    
     /// <returns>Elevation color palette</returns>
     [Route("api/v2/compaction/elevationpalette")]
     [HttpGet]
@@ -246,8 +245,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetElevationPalette: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -255,7 +253,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,

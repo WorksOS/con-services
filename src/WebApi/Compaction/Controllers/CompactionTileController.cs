@@ -127,8 +127,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectIdVerifier]
@@ -159,8 +157,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
@@ -169,7 +166,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
@@ -213,8 +210,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
     /// If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered 
     /// in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to 
@@ -250,8 +245,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
 
@@ -260,7 +254,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
