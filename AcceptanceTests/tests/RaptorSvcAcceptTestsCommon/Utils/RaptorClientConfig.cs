@@ -64,9 +64,25 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         //  return ConstructUri(":5000");
         //else
         //  return ConstructUri("/compaction");
-        return Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI");
+        return ConstructUri(Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI"));
       }
     }
+
+    public static string NotificationSvcBaseUri
+    {
+      get
+      {
+        //if (TestEnvironment == "Tc")
+        //  return ConstructUri(":3001");
+        //else if (TestEnvironment == "Dev")
+        //  return ConstructUri(":80");
+        //else if (TestEnvironment == "Local")
+        //  return ConstructUri(":5000");
+        //else
+          return ConstructUri(Environment.GetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI"));
+      }
+    }
+
     public static string ReportSvcBaseUri
     {
       get
@@ -79,7 +95,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         //  return ConstructUri(":5000");
         //else
         //  return ConstructUri("/Report");
-        return Environment.GetEnvironmentVariable("REPORT_SVC_BASE_URI");
+        return ConstructUri(Environment.GetEnvironmentVariable("REPORT_SVC_BASE_URI"));
       }
     }
     public static string TagSvcBaseUri
@@ -94,7 +110,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         //  return ConstructUri(":5000");
         //else
         //  return ConstructUri("/TagProc");
-        return Environment.GetEnvironmentVariable("TAG_SVC_BASE_URI");
+        return ConstructUri(Environment.GetEnvironmentVariable("TAG_SVC_BASE_URI"));
       }
     }
     public static string CoordSvcBaseUri
@@ -109,7 +125,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         //  return ConstructUri(":5000");
         //else
         //  return ConstructUri("/Coord");
-        return Environment.GetEnvironmentVariable("COORD_SVC_BASE_URI");
+        return ConstructUri(Environment.GetEnvironmentVariable("COORD_SVC_BASE_URI"));
       }
     }
     public static string ProdSvcBaseUri
@@ -124,7 +140,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         //  return ConstructUri(":5000");
         //else
         //  return ConstructUri("/ProdData");
-        return Environment.GetEnvironmentVariable("PROD_SVC_BASE_URI");
+        return ConstructUri(Environment.GetEnvironmentVariable("PROD_SVC_BASE_URI"));
 
       }
     }
@@ -138,7 +154,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         //  return ConstructUri(":5000");
         //else
         //  return ConstructUri("/FileAccess");
-        return Environment.GetEnvironmentVariable("COORD_SVC_BASE_URI");
+        return ConstructUri(Environment.GetEnvironmentVariable("COORD_SVC_BASE_URI"));
 
       }
     }
@@ -162,7 +178,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
       //if (string.IsNullOrEmpty(server))
       //  return null;
-      var server = Environment.GetEnvironmentVariable("SERVER");
+      var server = "http://" + Environment.GetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST");
 
       var url = string.Format("{0}{1}", server, subDir);
       return url;

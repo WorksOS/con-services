@@ -40,8 +40,10 @@ node('Jenkins-Win2016-Raptor') {
     try {
     stage 'Compose containers'
     bat "./start_containers.bat"
+	stage 'Setting test Environment'
+	bat "./setup_test_environment"
     stage 'Run Acceptance Tests'
-    bat "./runacceptancetests.bat"
+    bat "./runacceptancetests_NEW.bat"
     }
     finally {
     stage 'Bring containers down and archive the logs'
