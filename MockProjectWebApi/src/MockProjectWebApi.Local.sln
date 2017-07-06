@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockProjectWebApi.Local", "..\MockProjectWebApi.Local.csproj", "{8FA2A126-9A88-4006-97EF-11266B4765E9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockProjectWebApi.Local", "MockProjectWebApi.Local.csproj", "{8FA2A126-9A88-4006-97EF-11266B4765E9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MasterDataProxies.Local", "..\..\..\MasterDataProxies\src\MasterDataProxies.Local.csproj", "{D47B0FA4-CB3E-474A-A5C7-875425ADF86E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MasterDataProxies.Local", "..\..\MasterDataProxies\src\MasterDataProxies.Local.csproj", "{D47B0FA4-CB3E-474A-A5C7-875425ADF86E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "log4netExtensions.Local", "..\..\..\log4netExtensions\log4netExtensions.Local.csproj", "{F76B62A0-09E0-401B-ABF2-BA21E8D35507}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "log4netExtensions.Local", "..\..\log4netExtensions\log4netExtensions.Local.csproj", "{F76B62A0-09E0-401B-ABF2-BA21E8D35507}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigStore.Local", "..\..\..\ConfigurationStore\src\ConfigStore.Local.csproj", "{4F4DE324-53D6-471B-A4AE-A6207084DAE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigStore.Local", "..\..\ConfigurationStore\src\ConfigStore.Local.csproj", "{4F4DE324-53D6-471B-A4AE-A6207084DAE4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
