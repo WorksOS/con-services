@@ -20,11 +20,11 @@
     <PackageReference Include="Dapper" Version="1.50.2" />
     <PackageReference Include="ITask.netcore" Version="1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="*" />
+    <PackageReference Include="ConfigurationStore.netcore" Version="1.1.*" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="NodaTime" Version="2.0.3" />
     <PackageReference Include="Polly" Version="5.1.0" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.3" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.*" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
 
