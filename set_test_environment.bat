@@ -1,5 +1,6 @@
+set content=
 rem Get Raptor webservices container ID
-for /F "delims=" %%i in ('docker ps -f "name=vssraptorservice_webapi" -q') do set container_id=%%i
+for /F "delims=" %%i in (container.txt) do set container_id=%%i
 rem Get Raptor webservices container IP from the ID
 for /f %%i in ('docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddress }}" %container_id%') do set RAPTOR_WEBSERVICES_IP=%%i
 PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP %RAPTOR_WEBSERVICES_IP%
