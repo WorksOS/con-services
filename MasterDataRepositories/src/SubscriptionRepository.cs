@@ -30,20 +30,20 @@ namespace Repositories
       var upsertedCount = 0;
       if (evt == null)
       {
-        log.LogWarning($"Unsupported event type");
+        log.LogWarning("Unsupported subscription event type");
         return 0;
       }
 
 
       if (_serviceTypes == null)
         _serviceTypes = (await GetServiceTypes()).ToDictionary(k => k.Name, v => v);
-      log.LogDebug($"Event type is {evt.GetType().ToString()}");
+      log.LogDebug($"Event type is {evt.GetType()}");
       if (evt is CreateProjectSubscriptionEvent)
       {
         var subscriptionEvent = (CreateProjectSubscriptionEvent) evt;
         if (!_serviceTypes.ContainsKey(subscriptionEvent.SubscriptionType))
         {
-          log.LogWarning($"Unsupported service type: {subscriptionEvent.SubscriptionType}");
+          log.LogWarning($"Unsupported SubscriptionType: {subscriptionEvent.SubscriptionType}");
           return 0;
         }
         var subscription = new Subscription();
@@ -252,6 +252,7 @@ namespace Repositories
 
       var upsertedCount = 0;
       if (existing != null)
+      {
         if (subscription.LastActionedUTC >= existing.LastActionedUTC)
         {
           log.LogDebug("SubscriptionRepository/UpdateSubscription: going to create subscription={0}",
@@ -287,8 +288,12 @@ namespace Repositories
               : upsertedCount; // 2=1RowUpdated; 1=1RowInserted; 0=noRowsInserted       
           }
         }
-      log.LogDebug("SubscriptionRepository/UpdateSubscription: can't update as none existing subscription={0}",
-        JsonConvert.SerializeObject(subscription));
+      }
+      else
+      {
+        log.LogDebug("SubscriptionRepository/UpdateSubscription: can't update as none existing subscription={0}",
+          JsonConvert.SerializeObject(subscription));
+      }
       return upsertedCount;
     }
 
@@ -430,8 +435,7 @@ namespace Repositories
       return subscription;
     }
 
-    public async Task<IEnumerable<Subscription>> GetSubscriptionsByCustomer(string customerUid,
-      DateTime validAtDate)
+    public async Task<IEnumerable<Subscription>> GetSubscriptionsByCustomer(string customerUid, DateTime validAtDate)
     {
       var subscription = await QueryWithAsyncPolicy<Subscription>
       (@"SELECT 
@@ -442,6 +446,24 @@ namespace Repositories
         , new {customerUid, validAtDate}
       );
 
+      return subscription;
+    }
+
+    public async Task<IEnumerable<Subscription>> GetFreeProjectSubscriptionsByCustomer(string customerUid,
+      DateTime validAtDate)
+    {
+      // if a sub is attached to a project, and the project is deleted, the sub cannot be used by another project
+      var subscription = await QueryWithAsyncPolicy<Subscription>
+      (@"SELECT 
+              s.SubscriptionUID, s.fk_CustomerUID AS CustomerUID, s.fk_ServiceTypeID AS ServiceTypeID, s.StartDate, s.EndDate, s.LastActionedUTC
+            FROM Subscription s
+              LEFT OUTER JOIN ProjectSubscription ps ON ps.fk_SubscriptionUID = s.SubscriptionUID
+            WHERE fk_CustomerUID = @customerUid
+              AND @validAtDate BETWEEN StartDate AND EndDate
+              AND fk_ServiceTypeID IN (19, 20)
+              AND ps.fk_SubscriptionUID IS NULL"
+        , new {customerUid, validAtDate}
+      );
 
       return subscription;
     }

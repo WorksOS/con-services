@@ -3,7 +3,6 @@
   <PropertyGroup>
     <Description>Provides support ITask interface for covariant interfaces for net core. Based on original ITask lib</Description>
     <AssemblyTitle>ITask for dotnet core</AssemblyTitle>
-    <VersionPrefix>1.0.1</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>ITask.netcore</AssemblyName>
     <PackageId>ITask</PackageId>

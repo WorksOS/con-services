@@ -467,6 +467,60 @@ namespace RepositoryTests
       Assert.IsNotNull(g.Result, "Unable to retrieve 1 project/sub from projectRepo");
       Assert.AreEqual(createProjectSubscriptionEvent.SubscriptionUID.ToString(), g.Result.SubscriptionUID, "project details are incorrect from subscriptionRepo");
       Assert.AreEqual(project, g.Result, "project details are incorrect from subscriptionRepo");
+
+      var sub = subscriptionContext.GetFreeProjectSubscriptionsByCustomer(customerUID.ToString(), DateTime.UtcNow);
+      sub.Wait();
+      Assert.IsNotNull(sub.Result, "Unable to retrieve project/sub from subscriptionContext");
+      Assert.AreEqual(0, sub.Result.Count(), "Should be no free projectSubs");
+    }
+
+    /// <summary>
+    /// AssociateProjectSubscriptionEvent - sub is not assigned to a project, so should retrieve 1 free
+    /// </summary>
+    [TestMethod]
+    public void AssociateProjectSubscriptionEvent_FreeProjectSub()
+    {
+      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
+      var customerUID = Guid.NewGuid();
+
+      var createCustomerEvent = new CreateCustomerEvent()
+        { CustomerUID = Guid.NewGuid(), CustomerName = "The Customer Name", CustomerType = CustomerType.Customer.ToString(), ActionUTC = actionUtc };
+
+      var createProjectEvent = new CreateProjectEvent()
+      {
+        ProjectUID = Guid.NewGuid(),
+        ProjectID = new Random().Next(1, 1999999),
+        ProjectName = "The Project Name",
+        ProjectType = ProjectType.LandFill,
+        ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
+        ProjectStartDate = new DateTime(2016, 02, 01),
+        ProjectEndDate = new DateTime(2017, 02, 01),
+        ProjectBoundary = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
+        ActionUTC = actionUtc
+      };
+
+      var associateCustomerProjectEvent = new AssociateProjectCustomer()
+        { CustomerUID = createCustomerEvent.CustomerUID, ProjectUID = createProjectEvent.ProjectUID, LegacyCustomerID = 1234, RelationType = RelationType.Customer, ActionUTC = actionUtc };
+
+      var createProjectSubscriptionEvent = new CreateProjectSubscriptionEvent()
+      {
+        CustomerUID = customerUID,
+        SubscriptionUID = Guid.NewGuid(),
+        SubscriptionType = "Project Monitoring",
+        StartDate = new DateTime(2016, 02, 01),
+        EndDate = new DateTime(9999, 12, 31),
+        ActionUTC = actionUtc
+      };
+
+      projectContext.StoreEvent(createProjectEvent).Wait();
+      customerContext.StoreEvent(createCustomerEvent).Wait();
+      projectContext.StoreEvent(associateCustomerProjectEvent).Wait();
+      subscriptionContext.StoreEvent(createProjectSubscriptionEvent).Wait();
+
+      var sub = subscriptionContext.GetFreeProjectSubscriptionsByCustomer(customerUID.ToString(), DateTime.UtcNow);
+      sub.Wait();
+      Assert.IsNotNull(sub.Result, "Unable to retrieve project/sub from subscriptionContext");
+      Assert.AreEqual(1, sub.Result.Count(), "Should be 1 free projectSub");
     }
 
     /// <summary>

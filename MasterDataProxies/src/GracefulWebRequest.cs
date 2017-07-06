@@ -60,6 +60,7 @@ namespace MasterDataProxies
           log.LogDebug($"ExecuteRequest() T: InOddException {ex.Message}");
           if (ex.InnerException != null)
             log.LogDebug($"ExecuteRequestInnerException() T: errorCode: {ex.InnerException.Message}");
+          throw;
         }
         finally
         {
