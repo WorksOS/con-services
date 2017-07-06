@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       {
         case DisplayMode.Height:
 
-          //Compaction elevation palette has 32 colors, original Raptor one had 30 colors
+          //Compaction elevation palette has 31 colors, original Raptor one had 30 colors
           List<int> colors = ElevationPalette();
           double step = (elevExtents.MaxElevation - elevExtents.MinElevation) / (colors.Count - 1);
 
@@ -237,8 +237,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
         RGBToColor(0,120,250),
         RGBToColor(0,90,255),
         RGBToColor(0,70,255),
-        RGBToColor(0,0,255),
-        RGBToColor(0,0,200)
+        RGBToColor(0,0,255)
       };
     }
 
