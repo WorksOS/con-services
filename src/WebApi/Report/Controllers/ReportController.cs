@@ -70,6 +70,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
@@ -91,6 +93,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
+    /// 
+    [PostRequestVerifier]
     [Route("api/v1/export")]
     [HttpPost]
 
@@ -110,6 +114,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns>Returns JSON structure wtih operation result.
     /// </returns>
     /// <executor>SummaryPassCountsExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
@@ -133,6 +139,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns>Returns JSON structure with operation result. {"Code":0,"Message":"User-friendly"}
     /// </returns>
     /// <executor>DetailedPassCountExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
@@ -165,6 +173,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns>Returns JSON structure wtih operation result.
     /// </returns>
     /// <executor>SummaryCMVExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
@@ -187,6 +197,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns>Returns JSON structure wtih operation result. {"Code":0,"Message":"User-friendly"}
     /// </returns>
     /// <executor>DetailedCMVExecutor</executor>     
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
@@ -213,6 +225,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="request">The request for statistics request to Raptor</param>
     /// <returns></returns>
     /// <executor>ProjectStatisticsExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v1/projects/statistics")]
@@ -231,6 +245,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="request">The request for volumes summary request to Raptor</param>
     /// <returns></returns>
     /// <executor>SummaryVolumesExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v1/volumes/summary")]
@@ -249,6 +265,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="parameters">The request for thickness summary request to Raptor</param>
     /// <returns></returns>
     /// <executor>SummaryVolumesExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
@@ -270,6 +288,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="parameters">The request for speed summary request to Raptor</param>
     /// <returns></returns>
     /// <executor>SummarySpeedExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
@@ -291,6 +311,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="parameters">The request for CMV Change summary request to Raptor</param>
     /// <returns></returns>
     /// <executor>CMVChangeSummaryExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
@@ -311,6 +333,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="request">The request for elevation statistics request to Raptor</param>
     /// <returns></returns>
     /// <executor>ElevationStatisticsExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v1/statistics/elevation")]
@@ -330,6 +354,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <returns>Returns JSON structure wtih operation result.
     /// </returns>
     /// <executor>SummaryCCAExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v1/compaction/cca/summary")]

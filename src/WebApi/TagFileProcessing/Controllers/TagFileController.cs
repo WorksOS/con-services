@@ -63,6 +63,8 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <returns>Returns JSON structure wtih operation result. {"Code":0,"Message":"User-friendly"}
     /// </returns>
     /// <executor>TagFileExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [ProjectWritableVerifier]
     [NotLandFillProjectVerifier]
@@ -84,6 +86,8 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     /// <returns>Returns JSON structure wtih operation result. {"Code":0,"Message":"User-friendly"}
     /// </returns>
     /// <executor>TagFileExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectUidVerifier]
     [ProjectWritableWithUIDVerifier]
     [NotLandFillProjectWithUIDVerifier]

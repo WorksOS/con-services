@@ -53,7 +53,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="request">Description of the Surveyed Surface request.</param>
     /// <returns>Execution result.</returns>
-    /// 
+    ///
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectWritableVerifier]
@@ -166,6 +167,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="request">Description of the Surveyed Surface request.</param>
     /// <returns>Execution result.</returns>
     /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectWritableVerifier]
@@ -185,6 +187,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="request">Descriptor of the Design File (filename).</param>
     /// <returns>Execution result.</returns>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectWritableVerifier]

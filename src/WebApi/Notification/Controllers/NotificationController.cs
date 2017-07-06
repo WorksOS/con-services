@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using MasterDataProxies;
@@ -186,7 +187,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     }
 
     /// <summary>
-    /// Clears the imported files cache in the proxy and the response cache so that linework tile requests are refreshed appropriately
+    /// Clears the imported files cache in the proxy so that linework tile requests are refreshed appropriately
     /// </summary>
     /// <param name="projectUid">The project UID that the cached items belong to</param>
     /// <param name="fileUids">The file UIDs of files that have been activated/deactivated</param>
@@ -194,19 +195,13 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <returns></returns>
     private async Task<bool> ClearFilesCaches(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders)
     {
+      log.LogInformation("Clearing imported files cache for project {0}", projectUid);
       //Clear file list cache and reload
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
         customHeaders.Add("X-VisionLink-ClearCache", "true");
 
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
-      /*
-      var fileUidList = fileUids.Select(f => f.ToString());
-      var files = fileList.Where(f => fileUidList.Contains(f.ImportedFileUid)).ToList();
-      var fileTypes = files.Select(f => f.ImportedFileType).Distinct();
- 
-      //Clear response cache for tiles for this project and file type(s)
-      //TODO: Implement this
-      */
+      log.LogInformation("After clearing cache {0} total imported files, {1} activated, for project {2}", fileList.Count, fileList.Where(f => f.IsActivated).Count(), projectUid);
 
       return true;
     }

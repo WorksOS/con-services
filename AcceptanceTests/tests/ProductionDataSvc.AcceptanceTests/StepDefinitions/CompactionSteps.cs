@@ -216,7 +216,6 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         mode, bbox, width, height);
     }
 
-
     [When(@"I request a Tile")]
     public void WhenIRequestATile()
     {

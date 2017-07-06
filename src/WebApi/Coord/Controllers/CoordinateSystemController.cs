@@ -54,6 +54,8 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// Returns JSON structure wtih operation result. {"Code":0,"Message":"User-friendly"}
     /// </returns>
     /// <executor>CoordinateSystemExecutorPost</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [ProjectWritableVerifier]
@@ -74,6 +76,8 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// True for success and false for failure.
     /// </returns>
     /// <executor>CoordinateSystemExecutorPost</executor>
+    /// 
+    [PostRequestVerifier]
     [Route("api/v1/coordsystem/validation")]
     [HttpPost]
     public CoordinateSystemSettings PostValidate([FromBody]CoordinateSystemFileValidationRequest request)
@@ -141,6 +145,8 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// Returns JSON structure wtih operation result. {"Code":0,"Message":"User-friendly"}
     /// </returns>
     /// <executor>CoordinateCoversionExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v1/coordinateconversion")]

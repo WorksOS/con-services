@@ -48,7 +48,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="request">Parameters to request project data extents</param>
     /// <returns></returns>
-    /// <executor>ProjectExtentsSubmitter</executor> 
+    /// <executor>ProjectExtentsSubmitter</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v1/projectextents")]
