@@ -4,7 +4,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
-using MasterDataProxies.Models;
+using MasterDataProxies.ResultHandling;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
