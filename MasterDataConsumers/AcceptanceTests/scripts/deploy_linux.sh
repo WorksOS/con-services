@@ -9,7 +9,7 @@ cp scripts/wait-for-it.sh deploy/
 cp scripts/rm_cr.sh deploy/
 mkdir deploy/testresults
 
-dotnet restore --no-cache
+dotnet restore --no-cache ConsumerAcceptanceTests.sln
 
 cd tests
 dotnet publish EventTests/EventTests.csproj -o ../../deploy/EventTests -f netcoreapp1.1
