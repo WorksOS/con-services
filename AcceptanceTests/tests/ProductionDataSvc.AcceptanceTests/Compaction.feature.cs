@@ -389,7 +389,7 @@ this.ScenarioSetup(scenarioInfo);
 #line hidden
 #line 218
  testRunner.Then("the Elevation Range result should be", "{\r\n  \"boundingExtents\": null,\r\n  \"minElevation\": 0,\r\n  \"maxElevation\": 0,\r\n  \"tot" +
-                    "alCoverageArea\": 0,\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+                    "alCoverageArea\": 0,\r\n  \"Code\": -4,\r\n  \"Message\": \"No elevation range\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -537,7 +537,7 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.When("I request Elevation Palette", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 304
- testRunner.Then("the Elevation Palette result should be", "{\r\n  \"palette\": null,\r\n   \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the Elevation Palette result should be", "{\r\n  \"palette\": null,\r\n   \"Code\": -4,\r\n  \"Message\": \"No elevation range\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

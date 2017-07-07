@@ -222,8 +222,8 @@ Scenario: Compaction Get CMV Summary
     "minElevation": 0,
     "maxElevation": 0,
     "totalCoverageArea": 0,
-    "Code": 0,
-    "Message": "success"
+    "Code": -4,
+    "Message": "No elevation range"
   }
 	"""
 
@@ -305,8 +305,8 @@ Scenario: Compaction Get CMV Summary
   """
   {
     "palette": null,
-     "Code": 0,
-    "Message": "success"
+     "Code": -4,
+    "Message": "No elevation range"
   }
 	"""
 
