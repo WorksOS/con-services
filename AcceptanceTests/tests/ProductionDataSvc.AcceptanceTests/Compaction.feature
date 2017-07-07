@@ -242,13 +242,43 @@ Scenario: Compaction Get CMV Summary
 	Then the Tile result should be
   """
   {
-    "TileData": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAADi0lEQVR42u3TQU0FARQEQdYNmpCD8Y8FLpPNS1cp6Es/n58vJr7fDuAfHgOsGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4AIDzBjgAgPMGOACA8wY4ILn8/t2ArzHAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFI+wPL4oIQ8iSaXgAAAABJRU5ErkJggg==",
+    "TileData": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAADjklEQVR42u3TQW1DARTEwH4iQVIkZV8kDYVeVtGTZxD44uf3+4uF1+vTBfzDY4ARA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnPD8/Xw6AT7HAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIewP3SloQh/j9MQAAAABJRU5ErkJggg==",
     "TileOutsideProjectExtents": false,
     "Code": 0,
     "Message": "success"
   }
 	"""
   
+  Scenario: Compaction Get Compaction Coverage Tiles With Surveyed Surfaces Included
+  Given the Compaction Tiles service URI "/api/v2/compaction/productiondatatiles"
+  And a projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
+  And a displayMode "0" and a bbox "36.207437, -115.019999, 36.207473, -115.019959" and a width "256" and a height "256"
+  When I request a Tile
+  Then the Tile result should be
+  """
+  {
+    "tileData": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAACl0lEQVR42u3TAQEAAAiAoPo/uoYIH9gb6FoBKBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIeyF3ABDkaLbCAAAAAElFTkSuQmCC",
+    "tileOutsideProjectExtents": false,
+    "Code": 0,
+    "Message": "success"
+  }  
+  """
+
+  Scenario: Compaction Get Compaction Coverage Tiles With Surveyed Surfaces Excluded
+  Given the Compaction Tiles service URI "/api/v2/compaction/productiondatatiles"
+  And a projectUid "86a42bbf-9d0e-4079-850f-835496d715c5"
+  And a displayMode "0" and a bbox "36.207437, -115.019999, 36.207473, -115.019959" and a width "256" and a height "256"
+  When I request a Tile
+  Then the Tile result should be
+  """
+  {
+    "tileData": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAACzElEQVR42u3UQRGAQBADQc4ISnCPEpQcInhQW9OtIJ/J2nsfULUEQJkASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZC2nuvvCUx23rMPVAB8IgDSBECaAEgTAGkCIE0ApAmANAGQJgDSBECaAEgTAGkCIE0ApAmANAGQJgDSBECaAEgTAGkCgMEEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQNoLEuM3XwkCBu0AAAAASUVORK5CYII=",
+    "tileOutsideProjectExtents": false,
+    "Code": 0,
+    "Message": "success"
+  }  
+  """
+
   Scenario: Compaction Get Elevation Palette 
 	Given the Compaction Elevation Palette service URI "/api/v2/compaction/elevationpalette"
   And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -259,120 +289,124 @@ Scenario: Compaction Get CMV Summary
     "palette": {
       "colorValues": [
         {
-          "color": 16711680,
+          "color": 13107200,
           "value": 591.9539794921875
         },
         {
+          "color": 16711680,
+          "value": 593.02544759114585
+        },
+        {
           "color": 14760960,
-          "value": 593.062394766972
+          "value": 594.0969156901042
         },
         {
           "color": 16734720,
-          "value": 594.17081004175645
+          "value": 595.16838378906255
         },
         {
           "color": 16744960,
-          "value": 595.279225316541
+          "value": 596.23985188802078
         },
         {
           "color": 16755200,
-          "value": 596.38764059132541
+          "value": 597.31131998697913
         },
         {
           "color": 16762880,
-          "value": 597.49605586610994
+          "value": 598.38278808593748
         },
         {
           "color": 16768000,
-          "value": 598.60447114089436
+          "value": 599.45425618489583
         },
         {
           "color": 16442880,
-          "value": 599.71288641567889
+          "value": 600.52572428385417
         },
         {
           "color": 14476800,
-          "value": 600.82130169046332
+          "value": 601.59719238281252
         },
         {
           "color": 13821440,
-          "value": 601.92971696524785
+          "value": 602.66866048177087
         },
         {
           "color": 13166080,
-          "value": 603.03813224003238
+          "value": 603.74012858072922
         },
         {
           "color": 11855360,
-          "value": 604.1465475148168
+          "value": 604.81159667968745
         },
         {
           "color": 9889280,
-          "value": 605.25496278960134
+          "value": 605.8830647786458
         },
         {
           "color": 8578560,
-          "value": 606.36337806438576
+          "value": 606.95453287760415
         },
         {
           "color": 6615040,
-          "value": 607.47179333917029
+          "value": 608.0260009765625
         },
         {
           "color": 65280,
-          "value": 608.58020861395471
+          "value": 609.09746907552085
         },
         {
           "color": 61540,
-          "value": 609.68862388873924
+          "value": 610.1689371744792
         },
         {
           "color": 59010,
-          "value": 610.79703916352366
+          "value": 611.24040527343755
         },
         {
           "color": 59030,
-          "value": 611.9054544383082
+          "value": 612.31187337239578
         },
         {
           "color": 59060,
-          "value": 613.01386971309262
+          "value": 613.38334147135413
         },
         {
           "color": 59080,
-          "value": 614.12228498787715
+          "value": 614.45480957031248
         },
         {
           "color": 59090,
-          "value": 615.23070026266168
+          "value": 615.52627766927083
         },
         {
           "color": 56540,
-          "value": 616.33911553744611
+          "value": 616.59774576822917
         },
         {
           "color": 51430,
-          "value": 617.44753081223064
+          "value": 617.66921386718752
         },
         {
           "color": 46320,
-          "value": 618.55594608701506
+          "value": 618.74068196614587
         },
         {
           "color": 38645,
-          "value": 619.66436136179959
+          "value": 619.81215006510422
         },
         {
           "color": 30970,
-          "value": 620.772776636584
+          "value": 620.88361816406245
         },
         {
           "color": 23295,
-          "value": 621.88119191136855
+          "value": 621.9550862630208
         },
         {
           "color": 18175,
-          "value": 622.989607186153
+          "value": 623.02655436197915
         },
         {
           "color": 255,
@@ -397,120 +431,124 @@ Scenario: Compaction Get CMV Summary
     "elevationPalette": {
       "colorValues": [
         {
-          "color": 16711680,
+          "color": 13107200,
           "value": 591.9539794921875
         },
         {
+          "color": 16711680,
+          "value": 593.02544759114585
+        },
+        {
           "color": 14760960,
-          "value": 593.062394766972
+          "value": 594.0969156901042
         },
         {
           "color": 16734720,
-          "value": 594.17081004175645
+          "value": 595.16838378906255
         },
         {
           "color": 16744960,
-          "value": 595.279225316541
+          "value": 596.23985188802078
         },
         {
           "color": 16755200,
-          "value": 596.38764059132541
+          "value": 597.31131998697913
         },
         {
           "color": 16762880,
-          "value": 597.49605586610994
+          "value": 598.38278808593748
         },
         {
           "color": 16768000,
-          "value": 598.60447114089436
+          "value": 599.45425618489583
         },
         {
           "color": 16442880,
-          "value": 599.71288641567889
+          "value": 600.52572428385417
         },
         {
           "color": 14476800,
-          "value": 600.82130169046332
+          "value": 601.59719238281252
         },
         {
           "color": 13821440,
-          "value": 601.92971696524785
+          "value": 602.66866048177087
         },
         {
           "color": 13166080,
-          "value": 603.03813224003238
+          "value": 603.74012858072922
         },
         {
           "color": 11855360,
-          "value": 604.1465475148168
+          "value": 604.81159667968745
         },
         {
           "color": 9889280,
-          "value": 605.25496278960134
+          "value": 605.8830647786458
         },
         {
           "color": 8578560,
-          "value": 606.36337806438576
+          "value": 606.95453287760415
         },
         {
           "color": 6615040,
-          "value": 607.47179333917029
+          "value": 608.0260009765625
         },
         {
           "color": 65280,
-          "value": 608.58020861395471
+          "value": 609.09746907552085
         },
         {
           "color": 61540,
-          "value": 609.68862388873924
+          "value": 610.1689371744792
         },
         {
           "color": 59010,
-          "value": 610.79703916352366
+          "value": 611.24040527343755
         },
         {
           "color": 59030,
-          "value": 611.9054544383082
+          "value": 612.31187337239578
         },
         {
           "color": 59060,
-          "value": 613.01386971309262
+          "value": 613.38334147135413
         },
         {
           "color": 59080,
-          "value": 614.12228498787715
+          "value": 614.45480957031248
         },
         {
           "color": 59090,
-          "value": 615.23070026266168
+          "value": 615.52627766927083
         },
         {
           "color": 56540,
-          "value": 616.33911553744611
+          "value": 616.59774576822917
         },
         {
           "color": 51430,
-          "value": 617.44753081223064
+          "value": 617.66921386718752
         },
         {
           "color": 46320,
-          "value": 618.55594608701506
+          "value": 618.74068196614587
         },
         {
           "color": 38645,
-          "value": 619.66436136179959
+          "value": 619.81215006510422
         },
         {
           "color": 30970,
-          "value": 620.772776636584
+          "value": 620.88361816406245
         },
         {
           "color": 23295,
-          "value": 621.88119191136855
+          "value": 621.9550862630208
         },
         {
           "color": 18175,
-          "value": 622.989607186153
+          "value": 623.02655436197915
         },
         {
           "color": 255,

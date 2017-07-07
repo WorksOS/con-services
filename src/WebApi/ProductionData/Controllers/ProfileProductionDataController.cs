@@ -57,17 +57,19 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     ///     InternalProcessingError = -3;
     ///     FailedToGetResults = -4;
     /// </returns>
-    /// <executor>ProfileProductionDataExecutor</executor> 
+    /// <executor>ProfileProductionDataExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
-      [NotLandFillProjectVerifier]
-      [ProjectUidVerifier]
-      [NotLandFillProjectWithUIDVerifier]
-      [Route("api/v1/profiles/productiondata")]
-      [HttpPost]
-      public ProfileResult Post([FromBody]ProfileProductionDataRequest request)
-      {
-        request.Validate();
-        return RequestExecutorContainer.Build<ProfileProductionDataExecutor>(logger, raptorClient, null).Process(request) as ProfileResult;
-      }
+    [NotLandFillProjectVerifier]
+    [ProjectUidVerifier]
+    [NotLandFillProjectWithUIDVerifier]
+    [Route("api/v1/profiles/productiondata")]
+    [HttpPost]
+    public ProfileResult Post([FromBody]ProfileProductionDataRequest request)
+    {
+      request.Validate();
+      return RequestExecutorContainer.Build<ProfileProductionDataExecutor>(logger, raptorClient, null).Process(request) as ProfileResult;
     }
+  }
 }

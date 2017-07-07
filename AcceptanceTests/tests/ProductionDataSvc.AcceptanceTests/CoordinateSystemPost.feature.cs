@@ -177,6 +177,18 @@ this.FeatureBackground();
         {
             this.CoordinateSystemPost_BadRequest("FileNameTooLong", "400", "-2", ((string[])(null)));
         }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("CoordinateSystemPost - Bad Request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "CoordinateSystemPost")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "NullRequest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ParameterName", "NullRequest")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:httpCode", "400")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:errorCode", "-1")]
+        public virtual void CoordinateSystemPost_BadRequest_NullRequest()
+        {
+            this.CoordinateSystemPost_BadRequest("NullRequest", "400", "-1", ((string[])(null)));
+        }
     }
 }
 #pragma warning restore

@@ -13,15 +13,18 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
   /// </summary>
   public class RaptorPrincipal : ClaimsPrincipal
   {
-    public RaptorPrincipal(ClaimsIdentity identity, string customerUid, List<ProjectDescriptor> projects) : base(identity)
+    public RaptorPrincipal(ClaimsIdentity identity, string customerUid, List<ProjectDescriptor> projects, bool isApplication = false) : base(identity)
     {
       CustomerUid = customerUid;
       Projects = projects;
+      this.isApplication = isApplication;
     }
 
     public string CustomerUid { get; }
 
     public List<ProjectDescriptor> Projects { get; }
+
+    public bool isApplication { get; private set; } = false;
 
     /// <summary>
     /// Get the project descriptor for the specified project id.
