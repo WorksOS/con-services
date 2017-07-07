@@ -10,12 +10,12 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.WebApi.Compaction.Controllers
+namespace VSS.Productivity3D.Common.Controllers
 {
   /// <summary>
   /// Extensions for the Compaction controller.
   /// </summary>
-  public static class CompactionControllerExtensions
+  public static class ControllerExtensions
   {
     /// <summary>
     /// Gets the ids of the surveyed surfaces to exclude from Raptor calculations. 
