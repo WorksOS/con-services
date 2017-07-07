@@ -210,6 +210,23 @@ Scenario: Compaction Get CMV Summary
   }
 	"""
 
+  Scenario: Compaction Get Elevation Range With No Data 
+	Given the Compaction Elevation Range service URI "/api/v2/compaction/elevationrange"
+	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
+	And a startUtc "2017-01-01" and an EndUtc "2017-01-01"
+	When I request Elevation Range
+	Then the Elevation Range result should be
+  """
+  {
+    "boundingExtents": null,
+    "minElevation": 0,
+    "maxElevation": 0,
+    "totalCoverageArea": 0,
+    "Code": -4,
+    "Message": "No elevation range"
+  }
+	"""
+
   Scenario: Compaction Get Project Statistics 
 	Given the Compaction Project Statistics service URI "/api/v2/compaction/projectstatistics"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -278,6 +295,20 @@ Scenario: Compaction Get CMV Summary
     "Message": "success"
   }  
   """
+
+  Scenario: Compaction Get Elevation Palette When No Elevation Data
+	Given the Compaction Elevation Palette service URI "/api/v2/compaction/elevationpalette"
+  And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
+  And a startUtc "2017-01-01" and an EndUtc "2017-01-01"
+	When I request Elevation Palette
+	Then the Elevation Palette result should be
+  """
+  {
+    "palette": null,
+     "Code": -4,
+    "Message": "No elevation range"
+  }
+	"""
 
   Scenario: Compaction Get Elevation Palette 
 	Given the Compaction Elevation Palette service URI "/api/v2/compaction/elevationpalette"

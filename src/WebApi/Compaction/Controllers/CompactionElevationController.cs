@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using MasterDataProxies.ResultHandling;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -121,6 +122,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
         ElevationStatisticsResult result = elevProxy.GetElevationRange(raptorClient, projectId.Value, filter);
+        if (result == null)
+        {
+          //Ideally want to return an error code and message only here
+          result = ElevationStatisticsResult.CreateElevationStatisticsResult(null, 0, 0, 0);
+        }
         log.LogInformation("GetElevationRange result: " + JsonConvert.SerializeObject(result));
         return result;
       }
