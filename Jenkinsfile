@@ -4,7 +4,7 @@ checkout scm
 def branchc = env.BRANCH_NAME
 def prjname = env.JOB_NAME 
 
-if (prjname.contains("MasterDataConsumers")
+if (prjname.contains("MasterDataConsumers"))
 {
  load './MasterDataConsumers/Jenkinsfile'
 }
