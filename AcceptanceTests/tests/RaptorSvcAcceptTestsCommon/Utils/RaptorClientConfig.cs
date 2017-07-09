@@ -28,9 +28,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       get
       {
-        //return "Local"; 
-        //return "Dev";
-        // DLLConfig.AppSettings.Settings["TestEnvironment"].Value;
         return Environment.GetEnvironmentVariable("TEST_ENVIRONMENT");
       }
     }
@@ -38,11 +35,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       get
       {
-        //Local
-        //return "../../../tests/TestData/TestData/"; 
-        //Dev
-        //DLLConfig.AppSettings.Settings["TestDataPath"].Value;
-        //return "../../TestData/";
         var path = Environment.GetEnvironmentVariable("TEST_DATA_PATH");     
         if (path == null)
         {
@@ -56,14 +48,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       get
       {
-        //if (TestEnvironment == "Tc")
-        //  return ConstructUri(":3001");
-        //else if (TestEnvironment == "Dev")
-        //  return ConstructUri(":80");
-        //else if (TestEnvironment == "Local")
-        //  return ConstructUri(":5000");
-        //else
-        //  return ConstructUri("/compaction");
         return ConstructUri(Environment.GetEnvironmentVariable("COMPACTION_SVC_BASE_URI"));
       }
     }
@@ -72,13 +56,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       get
       {
-        //if (TestEnvironment == "Tc")
-        //  return ConstructUri(":3001");
-        //else if (TestEnvironment == "Dev")
-        //  return ConstructUri(":80");
-        //else if (TestEnvironment == "Local")
-        //  return ConstructUri(":5000");
-        //else
           return ConstructUri(Environment.GetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI"));
       }
     }
@@ -87,14 +64,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       get
       {
-        //if (TestEnvironment == "Tc")
-        //  return ConstructUri(":3001");
-        //else if (TestEnvironment == "Dev")
-        //  return ConstructUri(":80");
-        //else if (TestEnvironment == "Local")
-        //  return ConstructUri(":5000");
-        //else
-        //  return ConstructUri("/Report");
         return ConstructUri(Environment.GetEnvironmentVariable("REPORT_SVC_BASE_URI"));
       }
     }
@@ -102,14 +71,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       get
       {
-        //if (TestEnvironment == "Tc")
-        //  return ConstructUri(":3000");
-        //else if (TestEnvironment == "Dev")
-        //  return ConstructUri(":80");
-        //else if (TestEnvironment == "Local")
-        //  return ConstructUri(":5000");
-        //else
-        //  return ConstructUri("/TagProc");
         return ConstructUri(Environment.GetEnvironmentVariable("TAG_SVC_BASE_URI"));
       }
     }
@@ -117,14 +78,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       get
       {
-        //if (TestEnvironment == "Tc")
-        //  return ConstructUri(":3002");
-        //else if (TestEnvironment == "Dev")
-        //  return ConstructUri(":80");
-        //else if (TestEnvironment == "Local")
-        //  return ConstructUri(":5000");
-        //else
-        //  return ConstructUri("/Coord");
         return ConstructUri(Environment.GetEnvironmentVariable("COORD_SVC_BASE_URI"));
       }
     }
@@ -132,14 +85,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       get
       {
-        //if (TestEnvironment == "Tc")
-        //  return ConstructUri(":3003");
-        //else if (TestEnvironment == "Dev")
-        //  return ConstructUri(":80");
-        //else if (TestEnvironment == "Local")
-        //  return ConstructUri(":5000");
-        //else
-        //  return ConstructUri("/ProdData");
         return ConstructUri(Environment.GetEnvironmentVariable("PROD_SVC_BASE_URI"));
 
       }
@@ -148,12 +93,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       get
       {
-        //if (TestEnvironment == "Tc")
-        //  return ConstructUri(":3004");
-        //else if (TestEnvironment == "Local")
-        //  return ConstructUri(":5000");
-        //else
-        //  return ConstructUri("/FileAccess");
         return ConstructUri(Environment.GetEnvironmentVariable("COORD_SVC_BASE_URI"));
 
       }

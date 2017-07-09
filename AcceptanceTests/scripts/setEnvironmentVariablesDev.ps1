@@ -25,4 +25,4 @@
 [Environment]::SetEnvironmentVariable("COORD_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("PROD_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("COORD_SVC_BASE_URI", "/FileAccess", "Machine")
-[Environment]::SetEnvironmentVariable("SERVER", "https://10.97.96.42", "Machine")
+[Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", "172.18.26.128", "Machine")
