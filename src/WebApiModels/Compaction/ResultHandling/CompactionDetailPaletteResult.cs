@@ -33,7 +33,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     {
       return new CompactionDetailPaletteResult
       {
-        Palette = elevationPalette
+        Palette = elevationPalette,
+        Message = elevationPalette == null ? "No elevation range" : DefaultMessage,
+        Code = elevationPalette == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ExecutedSuccessfully
       };
     }
   }

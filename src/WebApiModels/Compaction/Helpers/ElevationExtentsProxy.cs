@@ -73,6 +73,13 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           RequestExecutorContainer.Build<ElevationStatisticsExecutor>(logger, raptorClient)
             .Process(statsRequest) as ElevationStatisticsResult;
 
+        //Check for 'No elevation range' result
+        const double NO_ELEVATION = 10000000000.0;
+        if (Math.Abs(result.MinElevation - NO_ELEVATION) < 0.001 && Math.Abs(result.MaxElevation + NO_ELEVATION) < 0.001)
+        { 
+          result = null;
+        }
+
         var opts = new MemoryCacheEntryOptions
         {
           SlidingExpiration = elevationExtentsCacheLife

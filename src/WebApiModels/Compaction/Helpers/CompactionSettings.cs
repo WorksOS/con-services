@@ -101,16 +101,23 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       {
         case DisplayMode.Height:
 
-          //Compaction elevation palette has 31 colors, original Raptor one had 30 colors
-          List<int> colors = ElevationPalette();
-          double step = (elevExtents.MaxElevation - elevExtents.MinElevation) / (colors.Count - 1);
-
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationBelowColor, -1));
-          for (int i = 0; i < colors.Count; i++)
+          if (elevExtents == null)
           {
-            palette.Add(ColorPalette.CreateColorPalette((uint)colors[i], elevExtents.MinElevation + i * step));
+            palette = null;
           }
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationAboveColor, -1));
+          else
+          {
+            //Compaction elevation palette has 31 colors, original Raptor one had 30 colors
+            List<int> colors = ElevationPalette();
+            double step = (elevExtents.MaxElevation - elevExtents.MinElevation) / (colors.Count - 1);
+
+            palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationBelowColor, -1));
+            for (int i = 0; i < colors.Count; i++)
+            {
+              palette.Add(ColorPalette.CreateColorPalette((uint) colors[i], elevExtents.MinElevation + i * step));
+            }
+            palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationAboveColor, -1));
+          }
 
           break;
         case DisplayMode.CCV:
