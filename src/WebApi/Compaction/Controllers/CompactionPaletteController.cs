@@ -134,14 +134,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         switch (mode)
         {
           case DisplayMode.Height:
-            colorValues = new List<ColorValue>();
-            for (int i = 1; i < compactionPalette.Count - 1; i++)
+            if (compactionPalette != null)
             {
-              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-                compactionPalette[i].value));
+              colorValues = new List<ColorValue>();
+              for (int i = 1; i < compactionPalette.Count - 1; i++)
+              {
+                colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
+                  compactionPalette[i].value));
+              }
+              elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
+                compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
             }
-            elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
-              compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
             break;
           case DisplayMode.CCV:
             colorValues = new List<ColorValue>();
@@ -262,14 +265,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(raptorClient, projectId.Value, filter);
       var compactionPalette = CompactionSettings.CompactionPalette(DisplayMode.Height, elevExtents);
 
-      List<ColorValue> colorValues = new List<ColorValue>();
-      for (int i = 1; i < compactionPalette.Count - 1; i++)
+      DetailPalette elevationPalette = null;
+      if (compactionPalette != null)
       {
-        colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-          compactionPalette[i].value));
+        List<ColorValue> colorValues = new List<ColorValue>();
+        for (int i = 1; i < compactionPalette.Count - 1; i++)
+        {
+          colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
+            compactionPalette[i].value));
+        }
+        elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
+          compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
       }
-      DetailPalette elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
-        compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
 
       return CompactionDetailPaletteResult.CreateCompactionDetailPaletteResult(elevationPalette);
     }

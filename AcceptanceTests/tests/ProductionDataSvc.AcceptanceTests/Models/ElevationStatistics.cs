@@ -77,15 +77,16 @@ namespace ProductionDataSvc.AcceptanceTests.Models
             if (other == null)
                 return false;
 
-            return Math.Round(this.BoundingExtents.maxX, 2) == Math.Round(other.BoundingExtents.maxX, 2) &&
-                Math.Round(this.BoundingExtents.maxY, 2) == Math.Round(other.BoundingExtents.maxY, 2) &&
-                Math.Round(this.BoundingExtents.maxZ, 2) == Math.Round(other.BoundingExtents.maxZ, 2) &&
-                Math.Round(this.BoundingExtents.minX, 2) == Math.Round(other.BoundingExtents.minX, 2) &&
-                Math.Round(this.BoundingExtents.minY, 2) == Math.Round(other.BoundingExtents.minY, 2) &&
-                Math.Round(this.BoundingExtents.minZ, 2) == Math.Round(other.BoundingExtents.minZ, 2) &&
-                Math.Round(this.MinElevation, 2) == Math.Round(other.MinElevation, 2) &&
-                Math.Round(this.MaxElevation, 2) == Math.Round(other.MaxElevation, 2) &&
-                Math.Round(this.TotalCoverageArea, 2) == Math.Round(other.TotalCoverageArea, 2) &&
+          var bboxEqual = this.BoundingExtents != null && other.BoundingExtents != null ?
+              Math.Round(this.BoundingExtents.maxX, 2) == Math.Round(other.BoundingExtents.maxX, 2) &&
+              Math.Round(this.BoundingExtents.maxY, 2) == Math.Round(other.BoundingExtents.maxY, 2) &&
+              Math.Round(this.BoundingExtents.maxZ, 2) == Math.Round(other.BoundingExtents.maxZ, 2) &&
+              Math.Round(this.BoundingExtents.minX, 2) == Math.Round(other.BoundingExtents.minX, 2) &&
+              Math.Round(this.BoundingExtents.minY, 2) == Math.Round(other.BoundingExtents.minY, 2) &&
+              Math.Round(this.BoundingExtents.minZ, 2) == Math.Round(other.BoundingExtents.minZ, 2) :
+              (this.BoundingExtents == null && other.BoundingExtents == null);
+
+            return bboxEqual &&
                 this.Code == other.Code &&
                 this.Message == other.Message;
         }

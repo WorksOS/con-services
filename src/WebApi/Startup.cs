@@ -111,6 +111,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<ITagProcessor, TagProcessor>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
+      services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddSingleton<IFileListProxy, FileListProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();

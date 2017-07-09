@@ -55,7 +55,9 @@ namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
         BoundingExtents = convertExtents,
         MinElevation = minElevation,
         MaxElevation = maxElevation,
-        TotalCoverageArea = totalCoverageArea
+        TotalCoverageArea = totalCoverageArea,
+        Message = convertExtents == null ? "No elevation range" : DefaultMessage,
+        Code = convertExtents == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ExecutedSuccessfully
       };
     }
 

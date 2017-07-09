@@ -45,6 +45,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.projectUid = projectUid;
     }
 
+    [Given(@"a startUtc ""(.*)"" and an EndUtc ""(.*)""")]
+    public void GivenAStartUtcAndAnEndUtc(string startUtc, string endUtc)
+    {
+      queryParameters = string.Format("&startUtc={0}&endUtc={1}",
+        startUtc, endUtc);
+    }
+
     [When(@"I request CMV summary")]
     public void WhenIRequestCMVSummary()
     {

@@ -28,7 +28,11 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
-      return this.palette.Equals(other.palette) &&           
+      var paletteEqual = this.palette != null && other.palette != null
+        ? this.palette.Equals(other.palette)
+        : this.palette == null && other.palette == null;
+
+      return paletteEqual &&
              this.Code == other.Code &&
              this.Message == other.Message;
     }
