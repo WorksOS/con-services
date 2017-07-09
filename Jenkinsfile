@@ -2,10 +2,18 @@ node ('master')
 {
 checkout scm
 def branchc = env.BRANCH_NAME
+def prjname = env.JOB_NAME 
 
-load './MasterDataConsumers/Jenkinsfile'
-if (!(branchc.contains("release")||branchc.contains("master"))) 
+if (prjname.contains("MasterDataConsumers")
 {
-load './MockProjectWebApi/src/Jenkinsfile'
+ load './MasterDataConsumers/Jenkinsfile'
 }
+else
+{
+  if (!(branchc.contains("release")||branchc.contains("master"))) 
+  {
+   load './MockProjectWebApi/src/Jenkinsfile'
+  }
+}
+
 }
