@@ -24,13 +24,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         return ConfigurationManager.OpenExeConfiguration(Assembly.GetExecutingAssembly().Location);
       }
     }
-    public static string TestEnvironment
-    {
-      get
-      {
-        return Environment.GetEnvironmentVariable("TEST_ENVIRONMENT");
-      }
-    }
+
     public static string TestDataPath
     {
       get
@@ -100,23 +94,6 @@ namespace RaptorSvcAcceptTestsCommon.Utils
 
     private static string ConstructUri(string subDir)
     {
-      //string server = null;
-      //if (TestEnvironment == "Tc")
-      //  server = "http://mer-vm-tc-01.ap.trimblecorp.net";
-      //else if (TestEnvironment == "Dev")
-      //{
-      //  string addr = "http://" + File.ReadAllText(TestDataPath + "webapiaddress.txt");
-      //  addr = addr.Replace("\n", "").Replace("\r", "").Trim();
-      //  Console.WriteLine("Host WebAPI url>" + addr + "<");
-      //  server = addr;
-      //}
-      //else if (TestEnvironment == "T01")
-      //  server = "http://t01-aslv01.vssengg.com/RaptorWebAPI";
-      //else if (TestEnvironment == "Local")
-      //  server = "http://localhost";
-
-      //if (string.IsNullOrEmpty(server))
-      //  return null;
       var server = "http://" + Environment.GetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST");
 
       var url = string.Format("{0}{1}", server, subDir);

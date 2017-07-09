@@ -18,8 +18,6 @@ param (
 [string]$RAPTOR_WEBSERVICES_HOST = "localhost"
 )
 	
-
-[Environment]::SetEnvironmentVariable("TEST_ENVIRONMENT", "Local", "Machine")
 [Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../TestData/", "Machine")
 [Environment]::SetEnvironmentVariable("COMPACTION_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI", "80", "Machine")

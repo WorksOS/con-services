@@ -1,8 +1,6 @@
 <#
 	Sets the environment variables required for running the tests locally
 
-
-	TEST_ENVIRONMENT -> The environment the tests are running in - may be unneeded in future
 	TEST_DATA_PATH -> Relative path to the test data directory
 	COMPACTION_SVC_BASE_URI -> compaction service end point, ususally a port or /compaction
 	NOTIFICATION_SVC_BASE_URI -> notification service end point, usually a port or /notification
@@ -15,8 +13,6 @@
 
 	#>
 
-
-[Environment]::SetEnvironmentVariable("TEST_ENVIRONMENT", "Dev", "Machine")
 [Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../TestData/", "Machine")
 [Environment]::SetEnvironmentVariable("COMPACTION_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI", "/notification", "Machine")

@@ -7,7 +7,6 @@ for /f %%i in ('docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddr
 PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP %ipaddress%
 
 rem SET ENVIRONMENT VARIABLES
-set TEST_ENVIRONMENT=Local
 set TEST_DATA_PATH=../../TestData/
 set COMPACTION_SVC_BASE_URI=:80
 set NOTIFICATION_SVC_BASE_URI=:80
