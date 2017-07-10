@@ -2,9 +2,9 @@
 using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json;
-using WebApiModels.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApiModels.Models
+namespace VSS.Productivity3D.WebApiModels.Models
 {
     /// <summary>
     ///   This is an expected exception and should be ignored by unit test failure methods.

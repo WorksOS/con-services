@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.Models;
 
-namespace WebApiModels.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ResultHandling
 {
   public class ExceptionsTrap
   {

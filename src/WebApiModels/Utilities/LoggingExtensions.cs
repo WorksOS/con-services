@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using WebApiModels.Models;
-using WebApiModels.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApiModels.Utilities
+namespace VSS.Productivity3D.WebApiModels.Utilities
 {
   public static class LoggingExtensions
   {

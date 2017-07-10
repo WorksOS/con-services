@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Repositories.DBModels;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using WebApiModels.Models;
-using WebApiModels.ResultHandling;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Repositories.DBModels;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApiModels.Executors
+namespace VSS.Productivity3D.WebApiModels.Executors
 {
   /// <summary>
   /// The executor which gets a list of project boundaries for the requested asset id.

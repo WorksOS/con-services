@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WebApiModels.Enums
+namespace VSS.Productivity3D.WebApiModels.Enums
 {
 
   // Service type enums are different between CG and NG.

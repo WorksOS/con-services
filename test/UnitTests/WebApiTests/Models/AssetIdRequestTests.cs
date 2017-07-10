@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.Models;
 
 namespace WebApiTests.Models
 {

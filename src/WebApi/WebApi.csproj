@@ -9,6 +9,7 @@
     <PackageId>WebApi</PackageId>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
+    <RootNamespace>VSS.Productivity3D.WebApi</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,10 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
 using System.Net;
-using WebApiModels.ResultHandling;
+using Newtonsoft.Json;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApiModels.Models
+namespace VSS.Productivity3D.WebApiModels.Models
 {
   /// <summary>
   /// The request representation used to request the boundary of a project that is active at a specified date time.

@@ -1,11 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using WebApiModels.Enums;
-using WebApiModels.ResultHandling;
+﻿using System;
+using Newtonsoft.Json;
+using VSS.Productivity3D.WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApiModels.Models
+namespace VSS.Productivity3D.WebApiModels.Models
 {
   /// <summary>
   /// The request representation used to raise an alert for a tag file processing error if required.

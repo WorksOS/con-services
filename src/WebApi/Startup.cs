@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using log4netExtensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using log4netExtensions;
+using Repositories;
 using Swashbuckle.Swagger.Model;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.WebApi.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using Repositories;
-using VSS.TagFileAuth.Service.Filters;
-using WebApiModels.ResultHandling;
+using ExceptionsTrapExtensions = VSS.Productivity3D.WebApiModels.ResultHandling.ExceptionsTrapExtensions;
 
-namespace WebApi
+namespace VSS.Productivity3D.WebApi
 {
   public class Startup
   {
@@ -61,7 +61,7 @@ namespace WebApi
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
           .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
-      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+      services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
       services.AddMvc(
         config =>
         {
@@ -97,7 +97,7 @@ namespace WebApi
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
 
-      app.UseExceptionTrap();
+      ExceptionsTrapExtensions.UseExceptionTrap(app);
       //Enable TID here
       //app.UseTIDAuthentication();
       app.UseCors("VSS");

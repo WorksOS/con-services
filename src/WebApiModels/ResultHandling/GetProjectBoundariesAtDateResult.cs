@@ -1,7 +1,7 @@
 ﻿
-using WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.Models;
 
-namespace WebApiModels.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ResultHandling
 {
   /// <summary>
   /// The result representation of a get project boundaries request.

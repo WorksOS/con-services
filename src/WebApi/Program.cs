@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
 
-namespace WebApi
+namespace VSS.Productivity3D.WebApi
 {
   public class Program
     {

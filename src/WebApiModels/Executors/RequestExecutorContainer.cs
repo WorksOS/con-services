@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
-using Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using WebApiModels.Enums;
-using WebApiModels.Models;
-using WebApiModels.ResultHandling;
+using Microsoft.Extensions.Logging;
+using Repositories;
+using VSS.Productivity3D.WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApiModels.Executors
+namespace VSS.Productivity3D.WebApiModels.Executors
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic

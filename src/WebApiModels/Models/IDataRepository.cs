@@ -1,9 +1,4 @@
-﻿using Repositories.DBModels;
-using Repositories.ExtendedModels;
-using System;
-using System.Collections.Generic;
-
-namespace WebApiModels.Models
+﻿namespace VSS.Productivity3D.WebApiModels.Models
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic

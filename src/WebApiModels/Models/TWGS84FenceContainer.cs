@@ -1,5 +1,5 @@
 ﻿
-namespace WebApiModels.Models
+namespace VSS.Productivity3D.WebApiModels.Models
 {
   public class TWGS84FenceContainer
   {

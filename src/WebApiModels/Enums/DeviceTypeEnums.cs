@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace WebApiModels.Enums
+﻿namespace VSS.Productivity3D.WebApiModels.Enums
 {
 
   // There shold be a master-copy of these somewhere in the masterData code or databases
