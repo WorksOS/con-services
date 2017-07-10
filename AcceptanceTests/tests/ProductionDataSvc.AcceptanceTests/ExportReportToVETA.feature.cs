@@ -79,26 +79,28 @@ namespace ProductionDataSvc.AcceptanceTests
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportToVETA - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportToVETA")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
         public virtual void ExportReportToVETA_GoodRequest()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToVETA - Good Request", ((string[])(null)));
-#line 7
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToVETA - Good Request", new string[] {
+                        "ignore"});
+#line 8
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 8
-  testRunner.And("projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
- testRunner.And("startUtc \"2005-01-01T00:00:00\" and endUtc \"2017-06-23T03:19:35.2130131Z\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 10
+ testRunner.And("startUtc \"2005-01-01T00:00:00\" and endUtc \"2017-06-23T03:19:35.2130131Z\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 11
  testRunner.And("machineNames \"D61 SATD PE,KOMATSU PC210,ACOM,LIEBHERR 924C,CAT CS56B,VOLVO G946B," +
                     "CASE CX160C,LIEBHERR724,JD 764 CV\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 11
- testRunner.And("fileName=Test", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 12
+ testRunner.And("fileName=Test", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 13
  testRunner.When("I request an Export Report To VETA", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 13
+#line 14
  testRunner.Then("the report result should be", "{\n  \"exportData\": \"UEsDBBQAAAgIABFb6krEbg45gn4BAAhmGAAIAAAAVGVzdC5jc3bMvd3OLbt1JX" +
                     "YfIO8g+CoBtr/UH8nivpPVPwFiqQ1LaCBXxrF81C20pONIagfJq+Uij5RXSHGtVSwWxyC5qhZrsnThvW" +
                     "Xt852x55hFjjk5f/6//+f//c3v//jjt1/8+Ic//Oqf/vj49d8vv/77P/z4bz/89fc//Wn5/T/88Je//O" +

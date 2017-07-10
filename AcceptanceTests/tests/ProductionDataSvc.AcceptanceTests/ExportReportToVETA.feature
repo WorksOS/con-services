@@ -4,6 +4,7 @@ I should be able to request production data export report for import to VETA.
 Background: 
 	Given the Export Report To VETA service URI "v2/export/veta"
 
+@ignore
 Scenario: ExportReportToVETA - Good Request
   And projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
 	And startUtc "2005-01-01T00:00:00" and endUtc "2017-06-23T03:19:35.2130131Z"
