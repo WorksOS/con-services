@@ -1,4 +1,4 @@
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// A set of predefined color constants that may be used when defining color palettes

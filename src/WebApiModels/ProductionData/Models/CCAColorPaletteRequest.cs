@@ -2,11 +2,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   /// <summary>
   /// CCA Color Palette request domain object. The palette is to be used by a map legend. Model represents a CCA Color Palette request.
@@ -65,25 +65,21 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     /// 
     public static CCAColorPaletteRequest CreateCCAColorPaletteRequest(long projectId, long assetId, DateTime? startUtc, DateTime? endUtc, int? liftId)
     {
-      return new CCAColorPaletteRequest() { projectId = projectId, assetId = assetId, startUtc = startUtc, endUtc = endUtc, liftId = liftId};
+      return new CCAColorPaletteRequest { projectId = projectId, assetId = assetId, startUtc = startUtc, endUtc = endUtc, liftId = liftId};
     }
 
     /// <summary>
     /// Creates CCAColorPaletteRequest class sample instance to be displayed in Help documantation.
     /// </summary>
     /// 
-    public new static CCAColorPaletteRequest HelpSample
+    public new static CCAColorPaletteRequest HelpSample => new CCAColorPaletteRequest
     {
-      get { return new CCAColorPaletteRequest()
-        {
-          projectId = 111,
-          assetId = 1,
-          startUtc = DateTime.UtcNow,
-          endUtc = DateTime.UtcNow.AddDays(5),
-          liftId = 1
-        };
-      }
-    }
+      projectId = 111,
+      assetId = 1,
+      startUtc = DateTime.UtcNow,
+      endUtc = DateTime.UtcNow.AddDays(5),
+      liftId = 1
+    };
 
     /// <summary>
     /// Validates properties.

@@ -1,7 +1,6 @@
-﻿
-using VSS.Raptor.Service.Common.Contracts;
+﻿using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiModels.TagfileProcessing.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.TagfileProcessing.ResultHandling
 {
     /// <summary>
     /// REpresents response from the service after TAG file POST request
@@ -25,10 +24,6 @@ namespace VSS.Raptor.Service.WebApiModels.TagfileProcessing.ResultHandling
         /// <summary>
         /// TAGFile instance
         /// </summary>
-        public static TAGFilePostResult HelpSample
-        {
-            get { return new TAGFilePostResult(); }
-        }
-
+        public static TAGFilePostResult HelpSample => new TAGFilePostResult();
     }
 }

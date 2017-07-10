@@ -1,4 +1,10 @@
-﻿using System;
+﻿using ASNodeDecls;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
+using MasterDataProxies.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -6,30 +12,24 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using ASNodeDecls;
-using Common.Executors;
-using Common.Filters.Authentication.Models;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
-using MasterDataProxies.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Controllers;
+using VSS.Productivity3D.Common.Executors;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Compaction.Executors;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Compaction.Models;
+using VSS.Productivity3D.WebApiModels.Notification.Helpers;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using WebApiModels.Compaction.Executors;
-using WebApiModels.Compaction.Helpers;
-using WebApiModels.Compaction.Models;
-using WebApiModels.Notification.Helpers;
 
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
@@ -37,8 +37,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
   /// <summary>
   /// Controller for getting tiles for displaying production data and linework.
   /// </summary>
-  //[ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
-  [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
   public class CompactionTileController : Controller
   {
     /// <summary>
@@ -130,14 +128,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds.</returns>
     /// <executor>TilesExecutor</executor> 
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles")]
     [HttpGet]
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public async Task<TileResult> GetProductionDataTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -161,8 +158,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogDebug("GetProductionDataTile: " + Request.QueryString);
       ValidateWmsParameters(SERVICE, VERSION, REQUEST, FORMAT, TRANSPARENT, LAYERS, CRS, STYLES);
@@ -171,7 +167,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
@@ -215,8 +211,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds. 
     /// If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered 
     /// in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to 
@@ -228,6 +222,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/productiondatatiles/png")]
     [HttpGet]
+    [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
     public async Task<FileResult> GetProductionDataTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -251,8 +246,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogDebug("GetProductionDataTileRaw: " + Request.QueryString);
 
@@ -261,7 +255,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
@@ -294,7 +288,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles")]
     [HttpGet]
-    //[ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<TileResult> GetLineworkTile(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,
@@ -346,7 +340,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/compaction/lineworktiles/png")]
     [HttpGet]
-    //[ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]//temp. no caching
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public async Task<FileResult> GetLineworkTileRaw(
       [FromQuery] string SERVICE,
       [FromQuery] string VERSION,

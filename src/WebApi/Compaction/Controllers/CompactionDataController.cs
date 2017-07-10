@@ -1,20 +1,21 @@
-﻿using System;
-using System.Threading.Tasks;
-using Common.Filters.Authentication.Models;
-using MasterDataProxies;
+﻿using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
-using VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.Executors;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using System;
+using System.Threading.Tasks;
+using VSS.Productivity3D.Common.Controllers;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Executors;
+using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -83,8 +84,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>CMV summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -101,12 +100,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetCmvSummary: " + Request.QueryString);
       CMVRequest request = await GetCMVRequest(projectId, projectUid, startUtc, endUtc, vibeStateOn, elevationType,
-        layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, includeSurveyedSurfaces);
+        layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
       request.Validate();
 
       try
@@ -151,8 +149,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>MDP summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -169,8 +165,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -179,7 +174,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       MDPSettings mdpSettings = CompactionSettings.CompactionMdpSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
@@ -229,8 +224,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>Pass count summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -247,13 +240,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetPassCountSummary: " + Request.QueryString);
 
       PassCounts request = await GetPassCountRequest(projectId, projectUid, startUtc, endUtc, vibeStateOn,
-        elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, true, includeSurveyedSurfaces);
+        elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, true);
       request.Validate();
 
       try
@@ -297,8 +289,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>Temperature summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -315,8 +305,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetTemperatureSummary: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -325,7 +314,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       TemperatureSettings temperatureSettings = CompactionSettings.CompactionTemperatureSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
@@ -376,8 +365,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>Speed summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -394,8 +381,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetSpeedSummary: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -404,7 +390,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       //Speed settings are in LiftBuildSettings
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
@@ -455,8 +441,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>CMV % change</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -473,8 +457,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetCmvPercentChange: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -482,7 +465,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
@@ -536,8 +519,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>CMV details</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -554,13 +535,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
       CMVRequest request = await GetCMVRequest(projectId, projectUid, startUtc, endUtc, vibeStateOn, elevationType,
-        layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, includeSurveyedSurfaces);
+        layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe);
       request.Validate();
 
       try
@@ -606,8 +586,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>Pass count details</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -624,13 +602,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetPassCountDetails: " + Request.QueryString);
 
       PassCounts request = await GetPassCountRequest(projectId, projectUid, startUtc, endUtc, vibeStateOn,
-        elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, false, includeSurveyedSurfaces);
+        elevationType, layerNumber, onMachineDesignId, assetID, machineName, isJohnDoe, false);
       request.Validate();
 
       try
@@ -670,11 +647,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="assetID"></param>
     /// <param name="machineName"></param>
     /// <param name="isJohnDoe"></param>
-    /// <param name="includeSurveyedSurfaces"></param>
     /// <returns>An instance of the CMVRequest class.</returns>
     private async Task<CMVRequest> GetCMVRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
-      string machineName, bool? isJohnDoe, bool? includeSurveyedSurfaces)
+      string machineName, bool? isJohnDoe)
     {
       if (!projectId.HasValue)
       {
@@ -682,7 +658,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       CMVSettings cmvSettings = CompactionSettings.CompactionCmvSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
@@ -707,11 +683,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="machineName"></param>
     /// <param name="isJohnDoe"></param>
     /// <param name="isSummary"></param>
-    /// <param name="includeSurveyedSurfaces"></param>
     /// <returns>An instance of the PassCounts class.</returns>
     private async Task<PassCounts> GetPassCountRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
-      string machineName, bool? isJohnDoe, bool isSummary, bool? includeSurveyedSurfaces)
+      string machineName, bool? isJohnDoe, bool isSummary)
     {
       if (!projectId.HasValue)
       {
@@ -719,7 +694,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       PassCountSettings passCountSettings = isSummary ? null : CompactionSettings.CompactionPassCountSettings;
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,

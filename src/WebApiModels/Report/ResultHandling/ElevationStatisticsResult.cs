@@ -1,8 +1,7 @@
-﻿
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
+﻿using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Report.ResultHandling
 {
   /// <summary>
   /// Represents result returned by levation Statistics request
@@ -51,12 +50,14 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     public static ElevationStatisticsResult CreateElevationStatisticsResult(BoundingBox3DGrid convertExtents, double minElevation,
             double maxElevation, double totalCoverageArea)
     {
-      return new ElevationStatisticsResult()
+      return new ElevationStatisticsResult
       {
         BoundingExtents = convertExtents,
         MinElevation = minElevation,
         MaxElevation = maxElevation,
-        TotalCoverageArea = totalCoverageArea
+        TotalCoverageArea = totalCoverageArea,
+        Message = convertExtents == null ? "No elevation range" : DefaultMessage,
+        Code = convertExtents == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ExecutedSuccessfully
       };
     }
 
@@ -67,7 +68,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.ResultHandling
     {
       get
       {
-        return new ElevationStatisticsResult()
+        return new ElevationStatisticsResult
         {
           BoundingExtents = BoundingBox3DGrid.HelpSample,
           MinElevation = 100.0,

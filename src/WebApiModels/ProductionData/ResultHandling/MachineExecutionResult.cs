@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.Contracts;
 using Newtonsoft.Json;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
   public class MachineExecutionResult : ContractExecutionResult
   {
@@ -40,9 +40,9 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
     {
       get
       {
-        return new MachineExecutionResult()
+        return new MachineExecutionResult
         {
-            MachineStatuses = new []{Models.MachineStatus.HelpSample}
+            MachineStatuses = new []{MachineStatus.HelpSample}
         };
       }
     }

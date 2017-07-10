@@ -1,19 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
-using Common.Filters.Authentication.Models;
-using MasterDataProxies;
+﻿using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
+using VSS.Productivity3D.Common.Controllers;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
-using VSS.Raptor.Service.WebApiModels.Report.Executors;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Executors;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -90,8 +91,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>Elevation statistics</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -108,8 +107,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetElevationRange: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -118,12 +116,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       try
       {
-        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
           Request.Headers.GetCustomHeaders());
         Filter filter = CompactionSettings.CompactionFilter(
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
         ElevationStatisticsResult result = elevProxy.GetElevationRange(raptorClient, projectId.Value, filter);
+        if (result == null)
+        {
+          //Ideally want to return an error code and message only here
+          result = ElevationStatisticsResult.CreateElevationStatisticsResult(null, 0, 0, 0);
+        }
         log.LogInformation("GetElevationRange result: " + JsonConvert.SerializeObject(result));
         return result;
       }
@@ -151,6 +154,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="request">The request for statistics request to Raptor</param>
     /// <returns></returns>
     /// <executor>ProjectStatisticsExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [ProjectUidVerifier]
     [Route("api/v2/compaction/projectstatistics")]
@@ -185,8 +190,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="projectUid">Project UID</param>
-    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
     /// <returns>Project statistics</returns>
     /// <executor>ProjectStatisticsExecutor</executor>
     [ProjectIdVerifier]
@@ -195,15 +198,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet]
     public async Task<ProjectStatisticsResult> GetProjectStatistics(
       [FromQuery] long? projectId,
-      [FromQuery] Guid? projectUid,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] Guid? projectUid)
     {
       log.LogInformation("GetProjectStatistics: " + Request.QueryString);
       if (!projectId.HasValue)
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
       ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId.Value, excludedIds.ToArray());
       request.Validate();

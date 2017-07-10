@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Utilities;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   /// <summary>
   /// The two end points of a stright line used for a profile calculation, defined in WGS84 latitude longitude coordinates.
@@ -80,7 +80,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
     {
       get
       {
-        return new ProfileLLPoints()
+        return new ProfileLLPoints
         {
           lat1 = 35.109149 * ConversionConstants.DEGREES_TO_RADIANS,
           lon1 = -106.6040765 * ConversionConstants.DEGREES_TO_RADIANS,

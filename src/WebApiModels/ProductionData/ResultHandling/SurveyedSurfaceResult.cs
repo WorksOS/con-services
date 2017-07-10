@@ -1,7 +1,7 @@
-﻿using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.Common.Contracts;
+﻿using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
   /// <summary>
   /// Surveyed Surface result class.
@@ -32,7 +32,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
     /// 
     public static SurveyedSurfaceResult CreateSurveyedSurfaceResult(SurveyedSurfaceDetails[] surveyedSurfaces)
     {
-      return new SurveyedSurfaceResult() { SurveyedSurfaces = surveyedSurfaces };
+      return new SurveyedSurfaceResult { SurveyedSurfaces = surveyedSurfaces };
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
     /// 
     public static SurveyedSurfaceResult HelpSample
     {
-      get { return new SurveyedSurfaceResult() { SurveyedSurfaces = new SurveyedSurfaceDetails[] { SurveyedSurfaceDetails.HelpSample } }; }
+      get { return new SurveyedSurfaceResult { SurveyedSurfaces = new SurveyedSurfaceDetails[] { SurveyedSurfaceDetails.HelpSample } }; }
     }
   }
 }

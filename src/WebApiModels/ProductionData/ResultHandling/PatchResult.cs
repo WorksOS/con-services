@@ -1,6 +1,6 @@
-﻿using VSS.Raptor.Service.Common.Contracts;
+﻿using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
   public class PatchResult 
     {
@@ -194,7 +194,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
         {
           get
           {
-            return new PatchResultStructured()
+            return new PatchResultStructured
             {
             };
           }

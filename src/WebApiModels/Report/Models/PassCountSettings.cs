@@ -1,12 +1,10 @@
-﻿
-using System.Linq;
+﻿using Newtonsoft.Json;
 using System.Net;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Models
+namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
   /// <summary>
   /// Setting and configuration values related to processing pass count related queries
@@ -53,7 +51,7 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
     {
       get
       {
-        return new PassCountSettings()
+        return new PassCountSettings
         {
           passCounts = new int[] { 1, 2, 3, 5, 8, 12, 20 }
         };
@@ -77,9 +75,10 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
       if (passCounts[0] == MIN_TARGET_PASS_COUNT)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, string.Format("Pass counts must start greater than {0}", MIN_TARGET_PASS_COUNT)));
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                $"Pass counts must start greater than {MIN_TARGET_PASS_COUNT}"));
       }
-      for (int i = 1; i < passCounts.Count(); i++)
+      for (int i = 1; i < passCounts.Length; i++)
       {
         if (passCounts[i] <= passCounts[i - 1])
         {
@@ -87,14 +86,12 @@ namespace VSS.Raptor.Service.WebApiModels.Report.Models
                 new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Pass counts must be ordered from lowest to the highest"));
         }
       }
-      if (passCounts[passCounts.Count()-1] < MIN_TARGET_PASS_COUNT || passCounts[passCounts.Count()-1] > MAX_TARGET_PASS_COUNT)
+      if (passCounts[passCounts.Length - 1] < MIN_TARGET_PASS_COUNT || passCounts[passCounts.Length - 1] > MAX_TARGET_PASS_COUNT)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, string.Format("Pass counts must be between {0} and {1}", MIN_TARGET_PASS_COUNT+1, MAX_TARGET_PASS_COUNT)));
-      }      
-      
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                $"Pass counts must be between {MIN_TARGET_PASS_COUNT + 1} and {MAX_TARGET_PASS_COUNT}"));
+      }
     }
-
-
   }
 }

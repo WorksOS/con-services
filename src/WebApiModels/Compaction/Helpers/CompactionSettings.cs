@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
+namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
   /// <summary>
   /// Default settings for compaction end points. For consistency all compaction end points should use these settings.
@@ -89,13 +88,7 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
       }
     }
 
-    public static PassCountSettings CompactionPassCountSettings
-    {
-      get
-      {
-        return PassCountSettings.CreatePassCountSettings(new int[] {1,2,3,4,5,6,7,8});
-      }
-    }
+    public static PassCountSettings CompactionPassCountSettings => PassCountSettings.CreatePassCountSettings(new int[] {1,2,3,4,5,6,7,8});
 
     public static List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents)
     {
@@ -108,17 +101,23 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
       {
         case DisplayMode.Height:
 
-          const int NUMBER_OF_COLORS = 30;
-
-          double step = (elevExtents.MaxElevation - elevExtents.MinElevation) / (NUMBER_OF_COLORS - 1);
-          List<int> colors = RaptorConverters.ElevationPalette();
-
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationBelowColor, -1));
-          for (int i = 0; i < colors.Count; i++)
+          if (elevExtents == null)
           {
-            palette.Add(ColorPalette.CreateColorPalette((uint)colors[i], elevExtents.MinElevation + i * step));
+            palette = null;
           }
-          palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationAboveColor, -1));
+          else
+          {
+            //Compaction elevation palette has 31 colors, original Raptor one had 30 colors
+            List<int> colors = ElevationPalette();
+            double step = (elevExtents.MaxElevation - elevExtents.MinElevation) / (colors.Count - 1);
+
+            palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationBelowColor, -1));
+            for (int i = 0; i < colors.Count; i++)
+            {
+              palette.Add(ColorPalette.CreateColorPalette((uint) colors[i], elevExtents.MinElevation + i * step));
+            }
+            palette.Add(ColorPalette.CreateColorPalette(ColorSettings.Default.elevationAboveColor, -1));
+          }
 
           break;
         case DisplayMode.CCV:
@@ -206,6 +205,49 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.Helpers
     }
 
     private const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;
+
+    private static int RGBToColor(int r, int g, int b)
+    {
+      return r << 16 | g << 8 | b << 0;
+    }
+
+    private static List<int> ElevationPalette()
+    {
+      return new List<int> {
+        RGBToColor(200,0,0),
+        RGBToColor(255,0,0),
+        RGBToColor(225,60,0),
+        RGBToColor(255,90,0),
+        RGBToColor(255,130,0),
+        RGBToColor(255,170,0),
+        RGBToColor(255,200,0),
+        RGBToColor(255,220,0),
+        RGBToColor(250,230,0),
+        RGBToColor(220,230,0),
+        RGBToColor(210,230,0),
+        RGBToColor(200,230,0),
+        RGBToColor(180,230,0),
+        RGBToColor(150,230,0),
+        RGBToColor(130,230,0),
+        RGBToColor(100,240,0),
+        RGBToColor(0,255,0),
+        RGBToColor(0,240,100),
+        RGBToColor(0,230,130),
+        RGBToColor(0,230,150),
+        RGBToColor(0,230,180),
+        RGBToColor(0,230,200),
+        RGBToColor(0,230,210),
+        RGBToColor(0,220,220),
+        RGBToColor(0,200,230),
+        RGBToColor(0,180,240),
+        RGBToColor(0,150,245),
+        RGBToColor(0,120,250),
+        RGBToColor(0,90,255),
+        RGBToColor(0,70,255),
+        RGBToColor(0,0,255)
+      };
+    }
+
 
 
   }

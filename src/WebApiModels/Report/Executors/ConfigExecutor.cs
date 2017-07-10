@@ -1,17 +1,16 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Net;
 using System.Xml;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
-    public class ConfigExecutor : RequestExecutorContainer
+  public class ConfigExecutor : RequestExecutorContainer
     {
         /// <summary>
         /// This constructor allows us to mock raptorClient

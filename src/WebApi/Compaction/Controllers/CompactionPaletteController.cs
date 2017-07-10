@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Common.Filters.Authentication.Models;
-using MasterDataProxies;
+﻿using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using VSS.Productivity3D.Common.Controllers;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.WebApiModels.Compaction.Helpers;
-using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
-using VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
-using ColorValue = VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes.ColorValue;
+using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
+using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using ColorValue = VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes.ColorValue;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -59,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
-      this.log = logger.CreateLogger<CompactionPaletteController>();
+      log = logger.CreateLogger<CompactionPaletteController>();
       this.fileListProxy = fileListProxy;
       this.elevProxy = elevProxy;
     }
@@ -133,14 +134,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         switch (mode)
         {
           case DisplayMode.Height:
-            colorValues = new List<ColorValue>();
-            for (int i = 1; i < compactionPalette.Count - 1; i++)
+            if (compactionPalette != null)
             {
-              colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-                compactionPalette[i].value));
+              colorValues = new List<ColorValue>();
+              for (int i = 1; i < compactionPalette.Count - 1; i++)
+              {
+                colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
+                  compactionPalette[i].value));
+              }
+              elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
+                compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
             }
-            elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
-              compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
             break;
           case DisplayMode.CCV:
             colorValues = new List<ColorValue>();
@@ -230,8 +234,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>    /// <param name="includeSurveyedSurfaces">If true, active surveyed surfaces are included with the production data. 
-    /// If False all surveyed surfaces are excluded. Default is true</param>
+    /// <param name="isJohnDoe">See assetIDL</param>    
     /// <returns>Elevation color palette</returns>
     [Route("api/v2/compaction/elevationpalette")]
     [HttpGet]
@@ -246,8 +249,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe,
-      [FromQuery] bool? includeSurveyedSurfaces)
+      [FromQuery] bool? isJohnDoe)
     {
       log.LogInformation("GetElevationPalette: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -255,7 +257,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, includeSurveyedSurfaces,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
         Request.Headers.GetCustomHeaders());
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
@@ -263,14 +265,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(raptorClient, projectId.Value, filter);
       var compactionPalette = CompactionSettings.CompactionPalette(DisplayMode.Height, elevExtents);
 
-      List<ColorValue> colorValues = new List<ColorValue>();
-      for (int i = 1; i < compactionPalette.Count - 1; i++)
+      DetailPalette elevationPalette = null;
+      if (compactionPalette != null)
       {
-        colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-          compactionPalette[i].value));
+        List<ColorValue> colorValues = new List<ColorValue>();
+        for (int i = 1; i < compactionPalette.Count - 1; i++)
+        {
+          colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
+            compactionPalette[i].value));
+        }
+        elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
+          compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
       }
-      DetailPalette elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
-        compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
 
       return CompactionDetailPaletteResult.CreateCompactionDetailPaletteResult(elevationPalette);
     }

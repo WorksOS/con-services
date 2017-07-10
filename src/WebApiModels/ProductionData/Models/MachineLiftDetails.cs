@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.Raptor.Service.Common.Models;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Models
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
 {
   public class MachineLiftDetails : MachineDetails
   {

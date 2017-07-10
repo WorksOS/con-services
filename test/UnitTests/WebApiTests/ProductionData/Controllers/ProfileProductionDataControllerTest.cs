@@ -1,22 +1,19 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using VSS.Raptor.Service.WebApi.ProductionData.Controllers;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Helpers;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
-
 using SVOICOptionsDecls;
+using System;
+using System.IO;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
+using VSS.Productivity3D.WebApiModels.ProductionData.Helpers;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 
-namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
+namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
   [TestClass]
   public class ProfileProductionDataControllerTest
@@ -63,7 +60,7 @@ namespace VSS.Raptor.Service.WebApiTests.ProductionData.Controllers
       VLPDDecls.TWGS84Point startPt, endPt;
 
       bool positionsAreGrid;
-      
+
       ProfilesHelper.convertProfileEndPositions(request.gridPoints, request.wgs84Points, out startPt, out endPt, out positionsAreGrid);
 
       ASNode.RequestProfile.RPC.TASNodeServiceRPCVerb_RequestProfile_Args args

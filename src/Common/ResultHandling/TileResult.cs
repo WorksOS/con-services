@@ -1,8 +1,7 @@
-﻿
-using ASNodeDecls;
-using VSS.Raptor.Service.Common.Contracts;
+﻿using ASNodeDecls;
+using VSS.Productivity3D.Common.Contracts;
 
-namespace VSS.Raptor.Service.Common.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
   public class TileResult : ContractExecutionResult
   {

@@ -1,27 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Contracts;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Executors;
-using VSS.Raptor.Service.WebApiModels.ProductionData.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.Report.Executors;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
+using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Executors;
 
-
-namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
+namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
-
-
-    [ResponseCache(NoStore = true)]
-    public class EditDataController : Controller, IEditDataContract
+  /// <summary>
+  /// 
+  /// </summary>
+  [ResponseCache(NoStore = true)]
+  public class EditDataController : Controller, IEditDataContract
   {
     /// <summary>
     /// Tag processor for use by executor
@@ -63,6 +62,8 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// <param name="request">The request representation for the operation.</param>
     /// <returns>A list of the edits applied to the production data for the project and machine.</returns>
     /// <executor>GetEditDataExecutor</executor> 
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
@@ -82,7 +83,9 @@ namespace VSS.Raptor.Service.WebApi.ProductionData.Controllers
     /// </summary>
     /// <param name="request">The request representation for the operation</param>
     /// <returns></returns>
-    /// <executor>EditDataExecutor</executor> 
+    /// <executor>EditDataExecutor</executor>
+    /// 
+    [PostRequestVerifier]
     [ProjectIdVerifier]
     [NotLandFillProjectVerifier]
     [ProjectWritableVerifier]

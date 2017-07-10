@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.Common.Utilities;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Utilities;
 
-namespace VSS.Raptor.Service.WebApiTests.Common.Models
+namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
 {
-  [TestClass()]
+  [TestClass]
   public class BoundingBoxTests
   {
-    [TestMethod()]
+    [TestMethod]
     public void CanCreateBoundingBox2DGridTest()
     {
       var validator = new DataAnnotationsValidator();
@@ -19,14 +19,14 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.IsTrue(validator.TryValidate(bbox, out results));
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateBoundingBox2DGridSuccessTest()
     {
       BoundingBox2DGrid bbox = BoundingBox2DGrid.CreateBoundingBox2DGrid(380646.982394, 812634.205106, 380712.19834, 812788.92875);
       bbox.Validate();
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateBoundingBox2DGridFailTest()
     {
       //not bl and tr
@@ -34,7 +34,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.ThrowsException<ServiceException>(() => bbox.Validate());
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void CanCreateBoundingBox2DLatLonTest()
     {
       var validator = new DataAnnotationsValidator();
@@ -49,14 +49,14 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.IsFalse(validator.TryValidate(bbox, out results));
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateBoundingBox2DLatLonSuccessTest()
     {
       BoundingBox2DLatLon bbox = BoundingBox2DLatLon.CreateBoundingBox2DLatLon(-0.758809, 3.010479, -0.741023, 3.0567);
       bbox.Validate();
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateBoundingBox2DLatLonFailTest()
     {
       //not bl and tr

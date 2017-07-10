@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebApiModels.Notification.Helpers
+namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
 {
   public class WebMercatorProjection
   {
@@ -43,8 +43,8 @@ namespace WebApiModels.Notification.Helpers
     public static Point PixelToTile(Point pixelPt)
     {
       Point tilePt = new Point();
-      tilePt.x = Math.Floor(pixelPt.x / TILE_SIZE);
-      tilePt.y = Math.Floor(pixelPt.y / TILE_SIZE);
+      tilePt.x = Math.Round(pixelPt.x / TILE_SIZE);//was Math.Floor
+      tilePt.y = Math.Round(pixelPt.y / TILE_SIZE);//but gave wrong result in some cases
       return tilePt;
     }
 
@@ -84,6 +84,39 @@ namespace WebApiModels.Notification.Helpers
       worldPt.x = pixelPt.x / numTiles;
       worldPt.y = pixelPt.y / numTiles;
       return worldPt;
+    }
+
+    //see http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+    //Calculations below are equivalent to above but have the rounding problem also
+
+    /// <summary>
+    /// Calculates x tile coordinate from longitude
+    /// </summary>
+    /// <param name="longitude">longitude in radians</param>
+    /// <param name="numTiles">number of tiles (calcuated from zoom level)</param>
+    /// <returns>x tile coordinate</returns>
+    public static int LongitudeToTile(double longitude, int numTiles)
+    {      
+      var columnIndex = longitude;
+      var columnNormalized = (1.0 + columnIndex / Math.PI) / 2.0;
+      var column = columnNormalized * numTiles;
+      var columnInt = Math.Round(column);
+      return (int)columnInt;
+    }
+
+    /// <summary>
+    /// Calculates the y tile coordinate from latitude
+    /// </summary>
+    /// <param name="latitude">latitude in radians</param>
+    /// <param name="numTiles">number of tiles (calcuated from zoom level)</param>
+    /// <returns>y tile coordinate</returns>
+    public static int LatitudeToTile(double latitude, int numTiles)
+    {    
+      var rowIndex = Math.Log(Math.Tan(latitude) + (1.0 / Math.Cos(latitude)));
+      var rowNormalized = (1.0 - rowIndex / Math.PI) / 2.0;
+      var row = rowNormalized * numTiles;
+      var rowInt = Math.Round(row);
+      return (int)rowInt;
     }
   }
 }

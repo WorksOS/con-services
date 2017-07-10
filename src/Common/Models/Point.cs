@@ -1,9 +1,8 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.Common.Interfaces;
+using VSS.Productivity3D.Common.Interfaces;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// A spatial coordinate within the grid coordinate system used by a project.
@@ -49,17 +48,11 @@ namespace VSS.Raptor.Service.Common.Models
     /// <summary>
     /// Create example instance of Point to display in Help documentation.
     /// </summary>
-    public static Point HelpSample
+    public static Point HelpSample => new Point
     {
-      get
-      {
-        return new Point()
-        {
-          x = 82.3,
-          y = 130.12
-        };
-      }
-    }
+      x = 82.3,
+      y = 130.12
+    };
 
     /// <summary>
     /// Validates all properties
@@ -68,7 +61,5 @@ namespace VSS.Raptor.Service.Common.Models
     {
       //Nothing else to validate
     }
-
-
   }
 }

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   ///     Attribute to test if supplied date greater than referenced.
@@ -25,7 +24,7 @@ namespace VSS.Raptor.Service.Common.Models
       /// <value>
       /// The name of the date to compare to field.
       /// </value>
-      public string DateToCompareToFieldName { get; private set; }
+      public string DateToCompareToFieldName { get; }
 
       /// <summary>
       /// Validates the specified value with respect to the current validation attribute.

@@ -1,17 +1,15 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
 
-
-namespace VSS.Raptor.Service.WebApiTests.Common.Models
+namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Models
 {
-  [TestClass()]
+  [TestClass]
   public class TemperatureWarningLevelsTests
   {
-    [TestMethod()]
+    [TestMethod]
     public void CanCreateTemperatureWarningLevelsTest()
     {
       var validator = new DataAnnotationsValidator();
@@ -24,7 +22,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       Assert.IsFalse(validator.TryValidate(range, out results));
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateSuccessTest()
     {
       //min > max
@@ -32,7 +30,7 @@ namespace VSS.Raptor.Service.WebApiTests.Common.Models
       range.Validate();
     }
 
-    [TestMethod()]
+    [TestMethod]
     public void ValidateFailTest()
     {
       TemperatureWarningLevels range = TemperatureWarningLevels.CreateTemperatureWarningLevels(700, 300);

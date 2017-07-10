@@ -3,26 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Filters.Authentication.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace Common.Filters.Authentication.Models
+namespace VSS.Productivity3D.Common.Filters.Authentication.Models
 {
   /// <summary>
   /// Custom principal for Raptor with list of projects.
   /// </summary>
   public class RaptorPrincipal : ClaimsPrincipal
   {
-    public RaptorPrincipal(ClaimsIdentity identity, string customerUid, List<ProjectDescriptor> projects) : base(identity)
+    public RaptorPrincipal(ClaimsIdentity identity, string customerUid, List<ProjectDescriptor> projects, bool isApplication = false) : base(identity)
     {
       CustomerUid = customerUid;
       Projects = projects;
+      this.isApplication = isApplication;
     }
 
-    public string CustomerUid { get; private set; }
+    public string CustomerUid { get; }
 
-    public List<ProjectDescriptor> Projects { get; private set; }
+    public List<ProjectDescriptor> Projects { get; }
+
+    public bool isApplication { get; private set; } = false;
 
     /// <summary>
     /// Get the project descriptor for the specified project id.

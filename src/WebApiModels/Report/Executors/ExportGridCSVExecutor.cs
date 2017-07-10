@@ -1,32 +1,27 @@
-﻿using System;
-using System.Configuration;
-using System.IO;
-using System.Net;
-using ASNode.ExportProductionDataCSV.RPC;
-using ASNode.UserPreferences;
-using ASNodeDecls;
-using SVOICFilterSettings;
-using VLPDDecls;
+﻿using ASNodeDecls;
 using ASNodeRaptorReports;
-using System.Globalization;
-using System.Text;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.WebApiModels.Report.Models;
-using VSS.Raptor.Service.WebApiModels.Report.ResultHandling;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Nighthawk.ReportSvc.WebApi.Models;
-using System.IO.Compression;
-using VSS.GenericConfiguration;
 using Microsoft.Extensions.Logging;
+using SVOICFilterSettings;
+using System;
+using System.Globalization;
+using System.IO;
+using System.IO.Compression;
+using System.Net;
+using System.Text;
+using VSS.GenericConfiguration;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Report.Models;
+using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.Report.Executors
+namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {
-    /// <summary>
-    /// The executor which passes the summary pass counts request to Raptor
-    /// </summary>
-    public class ExportGridCSVExecutor : RequestExecutorContainer
+  /// <summary>
+  /// The executor which passes the summary pass counts request to Raptor
+  /// </summary>
+  public class ExportGridCSVExecutor : RequestExecutorContainer
     {
         private const double NO_HEIGHT = 1E9;
         private const int NO_CCV = SVOICDecls.__Global.kICNullCCVValue;

@@ -1,4 +1,4 @@
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
   public class ColorSettingsFlags
   {

@@ -1,8 +1,8 @@
 ﻿using MasterDataProxies.ResultHandling;
 using Newtonsoft.Json;
-using VSS.Raptor.Service.WebApiModels.Compaction.Models.Palettes;
+using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
 
-namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
 {
   /// <summary>
   /// Represents color palette result for a elevation palette request
@@ -33,7 +33,9 @@ namespace VSS.Raptor.Service.WebApiModels.Compaction.ResultHandling
     {
       return new CompactionDetailPaletteResult
       {
-        Palette = elevationPalette
+        Palette = elevationPalette,
+        Message = elevationPalette == null ? "No elevation range" : DefaultMessage,
+        Code = elevationPalette == null ? ContractExecutionStatesEnum.FailedToGetResults : ContractExecutionStatesEnum.ExecutedSuccessfully
       };
     }
   }

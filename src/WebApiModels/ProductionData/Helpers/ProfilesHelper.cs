@@ -1,15 +1,16 @@
-﻿
-using SVOICProfileCell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SVOICProfileCell;
 using VLPDDecls;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling;
+using VSS.Productivity3D.WebApiModels.ProductionData.Models;
+using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 using VSS.Velociraptor.PDSInterface;
+using ProfileCell = VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling.ProfileCell;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.Helpers
+namespace VSS.Productivity3D.WebApiModels.ProductionData.Helpers
 {
   public class ProfilesHelper
   {
@@ -52,7 +53,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Helpers
             );
         }
 
-        profile.cells = new List<VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling.ProfileCell>();
+        profile.cells = new List<ProfileCell>();
         VSS.Velociraptor.PDSInterface.ProfileCell prevCell = null;
         foreach (VSS.Velociraptor.PDSInterface.ProfileCell currCell in pdsiProfile.cells)
         {
@@ -62,7 +63,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Helpers
                        : Math.Abs(currCell.station - prevStationIntercept) > 0.001;
           if (gap)
           {
-            profile.cells.Add(new VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling.ProfileCell()
+            profile.cells.Add(new ProfileCell()
             {
               station = prevStationIntercept,
               firstPassHeight = float.NaN,
@@ -98,7 +99,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Helpers
           bool noPassCountValue = currCell.topLayerPassCount == NO_PASSCOUNT;
           //bool noPassCountTargetValue = currCell.topLayerPassCountTargetRange.Min == NO_PASSCOUNT || currCell.topLayerPassCountTargetRange.Max == NO_PASSCOUNT;
 
-          profile.cells.Add(new VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling.ProfileCell()
+          profile.cells.Add(new ProfileCell()
           {
             station = currCell.station,
 
@@ -144,8 +145,8 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Helpers
         //Add a last point at the intercept length of the last cell so profiles are drawn correctly
         if (prevCell != null)
         {
-          VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling.ProfileCell lastCell = profile.cells[profile.cells.Count - 1];
-          profile.cells.Add(new VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling.ProfileCell()
+          ProfileCell lastCell = profile.cells[profile.cells.Count - 1];
+          profile.cells.Add(new ProfileCell()
           {
             station = prevCell.station + prevCell.interceptLength,
             firstPassHeight = lastCell.firstPassHeight,
@@ -199,7 +200,7 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.Helpers
       return profile;
     }
 
-    public static void convertProfileEndPositions(Models.ProfileGridPoints gridPoints, Models.ProfileLLPoints lLPoints,
+    public static void convertProfileEndPositions(ProfileGridPoints gridPoints, ProfileLLPoints lLPoints,
                                                  out VLPDDecls.TWGS84Point startPt, out VLPDDecls.TWGS84Point endPt,
                                                  out bool positionsAreGrid)
     {

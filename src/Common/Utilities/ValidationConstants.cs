@@ -1,5 +1,4 @@
-﻿
-namespace VSS.Raptor.Service.Common.Utilities
+﻿namespace VSS.Productivity3D.Common.Utilities
 {
   /// <summary>
   /// Utility class that defines constants used by data validation.

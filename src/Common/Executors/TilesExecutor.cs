@@ -6,13 +6,13 @@ using System;
 using System.IO;
 using System.Net;
 using VLPDDecls;
-using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.Proxies;
-using VSS.Raptor.Service.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace Common.Executors
+namespace VSS.Productivity3D.Common.Executors
 {
   public class TilesExecutor : RequestExecutorContainer
   {

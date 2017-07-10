@@ -1,8 +1,7 @@
-﻿
-using System.Threading.Tasks;
-using VSS.Raptor.Service.Common.Models;
+﻿using System.Threading.Tasks;
+using VSS.Productivity3D.Common.Models;
 
-namespace WebApiModels.Interfaces
+namespace VSS.Productivity3D.Common.Interfaces
 {
     public interface ITileGenerator
     {

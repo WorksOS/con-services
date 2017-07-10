@@ -23,3 +23,4 @@ Scenario Outline: CoordinateSystemPost - Bad Request
 	| InvalidProjectId  | 400      | -2        |
 	| FileNameTooLong   | 400      | -2        |
 	#| EmptyFileContents | 400      | -4        |
+  | NullRequest       | 400      | -1        |

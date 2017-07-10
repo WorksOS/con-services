@@ -1,9 +1,8 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace VSS.Raptor.Service.Common.Models
+namespace VSS.Productivity3D.Common.Models
 {
-    public class ColorSettings
+  public class ColorSettings
     {
         public ColorValue elevationMinimum;
         public ColorValue elevationMaximum;
@@ -87,38 +86,38 @@ namespace VSS.Raptor.Service.Common.Models
             {
                 if (_default == null)
                 {
-                    _default = new ColorSettings()
+                    _default = new ColorSettings
                     {
-                        elevationMinimum = new ColorValue() { color = Colors.Navy, value = 0.0 },
-                        elevationMaximum = new ColorValue() { color = Colors.Red, value = 2000.0 },
+                        elevationMinimum = new ColorValue { color = Colors.Navy, value = 0.0 },
+                        elevationMaximum = new ColorValue { color = Colors.Red, value = 2000.0 },
                         elevationAboveColor = Colors.Purple,
                         elevationBelowColor = Colors.Fuchsia,
                         setToDataExtents = false,
-                        cmvMinimum = new ColorValue() { color = Colors.Blue, value = 0.0 },
-                        cmvTarget = new ColorValue() { color = Colors.Lime, value = 40.0 },
-                        cmvMaximum = new ColorValue() { color = Colors.Red, value = 80.0 },
-                        cmvPercentMinimum = new ColorValue() { color = Colors.Red, value = 0.0 },
-                        cmvPercentTarget = new ColorValue() { color = Colors.Lime, value = 85.0 },
-                        cmvPercentMaximum = new ColorValue() { color = Colors.Blue, value = 130.0 },
-                        passCountDetailColors = new List<ColorValue>()
-                {
-                  new ColorValue() { color = 0x333300, value = 9 },
-                  new ColorValue() { color = 0x663300, value = 8 },
-                  new ColorValue() { color = 0x660099, value = 7 },
-                  new ColorValue() { color = 0xFF00FF, value = 6 },
-                  new ColorValue() { color = 0xCCFF00, value = 5 },
-                  new ColorValue() { color = 0x0099FF, value = 4 },
-                  new ColorValue() { color = 0x00FFFF, value = 3 },
-                  new ColorValue() { color = 0xFFFF00, value = 2 },
-                  new ColorValue() { color = 0xFFCC33, value = 1 }
+                        cmvMinimum = new ColorValue { color = Colors.Blue, value = 0.0 },
+                        cmvTarget = new ColorValue { color = Colors.Lime, value = 40.0 },
+                        cmvMaximum = new ColorValue { color = Colors.Red, value = 80.0 },
+                        cmvPercentMinimum = new ColorValue { color = Colors.Red, value = 0.0 },
+                        cmvPercentTarget = new ColorValue { color = Colors.Lime, value = 85.0 },
+                        cmvPercentMaximum = new ColorValue { color = Colors.Blue, value = 130.0 },
+                        passCountDetailColors = new List<ColorValue>
+                        {
+                  new ColorValue { color = 0x333300, value = 9 },
+                  new ColorValue { color = 0x663300, value = 8 },
+                  new ColorValue { color = 0x660099, value = 7 },
+                  new ColorValue { color = 0xFF00FF, value = 6 },
+                  new ColorValue { color = 0xCCFF00, value = 5 },
+                  new ColorValue { color = 0x0099FF, value = 4 },
+                  new ColorValue { color = 0x00FFFF, value = 3 },
+                  new ColorValue { color = 0xFFFF00, value = 2 },
+                  new ColorValue { color = 0xFFCC33, value = 1 }
                 },
-                        passCountMinimum = new ColorValue() { color = Colors.Blue, value = 1 },
-                        passCountTarget = new ColorValue() { color = Colors.Lime, value = 6.0 },
-                        passCountMaximum = new ColorValue() { color = Colors.Red, value = 1000000 },
+                        passCountMinimum = new ColorValue { color = Colors.Blue, value = 1 },
+                        passCountTarget = new ColorValue { color = Colors.Lime, value = 6.0 },
+                        passCountMaximum = new ColorValue { color = Colors.Red, value = 1000000 },
                         cutGradeTolerance = 0.05,
                         fillGradeTolerance = 0.05,
-                        cutFillColors = new List<ColorValue>()
-                {
+                        cutFillColors = new List<ColorValue>
+                        {
                   // match the color patterns that SiteVision Office uses
                   new ColorValue { color = Colors.Maroon, value = 0.05*4 },
                   new ColorValue { color = Colors.Red, value = 0.05*2 },
@@ -151,12 +150,12 @@ namespace VSS.Raptor.Service.Common.Models
                         temperatureTargetColor = Colors.Lime,
                         temperatureMaximumColor = Colors.Red,
                         // MDP US15167
-                        mdpMinimum = new ColorValue() { color = Colors.Blue, value = 0.0 },
-                        mdpTarget = new ColorValue() { color = Colors.Lime, value = 40.0 },
-                        mdpMaximum = new ColorValue() { color = Colors.Red, value = 80.0 },
-                        mdpPercentMinimum = new ColorValue() { color = Colors.Red, value = 0.0 },
-                        mdpPercentTarget = new ColorValue() { color = Colors.Lime, value = 85.0 },
-                        mdpPercentMaximum = new ColorValue() { color = Colors.Blue, value = 130.0 },
+                        mdpMinimum = new ColorValue { color = Colors.Blue, value = 0.0 },
+                        mdpTarget = new ColorValue { color = Colors.Lime, value = 40.0 },
+                        mdpMaximum = new ColorValue { color = Colors.Red, value = 80.0 },
+                        mdpPercentMinimum = new ColorValue { color = Colors.Red, value = 0.0 },
+                        mdpPercentTarget = new ColorValue { color = Colors.Lime, value = 85.0 },
+                        mdpPercentMaximum = new ColorValue { color = Colors.Blue, value = 130.0 },
                         mdpSummaryCompleteLayerColor = Colors.Lime,
                         mdpSummaryWorkInProgressLayerColor = Colors.Yellow,
                         mdpSummaryUndercompactedLayerColor = Colors.Blue,
@@ -164,20 +163,20 @@ namespace VSS.Raptor.Service.Common.Models
                         mdpSummaryTooThickLayerColor = Colors.Purple,
                         mdpSummaryApprovedLayerColor = Colors.White,
 
-                        machineSpeedColors = new List<ColorValue>()
+                        machineSpeedColors = new List<ColorValue>
                         {
-                          new ColorValue() { color = 0xCCFF00, value = 2000 },
-                          new ColorValue() { color = 0x0099FF, value = 1500 },
-                          new ColorValue() { color = 0x00FFFF, value = 1000 },
-                          new ColorValue() { color = 0xFFFF00, value = 500 },
-                          new ColorValue() { color = 0xFFCC33, value = 0 }
+                          new ColorValue { color = 0xCCFF00, value = 2000 },
+                          new ColorValue { color = 0x0099FF, value = 1500 },
+                          new ColorValue { color = 0x00FFFF, value = 1000 },
+                          new ColorValue { color = 0xFFFF00, value = 500 },
+                          new ColorValue { color = 0xFFCC33, value = 0 }
                         },
 
                         machineSpeedMinimumColor = Colors.Aqua,
                         machineSpeedTargetColor  = Colors.Lime,
                         machineSpeedMaximumColor = Colors.Purple,
 
-                        colorSettingsFlags = new ColorSettingsFlags()
+                        colorSettingsFlags = new ColorSettingsFlags
                         {
                             ccvSummaryWorkInProgressLayerVisible = true,
                             ccvSummaryTooThickLayerVisible = true,

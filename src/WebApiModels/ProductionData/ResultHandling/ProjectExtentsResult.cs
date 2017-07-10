@@ -1,7 +1,7 @@
-﻿using VSS.Raptor.Service.Common.Contracts;
-using VSS.Raptor.Service.Common.Models;
+﻿using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Models;
 
-namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
 {
   /// <summary>
   /// ProjectExtentsResult
@@ -37,24 +37,9 @@ namespace VSS.Raptor.Service.WebApiModels.ProductionData.ResultHandling
       /// <summary>
       /// Create example instance of ProjectExtentsResult to display in Help documentation.
       /// </summary>
-      public static ProjectExtentsResult HelpSample
+      public static ProjectExtentsResult HelpSample => new ProjectExtentsResult
       {
-        get
-        {
-          return new ProjectExtentsResult()
-          {
-            ProjectExtents = BoundingBox3DGrid.HelpSample
-          };
-        }
-      }
-
-
-
-
-
-
-
-
-
+        ProjectExtents = BoundingBox3DGrid.HelpSample
+      };
   }
 }
