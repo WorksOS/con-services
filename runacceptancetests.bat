@@ -5,7 +5,7 @@ for /f %%i in ('docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddr
 PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP %ipaddress%
 
 IF /I "%ERRORLEVEL%" NEQ "0" (
-	ping 127.0.0.1
+	ping 0.0.0.0 -n 10
 	for /f %%i in ('docker inspect --format "{{ .NetworkSettings.Networks.nat.IPAddress }}" %content%') do set ipaddress=%%i
 	PowerShell.exe -ExecutionPolicy Bypass -Command .\waitForContainer.ps1 -IP %ipaddress%
 	)
