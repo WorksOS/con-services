@@ -6,7 +6,7 @@ namespace MasterDataModels.ResultHandling
   /// Coordinate system settings result object.
   /// </summary>
   ///    
-  public class CoordinateSystemSettingsResult : ContractExecutionResult, IData
+  public class CoordinateSystemSettingsResult : BaseDataResult, IData
   {
     /// <summary>
     /// The coordinate system file name.

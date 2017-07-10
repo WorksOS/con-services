@@ -6,24 +6,8 @@ namespace MasterDataModels.ResultHandling
   /// <summary>
   /// List of file descriptors
   /// </summary>
-  public class FileDataResult
+  public class FileDataResult : BaseDataResult
   {
-    /// <summary>
-    ///   Defines machine-readable code.
-    /// </summary>
-    /// <value>
-    ///   Result code.
-    /// </value>
-    public int Code { get; protected set; }
-
-    /// <summary>
-    ///   Defines user-friendly message.
-    /// </summary>
-    /// <value>
-    ///   The message string.
-    /// </value>
-    public string Message { get; protected set; }
-
     /// <summary>
     /// Gets or sets the file descriptors.
     /// </summary>

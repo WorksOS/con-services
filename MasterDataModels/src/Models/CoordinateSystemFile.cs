@@ -1,12 +1,26 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace MasterDataModels.Models
 {
   /// <summary>
   /// Coordinate system(CS) definition file content and filename to be validated, then sent to Raptor.
   /// </summary>
-  public class CoordinateSystemFile : ProjectID
-  {
+  public class CoordinateSystemFile
+  { 
+    /// <summary>
+    /// The project to process the CS definition file into.
+    /// </summary>
+    /// 
+    [JsonProperty(PropertyName = "projectId", Required = Required.Default)]
+    public long? projectId { get; private set; }
+
+    /// <summary>
+    /// A project unique identifier.
+    /// </summary>
+    [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
+    public Guid? projectUid { get; private set; }
+
     /// <summary>
     /// The content of the CS definition file as an array of bytes.
     /// </summary>
@@ -42,13 +56,5 @@ namespace MasterDataModels.Models
       return tempCS;
     }
 
-    /// <summary>
-    /// Validation method.
-    /// </summary>
-    public new void Validate()
-    {
-      // Validation rules might be placed in here...
-      // throw new NotImplementedException();
-    }
   }
 }

@@ -3,24 +3,8 @@ using MasterDataModels.Models;
 
 namespace MasterDataModels.ResultHandling
 {
-  public class ProjectDataResult
-  {
-    /// <summary>
-    ///   Defines machine-readable code.
-    /// </summary>
-    /// <value>
-    ///   Result code.
-    /// </value>
-    public int Code { get; protected set; }
-
-    /// <summary>
-    ///   Defines user-friendly message.
-    /// </summary>
-    /// <value>
-    ///   The message string.
-    /// </value>
-    public string Message { get; protected set; }
-
+  public class ProjectDataResult : BaseDataResult
+  {  
     /// <summary>
     /// Gets or sets the project descriptors.
     /// </summary>
