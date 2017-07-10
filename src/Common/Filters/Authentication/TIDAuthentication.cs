@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           // User must have authentication for this customer
           try
           {
-            CustomerDataResult customerResult =
+            var customerResult =
               await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
             if (customerResult.status != 200 || customerResult.customer == null ||
                 customerResult.customer.Count < 1 ||

@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.WebApi
           Description = "API for 3D compaction and volume data",
           TermsOfService = "None"
         });
-        string path = isDevEnv ? "bin/Debug/net462/" : string.Empty;
+        string path = isDevEnv ? "bin/Debug/net47/" : string.Empty;
         options.IncludeXmlComments(path + "VSS.Productivity3D.WebApi.xml");
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
