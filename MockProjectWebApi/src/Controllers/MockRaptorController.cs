@@ -76,13 +76,13 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     [Route("api/v2/notification/addfile")]
     [HttpGet]
-    public ContractExecutionResult DummyAddFileGet(
+    public BaseDataResult DummyAddFileGet(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long importedFileId)
     {
-      var res = new ContractExecutionResult();
+      var res = new BaseDataResult();
       var message = $"DummyAddFileGet: res {res}. projectUid {projectUid} fileUid {fileUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}";
       Console.WriteLine(message);
       return res;
@@ -93,13 +93,13 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     [Route("api/v2/notification/deletefile")]
     [HttpGet]
-    public ContractExecutionResult DummyDeleteFileGet(
+    public BaseDataResult DummyDeleteFileGet(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long importedFileId)
     {
-      var res = new ContractExecutionResult();
+      var res = new BaseDataResult();
       var message = $"DummyDeleteFileGet: res {res}. projectUid {projectUid} fileUid {fileUid} fileDescriptor {fileDescriptor} importedFileId {importedFileId}";
       Console.WriteLine(message);
       return res;
@@ -110,11 +110,11 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     [Route("api/v2/notification/updatefiles")]
     [HttpGet]
-    public ContractExecutionResult DummyUpdateFilesGet(
+    public BaseDataResult DummyUpdateFilesGet(
       [FromQuery] Guid projectUid,
       [FromQuery] Guid[] fileUids)
     {
-      var res = new ContractExecutionResult();
+      var res = new BaseDataResult();
       var message = $"DummyUpdateFilesGet: res {res}. projectUid {projectUid} fileUids {fileUids}";
       Console.WriteLine(message);
       return res;
