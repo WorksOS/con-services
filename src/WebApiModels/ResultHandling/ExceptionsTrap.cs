@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Net;
 using System.Security.Authentication;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.WebApiModels.Models;
 
 namespace VSS.Productivity3D.WebApiModels.ResultHandling
@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.WebApiModels.ResultHandling
       {
         await _next.Invoke(context);
       }
-      catch (AuthenticationException ex)
+      catch (AuthenticationException)
       {
         context.Response.StatusCode = 401;
       }
@@ -35,8 +35,8 @@ namespace VSS.Productivity3D.WebApiModels.ResultHandling
       {
         log.LogWarning($"Service exception: {ex.GetContent}");
         context.Response.StatusCode = (ex.Response.StatusCode == HttpStatusCode.BadRequest)
-          ? (int) HttpStatusCode.OK
-          : (int) ex.Response.StatusCode;
+          ? (int)HttpStatusCode.OK
+          : (int)ex.Response.StatusCode;
         await context.Response.WriteAsync(ex.GetContent);
       }
       catch (Exception ex)

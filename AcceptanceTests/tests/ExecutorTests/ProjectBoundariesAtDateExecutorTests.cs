@@ -1,9 +1,9 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApiModels.Enums;
-using WebApiModels.Models;
-using WebApiModels.Executors;
-using WebApiModels.ResultHandling;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using VSS.Productivity3D.WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.Executors;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests

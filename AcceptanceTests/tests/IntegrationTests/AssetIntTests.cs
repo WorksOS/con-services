@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using TestUtility;
-using WebApiModels.Models;
-using WebApiModels.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace IntegrationTests

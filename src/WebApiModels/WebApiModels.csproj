@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MasterDataRepos.netcore" Version="*" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.78" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="1.1.3" />
   </ItemGroup>
 
