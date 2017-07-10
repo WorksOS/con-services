@@ -9,6 +9,7 @@
     <TargetFrameworks>netstandard1.6;net46;net462</TargetFrameworks>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.1</NetStandardImplicitPackageVersion>
+    <RootNamespace>VSS.Productivity3D.TCCFileAccess</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

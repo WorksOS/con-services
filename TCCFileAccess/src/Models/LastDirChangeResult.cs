@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace TCCFileAccess.Models
+namespace VSS.Productivity3D.TCCFileAccess.Models
 {
   public class LastDirChangeResult : ApiResult
   {

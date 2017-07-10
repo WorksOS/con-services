@@ -10,10 +10,10 @@ using MasterDataProxies;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using TCCFileAccess.Models;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.TCCFileAccess.Models;
 
-namespace TCCFileAccess
+namespace VSS.Productivity3D.TCCFileAccess
 {
 
   /// <summary>

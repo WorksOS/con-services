@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TCCFileAccess.Models
+namespace VSS.Productivity3D.TCCFileAccess.Models
 {
   //Note: This does NOT derive from ApiResult
   public class GetFileJobResultResult
