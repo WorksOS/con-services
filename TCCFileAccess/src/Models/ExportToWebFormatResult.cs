@@ -1,6 +1,6 @@
 ﻿
 
-namespace TCCFileAccess.Models
+namespace VSS.Productivity3D.TCCFileAccess.Models
 {
   public class ExportToWebFormatResult : ApiResult
   {

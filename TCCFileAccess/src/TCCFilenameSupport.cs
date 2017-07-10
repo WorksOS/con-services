@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text.RegularExpressions;
-using MasterDataProxies.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace TCCFileAccess
+namespace VSS.Productivity3D.TCCFileAccess
 {
 
   public class TCCFile

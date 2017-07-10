@@ -1,6 +1,6 @@
-﻿using MasterDataProxies.Models;
+﻿using VSS.Productivity3D.MasterDataProxies.Models;
 
-namespace MasterDataProxies.ResultHandling
+namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
 {
   /// <summary>
   /// Coordinate system settings result object.

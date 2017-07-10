@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using TCCFileAccess.Models;
+using VSS.Productivity3D.TCCFileAccess.Models;
 
-namespace TCCFileAccess
+namespace VSS.Productivity3D.TCCFileAccess
 {
     public interface IFileRepository
     {

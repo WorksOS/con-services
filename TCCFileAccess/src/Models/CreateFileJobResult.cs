@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TCCFileAccess.Models
+﻿namespace VSS.Productivity3D.TCCFileAccess.Models
 {
   public class CreateFileJobResult : ApiResult
   {

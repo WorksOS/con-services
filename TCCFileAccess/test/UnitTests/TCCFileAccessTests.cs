@@ -9,8 +9,8 @@ using log4netExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TCCFileAccess;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.TCCFileAccess;
 
 namespace UnitTests
 {

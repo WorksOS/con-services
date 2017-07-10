@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 
-namespace MasterDataProxies
+namespace VSS.Productivity3D.MasterDataProxies
 {
   public static class RequestUtils
   {

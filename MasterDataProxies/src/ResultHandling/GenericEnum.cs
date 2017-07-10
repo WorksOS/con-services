@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace MasterDataProxies.ResultHandling
+namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
 {
   public abstract class GenericEnum<T, U> where T : GenericEnum<T, U>, new()
   {

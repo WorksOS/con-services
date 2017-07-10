@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Repositories.DBModels;
-using Repositories.ExtendedModels;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.Repo;
+using VSS.Productivity3D.Repo.DBModels;
+using VSS.Productivity3D.Repo.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

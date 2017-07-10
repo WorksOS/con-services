@@ -1,24 +1,25 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using KafkaConsumer;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using Microsoft.Extensions.Logging;
-using log4netExtensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using VSS.GenericConfiguration;
+using System.Threading;
+using System.Threading.Tasks;
+using KafkaConsumer;
 using KafkaConsumer.Interfaces;
 using KafkaConsumer.Kafka;
+using log4netExtensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Repositories;
+using VSS.GenericConfiguration;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+
 #if NET_4_7
 using Topshelf;
 #endif
 
-namespace MasterDataConsumer
+namespace VSS.Productivity3D.MasterDataConsumer
 {
   public class Program
   {
@@ -95,7 +96,7 @@ namespace MasterDataConsumer
       var serviceCollection = new ServiceCollection()
         .AddTransient<IKafka, RdKafkaDriver>()
         .AddTransient<IMessageTypeResolver, MessageResolver>()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>()
         .AddLogging()
         .AddTransient<IRepositoryFactory, RepositoryFactory>()
 

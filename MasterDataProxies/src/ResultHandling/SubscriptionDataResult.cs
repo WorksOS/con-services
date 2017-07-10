@@ -1,4 +1,4 @@
-﻿namespace MasterDataProxies.ResultHandling
+﻿namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
 {
     class SubscriptionDataResult
     {

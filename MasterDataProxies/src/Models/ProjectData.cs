@@ -1,6 +1,6 @@
 ﻿using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace MasterDataProxies.Models
+namespace VSS.Productivity3D.MasterDataProxies.Models
 {
   /// <summary>
   ///   Describes VL project
