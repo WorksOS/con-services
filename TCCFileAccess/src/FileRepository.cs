@@ -1,4 +1,8 @@
-﻿using System;
+﻿using MasterDataProxies;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,16 +10,11 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using MasterDataProxies;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.TCCFileAccess.Models;
 
 namespace VSS.Productivity3D.TCCFileAccess
 {
-
   /// <summary>
   /// File access class to talk to TCC. This class is thread safe 
   /// </summary>
@@ -35,7 +34,6 @@ namespace VSS.Productivity3D.TCCFileAccess
     private readonly ILoggerFactory logFactory;
 
     private string ticket = String.Empty;
-
 
     /// <summary>
     /// The file cache - contains byte array for PNGs as a value and a full filename (path to the PNG) as a key. 
@@ -175,7 +173,8 @@ namespace VSS.Productivity3D.TCCFileAccess
       PutFileResponse result = default(PutFileResponse);
       try
       {
-        result = await gracefulClient.ExecuteRequest<PutFileResponse>(requestString, contents, headers);
+        var reader = new StreamReader(contents);
+        result = await gracefulClient.ExecuteRequest<PutFileResponse>(requestString, "PUT", headers, reader.ReadToEnd());
       }
       catch (WebException webException)
       {
@@ -237,8 +236,10 @@ namespace VSS.Productivity3D.TCCFileAccess
         path = WebUtility.UrlEncode(fullName)
       };
 
-      if (String.IsNullOrEmpty(tccBaseUrl))
+      if (string.IsNullOrEmpty(tccBaseUrl))
+      {
         throw new Exception("Configuration Error - no TCC url specified");
+      }
 
       var gracefulClient = new GracefulWebRequest(logFactory);
       var (requestString, headers) = FormRequest(getFileParams, "GetFile");
@@ -246,7 +247,15 @@ namespace VSS.Productivity3D.TCCFileAccess
       try
       {
         if (!cacheable)
-          return await gracefulClient.ExecuteRequest(requestString, "GET", headers);
+        {
+          using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers))
+          {
+            responseStream.Position = 0;
+            file = new byte[responseStream.Length];
+            responseStream.Read(file, 0, file.Length);
+            return new MemoryStream(file);
+          }
+        }
 
         using (var responseStream = await gracefulClient.ExecuteRequest(requestString, "GET", headers))
         {
@@ -276,7 +285,6 @@ namespace VSS.Productivity3D.TCCFileAccess
       }
       return null;
     }
-
 
     public async Task<bool> MoveFile(Organization org, string srcFullName, string dstFullName)
     {
@@ -561,8 +569,8 @@ namespace VSS.Productivity3D.TCCFileAccess
       var requestString = $"{tccBaseUrl}/tcc/{endpoint}?ticket={token ?? Ticket}";
       var headers = new Dictionary<string, string>();
       var properties = from p in request.GetType().GetRuntimeFields()
-        where p.GetValue(request) != null
-        select new {p.Name, Value = p.GetValue(request)};
+                       where p.GetValue(request) != null
+                       select new { p.Name, Value = p.GetValue(request) };
       foreach (var p in properties)
       {
         requestString += $"&{p.Name}={p.Value.ToString()}";
@@ -691,7 +699,7 @@ namespace VSS.Productivity3D.TCCFileAccess
               filenames.Clear();
               cacheLookup.DropCacheKeys(path);
             }
-            
+
             return jobResult.jobId;
           }
           CheckForInvalidTicket(jobResult, "CreateFileJob");
