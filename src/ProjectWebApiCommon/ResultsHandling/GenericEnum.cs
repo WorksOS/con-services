@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace ProjectWebApiCommon.ResultsHandling
+namespace VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling
 {
 
   public abstract class GenericEnum<T, U> where T : GenericEnum<T, U>, new()
@@ -160,8 +160,7 @@ namespace ProjectWebApiCommon.ResultsHandling
                   typeof(T).Name));
         return null;
       }
-      T t = new T();
-      t._index = names.IndexOf(name);
+      T t = new T {_index = names.IndexOf(name)};
       return t;
     }
 
@@ -174,8 +173,7 @@ namespace ProjectWebApiCommon.ResultsHandling
                   typeof(T).Name));
         return null;
       }
-      T t = new T();
-      t._index = values.IndexOf(value);
+      T t = new T {_index = values.IndexOf(value)};
       return t;
     }
 
@@ -187,8 +185,7 @@ namespace ProjectWebApiCommon.ResultsHandling
           throw new ArgumentException(String.Format("Index must be between 0 and {0}", Count - 1));
         return null;
       }
-      T t = new T();
-      t._index = index;
+      T t = new T {_index = index};
       return t;
     }
 

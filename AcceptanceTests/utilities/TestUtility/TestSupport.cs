@@ -1,7 +1,6 @@
 ﻿using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using ProjectWebApiCommon.Models;
 using Repositories.DBModels;
 using System;
 using System.Collections.Generic;
@@ -15,6 +14,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

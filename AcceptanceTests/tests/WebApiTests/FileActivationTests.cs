@@ -1,10 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using ProjectWebApiCommon.Models;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using TestUtility;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
 
 namespace WebApiTests
 {

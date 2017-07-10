@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using ProjectWebApiCommon.Models;
+using System;
 using TestUtility;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
 
 namespace WebApiTests
 {

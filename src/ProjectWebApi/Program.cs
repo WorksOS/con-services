@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
+
 #if NET_4_7
 using Microsoft.AspNetCore.Hosting.WindowsServices;
 #endif
 
-namespace ProjectWebApi
+namespace VSS.Productivity3D.ProjectWebApi
 {
   /// <summary>
   /// 

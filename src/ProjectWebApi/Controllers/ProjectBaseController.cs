@@ -1,48 +1,84 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using KafkaConsumer.Kafka;
-using MasterDataProxies;
 using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using ProjectWebApi.Filters;
-using ProjectWebApi.Internal;
-using ProjectWebApiCommon.Models;
+using Microsoft.Extensions.Logging;
 using Repositories;
-using Repositories.DBModels;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Filters;
+using VSS.Productivity3D.ProjectWebApi.Internal;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApiCommon.ResultsHandling;
 
-namespace Controllers
+namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {
   /// <summary>
   /// Project Base for all Project controllers
   /// </summary>
   public class ProjectBaseController : Controller
   {
+    /// <summary>
+    /// Gets or sets the Kafak consumer.
+    /// </summary>
     protected readonly IKafka producer;
+
+    /// <summary>
+    /// Gets or sets the local log provider.
+    /// </summary>
     protected readonly ILogger log;
+
+    /// <summary>
+    /// Gets or sets the subscription proxy.
+    /// </summary>
     protected readonly ISubscriptionProxy subsProxy;
+
+    /// <summary>
+    /// Gets or sets the Geofence proxy. 
+    /// </summary>
     protected readonly IGeofenceProxy geofenceProxy;
+
+    /// <summary>
+    /// Gets or sets the Raptor proxy.
+    /// </summary>
     protected readonly IRaptorProxy raptorProxy;
 
+    /// <summary>
+    /// Gets or sets the Project Repository. 
+    /// </summary>
     protected readonly ProjectRepository projectService;
+
+    /// <summary>
+    /// Gets or sets the Configuration Store. 
+    /// </summary>
     protected readonly IConfigurationStore store;
+
+    /// <summary>
+    /// Gets or sets the Kafka topic.
+    /// </summary>
     protected readonly string kafkaTopicName;
+
+    /// <summary>
+    /// Gets or sets the Subscription Repository.
+    /// </summary>
     protected readonly SubscriptionRepository subsService;
+
+    /// <summary>
+    /// Gets or sets the Service exception handler.
+    /// </summary>
     protected IServiceExceptionHandler ServiceExceptionHandler;
 
-    // save for potential rollback
+    /// <summary>
+    /// Save for potential rollback
+    /// </summary>
     protected Guid subscriptionUidAssigned = Guid.Empty;
 
+    /// <summary>
+    ///
+    /// </summary>
     protected Guid geofenceUidCreated = Guid.Empty;
 
     /// <summary>
@@ -81,7 +117,6 @@ namespace Controllers
     }
 
     /// <summary>
-
     /// Gets the project list for a customer
     /// </summary>
     /// <returns></returns>

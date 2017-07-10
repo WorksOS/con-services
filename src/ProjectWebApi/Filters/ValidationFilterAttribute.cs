@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Newtonsoft.Json;
-using ProjectWebApiCommon.ResultsHandling;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 
-
-namespace ProjectWebApi.Filters
+namespace VSS.Productivity3D.ProjectWebApi.Filters
 {
   /// <summary>
   /// Attribute enabling obligatory validation of domain objects upon reception.

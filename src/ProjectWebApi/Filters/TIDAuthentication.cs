@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Security.Principal;
+using System.Threading.Tasks;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
+using MasterDataProxies.ResultHandling;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using MasterDataProxies.ResultHandling;
-using ProjectWebApi.Internal;
 using VSS.Authentication.JWT;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Internal;
 
-namespace ProjectWebApi.Filters
+namespace VSS.Productivity3D.ProjectWebApi.Filters
 {
   /// <summary>
   /// authentication
@@ -21,9 +21,13 @@ namespace ProjectWebApi.Filters
   public class TIDAuthentication
   {
     private readonly RequestDelegate _next;
-    private ILogger<TIDAuthentication> log;
+    private readonly ILogger<TIDAuthentication> log;
     private readonly ICustomerProxy customerProxy;
     private readonly IConfigurationStore store;
+
+    /// <summary>
+    /// Service exception handler.
+    /// </summary>
     protected IServiceExceptionHandler ServiceExceptionHandler;
 
     /// <summary>
@@ -33,6 +37,7 @@ namespace ProjectWebApi.Filters
     /// <param name="customerProxy">The customer proxy.</param>
     /// <param name="store">The store.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="serviceExceptionHandler"></param>
     public TIDAuthentication(RequestDelegate next,
       ICustomerProxy customerProxy,
       IConfigurationStore store,
@@ -59,12 +64,18 @@ namespace ProjectWebApi.Filters
         string applicationName = "";
         string userUid = "";
         string userEmail = "";
+        bool requireCustomerUid = true;
+        string customerUid = "";
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
-        string customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
+
+        if (context.Request.Path.Value.Contains("api/v3/project")&&context.Request.Method!="GET")
+          requireCustomerUid = false;
+        else
+          customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
 
         // If no authorization header found, nothing to process further
-        if (string.IsNullOrEmpty(authorization) || string.IsNullOrEmpty(customerUid))
+        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid)&&requireCustomerUid))
         {
           log.LogWarning("No account selected for the request");
           await SetResult("No account selected", context);
@@ -106,26 +117,29 @@ namespace ProjectWebApi.Filters
         }
 
         // User must have be authenticated against this customer
-        try
+        if (requireCustomerUid)
         {
-          CustomerDataResult customerResult =
-            await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
-          if (customerResult.status != 200 || customerResult.customer == null ||
-              customerResult.customer.Count < 1 ||
-              !customerResult.customer.Exists(x => x.uid == customerUid))
+          try
           {
-            var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
-            log.LogWarning(error);
-            await SetResult(error, context);
+            CustomerDataResult customerResult =
+              await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+            if (customerResult.status != 200 || customerResult.customer == null ||
+                customerResult.customer.Count < 1 ||
+                !customerResult.customer.Exists(x => x.uid == customerUid))
+            {
+              var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
+              log.LogWarning(error);
+              await SetResult(error, context);
+              return;
+            }
+          }
+          catch (Exception e)
+          {
+            log.LogWarning(
+              $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
+            await SetResult("Failed authentication", context);
             return;
           }
-        }
-        catch (Exception e)
-        {
-          log.LogWarning(
-            $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
-          await SetResult("Failed authentication", context);
-          return;
         }
 
         log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,

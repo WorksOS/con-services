@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Net;
-using ProjectWebApiCommon.ResultsHandling;
 using System.IO;
+using System.Net;
 using FlowUploadFilter;
-using Repositories.DBModels;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ProjectWebApiCommon.Models
+namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
 {
   /// <summary>
   /// Validates all file import data
