@@ -13,7 +13,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <Version>1.2.2</Version>
-    <RootNamespace>MasterDataProxies</RootNamespace>
+    <RootNamespace>VSS.Productivity3D.MasterDataProxies</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

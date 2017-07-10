@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace MasterDataProxies.Models
+namespace VSS.Productivity3D.MasterDataProxies.Models
 {
     /// <summary>
     /// Describes geofence data returned by the geofence master data service.

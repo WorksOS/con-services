@@ -1,6 +1,6 @@
 ﻿
 
-namespace MasterDataProxies.Models
+namespace VSS.Productivity3D.MasterDataProxies.Models
 {
   /// <summary>
   /// Used by master data caching.

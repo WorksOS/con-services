@@ -3,18 +3,13 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using log4net;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 
-namespace MasterDataProxies
+namespace VSS.Productivity3D.MasterDataProxies
 {
 
   public class GracefulWebRequest

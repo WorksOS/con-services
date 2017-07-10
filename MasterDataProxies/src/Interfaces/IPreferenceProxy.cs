@@ -1,9 +1,8 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MasterDataProxies.Models;
+using VSS.Productivity3D.MasterDataProxies.Models;
 
-namespace MasterDataProxies.Interfaces
+namespace VSS.Productivity3D.MasterDataProxies.Interfaces
 {
   public interface IPreferenceProxy
   {
