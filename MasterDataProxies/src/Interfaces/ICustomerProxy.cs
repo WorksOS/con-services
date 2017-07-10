@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MasterDataProxies.ResultHandling;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
-namespace MasterDataProxies.Interfaces
+namespace VSS.Productivity3D.MasterDataProxies.Interfaces
 {
   public interface ICustomerProxy
   {

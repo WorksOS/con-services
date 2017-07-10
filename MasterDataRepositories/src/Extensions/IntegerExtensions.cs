@@ -1,4 +1,4 @@
-﻿namespace Repo.Extensions
+﻿namespace VSS.Productivity3D.Repo.Extensions
 {
     public static class IntegerExtensions
     {

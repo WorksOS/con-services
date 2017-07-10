@@ -8,7 +8,7 @@ using MySql.Data.MySqlClient;
 using Polly;
 using VSS.GenericConfiguration;
 
-namespace Repositories
+namespace VSS.Productivity3D.Repo
 {
   public abstract class RepositoryBase
   {

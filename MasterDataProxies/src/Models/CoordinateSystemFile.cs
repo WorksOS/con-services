@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MasterDataProxies.Models
+namespace VSS.Productivity3D.MasterDataProxies.Models
 {
   /// <summary>
   /// Coordinate system(CS) definition file content and filename to be validated, then sent to Raptor.

@@ -1,15 +1,15 @@
-﻿using MasterDataProxies.Interfaces;
-using MasterDataProxies.Models;
-using MasterDataProxies.ResultHandling;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
+using VSS.Productivity3D.MasterDataProxies.Models;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
-namespace MasterDataProxies
+namespace VSS.Productivity3D.MasterDataProxies
 {
   /// <summary>
   /// Proxy for Raptor services.

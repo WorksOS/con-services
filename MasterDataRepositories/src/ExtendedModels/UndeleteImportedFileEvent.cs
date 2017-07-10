@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace Repositories.ExtendedModels
+namespace VSS.Productivity3D.Repo.ExtendedModels
 {
   public class UndeleteImportedFileEvent : IProjectEvent
   {

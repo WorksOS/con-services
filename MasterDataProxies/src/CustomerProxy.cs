@@ -5,10 +5,10 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using MasterDataProxies.Interfaces;
-using MasterDataProxies.ResultHandling;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
-namespace MasterDataProxies
+namespace VSS.Productivity3D.MasterDataProxies
 {
   /// <summary>
   /// Proxy to validate and post a CoordinateSystem with Raptor.

@@ -1,4 +1,4 @@
-﻿namespace Repositories.ExtendedModels
+﻿namespace VSS.Productivity3D.Repo.ExtendedModels
 {
     public class AssetDeviceIds
     {

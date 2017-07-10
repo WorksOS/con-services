@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MasterDataProxies.Models
+namespace VSS.Productivity3D.MasterDataProxies.Models
 {
   /// <summary>
   ///   Describes VL customer

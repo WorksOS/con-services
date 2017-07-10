@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using VSS.GenericConfiguration;
-using MasterDataProxies.Models;
 using Newtonsoft.Json;
+using VSS.GenericConfiguration;
+using VSS.Productivity3D.MasterDataProxies.Models;
 
-namespace MasterDataProxies
+namespace VSS.Productivity3D.MasterDataProxies
 {
     /// <summary>
     /// Base class for proxies getting master data from services.
