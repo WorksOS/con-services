@@ -51,15 +51,18 @@ namespace VSS.Productivity3D.Common.Proxies
           }
 
         }
+        
+        if (PDSAddress == null)
+        {
+          throw new ArgumentException("Invalid PDS TAG Processor IPAddress in configuration file");
+        }
 
         log.LogInformation("PDS Server address ok, creating TAG Processor Client with address {0}", PDSAddress);
         return new TAGProcessorClient(PDSAddress, (short)VLPDServiceLocations.__Global.VLPDSvcLocations().VLPDTAGProcServiceIPPort);
 
-        //return null;
       }
       catch (System.Exception ex)
       {
-        log.LogWarning("EXCEPTION {0}", ex.ToString());
         log.LogWarning("Exception creating PDS TAG processor client. {0}", ex.Message);
         return null;
       }
