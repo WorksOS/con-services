@@ -1,8 +1,20 @@
-Commands to run to start container on local machine
+To run acceptance tests on local machine.
 
-aws ecr get-login --region us-west-2  > temp.cmd
-call temp.cmd
-del temp.cmd
-
-docker-compose pull
-docker-compose up --build -d 2>&1 | grep -o \w*_webapi_\w* > container.txt
+ - run build.bat in repository root directory
+ - run AcceptanceTests\scripts\runLocal.ps1
+ 
+ 
+ ////////////////////////////// FOR RUNNING TESTS FROM VISUAL STUDIO //////////////////////
+ 
+ after runLocal has finished run docker inspect on the newly built *webapi* container to find the ipaddress it has, update AcceptanceTests\scripts\setEnvironmentVariables.ps1 to reflect this new ip address.
+ 
+ - run setEnvironmentVariables.ps1 (from an elevated prompt)
+ 
+ open visual studio project and run tests
+ 
+ 
+ ////////////////////////////// RUNNING ALL TESTS FROM BAT FILE //////////////////////
+ after runLocal has finished, update/create container.txt in root of project repository to contain the newly created container id.
+ 
+ - run runacceptancetests.bat
+ 
