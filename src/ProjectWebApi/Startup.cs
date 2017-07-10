@@ -15,7 +15,7 @@ using System.Reflection;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApi.Filters;
-using VSS.Productivity3D.ProjectWebApi.Internal;
+using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;

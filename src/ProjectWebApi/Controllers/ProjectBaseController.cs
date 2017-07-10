@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Repositories;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApi.Filters;
-using VSS.Productivity3D.ProjectWebApi.Internal;
+using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.ProjectWebApi.Controllers

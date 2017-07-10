@@ -2,7 +2,7 @@
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 
-namespace VSS.Productivity3D.ProjectWebApi.Internal
+namespace VSS.Productivity3D.ProjectWebApiCommon.Internal
 {
   /// <summary>
   /// Common controller ServiceException handler.

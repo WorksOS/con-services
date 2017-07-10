@@ -139,6 +139,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling
       DynamicAddwithOffset("Unable to associate project with geofence.", 65);
       DynamicAddwithOffset("Unable to delete project.", 66);
       DynamicAddwithOffset("FileImport AddFile in RaptorServices failed. Reason: {0} {1}.", 67);
+      DynamicAddwithOffset("ProjectSettings: Unable to get settings from repository. Reason: {0} {1}.", 68);
     }
 
     /// <summary>
@@ -151,11 +152,23 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling
     /// </summary>
     public static readonly int ExecutedSuccessfully = 200;
 
+
+    /// <summary>
+    ///   Supplied data didn't pass validation
+    /// </summary>
+    public static readonly int ValidationError = -1;
+    
     /// <summary>
     ///   Serializing request erors
     /// </summary>
     public static readonly int SerializationError = -2;
-    
+
+    /// <summary>
+    ///   Internal processing error
+    /// </summary>
+    public static readonly int InternalProcessingError = -3;
+
+
     /// <summary>
     /// Dynamically adds new error messages addwith offset.
     /// </summary>
