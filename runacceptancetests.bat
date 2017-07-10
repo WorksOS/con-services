@@ -14,7 +14,7 @@ set REPORT_SVC_BASE_URI=:80
 set TAG_SVC_BASE_URI=:80
 set COORD_SVC_BASE_URI=:80
 set PROD_SVC_BASE_URI=:80
-set COORD_SVC_BASE_URI=:80
+set FILE_ACCESS_SVC_BASE_URI=:80
 set RAPTOR_WEBSERVICES_HOST=%ipaddress%
 
 cd AcceptanceTests\tests\ProductionDataSvc.AcceptanceTests\bin\Debug

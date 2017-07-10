@@ -87,7 +87,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
     {
       get
       {
-        return ConstructUri(Environment.GetEnvironmentVariable("COORD_SVC_BASE_URI"));
+        return ConstructUri(Environment.GetEnvironmentVariable("FILE_ACCESS_SVC_BASE_URI"));
 
       }
     }

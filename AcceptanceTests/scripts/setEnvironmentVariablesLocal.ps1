@@ -9,8 +9,8 @@
 	TAG_SVC_BASE_URI -> Tag file service, usually a port or /TagProc
 	COORD_SVC_BASE_URI Coordinates service, usually a port or /TagProc
 	PROD_SVC_BASE_URI Prod service, usually a port or /TagProc
-	COORD_SVC_BASE_URI Coordinate service, usually a port or /TagProc
-	SERVER -> server used for base - this would typically be set by runAcceptanceTests, but can be manually configured if required
+	FILE_ACCESS_SVC_BASE_URI Coordinate service, usually a port or /FileAccess
+	RAPTOR_WEBSERVICES_HOST -> server used for base - this would typically be set by runAcceptanceTests, but can be manually configured if required
 
 	#>
 
@@ -25,5 +25,5 @@ param (
 [Environment]::SetEnvironmentVariable("TAG_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("COORD_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("PROD_SVC_BASE_URI", ":80", "Machine")
-[Environment]::SetEnvironmentVariable("COORD_SVC_BASE_URI", ":80", "Machine")
+[Environment]::SetEnvironmentVariable("FILE_ACCESS_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", $RAPTOR_WEBSERVICES_HOST, "Machine")
