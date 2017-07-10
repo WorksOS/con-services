@@ -1,4 +1,4 @@
-namespace Repositories
+namespace VSS.Productivity3D.Repo
 {
     public interface IRepositoryFactory
     {
