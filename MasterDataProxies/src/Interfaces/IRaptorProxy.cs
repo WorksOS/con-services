@@ -1,5 +1,5 @@
 ﻿using System;
-using MasterDataProxies.ResultHandling;
+using MasterDataModels.ResultHandling;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

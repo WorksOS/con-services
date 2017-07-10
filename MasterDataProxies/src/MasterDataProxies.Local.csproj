@@ -34,6 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ConfigurationStore\src\ConfigStore.Local.csproj" />
     <ProjectReference Include="..\..\log4netExtensions\log4netExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\MasterDataModels\src\MasterDataModels.Local.csproj" />
   </ItemGroup>
 
 </Project>

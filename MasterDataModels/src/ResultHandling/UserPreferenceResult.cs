@@ -1,10 +1,10 @@
 ﻿
-namespace MasterDataProxies.Models
+namespace MasterDataModels.Models
 {
   /// <summary>
   ///  Describes preference data returned by the preference master data service.
   /// </summary>
-  public class PreferenceData
+  public class UserPreferenceResult
   {
     /// <summary>
     /// THe preference key e.g. "global"

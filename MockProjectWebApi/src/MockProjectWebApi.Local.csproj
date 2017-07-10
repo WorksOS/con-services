@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MasterDataProxies\src\MasterDataProxies.Local.csproj" />
+    <ProjectReference Include="..\..\MasterDataModels\src\MasterDataModels.Local.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">

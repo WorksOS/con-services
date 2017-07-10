@@ -3,7 +3,6 @@
   <PropertyGroup>
     <Description>Shared across Merino apps, source code is availble under MerinoSandbox repo</Description>
     <AssemblyTitle>Shared lib for masterdata models</AssemblyTitle>
-    <VersionPrefix>1.0.1</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>MasterDataModels.netcore</AssemblyName>
     <PackageId>MasterDataModels.netcore</PackageId>
@@ -12,7 +11,6 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <Version>1.0.1</Version>
     <RootNamespace>MasterDataModels</RootNamespace>
   </PropertyGroup>
 

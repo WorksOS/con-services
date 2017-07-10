@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCCFileAccess.Local", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests.Local", "test\UnitTests\UnitTests.Local.csproj", "{61D20BF7-277E-4FB5-8075-C1D6BA26C2C8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MasterDataModels.Local", "..\MasterDataModels\src\MasterDataModels.Local.csproj", "{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{61D20BF7-277E-4FB5-8075-C1D6BA26C2C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61D20BF7-277E-4FB5-8075-C1D6BA26C2C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61D20BF7-277E-4FB5-8075-C1D6BA26C2C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1A3B6B0-B843-4600-BA3C-C3C4CED399DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

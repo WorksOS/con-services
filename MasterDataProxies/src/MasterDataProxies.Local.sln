@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "log4netExtensions.Local", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigStore.Local", "..\..\ConfigurationStore\src\ConfigStore.Local.csproj", "{1C6FC224-0FDD-4209-8983-1CA146E66A0E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MasterDataModels.Local", "..\..\MasterDataModels\src\MasterDataModels.Local.csproj", "{BBEB12C9-05F2-44C3-86C2-C9BC4F4147B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{1C6FC224-0FDD-4209-8983-1CA146E66A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C6FC224-0FDD-4209-8983-1CA146E66A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C6FC224-0FDD-4209-8983-1CA146E66A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBEB12C9-05F2-44C3-86C2-C9BC4F4147B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBEB12C9-05F2-44C3-86C2-C9BC4F4147B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBEB12C9-05F2-44C3-86C2-C9BC4F4147B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBEB12C9-05F2-44C3-86C2-C9BC4F4147B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

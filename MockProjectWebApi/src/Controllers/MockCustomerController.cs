@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using MasterDataProxies.Models;
-using MasterDataProxies.ResultHandling;
+using MasterDataModels.Models;
+using MasterDataModels.ResultHandling;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 

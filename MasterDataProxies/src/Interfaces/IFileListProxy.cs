@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MasterDataProxies.Models;
+using MasterDataModels.Models;
 
 namespace MasterDataProxies.Interfaces
 {

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MasterDataProxies.Interfaces;
-using MasterDataProxies.Models;
-using MasterDataProxies.ResultHandling;
+using MasterDataModels.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -33,7 +32,7 @@ namespace MasterDataProxies
         ProjectUID = projectUid,
         SubscriptionUID = subscriptionUid
       };
-      await SendRequest<SubscriptionDataResult>("ASSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
+      await SendRequest<EmptyModel>("ASSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
         customHeaders);
     }
 
@@ -52,7 +51,7 @@ namespace MasterDataProxies
         ProjectUID = projectUid,
         SubscriptionUID = subscriptionUid
       };
-      await SendRequest<SubscriptionDataResult>("DISSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
+      await SendRequest<EmptyModel>("DISSOCIATESUBSPROJECT_API_URL", JsonConvert.SerializeObject(payLoadToSend),
         customHeaders);
     }
   }

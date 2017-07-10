@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
-using MasterDataProxies.Models;
+using MasterDataModels.Models;
 using Newtonsoft.Json;
 
 namespace MasterDataProxies
