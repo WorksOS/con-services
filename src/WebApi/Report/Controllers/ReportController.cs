@@ -103,8 +103,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
           if (machineNames != null)
           {
-            var machineNamesArray = machineNames.Split(',');
-            machineDetails = machineDetails.Where(machineDetail => machineNamesArray.Contains(machineDetail.Name)).ToArray();
+            if (machineNames != ALL_MACHINES)
+            {
+              var machineNamesArray = machineNames.Split(',');
+              machineDetails = machineDetails.Where(machineDetail => machineNamesArray.Contains(machineDetail.Name)).ToArray();
+            }
           }
           
           machineList = machineDetails.Select(m => new TMachine() {AssetID = m.ID, MachineName = m.Name, SerialNo = ""}).ToArray();
@@ -587,5 +590,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
               CCASummaryResult;
 
     }
+
+    private const string ALL_MACHINES = "All";
   }
 }
