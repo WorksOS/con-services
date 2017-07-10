@@ -1,14 +1,12 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Net;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using System;
 using TestUtility;
-using VSS.Raptor.Service.Common.Models;
-
+using VSS.Productivity3D.Common.Models;
 
 namespace IntegrationTests
 {
-    [TestClass]
+  [TestClass]
     public class FileAccessTests
     {
         [TestMethod]
