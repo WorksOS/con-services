@@ -16,6 +16,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Report.Contracts;
@@ -69,10 +70,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       bool restrictSize,
       bool rawData,
       OutputTypes outputType,
-      string machineNames)
-      //long? assetId,
-      //string machineName, 
-      //bool? isJohnDoe)
+      string machineNames,
+      double tolerance)
     {
       if (!projectId.HasValue)
       {
@@ -86,17 +85,32 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       // Filter filter = CompactionSettings.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
       Filter filter = CompactionSettings.CompactionFilter(null, null, null, null, null, null, null, excludedIds);
 
-      TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(projectId.Value);
+      T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;
 
-      if (machineDetails != null)
+      if (exportType == ExportTypes.kSurfaceExport)
       {
-        var machineNamesArray = machineNames.Split(',');
-
-        //machineDetails = machineDetails.GroupBy(x => x.Name).Select(y => y.Last()).ToArray();
-        machineDetails = machineDetails.Where(machineDetail => machineNamesArray.Contains(machineDetail.Name)).ToArray();
-        machineList = machineDetails.Select(m => new TMachine() {AssetID = m.ID, MachineName = m.Name, SerialNo = ""}).ToArray();
+        raptorClient.GetDataModelExtents(projectId.Value,
+          RaptorConverters.convertSurveyedSurfaceExlusionList(excludedIds), out projectExtents);
       }
+      else
+      {
+        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(projectId.Value);
+
+        if (machineDetails != null)
+        {
+          //machineDetails = machineDetails.GroupBy(x => x.Name).Select(y => y.Last()).ToArray();
+
+          if (machineNames != null)
+          {
+            var machineNamesArray = machineNames.Split(',');
+            machineDetails = machineDetails.Where(machineDetail => machineNamesArray.Contains(machineDetail.Name)).ToArray();
+          }
+          
+          machineList = machineDetails.Select(m => new TMachine() {AssetID = m.ID, MachineName = m.Name, SerialNo = ""}).ToArray();
+        }
+      }
+
 
       return ExportReport.CreateExportReportRequest(
         projectId.Value, 
@@ -110,11 +124,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         startUtc ?? DateTime.MinValue,
         endUtc ?? DateTime.MinValue, 
         true, 
-        0.05, 
+        tolerance, 
         false,
         restrictSize,
         rawData,
-        new T3DBoundingWorldExtent(), 
+        projectExtents, 
         false,
         outputType,
         machineList,
@@ -203,53 +217,76 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [ProjectUidVerifier]
     [Route("api/v2/export/surface")]
     [HttpGet]
-    public async Task<ExportResult> GetExportReportSurface()
-    {
-      return null;
-    }
-/*
-    /// <summary>
-    /// Gets an export of production data in cell grid format report.
-    /// </summary>
-    /// <returns></returns>
-    /// 
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
-    [Route("api/v2/export/machinepasses")]
-    [HttpGet]
-    public async Task<ExportResult> GetExportReportPassCount(
+    public async Task<ExportResult> GetExportReportSurface(
       [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid,
-      [FromQuery] DateTime? startUtc,
-      [FromQuery] DateTime? endUtc,
       [FromQuery] string fileName,
-      [FromQuery] long? assetId,
-      [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe
-    )
+      [FromQuery] double tolerance
+      )
     {
-      log.LogInformation("GetExportReportPassCount: " + Request.QueryString);
+      log.LogInformation("GetExportReportSurface: " + Request.QueryString);
 
       ExportReport request = await GetExportReportRequest(
         projectId,
         projectUid,
-        startUtc,
-        endUtc,
+        null, //startUtc,
+        null, //endUtc,
         CoordTypes.ptNORTHEAST,
-        ExportTypes.kPassCountExport,
+        ExportTypes.kSurfaceExport,
         fileName,
         false,
         true,
-        OutputTypes.etPassCountAllPasses,
-        assetId,
-        machineName,
-        isJohnDoe);
+        OutputTypes.etVedaAllPasses,
+        "",
+        tolerance);
 
       request.Validate();
 
       return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
     }
-*/
+    /*
+        /// <summary>
+        /// Gets an export of production data in cell grid format report.
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [ProjectIdVerifier]
+        [ProjectUidVerifier]
+        [Route("api/v2/export/machinepasses")]
+        [HttpGet]
+        public async Task<ExportResult> GetExportReportMachinePasses(
+          [FromQuery] long? projectId,
+          [FromQuery] Guid? projectUid,
+          [FromQuery] DateTime? startUtc,
+          [FromQuery] DateTime? endUtc,
+          [FromQuery] string fileName,
+          [FromQuery] long? assetId,
+          [FromQuery] string machineName,
+          [FromQuery] bool? isJohnDoe
+        )
+        {
+          log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
+
+          ExportReport request = await GetExportReportRequest(
+            projectId,
+            projectUid,
+            startUtc,
+            endUtc,
+            CoordTypes.ptNORTHEAST,
+            ExportTypes.kPassCountExport,
+            fileName,
+            false,
+            true,
+            OutputTypes.etPassCountAllPasses,
+            assetId,
+            machineName,
+            isJohnDoe);
+
+          request.Validate();
+
+          return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
+        }
+    */
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
@@ -265,11 +302,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] string fileName,
-      [FromQuery] string machineNames
-      //[FromQuery] long? assetId,
-      //[FromQuery] string machineName,
-      //[FromQuery] bool? isJohnDoe
-      )
+      [FromQuery] string machineNames)
     {
       log.LogInformation("GetExportReportVeta: " + Request.QueryString);
 
@@ -284,10 +317,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         false,
         true,
         OutputTypes.etVedaAllPasses,
-        machineNames);
-        //assetId, 
-        //machineName, 
-        //isJohnDoe);
+        machineNames,
+        0.0);
 
       request.Validate();
 
