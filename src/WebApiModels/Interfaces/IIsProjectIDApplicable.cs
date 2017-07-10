@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace VSS.Raptor.Service.WebApiModels.Interfaces
+﻿namespace WebApiModels.Interfaces
 {    
   /// <summary>
   /// Defines whether the project ID is applicable...

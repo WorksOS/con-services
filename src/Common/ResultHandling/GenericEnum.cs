@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace VSS.Raptor.Service.Common.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
 
     public abstract class GenericEnum<T, U> where T : GenericEnum<T, U>, new()

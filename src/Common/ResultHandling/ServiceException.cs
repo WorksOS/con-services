@@ -1,10 +1,9 @@
 ﻿using System;
-using Newtonsoft.Json;
 using System.Net;
-using System.Net.Http;
 using MasterDataProxies.ResultHandling;
+using Newtonsoft.Json;
 
-namespace VSS.Raptor.Service.Common.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
     /// <summary>
     ///   This is an expected exception and should be ignored by unit test failure methods.

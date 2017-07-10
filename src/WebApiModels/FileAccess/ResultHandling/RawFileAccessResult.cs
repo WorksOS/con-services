@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MasterDataProxies.ResultHandling;
+﻿using MasterDataProxies.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.FileAccess.ResultHandling
+namespace WebApiModels.FileAccess.ResultHandling
 {
   /// <summary>
   /// The result representation of a raw file access request.

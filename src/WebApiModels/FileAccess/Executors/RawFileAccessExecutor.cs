@@ -1,16 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using MasterDataProxies.ResultHandling;
-using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.Interfaces;
-using VSS.Raptor.Service.Common.Models;
-using VSS.Raptor.Service.Common.ResultHandling;
-using VSS.Raptor.Service.WebApiModels.FileAccess.ResultHandling;
+using Microsoft.Extensions.Logging;
 using TCCFileAccess;
+using VSS.GenericConfiguration;
+using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using WebApiModels.FileAccess.ResultHandling;
 
-namespace VSS.Raptor.Service.WebApiModels.FileAccess.Executors
+namespace WebApiModels.FileAccess.Executors
 {
     public class RawFileAccessExecutor : RequestExecutorContainer
   {
