@@ -109,7 +109,9 @@ namespace VSS.Productivity3D.ProjectWebApi.Filters
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
 
-          if (context.Request.Method == HttpMethod.Get.Method)
+          if (!requireCustomerUid)
+            await _next.Invoke(context);
+          else if (context.Request.Method == HttpMethod.Get.Method)
             await _next.Invoke(context);
           else
             ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 60);
