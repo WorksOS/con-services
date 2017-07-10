@@ -1,14 +1,14 @@
-using ProjectWebApiCommon.ResultsHandling;
 using System;
 using System.Collections.Immutable;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ProjectWebApiCommon.Models
+namespace VSS.Productivity3D.ProjectWebApiCommon.Models
 {
   /// <summary>
   /// List of importedfile descriptors
   /// </summary>
-  /// <seealso cref="ProjectWebApiCommon.ResultsHandling.ContractExecutionResult" />
+  /// <seealso cref="ContractExecutionResult" />
   public class ImportedFileDescriptorListResult : ContractExecutionResult
   {
     /// <summary>
@@ -38,7 +38,7 @@ namespace ProjectWebApiCommon.Models
   /// <summary>
   /// Single importedfile descriptor
   /// </summary>
-  /// <seealso cref="ProjectWebApiCommon.ResultsHandling.ContractExecutionResult" />
+  /// <seealso cref="ContractExecutionResult" />
   public class ImportedFileDescriptorSingleResult : ContractExecutionResult
   {
     public ImportedFileDescriptorSingleResult(ImportedFileDescriptor importedFileDescriptor)

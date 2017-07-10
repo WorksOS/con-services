@@ -1,4 +1,12 @@
-﻿using ProjectWebApi.Filters;
+﻿using KafkaConsumer.Kafka;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Repositories;
+using Repositories.DBModels;
+using Repositories.ExtendedModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -6,31 +14,25 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using ProjectWebApi.Internal;
-using KafkaConsumer.Kafka;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using ProjectWebApiCommon.Models;
-using Repositories;
-using VSS.GenericConfiguration;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using Repositories.DBModels;
 using TCCFileAccess;
+using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Filters;
+using VSS.Productivity3D.ProjectWebApi.Internal;
+using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ProjectWebApiCommon.Utilities;
-using Microsoft.Extensions.Logging;
-using Repositories.ExtendedModels;
 
-namespace Controllers
+namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {
   /// <summary>
   /// FileImporter controller
   /// </summary>
   public class FileImportBaseController : Controller
   {
-
+    /// <summary>
+    /// Local log provider.
+    /// </summary>
     protected readonly ILogger log;
 
     /// <summary>
@@ -46,9 +48,16 @@ namespace Controllers
     private readonly IRaptorProxy raptorProxy;
     private readonly IFileRepository fileRepo;
     private readonly ProjectRepository projectService;
-    protected readonly IKafka producer;
-    protected readonly string kafkaTopicName;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    protected readonly IKafka producer;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    protected readonly string kafkaTopicName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
@@ -118,7 +127,7 @@ namespace Controllers
 
       log.LogInformation($"Project {JsonConvert.SerializeObject(project)} retrieved");
     }
-    
+
     /// <summary>
     /// Gets the imported file list for a project
     /// </summary>
@@ -243,7 +252,7 @@ namespace Controllers
     protected async Task<DeleteImportedFileEvent> DeleteImportedFile(Guid projectUid, Guid importedFileUid, bool deletePermanently = false)
     {
       var nowUtc = DateTime.UtcNow;
-      var deleteImportedFileEvent = new DeleteImportedFileEvent()
+      var deleteImportedFileEvent = new DeleteImportedFileEvent
       {
         ProjectUID = projectUid,
         ImportedFileUID = importedFileUid,
@@ -267,11 +276,11 @@ namespace Controllers
     protected async Task UndeleteImportedFile(Guid projectUid, Guid importedFileUid)
     {
       var nowUtc = DateTime.UtcNow;
-      var undeleteImportedFileEvent = new UndeleteImportedFileEvent()
+      var undeleteImportedFileEvent = new UndeleteImportedFileEvent
       {
         ProjectUID = projectUid,
         ImportedFileUID = importedFileUid,
-        ActionUTC = nowUtc, 
+        ActionUTC = nowUtc,
         ReceivedUTC = nowUtc
       };
 
@@ -279,7 +288,6 @@ namespace Controllers
         return;
 
       ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 51);
-      return;
     }
 
     /// <summary>

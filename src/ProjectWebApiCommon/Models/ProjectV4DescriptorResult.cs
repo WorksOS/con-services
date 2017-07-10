@@ -1,16 +1,15 @@
 using System.Collections.Immutable;
-using Google.Protobuf.WellKnownTypes;
-using ProjectWebApiCommon.ResultsHandling;
 using Repositories.DBModels;
+using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ProjectWebApiCommon.Models
+namespace VSS.Productivity3D.ProjectWebApiCommon.Models
 {
 
   /// <summary>
   /// List of project descriptors
   /// </summary>
-  /// <seealso cref="ProjectWebApiCommon.ResultsHandling.ContractExecutionResult" />
+  /// <seealso cref="ContractExecutionResult" />
   public class ProjectV4DescriptorsListResult : ContractExecutionResult
   {
     /// <summary>

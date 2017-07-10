@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Security.Principal;
+using System.Threading.Tasks;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
+using MasterDataProxies.ResultHandling;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using MasterDataProxies.ResultHandling;
-using ProjectWebApi.Internal;
 using VSS.Authentication.JWT;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.ProjectWebApi.Internal;
 
-namespace ProjectWebApi.Filters
+namespace VSS.Productivity3D.ProjectWebApi.Filters
 {
   /// <summary>
   /// authentication
@@ -21,9 +21,13 @@ namespace ProjectWebApi.Filters
   public class TIDAuthentication
   {
     private readonly RequestDelegate _next;
-    private ILogger<TIDAuthentication> log;
+    private readonly ILogger<TIDAuthentication> log;
     private readonly ICustomerProxy customerProxy;
     private readonly IConfigurationStore store;
+
+    /// <summary>
+    /// Service exception handler.
+    /// </summary>
     protected IServiceExceptionHandler ServiceExceptionHandler;
 
     /// <summary>
@@ -33,6 +37,7 @@ namespace ProjectWebApi.Filters
     /// <param name="customerProxy">The customer proxy.</param>
     /// <param name="store">The store.</param>
     /// <param name="logger">The logger.</param>
+    /// <param name="serviceExceptionHandler"></param>
     public TIDAuthentication(RequestDelegate next,
       ICustomerProxy customerProxy,
       IConfigurationStore store,
