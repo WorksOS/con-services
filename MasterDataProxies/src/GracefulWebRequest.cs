@@ -66,8 +66,42 @@ namespace MasterDataProxies
         {
           readStream?.Dispose();
           ArrayPool<byte>.Shared.Return(buffer);
+          responseString = responseString.Trim(Convert.ToChar(0));
         }
         return responseString;
+      }
+
+      private async Task<Stream> GetMemoryStreamFromResponseStream(WebResponse response)
+      {
+        var readStream = response.GetResponseStream();
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(BUFFER_MAX_SIZE);
+        var resultStream = new MemoryStream();
+
+        try
+        {
+          Array.Clear(buffer, 0, buffer.Length);
+          var read = await readStream.ReadAsync(buffer, 0, buffer.Length);
+          resultStream.Write(buffer,0,read);
+          while (read > 0)
+          {
+            Array.Clear(buffer, 0, buffer.Length);
+            read = await readStream.ReadAsync(buffer, 0, buffer.Length);
+            resultStream.Write(buffer, 0, read);
+          }
+        }
+        catch (Exception ex)
+        {
+          log.LogDebug($"ExecuteRequest() T: InOddException {ex.Message}");
+          if (ex.InnerException != null)
+            log.LogDebug($"ExecuteRequestInnerException() T: errorCode: {ex.InnerException.Message}");
+          throw;
+        }
+        finally
+        {
+          readStream?.Dispose();
+          ArrayPool<byte>.Shared.Return(buffer);
+        }
+        return resultStream;
       }
 
       private async Task<WebRequest> PrepareWebRequest(string endpoint, string method,
@@ -139,7 +173,7 @@ namespace MasterDataProxies
           if (response != null)
           {
             log.LogDebug($"ExecuteRequest() T executed the request");
-            return response.GetResponseStream();
+            return await GetMemoryStreamFromResponseStream(response);
           }
         }
         catch (WebException ex)
