@@ -6,7 +6,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using log4net;
-using RestSharp;
 using VSS.Hosted.VLCommon;
 using MigrateProjects.Properties;
 using Newtonsoft.Json;
