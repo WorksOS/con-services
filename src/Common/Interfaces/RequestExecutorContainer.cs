@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Net;
 using MasterDataProxies.ResultHandling;
 using Microsoft.Extensions.Logging;
-using VSS.GenericConfiguration;
-using VSS.Raptor.Service.Common.ResultHandling;
 using TCCFileAccess;
+using VSS.GenericConfiguration;
+using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Raptor.Service.Common.Interfaces
+namespace VSS.Productivity3D.Common.Interfaces
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic

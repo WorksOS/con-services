@@ -1,8 +1,7 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace VSS.Raptor.Service.Common.ResultHandling
+namespace VSS.Productivity3D.Common.ResultHandling
 {
     public class DataAnnotationsValidator
     {
