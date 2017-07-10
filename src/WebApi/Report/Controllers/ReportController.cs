@@ -238,7 +238,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         ExportTypes.kSurfaceExport,
         fileName,
         false,
-        true,
+        false,
         OutputTypes.etVedaAllPasses,
         "",
         tolerance);
@@ -247,49 +247,49 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 
       return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
     }
-    /*
-        /// <summary>
-        /// Gets an export of production data in cell grid format report.
-        /// </summary>
-        /// <returns></returns>
-        /// 
-        [ProjectIdVerifier]
-        [ProjectUidVerifier]
-        [Route("api/v2/export/machinepasses")]
-        [HttpGet]
-        public async Task<ExportResult> GetExportReportMachinePasses(
-          [FromQuery] long? projectId,
-          [FromQuery] Guid? projectUid,
-          [FromQuery] DateTime? startUtc,
-          [FromQuery] DateTime? endUtc,
-          [FromQuery] string fileName,
-          [FromQuery] long? assetId,
-          [FromQuery] string machineName,
-          [FromQuery] bool? isJohnDoe
-        )
-        {
-          log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
 
-          ExportReport request = await GetExportReportRequest(
-            projectId,
-            projectUid,
-            startUtc,
-            endUtc,
-            CoordTypes.ptNORTHEAST,
-            ExportTypes.kPassCountExport,
-            fileName,
-            false,
-            true,
-            OutputTypes.etPassCountAllPasses,
-            assetId,
-            machineName,
-            isJohnDoe);
+    /// <summary>
+    /// Gets an export of production data in cell grid format report.
+    /// </summary>
+    /// <returns></returns>
+    /// 
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/export/machinepasses")]
+    [HttpGet]
+    public async Task<ExportResult> GetExportReportMachinePasses(
+      [FromQuery] long? projectId,
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc,
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] int coordType,
+      [FromQuery] int outputType,
+      [FromQuery] bool restrictOutput,
+      [FromQuery] bool rawDataOutput,
+      [FromQuery] string fileName
+    )
+    {
+      log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
+      
+      ExportReport request = await GetExportReportRequest(
+        projectId,
+        projectUid,
+        startUtc,
+        endUtc,
+        (CoordTypes)coordType,
+        ExportTypes.kPassCountExport,
+        fileName,
+        restrictOutput,
+        rawDataOutput,
+        (OutputTypes)outputType,
+        "",
+        0.0);
 
-          request.Validate();
+      request.Validate();
 
-          return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
-        }
-    */
+      return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
+    }
+    
     /// <summary>
     /// Gets an export of production data in cell grid format report for import to VETA.
     /// </summary>
