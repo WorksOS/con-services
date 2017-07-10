@@ -15,7 +15,7 @@
 
 [Environment]::SetEnvironmentVariable("TEST_DATA_PATH", "../../TestData/", "Machine")
 [Environment]::SetEnvironmentVariable("COMPACTION_SVC_BASE_URI", ":80", "Machine")
-[Environment]::SetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI", "/notification", "Machine")
+[Environment]::SetEnvironmentVariable("NOTIFICATION_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("REPORT_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("TAG_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("COORD_SVC_BASE_URI", ":80", "Machine")
