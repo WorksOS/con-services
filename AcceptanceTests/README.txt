@@ -18,3 +18,9 @@ To run acceptance tests on local machine.
  
  - run runacceptancetests.bat
  
+ 
+ 
+ 
+*****************************************************************************
+*	Environment variables for Jenkins are set in runacceptancetests.bat		*
+*****************************************************************************
