@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using log4net;
+using RestSharp;
 using VSS.Hosted.VLCommon;
 using MigrateProjects.Properties;
 using Newtonsoft.Json;
@@ -46,11 +47,11 @@ namespace ThreeDAPIs.ProjectMasterData
 
 
     public void SyncCreateProject(int id, Guid uid, int startKeyDate, int endKeyDate, string name, string timezone, 
-      ProjectTypeEnum projectType, List<Point> points, Guid customerUid, long customerId, string coordfilename, DateTime actionUTC)
+      ProjectTypeEnum projectType, string boundary, Guid customerUid, long customerId, string coordfilename, DateTime actionUTC)
     {
-      string boundary = points.Aggregate(string.Empty, (current, point) => string.Format("{0}{1},{2};", current, point.Latitude, point.Longitude));
+      //string boundary = points.Aggregate(string.Empty, (current, point) => string.Format("{0}{1},{2};", current, point.Latitude, point.Longitude));
       //Remove trailing ;
-      boundary = boundary.Substring(0, boundary.Length - 1);
+      //boundary = boundary.Substring(0, boundary.Length - 1);
       CreateProjectEvent evt = new CreateProjectEvent
                           {
                             ProjectEndDate = endKeyDate.FromKeyDate(),
