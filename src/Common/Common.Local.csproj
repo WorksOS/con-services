@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\MerinoSandbox\ConfigurationStore\src\ConfigStore.Local.csproj" />
+    <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataModels\src\MasterDataModels.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\MasterDataProxies\src\MasterDataProxies.Local.csproj" />
     <ProjectReference Include="..\..\..\MerinoSandbox\TCCFileAccess\src\TCCFileAccess.Local.csproj" />
   </ItemGroup>

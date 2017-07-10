@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using MasterDataModels.ResultHandling;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
-using MasterDataProxies.ResultHandling;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;

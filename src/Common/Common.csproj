@@ -17,6 +17,7 @@
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.*" />
     <PackageReference Include="ConfigurationStore.netcore" Version="1.0.*" />
     <PackageReference Include="MasterDataProxies.netcore" Version="1.2.*" />
+    <PackageReference Include="MasterDataModels.netcore" Version="1.0.*" />
     <PackageReference Include="VSS.Velociraptor.Interfaces" Version="1.0.*" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.*" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />

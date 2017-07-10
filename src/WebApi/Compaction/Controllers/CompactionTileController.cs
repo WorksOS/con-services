@@ -1,7 +1,6 @@
 ﻿using ASNodeDecls;
 using MasterDataProxies;
 using MasterDataProxies.Interfaces;
-using MasterDataProxies.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using MasterDataModels.Models;
 using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.Common.Contracts;
