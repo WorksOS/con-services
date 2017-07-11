@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.78" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.79" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
@@ -32,6 +32,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="ConfigurationStore.netcore" Version="1.0.15" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.4" />
   </ItemGroup>
 
   <ItemGroup>

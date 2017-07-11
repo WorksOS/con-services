@@ -10,6 +10,7 @@ using VSS.Productivity3D.Repo.ExtendedModels;
 using VSS.Productivity3D.Repo.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Repositories.DBModels;
 
 namespace VSS.Productivity3D.Repo
 {
