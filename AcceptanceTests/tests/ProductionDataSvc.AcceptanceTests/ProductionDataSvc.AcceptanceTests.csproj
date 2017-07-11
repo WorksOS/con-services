@@ -584,6 +584,9 @@
     <None Include="TestData\ExportReportResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\ExportReportToVETAResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\GetLiftsRequestRepository.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

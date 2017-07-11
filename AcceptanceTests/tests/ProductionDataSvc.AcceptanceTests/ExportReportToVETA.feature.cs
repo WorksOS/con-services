@@ -73,7 +73,7 @@ namespace ProductionDataSvc.AcceptanceTests
 #line 4
 #line 5
  testRunner.Given("the Export Report To VETA service URI \"v2/export/veta\" and the result file \"Expor" +
-                    "tReportToVETAResponse\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+                    "tReportToVETAResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
         }
         
@@ -142,21 +142,21 @@ this.FeatureBackground();
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToVETA - Bad Request", @__tags);
-#line 22
+#line 21
 this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
-#line 23
+#line 22
   testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 24
+#line 23
  testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startDate, endDate), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 25
+#line 24
  testRunner.And(string.Format("machineNames \"{0}\"", machineNames), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 26
+#line 25
  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 27
+#line 26
  testRunner.When("I request an Export Report To VETA", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 28
+#line 27
  testRunner.Then(string.Format("the report result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
