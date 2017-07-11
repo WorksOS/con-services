@@ -4,7 +4,7 @@
     <Description>Shared across Merino apps, source code is availble under MerinoSandbox repo</Description>
     <AssemblyTitle>Shared lib to access masterdata aspects through http</AssemblyTitle>
     <VersionPrefix>1.2.3</VersionPrefix>
-    <TargetFrameworks>netstandard1.6;net46;net462</TargetFrameworks>
+    <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>MasterDataProxies.netcore</AssemblyName>
     <PackageId>MasterDataProxies.netcore</PackageId>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
@@ -21,32 +21,19 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
-    <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
+    <PackageReference Include="log4net.netcore" Version="3.0.*" />
+    <PackageReference Include="log4netExtensions.netcore" Version="1.0.*" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="*" />
+    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.*" />
     <PackageReference Include="Polly" Version="5.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="*" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.*" />
+    <PackageReference Include="MasterDataModels.netcore" Version="1.0.*" />
   </ItemGroup>
 
 </Project>

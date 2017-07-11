@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
+using MasterDataModels.Models;
+using MasterDataModels.ResultHandling;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.MasterDataProxies.Models;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
 namespace VSS.Productivity3D.MasterDataProxies
 {

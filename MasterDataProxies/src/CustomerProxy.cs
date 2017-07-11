@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using MasterDataModels.ResultHandling;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
 namespace VSS.Productivity3D.MasterDataProxies
 {

@@ -48,11 +48,11 @@ namespace MigrateProjects
           project.Name,
           project.TimezoneName, 
           (VSS.Hosted.VLCommon.ProjectTypeEnum) project.fk_ProjectTypeID,
-          XmlToPoints(project.Polygon),
+          GetWicketFromPoints(XmlToPoints(project.Polygon)),
           project.CustomerUID,
           project.fk_CustomerID,
           coorIdName,
-          DateTime.Now);
+          DateTime.UtcNow);
 
         //Associate geofence with the project
         Console.WriteLine("Assign Site {0}", project.Name);
