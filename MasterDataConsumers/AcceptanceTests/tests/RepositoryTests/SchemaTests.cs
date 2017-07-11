@@ -101,6 +101,17 @@ namespace RepositoryTests
     }
 
     [TestMethod]
+    public void ProjectSettingsSchemaExists()
+    {
+      const string tableName = "ProjectSettings";
+      List<string> columnNames = new List<string>
+      {
+        "fk_ProjectUID", "Settings", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+      };
+      CheckSchema(tableName, columnNames);
+    }
+
+    [TestMethod]
     public void CustomerTccOrgSchemaExists()
     {
       const string tableName = "CustomerTccOrg";

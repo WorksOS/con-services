@@ -10,6 +10,7 @@ using VSS.Productivity3D.Repo.ExtendedModels;
 using VSS.Productivity3D.Repo.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Repositories.DBModels;
 
 namespace VSS.Productivity3D.Repo
 {
@@ -192,6 +193,17 @@ namespace VSS.Productivity3D.Repo
           LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "UndeleteImportedFileEvent");
+      }
+      else if (evt is UpdateProjectSettingsEvent)
+      {
+        var projectEvent = (UpdateProjectSettingsEvent)evt;
+        var projectSettings = new ProjectSettings
+        {
+          ProjectUid = projectEvent.ProjectUID.ToString(),
+          Settings = projectEvent.Settings,
+          LastActionedUtc = projectEvent.ActionUTC
+        };
+        upsertedCount = await UpsertProjectSettings(projectSettings);
       }
       return upsertedCount;
     }
@@ -512,12 +524,10 @@ namespace VSS.Productivity3D.Repo
                 IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
                     VALUES(LegacyCustomerID), LegacyCustomerID)";
 
-      {
-        var upsertedCount = await ExecuteWithAsyncPolicy(insert, customerProject);
-        log.LogDebug(
-          $"ProjectRepository/AssociateProjectCustomer: upserted {upsertedCount} rows (1=insert, 2=update) for: customerProjectUid:{customerProject.CustomerUID}");
-        return upsertedCount.CalculateUpsertCount();
-      }
+      var upsertedCount = await ExecuteWithAsyncPolicy(insert, customerProject);
+      log.LogDebug(
+        $"ProjectRepository/AssociateProjectCustomer: upserted {upsertedCount} rows (1=insert, 2=update) for: customerProjectUid:{customerProject.CustomerUID}");
+      return upsertedCount.CalculateUpsertCount();
     }
 
     private async Task<int> DissociateProjectCustomer(CustomerProject customerProject, CustomerProject existing)
@@ -808,6 +818,42 @@ namespace VSS.Productivity3D.Repo
     #endregion importedFiles
 
 
+    #region projectSettings
+
+    /// <summary>
+    ///     Only an upsert is implemented.
+    /// 1) because as that is the only endpoint in ProjectMDM
+    /// 2) because create and Update have to cover both scenarios anyway
+    /// </summary>
+    /// <param name="projectSettings"></param>
+    /// <returns></returns>
+    private async Task<int> UpsertProjectSettings(ProjectSettings projectSettings)
+    {
+      log.LogDebug(
+        $"ProjectRepository/UpsertProjectSettings: projectSettings={JsonConvert.SerializeObject(projectSettings)}))')");
+      
+      const string upsert =
+        @"INSERT ProjectSettings
+                 (fk_ProjectUID, Settings, LastActionedUTC)
+            VALUES
+              (@ProjectUID, @Settings, @LastActionedUTC)
+            ON DUPLICATE KEY UPDATE
+              LastActionedUTC =
+                IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
+                    VALUES(LastActionedUTC), LastActionedUTC),
+              Settings =
+                IF ( VALUES(LastActionedUTC) >= LastActionedUTC, 
+                    VALUES(Settings), Settings)";
+
+      var upsertedCount = await ExecuteWithAsyncPolicy(upsert, projectSettings);
+      log.LogDebug(
+        $"ProjectRepository/UpsertProjectSettings: upserted {upsertedCount} rows (1=insert, 2=update) for: projectSettingsProjectUid:{projectSettings.ProjectUid}");
+      return upsertedCount.CalculateUpsertCount();
+    }
+
+    #endregion projectSettings
+
+
     #region getters
 
     /// <summary>
@@ -1094,6 +1140,22 @@ namespace VSS.Productivity3D.Repo
 
 
       return project;
+    }
+
+
+    /// <summary>
+   /// At this stage there is only 1 setting/project
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
+    public async Task<ProjectSettings> GetProjectSettings(string projectUid)
+    {
+      var projectSettings = (await QueryWithAsyncPolicy<ProjectSettings>(@"SELECT 
+                fk_ProjectUID AS ProjectUid, Settings, LastActionedUTC
+              FROM ProjectSettings
+              WHERE fk_ProjectUID = @projectUid",
+        new { projectUid })).FirstOrDefault();
+      return projectSettings;
     }
 
     #endregion getters
