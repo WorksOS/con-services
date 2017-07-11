@@ -119,5 +119,24 @@ namespace MockProjectWebApi.Controllers
       Console.WriteLine(message);
       return res;
     }
+
+
+    /// <summary>
+    /// Dummies the project settings validation.
+    /// </summary>
+    [Route("api/v2/projectsettings/validation")]
+    [HttpGet]
+    public ContractExecutionResult DummyProjectSettingsValidationGet(
+      [FromQuery] string settings)
+    {
+      ContractExecutionResult res;
+      if (string.IsNullOrEmpty(settings))
+        res = new ContractExecutionResult(ContractExecutionStatesEnum.ProjectSettingsAreInvalid, "The supplied string is empty");
+      else
+        res = new ContractExecutionResult();
+      var message = $"DummyProjectSettingsValidationGet: res {res}. settings {settings}";
+      Console.WriteLine(message);
+      return res;
+    }
   }
 }

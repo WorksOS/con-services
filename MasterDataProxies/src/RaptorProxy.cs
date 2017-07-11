@@ -102,6 +102,20 @@ namespace VSS.Productivity3D.MasterDataProxies
     }
 
     /// <summary>
+    /// Validates the Settings for the project.
+    /// </summary>
+    /// <param name="settings">The settings in Json to be validated.</param>
+    /// <param name="customHeaders">The custom headers.</param>
+    public async Task<ContractExecutionResult> ProjectSettingsValidate(string settings, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"RaptorProxy.ProjectSettingsValidate: settings: {settings}");
+      ContractExecutionResult response = await SendRequest<ContractExecutionResult>("PROJECTSETTINGS_API_URL", settings, customHeaders, "/validation");
+
+      log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+      return response;
+    }
+
+    /// <summary>
     ///  Notifies Raptor that a file has been added to or deleted from a project
     /// </summary>
     /// <param name="route">The route for add or delete file notification</param>
