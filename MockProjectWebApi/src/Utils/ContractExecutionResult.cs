@@ -104,6 +104,11 @@ namespace MockProjectWebApi.Utils
     /// </summary>
     public static readonly int NoValidSubscription = -5;
 
+    /// <summary>
+    ///   The proposed project settings are invalid
+    /// </summary>
+    public static readonly int ProjectSettingsAreInvalid = -6;
+
 
     /// <summary>
     /// Dynamically adds new error messages addwith offset.
