@@ -331,7 +331,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
         }
 
         Assert.AreEqual(expectedHttpCode, this.CurrentServiceResponse.HttpCode,
-            String.Format("Expected {0}, but got {1} instead.", expectedHttpCode, this.CurrentServiceResponse.HttpCode));
+                    String.Format("Expected {0}, but got {1} instead. Message was {2}", expectedHttpCode, this.CurrentServiceResponse.HttpCode, this.CurrentServiceResponse.ResponseBody));
 
         //if (CurrentServiceResponse.ResponseHeader["Content-Type"] == "image/png")
         //{
