@@ -1,6 +1,8 @@
-﻿using ProductionDataSvc.AcceptanceTests.Models;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ProductionDataSvc.AcceptanceTests.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
 using System;
+using System.Net;
 using TechTalk.SpecFlow;
 
 namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
@@ -9,51 +11,56 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
   public sealed class ExportReportToVETASteps
   {
     private string url;
-    private string projectUid;
-    private string queryParameters = string.Empty;
 
     private Getter<ExportReportResult> exportReportRequester;
 
-    [Given(@"the Export Report To VETA service URI ""(.*)""")]
-    public void GivenTheExportReportToVETAServiceURI(string url)
+
+    [Given(@"the Export Report To VETA service URI ""(.*)"" and the result file ""(.*)""")]
+    public void GivenTheExportReportToVETAServiceURIAndTheResultFile(string url, string resultFileName)
     {
       this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+      exportReportRequester = new Getter<ExportReportResult>(url, resultFileName);
     }
-        
+
     [Given(@"projectUid ""(.*)""")]
     public void GivenProjectUid(string projectUid)
     {
-      this.projectUid = projectUid;
+      //this.projectUid = projectUid;
+      exportReportRequester.QueryString.Add("ProjectUid", projectUid);
     }
         
     [Given(@"startUtc ""(.*)"" and endUtc ""(.*)""")]
-    public void GivenStartUtcAndEndUtc(string p0, string p1)
+    public void GivenStartUtcAndEndUtc(string startUtc, string endUtc)
     {
-        ScenarioContext.Current.Pending();
+      exportReportRequester.QueryString.Add("startUtc", startUtc);
+      exportReportRequester.QueryString.Add("endUtc", endUtc);
     }
         
     [Given(@"machineNames ""(.*)""")]
-    public void GivenMachineNames(string p0)
+    public void GivenMachineNames(string machineNames)
     {
-        ScenarioContext.Current.Pending();
+      exportReportRequester.QueryString.Add("machineNames", machineNames);
     }
-        
-    [Given(@"fileName=Test")]
-    public void GivenFileNameTest()
+
+    [Given(@"fileName is ""(.*)""")]
+    public void GivenFileNameIs(string fileName)
     {
-        ScenarioContext.Current.Pending();
+      exportReportRequester.QueryString.Add("fileName", fileName);
     }
-        
+
+
     [When(@"I request an Export Report To VETA")]
     public void WhenIRequestAnExportReportToVETA()
     {
-      //exportReportRequester = GetIt<CompactionCmvSummaryResult>();
+      exportReportRequester.DoValidRequest();     
     }
-        
-    [Then(@"the report result should be")]
-    public void ThenTheReportResultShouldBe(string multilineText)
+
+
+    [Then(@"the report result should match the ""(.*)"" from the repository")]
+    public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)
     {
-        ScenarioContext.Current.Pending();
+      Assert.AreEqual(exportReportRequester.ResponseRepo[resultName], exportReportRequester.CurrentResponse);
     }
+
   }
 }
