@@ -1,18 +1,18 @@
-﻿using System;
+﻿using MasterDataProxies.ResultHandling;
+using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Net;
-using MasterDataProxies.ResultHandling;
-using Microsoft.Extensions.Logging;
-using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.TCCFileAccess;
 using WebApiModels.FileAccess.ResultHandling;
 
 namespace WebApiModels.FileAccess.Executors
 {
-    public class RawFileAccessExecutor : RequestExecutorContainer
+  public class RawFileAccessExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// This constructor allows us to mock raptorClient
@@ -20,8 +20,8 @@ namespace WebApiModels.FileAccess.Executors
     /// <param name="logger"></param>
     /// <param name="raptorClient"></param>
     /// 
-    public RawFileAccessExecutor(ILoggerFactory logger, IConfigurationStore configStore, IFileRepository fileAccess) 
-      : base(logger,configStore, fileAccess)
+    public RawFileAccessExecutor(ILoggerFactory logger, IConfigurationStore configStore, IFileRepository fileAccess)
+      : base(logger, configStore, fileAccess)
     {
       // ...
     }
@@ -49,7 +49,7 @@ namespace WebApiModels.FileAccess.Executors
       log.LogInformation("RawFileAccessExecutor: {0}: {1}\\{2}", request.filespaceId, request.path, request.fileName);
 
       try
-      {        
+      {
         if (fileAccess != null)
         {
           MemoryStream stream = new MemoryStream();
@@ -85,12 +85,9 @@ namespace WebApiModels.FileAccess.Executors
       {
         return RawFileAccessResult.CreateRawFileAccessResult(data);
       }
-      else
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to download file from TCC"));
-      }
 
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to download file from TCC"));
     }
 
     protected override void ProcessErrorCodes()
@@ -105,14 +102,11 @@ namespace WebApiModels.FileAccess.Executors
 
       var downloadFileResult = fileAccess.GetFile(file.filespaceId, fullName).Result;
 
-      if ((downloadFileResult != null) && (downloadFileResult.Length > 0))
+      if (downloadFileResult != null && downloadFileResult.Length > 0)
       {
         downloadFileResult.Seek(0, SeekOrigin.Begin);
         downloadFileResult.CopyTo(stream);
       }
     }
-
   }
 }
-
-

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using MasterDataProxies.ResultHandling;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Net;
-using MasterDataProxies.ResultHandling;
-using Microsoft.Extensions.Logging;
-using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.TCCFileAccess;
 
 namespace VSS.Productivity3D.Common.Interfaces
 {
@@ -82,14 +82,15 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// Dynamically defines new error codes for the executor instance. Don't forget to clean them up after exit.
     /// </summary>
     protected virtual void ProcessErrorCodes()
-    {
-    }
-
-
+    { }
+    
     protected RequestExecutorContainer(ILoggerFactory logger, IConfigurationStore configStore, IFileRepository fileAccess) : this()
     {
       if (logger != null)
-        this.log = logger.CreateLogger<RequestExecutorContainer>();
+      {
+        log = logger.CreateLogger<RequestExecutorContainer>();
+      }
+
       this.configStore = configStore;
       this.fileAccess = fileAccess;
     }
@@ -109,10 +110,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     ~RequestExecutorContainer()
     {
-      if (ContractExecutionStates != null)
-      {
-        ContractExecutionStates.ClearDynamic();
-      }
+      ContractExecutionStates?.ClearDynamic();
     }
 
     /// <summary>

@@ -5,9 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
-using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.Common.Filters;
+using VSS.Productivity3D.TCCFileAccess;
 
 namespace VSS.Productivity3D.WebApi
 {
