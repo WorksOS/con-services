@@ -378,6 +378,7 @@ namespace RaptorSvcAcceptTestsCommon.Utils
       this.Uri = uri;
       this.CurrentResponse = default(TResponse);
       this.CurrentServiceResponse = null;
+      this.QueryString = new Dictionary<string, string>();
 
       try
       {
