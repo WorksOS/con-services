@@ -1,14 +1,14 @@
-﻿using System;
-using System.Net;
-using MasterDataProxies.ResultHandling;
+﻿using MasterDataProxies.ResultHandling;
 using Newtonsoft.Json;
+using System;
+using System.Net;
 
 namespace VSS.Productivity3D.Common.ResultHandling
 {
-    /// <summary>
-    ///   This is an expected exception and should be ignored by unit test failure methods.
-    /// </summary>
-    public class ServiceException : Exception
+  /// <summary>
+  ///   This is an expected exception and should be ignored by unit test failure methods.
+  /// </summary>
+  public class ServiceException : Exception
     {
         /// <summary>
         ///   ServiceException class constructor.
