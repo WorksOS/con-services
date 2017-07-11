@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
 namespace VSS.Productivity3D.MasterDataProxies
 {
@@ -17,8 +18,7 @@ namespace VSS.Productivity3D.MasterDataProxies
   public class RaptorProxy : BaseProxy, IRaptorProxy
   {
     public RaptorProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(configurationStore, logger, cache)
-    {
-    }
+    { }
 
     /// <summary>
     /// Validates the CoordinateSystem for the project.
@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.MasterDataProxies
     {
       log.LogDebug($"RaptorProxy.CoordinateSystemValidate: coordinateSystemFileName: {coordinateSystemFileName}");
       var payLoadToSend = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName);
-      
+
       return await CoordSystemPost(JsonConvert.SerializeObject(payLoadToSend), customHeaders, "/validation");
     }
 

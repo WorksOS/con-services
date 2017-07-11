@@ -4,7 +4,7 @@
     <Description>Shared across Merino apps, source code is availble under MerinoSandbox repo</Description>
     <AssemblyTitle>Shared lib to access masterdata aspects through http</AssemblyTitle>
     <VersionPrefix>1.2.4</VersionPrefix>
-    <TargetFrameworks>netstandard1.6;net46;net462</TargetFrameworks>
+    <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>MasterDataProxies.netcore</AssemblyName>
     <PackageId>MasterDataProxies.netcore</PackageId>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>

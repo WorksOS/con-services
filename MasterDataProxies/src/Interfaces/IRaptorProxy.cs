@@ -3,6 +3,7 @@ using MasterDataModels.ResultHandling;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
 namespace VSS.Productivity3D.MasterDataProxies.Interfaces
 {
@@ -23,4 +24,3 @@ namespace VSS.Productivity3D.MasterDataProxies.Interfaces
     Task<ContractExecutionResult> ProjectSettingsValidate(string settings, IDictionary<string, string> customHeaders = null);
   }
 }
-
