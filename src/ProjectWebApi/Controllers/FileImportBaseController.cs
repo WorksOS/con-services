@@ -14,12 +14,12 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApi.Filters;
 using VSS.Productivity3D.ProjectWebApi.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.Productivity3D.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
