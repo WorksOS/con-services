@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using WebApiModels.ResultHandling;
+﻿using System;
+using Newtonsoft.Json;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApiModels.Models
+namespace VSS.Productivity3D.WebApiModels.Models
 {
   /// <summary>
   /// The request representation used to request the boundaries of projects that are active at a specified date time and belong to the owner

@@ -1,12 +1,12 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using Microsoft.Extensions.Logging;
-using WebApiModels.Enums;
-using System;
 using Newtonsoft.Json;
-using WebApiModels.Models;
-using WebApiModels.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApiModels.Executors
+namespace VSS.Productivity3D.WebApiModels.Executors
 {
   /// <summary>
   /// The executor which sends an alert if required for a tag file processing error.

@@ -1,18 +1,16 @@
-﻿using Repositories;
-using Repositories.DBModels;
-using Repositories.ExtendedModels;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using WebApiModels.ResultHandling;
-using WebApiModels.Models;
-using WebApiModels.Enums;
+using Repositories;
+using Repositories.DBModels;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace WebApiModels.Executors
+namespace VSS.Productivity3D.WebApiModels.Executors
 {
   /// <summary>
   /// The executor which gets the project id of the project for the requested asset location and date time.

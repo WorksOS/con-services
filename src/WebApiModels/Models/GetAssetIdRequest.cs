@@ -1,9 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-using WebApiModels.Enums;
-using WebApiModels.ResultHandling;
+﻿using Newtonsoft.Json;
+using VSS.Productivity3D.WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApiModels.Models
+namespace VSS.Productivity3D.WebApiModels.Models
 {
   /// <summary>
   /// The request representation used to request the asset Id and project monitoring subscription for a given machine whose tagfiles

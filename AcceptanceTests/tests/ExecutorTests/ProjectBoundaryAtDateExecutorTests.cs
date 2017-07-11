@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApiModels.Models;
-using WebApiModels.Executors;
-using WebApiModels.ResultHandling;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using VSS.Productivity3D.WebApiModels.Executors;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
 namespace RepositoryTests
 {

@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Net;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Repositories.DBModels;
-using System.Net;
-using WebApiModels.Models;
-using WebApiModels.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApiModels.Executors
+namespace VSS.Productivity3D.WebApiModels.Executors
 {
   /// <summary>
   /// The executor which gets the project boundary of the project for the requested project id.

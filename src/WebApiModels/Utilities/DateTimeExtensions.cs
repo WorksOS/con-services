@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebApiModels.Utilities
+namespace VSS.Productivity3D.WebApiModels.Utilities
 {
   public static class DateTimeExtensions
     {

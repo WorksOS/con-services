@@ -1,4 +1,4 @@
-﻿namespace WebApiModels.ResultHandling
+﻿namespace VSS.Productivity3D.WebApiModels.ResultHandling
 {
   /// <summary>
   /// The result of a request to get the legacyAssetID for a radioSerial

@@ -1,5 +1,5 @@
 ﻿
-namespace WebApiModels.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.ResultHandling
 {
   /// <summary>
   /// The result representation of a get project id request.

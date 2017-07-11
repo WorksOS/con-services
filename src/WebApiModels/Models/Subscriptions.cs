@@ -1,7 +1,7 @@
 ﻿using System;
-using WebApiModels.Utilities;
+using VSS.Productivity3D.WebApiModels.Utilities;
 
-namespace WebApiModels.Models
+namespace VSS.Productivity3D.WebApiModels.Models
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic

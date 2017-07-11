@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryTests;
-using WebApiModels.Enums;
-using WebApiModels.Executors;
-using WebApiModels.Models;
-using WebApiModels.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.Executors;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
 namespace ExecutorTests
 {

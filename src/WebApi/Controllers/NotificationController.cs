@@ -2,11 +2,11 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Repositories;
-using WebApiModels.Executors;
-using WebApiModels.Models;
-using WebApiModels.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Executors;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
-namespace WebApi.Controllers
+namespace VSS.Productivity3D.WebApi.Controllers
 {
     public class NotificationController : Controller
     {

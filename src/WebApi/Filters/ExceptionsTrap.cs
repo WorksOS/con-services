@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.Models;
 
-namespace WebApi.Filters
+namespace VSS.Productivity3D.WebApi.Filters
 {
   public class ExceptionsTrap
   {

@@ -1,11 +1,11 @@
-﻿using System.Net.Http;
-using System.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using System.Net.Http;
+using System.Threading;
 using TestUtility;
-using WebApiModels.ResultHandling;
-using WebApiModels.Models;
-using WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
 namespace WebApiTests
 {

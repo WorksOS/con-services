@@ -3,10 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Microsoft.Extensions.Logging;
 using Repositories;
-using WebApiModels.Models;
-using WebApiModels.ResultHandling;
-using WebApiModels.Executors;
-using WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.Executors;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
 
 namespace WebApiTests.Executors
 {

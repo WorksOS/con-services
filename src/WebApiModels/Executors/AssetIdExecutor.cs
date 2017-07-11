@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Repositories.DBModels;
 using Repositories.ExtendedModels;
-using WebApiModels.ResultHandling;
-using WebApiModels.Models;
-using WebApiModels.Enums;
-using WebApiModels.Utilities;
+using VSS.Productivity3D.WebApiModels.Enums;
+using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.Productivity3D.WebApiModels.Utilities;
 
-namespace WebApiModels.Executors
+namespace VSS.Productivity3D.WebApiModels.Executors
 {
   /// <summary>
   /// The executor which gets a legacyAssetId and/or serviceType for the requested radioSerial and/or legacyProjectId.
