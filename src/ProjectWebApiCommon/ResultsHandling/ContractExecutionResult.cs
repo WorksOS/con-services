@@ -128,7 +128,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling
       DynamicAddwithOffset("FileImport DeleteFile in RaptorServices failed. Reason: {0} {1}.", 54);
       DynamicAddwithOffset("CreateImportedFileV4. The uploaded file is not accessible.", 55);
       DynamicAddwithOffset("DeleteImportedFileV4. The importedFileUid doesn't exist under this project.", 56);
-      DynamicAddwithOffset("A problem occured at the {0} endpoint. Exception: {1}", 57);
+      DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 57);
       DynamicAddwithOffset("CreateImportedFileV4. The file has already been created.", 58);
       DynamicAddwithOffset("GeofenceService CreateGeofence failed. No geofenceUid returned.", 59);
       DynamicAddwithOffset("Application calling context supports only HttpGet endpoints.", 60);
@@ -141,7 +141,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling
       DynamicAddwithOffset("FileImport AddFile in RaptorServices failed. Reason: {0} {1}.", 67);
       DynamicAddwithOffset("Invalid parameters.", 68);
       DynamicAddwithOffset("Unable to retrieve project settings from repository. Reason: {0} {1}.", 69);
-      DynamicAddwithOffset("Unable to Validate project settings with raptor. Reason: {0} {1}.", 70);
+      DynamicAddwithOffset("Unable to validate project settings with raptor. Reason: {0} {1}.", 70);
       DynamicAddwithOffset("Unable to update project settings with raptor. Reason: {0} {1}.", 71);
     }
 

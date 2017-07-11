@@ -26,11 +26,6 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     protected ProjectRepository projectRepo;
 
     /// <summary>
-    /// raptor methods used to validate and submit project settings changes
-    /// </summary>
-    protected IRaptorProxy raptorProxy;
-
-    /// <summary>
     /// Configuration items
     /// </summary>
     protected IConfigurationStore configStore;
@@ -44,11 +39,6 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// handle exceptions
     /// </summary>
     protected IServiceExceptionHandler serviceExceptionHandler;
-
-    /// <summary>
-    /// pass custom headers around yuk todo
-    /// </summary>
-    protected IDictionary<string, string> customHeaders;
 
     /// <summary>
     /// Gets or sets the Kafak consumer.
@@ -147,15 +137,13 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(IRepository<IProjectEvent> projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore,  ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders, IKafka producer) : this()
+    protected RequestExecutorContainer(IRepository<IProjectEvent> projectRepo, IConfigurationStore configStore,  ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : this()
     {
       this.projectRepo = projectRepo as ProjectRepository;
-      this.raptorProxy = raptorProxy;
       this.configStore = configStore;
       if (logger != null)
         log = logger.CreateLogger<RequestExecutorContainer>();
       this.serviceExceptionHandler = serviceExceptionHandler;
-      this.customHeaders = customHeaders;
       this.producer = producer;
       kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
@@ -174,10 +162,10 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// </summary>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders, IKafka producer, string kafkaTopicName = null)
+    public static TExecutor Build<TExecutor>(ProjectRepository projectRepo, IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer, string kafkaTopicName = null)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { projectRepo = projectRepo, raptorProxy = raptorProxy, configStore = configStore, log = logger.CreateLogger<TExecutor>(), serviceExceptionHandler = serviceExceptionHandler, customHeaders = customHeaders, producer = producer, kafkaTopicName = kafkaTopicName};
+      var executor = new TExecutor() { projectRepo = projectRepo, configStore = configStore, log = logger.CreateLogger<TExecutor>(), serviceExceptionHandler = serviceExceptionHandler, producer = producer, kafkaTopicName = kafkaTopicName};
       return executor;
     }
 

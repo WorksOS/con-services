@@ -18,7 +18,7 @@ namespace ExecutorTests
     {
       string projectUid = Guid.NewGuid().ToString();
  
-      var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, customHeaders, producer);
+      var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer);
       var result = await executor.ProcessAsync(projectUid) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
@@ -34,7 +34,7 @@ namespace ExecutorTests
       var isCreatedOk = CreateProjectSettings(projectUid, settings);
       Assert.IsTrue(isCreatedOk, "created projectSettings");
 
-      var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, customHeaders, producer);
+      var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer);
       var result = await executor.ProcessAsync(projectUid) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
@@ -49,7 +49,7 @@ namespace ExecutorTests
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settings);
       string kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" + configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
 
-      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, customHeaders, producer, kafkaTopicName);
+      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
@@ -67,7 +67,7 @@ namespace ExecutorTests
       Assert.IsTrue(isCreatedOk, "created projectSettings");
 
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settingsUpdated);
-      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, customHeaders, producer);
+      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(projectUid, result.ProjectUid, "executor returned incorrect ProjectUid");

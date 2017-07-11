@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
-using MasterDataProxies.Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Repositories;
@@ -24,7 +23,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public UpsertProjectSettingsExecutor(IRepository<IProjectEvent> projectRepo, IRaptorProxy raptorProxy, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders, IKafka producer) : base(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, customHeaders, producer)
+    public UpsertProjectSettingsExecutor(IRepository<IProjectEvent> projectRepo, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : base(projectRepo, configStore, logger, serviceExceptionHandler, producer)
     {
     }
 
@@ -52,8 +51,6 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
       try
       {
         ProjectSettingsRequest request = item as ProjectSettingsRequest;
-
-        await RaptorUpsertProjectSettings(request.projectUid, request.settings);
 
         var upsertProjectSettingsEvent = new UpdateProjectSettingsEvent()
         {
@@ -86,34 +83,6 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     protected override void ProcessErrorCodes()
     {
     }
-
-    protected async Task RaptorUpsertProjectSettings(string projectUid, string settings)
-    {
-      MasterDataProxies.ResultHandling.ContractExecutionResult result = null;
-      try
-      {
-        // todo
-        //result = await raptorProxy
-        //  .ProjectSettingsUpsert(projectUid, settings, customHeaders)
-        //  .ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        log.LogError(
-          $"ProjectSettingsUpsert: RaptorServices failed with exception. projectUid:{projectUid} settings:{settings}. Exception Thrown: {e.Message}. ");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 70, "raptorProxy.ProjectSettingsValidate", e.Message);
-      }
-
-      log.LogDebug(
-        $"ProjectSettingsUpsert: projectUid: {projectUid} settings: {settings}. RaptorServices returned code: {result?.Code ?? -1} Message {result?.Message ?? "result == null"}.");
-
-      if (result != null && result.Code != 0)
-      {
-        log.LogError($"ProjectSettingsUpsert: RaptorServices failed. projectUid:{projectUid} settings:{settings}. Reason: {result?.Code ?? -1} {result?.Message ?? "null"}. ");
-
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(), result.Message);
-      }
-    }
-
+    
   }
 }

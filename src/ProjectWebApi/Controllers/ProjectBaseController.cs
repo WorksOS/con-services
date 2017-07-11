@@ -5,7 +5,6 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
-using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Repositories;
@@ -13,6 +12,7 @@ using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApi.Filters;
 using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
 
 namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {

@@ -2,13 +2,13 @@
 using System.Net;
 using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Repositories;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.MasterDataProxies;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 using VSS.Productivity3D.ProjectWebApi.Filters;
 using VSS.Productivity3D.ProjectWebApiCommon.Executors;
@@ -56,7 +56,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
       LogCustomerDetails("UpsertProjectSettings", projectUid);
 
-      var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, Request.Headers.GetCustomHeaders(), producer);
+      var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer);
       var result = await executor.ProcessAsync(projectUid);
 
       log.LogResult(this.ToString(), projectUid, result);
@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
 
       await RaptorValidateProjectSettings(request.projectUid, request.settings);
 
-      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, Request.Headers.GetCustomHeaders(), producer);
+      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer);
       var result = await executor.ProcessAsync(request);
 
       log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
@@ -99,10 +99,9 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       MasterDataProxies.ResultHandling.ContractExecutionResult result = null;
       try
       {
-        // todo do we need ProjectUid?
-        //result = await raptorProxy
-        //  .ProjectSettingsValidate(projectUid, settings, Request.Headers.GetCustomHeaders())
-        //  .ConfigureAwait(false);
+        result = await raptorProxy
+          .ProjectSettingsValidate(settings, Request.Headers.GetCustomHeaders())
+          .ConfigureAwait(false);
       }
       catch (Exception e)
       {

@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public GetProjectSettingsExecutor(IRepository<IProjectEvent> projectRepo, IRaptorProxy raptorProxy, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders, IKafka producer) : base(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, customHeaders, producer)
+    public GetProjectSettingsExecutor(IRepository<IProjectEvent> projectRepo, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : base(projectRepo, configStore, logger, serviceExceptionHandler, producer)
     {
     }
 
