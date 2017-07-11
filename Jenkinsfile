@@ -57,7 +57,7 @@ node('Ubuntu_Slave') {
 
        //Publish to AWS Repo
        stage 'Get ecr login, push image to Repo'
-       sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
+       sh "bash ./awslogin.sh"
 
 	if (branch.contains("release"))
 	{
