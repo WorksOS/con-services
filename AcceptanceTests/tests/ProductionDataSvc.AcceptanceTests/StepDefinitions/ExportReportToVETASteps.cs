@@ -52,7 +52,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I request an Export Report To VETA")]
     public void WhenIRequestAnExportReportToVETA()
     {
-      exportReportRequester.DoValidRequest();     
+      exportReportRequester.DoValidRequest(url);     
     }
 
 
