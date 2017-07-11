@@ -18,6 +18,10 @@ echo "WebApiTests finished"
 echo "Run Integration tests starting...."
 dotnet TestRun/TestRun.dll results=/testresults/IntegrationTestResults project=IntegrationTests
 echo "Integration tests finished"
+
+echo "Run Executor tests starting...."
+dotnet TestRun/TestRun.dll results=/testresults/ExecutorTestResults project=ExecutorTests
+echo "Executor tests finished"
 echo " "
 echo " "
 echo " All acceptance tests completed"

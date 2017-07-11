@@ -12,6 +12,7 @@ dotnet restore --no-cache
 cd tests
 dotnet publish IntegrationTests -o ..\..\deploy\IntegrationTests -f netcoreapp1.1
 dotnet publish WebApiTests -o ..\..\deploy\WebApiTests -f netcoreapp1.1
+dotnet publish ExecutorTests -o ..\..\deploy\ExecutorTests -f netcoreapp1.1
 
 cd ..
 cd utilities
