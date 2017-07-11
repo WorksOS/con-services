@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
             .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
             .ForMember(x => x.ProjectTimezone, opt => opt.Ignore());
-          cfg.CreateMap<Project, ProjectV4Descriptor>()
+          cfg.CreateMap<Repositories.DBModels.Project, ProjectV4Descriptor>()
             .ForMember(x => x.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
             .ForMember(x => x.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
             .ForMember(x => x.IsArchived,

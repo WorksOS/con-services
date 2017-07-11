@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
 using Microsoft.Extensions.Logging;
 using Repositories;
 using VSS.GenericConfiguration;
@@ -18,7 +21,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public GetProjectSettingsExecutor(IRepository<IProjectEvent> projectRepo, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler) : base(projectRepo, configStore, logger, serviceExceptionHandler)
+    public GetProjectSettingsExecutor(IRepository<IProjectEvent> projectRepo, IRaptorProxy raptorProxy, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders, IKafka producer) : base(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, customHeaders, producer)
     {
     }
 
@@ -47,18 +50,12 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
       {
         string projectUid = item as string;
 
-        var projectSettings =
-          // (await projectRepo.GetProject(projectUid).ConfigureAwait(false));
-          // todo temp until dbRepo done
-          ProjectSettingsResult.CreateProjectSettingsResult(
-            projectUid,
-            "<ProjectSettings> <VolumeSettings>< ApplyShrinkageAndBulking > false </ ApplyShrinkageAndBulking ></ ProjectSettings >"
-          );
-        result = ProjectSettingsResult.CreateProjectSettingsResult(projectUid, projectSettings.Settings);
+        var projectSettings = await projectRepo.GetProjectSettings(projectUid).ConfigureAwait(false);
+        result = ProjectSettingsResult.CreateProjectSettingsResult(projectUid, projectSettings?.Settings);
       }
       catch( Exception e)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 68, e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69, e.Message);
       }
       return result;
     }

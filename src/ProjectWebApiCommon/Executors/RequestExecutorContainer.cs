@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using KafkaConsumer.Kafka;
+using MasterDataProxies.Interfaces;
 using Repositories;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
@@ -24,6 +26,11 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     protected ProjectRepository projectRepo;
 
     /// <summary>
+    /// raptor methods used to validate and submit project settings changes
+    /// </summary>
+    protected IRaptorProxy raptorProxy;
+
+    /// <summary>
     /// Configuration items
     /// </summary>
     protected IConfigurationStore configStore;
@@ -37,6 +44,21 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// handle exceptions
     /// </summary>
     protected IServiceExceptionHandler serviceExceptionHandler;
+
+    /// <summary>
+    /// pass custom headers around yuk todo
+    /// </summary>
+    protected IDictionary<string, string> customHeaders;
+
+    /// <summary>
+    /// Gets or sets the Kafak consumer.
+    /// </summary>
+    protected IKafka producer;
+
+    /// <summary>
+    /// Gets or sets the Kafka topic.
+    /// </summary>
+    protected string kafkaTopicName;
 
 
 
@@ -125,16 +147,21 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(IRepository<IProjectEvent> projectRepo, IConfigurationStore configStore,  ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler) : this()
+    protected RequestExecutorContainer(IRepository<IProjectEvent> projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore,  ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders, IKafka producer) : this()
     {
       this.projectRepo = projectRepo as ProjectRepository;
+      this.raptorProxy = raptorProxy;
       this.configStore = configStore;
       if (logger != null)
         log = logger.CreateLogger<RequestExecutorContainer>();
       this.serviceExceptionHandler = serviceExceptionHandler;
+      this.customHeaders = customHeaders;
+      this.producer = producer;
+      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
+                       configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
-   /// <summary>
+    /// <summary>
     /// Default destructor which destroys all structures necessary for error handling.
     /// </summary>
     ~RequestExecutorContainer()
@@ -147,10 +174,10 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// </summary>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ProjectRepository projectRepo, IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+    public static TExecutor Build<TExecutor>(ProjectRepository projectRepo, IRaptorProxy raptorProxy, IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders, IKafka producer, string kafkaTopicName = null)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { projectRepo = projectRepo, configStore = configStore, log = logger.CreateLogger<TExecutor>(), serviceExceptionHandler = serviceExceptionHandler };
+      var executor = new TExecutor() { projectRepo = projectRepo, raptorProxy = raptorProxy, configStore = configStore, log = logger.CreateLogger<TExecutor>(), serviceExceptionHandler = serviceExceptionHandler, customHeaders = customHeaders, producer = producer, kafkaTopicName = kafkaTopicName};
       return executor;
     }
 

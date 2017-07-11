@@ -1,5 +1,8 @@
 ﻿using System;
+using KafkaConsumer.Kafka;
 using log4netExtensions;
+using MasterDataProxies;
+using MasterDataProxies.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -33,7 +36,9 @@ namespace MasterDataConsumerTests
       serviceCollection      
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddSingleton<IConfigurationStore, VSS.GenericConfiguration.GenericConfiguration>()
-        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+        .AddTransient<IRaptorProxy, RaptorProxy>()
+        .AddSingleton<IKafka, RdKafkaDriver>(); 
       serviceProvider = serviceCollection.BuildServiceProvider();
     }
 

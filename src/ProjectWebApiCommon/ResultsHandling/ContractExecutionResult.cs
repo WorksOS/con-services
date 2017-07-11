@@ -139,7 +139,10 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling
       DynamicAddwithOffset("Unable to associate project with geofence.", 65);
       DynamicAddwithOffset("Unable to delete project.", 66);
       DynamicAddwithOffset("FileImport AddFile in RaptorServices failed. Reason: {0} {1}.", 67);
-      DynamicAddwithOffset("ProjectSettings: Unable to get settings from repository. Reason: {0} {1}.", 68);
+      DynamicAddwithOffset("Invalid parameters.", 68);
+      DynamicAddwithOffset("Unable to retrieve project settings from repository. Reason: {0} {1}.", 69);
+      DynamicAddwithOffset("Unable to Validate project settings with raptor. Reason: {0} {1}.", 70);
+      DynamicAddwithOffset("Unable to update project settings with raptor. Reason: {0} {1}.", 71);
     }
 
     /// <summary>

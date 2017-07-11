@@ -6,7 +6,6 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Internal
 {
   public static class LoggingExtensions
   {
-
     public static int LogResult(this ILogger log, string methodName, string projectUid, ContractExecutionResult result)
     {
       if (result.Code == ContractExecutionStatesEnum.ExecutedSuccessfully)
