@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using MasterDataModels.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.Productivity3D.MasterDataProxies.Models;
 
 namespace VSS.Productivity3D.MasterDataProxies.Interfaces
 {

@@ -40,7 +40,7 @@ dir ("MasterDataConsumers")
     currentBuild.displayName = versionNumber + suffix
 
     stage 'Restore packages'
-    sh "dotnet restore --no-cache"
+    sh "dotnet restore --no-cache MasterDataConsumers.sln"
     stage 'Build solution'
     sh "bash ./build.sh"
     stage 'Run unit tests'

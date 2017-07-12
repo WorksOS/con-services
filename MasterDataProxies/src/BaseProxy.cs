@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using MasterDataModels.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.GenericConfiguration;
-using VSS.Productivity3D.MasterDataProxies.Models;
 
 namespace VSS.Productivity3D.MasterDataProxies
 {
-    /// <summary>
-    /// Base class for proxies getting master data from services.
-    /// </summary>
-    public class BaseProxy 
+  /// <summary>
+  /// Base class for proxies getting master data from services.
+  /// </summary>
+  public class BaseProxy 
     {
         protected readonly ILogger log;
         private readonly ILoggerFactory logger;
@@ -189,8 +189,7 @@ namespace VSS.Productivity3D.MasterDataProxies
                 IDictionary<string, string> customHeaders, string route = null) where T : IData
         {
             List<T> cacheData;
-            string caching = null;
-            customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+            customHeaders.TryGetValue("X-VisionLink-ClearCache", out string caching);
             if (!string.IsNullOrEmpty(caching) && caching == "true")
               cache.Remove(customerUid);
 

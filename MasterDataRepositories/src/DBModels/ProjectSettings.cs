@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Repositories.DBModels
+namespace VSS.Productivity3D.Repo.DBModels
 {
     public class ProjectSettings
     {

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TestUtility.Model.WebApi
 {
-    public class Cycle
+  public class Cycle
     {
         public DateTime? startCycleDeviceTime { get; set; }
         //This field is only applicable for L-D configuration telling when a dumop event has happened. In case of Load config and Dump config it's null

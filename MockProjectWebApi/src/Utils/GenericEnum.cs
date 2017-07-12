@@ -4,7 +4,6 @@ using System.Reflection;
 
 namespace MockProjectWebApi.Utils
 {
-
   public abstract class GenericEnum<T, U> where T : GenericEnum<T, U>, new()
   {
     private readonly List<string> names;
@@ -17,7 +16,7 @@ namespace MockProjectWebApi.Utils
       Type u = typeof(U);
       if (t == u)
         throw new InvalidOperationException(String.Format("{0} and its underlying type cannot be the same",
-                t.Name));
+          t.Name));
       BindingFlags bf = BindingFlags.Static | BindingFlags.Public;
       FieldInfo[] fia = t.GetFields(bf);
       names = new List<string>();
@@ -157,7 +156,7 @@ namespace MockProjectWebApi.Utils
       {
         if (allowInstanceExceptions)
           throw new ArgumentException(String.Format("'{0}' is not a defined name of {1}", name,
-                  typeof(T).Name));
+            typeof(T).Name));
         return null;
       }
       T t = new T();
@@ -171,7 +170,7 @@ namespace MockProjectWebApi.Utils
       {
         if (allowInstanceExceptions)
           throw new ArgumentException(String.Format("'{0}' is not a defined value of {1}", value,
-                  typeof(T).Name));
+            typeof(T).Name));
         return null;
       }
       T t = new T();
@@ -219,7 +218,7 @@ namespace MockProjectWebApi.Utils
         {
           if (allowInstanceExceptions)
             throw new ArgumentException(String.Format("'{0}' is not a defined name of {1}", value,
-                    typeof(T).Name));
+              typeof(T).Name));
           return;
         }
         _index = index;
@@ -236,7 +235,7 @@ namespace MockProjectWebApi.Utils
         {
           if (allowInstanceExceptions)
             throw new ArgumentException(String.Format("'{0}' is not a defined value of {1}", value,
-                    typeof(T).Name));
+              typeof(T).Name));
           return;
         }
         _index = index;
@@ -273,12 +272,8 @@ namespace MockProjectWebApi.Utils
       else
       {
         throw new InvalidOperationException(String.Format("'{0}' is already an element of {1}", name,
-                typeof(T).Name));
+          typeof(T).Name));
       }
     }
   }
-
-
-
 }
-

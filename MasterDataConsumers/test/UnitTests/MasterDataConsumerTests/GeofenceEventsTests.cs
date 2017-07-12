@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Repositories.DBModels;
 
 namespace MasterDataConsumerTests
 {

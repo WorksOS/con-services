@@ -1,19 +1,18 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
-using KafkaConsumer;
-
-using Microsoft.Extensions.Logging;
-using log4netExtensions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.GenericConfiguration;
+﻿using KafkaConsumer;
 using KafkaConsumer.Interfaces;
 using KafkaConsumer.Kafka;
-using Repositories;
+using log4netExtensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using VSS.GenericConfiguration;
+using VSS.Productivity3D.Repo;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace MasterDataConsumer.Tests
 {

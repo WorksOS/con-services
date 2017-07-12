@@ -1,16 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace MockProjectWebApi.Models
+namespace VSS.Productivity3D.MasterDataProxies.Models
 {
   /// <summary>
   /// Coordinate system(CS) definition file content and filename to be validated, then sent to Raptor.
   /// </summary>
-  public class CoordinateSystemFile : ProjectID
-  {
+  public class CoordinateSystemFile
+  { 
+    /// <summary>
+    /// The project to process the CS definition file into.
+    /// </summary>
+    /// 
+    [JsonProperty(PropertyName = "projectId", Required = Required.Default)]
+    public long? projectId { get; private set; }
+
+    /// <summary>
+    /// A project unique identifier.
+    /// </summary>
+    [JsonProperty(PropertyName = "projectUid", Required = Required.Default)]
+    public Guid? projectUid { get; private set; }
+
     /// <summary>
     /// The content of the CS definition file as an array of bytes.
     /// </summary>
@@ -36,22 +46,15 @@ namespace MockProjectWebApi.Models
 
     public static CoordinateSystemFile CreateCoordinateSystemFile(long projectId, byte[] csFileContent, string csFileName)
     {
-      CoordinateSystemFile tempCS = new CoordinateSystemFile();
-
-      tempCS.projectId = projectId;
-      tempCS.csFileName = csFileName;
-      tempCS.csFileContent = csFileContent;
+      CoordinateSystemFile tempCS = new CoordinateSystemFile
+      {
+        projectId = projectId,
+        csFileName = csFileName,
+        csFileContent = csFileContent
+      };
 
       return tempCS;
     }
 
-    /// <summary>
-    /// Validation method.
-    /// </summary>
-    public override void Validate()
-    {
-      // Validation rules might be placed in here...
-      throw new NotImplementedException();
-    }
   }
 }
