@@ -1,5 +1,4 @@
-﻿using MasterDataProxies;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -11,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.MasterDataProxies;
 using VSS.Productivity3D.TCCFileAccess.Models;
 
 namespace VSS.Productivity3D.TCCFileAccess
