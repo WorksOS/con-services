@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Repositories;
-using Repositories.DBModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -20,6 +18,8 @@ using VSS.Productivity3D.ProjectWebApi.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.Productivity3D.Repo;
+using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
