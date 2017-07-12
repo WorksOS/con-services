@@ -201,56 +201,61 @@ namespace TestRun
         }
 
 
-        /// <summary>
-        /// Set the exception message
-        /// </summary>
-        /// <param name="ex"></param>
-        /// <param name="stdout"></param>
-        /// <param name="testResult"></param>
-        private void SetFailureMessage(Exception ex, StringWriter stdout, string testResult)
+      /// <summary>
+      /// Set the exception message
+      /// </summary>
+      /// <param name="ex"></param>
+      /// <param name="stdout"></param>
+      /// <param name="testResult"></param>
+      private void SetFailureMessage(Exception ex, StringWriter stdout, string testResult)
+      {
+        lock (thisLock)
         {
-            lock (thisLock)
+          if (ex.InnerException != null)
+          {
+            if (ex.InnerException.GetType() == typeof(AssertFailedException))
             {
-                if (ex.InnerException != null)
-                {
-                    if (ex.InnerException.GetType() == typeof(AssertFailedException))
-                    {
-                        var excep = ex.InnerException.Message.Replace('<', ' ');
-                        excep = excep.Replace('>', ' ');
-                        var failureResult = ReplaceTag("XMLMESSAGE", excep, skelFailure);
-                        failureResult = ReplaceTag("XMLSTACKTRACE", "", failureResult);
-                        failureResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), failureResult);
-                        stdout.Flush();
-                        testResult = ReplaceTag("XMLERRORORFAILURE", failureResult, testResult);
-                    }
-                    else
-                    {
-                        var excep = ex.InnerException.Message.Replace('<', ' ');
-                        excep = excep.Replace('>', ' ');
-                        var errorResult = ReplaceTag("XMLMESSAGE", excep, skelFailure);
-                        var stackTrace = ex.StackTrace.Replace('<', ' ');
-                        stackTrace = stackTrace.Replace('>', ' ');
-                        errorResult = ReplaceTag("XMLSTACKTRACE", stackTrace, errorResult);
-                        errorResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), errorResult);
-                        stdout.Flush();
-                        testResult = ReplaceTag("XMLERRORORFAILURE", errorResult, testResult);
-                    }
-                }
-                else
-                {
-                    var excep = ex.Message.Replace('<', ' ');
-                    excep = excep.Replace('>', ' ');
-                    var errorResult = ReplaceTag("XMLMESSAGE", excep, skelFailure);
-                    var stackTrace = ex.StackTrace.Replace('<', ' ');
-                    stackTrace = stackTrace.Replace('>', ' ');
-                    errorResult = ReplaceTag("XMLSTACKTRACE", stackTrace, errorResult);
-                    errorResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), errorResult);
-                    stdout.Flush();
-                    testResult = ReplaceTag("XMLERRORORFAILURE", errorResult, testResult);
-                }
-
-                allTestCase = allTestCase + testResult;
+              var excep = ex.InnerException.Message.Replace('<', ' ');
+              excep = excep.Replace('>', ' ');
+              excep = excep.Replace('"', ' ');
+              var failureResult = ReplaceTag("XMLMESSAGE", excep, skelFailure);
+              failureResult = ReplaceTag("XMLSTACKTRACE", "", failureResult);
+              failureResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), failureResult);
+              stdout.Flush();
+              testResult = ReplaceTag("XMLERRORORFAILURE", failureResult, testResult);
             }
+            else
+            {
+              var excep = ex.InnerException.Message.Replace('<', ' ');
+              excep = excep.Replace('>', ' ');
+              excep = excep.Replace('"', ' ');
+              var errorResult = ReplaceTag("XMLMESSAGE", excep, skelFailure);
+              var stackTrace = ex.StackTrace.Replace('<', ' ');
+              stackTrace = stackTrace.Replace('>', ' ');
+              stackTrace = stackTrace.Replace('"', ' ');
+              errorResult = ReplaceTag("XMLSTACKTRACE", stackTrace, errorResult);
+              errorResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), errorResult);
+              stdout.Flush();
+              testResult = ReplaceTag("XMLERRORORFAILURE", errorResult, testResult);
+            }
+          }
+          else
+          {
+            var excep = ex.Message.Replace('<', ' ');
+            excep = excep.Replace('>', ' ');
+            excep = excep.Replace('"', ' ');
+            var errorResult = ReplaceTag("XMLMESSAGE", excep, skelFailure);
+            var stackTrace = ex.StackTrace.Replace('<', ' ');
+            stackTrace = stackTrace.Replace('>', ' ');
+            stackTrace = stackTrace.Replace('"', ' ');
+            errorResult = ReplaceTag("XMLSTACKTRACE", stackTrace, errorResult);
+            errorResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), errorResult);
+            stdout.Flush();
+            testResult = ReplaceTag("XMLERRORORFAILURE", errorResult, testResult);
+          }
+
+          allTestCase = allTestCase + testResult;
         }
-    }
+      }
+  }
 }

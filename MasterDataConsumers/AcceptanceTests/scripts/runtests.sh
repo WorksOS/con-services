@@ -10,8 +10,8 @@ echo ">>> Making sure Kafka is up"
 eval ./wait-for-it.sh "$KAFKA_URI:$KAFKA_PORT" -t 0
 echo "<<< Done checking on Kafka"
 
-echo "Wait for 90 seconds"
-sleep 90s
+echo "Wait for 60 seconds"
+sleep 60s
 
 # Run the component tests
 echo "Run the component tests"
@@ -20,7 +20,7 @@ dotnet TestRun/TestRun.dll results=/testresults/KafkaTestsResults project=KafkaT
 echo "KafkaTests finished"
 
 echo "RepositoryTests starting...."
-dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestsResults project=RepositoryTests
+dotnet TestRun/TestRun.dll results=/testresults/RepositoryTestsResults project=RepositoryTests messages=false
 echo "RepositoryTests finished"
 
 echo "Run the component/acceptance tests"
