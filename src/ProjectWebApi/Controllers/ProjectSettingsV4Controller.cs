@@ -5,7 +5,6 @@ using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Repositories;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.MasterDataProxies;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
@@ -14,6 +13,7 @@ using VSS.Productivity3D.ProjectWebApi.Filters;
 using VSS.Productivity3D.ProjectWebApiCommon.Executors;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.Productivity3D.Repo;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.ProjectWebApi.Controllers

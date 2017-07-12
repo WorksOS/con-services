@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
-using MasterDataProxies.Interfaces;
 using Microsoft.Extensions.Logging;
-using Repositories;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Productivity3D.Repo;
 
 namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
 {
@@ -21,7 +18,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public GetProjectSettingsExecutor(IRepository<IProjectEvent> projectRepo, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : base(projectRepo, configStore, logger, serviceExceptionHandler, producer)
+    public GetProjectSettingsExecutor(IProjectRepository projectRepo, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : base(projectRepo, configStore, logger, serviceExceptionHandler, producer)
     {
     }
 

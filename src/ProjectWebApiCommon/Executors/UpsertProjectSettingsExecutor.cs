@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Repositories;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.Productivity3D.Repo;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    public UpsertProjectSettingsExecutor(IRepository<IProjectEvent> projectRepo, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : base(projectRepo, configStore, logger, serviceExceptionHandler, producer)
+    public UpsertProjectSettingsExecutor(IProjectRepository projectRepo, ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : base(projectRepo, configStore, logger, serviceExceptionHandler, producer)
     {
     }
 
@@ -48,32 +48,33 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       ContractExecutionResult result = null;
+
+      ProjectSettingsRequest request = item as ProjectSettingsRequest;
+
+      var upsertProjectSettingsEvent = new UpdateProjectSettingsEvent()
+      {
+        ProjectUID = Guid.Parse(request.projectUid),
+        Settings = request.settings,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
+
+      if ( await projectRepo.StoreEvent(upsertProjectSettingsEvent).ConfigureAwait(false) < 1)
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 52);
+
       try
       {
-        ProjectSettingsRequest request = item as ProjectSettingsRequest;
-
-        var upsertProjectSettingsEvent = new UpdateProjectSettingsEvent()
-        {
-          ProjectUID = Guid.Parse(request.projectUid),
-          Settings = request.settings,
-          ActionUTC = DateTime.UtcNow,
-          ReceivedUTC = DateTime.UtcNow
-        };
-
-        if (await projectRepo.StoreEvent(upsertProjectSettingsEvent).ConfigureAwait(false) < 1)
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 52);
-
-        var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectSettingsEvent = upsertProjectSettingsEvent });
+        var messagePayload = JsonConvert.SerializeObject(new {UpdateProjectSettingsEvent = upsertProjectSettingsEvent});
         producer.Send(kafkaTopicName,
           new List<KeyValuePair<string, string>>
           {
             new KeyValuePair<string, string>(upsertProjectSettingsEvent.ProjectUID.ToString(), messagePayload)
           });
 
-        var projectSettings = await projectRepo.GetProject(request.projectUid).ConfigureAwait(false);
-        result = ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, request.settings);
+        var projectSettings = await projectRepo.GetProjectSettings(request.projectUid).ConfigureAwait(false);
+        result = ProjectSettingsResult.CreateProjectSettingsResult(request.projectUid, projectSettings.Settings);
       }
-      catch( Exception e)
+      catch (Exception e)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 69, e.Message);
       }

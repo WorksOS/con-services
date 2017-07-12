@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
-using MasterDataProxies.Interfaces;
-using Repositories;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Productivity3D.Repo;
 
 namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
 {
@@ -23,7 +21,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// <summary>
     /// Repository factory used in ProcessEx
     /// </summary>
-    protected ProjectRepository projectRepo;
+    protected IProjectRepository projectRepo;
 
     /// <summary>
     /// Configuration items
@@ -137,9 +135,9 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// <summary>
     /// Injected constructor for mocking.
     /// </summary>
-    protected RequestExecutorContainer(IRepository<IProjectEvent> projectRepo, IConfigurationStore configStore,  ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : this()
+    protected RequestExecutorContainer(IProjectRepository projectRepo, IConfigurationStore configStore,  ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer) : this()
     {
-      this.projectRepo = projectRepo as ProjectRepository;
+      this.projectRepo = projectRepo;
       this.configStore = configStore;
       if (logger != null)
         log = logger.CreateLogger<RequestExecutorContainer>();
@@ -162,7 +160,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
     /// </summary>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ProjectRepository projectRepo, IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer, string kafkaTopicName = null)
+    public static TExecutor Build<TExecutor>(IProjectRepository projectRepo, IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer, string kafkaTopicName = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor() { projectRepo = projectRepo, configStore = configStore, log = logger.CreateLogger<TExecutor>(), serviceExceptionHandler = serviceExceptionHandler, producer = producer, kafkaTopicName = kafkaTopicName};

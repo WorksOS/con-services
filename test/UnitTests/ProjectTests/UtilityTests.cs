@@ -1,13 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using Repositories.DBModels;
 using System;
 using VSS.Authentication.JWT;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace MasterDataConsumerTests
+namespace ProjectTests
 {
   [TestClass]
   public class UtilityTests
@@ -87,7 +87,7 @@ namespace MasterDataConsumerTests
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
 
-      var project = new Repositories.DBModels.Project()
+      var project = new Project()
       {
         ProjectUID = Guid.NewGuid().ToString(),
         LegacyProjectID = 123,
@@ -137,7 +137,7 @@ namespace MasterDataConsumerTests
       Assert.IsFalse(result.IsArchived, "IsArchived has not been mapped correctly");
 
       // just make a copy
-      var copyOfProject = AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(project);
+      var copyOfProject = AutoMapperUtility.Automapper.Map<Project>(project);
       Assert.AreEqual(project.ProjectUID, copyOfProject.ProjectUID, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(project.LegacyProjectID, copyOfProject.LegacyProjectID, "LegacyProjectID has not been mapped correctly");
     }

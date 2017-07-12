@@ -6,17 +6,18 @@ using MasterDataProxies.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Repositories;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApiCommon.Internal;
+using VSS.Productivity3D.Repo;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace MasterDataConsumerTests
+namespace ProjectTests
 {
   [TestClass]
   public class ExecutorBaseTests
   {
     public IServiceProvider serviceProvider = null;
+    protected string kafkaTopicName;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -40,6 +41,8 @@ namespace MasterDataConsumerTests
         .AddTransient<IRaptorProxy, RaptorProxy>()
         .AddSingleton<IKafka, RdKafkaDriver>(); 
       serviceProvider = serviceCollection.BuildServiceProvider();
+      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
+                       serviceProvider.GetRequiredService<IConfigurationStore>().GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
   }

@@ -6,7 +6,7 @@ using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace MasterDataConsumerTests
+namespace ProjectTests
 {
   [TestClass]
   public class ImportFileTests

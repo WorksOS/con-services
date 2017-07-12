@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Repositories;
 using Swashbuckle.Swagger.Model;
 using System.Diagnostics;
 using System.IO;
@@ -17,6 +16,7 @@ using VSS.Productivity3D.ProjectWebApi.Filters;
 using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.Productivity3D.Repo;
 using VSS.Productivity3D.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 

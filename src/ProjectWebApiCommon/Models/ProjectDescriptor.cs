@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
-using Repositories.DBModels;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.ProjectWebApiCommon.Models
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Models
   /// <summary>
   /// Descriped standrd subscription
   /// </summary>
-  /// <seealso cref="Repositories.DBModels.Subscription" />
+  /// <seealso cref="Subscription" />
   public class SubscriptionDescriptor : Subscription
   {
     /// <summary>

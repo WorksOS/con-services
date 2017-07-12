@@ -1,7 +1,7 @@
 ﻿using System;
 using AutoMapper;
-using Repositories.DBModels;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
             .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
             .ForMember(x => x.ProjectTimezone, opt => opt.Ignore());
-          cfg.CreateMap<Repositories.DBModels.Project, ProjectV4Descriptor>()
+          cfg.CreateMap<Repo.DBModels.Project, ProjectV4Descriptor>()
             .ForMember(x => x.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
             .ForMember(x => x.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
             .ForMember(x => x.IsArchived,

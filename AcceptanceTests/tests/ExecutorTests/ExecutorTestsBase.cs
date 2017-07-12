@@ -7,9 +7,9 @@ using MasterDataProxies.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Repositories;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.ProjectWebApiCommon.Internal;
+using VSS.Productivity3D.Repo;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
