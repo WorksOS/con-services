@@ -1,7 +1,5 @@
 using KafkaConsumer.Kafka;
 using log4netExtensions;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +11,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.MasterDataProxies;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.ProjectWebApi.Filters;
 using VSS.Productivity3D.ProjectWebApi.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
@@ -27,8 +27,8 @@ namespace VSS.Productivity3D.ProjectWebApi
   /// </summary>
   public class Startup
   {
-    private readonly string loggerRepoName = "WebApi";
-    private bool isDevEnv = false;
+    private const string loggerRepoName = "WebApi";
+    private readonly bool isDevEnv;
     IServiceCollection serviceCollection;
 
     /// <summary>

@@ -1,6 +1,5 @@
 ﻿using FlowUploadFilter;
 using KafkaConsumer.Kafka;
-using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -14,6 +13,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.ProjectWebApi.Filters;
 using VSS.Productivity3D.ProjectWebApi.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;

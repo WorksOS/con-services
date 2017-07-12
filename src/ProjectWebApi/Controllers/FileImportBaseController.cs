@@ -1,6 +1,4 @@
 ﻿using KafkaConsumer.Kafka;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -15,6 +13,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.MasterDataProxies;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.ProjectWebApi.Filters;
 using VSS.Productivity3D.ProjectWebApi.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
