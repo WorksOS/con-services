@@ -1,5 +1,5 @@
-﻿using Repositories;
-using Repositories.DBModels;
+﻿using VSS.Productivity3D.Repo;
+using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests.Internal

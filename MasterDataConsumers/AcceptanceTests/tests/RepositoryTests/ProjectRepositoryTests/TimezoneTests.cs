@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Repositories;
 using RepositoryTests.Internal;
+using VSS.Productivity3D.Repo;
 
 namespace RepositoryTests.ProjectRepositoryTests
 {
