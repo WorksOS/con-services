@@ -3,13 +3,13 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.IO;
 using System.Net;
-using MasterDataProxies.ResultHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 using VSS.Productivity3D.TCCFileAccess;
-using WebApiModels.FileAccess.Executors;
-using WebApiModels.FileAccess.ResultHandling;
+using VSS.Productivity3D.WebApiModels.FileAccess.Executors;
+using VSS.Productivity3D.WebApiModels.FileAccess.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.FileAccess.Controllers
 {
@@ -36,9 +36,7 @@ namespace VSS.Productivity3D.WebApi.FileAccess.Controllers
     /// <summary>
     /// Constructor with injected raptor client, logger and authenticated projects
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="authProjectsStore">Authenticated projects store</param>
     /// <param name="fileAccess">TCC file repository</param>
     public FileAccessController(ILoggerFactory logger,
         IFileRepository fileAccess)
@@ -62,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.FileAccess.Controllers
       try
       {
         request.Validate();
-        RawFileAccessResult result = RequestExecutorContainer
+        var result = RequestExecutorContainer
             .Build<RawFileAccessExecutor>(logger, null, fileAccess).Process(request) as RawFileAccessResult;
         if (result != null)
         {

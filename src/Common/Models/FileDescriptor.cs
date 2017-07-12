@@ -2,9 +2,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using MasterDataProxies.ResultHandling;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
 namespace VSS.Productivity3D.Common.Models
 {
@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "filespaceId", Required = Required.Always)]
     [Required]
-    public string filespaceId { get; private set; }
+    public string FilespaceId { get; private set; }
 
     /// <summary>
     /// The full path of the file.
@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.Common.Models
     [MaxLength(MAX_PATH)]
     [JsonProperty(PropertyName = "path", Required = Required.Always)]
     [Required]
-    public string path { get; private set; }
+    public string Path { get; private set; }
 
     /// <summary>
     /// The name of the file.
@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Common.Models
     [MaxLength(MAX_FILE_NAME)]
     [JsonProperty(PropertyName = "fileName", Required = Required.Always)]
     [Required]
-    public string fileName { get; private set; }
+    public string FileName { get; private set; }
 
    /// <summary>
     /// Private constructor
@@ -54,9 +54,9 @@ namespace VSS.Productivity3D.Common.Models
     {
       return new FileDescriptor
              {
-               filespaceId = filespaceId,
-               path = path,
-               fileName = fileName
+               FilespaceId = filespaceId,
+               Path = path,
+               FileName = fileName
              };
     }
 
@@ -74,9 +74,9 @@ namespace VSS.Productivity3D.Common.Models
       {
         return new FileDescriptor()
         {
-          filespaceId = "u72003136-d859-4be8-86de-c559c841bf10",
-          path = "BC Data/Sites/Integration10/Designs",
-          fileName = "Cycleway.ttm"
+          FilespaceId = "u72003136-d859-4be8-86de-c559c841bf10",
+          Path = "BC Data/Sites/Integration10/Designs",
+          FileName = "Cycleway.ttm"
         };
       }
     }
@@ -86,8 +86,8 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     public void Validate()
     {
-      if (string.IsNullOrEmpty(this.filespaceId) || string.IsNullOrEmpty(this.path) ||
-          string.IsNullOrEmpty(this.fileName))
+      if (string.IsNullOrEmpty(this.FilespaceId) || string.IsNullOrEmpty(this.Path) ||
+          string.IsNullOrEmpty(this.FileName))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.Common.Models
     /// </summary>
     public override string ToString()
     {
-      return String.Format("{0}: {1}, {2}", fileName, filespaceId, path);
+      return String.Format("{0}: {1}, {2}", FileName, FilespaceId, Path);
     }
 
 
@@ -110,9 +110,9 @@ namespace VSS.Productivity3D.Common.Models
 
     private static FileDescriptor emptyDescriptor = new FileDescriptor
                                                     {
-                                                        filespaceId = string.Empty,
-                                                        path = string.Empty,
-                                                        fileName = string.Empty
+                                                        FilespaceId = string.Empty,
+                                                        Path = string.Empty,
+                                                        FileName = string.Empty
                                                     };
 
 
