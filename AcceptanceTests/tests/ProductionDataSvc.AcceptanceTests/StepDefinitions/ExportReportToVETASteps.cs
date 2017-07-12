@@ -55,6 +55,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       exportReportRequester.DoValidRequest(url);     
     }
 
+    [When(@"I request an Export Report To VETA expecting BadRequest")]
+    public void WhenIRequestAnExportReportToVETAExpectingBadRequest()
+    {
+      exportReportRequester.DoInvalidRequest(url);
+    }
+
 
     [Then(@"the report result should match the ""(.*)"" from the repository")]
     public void ThenTheReportResultShouldMatchTheFromTheRepository(string resultName)
@@ -62,5 +68,12 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       Assert.AreEqual(exportReportRequester.ResponseRepo[resultName], exportReportRequester.CurrentResponse);
     }
 
+    [Then(@"the report result should contain error code (.*) and error message ""(.*)""")]
+    public void ThenTheReportResultShouldContainErrorCodeAndErrorMessage(int errorCode, string errorMessage)
+    {
+      Assert.IsTrue(exportReportRequester.CurrentResponse.Code == errorCode && (exportReportRequester.CurrentResponse.Message == errorMessage || exportReportRequester.CurrentResponse.Message.Contains(errorMessage)),
+        string.Format("Expected to see code {0} and message {1}, but got {2} and {3} instead.",
+          errorCode, errorMessage, exportReportRequester.CurrentResponse.Code, exportReportRequester.CurrentResponse.Message));
+    }
   }
 }
