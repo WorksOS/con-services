@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Diagnostics;
+using System.IO;
 
 /// <summary>
 /// Settings come from 2 sources:
@@ -16,56 +15,54 @@ namespace VSS.GenericConfiguration
 {
   public class GenericConfiguration : IConfigurationStore
   {
-    //private static readonly ILogger log = serviceProvider.GetService<ILoggerFactory>().CreateLogger<ConfigSettings>();
-    private IConfigurationBuilder configBuilder = null;
-
-    private IConfigurationRoot configuration = null;
-    private readonly ILogger log;
+    private readonly IConfigurationRoot _configuration;
+    private readonly ILogger _log;
 
     public GenericConfiguration(ILoggerFactory logger)
     {
-      log = logger.CreateLogger<GenericConfiguration>();
-      log.LogTrace("GenericConfig constructing");
+      IConfigurationBuilder configBuilder;
+      _log = logger.CreateLogger<GenericConfiguration>();
+      _log.LogTrace("GenericConfig constructing");
       var builder = configBuilder = new ConfigurationBuilder()
         .AddEnvironmentVariables();
       try
       {
-        log.LogTrace("Base:" + System.AppContext.BaseDirectory);
-        Console.WriteLine("Base:" + System.AppContext.BaseDirectory);
-        var dirToAppsettings = System.IO.Directory.GetCurrentDirectory();
-        log.LogTrace("Current:" + dirToAppsettings);
+        _log.LogTrace("Base:" + AppContext.BaseDirectory);
+        Console.WriteLine("Base:" + AppContext.BaseDirectory);
+        var dirToAppsettings = Directory.GetCurrentDirectory();
+        _log.LogTrace("Current:" + dirToAppsettings);
         Console.WriteLine("Current:" + dirToAppsettings);
-        var pathToConfigFile = string.Empty;
+        string pathToConfigFile;
 
-        log.LogDebug($"Testing default path for the config file {System.IO.Directory.GetCurrentDirectory()} and {System.AppContext.BaseDirectory}");
-        Console.WriteLine($"Testing default path for the config file {System.IO.Directory.GetCurrentDirectory()} and {System.AppContext.BaseDirectory}");
+        _log.LogDebug($"Testing default path for the config file {Directory.GetCurrentDirectory()} and {AppContext.BaseDirectory}");
+        Console.WriteLine($"Testing default path for the config file {Directory.GetCurrentDirectory()} and {AppContext.BaseDirectory}");
+
         //Test if appsettings exists in the default folder for the console application
-        if (File.Exists(Path.Combine(System.IO.Directory.GetCurrentDirectory(),"appsettings.json")))
+        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")))
         {
-          pathToConfigFile = System.IO.Directory.GetCurrentDirectory();
-          Console.WriteLine($"Setting GetCurrentDirectory path for the config file {pathToConfigFile}");
+          pathToConfigFile = Directory.GetCurrentDirectory();
         }
-        else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory,"appsettings.json")))
+        else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "appsettings.json")))
         {
-          pathToConfigFile = System.AppContext.BaseDirectory;
-          Console.WriteLine($"Setting BaseDirectory path for the config file {pathToConfigFile}");
+          pathToConfigFile = AppContext.BaseDirectory;
         }
         else
         {
           var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
           pathToConfigFile = Path.GetDirectoryName(pathToExe);
-          log.LogDebug($"Setting alternative path for the config file {pathToConfigFile}");
-          Console.WriteLine($"Setting alternative path for the config file {pathToConfigFile}");
 
+          _log.LogTrace($"No configuration files found, using alternative path {pathToConfigFile}");
         }
+
+        Console.WriteLine($"Using configuration file: {pathToConfigFile}");
 
         builder.SetBasePath(pathToConfigFile) // for appsettings.json location
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-        configuration = configBuilder.Build();
+        _configuration = configBuilder.Build();
       }
       catch (Exception ex)
       {
-        log.LogCritical("GenericConfiguration exception: {0}, {1}, {2}", ex.Message, ex.Source, ex.StackTrace);
+        _log.LogCritical($"GenericConfiguration exception: {ex.Message}, {ex.Source}, {ex.StackTrace}");
         throw;
       }
     }
@@ -73,10 +70,16 @@ namespace VSS.GenericConfiguration
     public string GetConnectionString(string connectionType)
     {
       string serverName = null;
-      if (connectionType == "VSPDB")
-        serverName = GetValueString("MYSQL_SERVER_NAME_VSPDB");
-      else if (connectionType == "ReadVSPDB")
-        serverName = GetValueString("MYSQL_SERVER_NAME_ReadVSPDB");
+
+      switch (connectionType)
+      {
+        case "VSPDB":
+          serverName = GetValueString("MYSQL_SERVER_NAME_VSPDB");
+          break;
+        case "ReadVSPDB":
+          serverName = GetValueString("MYSQL_SERVER_NAME_ReadVSPDB");
+          break;
+      }
 
       var serverPort = GetValueString("MYSQL_PORT");
       var serverDatabaseName = GetValueString("MYSQL_DATABASE_NAME");
@@ -88,7 +91,8 @@ namespace VSS.GenericConfiguration
       {
         var errorString =
           $"Your application is attempting to use the {connectionType} connectionType but is missing an environment variable. serverName {serverName} serverPort {serverPort} serverDatabaseName {serverDatabaseName} serverUserName {serverUserName} serverPassword {serverPassword}";
-        log.LogError(errorString);
+        _log.LogError(errorString);
+
         throw new InvalidOperationException(errorString);
       }
 
@@ -99,42 +103,41 @@ namespace VSS.GenericConfiguration
         ";userid=" + serverUserName +
         ";password=" + serverPassword +
         ";Convert Zero Datetime=True;AllowUserVariables=True;CharSet=utf8mb4";
-      log.LogDebug($"Served connection string {connString}");
+      _log.LogTrace($"Served connection string {connString}");
 
       return connString;
     }
 
     public string GetValueString(string key)
     {
-      log.LogDebug($"Served configuration value {key}:{configuration[key]}");
-      return configuration[key];
+      _log.LogDebug($"Served configuration value {key}:{_configuration[key]}");
+      return _configuration[key];
     }
 
     public int GetValueInt(string key)
     {
       // zero is valid. Returns int.MinValue on error
-      int theInt;
-      if (!int.TryParse(configuration[key], out theInt))
+      if (!int.TryParse(_configuration[key], out int valueInt))
       {
-        theInt = -1;
+        valueInt = -1;
       }
-      log.LogDebug($"Served configuration value {key}:{theInt}");
-      return theInt;
+
+      _log.LogDebug($"Served configuration value {key}:{valueInt}");
+
+      return valueInt;
     }
 
     public bool? GetValueBool(string key)
     {
-      // zero is valid. Returns int.MinValue on error
       bool? theBoolToReturn = null;
-      bool theBool;
-      if (bool.TryParse(configuration[key], out theBool))
+      if (bool.TryParse(_configuration[key], out bool theBool))
       {
         theBoolToReturn = theBool;
       }
-      log.LogDebug($"Served configuration value {key}:{theBoolToReturn}");
+
+      _log.LogDebug($"Served configuration value {key}:{theBoolToReturn}");
 
       return theBoolToReturn;
     }
-
   }
 }
