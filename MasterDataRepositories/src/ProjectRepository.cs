@@ -14,7 +14,7 @@ using Repositories.DBModels;
 
 namespace VSS.Productivity3D.Repo
 {
-  public class ProjectRepository : RepositoryBase, IRepository<IProjectEvent>
+  public class ProjectRepository : RepositoryBase, IRepository<IProjectEvent>, IProjectRepository
   {
     private readonly ILogger log;
 
