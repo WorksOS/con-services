@@ -160,30 +160,31 @@ namespace TestRun
         {
             lock (thisLock)
             {
-                var testResult = ReplaceTag("XMLTESTNAME", method.Name, skelTestResult);
-                testResult = ReplaceTag("XMLTESTID", testId, testResult);
-                testResult = ReplaceTag("XMLTESTEXEC", executionId, testResult);
-                testResult = ReplaceTag("XMLTESTTYPE", testTypeId, testResult);
-                testResult = ReplaceTag("XMLDURATION", stats.LocalTime.ToString(), testResult);
-                testResult = ReplaceTag("XMLSTARTTIME",
-                    stats.StartDateTimeOneTest.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz"), testResult);
-                testResult = ReplaceTag("XMLENDTIME",
-                    stats.EndDateTimeOneTest.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz"), testResult);
-                testResult = ReplaceTag("XMLOUTCOME", "Failed", testResult);
-                testResult = ReplaceTag("XMLCOMPUTER", Environment.MachineName, testResult);
-                testResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), testResult);
-
-                var excep = ex.GetBaseException().Message.Replace('<', ' ' );
-                excep = excep.Replace('>', ' ');
-                var exceptionDetails = "Test method " + method.Name + " threw exception: " + Environment.NewLine +
-                                       ex.Message +
-                                       Environment.NewLine + excep;
-                var errorResult = ReplaceTag("XMLMESSAGE", exceptionDetails, skelErrorInfo);
-                var stackTrace = ex.StackTrace.Replace('<', ' ');
-                stackTrace = excep.Replace('>', ' ');
-                errorResult = ReplaceTag("XMLSTACKTRACE", stackTrace, errorResult);
-                testResult = ReplaceTag("XMLERROR", errorResult, testResult);
-                allTestResults = allTestResults + testResult;
+              var testResult = ReplaceTag("XMLTESTNAME", method.Name, skelTestResult);
+              testResult = ReplaceTag("XMLTESTID", testId, testResult);
+              testResult = ReplaceTag("XMLTESTEXEC", executionId, testResult);
+              testResult = ReplaceTag("XMLTESTTYPE", testTypeId, testResult);
+              testResult = ReplaceTag("XMLDURATION", stats.LocalTime.ToString(), testResult);
+              testResult = ReplaceTag("XMLSTARTTIME",
+                stats.StartDateTimeOneTest.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz"), testResult);
+              testResult = ReplaceTag("XMLENDTIME",
+                stats.EndDateTimeOneTest.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffzzz"), testResult);
+              testResult = ReplaceTag("XMLOUTCOME", "Failed", testResult);
+              testResult = ReplaceTag("XMLCOMPUTER", Environment.MachineName, testResult);
+              testResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), testResult);
+              var excep = ex.InnerException.Message.Replace('<', ' ');
+              excep = excep.Replace('>', ' ');
+              excep = excep.Replace('"', ' ');
+              var exceptionDetails = "Test method " + method.Name + " threw exception: " + Environment.NewLine +
+                                     ex.Message +
+                                     Environment.NewLine + excep;
+              var errorResult = ReplaceTag("XMLMESSAGE", exceptionDetails, skelErrorInfo);
+              var stackTrace = ex.StackTrace.Replace('<', ' ');
+              stackTrace = stackTrace.Replace('>', ' ');
+              stackTrace = stackTrace.Replace('"', ' ');
+              errorResult = ReplaceTag("XMLSTACKTRACE", stackTrace, errorResult);
+              testResult = ReplaceTag("XMLERROR", errorResult, testResult);
+              allTestResults = allTestResults + testResult;
             }
         }
 

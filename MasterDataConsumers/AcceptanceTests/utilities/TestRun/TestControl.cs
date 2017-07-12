@@ -194,6 +194,7 @@ namespace TestRun
         /// <returns>bool if run successfully</returns>
         private bool GetAllClassesInAssemblyAndRunTests(Assembly assembly, Type[] classes)
         {
+            stats.StartDateTimeAllTests = DateTime.Now;
             foreach (var current in classes)
             {
                 if (!string.IsNullOrEmpty(singleClassName))
