@@ -1,10 +1,10 @@
-﻿using MasterDataProxies.ResultHandling;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 using VSS.Productivity3D.TCCFileAccess;
 
 namespace VSS.Productivity3D.Common.Interfaces

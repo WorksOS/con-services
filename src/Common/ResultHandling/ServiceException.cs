@@ -1,7 +1,7 @@
-﻿using MasterDataProxies.ResultHandling;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Net;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
 namespace VSS.Productivity3D.Common.ResultHandling
 {

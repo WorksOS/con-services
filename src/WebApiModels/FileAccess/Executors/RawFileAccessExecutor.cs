@@ -1,16 +1,16 @@
-﻿using MasterDataProxies.ResultHandling;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 using VSS.Productivity3D.TCCFileAccess;
-using WebApiModels.FileAccess.ResultHandling;
+using VSS.Productivity3D.WebApiModels.FileAccess.ResultHandling;
 
-namespace WebApiModels.FileAccess.Executors
+namespace VSS.Productivity3D.WebApiModels.FileAccess.Executors
 {
   public class RawFileAccessExecutor : RequestExecutorContainer
   {
@@ -46,7 +46,7 @@ namespace WebApiModels.FileAccess.Executors
       byte[] data = null;
 
       FileDescriptor request = item as FileDescriptor;
-      log.LogInformation("RawFileAccessExecutor: {0}: {1}\\{2}", request.filespaceId, request.path, request.fileName);
+      log.LogInformation("RawFileAccessExecutor: {0}: {1}\\{2}", request.FilespaceId, request.Path, request.FileName);
 
       try
       {
@@ -62,12 +62,12 @@ namespace WebApiModels.FileAccess.Executors
             stream.Read(data, 0, (int)stream.Length);
             success = true;
             log.LogInformation("RawFileAccessExecutor: Succeeded in reading {0}: {1}\\{2}",
-                request.filespaceId, request.path, request.fileName);
+                request.FilespaceId, request.Path, request.FileName);
           }
           else
           {
             log.LogInformation("RawFileAccessExecutor: Failed to read {0}: {1}\\{2} (stream is 0 length)",
-                request.filespaceId, request.path, request.fileName);
+                request.FilespaceId, request.Path, request.FileName);
           }
         }
         else
@@ -78,7 +78,7 @@ namespace WebApiModels.FileAccess.Executors
       catch (Exception ex)
       {
         log.LogError(null, ex, "***ERROR*** FileAccessExecutor: Failed on getting {0} file from TCC!",
-            request.fileName);
+            request.FileName);
       }
 
       if (success)
@@ -97,10 +97,10 @@ namespace WebApiModels.FileAccess.Executors
 
     private void DownloadFile(IFileRepository fileAccess, FileDescriptor file, Stream stream)
     {
-      string fullName = string.IsNullOrEmpty(file.fileName) ? file.path : Path.Combine(file.path, file.fileName);
+      string fullName = string.IsNullOrEmpty(file.FileName) ? file.Path : Path.Combine(file.Path, file.FileName);
       fullName = fullName.Replace(Path.DirectorySeparatorChar, '/');
 
-      var downloadFileResult = fileAccess.GetFile(file.filespaceId, fullName).Result;
+      var downloadFileResult = fileAccess.GetFile(file.FilespaceId, fullName).Result;
 
       if (downloadFileResult != null && downloadFileResult.Length > 0)
       {

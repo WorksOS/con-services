@@ -1,6 +1,6 @@
-﻿using MasterDataProxies.ResultHandling;
+﻿using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
-namespace WebApiModels.FileAccess.ResultHandling
+namespace VSS.Productivity3D.WebApiModels.FileAccess.ResultHandling
 {
   /// <summary>
   /// The result representation of a raw file access request.
@@ -29,13 +29,6 @@ namespace WebApiModels.FileAccess.ResultHandling
     /// <summary>
     /// Example for Help
     /// </summary>
-    public static RawFileAccessResult HelpSample
-    {
-      //TODO:
-      get
-      {
-        return new RawFileAccessResult();
-      }
-    }
+    public static RawFileAccessResult HelpSample => new RawFileAccessResult();
   }
 }
