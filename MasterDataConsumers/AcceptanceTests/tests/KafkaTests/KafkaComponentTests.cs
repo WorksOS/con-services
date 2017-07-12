@@ -1,21 +1,21 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using KafkaConsumer;
+using KafkaConsumer.Interfaces;
+using KafkaConsumer.Kafka;
+using log4netExtensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using VSS.GenericConfiguration;
+using VSS.Productivity3D.Repo;
+using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System.Threading;
-using System.Linq;
-using KafkaConsumer;
-using Microsoft.Extensions.Logging;
-using log4netExtensions;
-using VSS.GenericConfiguration;
-using Repositories;
-using Repositories.DBModels;
-using KafkaConsumer.Kafka;
-using KafkaConsumer.Interfaces;
 
 namespace KafkaTests
 {
