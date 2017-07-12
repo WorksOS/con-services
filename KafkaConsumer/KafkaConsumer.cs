@@ -1,14 +1,14 @@
-﻿using System;
+﻿using KafkaConsumer.Interfaces;
+using KafkaConsumer.Kafka;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Logging;
 using VSS.GenericConfiguration;
-using KafkaConsumer.Kafka;
-using KafkaConsumer.Interfaces;
-using Repositories;
+using VSS.Productivity3D.Repo;
 
 namespace KafkaConsumer
 {
