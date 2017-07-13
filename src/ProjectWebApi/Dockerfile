@@ -14,4 +14,4 @@ COPY . /app
 VOLUME logs
 
 # Start the app
-ENTRYPOINT dotnet VSS.MasterData.Project.Services.WebApi.dll
+ENTRYPOINT dotnet VSS.MasterData.Project.Services.WebAPI.dll
