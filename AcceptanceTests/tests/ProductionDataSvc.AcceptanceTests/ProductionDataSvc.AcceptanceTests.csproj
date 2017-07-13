@@ -173,6 +173,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ExportReportToSurface.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExportReportToSurface.feature</DependentUpon>
+    </Compile>
     <Compile Include="ExportReportToVETA.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -307,6 +312,7 @@
     <Compile Include="StepDefinitions\ElevationStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\ExportGriddedCSVSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportSteps.cs" />
+    <Compile Include="StepDefinitions\ExportReportToSurfaceSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportToVETASteps.cs" />
     <Compile Include="StepDefinitions\FileAccessSteps.cs" />
     <Compile Include="StepDefinitions\NotificationSteps.cs" />
@@ -437,6 +443,10 @@
     <None Include="ExportReport.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ExportReport.feature.cs</LastGenOutput>
+    </None>
+    <None Include="ExportReportToSurface.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ExportReportToSurface.feature.cs</LastGenOutput>
     </None>
     <None Include="ExportReportToVETA.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -584,6 +594,7 @@
     <None Include="TestData\ExportReportResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\ExportReportToSurfaceResponse.json" />
     <None Include="TestData\ExportReportToVETAResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

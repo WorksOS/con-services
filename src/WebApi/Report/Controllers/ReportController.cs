@@ -224,10 +224,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       [FromQuery] long? projectId,
       [FromQuery] Guid? projectUid,
       [FromQuery] string fileName,
-      [FromQuery] double tolerance
+      [FromQuery] double? tolerance
       )
     {
       log.LogInformation("GetExportReportSurface: " + Request.QueryString);
+
+      tolerance = tolerance ?? SURFACE_EXPORT_TOLLERANCE;
 
       ExportReport request = await GetExportReportRequest(
         projectId,
@@ -241,7 +243,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         false,
         OutputTypes.etVedaAllPasses,
         "",
-        tolerance);
+        tolerance.Value);
 
       request.Validate();
 
@@ -592,5 +594,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     }
 
     private const string ALL_MACHINES = "All";
+    private const double SURFACE_EXPORT_TOLLERANCE = 0.05;
   }
 }
