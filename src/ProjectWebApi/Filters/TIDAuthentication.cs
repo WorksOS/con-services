@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
-using MasterDataProxies.ResultHandling;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.MasterDataProxies;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 using VSS.Productivity3D.ProjectWebApi.Internal;
 
 namespace VSS.Productivity3D.ProjectWebApi.Filters
@@ -69,13 +69,13 @@ namespace VSS.Productivity3D.ProjectWebApi.Filters
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
 
-        if (context.Request.Path.Value.Contains("api/v3/project")&&context.Request.Method!="GET")
+        if (context.Request.Path.Value.Contains("api/v3/project") && context.Request.Method != "GET")
           requireCustomerUid = false;
         else
           customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
 
         // If no authorization header found, nothing to process further
-        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid)&&requireCustomerUid))
+        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) && requireCustomerUid))
         {
           log.LogWarning("No account selected for the request");
           await SetResult("No account selected", context);

@@ -1,9 +1,7 @@
 ﻿using KafkaConsumer.Kafka;
-using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Repositories;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -11,9 +9,11 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.ProjectWebApi.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.Productivity3D.Repo;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -40,9 +40,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
       : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger, serviceExceptionHandler)
-    {
-    }
-
+    { }
 
     /// <summary>
     /// Gets a list of projects for a customer. The list includes projects of all project types
@@ -197,7 +195,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       ProjectDataValidator.Validate(project, projectService);
       if (project.ProjectID <= 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 44);
-      
+
       project.ReceivedUTC = DateTime.UtcNow;
 
       //Save boundary as WKT
@@ -208,7 +206,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
 
       //Send boundary as old format on kafka queue
       project.ProjectBoundary = kafkaProjectBoundary;
-      var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
+      var messagePayload = JsonConvert.SerializeObject(new { CreateProjectEvent = project });
       await producer.Send(kafkaTopicName,
         new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload));
     }
@@ -234,7 +232,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
         });
     }
-    
+
     /// <summary>
     /// Associates the project customer.
     /// </summary>
@@ -248,7 +246,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       var isUpdated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
       if (isUpdated == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
-      
+
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()
