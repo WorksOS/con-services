@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using MasterDataModels.Models;
+using MasterDataModels.ResultHandling;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.MasterDataProxies.Models;
 using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
 namespace VSS.Productivity3D.MasterDataProxies
@@ -17,8 +18,7 @@ namespace VSS.Productivity3D.MasterDataProxies
   public class RaptorProxy : BaseProxy, IRaptorProxy
   {
     public RaptorProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(configurationStore, logger, cache)
-    {
-    }
+    { }
 
     /// <summary>
     /// Validates the CoordinateSystem for the project.
@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.MasterDataProxies
     {
       log.LogDebug($"RaptorProxy.CoordinateSystemValidate: coordinateSystemFileName: {coordinateSystemFileName}");
       var payLoadToSend = CoordinateSystemFileValidationRequest.CreateCoordinateSystemFileValidationRequest(coordinateSystemFileContent, coordinateSystemFileName);
-      
+
       return await CoordSystemPost(JsonConvert.SerializeObject(payLoadToSend), customHeaders, "/validation");
     }
 
@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.MasterDataProxies
     /// <param name="fileId">A unique file identifier (legacy)</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns></returns>
-    public async Task<ContractExecutionResult> AddFile(Guid projectUid, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseDataResult> AddFile(Guid projectUid, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.AddFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId}");
       var queryParams = $"?projectUid={projectUid}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}";
@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.MasterDataProxies
     /// <param name="fileId">A unique file identifier (legcy)</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns></returns>
-    public async Task<ContractExecutionResult> DeleteFile(Guid projectUid, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseDataResult> DeleteFile(Guid projectUid, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.DeleteFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId}");
       var queryParams = $"?projectUid={projectUid}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}";
@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.MasterDataProxies
     /// <param name="fileUids">File UIDs</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns></returns>
-    public async Task<ContractExecutionResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.UpdateFiles: projectUid: {projectUid} fileUids: {fileUids}");
       var queryParams = $"?projectUid={projectUid}&fileUids={string.Join("&fileUids=", fileUids)}";
@@ -122,9 +122,9 @@ namespace VSS.Productivity3D.MasterDataProxies
     /// <param name="queryParams">Query parameters for the request</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns></returns>
-    private async Task<ContractExecutionResult> NotifyFile(string route, string queryParams, IDictionary<string, string> customHeaders)
+    private async Task<BaseDataResult> NotifyFile(string route, string queryParams, IDictionary<string, string> customHeaders)
     {
-      ContractExecutionResult response = await GetItem<ContractExecutionResult>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, route);
+      BaseDataResult response = await GetItem<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, route);
       var message = string.Format("RaptorProxy.NotifyFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       log.LogDebug(message);
 

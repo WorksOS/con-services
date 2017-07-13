@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Repositories.DBModels;
 using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 

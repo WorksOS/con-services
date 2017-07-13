@@ -11,8 +11,8 @@ using KafkaConsumer.Kafka;
 using log4netExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Repositories;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.Repo;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 #if NET_4_7

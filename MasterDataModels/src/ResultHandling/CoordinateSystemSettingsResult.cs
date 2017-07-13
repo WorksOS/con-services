@@ -1,4 +1,5 @@
-﻿using VSS.Productivity3D.MasterDataProxies.Models;
+﻿using MasterDataModels.Models;
+using VSS.Productivity3D.MasterDataProxies.Models;
 
 namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
 {
@@ -6,7 +7,7 @@ namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
   /// Coordinate system settings result object.
   /// </summary>
   ///    
-  public class CoordinateSystemSettingsResult : ContractExecutionResult, IData
+  public class CoordinateSystemSettingsResult : BaseDataResult, IData
   {
     /// <summary>
     /// The coordinate system file name.

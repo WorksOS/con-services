@@ -1,15 +1,15 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using log4netExtensions;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Microsoft.Extensions.Logging;
-using log4netExtensions;
-using VSS.GenericConfiguration;
-using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using VSS.GenericConfiguration;
+using VSS.Productivity3D.Repo;
+using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using Repositories;
-using Repositories.DBModels;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {

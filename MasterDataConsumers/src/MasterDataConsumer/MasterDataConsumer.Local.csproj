@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp1.1;net47</TargetFrameworks>
+    <AssemblyName>MasterDataConsumer</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>MasterDataConsumer</PackageId>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Update="Dockerfile;runme.sh;wait-for-it.sh;log4net.xml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Update="log4net.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.DotNet.InternalAbstractions" Version="1.0.1-beta-003206" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
+    <PackageReference Include="log4net.netcore" Version="3.0.*" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="Topshelf" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ConfigurationStore\src\ConfigStore.Local.csproj" />
+    <ProjectReference Include="..\..\..\KafkaConsumer\KafkaConsumer.Local.csproj" />
+    <ProjectReference Include="..\..\..\log4netExtensions\log4netExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\..\MasterDataRepositories\src\Repo.Local.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <DefineConstants>$(DefineConstants);STRONG;NET;NET_2_0;NET_4_0;NET_4_5;NET_4_7</DefineConstants>
+  </PropertyGroup>
+
+</Project>

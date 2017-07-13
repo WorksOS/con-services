@@ -6,97 +6,93 @@ namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
 {
   public abstract class GenericEnum<T, U> where T : GenericEnum<T, U>, new()
   {
-    private readonly List<string> names;
-    private readonly List<U> values;
-    private bool allowInstanceExceptions;
+    private int _index;
+    private readonly List<string> _names;
+    private readonly List<U> _values;
 
-    public GenericEnum()
+    protected GenericEnum()
     {
       Type t = typeof(T);
       Type u = typeof(U);
       if (t == u)
         throw new InvalidOperationException(String.Format("{0} and its underlying type cannot be the same",
-                t.Name));
+          t.Name));
       BindingFlags bf = BindingFlags.Static | BindingFlags.Public;
       FieldInfo[] fia = t.GetFields(bf);
-      names = new List<string>();
-      values = new List<U>();
+      _names = new List<string>();
+      _values = new List<U>();
       for (int i = 0; i < fia.Length; i++)
       {
         if (fia[i].FieldType == u && (fia[i].IsLiteral || fia[i].IsInitOnly))
         {
-          names.Add(fia[i].Name);
-          values.Add((U)fia[i].GetValue(null));
+          _names.Add(fia[i].Name);
+          _values.Add((U)fia[i].GetValue(null));
         }
       }
-      if (names.Count == 0)
+      if (_names.Count == 0)
         throw new InvalidOperationException(String.Format("{0} has no suitable fields", t.Name));
     }
 
-    public bool AllowInstanceExceptions
-    {
-      get { return allowInstanceExceptions; }
-      set { allowInstanceExceptions = value; }
-    }
+    public bool AllowInstanceExceptions { get; set; }
 
     public string[] GetNames()
     {
-      return names.ToArray();
+      return _names.ToArray();
     }
 
     public string[] GetNames(U value)
     {
       List<string> nameList = new List<string>();
-      for (int i = 0; i < values.Count; i++)
+      for (int i = 0; i < _values.Count; i++)
       {
-        if (values[i].Equals(value)) nameList.Add(names[i]);
+        if (_values[i].Equals(value)) nameList.Add(_names[i]);
       }
       return nameList.ToArray();
     }
 
     public U[] GetValues()
     {
-      return values.ToArray();
+      return _values.ToArray();
     }
 
     public int[] GetIndices(U value)
     {
       List<int> indexList = new List<int>();
-      for (int i = 0; i < values.Count; i++)
+      for (int i = 0; i < _values.Count; i++)
       {
-        if (values[i].Equals(value)) indexList.Add(i);
+        if (_values[i].Equals(value)) indexList.Add(i);
       }
       return indexList.ToArray();
     }
 
     public int IndexOf(string name)
     {
-      return names.IndexOf(name);
+      return _names.IndexOf(name);
     }
 
     public U ValueOf(string name)
     {
-      int index = names.IndexOf(name);
+      int index = _names.IndexOf(name);
       if (index >= 0)
       {
-        return values[index];
+        return _values[index];
       }
       throw new ArgumentException(String.Format("'{0}' is not a defined name of {1}", name, typeof(T).Name));
     }
 
     public string FirstNameWith(U value)
     {
-      int index = values.IndexOf(value);
+      int index = _values.IndexOf(value);
       if (index >= 0)
       {
-        return names[index];
+        return _names[index];
       }
       throw new ArgumentException(String.Format("'{0}' is not a defined value of {1}", value, typeof(T).Name));
     }
 
     public int FirstIndexWith(U value)
     {
-      int index = values.IndexOf(value);
+      int index = _values.IndexOf(value);
       if (index >= 0)
       {
         return index;
@@ -108,7 +104,7 @@ namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
     {
       if (index >= 0 && index < Count)
       {
-        return names[index];
+        return _names[index];
       }
       throw new IndexOutOfRangeException(String.Format("Index must be between 0 and {0}", Count - 1));
     }
@@ -117,30 +113,24 @@ namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
     {
       if (index >= 0 && index < Count)
       {
-        return values[index];
+        return _values[index];
       }
       throw new IndexOutOfRangeException(String.Format("Index must be between 0 and {0}", Count - 1));
     }
 
-    public Type UnderlyingType
-    {
-      get { return typeof(U); }
-    }
+    public Type UnderlyingType => typeof(U);
 
-    public int Count
-    {
-      get { return names.Count; }
-    }
+    public int Count => _names.Count;
 
     public bool IsDefinedName(string name)
     {
-      if (names.IndexOf(name) >= 0) return true;
+      if (_names.IndexOf(name) >= 0) return true;
       return false;
     }
 
     public bool IsDefinedValue(U value)
     {
-      if (values.IndexOf(value) >= 0) return true;
+      if (_values.IndexOf(value) >= 0) return true;
       return false;
     }
 
@@ -154,13 +144,12 @@ namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
     {
       if (!IsDefinedName(name))
       {
-        if (allowInstanceExceptions)
+        if (AllowInstanceExceptions)
           throw new ArgumentException(String.Format("'{0}' is not a defined name of {1}", name,
-                  typeof(T).Name));
+            typeof(T).Name));
         return null;
       }
-      T t = new T();
-      t._index = names.IndexOf(name);
+      T t = new T { _index = _names.IndexOf(name) };
       return t;
     }
 
@@ -168,13 +157,12 @@ namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
     {
       if (!IsDefinedValue(value))
       {
-        if (allowInstanceExceptions)
+        if (AllowInstanceExceptions)
           throw new ArgumentException(String.Format("'{0}' is not a defined value of {1}", value,
-                  typeof(T).Name));
+            typeof(T).Name));
         return null;
       }
-      T t = new T();
-      t._index = values.IndexOf(value);
+      T t = new T { _index = _values.IndexOf(value) };
       return t;
     }
 
@@ -182,25 +170,22 @@ namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
     {
       if (index < 0 || index >= Count)
       {
-        if (allowInstanceExceptions)
+        if (AllowInstanceExceptions)
           throw new ArgumentException(String.Format("Index must be between 0 and {0}", Count - 1));
         return null;
       }
-      T t = new T();
-      t._index = index;
+      T t = new T { _index = index };
       return t;
     }
 
-    protected int _index;
-
     public int Index
     {
-      get { return _index; }
+      get => _index;
       set
       {
         if (value < 0 || value >= Count)
         {
-          if (allowInstanceExceptions)
+          if (AllowInstanceExceptions)
             throw new ArgumentException(String.Format("Index must be between 0 and {0}", Count - 1));
           return;
         }
@@ -210,15 +195,15 @@ namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
 
     public string Name
     {
-      get { return names[_index]; }
+      get => _names[_index];
       set
       {
-        int index = names.IndexOf(value);
+        int index = _names.IndexOf(value);
         if (index == -1)
         {
-          if (allowInstanceExceptions)
+          if (AllowInstanceExceptions)
             throw new ArgumentException(String.Format("'{0}' is not a defined name of {1}", value,
-                    typeof(T).Name));
+              typeof(T).Name));
           return;
         }
         _index = index;
@@ -227,15 +212,15 @@ namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
 
     public U Value
     {
-      get { return values[_index]; }
+      get => _values[_index];
       set
       {
-        int index = values.IndexOf(value);
+        int index = _values.IndexOf(value);
         if (index == -1)
         {
-          if (allowInstanceExceptions)
+          if (AllowInstanceExceptions)
             throw new ArgumentException(String.Format("'{0}' is not a defined value of {1}", value,
-                    typeof(T).Name));
+              typeof(T).Name));
           return;
         }
         _index = index;
@@ -244,39 +229,31 @@ namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
 
     public override string ToString()
     {
-      return names[_index];
+      return _names[_index];
     }
-
-    private int dynamicCount;
 
     public void ClearDynamic()
     {
-      names.RemoveRange(names.Count - dynamicCount, dynamicCount);
-      values.RemoveRange(values.Count - dynamicCount, dynamicCount);
-      dynamicCount = 0;
+      _names.RemoveRange(_names.Count - DynamicCount, DynamicCount);
+      _values.RemoveRange(_values.Count - DynamicCount, DynamicCount);
+      DynamicCount = 0;
     }
 
-    public int DynamicCount
-    {
-      get { return dynamicCount; }
-    }
+    public int DynamicCount { get; private set; }
 
     public void DynamicAdd(string name, U value)
     {
-      if (names.IndexOf(name) == -1)
+      if (_names.IndexOf(name) == -1)
       {
-        names.Add(name);
-        values.Add(value);
-        dynamicCount++;
+        _names.Add(name);
+        _values.Add(value);
+        DynamicCount++;
       }
       else
       {
         throw new InvalidOperationException(String.Format("'{0}' is already an element of {1}", name,
-                typeof(T).Name));
+          typeof(T).Name));
       }
     }
   }
-
-
-
 }

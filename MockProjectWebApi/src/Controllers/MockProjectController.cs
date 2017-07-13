@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using MasterDataModels.Models;
+using MasterDataModels.ResultHandling;
 using Microsoft.AspNetCore.Mvc;
-using MockProjectWebApi.Models;
-using src.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -17,12 +16,12 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The list of mocked projects</returns>
     [Route("api/v4/mockproject")]
     [HttpGet]
-    public MockProjectContractResult GetMockProjects()
+    public ProjectDataResult GetMockProjects()
     {
       Console.WriteLine("GetMockProjects");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
-      return new MockProjectContractResult {ProjectDescriptors = projectList};
+      return new ProjectDataResult { ProjectDescriptors = projectList};
     }
 
     /// <summary>

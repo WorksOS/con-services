@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TestUtility.Model.WebApi
 {
-    public class AssetCycleData
+  public class AssetCycleData
     {
 
         public string assetUid { get; set; }

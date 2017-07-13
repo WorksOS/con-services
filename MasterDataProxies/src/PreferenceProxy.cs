@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using MasterDataModels.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.MasterDataProxies.Models;
 
 namespace VSS.Productivity3D.MasterDataProxies
 {
@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.MasterDataProxies
     /// <returns></returns>
     public async Task<UserPreferenceData> GetUserPreferences(IDictionary<string, string> customHeaders=null)
     {
-      var response = await GetItem<PreferenceData>("PREFERENCE_API_URL", customHeaders, "/user?keyName=global");
+      var response = await GetItem<UserPreferenceResult>("PREFERENCE_API_URL", customHeaders, "/user?keyName=global");
       var message = string.Format("PreferenceProxy.GetUserPreferences: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       log.LogDebug(message);
 

@@ -14,14 +14,12 @@
     }
 
     protected ContractExecutionResult(string message)
-        : this(ContractExecutionStatesEnum.ExecutedSuccessfully, message)
-    {
-    }
+      : this(ContractExecutionStatesEnum.ExecutedSuccessfully, message)
+    { }
 
     public ContractExecutionResult()
-        : this(DefaultMessage)
-    {
-    }
+      : this(DefaultMessage)
+    { }
 
     public int Code { get; protected set; }
 
@@ -36,7 +34,7 @@
     /// <summary>
     /// The execution result offset to create dynamically add custom errors
     /// </summary>
-    private const int executionResultOffset = 100;
+    private const int ExecutionResultOffset = 100;
 
     /// <summary>
     ///   Service request executed successfully
@@ -85,8 +83,7 @@
     /// <returns></returns>
     public int GetErrorNumberwithOffset(int errorNum)
     {
-      return errorNum + executionResultOffset;
+      return errorNum + ExecutionResultOffset;
     }
-
   }
 }

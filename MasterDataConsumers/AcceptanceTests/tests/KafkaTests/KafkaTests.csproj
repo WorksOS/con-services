@@ -23,14 +23,14 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
-    <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
+    <PackageReference Include="log4net.netcore" Version="3.0.*" />
+    <PackageReference Include="log4netExtensions.netcore" Version="1.0.*" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.4" />
-    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.23" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.*" />
+    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.*" />
   </ItemGroup>
 
   <ItemGroup>
