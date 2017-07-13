@@ -1,3 +1,3 @@
-dotnet restore ./test/UnitTests/WebApiTests  
+dotnet restore ./test/UnitTests/WebApiTests/WebApiTests.csproj  
 cd test/UnitTests/WebApiTests
-dotnet test -f net462 
+dotnet test WebApiTests.csproj -f net47 

@@ -3,6 +3,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using RaptorSvcAcceptTestsCommon.Models;
 using RaptorSvcAcceptTestsCommon.Utils;
+using System.Text;
 
 namespace ProductionDataSvc.AcceptanceTests.Models
 {
@@ -125,10 +126,22 @@ namespace ProductionDataSvc.AcceptanceTests.Models
             if (other == null)
                 return false;
 
+          // Check all the entries in the file are the same.
+          // Note: The order of the result is not deterministics so the CSV contents need to be compared against
+          // each other in light of that.
+          string[] thisData = Encoding.Default.GetString(Common.Decompress(this.ExportData)).Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+          string[] otherData = Encoding.Default.GetString(Common.Decompress(other.ExportData)).Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+          return thisData.All(x => otherData.Contains(x)) &&
+                 this.ResultCode == other.ResultCode &&
+                 this.Code == other.Code &&
+                 this.Message == other.Message;
+          /*
             return Common.Decompress(this.ExportData).SequenceEqual(Common.Decompress(other.ExportData)) &&
                 this.ResultCode == other.ResultCode &&
                 this.Code == other.Code &&
                 this.Message == other.Message;
+          */
         }
 
         public static bool operator ==(ExportReportResult a, ExportReportResult b)

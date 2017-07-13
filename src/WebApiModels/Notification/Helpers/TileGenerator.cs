@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.TCCFileAccess;
 
 namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
 {

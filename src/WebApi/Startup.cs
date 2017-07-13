@@ -1,6 +1,4 @@
 ﻿using log4netExtensions;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.Swagger.Model;
 using System;
-using TCCFileAccess;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters;
@@ -18,6 +15,9 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
+using VSS.Productivity3D.MasterDataProxies;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
+using VSS.Productivity3D.TCCFileAccess;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.WebApi
           Description = "API for 3D compaction and volume data",
           TermsOfService = "None"
         });
-        string path = isDevEnv ? "bin/Debug/net462/" : string.Empty;
+        string path = isDevEnv ? "bin/Debug/net47/" : string.Empty;
         options.IncludeXmlComments(path + "VSS.Productivity3D.WebApi.xml");
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();

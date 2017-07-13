@@ -3,8 +3,8 @@ RMDIR /S /Q Artifacts
 if exist Artifacts rd /s /q Artifacts
 
 rem echo %PATH%
-dotnet publish ./src/WebApi -o ../../Artifacts/WebApi -f net462 -c Docker
-dotnet build ./test/UnitTests/WebApiTests
+dotnet publish ./src/WebApi/WebApi.csproj -o ../../Artifacts/WebApi -f net47 -c Docker
+dotnet build ./test/UnitTests/WebApiTests/WebApiTests.csproj
 copy src\WebApi\appsettings.json Artifacts\WebApi\
 copy src\WebApi\Dockerfile Artifacts\WebApi\
 copy src\WebApi\SetupWebAPI.ps1 Artifacts\WebApi\
