@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   webapi:
     image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest-release-[WVERSION]
