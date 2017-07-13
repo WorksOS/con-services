@@ -594,7 +594,9 @@
     <None Include="TestData\ExportReportResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\ExportReportToSurfaceResponse.json" />
+    <None Include="TestData\ExportReportToSurfaceResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\ExportReportToVETAResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
