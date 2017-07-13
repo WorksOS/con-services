@@ -1,17 +1,23 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using System;
 using VSS.Authentication.JWT;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace MasterDataConsumerTests
+namespace VSS.MasterData.ConsumerTests
 {
   [TestClass]
   public class UtilityTests
   {
+    [ClassInitialize]
+    public static void ClassInitialize(TestContext testContext)
+    {
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
+    }
+
     [TestMethod]
     public void TestJWTKey()
     {
@@ -19,12 +25,9 @@ namespace MasterDataConsumerTests
       var jwtToken = new TPaaSJWT(jwt);
     }
 
-
     [TestMethod]
     public void MapCreateProjectRequestToEvent()
     {
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-
       var request = CreateProjectRequest.CreateACreateProjectRequest
       (Guid.NewGuid(), Guid.NewGuid(),
         ProjectType.Standard, "projectName", "this is the description",
@@ -57,8 +60,6 @@ namespace MasterDataConsumerTests
     [TestMethod]
     public void MapUpdateProjectRequestToEvent()
     {
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
       (Guid.NewGuid(), ProjectType.Standard, "projectName", "this is the description",
         new DateTime(2017, 02, 15), "csName", new byte[] { 1, 2, 3 });
@@ -84,9 +85,7 @@ namespace MasterDataConsumerTests
     [TestMethod]
     public void MapProjectToResult()
     {
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-
-      var project = new Project
+      var project = new Productivity3D.Repo.DBModels.Project
       {
         ProjectUID = Guid.NewGuid().ToString(),
         LegacyProjectID = 123,
@@ -136,7 +135,7 @@ namespace MasterDataConsumerTests
       Assert.IsFalse(result.IsArchived, "IsArchived has not been mapped correctly");
 
       // just make a copy
-      var copyOfProject = AutoMapperUtility.Automapper.Map<Project>(project);
+      var copyOfProject = AutoMapperUtility.Automapper.Map<Productivity3D.Repo.DBModels.Project>(project);
       Assert.AreEqual(project.ProjectUID, copyOfProject.ProjectUID, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(project.LegacyProjectID, copyOfProject.LegacyProjectID, "LegacyProjectID has not been mapped correctly");
     }
@@ -144,8 +143,6 @@ namespace MasterDataConsumerTests
     [TestMethod]
     public void MapImportedFileRepoToResponse()
     {
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-
       var request = new ImportedFile
       {
         ProjectUid = Guid.NewGuid().ToString(),
@@ -183,8 +180,6 @@ namespace MasterDataConsumerTests
     [TestMethod]
     public void MapImportedFileRepoToUpdateEvent()
     {
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-
       var request = new ImportedFile
       {
         ProjectUid = Guid.NewGuid().ToString(),

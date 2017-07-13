@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using KafkaConsumer.Kafka;
 using log4netExtensions;
 using Microsoft.AspNetCore.Builder;
@@ -6,21 +9,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using VSS.GenericConfiguration;
+using VSS.MasterData.Project.Services.WebAPI.Filters;
+using VSS.MasterData.Project.Services.WebAPI.Internal;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.MasterDataProxies;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.ProjectWebApi.Filters;
-using VSS.Productivity3D.ProjectWebApi.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.Productivity3D.Repo;
 using VSS.Productivity3D.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.Productivity3D.ProjectWebApi
+namespace VSS.MasterData.Project.Services.WebAPI
 {
   /// <summary>
   /// 

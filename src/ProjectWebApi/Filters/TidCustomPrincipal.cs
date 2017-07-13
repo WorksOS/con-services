@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace VSS.Productivity3D.ProjectWebApi.Filters
+namespace VSS.MasterData.Project.Services.WebAPI.Filters
 {
   /// <summary>
   /// 

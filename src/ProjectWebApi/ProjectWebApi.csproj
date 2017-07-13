@@ -4,13 +4,13 @@
     <TargetFrameworks>netcoreapp1.1</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>VSS.Productivity3D.ProjectWebApi</AssemblyName>
+    <AssemblyName>VSS.MasterData.Project.Services.WebAPI</AssemblyName>
     <OutputType>exe</OutputType>
     <PackageId>ProjectWebApi</PackageId>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
-    <RootNamespace>VSS.Productivity3D.ProjectWebApi</RootNamespace>
+    <RootNamespace>VSS.MasterData.Project.Services.WebAPI</RootNamespace>
     <ApplicationIcon />
     <OutputTypeEx>exe</OutputTypeEx>
     <StartupObject />
@@ -44,8 +44,8 @@
     <PackageReference Include="Swashbuckle.SwaggerGen" Version="6.0.0-beta902" />
     <PackageReference Include="Swashbuckle.SwaggerUi" Version="6.0.0-beta902" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
-    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.23" />
+    <PackageReference Include="log4netExtensions.netcore" Version="1.0.*" />
+    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.*" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
     <PackageReference Include="AutoMapper" Version="6.1.1" />
     <PackageReference Include="TCCFileAccess.netcore" Version="1.3.*" />

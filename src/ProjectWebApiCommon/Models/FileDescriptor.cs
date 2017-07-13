@@ -1,8 +1,8 @@
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Models
+namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
   /// <summary>
   /// Description to identify a file by its location in TCC.

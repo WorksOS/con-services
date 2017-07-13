@@ -1,12 +1,12 @@
-﻿using FlowUploadFilter;
+﻿using System;
+using FlowUploadFilter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace MasterDataConsumerTests
+namespace VSS.MasterData.ConsumerTests
 {
   [TestClass]
   public class ImportFileTests

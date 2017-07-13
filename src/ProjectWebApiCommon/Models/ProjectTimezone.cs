@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Models
+namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
   /// <summary>
   /// this matches (one hopes) the client list.
