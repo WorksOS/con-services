@@ -1,5 +1,5 @@
-﻿using MasterDataProxies.ResultHandling;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
