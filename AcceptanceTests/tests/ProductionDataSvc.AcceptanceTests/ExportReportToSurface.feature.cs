@@ -85,7 +85,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 8
-  testRunner.And("projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 10
@@ -120,7 +120,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 18
-  testRunner.And("projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 19
  testRunner.And(string.Format("fileName is \"{0}\"", fileName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 20
@@ -175,7 +175,7 @@ this.FeatureBackground();
             this.ExportReportToSurface_BadRequest_NoProjectUID("", "0.05", "Test", "-2", "Missing project UID", ((string[])(null)));
         }
         
-        public virtual void ExportReportToSurface_BadRequest_NoFileName(string requetsName, string tolerance, string errorCode, string errorMessage, string[] exampleTags)
+        public virtual void ExportReportToSurface_BadRequest_NoFileName(string requetsName, string projectUID, string tolerance, string errorCode, string errorMessage, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("ExportReportToSurface - Bad Request - NoFileName", exampleTags);
 #line 35
@@ -183,7 +183,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 4
 this.FeatureBackground();
 #line 36
- testRunner.And("projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 37
  testRunner.And(string.Format("tolerance \"{0}\"", tolerance), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 38
@@ -198,12 +198,13 @@ this.FeatureBackground();
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("ExportReportToSurface - Bad Request - NoFileName")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ExportReportToSurface")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Tolerance", "0.05")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorCode", "-4")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ErrorMessage", "Failed to get requested export data")]
         public virtual void ExportReportToSurface_BadRequest_NoFileName_()
         {
-            this.ExportReportToSurface_BadRequest_NoFileName("", "0.05", "-4", "Failed to get requested export data", ((string[])(null)));
+            this.ExportReportToSurface_BadRequest_NoFileName("", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "0.05", "-4", "Failed to get requested export data", ((string[])(null)));
         }
     }
 }

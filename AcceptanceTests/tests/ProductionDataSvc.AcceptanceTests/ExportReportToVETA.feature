@@ -5,7 +5,7 @@ Background:
 	Given the Export Report To VETA service URI "/api/v2/export/veta" and the result file "ExportReportToVETAResponse.json"
 
 Scenario Outline: ExportReportToVETA - Good Request
-  And projectUid "7925f179-013d-4aaf-aff4-7b9833bb06d6"
+  And projectUid "<ProjectUID>"
 	And startUtc "<StartDate>" and endUtc "<EndDate>"
 	And machineNames "<MachineNames>"
 	And fileName is "<FileName>"
