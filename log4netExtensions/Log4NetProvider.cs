@@ -1,33 +1,33 @@
-﻿using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using log4net.Repository;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace log4netExtensions
 {
   public class Log4NetProvider : ILoggerProvider
   {
     private IDictionary<string, ILogger> _loggers = new Dictionary<string, ILogger>();
-    private string repoName;
+    private readonly string _repoName;
 
     public Log4NetProvider(string repoName)
     {
-      this.repoName = repoName;
+      _repoName = repoName;
     }
 
     public ILogger CreateLogger(string name)
     {
-      if (!_loggers.ContainsKey(name))
+      lock (_loggers)
       {
-        lock (_loggers)
+        if (!_loggers.ContainsKey(name))
         {
           // Have to check again since another thread may have gotten the lock first
           if (!_loggers.ContainsKey(name))
           {
-            _loggers[name] = new Log4NetAdapter(repoName, name);
+            _loggers[name] = new Log4NetAdapter(_repoName, name);
           }
         }
+
+        return _loggers[name];
       }
-      return _loggers[name];
     }
 
     public void Dispose()
