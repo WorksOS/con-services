@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using MasterDataModels.ResultHandling;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
+using VSS.Productivity3D.MasterDataProxies;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication

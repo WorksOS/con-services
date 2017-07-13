@@ -201,3 +201,6 @@ Deploy/
 
 
 **/project.lock.json
+
+#Container.txt use used during jenkins build to get the ip address of the just built container.
+container.txt

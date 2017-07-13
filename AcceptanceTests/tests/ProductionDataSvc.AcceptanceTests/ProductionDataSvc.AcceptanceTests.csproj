@@ -173,6 +173,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ExportReportToVETA.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExportReportToVETA.feature</DependentUpon>
+    </Compile>
     <Compile Include="GetLifts.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -302,6 +307,7 @@
     <Compile Include="StepDefinitions\ElevationStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\ExportGriddedCSVSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportSteps.cs" />
+    <Compile Include="StepDefinitions\ExportReportToVETASteps.cs" />
     <Compile Include="StepDefinitions\FileAccessSteps.cs" />
     <Compile Include="StepDefinitions\NotificationSteps.cs" />
     <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
@@ -431,6 +437,10 @@
     <None Include="ExportReport.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ExportReport.feature.cs</LastGenOutput>
+    </None>
+    <None Include="ExportReportToVETA.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ExportReportToVETA.feature.cs</LastGenOutput>
     </None>
     <None Include="FilterServices.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -574,6 +584,9 @@
     <None Include="TestData\ExportReportResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\ExportReportToVETAResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\GetLiftsRequestRepository.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -698,7 +711,8 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy RaptorSvcAcceptTestsCommon.dll.Local.config RaptorSvcAcceptTestsCommon.dll.config /Y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

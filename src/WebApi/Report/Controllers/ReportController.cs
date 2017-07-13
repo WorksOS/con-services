@@ -1,12 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Net;
+using System.Threading.Tasks;
+using System.Linq;
+using ASNode.ExportProductionDataCSV.RPC;
+using BoundingExtents;
+using VLPDDecls;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.MasterDataProxies;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
+using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Report.Contracts;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
@@ -20,6 +32,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
   [ResponseCache(Duration = 180, VaryByQueryKeys = new[] { "*" })]
   public class ReportController : Controller, IReportSvc
   {
+    #region privates
     /// <summary>
     /// Raptor client for use by executor
     /// </summary>
@@ -35,7 +48,98 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </summary>
     private readonly ILoggerFactory logger;
 
+    /// <summary>
+    /// For getting list of imported files for a project
+    /// </summary>
+    private readonly IFileListProxy fileListProxy;
+
     private readonly IConfigurationStore configStore;
+
+    /// <summary>
+    /// Creates an instance of the CMVRequest class and populate it with data.
+    /// </summary>
+    /// <returns></returns>
+    private async Task<ExportReport> GetExportReportRequest(
+      long? projectId, 
+      Guid? projectUid, 
+      DateTime? startUtc, 
+      DateTime? endUtc, 
+      CoordTypes coordType, 
+      ExportTypes exportType,
+      string fileName,
+      bool restrictSize,
+      bool rawData,
+      OutputTypes outputType,
+      string machineNames,
+      double tolerance)
+    {
+      if (!projectId.HasValue)
+      {
+        projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      }
+
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, Request.Headers.GetCustomHeaders());
+
+      // Filter filter = CompactionSettings.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
+      Filter filter = CompactionSettings.CompactionFilter(null, null, null, null, null, null, null, excludedIds);
+
+      T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
+      TMachine[] machineList = null;
+
+      if (exportType == ExportTypes.kSurfaceExport)
+      {
+        raptorClient.GetDataModelExtents(projectId.Value,
+          RaptorConverters.convertSurveyedSurfaceExlusionList(excludedIds), out projectExtents);
+      }
+      else
+      {
+        TMachineDetail[] machineDetails = raptorClient.GetMachineIDs(projectId.Value);
+
+        if (machineDetails != null)
+        {
+          //machineDetails = machineDetails.GroupBy(x => x.Name).Select(y => y.Last()).ToArray();
+
+          if (machineNames != null)
+          {
+            if (machineNames != ALL_MACHINES)
+            {
+              var machineNamesArray = machineNames.Split(',');
+              machineDetails = machineDetails.Where(machineDetail => machineNamesArray.Contains(machineDetail.Name)).ToArray();
+            }
+          }
+          
+          machineList = machineDetails.Select(m => new TMachine() {AssetID = m.ID, MachineName = m.Name, SerialNo = ""}).ToArray();
+        }
+      }
+
+
+      return ExportReport.CreateExportReportRequest(
+        projectId.Value, 
+        liftSettings, 
+        filter, 
+        -1, 
+        null, 
+        false, 
+        null, 
+        coordType, 
+        startUtc ?? DateTime.MinValue,
+        endUtc ?? DateTime.MinValue, 
+        true, 
+        tolerance, 
+        false,
+        restrictSize,
+        rawData,
+        projectExtents, 
+        false,
+        outputType,
+        machineList,
+        false,
+        fileName, 
+        exportType);
+    }
+    #endregion
 
     /// <summary>
     /// Constructor with injected raptor client and logger
@@ -43,12 +147,13 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="configStore"></param>
-    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore)
+    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<ReportController>();
       this.configStore = configStore;
+      this.fileListProxy = fileListProxy;
     }
 
     #region ExportPing
@@ -104,6 +209,123 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       return
           RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore)
               .Process(request) as ExportResult;
+    }
+
+    /// <summary>
+    /// Gets an export of 3D project data in .TTM file format report.
+    /// </summary>
+    /// <returns></returns>
+    /// 
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/export/surface")]
+    [HttpGet]
+    public async Task<ExportResult> GetExportReportSurface(
+      [FromQuery] long? projectId,
+      [FromQuery] Guid? projectUid,
+      [FromQuery] string fileName,
+      [FromQuery] double tolerance
+      )
+    {
+      log.LogInformation("GetExportReportSurface: " + Request.QueryString);
+
+      ExportReport request = await GetExportReportRequest(
+        projectId,
+        projectUid,
+        null, //startUtc,
+        null, //endUtc,
+        CoordTypes.ptNORTHEAST,
+        ExportTypes.kSurfaceExport,
+        fileName,
+        false,
+        false,
+        OutputTypes.etVedaAllPasses,
+        "",
+        tolerance);
+
+      request.Validate();
+
+      return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
+    }
+
+    /// <summary>
+    /// Gets an export of production data in cell grid format report.
+    /// </summary>
+    /// <returns></returns>
+    /// 
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/export/machinepasses")]
+    [HttpGet]
+    public async Task<ExportResult> GetExportReportMachinePasses(
+      [FromQuery] long? projectId,
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc,
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] int coordType,
+      [FromQuery] int outputType,
+      [FromQuery] bool restrictOutput,
+      [FromQuery] bool rawDataOutput,
+      [FromQuery] string fileName
+    )
+    {
+      log.LogInformation("GetExportReportMachinePasses: " + Request.QueryString);
+      
+      ExportReport request = await GetExportReportRequest(
+        projectId,
+        projectUid,
+        startUtc,
+        endUtc,
+        (CoordTypes)coordType,
+        ExportTypes.kPassCountExport,
+        fileName,
+        restrictOutput,
+        rawDataOutput,
+        (OutputTypes)outputType,
+        "",
+        0.0);
+
+      request.Validate();
+
+      return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
+    }
+    
+    /// <summary>
+    /// Gets an export of production data in cell grid format report for import to VETA.
+    /// </summary>
+    /// <returns></returns>
+    /// 
+    [ProjectIdVerifier]
+    [ProjectUidVerifier]
+    [Route("api/v2/export/veta")]
+    [HttpGet]
+    public async Task<ExportResult> GetExportReportVeta(
+      [FromQuery] long? projectId,
+      [FromQuery] Guid? projectUid,
+      [FromQuery] DateTime? startUtc,
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] string fileName,
+      [FromQuery] string machineNames)
+    {
+      log.LogInformation("GetExportReportVeta: " + Request.QueryString);
+
+      ExportReport request = await GetExportReportRequest(
+        projectId,
+        projectUid,
+        startUtc,
+        endUtc,
+        CoordTypes.ptNORTHEAST,
+        ExportTypes.kVedaExport,
+        fileName,
+        false,
+        true,
+        OutputTypes.etVedaAllPasses,
+        machineNames,
+        0.0);
+
+      request.Validate();
+
+      return RequestExecutorContainer.Build<ExportReportExecutor>(logger, raptorClient, null, configStore).Process(request) as ExportResult;
     }
 
     /// <summary>
@@ -368,5 +590,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
               CCASummaryResult;
 
     }
+
+    private const string ALL_MACHINES = "All";
   }
 }

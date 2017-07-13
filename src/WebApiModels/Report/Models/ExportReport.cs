@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using ASNode.ExportProductionDataCSV.RPC;
 using ASNode.UserPreferences;
 using BoundingExtents;
@@ -6,6 +7,8 @@ using Newtonsoft.Json;
 using VLPDDecls;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Common.Contracts;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Models
 {
@@ -208,8 +211,37 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
     /// </summary>
     public override void Validate()
     {
-        base.Validate();
-        if (machineList == null)
+      base.Validate();
+
+      if (coordType != CoordTypes.ptNORTHEAST && coordType != CoordTypes.ptLATLONG)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid coordinates type for export report"));
+      }
+
+      if (outputType < OutputTypes.etPassCountLastPass || outputType > OutputTypes.etVedaAllPasses)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid output type for export report"));
+      }
+
+      if (exportType == ExportTypes.kPassCountExport && outputType != OutputTypes.etPassCountLastPass && outputType != OutputTypes.etPassCountAllPasses)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid output type for machine passes export report"));
+      }
+
+      if (exportType == ExportTypes.kVedaExport && outputType != OutputTypes.etVedaFinalPass && outputType != OutputTypes.etVedaAllPasses)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid output type for machine passes export report for VETA"));
+      }
+
+      if (machineList == null)
         {
           machineList = new TMachine[2];
 

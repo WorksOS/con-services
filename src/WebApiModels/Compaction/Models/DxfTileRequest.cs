@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using MasterDataModels.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.MasterDataProxies.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Models
 {
