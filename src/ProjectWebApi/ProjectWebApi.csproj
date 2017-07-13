@@ -4,13 +4,13 @@
     <TargetFrameworks>netcoreapp1.1</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>VSS.MasterData.Project.Services.WebAPI</AssemblyName>
+    <AssemblyName>VSS.MasterData.Project.WebAPI</AssemblyName>
     <OutputType>exe</OutputType>
     <PackageId>ProjectWebApi</PackageId>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">1.1.1</RuntimeFrameworkVersion>
-    <RootNamespace>VSS.MasterData.Project.Services.WebAPI</RootNamespace>
+    <RootNamespace>VSS.MasterData.Project.WebAPI</RootNamespace>
     <ApplicationIcon />
     <OutputTypeEx>exe</OutputTypeEx>
     <StartupObject />

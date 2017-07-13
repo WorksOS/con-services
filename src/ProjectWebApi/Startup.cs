@@ -10,17 +10,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
 using VSS.GenericConfiguration;
-using VSS.MasterData.Project.Services.WebAPI.Filters;
-using VSS.MasterData.Project.Services.WebAPI.Internal;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Project.WebAPI.Filters;
+using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.Productivity3D.MasterDataProxies;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.Repo;
 using VSS.Productivity3D.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.MasterData.Project.Services.WebAPI
+namespace VSS.MasterData.Project.WebAPI
 {
   /// <summary>
   /// 

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.WindowsServices;
 #endif
 
-namespace VSS.MasterData.Project.Services.WebAPI
+namespace VSS.MasterData.Project.WebAPI
 {
   /// <summary>
   /// 

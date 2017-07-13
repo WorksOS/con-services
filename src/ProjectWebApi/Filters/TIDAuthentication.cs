@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.GenericConfiguration;
-using VSS.MasterData.Project.Services.WebAPI.Internal;
+using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.Productivity3D.MasterDataProxies;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
-namespace VSS.MasterData.Project.Services.WebAPI.Filters
+namespace VSS.MasterData.Project.WebAPI.Filters
 {
   /// <summary>
   /// authentication
