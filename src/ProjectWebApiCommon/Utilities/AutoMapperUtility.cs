@@ -1,10 +1,10 @@
 ﻿using System;
 using AutoMapper;
-using Repositories.DBModels;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
+namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
   public class AutoMapperUtility
   {
@@ -55,17 +55,17 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
             .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
             .ForMember(x => x.ProjectTimezone, opt => opt.Ignore());
-          cfg.CreateMap<Project, ProjectV4Descriptor>()
+          cfg.CreateMap<Productivity3D.Repo.DBModels.Project, ProjectV4Descriptor>()
             .ForMember(x => x.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
             .ForMember(x => x.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
             .ForMember(x => x.IsArchived,
-              opt => opt.MapFrom(src => (src.IsDeleted || src.SubscriptionEndDate < DateTime.UtcNow)))
+              opt => opt.MapFrom(src => src.IsDeleted || src.SubscriptionEndDate < DateTime.UtcNow))
             .ForMember(x => x.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
             .ForMember(x => x.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")))
             .ForMember(x => x.SubscriptionStartDate,
-              opt => opt.MapFrom(src => (src.SubscriptionStartDate.HasValue
+              opt => opt.MapFrom(src => src.SubscriptionStartDate.HasValue
                 ? src.SubscriptionStartDate.Value.ToString("O")
-                : string.Empty)))
+                : string.Empty))
             .ForMember(x => x.SubscriptionEndDate,
               opt => opt.MapFrom(src => src.SubscriptionEndDate.HasValue
                 ? src.SubscriptionEndDate.Value.ToString("O")
@@ -78,7 +78,6 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
             .ForMember(x => x.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))
             .ForMember(x => x.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc))
             .ForMember(x => x.ReceivedUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
-          ;
         }
       );
 

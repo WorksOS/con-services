@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <AssemblyName>MasterDataConsumerTests</AssemblyName>
+    <AssemblyName>VSS.MasterData.ConsumerTests</AssemblyName>
     <PackageId>MasterDataConsumerTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net45+win8</PackageTargetFallback>
@@ -10,12 +10,13 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>VSS.MasterData.ConsumerTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
     <PackageReference Include="OpenCover" Version="4.6.519" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
@@ -24,12 +25,12 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.15" />
-    <PackageReference Include="Moq" Version="4.7.10" />
+    <PackageReference Include="log4netExtensions.netcore" Version="1.0.*" />
+    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.*" />
+    <PackageReference Include="Moq" Version="4.7.63" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.23" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.78" />
+    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.*" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.*" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
   </ItemGroup>
 

@@ -1,29 +1,31 @@
-﻿using KafkaConsumer.Kafka;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Repositories;
-using Repositories.DBModels;
-using Repositories.ExtendedModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using TCCFileAccess;
+using KafkaConsumer.Kafka;
+using MasterDataModels.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Productivity3D.ProjectWebApi.Filters;
-using VSS.Productivity3D.ProjectWebApi.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Project.WebAPI.Filters;
+using VSS.MasterData.Project.WebAPI.Internal;
+using VSS.Productivity3D.MasterDataProxies;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
+using VSS.Productivity3D.Repo;
+using VSS.Productivity3D.Repo.DBModels;
+using VSS.Productivity3D.Repo.ExtendedModels;
+using VSS.Productivity3D.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.ProjectWebApi.Controllers
+namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// FileImporter controller
@@ -94,7 +96,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
-    protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
+    protected async Task<Productivity3D.Repo.DBModels.Project> GetProject(string projectUid)
     {
       var customerUid = LogCustomerDetails("GetProject", projectUid);
       var project =
@@ -402,13 +404,13 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate)
+    protected async Task NotifyRaptorAddFile(long? projectId, ImportedFileType fileType, Guid projectUid, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate)
     {
-      MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult = null;
+      BaseDataResult notificationResult = null;
       try
       {
         notificationResult = await raptorProxy
-          .AddFile(projectUid, importedFileUid,
+          .AddFile(projectUid, fileType, importedFileUid,
             JsonConvert.SerializeObject(fileDescriptor), importedFileId, Request.Headers.GetCustomHeaders())
           .ConfigureAwait(false);
       }
@@ -438,13 +440,13 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     ///  if it doesn't know about it then it do nothing and return success
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor, long importedFileId, Guid importedFileUid)
+    protected async Task NotifyRaptorDeleteFile(Guid projectUid, ImportedFileType fileType, string fileDescriptor, long importedFileId, Guid importedFileUid)
     {
-      MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult = null;
+      BaseDataResult notificationResult = null;
       try
       {
         notificationResult = await raptorProxy
-          .DeleteFile(projectUid, importedFileUid, fileDescriptor, importedFileId, Request.Headers.GetCustomHeaders())
+          .DeleteFile(projectUid, fileType, importedFileUid, fileDescriptor, importedFileId, Request.Headers.GetCustomHeaders())
           .ConfigureAwait(false);
       }
       catch (Exception e)

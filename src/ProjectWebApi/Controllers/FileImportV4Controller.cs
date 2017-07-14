@@ -1,29 +1,29 @@
-﻿using FlowUploadFilter;
-using KafkaConsumer.Kafka;
-using MasterDataProxies.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Repositories;
-using Repositories.DBModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using TCCFileAccess;
+using FlowUploadFilter;
+using KafkaConsumer.Kafka;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.GenericConfiguration;
-using VSS.Productivity3D.ProjectWebApi.Filters;
-using VSS.Productivity3D.ProjectWebApi.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Project.WebAPI.Filters;
+using VSS.MasterData.Project.WebAPI.Internal;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
+using VSS.Productivity3D.Repo;
+using VSS.Productivity3D.Repo.DBModels;
+using VSS.Productivity3D.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.ProjectWebApi.Controllers
+namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// File Import controller v4
@@ -236,7 +236,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor,
+      await NotifyRaptorAddFile(project.LegacyProjectID, importedFileType, projectUid, fileDescriptor,
         createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true).ConfigureAwait(false);
 
 
@@ -341,7 +341,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value,
+      await NotifyRaptorAddFile(project.LegacyProjectID, importedFileType, projectUid, fileDescriptor, importedFileId.Value,
           Guid.Parse(importedFileUid), (existing == null))
         .ConfigureAwait(false);
 
@@ -412,7 +412,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
       var deleteImportedFileEvent = await DeleteImportedFile(projectUid, importedFileUid, false).ConfigureAwait(false);
       
-      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor, importedFile.ImportedFileId, Guid.Parse(importedFile.ImportedFileUid))
+      await NotifyRaptorDeleteFile(projectUid, importedFile.ImportedFileType, importedFile.FileDescriptor, importedFile.ImportedFileId, Guid.Parse(importedFile.ImportedFileUid))
         .ConfigureAwait(false);
 
       await DeleteFileFromTCCRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor), projectUid, importedFileUid)

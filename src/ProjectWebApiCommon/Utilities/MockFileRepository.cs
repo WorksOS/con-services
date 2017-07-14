@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using TCCFileAccess;
-using TCCFileAccess.Models;
+using VSS.Productivity3D.TCCFileAccess;
+using VSS.Productivity3D.TCCFileAccess.Models;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
+namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
   public class MockFileRepository : IFileRepository
   {

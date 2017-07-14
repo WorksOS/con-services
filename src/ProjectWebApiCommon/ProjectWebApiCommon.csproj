@@ -4,12 +4,12 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <AssemblyName>VSS.Productivity3D.ProjectWebApiCommon</AssemblyName>
+    <AssemblyName>VSS.MasterData.Project.WebAPI.Common</AssemblyName>
     <PackageId>ProjectWebApiCommon</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <RootNamespace>VSS.Productivity3D.ProjectWebApiCommon</RootNamespace>
+    <RootNamespace>VSS.MasterData.Project.WebAPI.Common</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,9 +22,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
-    <PackageReference Include="AutoMapper" Version="6.0.2" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.78" />
-    <PackageReference Include="TCCFileAccess.netcore" Version="1.2.6" />
+    <PackageReference Include="AutoMapper" Version="6.1.1" />
+    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.*" />
+    <PackageReference Include="TCCFileAccess.netcore" Version="1.3.*" />
   </ItemGroup>
 
 </Project>

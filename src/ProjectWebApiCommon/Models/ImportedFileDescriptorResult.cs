@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Immutable;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Models
+namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
   /// <summary>
   /// List of importedfile descriptors
