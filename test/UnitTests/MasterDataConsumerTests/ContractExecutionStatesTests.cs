@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
-namespace MasterDataConsumerTests
+namespace VSS.MasterData.ConsumerTests
 {
   [TestClass]
   public class ContractExecutionStatesEnumTests

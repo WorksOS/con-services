@@ -1,21 +1,21 @@
-﻿using KafkaConsumer.Kafka;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using KafkaConsumer.Kafka;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.GenericConfiguration;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Project.WebAPI.Filters;
+using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.Productivity3D.MasterDataProxies;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.ProjectWebApi.Filters;
-using VSS.Productivity3D.ProjectWebApi.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
 using VSS.Productivity3D.Repo;
 using VSS.Productivity3D.Repo.DBModels;
 using VSS.Productivity3D.Repo.ExtendedModels;
@@ -23,7 +23,7 @@ using VSS.Productivity3D.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.ProjectWebApi.Controllers
+namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// FileImporter controller
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
-    protected async Task<Repo.DBModels.Project> GetProject(string projectUid)
+    protected async Task<Productivity3D.Repo.DBModels.Project> GetProject(string projectUid)
     {
       var customerUid = LogCustomerDetails("GetProject", projectUid);
       var project =
@@ -404,7 +404,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     /// <returns></returns>
     protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate)
     {
-      MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult = null;
+      Productivity3D.MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult = null;
       try
       {
         notificationResult = await raptorProxy
@@ -440,7 +440,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     /// <returns></returns>
     protected async Task NotifyRaptorDeleteFile(Guid projectUid, string fileDescriptor, long importedFileId, Guid importedFileUid)
     {
-      MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult = null;
+      Productivity3D.MasterDataProxies.ResultHandling.ContractExecutionResult notificationResult = null;
       try
       {
         notificationResult = await raptorProxy

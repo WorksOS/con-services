@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling
+namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
 {
   public class ExceptionsTrap
   {

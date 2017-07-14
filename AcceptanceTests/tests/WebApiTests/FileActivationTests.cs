@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using TestUtility;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 
 namespace WebApiTests
 {

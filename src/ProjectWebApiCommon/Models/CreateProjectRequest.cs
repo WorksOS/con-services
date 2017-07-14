@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Models
+namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
   /// <summary>
   /// The request representation used to Create a project. 
