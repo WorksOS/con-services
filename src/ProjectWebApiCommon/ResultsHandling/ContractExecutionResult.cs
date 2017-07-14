@@ -149,7 +149,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     /// <summary>
     ///   Service request executed successfully
     /// </summary>
-    public static readonly int ExecutedSuccessfully = 200;
+    public static readonly int ExecutedSuccessfully = 0;
 
     /// <summary>
     ///   Serializing request erors
