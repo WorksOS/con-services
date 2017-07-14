@@ -151,6 +151,74 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Models
     public double? customBulkingPercent { get; private set; }
 
     /// <summary>
+    /// Private constructor
+    /// </summary>
+    private CompactionProjectSettings()
+    {
+    }
+
+    /// <summary>
+    /// Create instance of CompactionProjectSettings
+    /// </summary>
+    public static CompactionProjectSettings CreateProjectSettings
+      (
+      bool? useMachineTargetPassCount,
+      int? customTargetPassCountMinimum,
+      int? customTargetPassCountMaximum,
+      bool? useMachineTargetTemperature,
+      double? customTargetTemperatureMinimum,
+      double? customTargetTemperatureMaximum,
+      bool? useMachineTargetCmv,
+      double? customTargetCmv,
+      bool? useMachineTargetMdp,
+      double? customTargetMdp,
+      bool? useDefaultTargetRangeCmvPercent,
+      double? customTargetCmvPercentMinimum,
+      double? customTargetCmvPercentMaximum,
+      bool? useDefaultTargetRangeMdpPercent,
+      double? customTargetMdpPercentMinimum,
+      double? customTargetMdpPercentMaximum,
+      bool? useDefaultTargetRangeSpeed,
+      double? customTargetSpeedMinimum,
+      double? customTargetSpeedMaximum,
+      bool? useDefaultCutFillTolerances,
+      List<double> customCutFillTolerances,
+      bool? useDefaultVolumeShrinkageBulking,
+      double? customShrinkagePercent,
+      double? customBulkingPercent
+      )
+   
+    {
+      return new CompactionProjectSettings
+      {
+        useMachineTargetPassCount = useMachineTargetPassCount,
+        customTargetPassCountMinimum = customTargetPassCountMinimum,
+        customTargetPassCountMaximum = customTargetPassCountMaximum,
+        useMachineTargetTemperature = useMachineTargetTemperature,
+        customTargetTemperatureMinimum = customTargetTemperatureMinimum,
+        customTargetTemperatureMaximum = customTargetTemperatureMaximum,
+        useMachineTargetCmv = useMachineTargetCmv,
+        customTargetCmv = customTargetCmv,
+        useMachineTargetMdp = useMachineTargetMdp,
+        customTargetMdp = customTargetMdp,
+        useDefaultTargetRangeCmvPercent = useDefaultTargetRangeCmvPercent,
+        customTargetCmvPercentMinimum = customTargetCmvPercentMinimum,
+        customTargetCmvPercentMaximum = customTargetCmvPercentMaximum,
+        useDefaultTargetRangeMdpPercent = useDefaultTargetRangeMdpPercent,
+        customTargetMdpPercentMinimum = customTargetMdpPercentMinimum,
+        customTargetMdpPercentMaximum = customTargetMdpPercentMaximum,
+        useDefaultTargetRangeSpeed = useDefaultTargetRangeSpeed,
+        customTargetSpeedMinimum = customTargetSpeedMinimum,
+        customTargetSpeedMaximum = customTargetSpeedMaximum,
+        useDefaultCutFillTolerances = useDefaultCutFillTolerances,
+        customCutFillTolerances = customCutFillTolerances,
+        useDefaultVolumeShrinkageBulking = useDefaultVolumeShrinkageBulking,
+        customShrinkagePercent = customShrinkagePercent,
+        customBulkingPercent = customBulkingPercent
+      };
+    }
+
+    /// <summary>
     /// Validates all properties
     /// </summary>
     public void Validate()
@@ -222,7 +290,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Models
     /// <param name="what">What is being validated for error message</param>
     private void ValidateValue(bool? useMachineTarget, double? customTargetValue, string what)
     {
-      if (useMachineTarget.HasValue && useMachineTarget.Value)
+      if (useMachineTarget.HasValue && !useMachineTarget.Value)
       {
         if (!customTargetValue.HasValue)
         {
