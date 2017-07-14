@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using MasterDataProxies.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -98,6 +97,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileUid">File UID</param>
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
+    /// <param name="fileType">Type of the file</param>
     /// <param name="fileId">A unique file identifier</param>
     /// <returns></returns>
     /// <executor>AddFileExecutor</executor> 
@@ -106,6 +106,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [HttpGet]
     public async Task<ContractExecutionResult> GetAddFile(
       [FromQuery] Guid projectUid,
+      [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long fileId)
@@ -117,7 +118,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var userPrefs = await prefProxy.GetUserPreferences(customHeaders);
       var userUnits = userPrefs == null ? UnitsTypeEnum.US : (UnitsTypeEnum)Enum.Parse(typeof(UnitsTypeEnum), userPrefs.Units, true);
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var fileType = await GetFileType(projectUid, fileUid);
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, coordSystem, userUnits, fileId, fileType);
       request.Validate();
       var executor = RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
@@ -134,6 +134,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileUid">File UID</param>
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>    /// <returns></returns>
+    /// <param name="fileType">Type of the file</param>
     /// <param name="fileId">A unique file identifier</param>
     /// <executor>DeleteFileExecutor</executor> 
     [ProjectUidVerifier]
@@ -141,6 +142,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     [HttpGet]
     public async Task<ContractExecutionResult> GetDeleteFile(
       [FromQuery] Guid projectUid,
+      [FromQuery] ImportedFileType fileType,
       [FromQuery] Guid fileUid,
       [FromQuery] string fileDescriptor,
       [FromQuery] long fileId)
@@ -148,9 +150,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       log.LogDebug("GetDeleteFile: " + Request.QueryString);
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-
-      var fileType = await GetFileType(projectUid, fileUid);
-
       var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId, fileType);
       request.Validate();
       var executor = RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
@@ -160,18 +159,6 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       return result;
     }
 
-    /// <summary>
-    /// Gets filetype from the fileUID
-    /// </summary>
-    /// <param name="projectUid">Project UID</param>
-    /// <param name="fileUid">File UID</param>
-    private async Task<ImportedFileType> GetFileType(Guid projectUid, Guid fileUid)
-    {
-      var customHeaders = Request.Headers.GetCustomHeaders();
-      var fileType = (await fileListProxy.GetFiles(projectUid.ToString(), customHeaders))
-        .Where(file => file.ImportedFileUid == fileUid.ToString()).Select(file => file.ImportedFileType).FirstOrDefault();
-      return fileType;
-    }
 
     /// <summary>
     /// Notifies Raptor that files have been activated or deactivated
