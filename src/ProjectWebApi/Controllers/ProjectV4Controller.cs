@@ -7,6 +7,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
 using KafkaConsumer.Kafka;
+using MasterDataModels.ResultHandling;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -330,7 +331,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
       {
         ProjectDataValidator.ValidateFileName(csFileName);
-        Productivity3D.MasterDataProxies.ResultHandling.CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
+        CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
         try
         {
           coordinateSystemSettingsResult = await raptorProxy
