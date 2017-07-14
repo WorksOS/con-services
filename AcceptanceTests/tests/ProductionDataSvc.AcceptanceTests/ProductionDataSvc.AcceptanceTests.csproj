@@ -173,6 +173,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ExportReportMachinePasses.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExportReportMachinePasses.feature</DependentUpon>
+    </Compile>
     <Compile Include="ExportReportToSurface.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -311,6 +316,7 @@
     <Compile Include="StepDefinitions\DxfTileSteps.cs" />
     <Compile Include="StepDefinitions\ElevationStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\ExportGriddedCSVSteps.cs" />
+    <Compile Include="StepDefinitions\ExportReportMachinePassesSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportToSurfaceSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportToVETASteps.cs" />
@@ -443,6 +449,10 @@
     <None Include="ExportReport.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ExportReport.feature.cs</LastGenOutput>
+    </None>
+    <None Include="ExportReportMachinePasses.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ExportReportMachinePasses.feature.cs</LastGenOutput>
     </None>
     <None Include="ExportReportToSurface.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -646,6 +656,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\TagFileRequest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\ExportReportMachinePassesResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Tiles.feature">
