@@ -266,6 +266,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ProjectSettings.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ProjectSettings.feature</DependentUpon>
+    </Compile>
     <Compile Include="ProjectStatistics.feature.cs">
       <DependentUpon>ProjectStatistics.feature</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -312,6 +317,7 @@
     <Compile Include="StepDefinitions\NotificationSteps.cs" />
     <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
     <Compile Include="StepDefinitions\PassCountSummarySteps.cs" />
+    <Compile Include="StepDefinitions\ProjectSettingsSteps.cs" />
     <Compile Include="StepDefinitions\ProjectStatisticsSteps.cs" />
     <Compile Include="StepDefinitions\RaptorConfigSteps.cs" />
     <Compile Include="StepDefinitions\SummarySpeedSteps.cs" />
@@ -494,6 +500,10 @@
     <None Include="Profile.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Profile.feature.cs</LastGenOutput>
+    </None>
+    <None Include="ProjectSettings.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ProjectSettings.feature.cs</LastGenOutput>
     </None>
     <None Include="ProjectStatistics.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

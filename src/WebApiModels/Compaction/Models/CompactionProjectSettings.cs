@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Drawing.Text;
 using System.Net;
+using System.Linq;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
@@ -154,6 +155,14 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Models
     /// </summary>
     public void Validate()
     {
+      var validator = new DataAnnotationsValidator();
+      ICollection<ValidationResult> results;
+      validator.TryValidate(this, out results);
+      if (results.Any())
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, results.FirstOrDefault().ErrorMessage));
+      }
+
       ValidateRange(useMachineTargetPassCount, customTargetPassCountMinimum, customTargetPassCountMaximum, "pass count");
       ValidateRange(useMachineTargetTemperature, customTargetTemperatureMinimum, customTargetTemperatureMaximum, "temperature");
       ValidateRange(useDefaultTargetRangeCmvPercent, customTargetCmvPercentMinimum, customTargetCmvPercentMaximum, "CMV %");

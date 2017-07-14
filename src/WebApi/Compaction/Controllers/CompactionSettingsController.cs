@@ -54,9 +54,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       log.LogInformation("ValidateProjectSettings: " + Request.QueryString);
 
-      var compactionSettings = GetProjectSettings(projectSettings);
-      compactionSettings.Validate();
-  
+      if (!string.IsNullOrEmpty(projectSettings))
+      {
+        var compactionSettings = GetProjectSettings(projectSettings);
+        compactionSettings.Validate();
+      }
+
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Project settings are valid");
     }
@@ -69,19 +72,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private CompactionProjectSettings GetProjectSettings(string projectSettings)
     {
       CompactionProjectSettings ps = null;
-      try
+      if (!string.IsNullOrEmpty(projectSettings))
       {
-        ps = JsonConvert.DeserializeObject<CompactionProjectSettings>(projectSettings);
-      }
-      catch (Exception ex)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            ex.Message));
+        try
+        {
+          ps = JsonConvert.DeserializeObject<CompactionProjectSettings>(projectSettings);
+        }
+        catch (Exception ex)
+        {
+          throw new ServiceException(HttpStatusCode.BadRequest,
+            new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+              ex.Message));
+        }
       }
       return ps;
     }
-
-
   }
 }
