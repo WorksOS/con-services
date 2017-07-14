@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.MasterDataProxies.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.MasterDataProxies
 {
@@ -57,11 +58,12 @@ namespace VSS.Productivity3D.MasterDataProxies
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
     /// <param name="fileId">A unique file identifier (legacy)</param>
     /// <param name="customHeaders">Custom request headers</param>
+    /// <param name="fileType">Type of the file</param>
     /// <returns></returns>
-    public async Task<BaseDataResult> AddFile(Guid projectUid, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseDataResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.AddFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId}");
-      var queryParams = $"?projectUid={projectUid}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}";
+      var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}";
       //log.LogDebug($"RaptorProxy.AddFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
 
       return await NotifyFile("/addfile", queryParams, customHeaders);
@@ -74,12 +76,13 @@ namespace VSS.Productivity3D.MasterDataProxies
     /// <param name="fileUid">File UID</param>
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
     /// <param name="fileId">A unique file identifier (legcy)</param>
+    /// <param name="fileType">Type of the file</param>
     /// <param name="customHeaders">Custom request headers</param>
     /// <returns></returns>
-    public async Task<BaseDataResult> DeleteFile(Guid projectUid, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor, long fileId, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.DeleteFile: projectUid: {projectUid} fileUid: {fileUid} fileDescriptor: {fileDescriptor} fileId: {fileId}");
-      var queryParams = $"?projectUid={projectUid}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}";
+      var queryParams = $"?projectUid={projectUid}&fileType={fileType}&fileUid={fileUid}&fileDescriptor={fileDescriptor}&fileId={fileId}";
       //log.LogDebug($"RaptorProxy.DeleteFile: queryParams: {JsonConvert.SerializeObject(queryParams)}");
 
       return await NotifyFile("/deletefile", queryParams, customHeaders);
