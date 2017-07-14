@@ -1,5 +1,6 @@
 ﻿using log4net;
 using System;
+using log4netExtensions.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace log4netExtensions
@@ -18,6 +19,7 @@ namespace log4netExtensions
       switch (logLevel)
       {
         case LogLevel.Trace:
+          return _logger.IsDebugEnabled;
         case LogLevel.Debug:
           return _logger.IsDebugEnabled;
         case LogLevel.Information:
@@ -57,6 +59,8 @@ namespace log4netExtensions
       switch (logLevel)
       {
         case LogLevel.Trace:
+          _logger.Trace(message, exception);
+          break;
         case LogLevel.Debug:
           _logger.Debug(message, exception);
           break;
