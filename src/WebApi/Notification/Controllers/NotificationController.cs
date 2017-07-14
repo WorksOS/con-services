@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using MasterDataProxies.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -19,6 +20,7 @@ using VSS.Productivity3D.TCCFileAccess;
 using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApiModels.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Notification.Controllers
 {
@@ -115,7 +117,8 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       var userPrefs = await prefProxy.GetUserPreferences(customHeaders);
       var userUnits = userPrefs == null ? UnitsTypeEnum.US : (UnitsTypeEnum)Enum.Parse(typeof(UnitsTypeEnum), userPrefs.Units, true);
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, coordSystem, userUnits, fileId);
+      var fileType = await GetFileType(projectUid, fileUid);
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, coordSystem, userUnits, fileId, fileType);
       request.Validate();
       var executor = RequestExecutorContainer.Build<AddFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
@@ -145,14 +148,29 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       log.LogDebug("GetDeleteFile: " + Request.QueryString);
       ProjectDescriptor projectDescr = (User as RaptorPrincipal).GetProject(projectUid);
       FileDescriptor fileDes = GetFileDescriptor(fileDescriptor);
-      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId);
+
+      var fileType = await GetFileType(projectUid, fileUid);
+
+      var request = ProjectFileDescriptor.CreateProjectFileDescriptor(projectDescr.projectId, projectUid, fileDes, null, UnitsTypeEnum.None, fileId, fileType);
       request.Validate();
       var executor = RequestExecutorContainer.Build<DeleteFileExecutor>(logger, raptorClient, null, configStore, fileRepo, tileGenerator);
       var result = await executor.ProcessAsync(request);
-      var customHeaders = Request.Headers.GetCustomHeaders();
-      await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, customHeaders);
+      await ClearFilesCaches(projectUid, new List<Guid> { fileUid }, Request.Headers.GetCustomHeaders());
       log.LogInformation("GetDeleteFile returned: " + Response.StatusCode);
       return result;
+    }
+
+    /// <summary>
+    /// Gets filetype from the fileUID
+    /// </summary>
+    /// <param name="projectUid">Project UID</param>
+    /// <param name="fileUid">File UID</param>
+    private async Task<ImportedFileType> GetFileType(Guid projectUid, Guid fileUid)
+    {
+      var customHeaders = Request.Headers.GetCustomHeaders();
+      var fileType = (await fileListProxy.GetFiles(projectUid.ToString(), customHeaders))
+        .Where(file => file.ImportedFileUid == fileUid.ToString()).Select(file => file.ImportedFileType).FirstOrDefault();
+      return fileType;
     }
 
     /// <summary>
@@ -193,7 +211,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileUids">The file UIDs of files that have been activated/deactivated</param>
     /// <param name="customHeaders">The custom headers of the notification request</param>
     /// <returns></returns>
-    private async Task<bool> ClearFilesCaches(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders)
+    private async Task<List<FileData>> ClearFilesCaches(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders)
     {
       log.LogInformation("Clearing imported files cache for project {0}", projectUid);
       //Clear file list cache and reload
@@ -201,9 +219,9 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
         customHeaders.Add("X-VisionLink-ClearCache", "true");
 
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
-      log.LogInformation("After clearing cache {0} total imported files, {1} activated, for project {2}", fileList.Count, fileList.Where(f => f.IsActivated).Count(), projectUid);
+      log.LogInformation("After clearing cache {0} total imported files, {1} activated, for project {2}", fileList.Count, fileList.Count(f => f.IsActivated), projectUid);
 
-      return true;
+      return fileList;
     }
 
     /// <summary>
