@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Helpers
     public static DateTime? SurveyedSurfaceUtc(string fileName)
     {
       var shortFileName = Path.GetFileNameWithoutExtension(fileName);
-      var format = "yyyy-MM-ddTHH:mm:ssZ";
+      var format = "yyyy-MM-ddTHHmmssZ";
       if (shortFileName.Length <= format.Length)
         return (DateTime?) null;
       DateTime dateTime = shortFileName.Substring(shortFileName.Length - format.Length).IsDateTimeISO8601(format);
