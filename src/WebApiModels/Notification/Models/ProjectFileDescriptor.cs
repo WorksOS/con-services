@@ -5,6 +5,7 @@ using System.Net;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApiModels.Notification.Models
 {
@@ -40,6 +41,12 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
     public long FileId { get; private set; }
 
     /// <summary>
+    /// Type of the imported file
+    /// </summary>
+    [JsonIgnore]
+    public ImportedFileType FileType { get; private set; }
+
+    /// <summary>
     /// Private constructor
     /// </summary>
     private ProjectFileDescriptor()
@@ -55,7 +62,8 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
       FileDescriptor file,
       string coordSystemFileName,
       UnitsTypeEnum userUnits,
-      long fileId
+      long fileId,
+      ImportedFileType fileType = ImportedFileType.DesignSurface
     )
     {
       return new ProjectFileDescriptor
@@ -65,7 +73,8 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Models
         File = file,
         CoordSystemFileName = coordSystemFileName,
         UserPreferenceUnits = userUnits,
-        FileId = fileId
+        FileId = fileId,
+        FileType = fileType
       };
     }
 
