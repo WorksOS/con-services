@@ -65,8 +65,9 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       try
       {
         ProjectFileDescriptor request = item as ProjectFileDescriptor;
-        ImportedFileType fileType = FileUtils.GetFileType(request.File.fileName);
- 
+        ImportedFileType fileType = request.FileType;//FileUtils.GetFileType(request.File.fileName);
+        log.LogDebug($"FileType is: {fileType}");
+
         //Tell Raptor to update its cache. 
         //Note: surveyed surface file names are the TCC one including the surveyed UTC in the file name
         if (fileType == ImportedFileType.Alignment || 

@@ -57,7 +57,8 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       try
       {
         ProjectFileDescriptor request = item as ProjectFileDescriptor;
-        ImportedFileType fileType = FileUtils.GetFileType(request.File.fileName);
+        ImportedFileType fileType = request.FileType;   //FileUtils.GetFileType(request.File.fileName);
+        log.LogDebug($"FileType is: {fileType}");
 
         if (fileType == ImportedFileType.DesignSurface ||
             fileType == ImportedFileType.Alignment ||
