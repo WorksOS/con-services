@@ -62,6 +62,8 @@ namespace VSS.Productivity3D.Common.Filters
       var typedHeaders = context.HttpContext.Response.GetTypedHeaders();
       var responseHeaders = typedHeaders.CacheControl ?? EmptyCacheControl;
 
+
+
       // Check no-store
       if (responseHeaders.NoStore)
       {
@@ -75,6 +77,12 @@ namespace VSS.Productivity3D.Common.Filters
       }
 
       var response = context.HttpContext.Response;
+
+      //Does request contains "mode=0" string to avoid caching elevation tiles?
+      if (response.HttpContext.Request.QueryString.Value.Contains("mode=0"))
+      {
+        return false;
+      }
 
       // Do not cache responses with Set-Cookie headers
       if (!StringValues.IsNullOrEmpty(response.Headers[HeaderNames.SetCookie]))
