@@ -21,9 +21,8 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
       ContractExecutionResult result = null;
       try
       {
-        // todo include projectUid
         result = await raptorProxy
-          .ProjectSettingsValidate(Guid.Parse(request.projectUid), request.settings, customHeaders)
+          .ValidateProjectSettings(Guid.Parse(request.projectUid), request.settings, customHeaders)
           .ConfigureAwait(false);
       }
       catch (Exception e)
@@ -31,7 +30,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
         log.LogError(
           $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{request.projectUid} settings:{request.settings}. Exception Thrown: {e.Message}. ");
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 70,
-          "raptorProxy.ProjectSettingsValidate", e.Message);
+          "raptorProxy.ValidateProjectSettings", e.Message);
       }
 
       log.LogDebug(
