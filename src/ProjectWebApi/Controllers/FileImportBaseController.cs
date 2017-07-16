@@ -327,8 +327,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       catch (Exception e)
       {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.PutFile", e.Message);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "fileRepo.PutFile",
+          e.Message);
       }
+      finally
+      {
+        fileStream.Dispose();
+      }
+
 
       if (ccPutFileResult == false)
       {
