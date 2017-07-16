@@ -22,6 +22,6 @@ namespace VSS.Productivity3D.MasterDataProxies.Interfaces
 
     Task<BaseDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders = null);
 
-    Task<ContractExecutionResult> ProjectSettingsValidate(Guid projectUid, string settings, IDictionary<string, string> customHeaders = null);
+    Task<ContractExecutionResult> ValidateProjectSettings(Guid projectUid, string projectSettings, IDictionary<string, string> customHeaders = null);
   }
 }

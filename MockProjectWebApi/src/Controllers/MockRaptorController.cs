@@ -124,20 +124,20 @@ namespace MockProjectWebApi.Controllers
     }
 
     /// <summary>
-    /// Dummies the project settings validation.
+    /// Dummies the project projectSettings validation.
     /// </summary>
-    [Route("api/v2/projectsettings/validation")]
+    [Route("api/v2/compaction/validatesettings")]
     [HttpGet]
-    public ContractExecutionResult DummyProjectSettingsValidationGet(
+    public ContractExecutionResult DummyValidateProjectSettingsGet(
       [FromQuery] Guid projectUid,
-      [FromQuery] string settings)
+      [FromQuery] string projectSettings)
     {
       ContractExecutionResult res;
-      if (string.IsNullOrEmpty(settings))
+      if (string.IsNullOrEmpty(projectSettings))
         res = new ContractExecutionResult(ContractExecutionStatesEnum.ProjectSettingsAreInvalid, "The supplied string is empty");
       else
         res = new ContractExecutionResult();
-      var message = $"DummyProjectSettingsValidationGet: res {res}. settings {settings}";
+      var message = $"DummyValidateProjectSettingsGet: res {res}. projectSettings {projectSettings}";
       Console.WriteLine(message);
       return res;
     }
