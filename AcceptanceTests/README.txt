@@ -1,5 +1,5 @@
 To run acceptance tests on local machine.
-
+ - dotnet restore VSS.Raptor.Service.sln --no-cache
  - run build.bat in repository root directory
  - run AcceptanceTests\scripts\runLocal.ps1
  
