@@ -82,9 +82,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
+      //Note: elevation palette is a separate call as it requires a filter
       List<DisplayMode> modes = new List<DisplayMode>
       {
-        DisplayMode.Height,
         DisplayMode.CCV,
         DisplayMode.PassCount,
         DisplayMode.PassCountSummary,
@@ -96,7 +96,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         DisplayMode.CMVChange
       };
 
-      DetailPalette elevationPalette = null;
       DetailPalette cmvDetailPalette = null;
       DetailPalette passCountDetailPalette = null;
       SummaryPalette passCountSummaryPalette = null;
@@ -133,19 +132,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var compactionPalette = CompactionSettings.CompactionPalette(mode, elevExtents);
         switch (mode)
         {
-          case DisplayMode.Height:
-            if (compactionPalette != null)
-            {
-              colorValues = new List<ColorValue>();
-              for (int i = 1; i < compactionPalette.Count - 1; i++)
-              {
-                colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-                  compactionPalette[i].value));
-              }
-              elevationPalette = DetailPalette.CreateDetailPalette(colorValues,
-                compactionPalette[compactionPalette.Count - 1].color, compactionPalette[0].color);
-            }
-            break;
           case DisplayMode.CCV:
             colorValues = new List<ColorValue>();
             for (int i = 0; i < compactionPalette.Count; i++)
@@ -208,10 +194,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       }
       return CompactionColorPalettesResult.CreateCompactionColorPalettesResult(
-        elevationPalette, cmvDetailPalette, passCountDetailPalette, passCountSummaryPalette, cutFillPalette,
-        temperatureSummaryPalette,
-        cmvSummaryPalette, mdpSummaryPalette, cmvPercentChangePalette, speedSummaryPalette,
-        temperatureDetailPalette);
+        cmvDetailPalette, passCountDetailPalette, passCountSummaryPalette, cutFillPalette, temperatureSummaryPalette,
+        cmvSummaryPalette, mdpSummaryPalette, cmvPercentChangePalette, speedSummaryPalette, temperatureDetailPalette);
     }
 
     /// <summary>
