@@ -127,6 +127,7 @@ namespace MockProjectWebApi.Controllers
     [Route("api/v2/projectsettings/validation")]
     [HttpGet]
     public ContractExecutionResult DummyProjectSettingsValidationGet(
+      [FromQuery] Guid projectUid,
       [FromQuery] string settings)
     {
       ContractExecutionResult res;
