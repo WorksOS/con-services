@@ -145,7 +145,8 @@ namespace VSS.Productivity3D.WebApi
       //For now don't use application insights as it clogs the log with lots of stuff.
       //app.UseApplicationInsightsRequestTelemetry();
       //app.UseApplicationInsightsExceptionTelemetry();
-      app.UseResponseCaching();
+
+      //app.UseResponseCaching();
       app.UseMvc();
 
       app.UseSwagger();
