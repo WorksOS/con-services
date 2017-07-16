@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MasterDataModels.Models;
 using MasterDataModels.ResultHandling;
 using Microsoft.AspNetCore.Mvc;
+using VSS.Productivity3D.MasterDataProxies.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers

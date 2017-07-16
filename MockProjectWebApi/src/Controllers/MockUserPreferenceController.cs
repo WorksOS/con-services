@@ -1,6 +1,7 @@
 ﻿using System;
 using MasterDataModels.Models;
 using Microsoft.AspNetCore.Mvc;
+using VSS.Productivity3D.MasterDataProxies.Models;
 
 namespace src.Controllers
 {

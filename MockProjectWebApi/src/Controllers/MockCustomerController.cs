@@ -4,6 +4,8 @@ using MasterDataModels.Models;
 using MasterDataModels.ResultHandling;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using VSS.Productivity3D.MasterDataProxies.Models;
+using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {
