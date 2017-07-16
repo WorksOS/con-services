@@ -107,14 +107,16 @@ namespace VSS.Productivity3D.MasterDataProxies
     /// <summary>
     /// Validates the Settings for the project.
     /// </summary>
+    /// <param name="projectUid"></param>
     /// <param name="settings">The settings in Json to be validated.</param>
     /// <param name="customHeaders">The custom headers.</param>
-    public async Task<ContractExecutionResult> ProjectSettingsValidate(string settings, IDictionary<string, string> customHeaders = null)
+    public async Task<ContractExecutionResult> ProjectSettingsValidate(Guid projectUid, string settings, IDictionary<string, string> customHeaders = null)
     {
-      log.LogDebug($"RaptorProxy.ProjectSettingsValidate: settings: {settings}");
-      ContractExecutionResult response = await SendRequest<ContractExecutionResult>("PROJECTSETTINGS_API_URL", settings, customHeaders, "/validation");
-
+      log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
+      var queryParams = $"?projectUid={projectUid}&settings={settings}";
+      ContractExecutionResult response = await GetItem<ContractExecutionResult>("PROJECTSETTINGS_API_URL", customHeaders, queryParams, "/validation");
       log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
+
       return response;
     }
 
