@@ -10,8 +10,8 @@ using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using Moq;
-using Repositories.DBModels;
 using VSS.Productivity3D.Repo;
+using VSS.Productivity3D.Repo.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ProjectTests

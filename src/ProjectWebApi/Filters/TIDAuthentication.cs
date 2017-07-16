@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using MasterDataModels.ResultHandling;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -10,7 +11,6 @@ using VSS.Authentication.JWT;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.MasterDataProxies;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
 using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 
 namespace VSS.Productivity3D.ProjectWebApi.Filters

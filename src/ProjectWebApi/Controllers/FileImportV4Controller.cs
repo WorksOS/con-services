@@ -236,7 +236,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor,
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, fileDescriptor,
         createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true).ConfigureAwait(false);
 
 
@@ -341,7 +341,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, fileDescriptor, importedFileId.Value,
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, fileDescriptor, importedFileId.Value,
           Guid.Parse(importedFileUid), (existing == null))
         .ConfigureAwait(false);
 
@@ -412,7 +412,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
       var deleteImportedFileEvent = await DeleteImportedFile(projectUid, importedFileUid, false).ConfigureAwait(false);
       
-      await NotifyRaptorDeleteFile(projectUid, importedFile.FileDescriptor, importedFile.ImportedFileId, Guid.Parse(importedFile.ImportedFileUid))
+      await NotifyRaptorDeleteFile(projectUid, importedFile.ImportedFileType, importedFile.FileDescriptor, importedFile.ImportedFileId, Guid.Parse(importedFile.ImportedFileUid))
         .ConfigureAwait(false);
 
       await DeleteFileFromTCCRepository(JsonConvert.DeserializeObject<FileDescriptor>(importedFile.FileDescriptor), projectUid, importedFileUid)

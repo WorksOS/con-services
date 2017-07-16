@@ -10,6 +10,7 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
+using MasterDataModels.ResultHandling;
 using VSS.GenericConfiguration;
 using VSS.Productivity3D.MasterDataProxies;
 using VSS.Productivity3D.MasterDataProxies.Interfaces;
@@ -329,7 +330,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       if (!string.IsNullOrEmpty(csFileName) || csFileContent != null)
       {
         ProjectDataValidator.ValidateFileName(csFileName);
-        MasterDataProxies.ResultHandling.CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
+        CoordinateSystemSettingsResult coordinateSystemSettingsResult = null;
         try
         {
           coordinateSystemSettingsResult = await raptorProxy
@@ -387,10 +388,11 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
 
       // this is needed so that when ASNode (raptor client), which is called from CoordinateSystemPost, can retrieve the just written project+cp
       isCreated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
+
       if (isCreated == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
 
-      log.LogDebug($"Created CustomerProject in DB {customerProject}");
+      log.LogDebug($"Created CustomerProject in DB {JsonConvert.SerializeObject(customerProject)}");
       return project; // legacyID may have been added
     }
 

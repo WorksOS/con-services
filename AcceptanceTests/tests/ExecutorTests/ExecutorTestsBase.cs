@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using KafkaConsumer.Kafka;
 using log4netExtensions;
-using MasterDataProxies;
-using MasterDataProxies.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.GenericConfiguration;
+using VSS.Productivity3D.MasterDataProxies;
+using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.ProjectWebApiCommon.Internal;
 using VSS.Productivity3D.Repo;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -52,6 +52,7 @@ namespace ExecutorTests
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       projectRepo = serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
+      raptorProxy = serviceProvider.GetRequiredService<IRaptorProxy>();
       customHeaders = new Dictionary<string, string>();
       producer = serviceProvider.GetRequiredService<IKafka>();
     }

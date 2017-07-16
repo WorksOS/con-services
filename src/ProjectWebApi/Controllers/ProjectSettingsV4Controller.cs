@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
@@ -18,28 +17,15 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.ProjectWebApi.Controllers
 {
-  public class ProjectSettingsV4Controller : Controller
+  public class ProjectSettingsV4Controller : ProjectSettingsBaseController
   {
-    private readonly ProjectRepository projectRepo;
-    private readonly IRaptorProxy raptorProxy;
-    private readonly IConfigurationStore configStore;
-    private readonly ILoggerFactory logger;
     private readonly ILogger log;
-    private readonly IServiceExceptionHandler serviceExceptionHandler;
-    private readonly IKafka producer;
-    private readonly string kafkaTopicName;
 
     public ProjectSettingsV4Controller(IRepository<IProjectEvent> projectRepo, IRaptorProxy raptorProxy,
       IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IKafka producer)
+      : base(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, producer)
     {
-      this.projectRepo = projectRepo as ProjectRepository;
-      this.raptorProxy = raptorProxy;
-      this.configStore = configStore;
-      this.logger = logger;
       log = logger.CreateLogger<ProjectSettingsV4Controller>(); 
-      this.serviceExceptionHandler = serviceExceptionHandler;
-      this.producer = producer;
-      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" + configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
 
@@ -77,7 +63,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
       log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 
-      await RaptorValidateProjectSettings(request.projectUid, request.settings);
+      await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log, serviceExceptionHandler, request, Request.Headers.GetCustomHeaders());
 
       var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer);
       var result = await executor.ProcessAsync(request);
@@ -94,31 +80,31 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
       return customerUid;
     }
 
-    private async Task RaptorValidateProjectSettings(string projectUid, string settings)
-    {
-      MasterDataProxies.ResultHandling.ContractExecutionResult result = null;
-      try
-      {
-        result = await raptorProxy
-          .ProjectSettingsValidate(settings, Request.Headers.GetCustomHeaders())
-          .ConfigureAwait(false);
-      }
-      catch (Exception e)
-      {
-        log.LogError(
-          $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{projectUid} settings:{settings}. Exception Thrown: {e.Message}. ");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 70, "raptorProxy.ProjectSettingsValidate", e.Message);
-      }
+    //private async Task RaptorValidateProjectSettings(string projectUid, string settings)
+    //{
+    //  MasterDataProxies.ResultHandling.ContractExecutionResult result = null;
+    //  try
+    //  {
+    //    result = await raptorProxy
+    //      .ProjectSettingsValidate(settings, Request.Headers.GetCustomHeaders())
+    //      .ConfigureAwait(false);
+    //  }
+    //  catch (Exception e)
+    //  {
+    //    log.LogError(
+    //      $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{projectUid} settings:{settings}. Exception Thrown: {e.Message}. ");
+    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 70, "raptorProxy.ProjectSettingsValidate", e.Message);
+    //  }
 
-      log.LogDebug(
-        $"RaptorValidateProjectSettings: projectUid: {projectUid} settings: {settings}. RaptorServices returned code: {result?.Code ?? -1} Message {result?.Message ?? "result == null"}.");
+    //  log.LogDebug(
+    //    $"RaptorValidateProjectSettings: projectUid: {projectUid} settings: {settings}. RaptorServices returned code: {result?.Code ?? -1} Message {result?.Message ?? "result == null"}.");
 
-      if (result != null && result.Code != 0)
-      {
-        log.LogError($"FRaptorValidateProjectSettings: RaptorServices failed. projectUid:{projectUid} settings:{settings}. Reason: {result?.Code ?? -1} {result?.Message ?? "null"}. ");
+    //  if (result != null && result.Code != 0)
+    //  {
+    //    log.LogError($"FRaptorValidateProjectSettings: RaptorServices failed. projectUid:{projectUid} settings:{settings}. Reason: {result?.Code ?? -1} {result?.Message ?? "null"}. ");
 
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(), result.Message);
-      }
-    }
+    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(), result.Message);
+    //  }
+    //}
   }
 }
