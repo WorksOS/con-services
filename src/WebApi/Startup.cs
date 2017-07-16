@@ -146,7 +146,7 @@ namespace VSS.Productivity3D.WebApi
       //app.UseApplicationInsightsRequestTelemetry();
       //app.UseApplicationInsightsExceptionTelemetry();
 
-      //app.UseResponseCaching();
+      app.UseResponseCaching();
       app.UseMvc();
 
       app.UseSwagger();
