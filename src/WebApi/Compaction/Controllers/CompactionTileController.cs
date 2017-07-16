@@ -266,7 +266,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-      //AddCacheResponseHeaders();  //done by middleware               
+      if (mode == DisplayMode.Height)
+        Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true };
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 
