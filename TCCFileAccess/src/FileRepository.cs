@@ -173,8 +173,7 @@ namespace VSS.Productivity3D.TCCFileAccess
       PutFileResponse result = default(PutFileResponse);
       try
       {
-        var reader = new StreamReader(contents);
-        result = await gracefulClient.ExecuteRequest<PutFileResponse>(requestString, "PUT", headers, reader.ReadToEnd());
+        result = await gracefulClient.ExecuteRequest<PutFileResponse>(requestString, contents, headers, "PUT");
       }
       catch (WebException webException)
       {

@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.MasterDataProxies
 
     public GracefulWebRequest(ILoggerFactory logger)
     {
-      
+
       log = logger.CreateLogger<GracefulWebRequest>();
     }
 
@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.MasterDataProxies
       private async Task<string> GetStringFromResponseStream(WebResponse response)
       {
         var readStream = response.GetResponseStream();
-        byte[] buffer= ArrayPool<byte>.Shared.Rent(BUFFER_MAX_SIZE); 
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(BUFFER_MAX_SIZE);
         string responseString = String.Empty;
 
         try
@@ -78,7 +78,7 @@ namespace VSS.Productivity3D.MasterDataProxies
         {
           Array.Clear(buffer, 0, buffer.Length);
           var read = await readStream.ReadAsync(buffer, 0, buffer.Length);
-          resultStream.Write(buffer,0,read);
+          resultStream.Write(buffer, 0, read);
           while (read > 0)
           {
             Array.Clear(buffer, 0, buffer.Length);
@@ -102,7 +102,7 @@ namespace VSS.Productivity3D.MasterDataProxies
       }
 
       private async Task<WebRequest> PrepareWebRequest(string endpoint, string method,
-        IDictionary<string, string> customHeaders, string payloadData=null, Stream requestStream = null)
+        IDictionary<string, string> customHeaders, string payloadData = null, Stream requestStream = null)
       {
         var request = WebRequest.Create(endpoint);
         request.Method = method;
@@ -134,7 +134,7 @@ namespace VSS.Productivity3D.MasterDataProxies
           }
         }
         else
-        //Apply payload if any
+          //Apply payload if any
         if (!String.IsNullOrEmpty(payloadData))
         {
           request.ContentType = "application/json";
@@ -178,7 +178,7 @@ namespace VSS.Productivity3D.MasterDataProxies
           log.LogDebug($"ExecuteRequest() T: InWebException");
           using (WebResponse exResponse = ex.Response)
           {
-            HttpWebResponse httpResponse = (HttpWebResponse)exResponse;
+            HttpWebResponse httpResponse = (HttpWebResponse) exResponse;
             log.LogDebug(
               $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode}");
             throw new Exception($"{httpResponse.StatusCode}");
@@ -200,70 +200,72 @@ namespace VSS.Productivity3D.MasterDataProxies
 
       public async Task<T> ExecuteActualRequest<T>(Stream requestSteam = null)
       {
-          var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, requestSteam);
-          string responseString = null;
-          WebResponse response = null;
-          try
+        var request = await PrepareWebRequest(endpoint, method, customHeaders, payloadData, requestSteam);
+        string responseString = null;
+        WebResponse response = null;
+        try
+        {
+          response = await request.GetResponseAsync();
+          if (response != null)
           {
-            response = await request.GetResponseAsync();
-            if (response != null)
-            {
-              log.LogDebug($"ExecuteRequest() T executed the request");
-              responseString=await GetStringFromResponseStream(response);
-              log.LogDebug($"ExecuteRequest() T success: responseString {responseString}");
-            }
+            log.LogDebug($"ExecuteRequest() T executed the request");
+            responseString = await GetStringFromResponseStream(response);
+            log.LogDebug($"ExecuteRequest() T success: responseString {responseString}");
           }
-          catch (WebException ex)
-          {
-            log.LogDebug($"ExecuteRequest() T: InWebException");
-            using (WebResponse exResponse = ex.Response)
-            {
-              if (exResponse == null) throw;
-              log.LogDebug("ExecuteRequestException() T: going to read stream");
-              responseString = await GetStringFromResponseStream(exResponse);
-              HttpWebResponse httpResponse = (HttpWebResponse) exResponse;
-              log.LogDebug(
-                $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString}");
-              throw new Exception($"{httpResponse.StatusCode} {responseString}");
-            }
-          }
-          catch (Exception ex)
-          {
-            log.LogDebug($"ExecuteRequestException() T: errorCode: {ex.Message}");
-            if (ex.InnerException != null)
-              log.LogDebug($"ExecuteRequestInnerException() T: errorCode: {ex.InnerException.Message}");
-            throw;
-          }
-          finally
-          {
-            response?.Dispose();
-          }
-
-          if (!string.IsNullOrEmpty(responseString))
-          {
-            var toReturn = JsonConvert.DeserializeObject<T>(responseString);
-            log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(toReturn)}");
-            return toReturn;
-          }
-          var defaultToReturn = default(T);
-          log.LogDebug($"ExecuteRequest() T. defaultToReturn:{JsonConvert.SerializeObject(defaultToReturn)}");
-          return defaultToReturn;
-
         }
+        catch (WebException ex)
+        {
+          log.LogDebug($"ExecuteRequest() T: InWebException");
+          using (WebResponse exResponse = ex.Response)
+          {
+            if (exResponse == null) throw;
+            log.LogDebug("ExecuteRequestException() T: going to read stream");
+            responseString = await GetStringFromResponseStream(exResponse);
+            HttpWebResponse httpResponse = (HttpWebResponse) exResponse;
+            log.LogDebug(
+              $"ExecuteRequestException() T: errorCode: {httpResponse.StatusCode} responseString: {responseString}");
+            throw new Exception($"{httpResponse.StatusCode} {responseString}");
+          }
+        }
+        catch (Exception ex)
+        {
+          log.LogDebug($"ExecuteRequestException() T: errorCode: {ex.Message}");
+          if (ex.InnerException != null)
+            log.LogDebug($"ExecuteRequestInnerException() T: errorCode: {ex.InnerException.Message}");
+          throw;
+        }
+        finally
+        {
+          response?.Dispose();
+        }
+
+        if (!string.IsNullOrEmpty(responseString))
+        {
+          var toReturn = JsonConvert.DeserializeObject<T>(responseString);
+          log.LogDebug($"ExecuteRequest() T. toReturn:{JsonConvert.SerializeObject(toReturn)}");
+          return toReturn;
+        }
+        var defaultToReturn = default(T);
+        log.LogDebug($"ExecuteRequest() T. defaultToReturn:{JsonConvert.SerializeObject(defaultToReturn)}");
+        return defaultToReturn;
+
+      }
     }
 
-    public async Task<T> ExecuteRequest<T>(string endpoint, string method, IDictionary<string, string> customHeaders = null, 
-      string payloadData = null, int retries = 3, bool suppressExceptionLogging=false)
+    public async Task<T> ExecuteRequest<T>(string endpoint, string method,
+      IDictionary<string, string> customHeaders = null,
+      string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
     {
-      log.LogDebug($"ExecuteRequest() T : endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))} payloadData {payloadData}");
-    
+      log.LogDebug(
+        $"ExecuteRequest() T : endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))} payloadData {payloadData}");
+
       var policyResult = await Policy
         .Handle<Exception>()
         .RetryAsync(retries)
-        .ExecuteAndCaptureAsync( () =>
+        .ExecuteAndCaptureAsync(() =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData,log);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, payloadData, log);
           return executor.ExecuteActualRequest<T>();
         });
 
@@ -271,7 +273,8 @@ namespace VSS.Productivity3D.MasterDataProxies
       {
         if (!suppressExceptionLogging)
         {
-          log.LogDebug($"ExecuteRequest() T. exceptionToRethrow:{policyResult.FinalException} endpoint: {endpoint} method: {method}");
+          log.LogDebug(
+            $"ExecuteRequest() T. exceptionToRethrow:{policyResult.FinalException} endpoint: {endpoint} method: {method}");
         }
         throw policyResult.FinalException;
       }
@@ -283,10 +286,12 @@ namespace VSS.Productivity3D.MasterDataProxies
     }
 
 
-    public async Task<Stream> ExecuteRequest(string endpoint, string method, IDictionary<string, string> customHeaders = null,
+    public async Task<Stream> ExecuteRequest(string endpoint, string method,
+      IDictionary<string, string> customHeaders = null,
       string payloadData = null, int retries = 3, bool suppressExceptionLogging = false)
     {
-      log.LogDebug($"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))} payloadData {payloadData}");
+      log.LogDebug(
+        $"ExecuteRequest() Stream: endpoint {endpoint} method {method}, customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))} payloadData {payloadData}");
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -302,7 +307,8 @@ namespace VSS.Productivity3D.MasterDataProxies
       {
         if (!suppressExceptionLogging)
         {
-          log.LogDebug($"ExecuteRequest() Stream: exceptionToRethrow:{policyResult.FinalException.ToString()} endpoint: {endpoint} method: {method}");
+          log.LogDebug(
+            $"ExecuteRequest() Stream: exceptionToRethrow:{policyResult.FinalException.ToString()} endpoint: {endpoint} method: {method}");
         }
         throw policyResult.FinalException;
       }
@@ -315,9 +321,10 @@ namespace VSS.Productivity3D.MasterDataProxies
 
 
     public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload,
-      IDictionary<string, string> customHeaders = null, int retries = 3, bool suppressExceptionLogging = false)
+      IDictionary<string, string> customHeaders = null, string method = "POST", int retries = 3, bool suppressExceptionLogging = false)
     {
-      log.LogDebug($"ExecuteRequest() T(no method) : endpoint {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))}");
+      log.LogDebug(
+        $"ExecuteRequest() T(no method) : endpoint {endpoint} customHeaders {(customHeaders == null ? null : JsonConvert.SerializeObject(customHeaders))}");
 
       var policyResult = await Policy
         .Handle<Exception>()
@@ -325,7 +332,7 @@ namespace VSS.Productivity3D.MasterDataProxies
         .ExecuteAndCaptureAsync(async () =>
         {
           log.LogDebug($"Trying to execute request {endpoint}");
-          var executor = new RequestExecutor(endpoint, "POST", customHeaders,"",log);
+          var executor = new RequestExecutor(endpoint, method, customHeaders, "", log);
           return await executor.ExecuteActualRequest<T>(payload);
         });
 
@@ -345,6 +352,6 @@ namespace VSS.Productivity3D.MasterDataProxies
       }
       return default(T);
     }
-   
+
   }
 }
