@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
-namespace VSS.Productivity3D.WebApi
+namespace VSS.Productivity3D.FileAccess.Service.WebAPI
 {
     public class Program
     {

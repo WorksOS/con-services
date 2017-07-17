@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
-using VSS.Productivity3D.TCCFileAccess;
+using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
+using VSS.MasterDataProxies.ResultHandling;
+using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
+using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.Common.Interfaces
+namespace VSS.Productivity3D.FileAccess.Service.Common.Interfaces
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
@@ -121,9 +121,8 @@ namespace VSS.Productivity3D.Common.Interfaces
     public static TExecutor Build<TExecutor>(ILoggerFactory logger,IConfigurationStore configStore=null, IFileRepository fileAccess=null) 
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() {log = logger.CreateLogger<TExecutor>(), configStore = configStore, fileAccess = fileAccess};
+      var executor = new TExecutor {log = logger.CreateLogger<TExecutor>(), configStore = configStore, fileAccess = fileAccess};
       return executor;
     }
-
   }
 }

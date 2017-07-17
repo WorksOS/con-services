@@ -1,6 +1,6 @@
-﻿using VSS.Productivity3D.MasterDataProxies.ResultHandling;
+﻿using VSS.MasterDataProxies.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.FileAccess.ResultHandling
+namespace VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling
 {
   /// <summary>
   /// The result representation of a raw file access request.

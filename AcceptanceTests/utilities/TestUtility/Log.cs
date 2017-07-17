@@ -46,7 +46,6 @@ namespace TestUtility
             {
                 w.WriteLine(contents);
             }
-
         }
     }
 }

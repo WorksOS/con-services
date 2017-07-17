@@ -10,4 +10,4 @@ EXPOSE 80
 COPY . /app
 
 # Start the app
-ENTRYPOINT dotnet WebApi.dll
+ENTRYPOINT dotnet VSS.Productivity3D.FileAccess.Service.WebAPI.dll

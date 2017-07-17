@@ -1,4 +1,4 @@
-﻿namespace WebApiModels.Interfaces
+﻿namespace VSS.Productivity3D.FileAccess.Service.WebAPI.Models.Interfaces
 {    
   /// <summary>
   /// Defines whether the project ID is applicable...

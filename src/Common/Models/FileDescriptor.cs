@@ -1,12 +1,12 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
+using Newtonsoft.Json;
+using VSS.MasterDataProxies.ResultHandling;
+using VSS.Productivity3D.FileAccess.Service.Common.Interfaces;
+using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
 
-namespace VSS.Productivity3D.Common.Models
+namespace VSS.Productivity3D.FileAccess.Service.Common.Models
 {
   /// <summary>
   /// Description to identify a file by its location in TCC.
@@ -114,8 +114,5 @@ namespace VSS.Productivity3D.Common.Models
                                                         Path = string.Empty,
                                                         FileName = string.Empty
                                                     };
-
-
-
   }
 }

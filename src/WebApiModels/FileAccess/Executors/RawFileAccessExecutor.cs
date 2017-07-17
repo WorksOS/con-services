@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Net;
-using Microsoft.Extensions.Logging;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
-using VSS.Productivity3D.TCCFileAccess;
-using VSS.Productivity3D.WebApiModels.FileAccess.ResultHandling;
+using VSS.ConfigurationStore;
+using VSS.MasterDataProxies.ResultHandling;
+using VSS.Productivity3D.FileAccess.Service.Common.Interfaces;
+using VSS.Productivity3D.FileAccess.Service.Common.Models;
+using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
+using VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling;
+using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.WebApiModels.FileAccess.Executors
+namespace VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.Executors
 {
   public class RawFileAccessExecutor : RequestExecutorContainer
   {
@@ -18,8 +18,8 @@ namespace VSS.Productivity3D.WebApiModels.FileAccess.Executors
     /// This constructor allows us to mock raptorClient
     /// </summary>
     /// <param name="logger"></param>
-    /// <param name="raptorClient"></param>
-    /// 
+    /// <param name="configStore"></param>
+    /// <param name="fileAccess"></param>
     public RawFileAccessExecutor(ILoggerFactory logger, IConfigurationStore configStore, IFileRepository fileAccess)
       : base(logger, configStore, fileAccess)
     {
