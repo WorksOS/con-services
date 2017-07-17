@@ -137,7 +137,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             for (int i = 0; i < compactionPalette.Count; i++)
             {
               colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-                compactionPalette[i].value));
+                compactionPalette[i].value / 10));
             }
             cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
             break;
