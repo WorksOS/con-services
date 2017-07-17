@@ -12,4 +12,4 @@ echo "Master data kafka consumer starting in 60 seconds....."
 sleep 30s
 
 echo "Master data kafka consumer starting Now "
-dotnet MasterDataConsumer.dll
+dotnet VSS.Productivity3D.MasterDataConsumer.dll

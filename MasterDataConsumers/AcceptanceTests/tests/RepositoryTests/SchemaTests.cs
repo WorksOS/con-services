@@ -5,7 +5,7 @@ using MySql.Data.MySqlClient;
 using RepositoryTests.Internal;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.GenericConfiguration;
+using VSS.ConfigurationStore;
 
 namespace RepositoryTests
 {

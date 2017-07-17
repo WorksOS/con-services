@@ -5,14 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using KafkaConsumer;
-using KafkaConsumer.Interfaces;
-using KafkaConsumer.Kafka;
-using log4netExtensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.Repo;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer;
+using VSS.KafkaConsumer.Interfaces;
+using VSS.KafkaConsumer.Kafka;
+using VSS.Log4Net.Extensions;
+using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 #if NET_4_7
@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.MasterDataConsumer
       var serviceCollection = new ServiceCollection()
         .AddTransient<IKafka, RdKafkaDriver>()
         .AddTransient<IMessageTypeResolver, MessageResolver>()
-        .AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddLogging()
         .AddTransient<IRepositoryFactory, RepositoryFactory>()
 

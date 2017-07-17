@@ -4,9 +4,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryTests.Internal;
 using System;
 using System.Linq;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.Repo;
-using VSS.Productivity3D.Repo.ExtendedModels;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests

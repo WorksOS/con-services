@@ -1,8 +1,4 @@
-﻿using KafkaConsumer;
-using KafkaConsumer.Interfaces;
-using KafkaConsumer.Kafka;
-using log4netExtensions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -11,9 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.Repo;
-using VSS.Productivity3D.Repo.DBModels;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer;
+using VSS.KafkaConsumer.Interfaces;
+using VSS.KafkaConsumer.Kafka;
+using VSS.Log4Net.Extensions;
+using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

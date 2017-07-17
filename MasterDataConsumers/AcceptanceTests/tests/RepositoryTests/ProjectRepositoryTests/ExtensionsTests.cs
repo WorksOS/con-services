@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.Repo.Extensions;
+using VSS.MasterData.Repositories.Extensions;
 
 namespace RepositoryTests.ProjectRepositoryTests
 {

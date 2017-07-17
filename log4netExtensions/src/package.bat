@@ -1,7 +1,7 @@
 @ECHO OFF
 
 SET config=Release
-SET projectFile=VSS.Log4Net.Extensions.csproj
+SET projectFile=VSS.Log4NetExtensions.csproj
 SET packageServer=https://packages.vspengg.com/
 SET apiKey=qATxVIHO5rIPF3K7
 

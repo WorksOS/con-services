@@ -1,10 +1,10 @@
-﻿using log4netExtensions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.GenericConfiguration;
+using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
 
 namespace RepositoryTests.Internal
 {

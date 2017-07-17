@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using VSS.Productivity3D.Repo;
-using VSS.Productivity3D.Repo.DBModels;
+using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MasterDataConsumerTests
