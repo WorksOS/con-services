@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using FlowUploadFilter;
+using VSS.FlowJSHandler;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;

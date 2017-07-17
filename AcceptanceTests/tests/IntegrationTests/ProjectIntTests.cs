@@ -2,7 +2,7 @@
 using System;
 using System.Net;
 using TestUtility;
-using VSS.Productivity3D.Repo.DBModels;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 

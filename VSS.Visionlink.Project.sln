@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{160796E4-4ED9-480B-B3D7-044B334F28EE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{8468BBE9-B385-4CFE-8F63-0A47E0849518}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectWebApi", "src\ProjectWebApi\ProjectWebApi.csproj", "{5CEF0F77-FDD0-4798-951F-8317529B4779}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Project.WebApi", "src\ProjectWebApi\VSS.Project.WebApi.csproj", "{5CEF0F77-FDD0-4798-951F-8317529B4779}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MasterDataConsumerTests", "test\UnitTests\MasterDataConsumerTests\MasterDataConsumerTests.csproj", "{4C0A1653-810A-4DC1-90D7-76BAD6F10058}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Project.WebApi.Tests", "test\UnitTests\MasterDataConsumerTests\VSS.Project.WebApi.Tests.csproj", "{4C0A1653-810A-4DC1-90D7-76BAD6F10058}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectWebApiCommon", "src\ProjectWebApiCommon\ProjectWebApiCommon.csproj", "{961836FE-F672-445C-8B18-A843995D634E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Project.WebApi.Common", "src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj", "{961836FE-F672-445C-8B18-A843995D634E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using VSS.Authentication.JWT;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.Productivity3D.Repo.DBModels;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.ConsumerTests
@@ -85,7 +85,7 @@ namespace VSS.MasterData.ConsumerTests
     [TestMethod]
     public void MapProjectToResult()
     {
-      var project = new Productivity3D.Repo.DBModels.Project
+      var project = new Repositories.DBModels.Project
       {
         ProjectUID = Guid.NewGuid().ToString(),
         LegacyProjectID = 123,
@@ -135,7 +135,7 @@ namespace VSS.MasterData.ConsumerTests
       Assert.IsFalse(result.IsArchived, "IsArchived has not been mapped correctly");
 
       // just make a copy
-      var copyOfProject = AutoMapperUtility.Automapper.Map<Productivity3D.Repo.DBModels.Project>(project);
+      var copyOfProject = AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(project);
       Assert.AreEqual(project.ProjectUID, copyOfProject.ProjectUID, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(project.LegacyProjectID, copyOfProject.LegacyProjectID, "LegacyProjectID has not been mapped correctly");
     }

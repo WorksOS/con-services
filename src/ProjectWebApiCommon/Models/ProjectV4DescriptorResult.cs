@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.Productivity3D.Repo.DBModels;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
