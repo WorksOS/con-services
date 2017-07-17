@@ -25,6 +25,6 @@ set RAPTOR_WEBSERVICES_HOST=%ipaddress%
 cd AcceptanceTests\tests\ProductionDataSvc.AcceptanceTests\bin\Debug
 del *.trx
 echo %ipaddress% > TestData\webapiaddress.txt
-"C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\MSTest.exe" /testcontainer:ProductionDataSvc.AcceptanceTests.dll /resultsfile:testresults.trx
+mstest /testcontainer:ProductionDataSvc.AcceptanceTests.dll /resultsfile:testresults.trx
 docker logs %content% > logs.txt
 rem exit 0
