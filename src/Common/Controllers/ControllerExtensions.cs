@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Common.Controllers

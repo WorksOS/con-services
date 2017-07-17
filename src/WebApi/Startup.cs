@@ -1,5 +1,4 @@
-﻿using log4netExtensions;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -8,19 +7,20 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.Swagger.Model;
 using System;
-using VSS.GenericConfiguration;
+using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
+using VSS.MasterDataProxies;
+using VSS.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
-using VSS.Productivity3D.MasterDataProxies;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.TCCFileAccess;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
+using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.WebApi
 {
@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>();
       services.AddScoped<IASNodeClient, ASNodeClient>();
       services.AddScoped<ITagProcessor, TagProcessor>();
-      services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IProjectListProxy, ProjectListProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddSingleton<IFileListProxy, FileListProxy>();
