@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.Repo.DBModels;
-using VSS.Productivity3D.Repo.ExtendedModels;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.Repo
+namespace VSS.MasterData.Repositories
 {
     public class DeviceRepository : RepositoryBase, IRepository<IDeviceEvent>
     {

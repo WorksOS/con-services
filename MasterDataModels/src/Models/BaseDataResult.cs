@@ -1,5 +1,5 @@
 ﻿
-namespace MasterDataModels.Models
+namespace VSS.MasterData.Models.Models
 {
   /// <summary>
   /// This is the ContractExecutionResult from Productivity3D in a simplified form for proxies and mocks.

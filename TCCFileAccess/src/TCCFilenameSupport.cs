@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.TCCFileAccess
+namespace VSS.TCCFileAccess
 {
 
   public class TCCFile

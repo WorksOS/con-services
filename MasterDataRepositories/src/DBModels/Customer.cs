@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.Repo.DBModels
+namespace VSS.MasterData.Repositories.DBModels
 {
     public class Customer
     {

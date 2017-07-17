@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using MasterDataModels.Models;
-using VSS.Productivity3D.MasterDataProxies.Models;
+using VSS.MasterData.Models.Models;
 
-namespace MasterDataModels.ResultHandling
+namespace VSS.MasterData.Models.ResultHandling
 {
   public class ProjectDataResult : BaseDataResult
   {  

@@ -1,15 +1,14 @@
-﻿using MasterDataModels.Models;
-using MasterDataProxies;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
+using VSS.MasterDataProxies.Interfaces;
 
-namespace VSS.Productivity3D.MasterDataProxies
+namespace VSS.MasterDataProxies
 {
   public class SubscriptionProxy : BaseProxy, ISubscriptionProxy
   {

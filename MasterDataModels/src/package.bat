@@ -1,3 +1,3 @@
-dotnet restore --no-cache MasterDataModels.csproj
-dotnet pack MasterDataModels.csproj -c Release
-nuget push .\bin\release\*.nupkg qATxVIHO5rIPF3K7 -so https://packages.vspengg.com/ -verbosity detailed
+dotnet restore --no-cache VSS.MasterData.Models.csproj
+dotnet pack VSS.MasterData.Models.csproj -c Release
+nuget push .\bin\release\*.nupkg -so https://packages.vspengg.com/ qATxVIHO5rIPF3K7 -verbosity detailed

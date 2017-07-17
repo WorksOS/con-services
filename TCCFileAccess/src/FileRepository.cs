@@ -9,11 +9,11 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.MasterDataProxies;
-using VSS.Productivity3D.TCCFileAccess.Models;
+using VSS.ConfigurationStore;
+using VSS.MasterDataProxies;
+using VSS.TCCFileAccess.Models;
 
-namespace VSS.Productivity3D.TCCFileAccess
+namespace VSS.TCCFileAccess
 {
   /// <summary>
   /// File access class to talk to TCC. This class is thread safe 

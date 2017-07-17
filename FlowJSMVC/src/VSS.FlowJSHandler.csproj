@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>VSS.FlowJSHandler.netcore</PackageId>
+    <Authors>Merino</Authors>
+    <Company>VSS</Company>
+    <Product>VSS.FlowJSHandler.netcore</Product>
+    <Description>MVC5 action filter to support Angular flow.js directive (multipart file upload, chunks, progress etc.)</Description>
+    <VersionPrefix>2.0.0</VersionPrefix>
+    <TargetFrameworks>netstandard1.6</TargetFrameworks>
+    <AssemblyName>VSS.FlowJSHandler</AssemblyName>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="1.1.2" />
+  </ItemGroup>
+
+</Project>

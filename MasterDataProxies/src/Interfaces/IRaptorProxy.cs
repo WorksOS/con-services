@@ -1,12 +1,12 @@
-﻿using MasterDataModels.Models;
-using MasterDataModels.ResultHandling;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
+using VSS.MasterDataProxies.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.MasterDataProxies.Interfaces
+namespace VSS.MasterDataProxies.Interfaces
 {
   public interface IRaptorProxy
   {

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace VSS.Productivity3D.Repo
+namespace VSS.MasterData.Repositories
 {
     public interface IRepository<in T>
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using VSS.Productivity3D.MasterDataProxies.Models;
+using VSS.MasterData.Models.Models;
 
-namespace VSS.Productivity3D.MasterDataProxies.ResultHandling
+namespace VSS.MasterData.Models.ResultHandling
 {
   public class CustomerDataResult
   {

@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.MasterDataProxies.Models
+﻿namespace VSS.MasterData.Models.Models
 {
   /// <summary>
   ///  Describes user preference data returned by the preference master data service.

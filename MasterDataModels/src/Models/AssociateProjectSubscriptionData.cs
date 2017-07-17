@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Productivity3D.MasterDataProxies.Models
+namespace VSS.MasterData.Models.Models
 {
     public class AssociateProjectSubscriptionData
     {

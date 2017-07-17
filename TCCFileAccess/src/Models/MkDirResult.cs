@@ -1,5 +1,5 @@
 ﻿
-namespace VSS.Productivity3D.TCCFileAccess.Models
+namespace VSS.TCCFileAccess.Models
 {
     public class MkDirResult : ApiResult
     {

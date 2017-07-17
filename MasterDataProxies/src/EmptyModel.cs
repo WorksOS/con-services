@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MasterDataProxies
+﻿namespace VSS.MasterDataProxies
 {
   /// <summary>
   /// Class to use for executing requests where the no result returned, apart from the HttpStatusCode.

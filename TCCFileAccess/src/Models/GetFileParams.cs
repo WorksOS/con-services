@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.TCCFileAccess.Models
+namespace VSS.TCCFileAccess.Models
 {
   public class GetFileParams
   {

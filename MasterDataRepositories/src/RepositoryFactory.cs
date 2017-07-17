@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.Productivity3D.Repo
+namespace VSS.MasterData.Repositories
 {
     public class RepositoryFactory : IRepositoryFactory
     {

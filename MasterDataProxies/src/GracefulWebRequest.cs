@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
 
-namespace VSS.Productivity3D.MasterDataProxies
+namespace VSS.MasterDataProxies
 {
 
   public class GracefulWebRequest

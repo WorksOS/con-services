@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Settings come from 2 sources:
@@ -11,7 +11,7 @@ using System.IO;
 /// if neither present then we'll use some defaults
 /// </summary>
 
-namespace VSS.GenericConfiguration
+namespace VSS.ConfigurationStore
 {
   public class GenericConfiguration : IConfigurationStore
   {
@@ -28,14 +28,11 @@ namespace VSS.GenericConfiguration
       try
       {
         _log.LogTrace("Base:" + AppContext.BaseDirectory);
-        Console.WriteLine("Base:" + AppContext.BaseDirectory);
         var dirToAppsettings = Directory.GetCurrentDirectory();
         _log.LogTrace("Current:" + dirToAppsettings);
-        Console.WriteLine("Current:" + dirToAppsettings);
         string pathToConfigFile;
 
         _log.LogDebug($"Testing default path for the config file {Directory.GetCurrentDirectory()} and {AppContext.BaseDirectory}");
-        Console.WriteLine($"Testing default path for the config file {Directory.GetCurrentDirectory()} and {AppContext.BaseDirectory}");
 
         //Test if appsettings exists in the default folder for the console application
         if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")))
@@ -54,7 +51,7 @@ namespace VSS.GenericConfiguration
           _log.LogTrace($"No configuration files found, using alternative path {pathToConfigFile}");
         }
 
-        Console.WriteLine($"Using configuration file: {pathToConfigFile}");
+        _log.LogTrace($"Using configuration file: {pathToConfigFile}");
 
         builder.SetBasePath(pathToConfigFile) // for appsettings.json location
           .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);

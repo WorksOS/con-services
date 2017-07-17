@@ -6,9 +6,9 @@ using Dapper;
 using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
 using Polly;
-using VSS.GenericConfiguration;
+using VSS.ConfigurationStore;
 
-namespace VSS.Productivity3D.Repo
+namespace VSS.MasterData.Repositories
 {
   public abstract class RepositoryBase
   {

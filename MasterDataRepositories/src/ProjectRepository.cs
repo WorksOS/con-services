@@ -4,14 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.Repo.DBModels;
-using VSS.Productivity3D.Repo.ExtendedModels;
-using VSS.Productivity3D.Repo.Extensions;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.MasterData.Repositories.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.Repo
+namespace VSS.MasterData.Repositories
 {
   public class ProjectRepository : RepositoryBase, IRepository<IProjectEvent>, IProjectRepository
   {

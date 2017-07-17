@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace VSS.Productivity3D.TCCFileAccess
+namespace VSS.TCCFileAccess
 {
   internal class CacheLookup
   {

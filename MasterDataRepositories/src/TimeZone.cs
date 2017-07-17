@@ -2,7 +2,7 @@
 using System.Linq;
 using NodaTime.TimeZones;
 
-namespace VSS.Productivity3D.Repo
+namespace VSS.MasterData.Repositories
 {
     /// <summary>
     ///     Encapsulates time zone conversion functions

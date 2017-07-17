@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Productivity3D.Repo.DBModels
+namespace VSS.MasterData.Repositories.DBModels
 {
     public class ProjectSubscription
     {
