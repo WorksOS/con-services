@@ -14,6 +14,8 @@ copy src\WebApi\log4net.xml Artifacts\WebApi\
 
 
 mkdir Artifacts\Logs
+dotnet build ./AcceptanceTests/tests/RaptorSvcAcceptTestsCommon/RaptorSvcAcceptTestsCommon.csproj -f net47 -c Debug
+dotnet build ./AcceptanceTests/tests/ProductionDataSvc.AcceptanceTests/ProductionDataSvc.AcceptanceTests.csproj -f net47 -c Debug
 rem cd .\test\ComponentTests\scripts
 rem deploy_win.bat
 
