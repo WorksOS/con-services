@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace VSS.Productivity3D.Common.ResultHandling
+namespace VSS.Productivity3D.FileAccess.Service.Common.ResultHandling
 {
     public class DataAnnotationsValidator
     {

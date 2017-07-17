@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using TestUtility;
-using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.FileAccess.Service.Common.Models;
 
 namespace IntegrationTests
 {
@@ -30,9 +30,6 @@ namespace IntegrationTests
             var request = new RestClientUtil();
             var(success, result) = request.DoHttpRequest(configuration.webApiUri, "POST", JsonConvert.SerializeObject(requestModel));
             Assert.IsFalse(success);
-
         }
-
-
     }
 }

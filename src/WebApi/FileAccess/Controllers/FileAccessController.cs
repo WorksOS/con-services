@@ -3,15 +3,15 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.IO;
 using System.Net;
-using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
-using VSS.Productivity3D.TCCFileAccess;
-using VSS.Productivity3D.WebApiModels.FileAccess.Executors;
-using VSS.Productivity3D.WebApiModels.FileAccess.ResultHandling;
+using VSS.MasterDataProxies.ResultHandling;
+using VSS.Productivity3D.FileAccess.Service.Common.Interfaces;
+using VSS.Productivity3D.FileAccess.Service.Common.Models;
+using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
+using VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.Executors;
+using VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling;
+using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.WebApi.FileAccess.Controllers
+namespace VSS.Productivity3D.FileAccess.Service.WebAPI.FileAccess.Controllers
 {
   /// <summary>
   /// Controller for file access resources.
@@ -60,8 +60,7 @@ namespace VSS.Productivity3D.WebApi.FileAccess.Controllers
       try
       {
         request.Validate();
-        var result = RequestExecutorContainer
-            .Build<RawFileAccessExecutor>(logger, null, fileAccess).Process(request) as RawFileAccessResult;
+        var result = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, null, fileAccess).Process(request) as RawFileAccessResult;
         if (result != null)
         {
           return new FileStreamResult(new MemoryStream(result.fileContents), "image/png");

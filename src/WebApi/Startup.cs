@@ -5,16 +5,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.Common.Filters;
-using VSS.Productivity3D.TCCFileAccess;
+using VSS.ConfigurationStore;
+using VSS.Productivity3D.FileAccess.Service.Common.Filters;
+using VSS.TCCFileAccess;
 
-namespace VSS.Productivity3D.WebApi
+namespace VSS.Productivity3D.FileAccess.Service.WebAPI
 {
   public class Startup
   {
-
-    private readonly string _loggerRepoName = "WebApi";
+    private const string LoggerRepoName = "WebApi";
     private readonly bool _isDevEnv;
     private IServiceCollection _serviceCollection;
 
@@ -25,7 +24,7 @@ namespace VSS.Productivity3D.WebApi
           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", _loggerRepoName);
+      env.ConfigureLog4Net("log4net.xml", LoggerRepoName);
 
       _isDevEnv = env.IsEnvironment("Development");
       if (_isDevEnv)
@@ -75,7 +74,7 @@ namespace VSS.Productivity3D.WebApi
       //Swagger documentation can be viewed with http://localhost:5000/swagger/ui/index.html   
 
       //Configure application services
-      services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IFileRepository, FileRepository>();
       services.AddMvc();
 
@@ -88,7 +87,7 @@ namespace VSS.Productivity3D.WebApi
     {
       loggerFactory.AddConsole(Configuration.GetSection("Logging"));
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(_loggerRepoName);
+      loggerFactory.AddLog4Net(LoggerRepoName);
 
       app.UseExceptionTrap();
       //Enable CORS before TID so OPTIONS works without authentication

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
 
-namespace VSS.Productivity3D.Common.Filters
+namespace VSS.Productivity3D.FileAccess.Service.Common.Filters
 {
   public class ExceptionsTrap
   {

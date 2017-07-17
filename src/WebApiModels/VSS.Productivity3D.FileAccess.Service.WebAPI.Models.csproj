@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>WebApiModels</AssemblyName>
+    <AssemblyName>VSS.Productivity3D.FileAccess.Service.WebAPI.Models</AssemblyName>
     <PackageId>WebApiModels</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <RootNamespace>VSS.Productivity3D.WebApiModels</RootNamespace>
+    <RootNamespace>VSS.Productivity3D.FileAccess.Service.WebAPI.Models</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

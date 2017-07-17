@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
+using Newtonsoft.Json;
+using VSS.MasterDataProxies.ResultHandling;
 
-namespace VSS.Productivity3D.Common.ResultHandling
+namespace VSS.Productivity3D.FileAccess.Service.Common.ResultHandling
 {
   /// <summary>
   ///   This is an expected exception and should be ignored by unit test failure methods.

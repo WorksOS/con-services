@@ -1,7 +1,7 @@
 ﻿
-using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
 
-namespace VSS.Productivity3D.Common.Interfaces
+namespace VSS.Productivity3D.FileAccess.Service.Common.Interfaces
 {
     /// <summary>
     /// Defines if a domain object can have business validation
