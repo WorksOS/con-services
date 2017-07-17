@@ -5,11 +5,11 @@ VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E515E228-BB40-40EA-92A9-A3332492F16E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "src\WebApi\WebApi.csproj", "{142CBC21-B945-4324-90EB-BBEDD26AD0B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.FileAccess.Service.WebAPI", "src\WebApi\VSS.Productivity3D.FileAccess.Service.WebAPI.csproj", "{142CBC21-B945-4324-90EB-BBEDD26AD0B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiModels", "src\WebApiModels\WebApiModels.csproj", "{91CF387C-9347-4470-B852-629D88516973}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.FileAccess.Service.WebAPI.Models", "src\WebApiModels\VSS.Productivity3D.FileAccess.Service.WebAPI.Models.csproj", "{91CF387C-9347-4470-B852-629D88516973}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Common\Common.csproj", "{F0981437-389F-46EC-8124-22ADC3893478}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.FileAccess.Service.Common", "src\Common\VSS.Productivity3D.FileAccess.Service.Common.csproj", "{F0981437-389F-46EC-8124-22ADC3893478}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

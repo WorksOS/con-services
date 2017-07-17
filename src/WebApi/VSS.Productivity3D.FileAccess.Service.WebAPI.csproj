@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\WebApiModels\WebApiModels.csproj" />
+    <ProjectReference Include="..\Common\VSS.Productivity3D.FileAccess.Service.Common.csproj" />
+    <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.FileAccess.Service.WebAPI.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
