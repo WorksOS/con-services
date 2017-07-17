@@ -8,14 +8,12 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using Microsoft.Extensions.Logging;
-using VSS.GenericConfiguration;
+using VSS.MasterDataProxies;
+using VSS.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.MasterDataProxies;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.TCCFileAccess;
 using VSS.Productivity3D.WebApi.Notification.Controllers;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

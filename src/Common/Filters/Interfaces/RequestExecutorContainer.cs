@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.TCCFileAccess;

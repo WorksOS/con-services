@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MasterDataModels.Models;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
@@ -14,6 +13,7 @@ using Newtonsoft.Json;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Models;
 using VLPDDecls;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 {
