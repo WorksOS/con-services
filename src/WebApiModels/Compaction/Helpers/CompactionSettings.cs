@@ -8,6 +8,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.Productivity3D.Common.Utilities;
 
 namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 {
@@ -17,23 +18,63 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
   /// </summary>
   public static class CompactionSettings
   {
-    public static LiftBuildSettings CompactionLiftBuildSettings
+    public static LiftBuildSettings CompactionLiftBuildSettings(CompactionProjectSettings ps)
     {
-      get
-      {
-        try
-        {
-          return JsonConvert.DeserializeObject<LiftBuildSettings>(
-            "{'liftDetectionType': '4', 'cCVRange': { 'min': '80', 'max': '120'}, 'mDPRange': { 'min': '80', 'max': '120'}, 'machineSpeedTarget': { 'MinTargetMachineSpeed': '333', 'MaxTargetMachineSpeed': '417'}}");
-          //liftDetectionType 4 = None, speeds are cm/sec (12 - 15 km/hr)        
-        }
-        catch (Exception ex)
-        {
-          throw new ServiceException(HttpStatusCode.InternalServerError,
-              new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              ex.Message));
-        }
-      }
+      //Note: CMV raw values are 10ths
+      var cmvOverrideTarget = ps.useMachineTargetCmv.HasValue && !ps.useMachineTargetCmv.Value;
+      var cmvTargetValue = ps.customTargetCmv.HasValue ? ps.customTargetCmv.Value * 10 : 0;
+
+      var cmvOverrideRange = ps.useDefaultTargetRangeCmvPercent.HasValue && !ps.useDefaultTargetRangeCmvPercent.Value;
+      var cmvMinPercent = ps.customTargetCmvPercentMinimum.HasValue ? ps.customTargetCmvPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum.Value;
+      var cmvMaxPercent = ps.customTargetCmvPercentMaximum.HasValue ? ps.customTargetCmvPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum.Value;
+
+      //Note: MDP raw values are 10ths
+      var mdpOverrideTarget = ps.useMachineTargetMdp.HasValue && !ps.useMachineTargetMdp.Value;
+      var mdpTargetValue = ps.customTargetMdp.HasValue ? ps.customTargetMdp.Value * 10 : 0;
+
+      var mdpOverrideRange = ps.useDefaultTargetRangeMdpPercent.HasValue && !ps.useDefaultTargetRangeMdpPercent.Value;
+      var mdpMinPercent = ps.customTargetMdpPercentMinimum.HasValue ? ps.customTargetMdpPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum.Value;
+      var mdpMaxPercent = ps.customTargetMdpPercentMaximum.HasValue ? ps.customTargetMdpPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum.Value;
+
+      //Note: Speed is cm/s for Raptor but km/h in project settings
+      var speedOverrideRange = ps.useDefaultTargetRangeSpeed.HasValue && !ps.useDefaultTargetRangeSpeed.Value;
+      var speedMin = (ps.customTargetSpeedMinimum.HasValue ? ps.customTargetSpeedMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMinimum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
+      var speedMax = (ps.customTargetSpeedMaximum.HasValue ? ps.customTargetSpeedMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMaximum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
+
+      var passCountOverrideRange = ps.useMachineTargetPassCount.HasValue && !ps.useMachineTargetPassCount.Value;
+      var passCountMin = ps.customTargetPassCountMinimum.HasValue ? ps.customTargetPassCountMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetPassCountMinimum.Value;
+      var passCountMax = ps.customTargetPassCountMaximum.HasValue ? ps.customTargetPassCountMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetPassCountMaximum.Value;
+
+      var tempSettings = CompactionTemperatureSettings(ps);
+
+      //TODO: Find out what the correct liftbuildsettings defaults are
+      //TODO: CMV/MDP here or settings
+
+      var liftBuildSettings = LiftBuildSettings.CreateLiftBuildSettings(
+        cmvOverrideRange ? CCVRangePercentage.CreateCcvRangePercentage(cmvMinPercent, cmvMaxPercent) : null,
+        true,
+        0.2,
+        0.05,
+        0,
+        LiftDetectionType.None,
+        LiftThicknessType.Compacted,
+        mdpOverrideRange ? MDPRangePercentage.CreateMdpRangePercentage(mdpMinPercent, mdpMaxPercent) : null,
+        true,
+        (float?) null,
+        cmvOverrideTarget ? (short) cmvTargetValue : (short?) null,
+        mdpOverrideTarget ? (short) mdpTargetValue : (short?) null,
+        passCountOverrideRange
+          ? TargetPassCountRange.CreateTargetPassCountRange((ushort) passCountMin, (ushort) passCountMax)
+          : null,
+        tempSettings.overrideTemperatureRange
+          ? TemperatureWarningLevels.CreateTemperatureWarningLevels((ushort) tempSettings.minTemperature,
+            (ushort) tempSettings.maxTemperature)
+          : null,
+        (bool?) null,
+        null,
+        speedOverrideRange ? MachineSpeedTarget.CreateMachineSpeedTarget((ushort) speedMin, (ushort) speedMax) : null
+      );
+      return liftBuildSettings;
     }
 
     public static Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType, 
@@ -52,31 +93,43 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
          : null;
     }
 
-    public static CMVSettings CompactionCmvSettings
+    public static CMVSettings CompactionCmvSettings(CompactionProjectSettings ps)
     {
-      get
-      {
-        //Note: CMVSettings documentation raw values are 10ths
-        return CMVSettings.CreateCMVSettings(700, 1000, 120, 200, 80, false);
-      }
+      //Note: CMVSettings documentation raw values are 10ths
+      var overrideTarget = ps.useMachineTargetCmv.HasValue && !ps.useMachineTargetCmv.Value;
+      var targetValue = ps.customTargetCmv.HasValue ? ps.customTargetCmv.Value * 10 : 0;
+
+      //TODO: Find out how to override % range - also in liftbuildsettings
+
+      var overrideRange = ps.useDefaultTargetRangeCmvPercent.HasValue && !ps.useDefaultTargetRangeCmvPercent.Value;
+      var minPercent = ps.customTargetCmvPercentMinimum.HasValue ? ps.customTargetCmvPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum.Value;
+      var maxPercent = ps.customTargetCmvPercentMaximum.HasValue ? ps.customTargetCmvPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum.Value;
+      return CMVSettings.CreateCMVSettings((short)targetValue, 1000, maxPercent, 200, minPercent, overrideTarget);
     }
 
-    public static MDPSettings CompactionMdpSettings
+    public static MDPSettings CompactionMdpSettings(CompactionProjectSettings ps)
     {
-      get
-      {
-        //Note: MDPSettings documentation raw values are 10ths
-        return MDPSettings.CreateMDPSettings(700, 1000, 120, 200, 80, false);
-      }
+      //Note: MDPSettings documentation raw values are 10ths
+      var overrideTarget = ps.useMachineTargetMdp.HasValue && !ps.useMachineTargetMdp.Value;
+      var targetValue = ps.customTargetMdp.HasValue ? ps.customTargetMdp.Value * 10 : 0;
+
+      //TODO: Find out how to override % range - also in liftbuildsettings
+
+      var overrideRange = ps.useDefaultTargetRangeMdpPercent.HasValue && !ps.useDefaultTargetRangeMdpPercent.Value;
+      var minPercent = ps.customTargetMdpPercentMinimum.HasValue ? ps.customTargetMdpPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum.Value;
+      var maxPercent = ps.customTargetMdpPercentMaximum.HasValue ? ps.customTargetMdpPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMaximum.Value;
+      return MDPSettings.CreateMDPSettings((short)targetValue, 1000, maxPercent, 200, minPercent, overrideTarget);
+
     }
 
-    public static TemperatureSettings CompactionTemperatureSettings
+    public static TemperatureSettings CompactionTemperatureSettings(CompactionProjectSettings ps)
     {
-      get
-      {
-        //Temperature settings are degrees Celcius (but temperature warning levels for override are 10ths)
-        return TemperatureSettings.CreateTemperatureSettings(175, 65, false);
-      }
+      //Temperature settings are degrees Celcius (but temperature warning levels for override are 10ths)
+      var overrideRange = ps.useMachineTargetTemperature.HasValue && !ps.useMachineTargetTemperature.Value;
+      var tempMin = ps.customTargetTemperatureMinimum.HasValue ? ps.customTargetTemperatureMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMinimum.Value;
+      var tempMax = ps.customTargetTemperatureMaximum.HasValue ? ps.customTargetTemperatureMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetTemperatureMaximum.Value;
+
+      return TemperatureSettings.CreateTemperatureSettings((short)(tempMax * 10), (short)(tempMin * 10), overrideRange);
     }
 
     public static double[] CompactionCmvPercentChangeSettings

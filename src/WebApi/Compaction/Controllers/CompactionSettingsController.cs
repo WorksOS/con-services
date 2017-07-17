@@ -6,9 +6,8 @@ using System.Net;
 using System.Threading.Tasks;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Compaction.Models;
-
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {

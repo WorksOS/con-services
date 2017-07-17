@@ -9,6 +9,8 @@ using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace VSS.Productivity3D.Common.Controllers
 {
@@ -35,6 +37,42 @@ namespace VSS.Productivity3D.Common.Controllers
         .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
         .Select(f => f.LegacyFileId).ToList();
     }
+
+    /// <summary>
+    /// Gets the project settings for the project.
+    /// </summary>
+    /// <param name="controller"></param>
+    /// <param name="projectSettingsProxy">Proxy client to get project settings for the project</param>
+    /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
+    /// <param name="customHeaders">Http request custom headers</param>
+    /// <param name="log">log for logging</param>
+    /// <returns>The project settings</returns>
+    public static async Task<CompactionProjectSettings> GetProjectSettings(this Controller controller, IProjectSettingsProxy projectSettingsProxy, Guid projectUid, IDictionary<string, string> customHeaders, ILogger log)
+    {
+      CompactionProjectSettings ps = null;
+      var jsonSettings = await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders);
+      if (!string.IsNullOrEmpty(jsonSettings))
+      {
+        try
+        {
+          ps = JsonConvert.DeserializeObject<CompactionProjectSettings>(jsonSettings);
+          ps.Validate();
+        }
+        catch (Exception ex)
+        {
+          log.LogInformation(
+            $"Project Settings deserialization or validation failure for projectUid {projectUid}. Error is {ex.Message}");
+          ps = CompactionProjectSettings.DefaultSettings;
+        }
+      }
+      else
+      {
+        log.LogDebug($"No Project Settings for projectUid {projectUid}. Using defaults.");
+        ps = CompactionProjectSettings.DefaultSettings;
+      }
+      return ps;
+    }
+
 
     /// <summary>
     /// Gets the list of contributing machines from the query parameters

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Drawing.Text;
 using System.Net;
 using System.Linq;
 using Newtonsoft.Json;
@@ -8,7 +7,7 @@ using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Compaction.Models
+namespace VSS.Productivity3D.Common.Models
 {
   /// <summary>
   /// 3D Productivity project settings. Used in Raptor calculations.
@@ -217,6 +216,42 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Models
         customBulkingPercent = customBulkingPercent
       };
     }
+
+    public static CompactionProjectSettings DefaultSettings
+    {
+      get {
+        return new CompactionProjectSettings
+        {
+          useMachineTargetPassCount = true,
+          customTargetPassCountMinimum = 6,
+          customTargetPassCountMaximum = 6,
+          useMachineTargetTemperature = true,
+          customTargetTemperatureMinimum = 65.0,
+          customTargetTemperatureMaximum = 175.0,
+          useMachineTargetCmv = true,
+          customTargetCmv = 4,
+          useMachineTargetMdp = true,
+          customTargetMdp = 4,
+          useDefaultTargetRangeCmvPercent = true,
+          customTargetCmvPercentMinimum = 80.0,
+          customTargetCmvPercentMaximum = 130.0,
+          useDefaultTargetRangeMdpPercent = true,
+          customTargetMdpPercentMinimum = 80.0,
+          customTargetMdpPercentMaximum = 130.0,
+          useDefaultTargetRangeSpeed = true,
+          customTargetSpeedMinimum = 12.0,
+          customTargetSpeedMaximum = 15.0,
+          useDefaultCutFillTolerances = true,
+          customCutFillTolerances = new List<double> {0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2},
+          useDefaultVolumeShrinkageBulking = true,
+          customShrinkagePercent = 0.0,
+          customBulkingPercent = 0.0
+
+        };
+      }
+    }
+
+
 
     /// <summary>
     /// Validates all properties
