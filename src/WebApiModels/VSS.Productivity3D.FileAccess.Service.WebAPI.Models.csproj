@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Authors>Merino</Authors>
+    <Company>VSS</Company>
     <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>VSS.Productivity3D.FileAccess.Service.WebAPI.Models</AssemblyName>
-    <PackageId>WebApiModels</PackageId>
+    <PackageId>VSS.Productivity3D.FileAccess.Service.WebAPI.Models</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>

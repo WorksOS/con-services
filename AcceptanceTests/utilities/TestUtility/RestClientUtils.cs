@@ -42,7 +42,7 @@ namespace TestUtility
       //Validate the HTTP Response Status Codes for Successful POST HTTP Request
       try
       {
-        string responseString = null;
+        string responseString;
         using (var response = (HttpWebResponse) request.GetResponseAsync().Result)
         {
           responseString = GetStringFromResponseStream(response);

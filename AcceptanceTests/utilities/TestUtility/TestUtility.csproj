@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Authors>Merino</Authors>
+    <Company>VSS</Company>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <AssemblyName>TestUtility</AssemblyName>
     <PackageId>TestUtility</PackageId>
