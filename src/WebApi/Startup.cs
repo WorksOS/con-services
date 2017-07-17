@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,8 +66,14 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI
           Title = "File Access API",
           TermsOfService = "None"
         });
-        string path = _isDevEnv ? "bin/Debug/netcoreapp1.1/" : string.Empty;
-        options.IncludeXmlComments(path + "WebApi.xml");
+
+        var moduleName = typeof(Startup).GetTypeInfo().Assembly.ManifestModule.Name;
+        var assemblyName = moduleName.Substring(0, moduleName.LastIndexOf('.'));
+        var path = _isDevEnv
+          ? "bin/Debug/netcoreapp1.1/"
+          : string.Empty;
+
+        options.IncludeXmlComments(path + assemblyName + ".xml");
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
 
