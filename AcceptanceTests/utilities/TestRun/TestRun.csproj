@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Common\Common.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\VSS.Productivity3D.FileAccess.Service.Common.csproj" />
     <ProjectReference Include="..\TestUtility\TestUtility.csproj" />
   </ItemGroup>
 
