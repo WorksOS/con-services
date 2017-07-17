@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Net;
 using VLPDDecls;
-using VSS.GenericConfiguration;
+using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
