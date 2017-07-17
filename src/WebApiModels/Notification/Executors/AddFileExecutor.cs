@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VLPDDecls;
 using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -222,7 +223,7 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiUnknownError;
       log.LogDebug("Getting DXF design boundary from Raptor");
 
-      raptorClient.GetDesignBoundaryAsDXFFile(
+      raptorClient.GetDesignBoundary(
         DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args
         (projectId,
           DesignDescriptor(0, fileDescr, 0),
@@ -287,6 +288,5 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       }
       return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designId, filespaceName, fileDescr.filespaceId, fileDescr.path, fileDescr.fileName, offset);
     }
-
   }
 }

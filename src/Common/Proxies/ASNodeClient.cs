@@ -432,10 +432,10 @@ namespace VSS.Productivity3D.Common.Proxies
     /// <param name="dxfContents">The DXF file contents</param>
     /// <param name="designProfilerResult">The result code (0=success)</param>
     /// <returns></returns>
-    public bool GetDesignBoundaryAsDXFFile(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args args,
+    public bool GetDesignBoundary(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args args,
       out MemoryStream dxfContents, out TDesignProfilerRequestResult designProfilerResult)
     {
-      return client.GetDesignBoundaryAsDXFFile(args, out dxfContents, out designProfilerResult);
+      return client.GetDesignBoundary(args, out dxfContents, out designProfilerResult);
     }
     /// <summary>
     /// Gets a gridded CSV export of the production data from Raptor

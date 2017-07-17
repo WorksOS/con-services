@@ -227,7 +227,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     TASNodeErrorStatus GetCoordinateSystemProjectionFile(long DataModelID, TVLPDDistanceUnits RequestedUnits, out string prjFile);
     TASNodeErrorStatus GetCoordinateSystemHorizontalAdjustmentFile(string CSFileName, long DataModelID, TVLPDDistanceUnits RequestedUnits, out string haFile);
-    bool GetDesignBoundaryAsDXFFile(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args Args, out MemoryStream DXFContents, out TDesignProfilerRequestResult DesignProfilerResult);
+    bool GetDesignBoundary(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args Args, out MemoryStream DXFContents, out TDesignProfilerRequestResult DesignProfilerResult);
 
     bool GetMachineCCAColourPalettes(long dataModelId, long machineId, DateTime? startUtc, DateTime? endUtc, int? liftId, out TColourPalettes palettes);
 
