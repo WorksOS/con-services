@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Can be used as an adapter between Log4Net and ASP.NET 5 logging facilities.</Description>
     <AssemblyTitle>Log4Net adapter for .NET Core applications</AssemblyTitle>
-    <VersionPrefix>1.0.2</VersionPrefix>
+    <VersionPrefix>1.0.4</VersionPrefix>
     <TargetFrameworks>netstandard1.6;net451</TargetFrameworks>
     <AssemblyName>Log4NetExtensions.netcore</AssemblyName>
     <PackageId>log4netExtensions.netcore</PackageId>

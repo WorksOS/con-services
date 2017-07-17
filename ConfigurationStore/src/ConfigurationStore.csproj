@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Shared across Merino apps, source code is availble under MerinoSandbox repo</Description>
     <AssemblyTitle>ConfigurationStore component to work with configs in .net core apps</AssemblyTitle>
-    <VersionPrefix>1.0.16</VersionPrefix>
+    <VersionPrefix>1.0.18</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>ConfigurationStore.netcore</AssemblyName>
     <PackageId>ConfigurationStore.netcore</PackageId>
