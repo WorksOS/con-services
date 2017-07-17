@@ -8,13 +8,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Text;
-using VSS.GenericConfiguration;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.ConfigurationStore;
 
 namespace VSS.Productivity3D.WebApiModels.Report.Executors
 {

@@ -20,13 +20,6 @@ namespace VSS.Productivity3D.Common.Filters
         return false;
       }
 
-      //Does request contains "mode=0" string to avoid caching elevation tiles?
-      if (request.QueryString.Value.Contains("mode=0"))
-      {
-        return false;
-      }
-
-
 
       var typedHeaders = context.HttpContext.Response.GetTypedHeaders();
       var requestCacheControl = typedHeaders.CacheControl ?? EmptyCacheControl;

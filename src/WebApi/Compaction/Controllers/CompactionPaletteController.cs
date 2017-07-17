@@ -3,12 +3,12 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VSS.MasterDataProxies;
+using VSS.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.MasterDataProxies;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models.Palettes;
@@ -137,7 +137,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
             for (int i = 0; i < compactionPalette.Count; i++)
             {
               colorValues.Add(ColorValue.CreateColorValue(compactionPalette[i].color,
-                compactionPalette[i].value));
+                compactionPalette[i].value / 10));
             }
             cmvDetailPalette = DetailPalette.CreateDetailPalette(colorValues, null, null);
             break;

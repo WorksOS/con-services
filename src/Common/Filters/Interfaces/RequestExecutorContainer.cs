@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using MasterDataModels.Models;
 using Microsoft.Extensions.Logging;
-using VLPDDecls;
-using VSS.GenericConfiguration;
+using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Contracts;
-using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.TCCFileAccess;
+using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.Common.Interfaces
 {
