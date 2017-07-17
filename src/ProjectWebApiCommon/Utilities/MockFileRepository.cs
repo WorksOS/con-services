@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using VSS.Productivity3D.TCCFileAccess;
-using VSS.Productivity3D.TCCFileAccess.Models;
+using VSS.TCCFileAccess;
+using VSS.TCCFileAccess.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {

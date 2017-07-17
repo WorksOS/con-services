@@ -1,6 +1,6 @@
 ﻿using System;
-using FlowUploadFilter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.FlowJSHandler;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;

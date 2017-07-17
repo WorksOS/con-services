@@ -25,12 +25,12 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="log4netExtensions.netcore" Version="1.0.*" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
     <PackageReference Include="Moq" Version="4.7.63" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.*" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.*" />
+    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.Authentication.JWT" Version="1.2.1" />
   </ItemGroup>
 
@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\ProjectWebApiCommon.csproj" />
+    <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
