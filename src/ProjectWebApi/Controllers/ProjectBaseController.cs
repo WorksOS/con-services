@@ -9,12 +9,12 @@ using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.ProjectWebApi.Filters;
+using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.MasterData.ProjectWebApi.Controllers
+namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// Project Base for all Project controllers

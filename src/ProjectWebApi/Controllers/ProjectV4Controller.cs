@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -9,6 +6,9 @@ using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.ResultHandling;
@@ -16,8 +16,7 @@ using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.ProjectWebApi.Filters;
-using VSS.MasterData.ProjectWebApiCommon.Utilities;
+using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterDataProxies;
@@ -25,7 +24,7 @@ using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.ProjectWebApi.Controllers
+namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// Project controller v4
@@ -46,10 +45,11 @@ namespace VSS.MasterData.ProjectWebApi.Controllers
     /// <param name="serviceExceptionHandler">The ServiceException handler.</param>
     public ProjectV4Controller(IKafka producer, IRepository<IProjectEvent> projectRepo,
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
-      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
-      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger, serviceExceptionHandler)
-    {
-    }
+      IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger,
+      IServiceExceptionHandler serviceExceptionHandler)
+      : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger,
+        serviceExceptionHandler)
+    { }
 
     #region projects
 

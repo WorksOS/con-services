@@ -7,7 +7,7 @@ using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.ProjectWebApiCommon.Utilities
+namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
   /// <summary>
   /// Validates all project event data sent to the Web API

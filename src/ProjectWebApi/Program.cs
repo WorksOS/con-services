@@ -1,12 +1,11 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
 #if NET_4_7
 using Microsoft.AspNetCore.Hosting.WindowsServices;
 #endif
 
-namespace VSS.MasterData.ProjectWebApi
+namespace VSS.MasterData.Project.WebAPI
 {
   /// <summary>
   /// 

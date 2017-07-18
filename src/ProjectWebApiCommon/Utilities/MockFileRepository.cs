@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using VSS.TCCFileAccess;
 using VSS.TCCFileAccess.Models;
 
-namespace VSS.MasterData.ProjectWebApiCommon.Utilities
+namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
   public class MockFileRepository : IFileRepository
   {

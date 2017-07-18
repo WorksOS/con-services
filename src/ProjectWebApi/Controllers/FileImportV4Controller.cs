@@ -1,29 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.FlowJSHandler;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.MasterData.ProjectWebApi.Filters;
-using VSS.MasterData.ProjectWebApiCommon.Utilities;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
 
-namespace VSS.MasterData.ProjectWebApi.Controllers
+namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// File Import controller v4
@@ -198,7 +198,7 @@ namespace VSS.MasterData.ProjectWebApi.Controllers
       FileImportDataValidator.ValidateUpsertImportedFileRequest(file, projectUid, importedFileType, fileCreatedUtc,
         fileUpdatedUtc, userEmailAddress, surveyedUtc);
       log.LogInformation(
-        $"CreateImportedFileV4. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
+        $"CreateImportedFileV4. file: {file.flowFilename} path {file.path} projectUid {projectUid.ToString()} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
       if (!System.IO.File.Exists(file.path))
       {

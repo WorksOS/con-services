@@ -1,35 +1,34 @@
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.ProjectWebApi.Filters;
-using VSS.MasterData.ProjectWebApiCommon.Utilities;
+using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.MasterData.ProjectWebApi
+namespace VSS.MasterData.Project.WebAPI
 {
   /// <summary>
   /// 
   /// </summary>
   public class Startup
   {
-    private readonly string loggerRepoName = "WebApi";
-    private bool isDevEnv = false;
+    private const string loggerRepoName = "WebApi";
+    private readonly bool isDevEnv;
     IServiceCollection serviceCollection;
 
     /// <summary>

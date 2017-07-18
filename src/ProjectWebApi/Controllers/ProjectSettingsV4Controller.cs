@@ -9,13 +9,13 @@ using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
-using VSS.MasterData.ProjectWebApi.Filters;
+using VSS.MasterData.Project.WebAPI.Filters;
 using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.MasterData.ProjectWebApi.Controllers
+namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   public class ProjectSettingsV4Controller : ProjectSettingsBaseController
   {

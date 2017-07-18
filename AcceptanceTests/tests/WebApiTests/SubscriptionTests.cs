@@ -9,12 +9,12 @@ namespace WebApiTests
   [TestClass]
   public class SubscriptionTests
   {
-    private readonly Msg msg = new Msg();
+    private readonly Msg _msg = new Msg();
 
     [TestMethod]
     public void Get2SubscriptionsForProjectMonitoring()
     {
-      msg.Title("Project Subtest 1", "Get 2 project monitoring subscriptions ");
+      _msg.Title("Project Subtest 1", "Get 2 project monitoring subscriptions ");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -41,7 +41,7 @@ namespace WebApiTests
     [TestMethod]
     public void Get4SubscriptionsForProjectMonitoringAndLandFill()
     {
-      msg.Title("Project Subtest 2", "Get 2 project monitoring and 2 landfill subscriptions ");
+      _msg.Title("Project Subtest 2", "Get 2 project monitoring and 2 landfill subscriptions ");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -79,7 +79,7 @@ namespace WebApiTests
     [TestMethod]
     public void Create4SubscriptionsAndUse2ForProjects()
     {
-      msg.Title("Project Subtest 3", "Get 4 subscriptions and use two ");
+      _msg.Title("Project Subtest 3", "Get 4 subscriptions and use two ");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -132,7 +132,7 @@ namespace WebApiTests
     [TestMethod]
     public void Create4SubscriptionsAndUse2ForLandfillProjects()
     {
-      msg.Title("Project Subtest 4", "Get 4 subscriptions and use two ");
+      _msg.Title("Project Subtest 4", "Get 4 subscriptions and use two ");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();

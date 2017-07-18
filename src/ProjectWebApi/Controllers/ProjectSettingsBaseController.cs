@@ -7,7 +7,7 @@ using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.MasterData.ProjectWebApi.Controllers
+namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// ProjectSettingsBaseController controller

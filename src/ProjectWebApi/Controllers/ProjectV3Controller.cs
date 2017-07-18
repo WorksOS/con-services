@@ -1,23 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.ProjectWebApiCommon.Utilities;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
 
-namespace VSS.MasterData.ProjectWebApi.Controllers
+namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
   /// Project controller v3
@@ -40,9 +40,7 @@ namespace VSS.MasterData.ProjectWebApi.Controllers
       IRepository<ISubscriptionEvent> subscriptionsRepo, IConfigurationStore store, ISubscriptionProxy subsProxy,
       IGeofenceProxy geofenceProxy, IRaptorProxy raptorProxy, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
       : base(producer, projectRepo, subscriptionsRepo, store, subsProxy, geofenceProxy, raptorProxy, logger, serviceExceptionHandler)
-    {
-    }
-
+    { }
 
     /// <summary>
     /// Gets a list of projects for a customer. The list includes projects of all project types
@@ -197,7 +195,7 @@ namespace VSS.MasterData.ProjectWebApi.Controllers
       ProjectDataValidator.Validate(project, projectService);
       if (project.ProjectID <= 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 44);
-      
+
       project.ReceivedUTC = DateTime.UtcNow;
 
       //Save boundary as WKT
@@ -208,7 +206,7 @@ namespace VSS.MasterData.ProjectWebApi.Controllers
 
       //Send boundary as old format on kafka queue
       project.ProjectBoundary = kafkaProjectBoundary;
-      var messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = project});
+      var messagePayload = JsonConvert.SerializeObject(new { CreateProjectEvent = project });
       await producer.Send(kafkaTopicName,
         new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload));
     }
@@ -234,7 +232,7 @@ namespace VSS.MasterData.ProjectWebApi.Controllers
           new KeyValuePair<string, string>(project.ProjectUID.ToString(), messagePayload)
         });
     }
-    
+
     /// <summary>
     /// Associates the project customer.
     /// </summary>
@@ -248,7 +246,7 @@ namespace VSS.MasterData.ProjectWebApi.Controllers
       var isUpdated = await projectService.StoreEvent(customerProject).ConfigureAwait(false);
       if (isUpdated == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 63);
-      
+
       var messagePayload = JsonConvert.SerializeObject(new { AssociateProjectCustomer = customerProject });
       producer.Send(kafkaTopicName,
         new List<KeyValuePair<string, string>>()

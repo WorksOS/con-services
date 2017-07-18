@@ -13,7 +13,7 @@ using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterDataProxies;
 using VSS.MasterDataProxies.Interfaces;
 
-namespace VSS.MasterData.ProjectWebApi.Filters
+namespace VSS.MasterData.Project.WebAPI.Filters
 {
   /// <summary>
   /// authentication
@@ -64,12 +64,18 @@ namespace VSS.MasterData.ProjectWebApi.Filters
         string applicationName = "";
         string userUid = "";
         string userEmail = "";
+        bool requireCustomerUid = true;
+        string customerUid = "";
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
-        string customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
+
+        if (context.Request.Path.Value.Contains("api/v3/project") && context.Request.Method != "GET")
+          requireCustomerUid = false;
+        else
+          customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
 
         // If no authorization header found, nothing to process further
-        if (string.IsNullOrEmpty(authorization) || string.IsNullOrEmpty(customerUid))
+        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) && requireCustomerUid))
         {
           log.LogWarning("No account selected for the request");
           await SetResult("No account selected", context);
@@ -103,7 +109,9 @@ namespace VSS.MasterData.ProjectWebApi.Filters
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
 
-          if (context.Request.Method == HttpMethod.Get.Method)
+          if (!requireCustomerUid)
+            await _next.Invoke(context);
+          else if (context.Request.Method == HttpMethod.Get.Method)
             await _next.Invoke(context);
           else
             ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 60);
@@ -111,26 +119,29 @@ namespace VSS.MasterData.ProjectWebApi.Filters
         }
 
         // User must have be authenticated against this customer
-        try
+        if (requireCustomerUid)
         {
-          CustomerDataResult customerResult =
-            await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
-          if (customerResult.status != 200 || customerResult.customer == null ||
-              customerResult.customer.Count < 1 ||
-              !customerResult.customer.Exists(x => x.uid == customerUid))
+          try
           {
-            var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
-            log.LogWarning(error);
-            await SetResult(error, context);
+            CustomerDataResult customerResult =
+              await customerProxy.GetCustomersForMe(userUid, context.Request.Headers.GetCustomHeaders());
+            if (customerResult.status != 200 || customerResult.customer == null ||
+                customerResult.customer.Count < 1 ||
+                !customerResult.customer.Exists(x => x.uid == customerUid))
+            {
+              var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
+              log.LogWarning(error);
+              await SetResult(error, context);
+              return;
+            }
+          }
+          catch (Exception e)
+          {
+            log.LogWarning(
+              $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
+            await SetResult("Failed authentication", context);
             return;
           }
-        }
-        catch (Exception e)
-        {
-          log.LogWarning(
-            $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
-          await SetResult("Failed authentication", context);
-          return;
         }
 
         log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,

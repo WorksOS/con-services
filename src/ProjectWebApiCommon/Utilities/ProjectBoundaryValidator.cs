@@ -6,7 +6,7 @@ using System.Text;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
-namespace VSS.MasterData.ProjectWebApiCommon.Utilities
+namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
   public class ProjectBoundaryValidator
   {

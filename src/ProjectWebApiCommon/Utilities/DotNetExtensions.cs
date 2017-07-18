@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.MasterData.ProjectWebApiCommon.Utilities
+namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
   public static class DotNetExtensions
   {
