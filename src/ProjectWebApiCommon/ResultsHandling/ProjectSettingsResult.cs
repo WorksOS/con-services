@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling
+namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
 {
   public class ProjectSettingsResult : ContractExecutionResult
   {

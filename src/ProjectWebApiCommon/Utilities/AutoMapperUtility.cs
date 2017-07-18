@@ -1,10 +1,10 @@
 ﻿using System;
 using AutoMapper;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.Repo.DBModels;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
+namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
   public class AutoMapperUtility
   {
@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
             .ForMember(x => x.ActionUTC, opt => opt.Ignore())
             .ForMember(x => x.ReceivedUTC, opt => opt.Ignore())
             .ForMember(x => x.ProjectTimezone, opt => opt.Ignore());
-          cfg.CreateMap<Repo.DBModels.Project, ProjectV4Descriptor>()
+          cfg.CreateMap<Repositories.DBModels.Project, ProjectV4Descriptor>()
             .ForMember(x => x.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
             .ForMember(x => x.ServiceType, opt => opt.MapFrom(src => src.ServiceTypeID))
             .ForMember(x => x.IsArchived,

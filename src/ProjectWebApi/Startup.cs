@@ -1,5 +1,3 @@
-using KafkaConsumer.Kafka;
-using log4netExtensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -9,18 +7,21 @@ using Swashbuckle.Swagger.Model;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.MasterDataProxies;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.ProjectWebApi.Filters;
-using VSS.Productivity3D.ProjectWebApiCommon.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
-using VSS.Productivity3D.Repo;
-using VSS.Productivity3D.TCCFileAccess;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
+using VSS.Log4Net.Extensions;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.ProjectWebApi.Filters;
+using VSS.MasterData.ProjectWebApiCommon.Utilities;
+using VSS.MasterData.Repositories;
+using VSS.MasterDataProxies;
+using VSS.MasterDataProxies.Interfaces;
+using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.Productivity3D.ProjectWebApi
+namespace VSS.MasterData.ProjectWebApi
 {
   /// <summary>
   /// 
@@ -87,14 +88,14 @@ namespace VSS.Productivity3D.ProjectWebApi
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
       services.AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
-      services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
       services.AddTransient<IGeofenceProxy, GeofenceProxy>();
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
 
-      var tccUrl = (new GenericConfiguration.GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
+      var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
       var useMock = string.IsNullOrEmpty(tccUrl) || tccUrl == "mock";
       if (useMock)
         services.AddTransient<IFileRepository, MockFileRepository>();

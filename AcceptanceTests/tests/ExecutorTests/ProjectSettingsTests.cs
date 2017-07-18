@@ -2,11 +2,9 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.ProjectWebApiCommon.Executors;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using System.Collections.Generic;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
 namespace ExecutorTests
 {

@@ -2,12 +2,12 @@
 using Newtonsoft.Json;
 using System;
 using VSS.Authentication.JWT;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
-using VSS.Productivity3D.Repo.DBModels;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ProjectTests
+namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
   public class UtilityTests
@@ -87,7 +87,7 @@ namespace ProjectTests
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
 
-      var project = new Project()
+      var project = new Repositories.DBModels.Project()
       {
         ProjectUID = Guid.NewGuid().ToString(),
         LegacyProjectID = 123,
@@ -137,7 +137,7 @@ namespace ProjectTests
       Assert.IsFalse(result.IsArchived, "IsArchived has not been mapped correctly");
 
       // just make a copy
-      var copyOfProject = AutoMapperUtility.Automapper.Map<Project>(project);
+      var copyOfProject = AutoMapperUtility.Automapper.Map<Repositories.DBModels.Project>(project);
       Assert.AreEqual(project.ProjectUID, copyOfProject.ProjectUID, "ProjectUID has not been mapped correctly");
       Assert.AreEqual(project.LegacyProjectID, copyOfProject.LegacyProjectID, "LegacyProjectID has not been mapped correctly");
     }

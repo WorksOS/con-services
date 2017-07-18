@@ -1,5 +1,4 @@
-﻿using KafkaConsumer.Kafka;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -9,22 +8,24 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using MasterDataModels.Models;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.MasterDataProxies;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.ProjectWebApi.Filters;
-using VSS.Productivity3D.ProjectWebApiCommon.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.Utilities;
-using VSS.Productivity3D.Repo;
-using VSS.Productivity3D.Repo.DBModels;
-using VSS.Productivity3D.Repo.ExtendedModels;
-using VSS.Productivity3D.TCCFileAccess;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.MasterDataProxies;
+using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.ProjectWebApi.Filters;
+using VSS.MasterData.ProjectWebApiCommon.Utilities;
+using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.ProjectWebApi.Controllers
+namespace VSS.MasterData.ProjectWebApi.Controllers
 {
   /// <summary>
   /// FileImporter controller
@@ -95,7 +96,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
-    protected async Task<Repo.DBModels.Project> GetProject(string projectUid)
+    protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
       var customerUid = LogCustomerDetails("GetProject", projectUid);
       var project =

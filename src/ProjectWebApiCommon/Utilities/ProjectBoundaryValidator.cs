@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Utilities
+namespace VSS.MasterData.ProjectWebApiCommon.Utilities
 {
   public class ProjectBoundaryValidator
   {

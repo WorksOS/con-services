@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using TestUtility;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 
 namespace WebApiTests
 {

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using KafkaConsumer.Kafka;
 using Microsoft.Extensions.Logging;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.ProjectWebApiCommon.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.Productivity3D.Repo;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Repositories;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
+namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   /// <summary>
   /// The executor which gets the project settings for the project

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Models
+namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
-    public class ProjectSettingsRequest
+  public class ProjectSettingsRequest
   {
     /// <summary>
     /// The id of the projectUid whose settings are to be upserted

@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 
-namespace ProjectTests
+namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
   public class ProjectValidationTests

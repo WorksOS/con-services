@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Internal
+namespace VSS.MasterData.Project.WebAPI.Common.Internal
 {
   public static class LoggingExtensions
   {

@@ -3,12 +3,12 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
-using VSS.Productivity3D.ProjectWebApiCommon.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterDataProxies.ResultHandling;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
+namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   public class ProjectSettingsValidation
   {

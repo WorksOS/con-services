@@ -1,13 +1,13 @@
-﻿using KafkaConsumer.Kafka;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.ProjectWebApiCommon.Internal;
-using VSS.Productivity3D.Repo;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Repositories;
+using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.Productivity3D.ProjectWebApi.Controllers
+namespace VSS.MasterData.ProjectWebApi.Controllers
 {
   /// <summary>
   /// ProjectSettingsBaseController controller

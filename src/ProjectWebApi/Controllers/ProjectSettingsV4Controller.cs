@@ -1,21 +1,21 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
-using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.MasterDataProxies;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.ProjectWebApiCommon.Internal;
-using VSS.Productivity3D.ProjectWebApi.Filters;
-using VSS.Productivity3D.ProjectWebApiCommon.Executors;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.Productivity3D.Repo;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.ProjectWebApi.Filters;
+using VSS.MasterData.Repositories;
+using VSS.MasterDataProxies;
+using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.Productivity3D.ProjectWebApi.Controllers
+namespace VSS.MasterData.ProjectWebApi.Controllers
 {
   public class ProjectSettingsV4Controller : ProjectSettingsBaseController
   {

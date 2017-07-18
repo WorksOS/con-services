@@ -3,10 +3,10 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 
-namespace VSS.Productivity3D.ProjectWebApi.Filters
+namespace VSS.MasterData.ProjectWebApi.Filters
 {
   /// <summary>
   /// Attribute enabling obligatory validation of domain objects upon reception.

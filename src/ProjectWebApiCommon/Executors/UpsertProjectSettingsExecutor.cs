@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using KafkaConsumer.Kafka;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.ProjectWebApiCommon.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.Productivity3D.Repo;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
+namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   /// <summary>
   /// The executor which upserts the project settings for the project

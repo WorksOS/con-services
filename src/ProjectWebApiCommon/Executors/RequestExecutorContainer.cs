@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using KafkaConsumer.Kafka;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.ProjectWebApiCommon.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
-using VSS.Productivity3D.Repo;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Repositories;
 
-namespace VSS.Productivity3D.ProjectWebApiCommon.Executors
+namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic

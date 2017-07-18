@@ -4,17 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using KafkaConsumer.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.ProjectWebApi.Filters;
-using VSS.Productivity3D.ProjectWebApiCommon.Internal;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.ProjectWebApi.Filters;
+using VSS.MasterData.Repositories;
+using VSS.MasterDataProxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.Repo;
 
-namespace VSS.Productivity3D.ProjectWebApi.Controllers
+namespace VSS.MasterData.ProjectWebApi.Controllers
 {
   /// <summary>
   /// Project Base for all Project controllers
@@ -120,7 +120,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     /// Gets the project list for a customer
     /// </summary>
     /// <returns></returns>
-    protected async Task<ImmutableList<Repo.DBModels.Project>> GetProjectList()
+    protected async Task<ImmutableList<Repositories.DBModels.Project>> GetProjectList()
     {
       var customerUid = LogCustomerDetails("GetProjectList");
       var projects = (await projectService.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
@@ -134,7 +134,7 @@ namespace VSS.Productivity3D.ProjectWebApi.Controllers
     /// </summary>
     /// <param name="projectUid">The project uid.</param>
     /// <returns></returns>
-    protected async Task<Repo.DBModels.Project> GetProject(string projectUid)
+    protected async Task<Repositories.DBModels.Project> GetProject(string projectUid)
     {
       var customerUid = LogCustomerDetails("GetProject", projectUid);
       var project =

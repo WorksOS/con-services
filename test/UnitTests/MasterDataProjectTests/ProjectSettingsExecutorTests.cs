@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Threading.Tasks;
-using KafkaConsumer.Kafka;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.ProjectWebApiCommon.Executors;
 using Microsoft.Extensions.Logging;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.ProjectWebApiCommon.Internal;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
-using VSS.Productivity3D.ProjectWebApiCommon.ResultsHandling;
 using Moq;
-using VSS.Productivity3D.Repo;
-using VSS.Productivity3D.Repo.DBModels;
+using VSS.ConfigurationStore;
+using VSS.KafkaConsumer.Kafka;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
+using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace ProjectTests
+namespace VSS.MasterData.ProjectTests
 {
   [TestClass]
   public class ProjectSettingsExecutorTests : ExecutorBaseTests

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.WindowsServices;
 #endif
 
-namespace VSS.Productivity3D.ProjectWebApi
+namespace VSS.MasterData.ProjectWebApi
 {
   /// <summary>
   /// 

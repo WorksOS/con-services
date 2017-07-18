@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using TestUtility.Model;
-using VSS.Productivity3D.ProjectWebApiCommon.Models;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 
 namespace TestUtility
 {
