@@ -29,18 +29,25 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     private readonly IMemoryCache elevationExtentsCache;
 
     /// <summary>
+    /// Raptor client for use by executor
+    /// 
+    /// </summary>
+    private readonly IASNodeClient raptorClient;
+
+    /// <summary>
     /// How long to cache elevation extents
     /// </summary>
     private readonly TimeSpan elevationExtentsCacheLife = new TimeSpan(0, 15, 0); //TODO: how long to cache ?
 
     /// <summary>
-    /// Constructor with injected cache
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="cache">Elevation extents cache</param>
-    public ElevationExtentsProxy(ILoggerFactory logger, IMemoryCache cache)
+    public ElevationExtentsProxy(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache)
     {
+      this.raptorClient = raptorClient;
       this.logger = logger;
       elevationExtentsCache = cache;
     }
@@ -48,11 +55,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <summary>
     /// Gets the elevation statistics for the given filter from Raptor
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
     /// <param name="projectId">Legacy project ID</param>
     /// <param name="filter">Compaction filter</param>
+    /// <param name="projectSettings">Project settings</param>
     /// <returns>Elevation statistics</returns>
-    public ElevationStatisticsResult GetElevationRange(IASNodeClient raptorClient, long projectId, Filter filter)
+    public ElevationStatisticsResult GetElevationRange(long projectId, Filter filter, CompactionProjectSettings projectSettings)
     {
       ElevationStatisticsResult result = null;
       string cacheKey;
@@ -62,7 +69,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       }
       if (!elevationExtentsCache.TryGetValue(cacheKey, out result))
       {
-        LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+        LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
 
         ElevationStatisticsRequest statsRequest =
           ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0,

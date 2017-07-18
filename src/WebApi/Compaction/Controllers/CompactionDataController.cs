@@ -45,19 +45,26 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// For getting list of imported files for a project
     /// </summary>
     private readonly IFileListProxy fileListProxy;
-  
+
     /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
+    /// For getting project settings for a project
+    /// </summary>
+    private readonly IProjectSettingsProxy projectSettingsProxy;
+
+    /// <summary>
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="fileListProxy">File list proxy</param>
-    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy)
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
+    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionDataController>();
       this.fileListProxy = fileListProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
     }
 
  
@@ -172,10 +179,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      MDPSettings mdpSettings = CompactionSettings.CompactionMdpSettings;
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      MDPSettings mdpSettings = CompactionSettings.CompactionMdpSettings(projectSettings);
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
+        headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -312,10 +321,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      TemperatureSettings temperatureSettings = CompactionSettings.CompactionTemperatureSettings;
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
+      //TODO: if projectuid is null get from raptorprincipal project
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      TemperatureSettings temperatureSettings = CompactionSettings.CompactionTemperatureSettings(projectSettings);
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -388,10 +399,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
       //Speed settings are in LiftBuildSettings
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -464,9 +476,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -664,10 +677,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      CMVSettings cmvSettings = CompactionSettings.CompactionCmvSettings;
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      CMVSettings cmvSettings = CompactionSettings.CompactionCmvSettings(projectSettings);
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -700,10 +714,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
       PassCountSettings passCountSettings = isSummary ? null : CompactionSettings.CompactionPassCountSettings;
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);

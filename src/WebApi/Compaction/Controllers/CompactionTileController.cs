@@ -76,7 +76,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
+    /// For getting project settings for a project
+    /// </summary>
+    private readonly IProjectSettingsProxy projectSettingsProxy;
+
+    /// <summary>
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
@@ -84,8 +89,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileRepo">Imported file repository</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IFileListProxy fileListProxy, IConfigurationStore configStore, IFileRepository fileRepo, IElevationExtentsProxy elevProxy)
+      IFileListProxy fileListProxy, IConfigurationStore configStore, IFileRepository fileRepo, 
+      IElevationExtentsProxy elevProxy, IProjectSettingsProxy projectSettingsProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -94,6 +101,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.configStore = configStore;
       this.fileRepo = fileRepo;
       this.elevProxy = elevProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
     }
 
     /// <summary>
@@ -169,12 +177,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
-        Request.Headers.GetCustomHeaders());
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
+      var tileResult = GetProductionDataTile(projectSettings, filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       if (mode==DisplayMode.Height)
         Response.GetTypedHeaders().CacheControl=new CacheControlHeaderValue(){NoCache = true, NoStore = true};
       return tileResult;
@@ -259,12 +268,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
-        Request.Headers.GetCustomHeaders());
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
+      var tileResult = GetProductionDataTile(projectSettings, filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
       if (mode == DisplayMode.Height)
         Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true };
@@ -564,6 +574,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the requested tile from Raptor
     /// </summary>
+    /// <param name="projectSettings"></param>
     /// <param name="filter"></param>
     /// <param name="projectId"></param>
     /// <param name="mode"></param>
@@ -571,13 +582,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="height"></param>
     /// <param name="bbox"></param>
     /// <returns>Tile result</returns>
-    private TileResult GetProductionDataTile(Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
+    private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
       BoundingBox2DLatLon bbox)
     {
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
       filter?.Validate();
       ElevationStatisticsResult elevExtents =
-        mode == DisplayMode.Height ? elevProxy.GetElevationRange(raptorClient, projectId, filter) : null;
+        mode == DisplayMode.Height ? elevProxy.GetElevationRange(projectId, filter, projectSettings) : null;
       //Fix bug in Raptor - swap elevations if required
       elevExtents?.SwapElevationsIfRequired();
       TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode,

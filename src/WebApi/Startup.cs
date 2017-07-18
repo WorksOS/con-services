@@ -117,6 +117,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
       services.AddTransient<ITileGenerator, TileGenerator>();
       services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
+      services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
 
 
       serviceCollection = services;

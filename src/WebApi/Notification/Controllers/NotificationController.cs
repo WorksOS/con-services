@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private readonly IFileListProxy fileListProxy;
 
     /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>

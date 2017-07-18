@@ -47,19 +47,16 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
       var tempSettings = CompactionTemperatureSettings(ps);
 
-      //TODO: Find out what the correct liftbuildsettings defaults are
-      //TODO: CMV/MDP here or settings
-
       var liftBuildSettings = LiftBuildSettings.CreateLiftBuildSettings(
         cmvOverrideRange ? CCVRangePercentage.CreateCcvRangePercentage(cmvMinPercent, cmvMaxPercent) : null,
-        true,
-        0.2,
-        0.05,
+        false,
+        0,
+        0,
         0,
         LiftDetectionType.None,
         LiftThicknessType.Compacted,
         mdpOverrideRange ? MDPRangePercentage.CreateMdpRangePercentage(mdpMinPercent, mdpMaxPercent) : null,
-        true,
+        false,
         (float?) null,
         cmvOverrideTarget ? (short) cmvTargetValue : (short?) null,
         mdpOverrideTarget ? (short) mdpTargetValue : (short?) null,
@@ -99,8 +96,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       var overrideTarget = ps.useMachineTargetCmv.HasValue && !ps.useMachineTargetCmv.Value;
       var targetValue = ps.customTargetCmv.HasValue ? ps.customTargetCmv.Value * 10 : 0;
 
-      //TODO: Find out how to override % range - also in liftbuildsettings
-
       var overrideRange = ps.useDefaultTargetRangeCmvPercent.HasValue && !ps.useDefaultTargetRangeCmvPercent.Value;
       var minPercent = ps.customTargetCmvPercentMinimum.HasValue ? ps.customTargetCmvPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum.Value;
       var maxPercent = ps.customTargetCmvPercentMaximum.HasValue ? ps.customTargetCmvPercentMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMaximum.Value;
@@ -112,8 +107,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       //Note: MDPSettings documentation raw values are 10ths
       var overrideTarget = ps.useMachineTargetMdp.HasValue && !ps.useMachineTargetMdp.Value;
       var targetValue = ps.customTargetMdp.HasValue ? ps.customTargetMdp.Value * 10 : 0;
-
-      //TODO: Find out how to override % range - also in liftbuildsettings
 
       var overrideRange = ps.useDefaultTargetRangeMdpPercent.HasValue && !ps.useDefaultTargetRangeMdpPercent.Value;
       var minPercent = ps.customTargetMdpPercentMinimum.HasValue ? ps.customTargetMdpPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum.Value;

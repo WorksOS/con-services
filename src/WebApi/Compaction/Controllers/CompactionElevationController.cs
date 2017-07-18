@@ -50,21 +50,28 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IFileListProxy fileListProxy;
 
+    /// <summary>
+    /// For getting project settings for a project
+    /// </summary>
+    private readonly IProjectSettingsProxy projectSettingsProxy;
 
     /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
-    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, IElevationExtentsProxy elevProxy)
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
+    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, 
+      IElevationExtentsProxy elevProxy, IProjectSettingsProxy projectSettingsProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionElevationController>();
       this.fileListProxy = fileListProxy;
       this.elevProxy = elevProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
     }
 
 
@@ -116,12 +123,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       try
       {
-        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
-          Request.Headers.GetCustomHeaders());
+        var headers = Request.Headers.GetCustomHeaders();
+        var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
         Filter filter = CompactionSettings.CompactionFilter(
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-        ElevationStatisticsResult result = elevProxy.GetElevationRange(raptorClient, projectId.Value, filter);
+        ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId.Value, filter, projectSettings);
         if (result == null)
         {
           //Ideally want to return an error code and message only here

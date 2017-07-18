@@ -18,11 +18,13 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Report.Contracts;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
@@ -56,6 +58,30 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     private readonly IConfigurationStore configStore;
 
     /// <summary>
+    /// For getting project settings for a project
+    /// </summary>
+    private readonly IProjectSettingsProxy projectSettingsProxy;
+
+    /// <summary>
+    /// Constructor with injection
+    /// </summary>
+    /// <param name="raptorClient">Raptor client</param>
+    /// <param name="logger">Logger</param>
+    /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="configStore">Configuration store</param>
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
+    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger,
+      IFileListProxy fileListProxy, IConfigurationStore configStore, IProjectSettingsProxy projectSettingsProxy)
+    {
+      this.raptorClient = raptorClient;
+      this.logger = logger;
+      this.log = logger.CreateLogger<CompactionTileController>();
+      this.fileListProxy = fileListProxy;
+      this.configStore = configStore;
+      this.projectSettingsProxy = projectSettingsProxy;
+    }
+
+    /// <summary>
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>
     /// <returns></returns>
@@ -77,10 +103,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
 
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, Request.Headers.GetCustomHeaders());
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
 
       // Filter filter = CompactionSettings.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
       Filter filter = CompactionSettings.CompactionFilter(null, null, null, null, null, null, null, excludedIds);
@@ -142,7 +169,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     #endregion
 
     /// <summary>
-    /// Constructor with injected raptor client and logger
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
