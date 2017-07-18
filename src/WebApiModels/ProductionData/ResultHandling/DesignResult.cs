@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling
     /// <param name="designBoundaries">Array of design boundaries in GeoJson format.</param>
     /// <returns>A created instance of the SurveyedSurfaceResult class.</returns>
     /// 
-    public static DesignResult CreateSurveyedSurfaceResult(string[] designBoundaries)
+    public static DesignResult CreateDesignResult(string[] designBoundaries)
     {
       return new DesignResult { designBoundaries = designBoundaries };
     }
