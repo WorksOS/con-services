@@ -3,10 +3,10 @@ using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
-using VSS.Productivity3D.WebApiModels.Models;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
-namespace VSS.Productivity3D.WebApi.Filters
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Filters
 {
   /// <summary>
   /// Attribute enabling obligatory validation of domain objects upon reception.

@@ -1,8 +1,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.4
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "src\WebApi\WebApi.csproj", "{108E9A08-995B-4C93-A7C1-D7B4FB107D9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.WebAPI", "src\WebApi\VSS.Productivity3D.TagFileAuth.WebAPI.csproj", "{108E9A08-995B-4C93-A7C1-D7B4FB107D9F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0EEFF2D8-1AE6-4CAD-B81C-307EDAA431F0}"
 EndProject
@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiTests", "test\UnitTests\WebApiTests\WebApiTests.csproj", "{2B5D04A4-86D2-46D1-A8B6-7B0C44D4751E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiModels", "src\WebApiModels\WebApiModels.csproj", "{8A61747A-DCBA-4ECE-BC9F-5724637CFDE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.WebAPI.Models", "src\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj", "{8A61747A-DCBA-4ECE-BC9F-5724637CFDE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

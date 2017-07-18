@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Repositories;
-using VSS.Productivity3D.WebApiModels.Enums;
-using VSS.Productivity3D.WebApiModels.Executors;
-using VSS.Productivity3D.WebApiModels.Models;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using VSS.MasterData.Repositories;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace WebApiTests.Executors
 {

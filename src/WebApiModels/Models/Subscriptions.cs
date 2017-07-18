@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.Productivity3D.WebApiModels.Utilities;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 
-namespace VSS.Productivity3D.WebApiModels.Models
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic

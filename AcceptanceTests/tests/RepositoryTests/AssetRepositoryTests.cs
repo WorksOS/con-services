@@ -1,12 +1,12 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using log4netExtensions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.GenericConfiguration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
+using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using Repositories;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {
@@ -44,7 +44,7 @@ namespace RepositoryTests
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 
-      factory = serviceProvider.GetRequiredService<IRepositoryFactory>();      
+      factory = serviceProvider.GetRequiredService<IRepositoryFactory>();
 
       assetContext = factory.GetRepository<IAssetEvent>() as AssetRepository;
       deviceContext = factory.GetRepository<IDeviceEvent>() as DeviceRepository;

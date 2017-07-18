@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace VSS.Productivity3D.WebApiModels.Enums
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums
 {
 
   // Service type enums are different between CG and NG.

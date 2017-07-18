@@ -21,11 +21,11 @@
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
     <PackageReference Include="RdKafka" Version="0.9.1" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.4" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.*" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\WebApiModels\WebApiModels.csproj" />
+    <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
   </ItemGroup>
 
 </Project>

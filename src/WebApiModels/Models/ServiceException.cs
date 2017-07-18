@@ -2,9 +2,9 @@
 using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Models
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
     /// <summary>
     ///   This is an expected exception and should be ignored by unit test failure methods.

@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 
 namespace TestRun
 {
-    /// <summary>
-    /// Build the trx file that holds the test results
-    /// </summary>
-    public class ResultsMstest
+  /// <summary>
+  /// Build the trx file that holds the test results
+  /// </summary>
+  public class ResultsMstest
     {
         #region public properties
         public string wholeTrxFile { get; set; }
@@ -33,7 +32,7 @@ namespace TestRun
         private string skelTestResult { get; set; }
         private string skelErrorInfo { get; set; }
         #endregion
-        private Object thisLock = new Object();
+        private readonly Object thisLock = new Object();
 
 
         public ResultsMstest()
@@ -151,13 +150,14 @@ namespace TestRun
             }
         }
 
-        /// <summary>
-        /// Set up XML for a failed test result
-        /// </summary>
-        /// <param name="method">method details</param>
-        /// <param name="stats">stats for current test</param>
-        /// <param name="ex">Exception that happen in the </param>
-        public void SetTestFailed(MethodInfo method, Stats stats, Exception ex, StringWriter stdout)
+      /// <summary>
+      /// Set up XML for a failed test result
+      /// </summary>
+      /// <param name="method">method details</param>
+      /// <param name="stats">stats for current test</param>
+      /// <param name="ex">Exception that happen in the </param>
+      /// <param name="stdout"></param>
+      public void SetTestFailed(MethodInfo method, Stats stats, Exception ex, StringWriter stdout)
         {
             lock (thisLock)
             {
@@ -173,14 +173,13 @@ namespace TestRun
                 testResult = ReplaceTag("XMLOUTCOME", "Failed", testResult);
                 testResult = ReplaceTag("XMLCOMPUTER", Environment.MachineName, testResult);
                 testResult = ReplaceTag("XMLSTDOUT", stdout.ToString(), testResult);
-                var excep = ex.InnerException.Message.Replace('<', ' ');
+                var excep = ex.GetBaseException().Message.Replace('<', ' ');
                 excep = excep.Replace('>', ' ');
                 var exceptionDetails = "Test method " + method.Name + " threw exception: " + Environment.NewLine +
                                        ex.Message +
                                        Environment.NewLine + excep;
                 var errorResult = ReplaceTag("XMLMESSAGE", exceptionDetails, skelErrorInfo);
-                var stackTrace = ex.StackTrace.Replace('<', ' ');
-                stackTrace = excep.Replace('>', ' ');
+                var stackTrace = excep.Replace('>', ' ');
                 errorResult = ReplaceTag("XMLSTACKTRACE", stackTrace, errorResult);
                 testResult = ReplaceTag("XMLERROR", errorResult, testResult);
                 allTestResults = allTestResults + testResult;

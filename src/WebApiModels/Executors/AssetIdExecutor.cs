@@ -4,14 +4,14 @@ using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Repositories.DBModels;
-using Repositories.ExtendedModels;
-using VSS.Productivity3D.WebApiModels.Enums;
-using VSS.Productivity3D.WebApiModels.Models;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Utilities;
+using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 
-namespace VSS.Productivity3D.WebApiModels.Executors
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
   /// <summary>
   /// The executor which gets a legacyAssetId and/or serviceType for the requested radioSerial and/or legacyProjectId.

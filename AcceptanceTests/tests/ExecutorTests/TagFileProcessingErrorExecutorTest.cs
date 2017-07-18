@@ -1,9 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RepositoryTests;
-using VSS.Productivity3D.WebApiModels.Enums;
-using VSS.Productivity3D.WebApiModels.Executors;
-using VSS.Productivity3D.WebApiModels.Models;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace ExecutorTests
 {
@@ -16,7 +15,7 @@ namespace ExecutorTests
       TagFileProcessingErrorRequest request = TagFileProcessingErrorRequest.CreateTagFileProcessingErrorRequest(1, "Data from my dozer", (int) TagFileErrorsEnum.ProjectID_NoMatchingArea);
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(factory, logger).Process(request) as TagFileProcessingErrorResult;
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorExecutor>(Factory, Logger).Process(request) as TagFileProcessingErrorResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "unsuccessful");
     }

@@ -1,5 +1,5 @@
 ﻿
-namespace VSS.Productivity3D.WebApiModels.Models
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   public class TWGS84FenceContainer
   {

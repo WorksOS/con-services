@@ -274,7 +274,7 @@ namespace TestRun
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("TestInitialize method: " + initializeMethod.Name + " - Exception:" + ex.InnerException); 
+                    Console.WriteLine("TestInitialize method: " + initializeMethod.Name + " - Exception:" + ex.GetBaseException()); 
                 }
             }
         }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 
 namespace WebApiTests.Models
 {

@@ -1,25 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <Authors>Merino</Authors>
+    <Company>VSS</Company>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>WebApi</AssemblyName>
+    <AssemblyName>VSS.Productivity3D.TagFileAuth.WebAPI</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>WebApi</PackageId>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
-    <RootNamespace>VSS.Productivity3D.WebApi</RootNamespace>
+    <RootNamespace>VSS.Productivity3D.TagFileAuth.WebAPI</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <None Update="Views;Areas\**\Views;Dockerfile;log4net.xml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\WebApiModels\WebApiModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,9 +36,12 @@
     <PackageReference Include="Swashbuckle.SwaggerUi" Version="6.0.0-beta902" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="1.1.3" />
     <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.15" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.4" />
+    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
   </ItemGroup>
 
 </Project>

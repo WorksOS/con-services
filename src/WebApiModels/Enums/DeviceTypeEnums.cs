@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.WebApiModels.Enums
+﻿namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums
 {
 
   // There shold be a master-copy of these somewhere in the masterData code or databases

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.WebApiModels.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 
-namespace VSS.Productivity3D.WebApi.Filters
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Filters
 {
   public class ExceptionsTrap
   {

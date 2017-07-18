@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Models
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
   /// The request representation used to request the boundary of a project that is active at a specified date time.

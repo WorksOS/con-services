@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Productivity3D.WebApiModels.Utilities
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities
 {
   public static class DateTimeExtensions
     {

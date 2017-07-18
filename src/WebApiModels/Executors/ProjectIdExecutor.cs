@@ -3,14 +3,14 @@ using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Repositories;
-using Repositories.DBModels;
-using VSS.Productivity3D.WebApiModels.Models;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.Productivity3D.WebApiModels.Executors
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
   /// <summary>
   /// The executor which gets the project id of the project for the requested asset location and date time.

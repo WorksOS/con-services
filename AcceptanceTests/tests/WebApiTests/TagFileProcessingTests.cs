@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Threading;
 using TestUtility;
-using VSS.Productivity3D.WebApiModels.Enums;
-using VSS.Productivity3D.WebApiModels.Models;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace WebApiTests
 {
