@@ -83,14 +83,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       request.Validate();
 
       var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
-      /*
-      if (fileList == null || fileList.Count == 0)
-      {
-        throw new ServiceException(HttpStatusCode.NoContent, 
-          new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully,
-            "No designs available"));
-      }
-      */
+
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 
       return RequestExecutorContainer.Build<DesignExecutor>(logger, raptorClient, null, null, null, null, fileList).Process(request);

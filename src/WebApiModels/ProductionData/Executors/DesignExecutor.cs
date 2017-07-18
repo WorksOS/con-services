@@ -77,11 +77,12 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
             MemoryStream memoryStream;
             TDesignProfilerRequestResult designProfilerResult;
+            FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor("", designs[i].Path, designs[i].Name);
 
             bool result = raptorClient.GetDesignBoundary(
               DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args(
                 request.projectId ?? -1,
-                DesignDescriptor(0, FileDescriptor.CreateFileDescriptor("", designs[i].Path, designs[i].Name), 0),
+                fileDescriptor.DesignDescriptor(configStore, log, 0, 0),
                 DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtJson,
                 request.tolerance,
                 TVLPDDistanceUnits.vduMeters,
@@ -117,30 +118,11 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
       }
     }
 
+/*
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      throw new NotImplementedException("Use the ynchronous form of this method");
+      throw new NotImplementedException("Use the synchronous form of this method");
     }
-
-    /// <summary>
-    /// Creates a Raptor design file descriptor
-    /// </summary>
-    /// <param name="designId">The id of the design file</param>
-    /// <param name="fileDescr">The location and name of the design file</param>
-    /// <param name="offset">The offset if the file is a reference surface</param>
-    /// <returns></returns>
-    private TVLPDDesignDescriptor DesignDescriptor(long designId, FileDescriptor fileDescr, double offset)
-    {
-      string filespaceName = configStore.GetValueString("TCCFILESPACENAME");
-
-      if (string.IsNullOrEmpty(filespaceName))
-      {
-        var errorString = "Your application is missing an environment variable TCCFILESPACENAME";
-        log.LogError(errorString);
-        throw new InvalidOperationException(errorString);
-      }
-      return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designId, filespaceName, fileDescr.filespaceId, fileDescr.path, fileDescr.fileName, offset);
-    }
-
+*/
   }
 }
