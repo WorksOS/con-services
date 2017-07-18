@@ -3,11 +3,11 @@ using System.Linq;
 using System.Net;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Repositories.DBModels;
-using VSS.Productivity3D.WebApiModels.Models;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Executors
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
   /// <summary>
   /// The executor which gets a list of project boundaries for the requested asset id.
@@ -68,14 +68,14 @@ namespace VSS.Productivity3D.WebApiModels.Executors
             log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded Projects {0} for customer",
               JsonConvert.SerializeObject(projects));
 
-            if (projects != null && projects.Count() > 0)
+            if (projects != null && projects.Any())
             {
               List<ProjectBoundaryPackage> list = new List<ProjectBoundaryPackage>();
               foreach (var p in projects)
               {
-                TWGS84FenceContainer boundaryFence = new TWGS84FenceContainer();
-                boundaryFence.FencePoints = dataRepository.ParseBoundaryData(p.GeometryWKT);
-                if (boundaryFence.FencePoints.Count() > 0)
+                TWGS84FenceContainer boundaryFence =
+                  new TWGS84FenceContainer {FencePoints = dataRepository.ParseBoundaryData(p.GeometryWKT)};
+                if (boundaryFence.FencePoints.Length > 0)
                 {
                   list.Add(new ProjectBoundaryPackage
                   {
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApiModels.Executors
               log.LogDebug("ProjectBoundariesAtDateExecutor: Loaded boundaries {0} for projects",
                 JsonConvert.SerializeObject(boundaries));
 
-              if (boundaries.Count() > 0) result = true;
+              if (boundaries.Length > 0) result = true;
             }
           }
         }

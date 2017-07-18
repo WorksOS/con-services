@@ -1,8 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Models
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
   /// The request representation used to request the project Id that a specified asset is inside at a given location and date time.

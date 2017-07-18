@@ -1,20 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Authors>Merino</Authors>
+    <Company>VSS</Company>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <AssemblyName>WebApiModels</AssemblyName>
+    <AssemblyName>VSS.Productivity3D.TagFileAuth.WebAPI.Models</AssemblyName>
     <PackageId>WebApiModels</PackageId>
     <PackageTargetFallback>$(PackageTargetFallback);dotnet5.6;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <RootNamespace>VSS.Productivity3D.WebApiModels</RootNamespace>
+    <RootNamespace>VSS.Productivity3D.TagFileAuth.WebAPI.Models</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.78" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="1.1.3" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.0.*" />
   </ItemGroup>
 
 </Project>

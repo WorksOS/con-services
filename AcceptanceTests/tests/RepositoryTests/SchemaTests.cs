@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Dapper;
+﻿using Dapper;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
-using log4netExtensions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using VSS.GenericConfiguration;
-using Repositories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
+using VSS.MasterData.Repositories;
 
 namespace RepositoryTests
 {

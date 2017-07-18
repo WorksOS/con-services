@@ -17,8 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="log4net.netcore" Version="3.0.0" />
-    <PackageReference Include="log4netExtensions.netcore" Version="1.0.1" />
+    <PackageReference Include="log4net.netcore" Version="3.0.*" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
@@ -30,8 +29,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
-    <PackageReference Include="KafkaConsumer.netcore" Version="1.0.23" />
-    <PackageReference Include="MasterDataRepos.netcore" Version="1.0.78" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.0.*" />
   </ItemGroup>
 
 </Project>

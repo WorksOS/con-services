@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Repositories;
-using Repositories.DBModels;
-using Repositories.ExtendedModels;
-using VSS.Productivity3D.WebApiModels.Enums;
+using VSS.MasterData.Repositories;
+using VSS.MasterData.Repositories.DBModels;
+using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.Productivity3D.WebApiModels.Models
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
   ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic

@@ -1,23 +1,24 @@
-﻿using log4netExtensions;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Repositories;
 using Swashbuckle.Swagger.Model;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.WebApi.Filters;
+using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
+using VSS.MasterData.Repositories;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Filters;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using ExceptionsTrapExtensions = VSS.Productivity3D.WebApiModels.ResultHandling.ExceptionsTrapExtensions;
+using ExceptionsTrapExtensions = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ExceptionsTrapExtensions;
 
-namespace VSS.Productivity3D.WebApi
+namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
   public class Startup
   {
-    private readonly string loggerRepoName = "WebApi";
-    private bool isDevEnv = false;
-    IServiceCollection serviceCollection;
+    private readonly string _loggerRepoName = "WebApi";
+    private readonly bool _isDevEnv;
+    IServiceCollection _serviceCollection;
+
     public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
@@ -25,9 +26,9 @@ namespace VSS.Productivity3D.WebApi
           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
           .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-      env.ConfigureLog4Net("log4net.xml", loggerRepoName);
-      isDevEnv = env.IsEnvironment("Development");
-      if (isDevEnv)
+      env.ConfigureLog4Net("log4net.xml", _loggerRepoName);
+      _isDevEnv = env.IsEnvironment("Development");
+      if (_isDevEnv)
       {
         // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
         builder.AddApplicationInsightsSettings(developerMode: true);
@@ -61,7 +62,7 @@ namespace VSS.Productivity3D.WebApi
           .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
           .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
           .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
-      services.AddSingleton<IConfigurationStore, GenericConfiguration.GenericConfiguration>();
+      services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddMvc(
         config =>
         {
@@ -79,23 +80,23 @@ namespace VSS.Productivity3D.WebApi
           Description = "API for Tagfile authorization service",
           TermsOfService = "None"
         });
-        string path = isDevEnv ? "bin/Debug/netcoreapp1.1/" : string.Empty;
-        options.IncludeXmlComments(path + "WebApi.xml");
+        string path = _isDevEnv ? "bin/Debug/netcoreapp1.1/" : string.Empty;
+        options.IncludeXmlComments(path + "VSS.Productivity3D.TagFileAuth.WebAPI.xml");
         options.IgnoreObsoleteProperties();
         options.DescribeAllEnumsAsStrings();
       });
-      serviceCollection = services;
+      _serviceCollection = services;
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
     public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
     {
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      _serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       //new DependencyInjectionProvider(serviceCollection.BuildServiceProvider());
-      serviceCollection.BuildServiceProvider();
+      _serviceCollection.BuildServiceProvider();
 
       loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
+      loggerFactory.AddLog4Net(_loggerRepoName);
 
       ExceptionsTrapExtensions.UseExceptionTrap(app);
       //Enable TID here

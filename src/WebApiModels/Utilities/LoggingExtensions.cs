@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Productivity3D.WebApiModels.Models;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiModels.Utilities
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities
 {
   public static class LoggingExtensions
   {
@@ -22,6 +22,5 @@ namespace VSS.Productivity3D.WebApiModels.Utilities
       }
       return 0;
     }
-
   }
 }

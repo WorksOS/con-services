@@ -35,7 +35,7 @@ namespace TestRun
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.InnerException);
+                Console.WriteLine(ex.GetBaseException());
                 return null;
             }
         }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace VSS.Productivity3D.WebApiModels.Enums
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums
 {
   public enum TagFileErrorsEnum
   {

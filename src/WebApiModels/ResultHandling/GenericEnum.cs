@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace VSS.Productivity3D.WebApiModels.ResultHandling
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
 
   public abstract class GenericEnum<T, U> where T : GenericEnum<T, U>, new()

@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Security.Authentication;
 using System.Threading.Tasks;
-using VSS.Productivity3D.WebApiModels.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 
-namespace VSS.Productivity3D.WebApiModels.ResultHandling
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
   public class ExceptionsTrap
   {

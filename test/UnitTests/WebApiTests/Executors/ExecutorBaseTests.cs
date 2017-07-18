@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using log4netExtensions;
-using Repositories;
-using VSS.GenericConfiguration;
+using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
+using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace WebApiTests.Executors
@@ -28,7 +28,7 @@ namespace WebApiTests.Executors
       loggerFactory.AddLog4Net(loggerRepoName);
 
       serviceCollection.AddLogging();
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.AddSingleton<IRepositoryFactory, RepositoryFactory>()
                         .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
                         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
@@ -36,7 +36,7 @@ namespace WebApiTests.Executors
                         .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
                         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
                         .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>();
-      serviceCollection.AddSingleton<IConfigurationStore, VSS.GenericConfiguration.GenericConfiguration>();
+      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceProvider = serviceCollection.BuildServiceProvider();
     }
   

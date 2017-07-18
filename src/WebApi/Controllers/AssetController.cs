@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Repositories;
-using VSS.Productivity3D.WebApiModels.Executors;
-using VSS.Productivity3D.WebApiModels.Models;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Utilities;
+using VSS.MasterData.Repositories;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 
-namespace VSS.Productivity3D.WebApi.Controllers
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
   public class AssetController : Controller
   {

@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using VSS.Productivity3D.WebApiModels.Executors;
-using VSS.Productivity3D.WebApiModels.Models;
-using VSS.Productivity3D.WebApiModels.ResultHandling;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
-namespace RepositoryTests
+namespace ExecutorTests
 {
   [TestClass]
   public class ProjectBoundaryAtDateExecutorTests : ExecutorTestData
@@ -22,7 +22,7 @@ namespace RepositoryTests
       GetProjectBoundaryAtDateRequest projectBoundaryAtDateExecutorRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(legacyProjectId, timeOfPositionUtc);
       projectBoundaryAtDateExecutorRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, logger).Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
+      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(Factory, Logger).Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary result");
@@ -43,7 +43,7 @@ namespace RepositoryTests
       GetProjectBoundaryAtDateRequest projectBoundaryAtDateExecutorRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(legacyProjectId, timeOfPositionUtc);
       projectBoundaryAtDateExecutorRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, logger).Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
+      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(Factory, Logger).Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsTrue(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary result");
@@ -71,7 +71,7 @@ namespace RepositoryTests
       GetProjectBoundaryAtDateRequest projectBoundaryAtDateExecutorRequest = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(legacyProjectId, timeOfPositionUtc);
       projectBoundaryAtDateExecutorRequest.Validate();
 
-      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(factory, logger).Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
+      var result = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(Factory, Logger).Process(projectBoundaryAtDateExecutorRequest) as GetProjectBoundaryAtDateResult;
       Assert.IsNotNull(result, "executor should always return a result");
       Assert.IsFalse(result.Result, "unsuccessful");
       Assert.IsNotNull(result.projectBoundary, "executor returned incorrect projectBoundary result");
