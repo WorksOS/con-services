@@ -580,8 +580,18 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         mode == DisplayMode.Height ? elevProxy.GetElevationRange(raptorClient, projectId, filter) : null;
       //Fix bug in Raptor - swap elevations if required
       elevExtents?.SwapElevationsIfRequired();
+      var palette = CompactionSettings.CompactionPalette(mode, elevExtents);
+      if (mode == DisplayMode.Height)
+      {
+        log.LogDebug("GetProductionDataTile: surveyedSurfaceExclusionList count={0}, elevExtents={1}-{2}, palette count={4}",
+          (filter == null || filter.surveyedSurfaceExclusionList == null)
+            ? 0
+            : filter.surveyedSurfaceExclusionList.Count,
+          elevExtents == null ? 0 : elevExtents.MinElevation, elevExtents == null ? 0 : elevExtents.MaxElevation,
+          palette == null ? 0 : palette.Count);
+      }
       TileRequest tileRequest = TileRequest.CreateTileRequest(projectId, null, mode,
-        CompactionSettings.CompactionPalette(mode, elevExtents),
+        palette,
         liftSettings, RaptorConverters.VolumesType.None, 0, null, filter, 0, null, 0,
         filter == null ? FilterLayerMethod.None : filter.layerType.Value,
         bbox, null, width, height, 0, CMV_DETAILS_NUMBER_OF_COLORS, false);
