@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -15,12 +15,12 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
   public class TIDAuthentication
   {
     private readonly RequestDelegate _next;
-    private readonly IProjectListProxy projectListProxy;
+    private readonly IProjectProxy projectListProxy;
     private readonly ICustomerProxy customerProxy;
     private readonly ILogger log;
 
 
-    public TIDAuthentication(RequestDelegate next, IProjectListProxy projectListProxy, ICustomerProxy customerProxy, ILoggerFactory logger)
+    public TIDAuthentication(RequestDelegate next, IProjectProxy projectListProxy, ICustomerProxy customerProxy, ILoggerFactory logger)
     {
       _next = next;
       this.projectListProxy = projectListProxy;

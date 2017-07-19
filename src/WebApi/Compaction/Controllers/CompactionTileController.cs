@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Executors;
@@ -58,10 +58,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// For getting list of imported files for a project
-    /// </summary>
-    private readonly IFileListProxy fileListProxy;
-    /// <summary>
     /// Where to get environment variables, connection string etc. from
     /// </summary>
     private IConfigurationStore configStore;
@@ -78,30 +74,28 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// For getting project settings for a project
     /// </summary>
-    private readonly IProjectSettingsProxy projectSettingsProxy;
+    private readonly IProjectProxy projectProxy;
 
     /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="fileListProxy">File list proxy</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileRepo">Imported file repository</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
-    /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="projectProxy">Project proxy</param>
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IFileListProxy fileListProxy, IConfigurationStore configStore, IFileRepository fileRepo, 
-      IElevationExtentsProxy elevProxy, IProjectSettingsProxy projectSettingsProxy)
+      IConfigurationStore configStore, IFileRepository fileRepo, 
+      IElevationExtentsProxy elevProxy, IProjectProxy projectProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionTileController>();
-      this.fileListProxy = fileListProxy;
       this.configStore = configStore;
       this.fileRepo = fileRepo;
       this.elevProxy = elevProxy;
-      this.projectSettingsProxy = projectSettingsProxy;
+      this.projectProxy = projectProxy;
     }
 
     /// <summary>
@@ -178,8 +172,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      var projectSettings = await this.GetProjectSettings(projectProxy, projectUid.Value, headers, log);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(projectProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -269,8 +263,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      var projectSettings = await this.GetProjectSettings(projectProxy, projectUid.Value, headers, log);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(projectProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -474,7 +468,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       //Get all the imported files for the project
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
+      var fileList = await projectProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
       if (fileList == null)
       {
         fileList = new List<FileData>();

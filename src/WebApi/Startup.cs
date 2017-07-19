@@ -9,8 +9,8 @@ using Swashbuckle.Swagger.Model;
 using System;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -110,15 +110,12 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IASNodeClient, ASNodeClient>();
       services.AddScoped<ITagProcessor, TagProcessor>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddSingleton<IProjectListProxy, ProjectListProxy>();
+      services.AddSingleton<IProjectProxy, ProjectProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddSingleton<IFileListProxy, FileListProxy>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
       services.AddTransient<ITileGenerator, TileGenerator>();
       services.AddSingleton<IElevationExtentsProxy, ElevationExtentsProxy>();
-      services.AddSingleton<IProjectSettingsProxy, ProjectSettingsProxy>();
-
 
       serviceCollection = services;
     }

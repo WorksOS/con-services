@@ -8,15 +8,14 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApiModels.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
@@ -64,9 +63,9 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private ITileGenerator tileGenerator;
 
     /// <summary>
-    /// For getting list of imported files for a project
+    /// For getting project settings and imported files for a project
     /// </summary>
-    private readonly IFileListProxy fileListProxy;
+    private readonly IProjectProxy projectProxy;
 
     /// <summary>
     /// Constructor with injection
@@ -77,10 +76,10 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="configStore"></param>
     /// <param name="prefProxy">Proxy for user preferences</param>
     /// <param name="tileGenerator">DXF tile generator</param>
-    /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="projectProxy">Project proxy</param>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
-      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy)
+      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IProjectProxy projectProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -89,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.configStore = configStore;
       this.prefProxy = prefProxy;
       this.tileGenerator = tileGenerator;
-      this.fileListProxy = fileListProxy;
+      this.projectProxy = projectProxy;
     }
 
     /// <summary>
@@ -206,7 +205,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
         customHeaders.Add("X-VisionLink-ClearCache", "true");
 
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      var fileList = await projectProxy.GetFiles(projectUid.ToString(), customHeaders);
       log.LogInformation("After clearing cache {0} total imported files, {1} activated, for project {2}", fileList.Count, fileList.Count(f => f.IsActivated), projectUid);
 
       return fileList;

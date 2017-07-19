@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -46,32 +46,25 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
-    /// For getting list of imported files for a project
+    /// For getting project settings and imported files for a project
     /// </summary>
-    private readonly IFileListProxy fileListProxy;
-
-    /// <summary>
-    /// For getting project settings for a project
-    /// </summary>
-    private readonly IProjectSettingsProxy projectSettingsProxy;
+    private readonly IProjectProxy projectProxy;
 
     /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="fileListProxy">File list proxy</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
-    /// <param name="projectSettingsProxy">Project settings proxy</param>
-    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, 
-      IElevationExtentsProxy elevProxy, IProjectSettingsProxy projectSettingsProxy)
+    /// <param name="projectProxy">Project proxy</param>
+    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, 
+      IElevationExtentsProxy elevProxy, IProjectProxy projectProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionElevationController>();
-      this.fileListProxy = fileListProxy;
       this.elevProxy = elevProxy;
-      this.projectSettingsProxy = projectSettingsProxy;
+      this.projectProxy = projectProxy;
     }
 
 
@@ -124,8 +117,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       try
       {
         var headers = Request.Headers.GetCustomHeaders();
-        var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+        var projectSettings = await this.GetProjectSettings(projectProxy, projectUid.Value, headers, log);
+        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(projectProxy, projectUid.Value, headers);
         Filter filter = CompactionSettings.CompactionFilter(
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -213,7 +206,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(projectProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
       ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId.Value, excludedIds.ToArray());
       request.Validate();

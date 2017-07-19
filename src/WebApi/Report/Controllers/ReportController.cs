@@ -8,8 +8,8 @@ using ASNode.ExportProductionDataCSV.RPC;
 using BoundingExtents;
 using VLPDDecls;
 using VSS.ConfigurationStore;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -50,35 +50,29 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </summary>
     private readonly ILoggerFactory logger;
 
-    /// <summary>
-    /// For getting list of imported files for a project
-    /// </summary>
-    private readonly IFileListProxy fileListProxy;
-
     private readonly IConfigurationStore configStore;
 
     /// <summary>
     /// For getting project settings for a project
     /// </summary>
-    private readonly IProjectSettingsProxy projectSettingsProxy;
+    private readonly IProjectProxy projectProxy;
 
     /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="fileListProxy">File list proxy</param>
     /// <param name="configStore">Configuration store</param>
-    /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="projectProxy">Project settings proxy</param>
     public ReportController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IFileListProxy fileListProxy, IConfigurationStore configStore, IProjectSettingsProxy projectSettingsProxy)
+      IConfigurationStore configStore, IProjectProxy projectProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionTileController>();
-      this.fileListProxy = fileListProxy;
+      this.projectProxy = projectProxy;
       this.configStore = configStore;
-      this.projectSettingsProxy = projectSettingsProxy;
+      this.projectProxy = projectProxy;
     }
 
     /// <summary>
@@ -104,10 +98,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      var projectSettings = await this.GetProjectSettings(projectProxy, projectUid.Value, headers, log);
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(projectProxy, projectUid.Value, headers);
 
       // Filter filter = CompactionSettings.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
       Filter filter = CompactionSettings.CompactionFilter(null, null, null, null, null, null, null, excludedIds);
@@ -167,21 +161,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         exportType);
     }
     #endregion
-
-    /// <summary>
-    /// Constructor with injection
-    /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
-    /// <param name="logger">Logger</param>
-    /// <param name="configStore"></param>
-    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
-    {
-      this.raptorClient = raptorClient;
-      this.logger = logger;
-      this.log = logger.CreateLogger<ReportController>();
-      this.configStore = configStore;
-      this.fileListProxy = fileListProxy;
-    }
 
     #region ExportPing
     /// <summary>

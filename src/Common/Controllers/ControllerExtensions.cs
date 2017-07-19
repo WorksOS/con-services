@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
@@ -24,13 +24,13 @@ namespace VSS.Productivity3D.Common.Controllers
     /// This is the deactivated ones.
     /// </summary>
     /// <param name="controller"></param>
-    /// <param name="fileListProxy">Proxy client to get list of imported files for the project</param>
+    /// <param name="projectProxy">Proxy client to get list of imported files for the project</param>
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
     /// <param name="customHeaders">Http request custom headers</param>
     /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
-    public static async Task<List<long>> GetExcludedSurveyedSurfaceIds(this Controller controller, IFileListProxy fileListProxy, Guid projectUid, IDictionary<string, string> customHeaders)
+    public static async Task<List<long>> GetExcludedSurveyedSurfaceIds(this Controller controller, IProjectProxy projectProxy, Guid projectUid, IDictionary<string, string> customHeaders)
     {
-      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      var fileList = await projectProxy.GetFiles(projectUid.ToString(), customHeaders);
       if (fileList == null || fileList.Count == 0)
         return null;
       return fileList
@@ -42,15 +42,15 @@ namespace VSS.Productivity3D.Common.Controllers
     /// Gets the project settings for the project.
     /// </summary>
     /// <param name="controller"></param>
-    /// <param name="projectSettingsProxy">Proxy client to get project settings for the project</param>
+    /// <param name="projectProxy">Proxy client to get project settings for the project</param>
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
     /// <param name="customHeaders">Http request custom headers</param>
     /// <param name="log">log for logging</param>
     /// <returns>The project settings</returns>
-    public static async Task<CompactionProjectSettings> GetProjectSettings(this Controller controller, IProjectSettingsProxy projectSettingsProxy, Guid projectUid, IDictionary<string, string> customHeaders, ILogger log)
+    public static async Task<CompactionProjectSettings> GetProjectSettings(this Controller controller, IProjectProxy projectProxy, Guid projectUid, IDictionary<string, string> customHeaders, ILogger log)
     {
       CompactionProjectSettings ps = null;
-      var jsonSettings = await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders);
+      var jsonSettings = await projectProxy.GetProjectSettings(projectUid.ToString(), customHeaders);
       if (!string.IsNullOrEmpty(jsonSettings))
       {
         try
