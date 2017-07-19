@@ -90,5 +90,29 @@ namespace VSS.MasterData.ProjectTests
       Assert.AreEqual(settings, result.Settings, "executor returned incorrect Settings");
     }
 
+    //[TestMethod]
+    //public async Task ProjectSettingsValidateProjectUid_ProjectOk()
+    //{
+    //  // project has to exist and this Customer have access
+    //  string customerUid = Guid.NewGuid().ToString();
+    //  string projectUid = Guid.NewGuid().ToString();
+
+    //  var projectRepo = new Mock<IProjectRepository>();
+    //  var projectSettings = new ProjectSettings() { ProjectUid = projectUid, Settings = settings };
+    //  projectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectUid);
+
+    //  var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+    //  var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+    //  var serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+    //  var producer = new Mock<IKafka>();
+
+    //  var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo.Object, configStore, logger, serviceExceptionHandler, producer.Object);
+    //  var result = await executor.ProcessAsync(projectUid) as ProjectSettingsResult;
+
+    //  Assert.IsNotNull(result, "executor failed");
+    //  Assert.AreEqual(projectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
+    //  Assert.AreEqual(settings, result.Settings, "executor should have returned Settings");
+    //}
+
   }
 }

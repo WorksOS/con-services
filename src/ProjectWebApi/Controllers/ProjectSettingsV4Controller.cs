@@ -42,6 +42,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
       LogCustomerDetails("UpsertProjectSettings", projectUid);
 
+      await ProjectSettingsValidation.ValidateProjectId(projectRepo, log, serviceExceptionHandler, (User as TIDCustomPrincipal).CustomerUid, projectUid);
+
       var executor = RequestExecutorContainer.Build<GetProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer);
       var result = await executor.ProcessAsync(projectUid);
 
@@ -63,6 +65,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
       log.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 
+      await ProjectSettingsValidation.ValidateProjectId(projectRepo, log, serviceExceptionHandler, (User as TIDCustomPrincipal).CustomerUid, request.projectUid);
       await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log, serviceExceptionHandler, request, Request.Headers.GetCustomHeaders());
 
       var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer);

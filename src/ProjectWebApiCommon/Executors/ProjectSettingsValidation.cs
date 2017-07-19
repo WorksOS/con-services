@@ -1,12 +1,16 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.MasterDataProxies.ResultHandling;
+using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -47,5 +51,24 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       return result;
     }
 
+    /// <summary>
+    /// Validates a project identifier.
+    /// </summary>
+    /// <param name="projectUid">The project uid.</param>
+    /// <returns></returns>
+    public static async Task ValidateProjectId(IProjectRepository projectRepo,
+      ILogger log,
+      IServiceExceptionHandler serviceExceptionHandler, string customerUid, string projectUid)
+    {
+      var project =
+        (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
+          p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
+      if (project == null)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
+      }
+
+      log.LogInformation($"Project {projectUid} validated");
+    }
   }
 }
