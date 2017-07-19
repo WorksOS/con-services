@@ -12,8 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\WebApiModels\WebApiModels.csproj" />
-    <ProjectReference Include="..\..\..\src\Common\Common.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\VSS.Productivity3D.Common.csproj" />
+    <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

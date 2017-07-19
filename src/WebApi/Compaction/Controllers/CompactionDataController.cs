@@ -3,14 +3,14 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using VSS.MasterDataProxies;
+using VSS.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.MasterDataProxies;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
@@ -537,6 +537,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] string machineName,
       [FromQuery] bool? isJohnDoe)
     {
+      /**************************************************************************************************
+       * NOTE: This end point for CMV details is currently not called from the Compaction UI.
+       * It still uses the old Raptor CMV settings with CMV min, max and target to calculate the percents
+       * data to return. However, the palette now uses 16 colors and values (the last being 'above' color
+       * and value) and this code needs to be updated to be consistent. This requires a change to Raptor
+       * to accept a list of CMV values like for pass count details.
+       **************************************************************************************************/
+        
       log.LogInformation("GetCmvDetails: " + Request.QueryString);
 
       CMVRequest request = await GetCMVRequest(projectId, projectUid, startUtc, endUtc, vibeStateOn, elevationType,

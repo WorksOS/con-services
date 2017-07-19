@@ -10,11 +10,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
   public class CompactionColorPalettesResult : ContractExecutionResult
   {  
     /// <summary>
-    /// The palette for displaying elevation values.
-    /// </summary>
-    [JsonProperty(PropertyName = "elevationPalette", Required = Required.Default)]
-    public DetailPalette ElevationPalette { get; private set; }
-    /// <summary>
     /// The palette for displaying CMV detail values.
     /// </summary>
     [JsonProperty(PropertyName = "cmvDetailPalette", Required = Required.Default)]
@@ -79,7 +74,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// </summary>
     /// <returns>An instance of the CompactionColorPalettesResult class.</returns> 
     public static CompactionColorPalettesResult CreateCompactionColorPalettesResult(
-      DetailPalette elevationPalette,
       DetailPalette cmvDetailPalette,
       DetailPalette passCountDetailPalette,
       SummaryPalette passCountSummaryPalette,
@@ -93,7 +87,6 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     {
       return new CompactionColorPalettesResult
       {
-        ElevationPalette = elevationPalette,
         CmvDetailPalette = cmvDetailPalette,
         PassCountDetailPalette = passCountDetailPalette,
         PassCountSummaryPalette = passCountSummaryPalette,

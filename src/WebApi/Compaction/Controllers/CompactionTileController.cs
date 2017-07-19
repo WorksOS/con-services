@@ -9,8 +9,12 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using MasterDataModels.Models;
-using VSS.GenericConfiguration;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
+using VSS.MasterDataProxies;
+using VSS.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Executors;
@@ -20,15 +24,13 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.MasterDataProxies;
-using VSS.Productivity3D.MasterDataProxies.Interfaces;
-using VSS.Productivity3D.TCCFileAccess;
 using VSS.Productivity3D.WebApiModels.Compaction.Executors;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Models;
 using VSS.Productivity3D.WebApiModels.Notification.Helpers;
 using VSS.Productivity3D.WebApiModels.Report.ResultHandling;
+using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 
@@ -173,6 +175,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
+      if (mode==DisplayMode.Height)
+        Response.GetTypedHeaders().CacheControl=new CacheControlHeaderValue(){NoCache = true, NoStore = true};
       return tileResult;
     }
 
@@ -262,7 +266,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       var tileResult = GetProductionDataTile(filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
       Response.Headers.Add("X-Warning", tileResult.TileOutsideProjectExtents.ToString());
-      //AddCacheResponseHeaders();  //done by middleware               
+      if (mode == DisplayMode.Height)
+        Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue() { NoCache = true, NoStore = true };
       return new FileStreamResult(new MemoryStream(tileResult.TileData), "image/png");
     }
 

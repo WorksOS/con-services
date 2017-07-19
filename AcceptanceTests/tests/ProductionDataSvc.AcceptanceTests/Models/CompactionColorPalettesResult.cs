@@ -12,10 +12,6 @@ namespace ProductionDataSvc.AcceptanceTests.Models
   {
     #region Members
     /// <summary>
-    /// The palette for displaying elevation values.
-    /// </summary>
-    public DetailPalette elevationPalette { get; set; }
-    /// <summary>
     /// The palette for displaying CMV detail values.
     /// </summary>
     public DetailPalette cmvDetailPalette { get; set; }
@@ -72,8 +68,7 @@ namespace ProductionDataSvc.AcceptanceTests.Models
       if (other == null)
         return false;
 
-      return this.elevationPalette.Equals(other.elevationPalette) &&
-        this.cmvDetailPalette.Equals(other.cmvDetailPalette) &&
+      return this.cmvDetailPalette.Equals(other.cmvDetailPalette) &&
         this.passCountDetailPalette.Equals(other.passCountDetailPalette) &&
         this.passCountSummaryPalette.Equals(other.passCountSummaryPalette) &&
         this.cutFillPalette.Equals(other.cutFillPalette) &&

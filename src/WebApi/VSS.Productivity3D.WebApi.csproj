@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\WebApiModels\WebApiModels.csproj" />
+    <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
+    <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +27,7 @@
     <PackageReference Include="Swashbuckle.SwaggerGen" Version="6.0.0-beta902" />
     <PackageReference Include="Swashbuckle.SwaggerUi" Version="6.0.0-beta902" />
     <PackageReference Include="log4net.netcore" Version="3.0.*" />
-    <PackageReference Include="log4netExtensions.netcore" Version="1.0.*" />
+    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
