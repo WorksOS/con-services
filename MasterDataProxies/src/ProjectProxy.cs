@@ -49,7 +49,7 @@ namespace VSS.MasterData.Proxies
       }
     }
 
-    public async Task<ProjectSettingsDataResult> GetProjectSettings(string projectUid, IDictionary<string, string> customHeaders = null)
+    public async Task<string> GetProjectSettings(string projectUid, IDictionary<string, string> customHeaders = null)
     {
       var result = await GetItem<ProjectSettingsDataResult>(projectUid, projectSettingsCacheLife, "PROJECT_SETTINGS_API_URL", customHeaders, $"/{projectUid}");
 
