@@ -11,6 +11,7 @@ using System.IO;
 using System.Net;
 using DesignProfilerDecls;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Models;
 using VLPDDecls;
@@ -59,11 +60,11 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
               "Undefined requested data DesignRequest"));
         }
 
-        string[] geoJsons = null;
+        JObject[] geoJsons = null;
 
         if (fileList != null && fileList.Count > 0)
         {
-          List<string> geoJsonList = new List<string>();
+          List<JObject> geoJsonList = new List<JObject>();
 
           for (var i = 0; i < fileList.Count; i++)
           {
@@ -90,7 +91,9 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
               {
                 memoryStream.Position = 0;
                 var sr = new StreamReader(memoryStream);
-                geoJsonList.Add(sr.ReadToEnd());
+                string geoJSONStr = sr.ReadToEnd();
+                JObject jo = JObject.Parse(geoJSONStr);
+                geoJsonList.Add(jo);
               }
             }
             else
@@ -105,7 +108,7 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
         }
         else
         {
-          geoJsons = new string[0];
+          geoJsons = new JObject[0];
         }
 
         return DesignResult.CreateDesignResult(geoJsons); ;
