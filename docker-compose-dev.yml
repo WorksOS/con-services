@@ -8,6 +8,7 @@ services:
      - PREFERENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-preferenceservice/1.0
      - IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/importedfiles
      - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
+     - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4/projectsettings
      - ASNODEIP=10.97.96.134
      - IONODEIP=10.97.96.92
      - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
