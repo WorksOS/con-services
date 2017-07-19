@@ -45,6 +45,6 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Models
       };
     }
 
-    public const double BOUNDARY_POINTS_INTERVAL = 0.05;
+    public const double BOUNDARY_POINTS_INTERVAL = 1.00;
   }
 }

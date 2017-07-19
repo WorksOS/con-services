@@ -27,20 +27,14 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
   public class DesignExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// The list of imported design surfaces for a project.
-    /// </summary>
-    private readonly List<FileData> designs;
-
-    /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="raptorClient"></param>
     /// <param name="designs"></param>
-    public DesignExecutor(ILoggerFactory logger, IASNodeClient raptorClient, List<FileData> designs) : 
-      base(logger, raptorClient)
+    public DesignExecutor(ILoggerFactory logger, IASNodeClient raptorClient, List<FileData> fileList) : 
+      base(logger, raptorClient, null, null, null, null, fileList)
     {
-      this.designs = designs;
     }
 
     /// <summary>
@@ -67,17 +61,17 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
         string[] geoJsons = null;
 
-        if (designs != null && designs.Count > 0)
+        if (fileList != null && fileList.Count > 0)
         {
           List<string> geoJsonList = new List<string>();
 
-          for (var i = 0; i < designs.Count; i++)
+          for (var i = 0; i < fileList.Count; i++)
           {
-            log.LogDebug(string.Format("Getting GeoJson design boundary from Raptor for file: {0}", designs[i].Name));
+            log.LogDebug(string.Format("Getting GeoJson design boundary from Raptor for file: {0}", fileList[i].Name));
 
             MemoryStream memoryStream;
             TDesignProfilerRequestResult designProfilerResult;
-            FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor("", designs[i].Path, designs[i].Name);
+            FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor("", fileList[i].Path, fileList[i].Name);
 
             bool result = raptorClient.GetDesignBoundary(
               DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args(
@@ -93,13 +87,17 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
             if (result)
             {
               if (designProfilerResult == TDesignProfilerRequestResult.dppiOK && memoryStream != null && memoryStream.Length > 0)
-                geoJsonList.Add(JsonConvert.SerializeObject(memoryStream));
+              {
+                memoryStream.Position = 0;
+                var sr = new StreamReader(memoryStream);
+                geoJsonList.Add(sr.ReadToEnd());
+              }
             }
             else
             {
               throw new ServiceException(HttpStatusCode.InternalServerError,
                 new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                  string.Format("Failed to get design boundary for file: {0}", designs[i].Name)));
+                  string.Format("Failed to get design boundary for file: {0}", fileList[i].Name)));
             }
           }
 

@@ -8,6 +8,7 @@ using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
 using VSS.MasterDataProxies;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -40,6 +41,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
+    /// Where to get environment variables, connection string etc. from
+    /// </summary>
+    private IConfigurationStore configStore;
+
+
+    /// <summary>
     /// For getting list of imported files for a project
     /// </summary>
     private readonly IFileListProxy fileListProxy;
@@ -51,11 +58,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="fileListProxy">File list proxy</param>
-    public DesignController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy)
+    public DesignController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<NotificationController>();
+      this.configStore = configStore;
       this.fileListProxy = fileListProxy;
     }
 
@@ -86,7 +94,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       fileList = fileList?.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface && f.IsActivated).ToList();
 
-      return RequestExecutorContainer.Build<DesignExecutor>(logger, raptorClient, null, null, null, null, fileList).Process(request);
+      return RequestExecutorContainer.Build<DesignExecutor>(logger, raptorClient, null, configStore, null, null, fileList).Process(request);
     }
   }
 }
