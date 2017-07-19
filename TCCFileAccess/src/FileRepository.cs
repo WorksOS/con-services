@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
-using VSS.MasterDataProxies;
+using VSS.MasterData.Proxies;
 using VSS.TCCFileAccess.Models;
 
 namespace VSS.TCCFileAccess

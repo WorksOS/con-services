@@ -78,6 +78,21 @@ namespace MockProjectWebApi.Controllers
       return new FileDataResult { ImportedFileDescriptors = fileList};
     }
 
+    /// <summary>
+    /// Gets the project settings used in the Raptor service acceptance tests.
+    /// The data is mocked.
+    /// </summary>
+    /// <returns>The mocked settings</returns>
+    [Route("api/v4/mock/projectsettings")]
+    [HttpGet]
+    public ProjectDataResult GetMockProjectSettings()
+    {
+      Console.WriteLine("GetMockProjects");
+      //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
+      return new ProjectDataResult { ProjectDescriptors = projectList };
+    }
+
     private List<FileData> surveyedSurfacesFileList = new List<FileData>
     {
       new FileData

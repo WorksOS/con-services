@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies.Interfaces;
 
-namespace VSS.MasterDataProxies
+namespace VSS.MasterData.Proxies
 {
   /// <summary>
   /// Proxy to validate and post a CoordinateSystem with Raptor.

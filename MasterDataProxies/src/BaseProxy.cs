@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 
-namespace VSS.MasterDataProxies
+namespace VSS.MasterData.Proxies
 {
   /// <summary>
   /// Base class for proxies getting master data from services.
@@ -148,8 +148,9 @@ namespace VSS.MasterDataProxies
         /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
         /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
         /// <param name="route">Additional routing to add to the base URL (optional)</param>
+        /// <param name="requestList">Flag to indicate if a list or the single item should be requested from the service</param>
         /// <returns>Master data item</returns>
-        protected async Task<T> GetItem<T>(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders, string route = null) where T : IData
+        protected async Task<T> GetItem<T>(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders, string route = null, bool requestList=true) where T : IData
         {
             T cacheData;
             string caching = null;
@@ -164,12 +165,21 @@ namespace VSS.MasterDataProxies
                     SlidingExpiration = cacheLife
                 };
 
-                var list = await GetList<T>(urlKey, customHeaders, route);
-                foreach (var item in list)
+                if (requestList)
                 {
+                  var list = await GetList<T>(urlKey, customHeaders, route);
+                  foreach (var item in list)
+                  {
                     var data = item as IData;
                     cache.Set(data.CacheKey, item, opts);
+                  }
                 }
+                else
+                {
+                  var item = await GetItem<T>(urlKey, customHeaders, null, route);
+                  cache.Set(uid, item, opts);
+                }
+ 
                 cache.TryGetValue(uid, out cacheData);
             }
             return cacheData;

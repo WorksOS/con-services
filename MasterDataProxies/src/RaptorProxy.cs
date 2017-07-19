@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterDataProxies.Interfaces;
-using VSS.MasterDataProxies.ResultHandling;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterDataProxies
+namespace VSS.MasterData.Proxies
 {
   /// <summary>
   /// Proxy for Raptor services.
@@ -110,11 +109,11 @@ namespace VSS.MasterDataProxies
     /// <param name="projectUid"></param>
     /// <param name="projectSettings">The projectSettings in Json to be validated.</param>
     /// <param name="customHeaders">The custom headers.</param>
-    public async Task<ContractExecutionResult> ValidateProjectSettings(Guid projectUid, string projectSettings, IDictionary<string, string> customHeaders = null)
+    public async Task<BaseDataResult> ValidateProjectSettings(Guid projectUid, string projectSettings, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
       var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}";
-      ContractExecutionResult response = await GetItem<ContractExecutionResult>("PROJECTSETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
+      BaseDataResult response = await GetItem<BaseDataResult>("PROJECTSETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
       log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;

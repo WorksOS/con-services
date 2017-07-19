@@ -1,4 +1,4 @@
-﻿namespace VSS.MasterDataProxies
+﻿namespace VSS.MasterData.Proxies
 {
   /// <summary>
   /// Class to use for executing requests where the no result returned, apart from the HttpStatusCode.

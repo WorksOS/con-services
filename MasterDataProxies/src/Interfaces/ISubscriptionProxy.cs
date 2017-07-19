@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace VSS.MasterDataProxies.Interfaces
+namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface ISubscriptionProxy
   {

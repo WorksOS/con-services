@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using VSS.MasterData.Models.Models;
 
-namespace VSS.MasterDataProxies.Interfaces
+namespace VSS.MasterData.Proxies.Interfaces
 {
   public interface IPreferenceProxy
   {
