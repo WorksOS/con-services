@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using MasterDataModels.Models;
-using MasterDataModels.ResultHandling;
 using Microsoft.AspNetCore.Mvc;
-using VSS.Productivity3D.MasterDataProxies.Models;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -83,14 +82,12 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The mocked settings</returns>
-    [Route("api/v4/mock/projectsettings")]
+    [Route("api/v4/mock/projectsettings/{projectUid}")]
     [HttpGet]
-    public ProjectDataResult GetMockProjectSettings()
+    public ProjectSettingsDataResult GetMockProjectSettings(string projectUid)
     {
-      Console.WriteLine("GetMockProjects");
-      //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
-      //Console.WriteLine("CustomerUID=" + customerUid + " and user=" + User);
-      return new ProjectDataResult { ProjectDescriptors = projectList };
+      Console.WriteLine("GetMockProjectSettings: projectUid={0}", projectUid);
+      return new ProjectSettingsDataResult { ProjectUid=projectUid, Settings=null };
     }
 
     private List<FileData> surveyedSurfacesFileList = new List<FileData>
