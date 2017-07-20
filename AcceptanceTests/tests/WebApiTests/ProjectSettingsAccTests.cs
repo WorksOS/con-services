@@ -45,13 +45,13 @@ namespace WebApiTests
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response);
-      Assert.AreEqual(objresp.Settings, projectSettings, "Actual project settings do not match expected");
-      Assert.AreEqual(objresp.ProjectUid, projectUid, "Actual project Uid for project settings do not match expected");
+      Assert.AreEqual(objresp.settings, projectSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(objresp.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
       // get call
       var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
-      Assert.AreEqual(objresp1.Settings, projectSettings, "Actual project settings do not match expected");
-      Assert.AreEqual(objresp1.ProjectUid, projectUid, "Actual project Uid for project settings do not match expected");
+      Assert.AreEqual(objresp1.settings, projectSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(objresp1.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
 
     }
 
@@ -116,13 +116,13 @@ namespace WebApiTests
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response);
-      Assert.AreEqual(objresp.Settings, projectSettings, "Actual project settings do not match expected");
-      Assert.AreEqual(objresp.ProjectUid, projectUid, "Actual project Uid for project settings do not match expected");
+      Assert.AreEqual(objresp.settings, projectSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(objresp.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
       // get call
       var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
-      Assert.AreEqual(objresp1.Settings, projectSettings, "Actual project settings do not match expected");
-      Assert.AreEqual(objresp1.ProjectUid, projectUid, "Actual project Uid for project settings do not match expected");
+      Assert.AreEqual(objresp1.settings, projectSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(objresp1.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
     }
 
     [TestMethod]
@@ -160,13 +160,62 @@ namespace WebApiTests
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var response = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response);
-      Assert.AreEqual(objresp.Settings, projectSettings, "Actual project settings do not match expected");
-      Assert.AreEqual(objresp.ProjectUid, projectUid, "Actual project Uid for project settings do not match expected");
+      Assert.AreEqual(objresp.settings, projectSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(objresp.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
       // get call
       var response1 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
-      Assert.AreEqual(objresp1.Settings, projectSettings, "Actual project settings do not match expected");
-      Assert.AreEqual(objresp1.ProjectUid, projectUid, "Actual project Uid for project settings do not match expected");
+      Assert.AreEqual(objresp1.settings, projectSettings, "Actual project settings do not match expected");
+      Assert.AreEqual(objresp1.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
+    }
+
+    [TestMethod]
+    public void AddProjectSettingsTheUpdateThem()
+    {
+      msg.Title("Project settings 5", "Add project settings for a project monitoring project");
+      var ts = new TestSupport();
+      var legacyProjectId = ts.SetLegacyProjectId();
+      var projectUid = Guid.NewGuid().ToString();
+      var customerUid = Guid.NewGuid();
+      var tccOrg = Guid.NewGuid();
+      var subscriptionUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      var startDate = startDateTime.ToString("yyyy-MM-dd");
+      var endDate = endDateTime.ToString("yyyy-MM-dd");
+      const string geometryWkt = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
+      var eventsArray = new[] {
+        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
+       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
+       $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
+       $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 20               | {startDate} | {endDate}      |               |          |                    |",
+      };
+      ts.PublishEventCollection(eventsArray);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+        "| EventType          | EventDate   | ProjectUID   | ProjectName       | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | ",
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Projectsettings 3 | ProjectMonitoring | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}   | {customerUid} | {legacyProjectId} |false      |" };
+      ts.PublishEventCollection(projectEventArray);
+      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      // Now create the settings
+      var projectSettings = "{useMachineTargetPassCount: false,customTargetPassCountMinimum: 5}";
+      var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings);
+      var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var response = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+
+      var projectSettings1 = "{customTargetPassCountMaximum: 7,useMachineTargetTemperature: false,customTargetTemperatureMinimum: 75}";
+      var projSettings1 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings1);
+      var configJson2 = JsonConvert.SerializeObject(projSettings1, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+      var response1 = ts.CallProjectWebApiV4("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString());
+      var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
+      Assert.AreEqual(objresp.settings, projectSettings1, "Actual project settings do not match expected");
+      Assert.AreEqual(objresp.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
+      // get call
+      var response2 = ts.CallProjectWebApiV4($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response2);
+      Assert.AreEqual(objresp1.settings, projectSettings1, "Actual project settings do not match expected");
+      Assert.AreEqual(objresp1.projectUid, projectUid, "Actual project Uid for project settings do not match expected");
     }
   }
 }
