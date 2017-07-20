@@ -1,11 +1,9 @@
-﻿using MasterDataModels.Models;
-using MasterDataModels.ResultHandling;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
 using System;
-using VSS.Productivity3D.MasterDataProxies.Models;
-using VSS.Productivity3D.MasterDataProxies.ResultHandling;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 
 namespace MockProjectWebApi.Controllers
 {

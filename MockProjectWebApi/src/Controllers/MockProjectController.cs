@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using MasterDataModels.Models;
-using MasterDataModels.ResultHandling;
 using Microsoft.AspNetCore.Mvc;
-using VSS.Productivity3D.MasterDataProxies.Models;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -73,7 +72,6 @@ namespace MockProjectWebApi.Controllers
           file.ProjectUid = projectUidStr;
           file.IsActivated = projectUidStr == GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1;
         }
-
         if (projectUidStr == GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1)
         {
           fileList.AddRange(designSurfacesFileList);
@@ -81,6 +79,19 @@ namespace MockProjectWebApi.Controllers
       }
 
       return new FileDataResult { ImportedFileDescriptors = fileList};
+    }
+
+    /// <summary>
+    /// Gets the project settings used in the Raptor service acceptance tests.
+    /// The data is mocked.
+    /// </summary>
+    /// <returns>The mocked settings</returns>
+    [Route("api/v4/mock/projectsettings/{projectUid}")]
+    [HttpGet]
+    public ProjectSettingsDataResult GetMockProjectSettings(string projectUid)
+    {
+      Console.WriteLine("GetMockProjectSettings: projectUid={0}", projectUid);
+      return new ProjectSettingsDataResult { ProjectUid=projectUid, Settings=null };
     }
 
     private List<FileData> surveyedSurfacesFileList = new List<FileData>
@@ -130,7 +141,7 @@ namespace MockProjectWebApi.Controllers
         Name = "Large Sites Road - Trimble Road_2012-06-01T015500Z.TTM",
         ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "SurveyedSurfaceAcceptanceTest",
-        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileType = ImportedFileType.SurveyedSurface,
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyFileId = 14222,
         IsActivated = true
