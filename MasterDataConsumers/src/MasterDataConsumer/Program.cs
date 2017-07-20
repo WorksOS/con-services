@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.MasterDataConsumer
       var serviceCollection = new ServiceCollection()
         .AddTransient<IKafka, RdKafkaDriver>()
         .AddTransient<IMessageTypeResolver, MessageResolver>()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<IConfigurationStore, ConfigurationStore.GenericConfiguration>()
         .AddLogging()
         .AddTransient<IRepositoryFactory, RepositoryFactory>()
 

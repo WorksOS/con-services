@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using log4netExtensions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.GenericConfiguration;
-using VSS.Productivity3D.TCCFileAccess;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using VSS.ConfigurationStore;
+using VSS.Log4Net.Extensions;
+using VSS.TCCFileAccess;
 
 namespace UnitTests
 {
