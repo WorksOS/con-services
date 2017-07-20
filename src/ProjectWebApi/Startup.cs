@@ -10,10 +10,10 @@ using Swashbuckle.Swagger.Model;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.Log4Net.Extensions;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Filters;
-using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies;
 using VSS.MasterDataProxies.Interfaces;
@@ -93,6 +93,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddMemoryCache(); 
 
       var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
       var useMock = string.IsNullOrEmpty(tccUrl) || tccUrl == "mock";

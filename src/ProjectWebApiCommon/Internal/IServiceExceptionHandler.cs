@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 
-namespace VSS.MasterData.Project.WebAPI.Internal
+namespace VSS.MasterData.Project.WebAPI.Common.Internal
 {
   /// <summary>
   /// Common controller ServiceException handler.

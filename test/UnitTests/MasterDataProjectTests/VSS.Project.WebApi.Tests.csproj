@@ -2,15 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <AssemblyName>VSS.MasterData.ConsumerTests</AssemblyName>
-    <PackageId>MasterDataConsumerTests</PackageId>
+    <AssemblyName>VSS.MasterData.ProjectTests</AssemblyName>
+    <PackageId>MasterDataProjectTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <RootNamespace>VSS.MasterData.ConsumerTests</RootNamespace>
+    <RootNamespace>VSS.MasterData.ProjectTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

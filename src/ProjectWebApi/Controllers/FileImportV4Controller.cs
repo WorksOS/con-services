@@ -15,13 +15,13 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Filters;
-using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -236,7 +236,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           fileCreatedUtc, fileUpdatedUtc, userEmailAddress)
         .ConfigureAwait(false);
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, importedFileType, projectUid, fileDescriptor,
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, fileDescriptor,
         createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true).ConfigureAwait(false);
 
 
@@ -341,7 +341,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         importedFileId = createImportedFileEvent.ImportedFileID;
       }
 
-      await NotifyRaptorAddFile(project.LegacyProjectID, importedFileType, projectUid, fileDescriptor, importedFileId.Value,
+      await NotifyRaptorAddFile(project.LegacyProjectID, projectUid, importedFileType, fileDescriptor, importedFileId.Value,
           Guid.Parse(importedFileUid), (existing == null))
         .ConfigureAwait(false);
 
@@ -425,7 +425,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           new KeyValuePair<string, string>(deleteImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
       log.LogInformation(
-        $"DeleteImportedFileV4. Completed succesfully. ProjectUid {projectUid} importedFileUid: {importedFileUid}");
+        $"DeleteImportedFileV4. Completed succesfully. projectUid {projectUid} importedFileUid: {importedFileUid}");
       return new ContractExecutionResult();
     }
   }

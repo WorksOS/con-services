@@ -11,10 +11,10 @@ using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Filters;
-using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
@@ -409,13 +409,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorAddFile(long? projectId, ImportedFileType fileType, Guid projectUid, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate)
+    protected async Task NotifyRaptorAddFile(long? projectId, Guid projectUid, ImportedFileType importedFileType, FileDescriptor fileDescriptor, long importedFileId, Guid importedFileUid, bool isCreate)
     {
       BaseDataResult notificationResult = null;
       try
       {
         notificationResult = await raptorProxy
-          .AddFile(projectUid, fileType, importedFileUid,
+          .AddFile(projectUid, importedFileType, importedFileUid,
             JsonConvert.SerializeObject(fileDescriptor), importedFileId, Request.Headers.GetCustomHeaders())
           .ConfigureAwait(false);
       }
@@ -445,13 +445,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///  if it doesn't know about it then it do nothing and return success
     /// </summary>
     /// <returns></returns>
-    protected async Task NotifyRaptorDeleteFile(Guid projectUid, ImportedFileType fileType, string fileDescriptor, long importedFileId, Guid importedFileUid)
+    protected async Task NotifyRaptorDeleteFile(Guid projectUid, ImportedFileType importedFileType, string fileDescriptor, long importedFileId, Guid importedFileUid)
     {
       BaseDataResult notificationResult = null;
       try
       {
         notificationResult = await raptorProxy
-          .DeleteFile(projectUid, fileType, importedFileUid, fileDescriptor, importedFileId, Request.Headers.GetCustomHeaders())
+          .DeleteFile(projectUid, importedFileType, importedFileUid, fileDescriptor, importedFileId, Request.Headers.GetCustomHeaders())
           .ConfigureAwait(false);
       }
       catch (Exception e)

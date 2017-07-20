@@ -48,12 +48,12 @@
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.0.*" />
   </ItemGroup>
 
-<Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">  
-  <ItemGroup>
-    <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
-  </ItemGroup>
-  <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
-</Target>  
+  <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
+    <ItemGroup>
+      <DocFile Include="bin\$(Configuration)\$(TargetFramework)\*.xml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DocFile)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="false" />
+  </Target>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
     <Reference Include="System" />

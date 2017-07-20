@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Project.WebAPI.Internal;
+using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterDataProxies;
 using VSS.MasterDataProxies.Interfaces;
 
