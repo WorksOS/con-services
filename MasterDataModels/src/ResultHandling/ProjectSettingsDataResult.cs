@@ -3,7 +3,7 @@ using VSS.MasterData.Models.Models;
 
 namespace VSS.MasterData.Models.ResultHandling
 {
-  public class ProjectSettingsDataResult : BaseDataResult, IData
+  public class ProjectSettingsDataResult : BaseDataResult
   {
     /// <summary>
     /// The projectUid
@@ -17,10 +17,5 @@ namespace VSS.MasterData.Models.ResultHandling
     [JsonProperty(PropertyName = "projectsettings")]
     public string Settings { get; set; }
 
-    /// <summary>
-    /// Key to use for caching project settings data
-    /// </summary>
-    [JsonIgnore]
-    public string CacheKey => ProjectUid;
   }
 }

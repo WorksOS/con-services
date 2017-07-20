@@ -6,7 +6,7 @@ namespace VSS.MasterData.Models.ResultHandling
   /// Coordinate system settings result object.
   /// </summary>
   ///    
-  public class CoordinateSystemSettingsResult : BaseDataResult, IData
+  public class CoordinateSystemSettingsResult : BaseDataResult
   {
     /// <summary>
     /// The coordinate system file name.
@@ -138,10 +138,6 @@ namespace VSS.MasterData.Models.ResultHandling
       };
     }
     
-    public string CacheKey
-    {
-      get { return ""; }
-    }
-
+  
   }
 }

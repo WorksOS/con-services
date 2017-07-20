@@ -4,15 +4,14 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-/// <summary>
-/// Settings come from 2 sources:
-/// environment variables and 'internal' (appsettings.json)
-/// Appsettings will override any environment setting
-/// if neither present then we'll use some defaults
-/// </summary>
-
 namespace VSS.ConfigurationStore
 {
+  /// <summary>
+  /// Settings come from 2 sources:
+  /// environment variables and 'internal' (appsettings.json)
+  /// Appsettings will override any environment setting
+  /// if neither present then we'll use some defaults
+  /// </summary>
   public class GenericConfiguration : IConfigurationStore
   {
     private readonly IConfigurationRoot _configuration;

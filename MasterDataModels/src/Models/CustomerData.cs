@@ -5,7 +5,7 @@ namespace VSS.MasterData.Models.Models
   /// <summary>
   ///   Describes VL customer
   /// </summary>
-  public class CustomerData : IData
+  public class CustomerData 
   {
     /// <summary>
     /// Gets or sets the customer uid.
@@ -31,11 +31,5 @@ namespace VSS.MasterData.Models.Models
     /// </value>
     public string type { get; set; }
 
-
-    /// <summary>
-    /// Key to use for caching customer master data
-    /// </summary>
-    [JsonIgnore]
-    public string CacheKey => uid;
   }
 }

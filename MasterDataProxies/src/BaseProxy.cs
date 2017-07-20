@@ -13,93 +13,104 @@ namespace VSS.MasterData.Proxies
   /// Base class for proxies getting master data from services.
   /// </summary>
   public class BaseProxy 
+  {
+    protected readonly ILogger log;
+    private readonly ILoggerFactory logger;
+    protected readonly IConfigurationStore configurationStore;
+    private readonly IMemoryCache cache;
+
+    protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache)
     {
-        protected readonly ILogger log;
-        private readonly ILoggerFactory logger;
-        protected readonly IConfigurationStore configurationStore;
-        private readonly IMemoryCache cache;
-
-        protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache)
-        {
-            log = logger.CreateLogger<BaseProxy>();
-            this.logger = logger;
-            this.configurationStore = configurationStore;
-            this.cache = cache;
-        }
-
-        /// <summary>
-        /// Executes a request against masterdata service
-        /// </summary>
-        /// <param name="urlKey">The configuration store key for the URL</param>
-        /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
-        /// <param name="payload">The payload of the request</param>
-        /// <param name="route">Additional routing to add to the base URL (optional)</param>
-        /// <returns>The item</returns>
-        protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null)
-        {
-            var url = ExtractUrl(urlKey, route);
-            T result = default(T);
-            try
-            {
-                GracefulWebRequest request = new GracefulWebRequest(logger);
-                result = await request.ExecuteRequest<T>(url, "POST", customHeaders, payload);
-                log.LogDebug("Result of send to master data request: {0}", result);
-            }
-            catch (Exception ex)
-            {
-                string message = ex.Message;
-                string stacktrace = ex.StackTrace;
-                //Check for 400 and 500 errors which come through as an inner exception
-                if (ex.InnerException != null)
-                {
-                    message = ex.InnerException.Message;
-                    stacktrace = ex.InnerException.StackTrace;
-                }
-                log.LogWarning("Error sending data from master data: ", message);
-                log.LogWarning("Stacktrace: ", stacktrace);
-              throw;
-            }
-            return result;
-
-        }
-
-        /// <summary>
-        /// Gets a list of the specified items from the specified service.
-        /// </summary>
-        /// <param name="urlKey">The configuration store key for the URL</param>
-        /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
-        /// <param name="route">Additional routing to add to the base URL (optional)</param>
-        /// <returns>List of items</returns>
-        private async Task<List<T>> GetList<T>(string urlKey, IDictionary<string, string> customHeaders, string route = null) where T : IData
-        {
-            var url = ExtractUrl(urlKey, route);
-
-            List<T> result = null;
-            try
-            {
-                GracefulWebRequest request = new GracefulWebRequest(logger);
-                result = await request.ExecuteRequest<List<T>>(url, "GET", customHeaders);
-                log.LogDebug($"Result of get list request: {JsonConvert.SerializeObject(result)}");
-            }
-            catch (Exception ex)
-            {
-                string message = ex.Message;
-                string stacktrace = ex.StackTrace;
-                //Check for 400 and 500 errors which come through as an inner exception
-                if (ex.InnerException != null)
-                {
-                    message = ex.InnerException.Message;
-                    stacktrace = ex.InnerException.StackTrace;
-                }
-                log.LogWarning("Error getting data from master data: ", message);
-                log.LogWarning("Stacktrace: ", stacktrace);
-                throw;
-            }
-            return result;
-        }
+      log = logger.CreateLogger<BaseProxy>();
+      this.logger = logger;
+      this.configurationStore = configurationStore;
+      this.cache = cache;
+    }
 
     /// <summary>
-    /// Gets an item from the specified service.
+    /// This constructor can be used when a proxy does not use caching
+    /// </summary>
+    /// <param name="configurationStore"></param>
+    /// <param name="logger"></param>
+    protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger)
+    {
+      log = logger.CreateLogger<BaseProxy>();
+      this.logger = logger;
+      this.configurationStore = configurationStore;
+    }
+
+    /// <summary>
+    /// Executes a request against masterdata service
+    /// </summary>
+    /// <param name="urlKey">The configuration store key for the URL</param>
+    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="payload">The payload of the request</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <returns>The item</returns>
+    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders, string route = null)
+    {
+      var url = ExtractUrl(urlKey, route);
+      T result = default(T);
+      try
+      {
+        GracefulWebRequest request = new GracefulWebRequest(logger);
+        result = await request.ExecuteRequest<T>(url, "POST", customHeaders, payload);
+        log.LogDebug("Result of send to master data request: {0}", result);
+      }
+      catch (Exception ex)
+      {
+        string message = ex.Message;
+        string stacktrace = ex.StackTrace;
+        //Check for 400 and 500 errors which come through as an inner exception
+        if (ex.InnerException != null)
+        {
+          message = ex.InnerException.Message;
+          stacktrace = ex.InnerException.StackTrace;
+        }
+        log.LogWarning("Error sending data from master data: ", message);
+        log.LogWarning("Stacktrace: ", stacktrace);
+        throw;
+      }
+      return result;
+    }
+
+    /// <summary>
+    /// Gets a list of the specified items from the specified service. No caching.
+    /// </summary>
+    /// <param name="urlKey">The configuration store key for the URL</param>
+    /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <returns>List of items</returns>
+    private async Task<List<T>> GetList<T>(string urlKey, IDictionary<string, string> customHeaders, string route = null) 
+    {
+      var url = ExtractUrl(urlKey, route);
+
+      List<T> result = null;
+      try
+      {
+        GracefulWebRequest request = new GracefulWebRequest(logger);
+        result = await request.ExecuteRequest<List<T>>(url, "GET", customHeaders);
+        log.LogDebug($"Result of get list request: {JsonConvert.SerializeObject(result)}");
+      }
+      catch (Exception ex)
+      {
+        string message = ex.Message;
+        string stacktrace = ex.StackTrace;
+        //Check for 400 and 500 errors which come through as an inner exception
+        if (ex.InnerException != null)
+        {
+          message = ex.InnerException.Message;
+          stacktrace = ex.InnerException.StackTrace;
+        }
+        log.LogWarning("Error getting data from master data: ", message);
+        log.LogWarning("Stacktrace: ", stacktrace);
+        throw;
+      }
+      return result;
+    }
+
+    /// <summary>
+    /// Gets an item from the specified service. No caching.
     /// </summary>
     /// <param name="urlKey">The configuration store key for the URL</param>
     /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
@@ -138,131 +149,174 @@ namespace VSS.MasterData.Proxies
       return result;
     }
 
+    /// <summary>
+    /// Gets a master data item. If the item is not in the cache then requests items from the relevant service and adds them to the cache.
+    /// The items to be retrieved must implement IData so that they can be cached with the correct cache keys.
+    /// </summary>
+    /// <param name="uid">The UID of the item to retrieve</param>
+    /// <param name="cacheLifeKey">The configuration store key for how long to cache items</param>
+    /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <returns>Master data item</returns>
+    protected async Task<T> GetItemWithList<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) where T : IData
+    {
+      T cacheData;
+      string caching = null;
+      customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+      if (!string.IsNullOrEmpty(caching) && caching == "true")
+        cache.Remove(uid);
 
-
-        /// <summary>
-        /// Gets a master data item. If the item is not in the cache then requests items from the relevant service and adds them to the cache.
-        /// </summary>
-        /// <param name="uid">The UID of the item to retrieve</param>
-        /// <param name="cacheLife">How long to cache items</param>
-        /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
-        /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
-        /// <param name="route">Additional routing to add to the base URL (optional)</param>
-        /// <param name="requestList">Flag to indicate if a list or the single item should be requested from the service</param>
-        /// <returns>Master data item</returns>
-        protected async Task<T> GetItem<T>(string uid, TimeSpan cacheLife, string urlKey, IDictionary<string, string> customHeaders, string route = null, bool requestList=true) where T : IData
-        {
-            T cacheData;
-            string caching = null;
-            customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
-            if (!string.IsNullOrEmpty(caching) && caching == "true")
-              cache.Remove(uid);
-
-            if (!cache.TryGetValue(uid, out cacheData))
-            {
-                var opts = new MemoryCacheEntryOptions()
-                {
-                    SlidingExpiration = cacheLife
-                };
-
-                if (requestList)
-                {
-                  var list = await GetList<T>(urlKey, customHeaders, route);
-                  foreach (var item in list)
-                  {
-                    var data = item as IData;
-                    cache.Set(data.CacheKey, item, opts);
-                  }
-                }
-                else
-                {
-                  var item = await GetItem<T>(urlKey, customHeaders, null, route);
-                  cache.Set(uid, item, opts);
-                }
- 
-                cache.TryGetValue(uid, out cacheData);
-            }
-            return cacheData;
-        }
-
-        /// <summary>
-        /// Gets a list of master data items for a customer. 
-        /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
-        /// </summary>
-        /// <param name="customerUid">The customer UID for the list to retrieve</param>
-        /// <param name="cacheLife">How long to cache the list</param>
-        /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
-        /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
-        /// <param name="route">Additional routing to add to the base URL (optional)</param>
-        /// <returns>List of Master data items</returns>
-        protected async Task<List<T>> GetList<T>(string customerUid, TimeSpan cacheLife, string urlKey,
-                IDictionary<string, string> customHeaders, string route = null) where T : IData
-        {
-            List<T> cacheData;
-            customHeaders.TryGetValue("X-VisionLink-ClearCache", out string caching);
-            if (!string.IsNullOrEmpty(caching) && caching == "true")
-              cache.Remove(customerUid);
-
-            if (!cache.TryGetValue(customerUid, out cacheData))
-            {
-                var opts = new MemoryCacheEntryOptions()
-                {
-                    SlidingExpiration = cacheLife
-                };
-                cacheData = await GetList<T>(urlKey, customHeaders, route);
-                cache.Set(customerUid, cacheData, opts);
-            }
-            return cacheData;
-        }
-
-        /// <summary>
-        /// Gets a list of master data items for a customer or project. 
-        /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
-        /// </summary>
-        /// <param name="uid">The UID for the list to retrieve (customerUid or projectUid). Also used for the cache key</param>
-        /// <param name="cacheLife">How long to cache the list</param>
-        /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
-        /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
-        /// <param name="queryParams">Query parameters for the request (optional)</param>
-        /// <param name="route">Additional routing to add to the base URL (optional)</param>
-        /// <returns>List of Master data items</returns>
-        protected async Task<T> GetContainedList<T>(string uid, TimeSpan cacheLife, string urlKey,
-                    IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
-        {
-          T cacheData;
-          string caching = null;
-          customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
-          if (!string.IsNullOrEmpty(caching) && caching == "true")
-            cache.Remove(uid);
-
-          if (!cache.TryGetValue(uid, out cacheData))
-          {
-            var opts = new MemoryCacheEntryOptions()
-            {
-              SlidingExpiration = cacheLife
-            };
-
-            cacheData = await GetItem<T>(urlKey, customHeaders, queryParams, route);
-            cache.Set(uid, cacheData, opts);
-          }
-          return cacheData;
-        }
-      private string ExtractUrl(string urlKey, string route)
+      if (!cache.TryGetValue(uid, out cacheData))
       {
-        string url = configurationStore.GetValueString(urlKey);
-        log.LogInformation(string.Format("{0}: {1}, route={2}", urlKey, url, route));
-
-        if (url == null)
+        var opts = GetCacheOptions(cacheLifeKey);
+             
+        var list = await GetList<T>(urlKey, customHeaders, route);
+        foreach (var item in list)
         {
-          var errorString = string.Format("Your application is missing an environment variable {0}", urlKey);
-          log.LogError(errorString);
-          throw new InvalidOperationException(errorString);
+          var data = item as IData;
+          cache.Set(data.CacheKey, item, opts);
         }
-        if (!string.IsNullOrEmpty(route))
-        {
-          url += route;
-        }
-        return url;
+               
+ 
+        cache.TryGetValue(uid, out cacheData);
       }
+      return cacheData;
+    }
+
+    /// <summary>
+    /// Gets a master data item. If the item is not in the cache then requests the item from the relevant service and adds it to the cache.
+    /// </summary>
+    /// <param name="uid">The UID of the item to retrieve. Also the cache key</param>
+    /// <param name="cacheLifeKey">The configuration store key for how long to cache items</param>
+    /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <returns>Master data item</returns>
+    protected async Task<T> GetItem<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) 
+    {
+      T cacheData;
+      string caching = null;
+      customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+      if (!string.IsNullOrEmpty(caching) && caching == "true")
+        cache.Remove(uid);
+
+      if (!cache.TryGetValue(uid, out cacheData))
+      {
+        var opts = GetCacheOptions(cacheLifeKey);
+
+        cacheData = await GetItem<T>(urlKey, customHeaders, null, route);
+        cache.Set(uid, cacheData, opts);
+        
+      }
+      return cacheData;
+    }
+
+    /// <summary>
+    /// Gets a list of master data items for a customer. 
+    /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
+    /// </summary>
+    /// <param name="customerUid">The customer UID for the list to retrieve. Also the cache key.</param>
+    /// <param name="cacheLifeKey">The configuration store key for how long to cache the list</param>
+    /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <returns>List of Master data items</returns>
+    protected async Task<List<T>> GetList<T>(string customerUid, string cacheLifeKey, string urlKey,
+                IDictionary<string, string> customHeaders, string route = null) 
+    {
+      List<T> cacheData;
+      customHeaders.TryGetValue("X-VisionLink-ClearCache", out string caching);
+      if (!string.IsNullOrEmpty(caching) && caching == "true")
+        cache.Remove(customerUid);
+
+      if (!cache.TryGetValue(customerUid, out cacheData))
+      {
+        var opts = GetCacheOptions(cacheLifeKey);
+
+        cacheData = await GetList<T>(urlKey, customHeaders, route);
+        cache.Set(customerUid, cacheData, opts);
+      }
+      return cacheData;
+    }
+
+    /// <summary>
+    /// Gets a list of master data items for a customer or project. 
+    /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
+    /// </summary>
+    /// <param name="uid">The UID for the list to retrieve (customerUid or projectUid). Also used for the cache key</param>
+    /// <param name="cacheLifeKey">The configuration store key for how long to cache the list</param>
+    /// <param name="urlKey">The configuration store key for the URL of the master data service</param>
+    /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
+    /// <param name="queryParams">Query parameters for the request (optional)</param>
+    /// <param name="route">Additional routing to add to the base URL (optional)</param>
+    /// <returns>List of Master data items</returns>
+    protected async Task<T> GetContainedList<T>(string uid, string cacheLifeKey, string urlKey,
+                  IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
+      {
+        T cacheData;
+        string caching = null;
+        customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+        if (!string.IsNullOrEmpty(caching) && caching == "true")
+          cache.Remove(uid);
+
+        if (!cache.TryGetValue(uid, out cacheData))
+        {
+          var opts = GetCacheOptions(cacheLifeKey);
+
+          cacheData = await GetItem<T>(urlKey, customHeaders, queryParams, route);
+          cache.Set(uid, cacheData, opts);
+        }
+        return cacheData;
+      }
+    /// <summary>
+    /// Gets the requested base URL from the configuration and adds the route to get the full URL.
+    /// </summary>
+    /// <param name="urlKey">THe configuration ket for the URL to get</param>
+    /// <param name="route">Any additional routing</param>
+    /// <returns></returns>
+    private string ExtractUrl(string urlKey, string route)
+    {
+      string url = configurationStore.GetValueString(urlKey);
+      log.LogInformation(string.Format("{0}: {1}, route={2}", urlKey, url, route));
+
+      if (string.IsNullOrEmpty(url))
+      {
+        var errorString = string.Format("Your application is missing an environment variable {0}", urlKey);
+        log.LogError(errorString);
+        throw new InvalidOperationException(errorString);
+      }
+      if (!string.IsNullOrEmpty(route))
+      {
+        url += route;
+      }
+      return url;
+    }
+
+    private MemoryCacheEntryOptions GetCacheOptions(string cacheLifeKey)
+    {
+      const string DEFAULT_TIMESPAN_MESSAGE = "Using default 15 mins.";
+
+      string cacheLife = configurationStore.GetValueString(cacheLifeKey);
+      log.LogInformation($"{cacheLifeKey}: {cacheLife}");
+
+      if (string.IsNullOrEmpty(cacheLife))
+      {
+        log.LogWarning($"Your application is missing an environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
+        cacheLife = "00:15:00";
+      }
+
+      TimeSpan result;
+      if (!TimeSpan.TryParse(cacheLife, out result))
+      {
+        log.LogWarning($"Invalid timespan for environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
+        result = new TimeSpan(0, 15, 0);
+      }
+
+      return new MemoryCacheEntryOptions()
+      {
+        SlidingExpiration = result
+      };
+    }
   }
 }

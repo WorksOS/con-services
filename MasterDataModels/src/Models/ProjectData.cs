@@ -5,7 +5,7 @@ namespace VSS.MasterData.Models.Models
   /// <summary>
   ///   Describes VL project
   /// </summary>
-  public class ProjectData : IData
+  public class ProjectData 
   {
     /// <summary>
     /// Gets or sets the project uid.
@@ -159,12 +159,5 @@ namespace VSS.MasterData.Models.Models
     /// </value>
     public bool IsArchived { get; set; }
 
-    /// <summary>
-    /// Key to use for caching project master data
-    /// </summary>
-    public string CacheKey
-    {
-      get { return ProjectUid; } 
-    }
   }
 }

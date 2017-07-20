@@ -15,7 +15,7 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public class PreferenceProxy : BaseProxy, IPreferenceProxy
   {
-    public PreferenceProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(configurationStore, logger, cache)
+    public PreferenceProxy(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore, logger)
     {
     }
     /// <summary>

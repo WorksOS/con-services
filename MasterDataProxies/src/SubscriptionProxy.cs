@@ -12,8 +12,8 @@ namespace VSS.MasterData.Proxies
 {
   public class SubscriptionProxy : BaseProxy, ISubscriptionProxy
   {
-    public SubscriptionProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) 
-      : base(configurationStore, logger, cache)
+    public SubscriptionProxy(IConfigurationStore configurationStore, ILoggerFactory logger) 
+      : base(configurationStore, logger)
     {
     }
 

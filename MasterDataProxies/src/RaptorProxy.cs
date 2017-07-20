@@ -17,7 +17,7 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public class RaptorProxy : BaseProxy, IRaptorProxy
   {
-    public RaptorProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(configurationStore, logger, cache)
+    public RaptorProxy(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore, logger)
     { }
 
     /// <summary>
