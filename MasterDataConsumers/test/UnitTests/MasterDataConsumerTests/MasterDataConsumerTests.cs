@@ -1,5 +1,4 @@
-﻿using log4netExtensions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -8,6 +7,7 @@ using VSS.ConfigurationStore;
 using VSS.KafkaConsumer;
 using VSS.KafkaConsumer.Interfaces;
 using VSS.KafkaConsumer.Kafka;
+using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
