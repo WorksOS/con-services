@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using MasterDataModels.Models;
-using MasterDataModels.ResultHandling;
 using Microsoft.AspNetCore.Mvc;
-using VSS.Productivity3D.MasterDataProxies.Models;
+using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
@@ -73,9 +72,26 @@ namespace MockProjectWebApi.Controllers
           file.ProjectUid = projectUidStr;
           file.IsActivated = projectUidStr == GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1;
         }
+        if (projectUidStr == GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1)
+        {
+          fileList.AddRange(designSurfacesFileList);
+        }
       }
 
       return new FileDataResult { ImportedFileDescriptors = fileList};
+    }
+
+    /// <summary>
+    /// Gets the project settings used in the Raptor service acceptance tests.
+    /// The data is mocked.
+    /// </summary>
+    /// <returns>The mocked settings</returns>
+    [Route("api/v4/mock/projectsettings/{projectUid}")]
+    [HttpGet]
+    public ProjectSettingsDataResult GetMockProjectSettings(string projectUid)
+    {
+      Console.WriteLine("GetMockProjectSettings: projectUid={0}", projectUid);
+      return new ProjectSettingsDataResult { ProjectUid=projectUid, Settings=null };
     }
 
     private List<FileData> surveyedSurfacesFileList = new List<FileData>
@@ -128,6 +144,60 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.SurveyedSurface,
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyFileId = 14222,
+        IsActivated = true
+      }
+    };
+
+    private List<FileData> designSurfacesFileList = new List<FileData>
+    {
+      new FileData
+      {
+        Name = "Original Ground Survey - Dimensions 2012.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "DesignSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 15177,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Large Sites Road - Trimble Road.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "DesignSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 15176,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Milling - Milling.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "DesignSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 15175,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Topcon Road - Topcon.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "DesignSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 15174,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Trimble Command Centre.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "DesignSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 15222,
         IsActivated = true
       }
     };

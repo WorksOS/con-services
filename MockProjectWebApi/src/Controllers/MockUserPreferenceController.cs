@@ -1,9 +1,8 @@
 ﻿using System;
-using MasterDataModels.Models;
 using Microsoft.AspNetCore.Mvc;
-using VSS.Productivity3D.MasterDataProxies.Models;
+using VSS.MasterData.Models.ResultHandling;
 
-namespace src.Controllers
+namespace MockProjectWebApi.Controllers
 {
   public class MockUserPreferenceController : Controller
   {
