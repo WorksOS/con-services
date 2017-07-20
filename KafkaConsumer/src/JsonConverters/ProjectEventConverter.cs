@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json.Linq;
+using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -25,15 +26,35 @@ namespace VSS.KafkaConsumer.JsonConverters
       {
         return jObject["AssociateProjectCustomer"].ToObject<AssociateProjectCustomer>();
       }
+      if (jObject["DissociateProjectCustomer"] != null)
+      {
+        return jObject["DissociateProjectCustomer"].ToObject<DissociateProjectCustomer>();
+      }
       if (jObject["AssociateProjectGeofence"] != null)
       {
         return jObject["AssociateProjectGeofence"].ToObject<AssociateProjectGeofence>();
       }
+      if (jObject["CreateImportedFileEvent"] != null)
+      {
+        return jObject["CreateImportedFileEvent"].ToObject<CreateImportedFileEvent>();
+      }
+      if (jObject["UpdateImportedFileEvent"] != null)
+      {
+        return jObject["UpdateImportedFileEvent"].ToObject<UpdateImportedFileEvent>();
+      }
+      if (jObject["DeleteImportedFileEvent"] != null)
+      {
+        return jObject["DeleteImportedFileEvent"].ToObject<DeleteImportedFileEvent>();
+      }
+      if (jObject["UndeleteImportedFileEvent"] != null)
+      {
+        return jObject["UndeleteImportedFileEvent"].ToObject<UndeleteImportedFileEvent>();
+      }
+      if (jObject["UpdateProjectSettingsEvent"] != null)
+      {
+        return jObject["UpdateProjectSettingsEvent"].ToObject<UpdateProjectSettingsEvent>();
+      }
 
-      //if (jObject["DissociateProjectCustomer"] != null)
-      //{
-      //  return jObject["DissociateProjectCustomer"].ToObject<DissociateProjectCustomer>();
-      //}
       //if (jObject["RestoreProjectEvent"] != null)
       //{
       //  return jObject["RestoreProjectEvent"].ToObject<RestoreProjectEvent>();
