@@ -16,7 +16,7 @@ namespace WebApiTests
     [TestMethod]
     public void AddProjectSettingsGoodPath()
     {
-      msg.Title("Project settings 2", "Add project settings for a standard project");
+      msg.Title("Project settings 1", "Add project settings for a standard project");
       var ts = new TestSupport();
       var legacyProjectId = ts.SetLegacyProjectId();
       var projectUid = Guid.NewGuid().ToString();
