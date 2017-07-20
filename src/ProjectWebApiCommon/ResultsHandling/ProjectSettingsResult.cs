@@ -8,13 +8,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     /// The projectUid
     /// </summary>
     [JsonProperty(PropertyName = "projectUid")]
-    public string ProjectUid { get;  set; }
+    public string projectUid { get;  set; }
 
     /// <summary>
     /// The projects settings
     /// </summary>
-    [JsonProperty(PropertyName = "projectsettings")]
-    public string Settings { get; set; }
+    [JsonProperty(PropertyName = "settings")]
+    public string settings { get; set; }
 
     /// <summary>
     /// Private constructor
@@ -27,15 +27,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
     /// ProjectSettingsResult create instance
     /// </summary>
     /// <param name="projectUid"></param>
-    /// <param name="projectSettings"></param>
+    /// <param name="settings"></param>
     /// <returns></returns>
     public static ProjectSettingsResult CreateProjectSettingsResult(string projectUid,
-      string projectSettings)
+      string settings)
     {
       return new ProjectSettingsResult
       {
-        ProjectUid = projectUid,
-        Settings = projectSettings
+        projectUid = projectUid,
+        settings = settings
       };
     }
     

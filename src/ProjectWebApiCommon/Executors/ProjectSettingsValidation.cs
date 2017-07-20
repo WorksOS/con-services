@@ -4,25 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.ResultsHandling;
 using VSS.MasterData.Repositories;
 using VSS.MasterDataProxies.Interfaces;
-using VSS.MasterDataProxies.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   public class ProjectSettingsValidation
   {
-
-    public static async Task<ContractExecutionResult> RaptorValidateProjectSettings(IRaptorProxy raptorProxy,
+    public static async Task RaptorValidateProjectSettings(IRaptorProxy raptorProxy,
       ILogger log,
       IServiceExceptionHandler serviceExceptionHandler,
       ProjectSettingsRequest request, IDictionary<string, string> customHeaders)
     {
-      ContractExecutionResult result = null;
+      BaseDataResult result = null;
       try
       {
         result = await raptorProxy
@@ -48,7 +46,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(),
           result.Message);
       }
-      return result;
+      return;
     }
 
     /// <summary>
@@ -68,7 +66,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }
 
-      log.LogInformation($"ProjectUid {projectUid} validated");
+      log.LogInformation($"projectUid {projectUid} validated");
     }
   }
 }

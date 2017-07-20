@@ -23,8 +23,8 @@ namespace ExecutorTests
           serviceExceptionHandler, producer);
       var result = await executor.ProcessAsync(projectUid) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(projectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
-      Assert.IsNull(result.Settings, "executor should have returned null Settings");
+      Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
+      Assert.IsNull(result.settings, "executor should have returned null Settings");
     }
 
     [TestMethod]
@@ -41,8 +41,8 @@ namespace ExecutorTests
           serviceExceptionHandler, producer);
       var result = await executor.ProcessAsync(projectUid) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(projectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(settings, result.Settings, "executor returned incorrect Settings");
+      Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(settings, result.settings, "executor returned incorrect Settings");
     }
 
     [TestMethod]
@@ -58,8 +58,8 @@ namespace ExecutorTests
         serviceExceptionHandler, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(projectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(settings, result.Settings, "executor returned incorrect Settings");
+      Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(settings, result.settings, "executor returned incorrect Settings");
     }
 
     [TestMethod]
@@ -79,8 +79,8 @@ namespace ExecutorTests
           serviceExceptionHandler, producer);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(projectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(settingsUpdated, result.Settings, "executor returned incorrect Settings");
+      Assert.AreEqual(projectUid, result.projectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(settingsUpdated, result.settings, "executor returned incorrect Settings");
     }
 
     [TestMethod]
@@ -92,29 +92,9 @@ namespace ExecutorTests
 
       var projectSettingsRequest =
         ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settings);
-      var result = await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log,
+      await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log,
         serviceExceptionHandler, projectSettingsRequest, customHeaders);
-
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(200, result.Code, "executor returned incorrect sucess code");
     }
-
-    [TestMethod]
-    public async Task ValidateProjectSettings_Failure()
-    {
-      var projectUid = Guid.NewGuid();
-      string settings = "";
-      var log = logger.CreateLogger<ProjectSettingsTests>();
-
-      var projectSettingsRequest =
-        ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settings);
-      var result = await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log,
-        serviceExceptionHandler, projectSettingsRequest, customHeaders);
-
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreNotEqual(200, result.Code, "executor returned incorrect sucess code");
-    }
-
   }
 }
 

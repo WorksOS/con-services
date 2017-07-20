@@ -84,32 +84,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       return customerUid;
     }
-
-    //private async Task RaptorValidateProjectSettings(string projectUid, string settings)
-    //{
-    //  MasterDataProxies.ResultHandling.ContractExecutionResult result = null;
-    //  try
-    //  {
-    //    result = await raptorProxy
-    //      .ProjectSettingsValidate(settings, Request.Headers.GetCustomHeaders())
-    //      .ConfigureAwait(false);
-    //  }
-    //  catch (Exception e)
-    //  {
-    //    log.LogError(
-    //      $"RaptorValidateProjectSettings: RaptorServices failed with exception. projectUid:{projectUid} settings:{settings}. Exception Thrown: {e.Message}. ");
-    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 70, "raptorProxy.ProjectSettingsValidate", e.Message);
-    //  }
-
-    //  log.LogDebug(
-    //    $"RaptorValidateProjectSettings: projectUid: {projectUid} settings: {settings}. RaptorServices returned code: {result?.Code ?? -1} Message {result?.Message ?? "result == null"}.");
-
-    //  if (result != null && result.Code != 0)
-    //  {
-    //    log.LogError($"FRaptorValidateProjectSettings: RaptorServices failed. projectUid:{projectUid} settings:{settings}. Reason: {result?.Code ?? -1} {result?.Message ?? "null"}. ");
-
-    //    serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 67, result.Code.ToString(), result.Message);
-    //  }
-    //}
   }
 }

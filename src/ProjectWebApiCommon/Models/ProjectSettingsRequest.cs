@@ -24,7 +24,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     }
 
     /// <summary>
-    /// Create instance of GetProjectIdRequest
+    /// Create instance of ProjectSettingsRequest
     /// </summary>
     public static ProjectSettingsRequest CreateProjectSettingsRequest(string projectUid, string settings)
     {

@@ -425,7 +425,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           new KeyValuePair<string, string>(deleteImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
         });
       log.LogInformation(
-        $"DeleteImportedFileV4. Completed succesfully. ProjectUid {projectUid} importedFileUid: {importedFileUid}");
+        $"DeleteImportedFileV4. Completed succesfully. projectUid {projectUid} importedFileUid: {importedFileUid}");
       return new ContractExecutionResult();
     }
   }
