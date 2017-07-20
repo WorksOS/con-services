@@ -26,6 +26,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       : base(projectRepo, raptorProxy, configStore, logger, serviceExceptionHandler, producer)
     {
       log = logger.CreateLogger<ProjectSettingsV4Controller>(); 
+      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
+                                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
     }
 
 
@@ -68,7 +70,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await ProjectSettingsValidation.ValidateProjectId(projectRepo, log, serviceExceptionHandler, (User as TIDCustomPrincipal).CustomerUid, request.projectUid);
       await ProjectSettingsValidation.RaptorValidateProjectSettings(raptorProxy, log, serviceExceptionHandler, request, Request.Headers.GetCustomHeaders());
 
-      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer);
+      var executor = RequestExecutorContainer.Build<UpsertProjectSettingsExecutor>(projectRepo, configStore, logger, serviceExceptionHandler, producer, kafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       log.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);

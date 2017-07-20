@@ -68,7 +68,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 1);
       }
 
-      log.LogInformation($"Project {projectUid} validated");
+      log.LogInformation($"ProjectUid {projectUid} validated");
     }
   }
 }

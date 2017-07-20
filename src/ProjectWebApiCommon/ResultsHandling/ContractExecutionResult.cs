@@ -143,6 +143,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.ResultsHandling
       DynamicAddwithOffset("Unable to retrieve project settings from repository. Reason: {0} {1}.", 69);
       DynamicAddwithOffset("Unable to validate project settings with raptor. Reason: {0} {1}.", 70);
       DynamicAddwithOffset("Unable to update project settings with raptor. Reason: {0} {1}.", 71);
+      DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 72);
     }
 
     /// <summary>

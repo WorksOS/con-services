@@ -21,6 +21,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private readonly ILogger log;
     protected IServiceExceptionHandler serviceExceptionHandler;
     protected IKafka producer;
+    protected string kafkaTopicName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectSettingsBaseController"/> class.

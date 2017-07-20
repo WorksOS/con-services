@@ -93,6 +93,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddMemoryCache(); 
 
       var tccUrl = (new GenericConfiguration(new LoggerFactory())).GetValueString("TCCBASEURL");
       var useMock = string.IsNullOrEmpty(tccUrl) || tccUrl == "mock";

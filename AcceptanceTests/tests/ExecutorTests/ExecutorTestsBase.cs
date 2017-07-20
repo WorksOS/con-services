@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -45,7 +46,8 @@ namespace ExecutorTests
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IRaptorProxy, RaptorProxy>()
-        .AddSingleton<IKafka, RdKafkaDriver>(); 
+        .AddSingleton<IKafka, RdKafkaDriver>()
+        .AddMemoryCache();  
 
       serviceProvider = serviceCollection.BuildServiceProvider();
       configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
