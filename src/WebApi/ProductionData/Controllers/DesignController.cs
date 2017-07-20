@@ -75,8 +75,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <returns>Execution result with a list of design boundaries.</returns>
     /// 
     [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
-    [ProjectWritableWithUIDVerifier]
     [Route("api/v2/designs/boundaries")]
     [HttpGet]
     public async Task<ContractExecutionResult> GetDesignBoundaries([FromQuery] Guid projectUid, [FromQuery] double? tolerance)
