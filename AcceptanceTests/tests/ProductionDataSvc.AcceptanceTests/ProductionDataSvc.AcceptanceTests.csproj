@@ -681,7 +681,9 @@
     <None Include="TestData\ExportReportMachinePassesResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\GetDesignBoundariesResponse.json" />
+    <None Include="TestData\GetDesignBoundariesResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Tiles.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Tiles.feature.cs</LastGenOutput>
