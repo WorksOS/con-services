@@ -12,8 +12,9 @@ Scenario Outline: ExportReportToSurface - Good Request
 	Then the report result should match the "<ResultName>" from the repository
 	Examples: 
 	| RequetsName    | ProjectUID                           | Tolerance | FileName             | ResultName    |
-	| With Tolerance | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 0.05      | SurfaceWithTolerance | WithTolerance |
+	| With Tolerance | 7925f179-013d-4aaf-aff4-7b9833bb06d6 | 1.50      | SurfaceWithTolerance | WithTolerance |
 
+@ignore
 Scenario Outline: ExportReportToSurface - Good Request - No Tolerance
   And projectUid "<ProjectUID>"
 	And fileName is "<FileName>"
