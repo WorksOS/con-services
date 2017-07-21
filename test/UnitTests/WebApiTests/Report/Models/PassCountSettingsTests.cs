@@ -14,8 +14,7 @@ namespace VSS.Productivity3D.WebApiTests.Report.Models
     {
       var validator = new DataAnnotationsValidator();
       PassCountSettings settings = PassCountSettings.CreatePassCountSettings(new int[] { 1, 3, 5, 10 });
-      ICollection<ValidationResult> results;
-      Assert.IsTrue(validator.TryValidate(settings, out results));
+      Assert.IsTrue(validator.TryValidate(settings, out ICollection<ValidationResult> results));
     }
 
     [TestMethod]
