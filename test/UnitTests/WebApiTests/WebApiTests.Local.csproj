@@ -27,8 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\MerinoSandbox\log4netExtensions\log4netExtensions.Local.csproj" />
-    <ProjectReference Include="..\..\..\src\WebApiModels\WebApiModels.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\MerinoSandbox\MasterDataModels\src\VSS.MasterData.Models.Local.csproj" />
+    <ProjectReference Include="..\..\..\src\Common\VSS.Productivity3D.Common.Local.csproj" />
+    <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.WebApi.Models.Local.csproj" />
   </ItemGroup>
 
   <ItemGroup>
