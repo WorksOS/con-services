@@ -1,13 +1,13 @@
-﻿using System;
+﻿using RdKafka;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using RdKafka;
 using VSS.ConfigurationStore;
 
 namespace VSS.KafkaConsumer.Kafka
 {
-    public class RdKafkaDriver : IKafka
+  public class RdKafkaDriver : IKafka
     {
         Consumer rdConsumer = null;
         Producer rdProducer = null;

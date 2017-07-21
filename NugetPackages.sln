@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{B54B2468-2D3A-4366-A59D-0A5F4681CF3A}"
 EndProject
@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "ITask\src\VSS.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.KafkaConsumer", "KafkaConsumer\src\VSS.KafkaConsumer.csproj", "{8F4DF61D-60BE-4C78-8E59-0F5A7D0CA236}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4Net.Extensions", "log4netExtensions\src\VSS.Log4Net.Extensions.csproj", "{EECED89D-9D1F-4827-871C-18EB21088FF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Log4NetExtensions", "log4netExtensions\src\VSS.Log4NetExtensions.csproj", "{EECED89D-9D1F-4827-871C-18EB21088FF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "MasterDataModels\src\VSS.MasterData.Models.csproj", "{E2170AC8-139A-4B16-8504-AAD2E6930446}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories", "MasterDataRepositories\src\VSS.MasterData.Repositories.csproj", "{F098DC6F-8D8B-464E-BA75-B49E23707DEF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess", "TCCFileAccess\src\VSS.TCCFileAccess.csproj", "{D8230F80-67EB-4473-BCCF-01257D4449B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess.UnitTests", "TCCFileAccess\test\UnitTests\VSS.TCCFileAccess.UnitTests.csproj", "{49C66113-2FB2-434C-B152-D334B2261070}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{D8230F80-67EB-4473-BCCF-01257D4449B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8230F80-67EB-4473-BCCF-01257D4449B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8230F80-67EB-4473-BCCF-01257D4449B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49C66113-2FB2-434C-B152-D334B2261070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C66113-2FB2-434C-B152-D334B2261070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C66113-2FB2-434C-B152-D334B2261070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C66113-2FB2-434C-B152-D334B2261070}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
