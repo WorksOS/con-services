@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VLPDDecls;
 using VSS.Productivity3D.Common.Contracts;
+using VSS.Productivity3D.Common.Executors;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -222,10 +223,10 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       TDesignProfilerRequestResult designProfilerResult = TDesignProfilerRequestResult.dppiUnknownError;
       log.LogDebug("Getting DXF design boundary from Raptor");
 
-      raptorClient.GetDesignBoundaryAsDXFFile(
+      raptorClient.GetDesignBoundary(
         DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args
         (projectId,
-          DesignDescriptor(0, fileDescr, 0),
+          fileDescr.DesignDescriptor(configStore, log, 0, 0),
           DesignProfiler.ComputeDesignBoundary.RPC.TDesignBoundaryReturnType.dbrtDXF,
           interval, raptorUnits,0), out memoryStream, out designProfilerResult);
 
@@ -267,26 +268,5 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
       }
       return true;
     }
-
-    /// <summary>
-    /// Creates a Raptor design file descriptor
-    /// </summary>
-    /// <param name="designId">The id of the design file</param>
-    /// <param name="fileDescr">The location and name of the design file</param>
-    /// <param name="offset">The offset if the file is a reference surface</param>
-    /// <returns></returns>
-    private TVLPDDesignDescriptor DesignDescriptor(long designId, FileDescriptor fileDescr, double offset)
-    {
-      string filespaceName = configStore.GetValueString("TCCFILESPACENAME");
-
-      if (string.IsNullOrEmpty(filespaceName))
-      {
-        var errorString = "Your application is missing an environment variable TCCFILESPACENAME";
-        log.LogError(errorString);
-        throw new InvalidOperationException(errorString);
-      }
-      return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designId, filespaceName, fileDescr.filespaceId, fileDescr.path, fileDescr.fileName, offset);
-    }
-
   }
 }
