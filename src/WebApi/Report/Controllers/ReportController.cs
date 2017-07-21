@@ -53,9 +53,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     private readonly IConfigurationStore configStore;
 
     /// <summary>
+    /// For getting imported files for a project
+    /// </summary>
+    private readonly IFileListProxy fileListProxy;
+
+    /// <summary>
     /// For getting project settings for a project
     /// </summary>
-    private readonly IProjectProxy projectProxy;
+    private readonly IProjectSettingsProxy projectSettingsProxy;
 
     /// <summary>
     /// Constructor with injection
@@ -63,16 +68,17 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
-    /// <param name="projectProxy">Project settings proxy</param>
+    /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
     public ReportController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IConfigurationStore configStore, IProjectProxy projectProxy)
+      IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionTileController>();
-      this.projectProxy = projectProxy;
+      this.fileListProxy = fileListProxy;
       this.configStore = configStore;
-      this.projectProxy = projectProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
     }
 
     /// <summary>
@@ -98,10 +104,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectProxy, projectUid.Value, headers, log);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(projectProxy, projectUid.Value, headers);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
 
       // Filter filter = CompactionSettings.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
       Filter filter = CompactionSettings.CompactionFilter(null, null, null, null, null, null, null, excludedIds);

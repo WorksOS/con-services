@@ -15,12 +15,12 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
   public class TIDAuthentication
   {
     private readonly RequestDelegate _next;
-    private readonly IProjectProxy projectListProxy;
+    private readonly IProjectListProxy projectListProxy;
     private readonly ICustomerProxy customerProxy;
     private readonly ILogger log;
 
 
-    public TIDAuthentication(RequestDelegate next, IProjectProxy projectListProxy, ICustomerProxy customerProxy, ILoggerFactory logger)
+    public TIDAuthentication(RequestDelegate next, IProjectListProxy projectListProxy, ICustomerProxy customerProxy, ILoggerFactory logger)
     {
       _next = next;
       this.projectListProxy = projectListProxy;

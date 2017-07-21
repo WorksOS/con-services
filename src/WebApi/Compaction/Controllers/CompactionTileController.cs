@@ -72,9 +72,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
+    /// For getting imported files for a project
+    /// </summary>
+    private readonly IFileListProxy fileListProxy;
+
+
+    /// <summary>
     /// For getting project settings for a project
     /// </summary>
-    private readonly IProjectProxy projectProxy;
+    private readonly IProjectSettingsProxy projectSettingsProxy;
 
     /// <summary>
     /// Constructor with injection
@@ -84,10 +90,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileRepo">Imported file repository</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
-    /// <param name="projectProxy">Project proxy</param>
+    /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger,
       IConfigurationStore configStore, IFileRepository fileRepo, 
-      IElevationExtentsProxy elevProxy, IProjectProxy projectProxy)
+      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -95,7 +102,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.configStore = configStore;
       this.fileRepo = fileRepo;
       this.elevProxy = elevProxy;
-      this.projectProxy = projectProxy;
+      this.fileListProxy = fileListProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
     }
 
     /// <summary>
@@ -172,8 +180,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectProxy, projectUid.Value, headers, log);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(projectProxy, projectUid.Value, headers);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -263,8 +271,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
       var headers = Request.Headers.GetCustomHeaders();
-      var projectSettings = await this.GetProjectSettings(projectProxy, projectUid.Value, headers, log);
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(projectProxy, projectUid.Value, headers);
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
@@ -468,7 +476,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
 
       //Get all the imported files for the project
-      var fileList = await projectProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
+      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), Request.Headers.GetCustomHeaders());
       if (fileList == null)
       {
         fileList = new List<FileData>();

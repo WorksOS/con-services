@@ -63,9 +63,9 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private ITileGenerator tileGenerator;
 
     /// <summary>
-    /// For getting project settings and imported files for a project
+    /// For getting imported files for a project
     /// </summary>
-    private readonly IProjectProxy projectProxy;
+    private readonly IFileListProxy fileListProxy;
 
     /// <summary>
     /// Constructor with injection
@@ -76,10 +76,10 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="configStore"></param>
     /// <param name="prefProxy">Proxy for user preferences</param>
     /// <param name="tileGenerator">DXF tile generator</param>
-    /// <param name="projectProxy">Project proxy</param>
+    /// <param name="fileListProxy">File list proxy</param>
     public NotificationController(IASNodeClient raptorClient, ILoggerFactory logger,
       IFileRepository fileRepo, IConfigurationStore configStore,
-      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IProjectProxy projectProxy)
+      IPreferenceProxy prefProxy, ITileGenerator tileGenerator, IFileListProxy fileListProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       this.configStore = configStore;
       this.prefProxy = prefProxy;
       this.tileGenerator = tileGenerator;
-      this.projectProxy = projectProxy;
+      this.fileListProxy = fileListProxy;
     }
 
     /// <summary>
@@ -205,7 +205,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
       if (!customHeaders.ContainsKey("X-VisionLink-ClearCache"))
         customHeaders.Add("X-VisionLink-ClearCache", "true");
 
-      var fileList = await projectProxy.GetFiles(projectUid.ToString(), customHeaders);
+      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
       log.LogInformation("After clearing cache {0} total imported files, {1} activated, for project {2}", fileList.Count, fileList.Count(f => f.IsActivated), projectUid);
 
       return fileList;
