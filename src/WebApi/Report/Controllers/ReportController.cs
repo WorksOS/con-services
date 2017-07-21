@@ -53,8 +53,16 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// </summary>
     private readonly IFileListProxy fileListProxy;
 
+    /// <summary>
+    /// Where to get environment variables, connection string etc. from
+    /// </summary>
     private readonly IConfigurationStore configStore;
 
+    /// <summary>
+    /// For retrieving user preferences
+    /// </summary>
+    private IPreferenceProxy prefProxy;
+    
     /// <summary>
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>
@@ -76,6 +84,16 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       if (!projectId.HasValue)
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      }
+
+      var customHeaders = Request.Headers.GetCustomHeaders();
+      var userPref = prefProxy.GetUserPreferences(customHeaders);
+
+      if (userPref == null)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+            "Pass count settings required for detailed pass count report"));
       }
 
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
@@ -147,12 +165,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="configStore"></param>
-    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
+    public ReportController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore,
+      IPreferenceProxy prefProxy, IFileListProxy fileListProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<ReportController>();
       this.configStore = configStore;
+      this.prefProxy = prefProxy;
       this.fileListProxy = fileListProxy;
     }
 

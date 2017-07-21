@@ -187,6 +187,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ExportReportToVETA.feature</DependentUpon>
     </Compile>
+    <Compile Include="GetDesignBoundaries.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GetDesignBoundaries.feature</DependentUpon>
+    </Compile>
     <Compile Include="GetLifts.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -237,6 +242,7 @@
     <Compile Include="Models\CoordinateSystemFile.cs" />
     <Compile Include="Models\DesignNameRequest.cs" />
     <Compile Include="Models\DesignNames.cs" />
+    <Compile Include="Models\DesignResult.cs" />
     <Compile Include="Models\ElevationStatistics.cs" />
     <Compile Include="Models\ExportGriddedCSV.cs" />
     <Compile Include="Models\ExportReport.cs" />
@@ -325,6 +331,7 @@
     <Compile Include="StepDefinitions\ExportReportToSurfaceSteps.cs" />
     <Compile Include="StepDefinitions\ExportReportToVETASteps.cs" />
     <Compile Include="StepDefinitions\FileAccessSteps.cs" />
+    <Compile Include="StepDefinitions\GetDesignBoundariesSteps.cs" />
     <Compile Include="StepDefinitions\NotificationSteps.cs" />
     <Compile Include="StepDefinitions\PassCountDetailSteps.cs" />
     <Compile Include="StepDefinitions\PassCountSummarySteps.cs" />
@@ -470,6 +477,10 @@
     <None Include="FilterServices.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>FilterServices.feature.cs</LastGenOutput>
+    </None>
+    <None Include="GetDesignBoundaries.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>GetDesignBoundaries.feature.cs</LastGenOutput>
     </None>
     <None Include="GetLifts.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -668,6 +679,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestData\ExportReportMachinePassesResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestData\GetDesignBoundariesResponse.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Tiles.feature">
