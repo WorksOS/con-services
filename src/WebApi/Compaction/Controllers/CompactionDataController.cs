@@ -12,6 +12,7 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
@@ -53,19 +54,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProjectSettingsProxy projectSettingsProxy;
 
     /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
-    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy)
+    /// <param name="settingsManager">Compaction settings manager</param>
+    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionDataController>();
       this.fileListProxy = fileListProxy;
       this.projectSettingsProxy = projectSettingsProxy;
+      this.settingsManager = settingsManager;
     }
 
  
@@ -182,11 +191,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-      MDPSettings mdpSettings = CompactionSettings.CompactionMdpSettings(projectSettings);
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      MDPSettings mdpSettings = settingsManager.CompactionMdpSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         headers);
-      Filter filter = CompactionSettings.CompactionFilter(
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       MDPRequest request = MDPRequest.CreateMDPRequest(projectId.Value, null, mdpSettings, liftSettings, filter,
@@ -325,10 +334,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //TODO: if projectuid is null get from raptorprincipal project
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-      TemperatureSettings temperatureSettings = CompactionSettings.CompactionTemperatureSettings(projectSettings);
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      TemperatureSettings temperatureSettings = settingsManager.CompactionTemperatureSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
-      Filter filter = CompactionSettings.CompactionFilter(
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
 
@@ -403,9 +412,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
       //Speed settings are in LiftBuildSettings
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
-      Filter filter = CompactionSettings.CompactionFilter(
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
 
@@ -479,12 +488,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
-      Filter filter = CompactionSettings.CompactionFilter(
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      double[] cmvChangeSummarySettings = CompactionSettings.CompactionCmvPercentChangeSettings;
+      double[] cmvChangeSummarySettings = settingsManager.CompactionCmvPercentChangeSettings(projectSettings);
       CMVChangeSummaryRequest request = CMVChangeSummaryRequest.CreateCMVChangeSummaryRequest(
         projectId.Value, null, liftSettings, filter, -1, cmvChangeSummarySettings);
       request.Validate();
@@ -680,10 +689,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-      CMVSettings cmvSettings = CompactionSettings.CompactionCmvSettings(projectSettings);
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      CMVSettings cmvSettings = settingsManager.CompactionCmvSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
-      Filter filter = CompactionSettings.CompactionFilter(
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
 
@@ -717,10 +726,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-      PassCountSettings passCountSettings = isSummary ? null : CompactionSettings.CompactionPassCountSettings;
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      PassCountSettings passCountSettings = isSummary ? null : settingsManager.CompactionPassCountSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
-      Filter filter = CompactionSettings.CompactionFilter(
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
 

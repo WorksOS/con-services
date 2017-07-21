@@ -57,6 +57,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProjectSettingsProxy projectSettingsProxy;
 
     /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -64,8 +69,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="elevProxy">Elevation extents proxy</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="settingsManager">Compaction settings manager</param>
     public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, 
-      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy)
+      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -73,6 +80,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.elevProxy = elevProxy;
       this.fileListProxy = fileListProxy;
       this.projectSettingsProxy = projectSettingsProxy;
+      this.settingsManager = settingsManager;
     }
 
 
@@ -127,7 +135,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         var headers = Request.Headers.GetCustomHeaders();
         var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
         var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
-        Filter filter = CompactionSettings.CompactionFilter(
+        Filter filter = settingsManager.CompactionFilter(
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
         ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId.Value, filter, projectSettings);

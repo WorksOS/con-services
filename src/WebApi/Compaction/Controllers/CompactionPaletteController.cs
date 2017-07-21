@@ -56,6 +56,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -63,8 +68,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="elevProxy">Elevation extents proxy</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="settingsManager">Compaction settings manager</param>
     public CompactionPaletteController(IASNodeClient raptorClient, ILoggerFactory logger, 
-      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy)
+      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -72,6 +79,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.elevProxy = elevProxy;
       this.fileListProxy = fileListProxy;
       this.projectSettingsProxy = projectSettingsProxy;
+      this.settingsManager = settingsManager;
     }
 
     /// <summary>
@@ -91,6 +99,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+
       //Note: elevation palette is a separate call as it requires a filter
       List<DisplayMode> modes = new List<DisplayMode>
       {
@@ -135,7 +146,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       foreach (var mode in modes)
       {
         List<ColorValue> colorValues;
-        var compactionPalette = CompactionSettings.CompactionPalette(mode, null);
+        var compactionPalette = settingsManager.CompactionPalette(mode, null, projectSettings);
         switch (mode)
         {
           case DisplayMode.CCV:
@@ -250,11 +261,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
 
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
-      Filter filter = CompactionSettings.CompactionFilter(
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(projectId.Value, filter, projectSettings);
-      var compactionPalette = CompactionSettings.CompactionPalette(DisplayMode.Height, elevExtents);
+      var compactionPalette = settingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings);
 
       DetailPalette elevationPalette = null;
       if (compactionPalette != null)

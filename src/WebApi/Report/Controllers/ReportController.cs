@@ -20,6 +20,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Report.Contracts;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
@@ -63,6 +64,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     private readonly IProjectSettingsProxy projectSettingsProxy;
 
     /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -70,8 +76,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="settingsManager">Compaction settings manager</param>
     public ReportController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IConfigurationStore configStore, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy)
+      IConfigurationStore configStore, IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -79,6 +87,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       this.fileListProxy = fileListProxy;
       this.configStore = configStore;
       this.projectSettingsProxy = projectSettingsProxy;
+      this.settingsManager = settingsManager;
     }
 
     /// <summary>
@@ -105,12 +114,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       }
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
 
-      // Filter filter = CompactionSettings.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
-      Filter filter = CompactionSettings.CompactionFilter(null, null, null, null, null, null, null, excludedIds);
+      // Filter filter = settingsManager.CompactionFilter(startUtc, endUtc, null, null, null, null, this.GetMachines(assetId, machineName, isJohnDoe), null);
+      Filter filter = settingsManager.CompactionFilter(null, null, null, null, null, null, null, excludedIds);
 
       T3DBoundingWorldExtent projectExtents = new T3DBoundingWorldExtent();
       TMachine[] machineList = null;

@@ -83,6 +83,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IProjectSettingsProxy projectSettingsProxy;
 
     /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
@@ -92,9 +97,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="elevProxy">Elevation extents proxy</param>
     /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="settingsManager">Compaction settings manager</param>
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger,
       IConfigurationStore configStore, IFileRepository fileRepo, 
-      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy)
+      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
@@ -104,6 +111,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       this.elevProxy = elevProxy;
       this.fileListProxy = fileListProxy;
       this.projectSettingsProxy = projectSettingsProxy;
+      this.settingsManager = settingsManager;
     }
 
     /// <summary>
@@ -182,7 +190,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
-      Filter filter = CompactionSettings.CompactionFilter(
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       var tileResult = GetProductionDataTile(projectSettings, filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
@@ -273,7 +281,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var headers = Request.Headers.GetCustomHeaders();
       var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
-      Filter filter = CompactionSettings.CompactionFilter(
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       var tileResult = GetProductionDataTile(projectSettings, filter, projectId.Value, mode, (ushort)WIDTH, (ushort)HEIGHT, GetBoundingBox(BBOX));
@@ -587,13 +595,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
       BoundingBox2DLatLon bbox)
     {
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
       filter?.Validate();
       ElevationStatisticsResult elevExtents =
         mode == DisplayMode.Height ? elevProxy.GetElevationRange(projectId, filter, projectSettings) : null;
       //Fix bug in Raptor - swap elevations if required
       elevExtents?.SwapElevationsIfRequired();
-      var palette = CompactionSettings.CompactionPalette(mode, elevExtents);
+      var palette = settingsManager.CompactionPalette(mode, elevExtents, projectSettings);
       if (mode == DisplayMode.Height)
       {
         log.LogDebug("GetProductionDataTile: surveyedSurfaceExclusionList count={0}, elevExtents={1}-{2}, palette count={4}",

@@ -40,16 +40,23 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     private readonly TimeSpan elevationExtentsCacheLife = new TimeSpan(0, 15, 0); //TODO: how long to cache ?
 
     /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="cache">Elevation extents cache</param>
-    public ElevationExtentsProxy(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache)
+    /// <param name="settingsManager">Compaction settings manager</param>
+    public ElevationExtentsProxy(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       elevationExtentsCache = cache;
+      this.settingsManager = settingsManager;
     }
 
     /// <summary>
@@ -69,7 +76,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       }
       if (!elevationExtentsCache.TryGetValue(cacheKey, out result))
       {
-        LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings(projectSettings);
+        LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
         ElevationStatisticsRequest statsRequest =
           ElevationStatisticsRequest.CreateElevationStatisticsRequest(projectId, null, filter, 0,

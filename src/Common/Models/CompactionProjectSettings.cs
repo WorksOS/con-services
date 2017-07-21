@@ -217,10 +217,8 @@ namespace VSS.Productivity3D.Common.Models
       };
     }
 
-    public static CompactionProjectSettings DefaultSettings
-    {
-      get {
-        return new CompactionProjectSettings
+    public static readonly CompactionProjectSettings DefaultSettings =
+        new CompactionProjectSettings
         {
           useMachineTargetPassCount = true,
           customTargetPassCountMinimum = 6,
@@ -246,12 +244,8 @@ namespace VSS.Productivity3D.Common.Models
           useDefaultVolumeShrinkageBulking = true,
           customShrinkagePercent = 0.0,
           customBulkingPercent = 0.0
-
         };
-      }
-    }
-
-
+      
 
     /// <summary>
     /// Validates all properties
