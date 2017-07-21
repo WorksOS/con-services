@@ -15,8 +15,7 @@ namespace UnitTests
   [TestClass]
   public class TCCFileAccessTests
   {
-    public IServiceProvider serviceProvider = null;
-    private ILogger<TCCFileAccessTests> Log;
+    public IServiceProvider ServiceProvider;
 
 
     [TestInitialize]
@@ -25,7 +24,7 @@ namespace UnitTests
       var serviceCollection = new ServiceCollection();
 
       string loggerRepoName = "UnitTestLogTest";
-      var logPath = System.IO.Directory.GetCurrentDirectory();
+      var logPath = Directory.GetCurrentDirectory();
       Log4NetAspExtensions.ConfigureLog4Net(logPath, "log4nettest.xml", loggerRepoName);
 
       ILoggerFactory loggerFactory = new LoggerFactory();
@@ -36,9 +35,7 @@ namespace UnitTests
       serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
       serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddTransient<IFileRepository, FileRepository>();
-      serviceProvider = serviceCollection.BuildServiceProvider();
-
-      Log = loggerFactory.CreateLogger<TCCFileAccessTests>();
+      ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 
 
@@ -46,14 +43,14 @@ namespace UnitTests
     [TestMethod]
     public void CanCreateFileAccessService()
     {
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       Assert.IsNotNull(fileaccess);
     }
 
     [TestMethod]
     public async Task CanListOrgs()
     {
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var orgs = await fileaccess.ListOrganizations();
       Assert.IsNotNull(orgs);
     }
@@ -61,9 +58,9 @@ namespace UnitTests
     [TestMethod]
     public async Task CanListFoldersFiles()
     {
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var orgName = configuration.GetValueString("TCCORG");
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var orgs = await fileaccess.ListOrganizations();
       var org = (from o in orgs where o.shortName == orgName select o).First();
       var folders = await fileaccess.GetFolders(org, DateTime.MinValue, "/");
@@ -76,9 +73,9 @@ namespace UnitTests
       const string folderName = "/barney";
       const string filename = "unittest.json";
 
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var orgName = configuration.GetValueString("TCCORG");
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var orgs = await fileaccess.ListOrganizations();
       var org = (from o in orgs where o.shortName == orgName select o).First();
       var exists = await fileaccess.FolderExists(org.filespaceId, folderName);
@@ -100,9 +97,9 @@ namespace UnitTests
       const string folderName = "/barney";
       const string filename = "unittest.json";
 
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var orgName = configuration.GetValueString("TCCORG");
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var orgs = await fileaccess.ListOrganizations();
       var org = (from o in orgs where o.shortName == orgName select o).First();
       var exists = await fileaccess.FolderExists(org.filespaceId, folderName);
@@ -121,9 +118,9 @@ namespace UnitTests
     [TestMethod]
     public async Task CanCheckFolderExists()
     {
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var exists = await fileaccess.FolderExists(filespaceId, "/77561/1158");
       Assert.IsTrue(exists);
     }
@@ -131,9 +128,9 @@ namespace UnitTests
     [TestMethod]
     public async Task CanCheckFolderDoesNotExist()
     {
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var exists = await fileaccess.FolderExists(filespaceId, "/123456789/987654321");
       Assert.IsFalse(exists);
     }
@@ -141,9 +138,9 @@ namespace UnitTests
     [TestMethod]
     public async Task CanCheckFileExists()
     {
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var exists = await fileaccess.FileExists(filespaceId, "/77561/1158/Building Pad - DesignMap.dxf");
       Assert.IsTrue(exists);
     }
@@ -154,10 +151,10 @@ namespace UnitTests
       const string folderName = "/barney";
       const string filename = "unittest.json";
 
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
 
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       
       var exists = await fileaccess.FolderExists(filespaceId, folderName);
       if (!exists)
@@ -177,10 +174,10 @@ namespace UnitTests
     public async Task CanMakeFolder()
     {
       const string folderPath = "/unittest/folder";
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
 
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var exists = await fileaccess.FolderExists(filespaceId, folderPath);
       if (exists)
       {
@@ -196,10 +193,10 @@ namespace UnitTests
       const string folderPath = "/unittest/folder";
       const string filename = "unittest.json";
 
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
 
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var exists = await fileaccess.FolderExists(filespaceId, folderPath);
       if (!exists)
       {
@@ -219,9 +216,9 @@ namespace UnitTests
     {
       const string path = "/FileJobUnitTest/CERA.bg.dxf";
 
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var jobId = await fileaccess.CreateFileJob(filespaceId, path);
       Assert.IsNotNull(jobId, "Failed to create file job");
 
@@ -253,9 +250,9 @@ namespace UnitTests
       const string srcPath = "/FileJobUnitTest/CERA.bg.dxf";
       const string dstPath = "/FileJobUnitTest/CERA.bg.dxf_Tiles$/Z15.html";
 
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       var jobId = await fileaccess.ExportToWebFormat(filespaceId, srcPath, filespaceId, dstPath, 15);
       Assert.IsNotNull(jobId, "Failed to export to web format"); 
 
@@ -268,9 +265,9 @@ namespace UnitTests
     {
       const string filename = "/barney/CacheUnitTest.DXF_Tiles$/Z14/6420/2960.png";
 
-      var configuration = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var configuration = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var filespaceId = configuration.GetValueString("TCCFILESPACEID");
-      var fileaccess = serviceProvider.GetRequiredService<IFileRepository>();
+      var fileaccess = ServiceProvider.GetRequiredService<IFileRepository>();
       //First time not cached
       var downloadFileResult = await fileaccess.GetFile(filespaceId, filename);
       //Second time cached
