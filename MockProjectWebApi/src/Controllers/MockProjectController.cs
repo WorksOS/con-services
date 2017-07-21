@@ -72,6 +72,10 @@ namespace MockProjectWebApi.Controllers
           file.ProjectUid = projectUidStr;
           file.IsActivated = projectUidStr == GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1;
         }
+        if (projectUidStr == GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1)
+        {
+          fileList.AddRange(designSurfacesFileList);
+        }
       }
 
       return new FileDataResult { ImportedFileDescriptors = fileList};
@@ -140,6 +144,60 @@ namespace MockProjectWebApi.Controllers
         ImportedFileType = ImportedFileType.SurveyedSurface,
         ImportedFileUid = Guid.NewGuid().ToString(),
         LegacyFileId = 14222,
+        IsActivated = true
+      }
+    };
+
+    private List<FileData> designSurfacesFileList = new List<FileData>
+    {
+      new FileData
+      {
+        Name = "Original Ground Survey - Dimensions 2012.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "DesignSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 15177,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Large Sites Road - Trimble Road.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "DesignSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 15176,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Milling - Milling.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "DesignSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 15175,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Topcon Road - Topcon.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "DesignSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 15174,
+        IsActivated = true
+      },
+      new FileData
+      {
+        Name = "Trimble Command Centre.TTM",
+        ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
+        CustomerUid = "DesignSurfaceAcceptanceTest",
+        ImportedFileType = ImportedFileType.DesignSurface,
+        ImportedFileUid = Guid.NewGuid().ToString(),
+        LegacyFileId = 15222,
         IsActivated = true
       }
     };
