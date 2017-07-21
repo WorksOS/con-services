@@ -6,7 +6,6 @@
     <Company>VSS</Company>
     <Product>VSS.KafkaConsumer.netcore</Product>
     <Description>Shared across Merino apps kafka consumer based on RD Kafka</Description>
-    <VersionPrefix>2.0.1</VersionPrefix>
     <TargetFrameworks>netstandard1.6</TargetFrameworks>
     <AssemblyName>VSS.KafkaConsumer</AssemblyName>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
@@ -16,14 +15,39 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <Compile Remove="obj\**" />
+    <Content Remove="bin\**" />
+    <Content Remove="obj\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="bin\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="RdKafka" Version="0.9.2-ci-170" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
     <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.*" />
-    <PackageReference Include="VSS.MasterData.Repositories.netcore" Version="2.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
+    <ProjectReference Include="..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.Local.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Runtime">
+      <HintPath>..\..\..\..\Users\amorgan\.nuget\packages\system.runtime\4.3.0\ref\netstandard1.5\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices">
+      <HintPath>..\..\..\..\Users\amorgan\.nuget\packages\system.runtime.interopservices\4.3.0\ref\netstandard1.5\System.Runtime.InteropServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks">
+      <HintPath>..\..\..\..\Users\amorgan\.nuget\packages\system.threading.tasks\4.3.0\ref\netstandard1.3\System.Threading.Tasks.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

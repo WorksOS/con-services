@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <AssemblyName>MasterDataConsumerTests</AssemblyName>
-    <PackageId>MasterDataConsumerTests</PackageId>
+    <AssemblyName>RepositoryTests</AssemblyName>
+    <PackageId>RepositoryTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
@@ -13,29 +13,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="appsettings.json;log4nettest.xml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    <None Include="appsettings.json;log4nettest.xml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
-    <PackageReference Include="OpenCover" Version="4.6.519" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
+    <PackageReference Include="log4net.netcore" Version="3.0.*" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
-    <PackageReference Include="log4net.netcore" Version="3.0.*" />
-    <PackageReference Include="Moq" Version="4.6.38-alpha" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.KafkaConsumer.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.Interfaces.netcore" Version="1.1.*" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.0" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
-    <None Update="appsettings.json;log4net.xml;log4nettest.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\ConfigurationStore\src\ConfigStore.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\log4netExtensions\log4netExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\..\..\MasterDataRepositories\src\Repo.Local.csproj" />
   </ItemGroup>
 
   <ItemGroup>

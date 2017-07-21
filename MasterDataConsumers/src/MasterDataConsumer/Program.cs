@@ -50,15 +50,14 @@ namespace VSS.Productivity3D.MasterDataConsumer
 
 #else
       var consumer = new ConsumerContainer();
-            consumer.Initialize();
+      consumer.Initialize();
 #endif
     }
   }
 
   public class ConsumerContainer
   {
-
-    ILogger log;
+    ILogger _log;
 
     private List<Task> tasks;
     private CancellationTokenSource token;
@@ -74,9 +73,9 @@ namespace VSS.Productivity3D.MasterDataConsumer
 
     public void StopAndDispose()
     {
-      log.LogInformation("MasterDataConsumer: Stopping all consumers.");
+      _log.LogInformation("MasterDataConsumer: Stopping all consumers.");
       consumers.ForEach(c => c.StopProcessing());
-      log.LogInformation("MasterDataConsumer: Cancelling all consumers.");
+      _log.LogInformation("MasterDataConsumer: Cancelling all consumers.");
       token.Cancel();
     }
 
@@ -124,16 +123,16 @@ namespace VSS.Productivity3D.MasterDataConsumer
         .Split(new[] { "," }, StringSplitOptions.None);
 
       string loggerRepoName = "MDC " + kafkaTopics[0].Split('.').Last();
-      string logPath = "";
+      string logPath;
 
-      if (File.Exists(Path.Combine(System.IO.Directory.GetCurrentDirectory(), "log4net.xml")))
+      if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "log4net.xml")))
       {
-        logPath = System.IO.Directory.GetCurrentDirectory();
+        logPath = Directory.GetCurrentDirectory();
         Console.WriteLine($"Setting GetCurrentDirectory path for the config file {logPath}");
       }
-      else if (File.Exists(Path.Combine(System.AppContext.BaseDirectory, "log4net.xml")))
+      else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "log4net.xml")))
       {
-        logPath = Path.Combine(System.AppContext.BaseDirectory);
+        logPath = Path.Combine(AppContext.BaseDirectory);
         Console.WriteLine($"Setting BaseDirectory path for the config file {logPath}");
       }
       else
@@ -149,14 +148,14 @@ namespace VSS.Productivity3D.MasterDataConsumer
       ILoggerFactory loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
       loggerFactory.AddLog4Net(loggerRepoName);
-      serviceCollection.AddSingleton<ILoggerFactory>(loggerFactory);
+      serviceCollection.AddSingleton(loggerFactory);
       serviceProvider = serviceCollection.BuildServiceProvider();
-      log = loggerFactory.CreateLogger(loggerRepoName);
-      log.LogDebug("MasterDataConsumer is starting....");
+      _log = loggerFactory.CreateLogger(loggerRepoName);
+      _log.LogDebug("MasterDataConsumer is starting....");
 
       foreach (var kafkaTopic in kafkaTopics)
       {
-        log.LogInformation("MasterDataConsumer topic: " + kafkaTopic);
+        _log.LogInformation("MasterDataConsumer topic: " + kafkaTopic);
         if (serviceConverter.Any(s => kafkaTopic.Contains(s.Key)))
         {
           var consumer =
@@ -168,17 +167,17 @@ namespace VSS.Productivity3D.MasterDataConsumer
         }
         else
         {
-          log.LogDebug("MasterDataConsumer: Kafka topic consumer not recognized: {0}", kafkaTopic);
+          _log.LogDebug("MasterDataConsumer: Kafka topic consumer not recognized: {0}", kafkaTopic);
           continue;
         }
-        log.LogDebug("MasterDataConsumer: Kafka topic consumer to be started: {0}", kafkaTopic);
+        _log.LogDebug("MasterDataConsumer: Kafka topic consumer to be started: {0}", kafkaTopic);
       }
 
 #if !NET_4_7
       if (tasks.Count > 0)
-                Task.WaitAll(tasks.ToArray());
-            else
-                log.LogCritical("MasterDataConsumer: No consumers started.");
+        Task.WaitAll(tasks.ToArray());
+      else
+        _log.LogCritical("MasterDataConsumer: No consumers started.");
 #endif
     }
   }

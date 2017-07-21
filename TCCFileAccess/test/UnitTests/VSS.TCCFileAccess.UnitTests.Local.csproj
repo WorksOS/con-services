@@ -21,8 +21,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="log4net.netcore" Version="3.0.*" />
-    <PackageReference Include="log4netExtensions.netcore" Version="1.0.*" />
-    <PackageReference Include="ConfigurationStore.netcore" Version="1.0.*" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />    
   </ItemGroup>
 
@@ -33,7 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\TCCFileAccess.csproj" />
+    <ProjectReference Include="..\..\..\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
+    <ProjectReference Include="..\..\..\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\src\VSS.TCCFileAccess.Local.csproj" />
   </ItemGroup>
 
   <ItemGroup>
