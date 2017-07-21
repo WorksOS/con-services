@@ -149,6 +149,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
     /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="designUid">The design or alignment file in the project that is to be used as a spatial filter 
+    /// when the filter layer method is OffsetFromDesign or OffsetFromProfile.</param>
     /// <returns>MDP summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -165,7 +167,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       [FromQuery] long? onMachineDesignId,
       [FromQuery] long? assetID,
       [FromQuery] string machineName,
-      [FromQuery] bool? isJohnDoe)
+      [FromQuery] bool? isJohnDoe,
+      [FromQuery] Guid? designUid)
     {
       log.LogInformation("GetMdpSummary: " + Request.QueryString);
       if (!projectId.HasValue)
@@ -176,9 +179,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
+
+      var legacyDesignId = await this.GetLegacyFileId(fileListProxy, projectUid.Value, designUid.Value, Request.Headers.GetCustomHeaders());
+
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
+        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds, legacyDesignId);
       MDPRequest request = MDPRequest.CreateMDPRequest(projectId.Value, null, mdpSettings, liftSettings, filter,
         -1,
         null, null, null);

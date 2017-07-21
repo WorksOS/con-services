@@ -36,6 +36,16 @@ namespace VSS.Productivity3D.Common.Controllers
         .Select(f => f.LegacyFileId).ToList();
     }
 
+    public static async Task<long?> GetLegacyFileId(this Controller controller, IFileListProxy fileListProxy, Guid projectUid, Guid fileUid, IDictionary<string, string> customHeaders)
+    {
+      var fileList = await fileListProxy.GetFiles(projectUid.ToString(), customHeaders);
+      if (fileList == null || fileList.Count == 0)
+        return null;
+
+      return fileList.Where(f => f.ImportedFileUid == fileUid.ToString() && f.IsActivated).Select(f => f.LegacyFileId).FirstOrDefault();
+    }
+    
+
     /// <summary>
     /// Gets the list of contributing machines from the query parameters
     /// </summary>
