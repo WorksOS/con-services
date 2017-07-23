@@ -37,7 +37,7 @@ node('Ubuntu_Slave') {
     stage 'Checkout'
     checkout scm
     stage 'Restore packages'
-    sh "dotnet restore --no-cache"
+    sh "dotnet restore --no-cache VSS.Visionlink.Project.sln"
     stage 'Build solution'
     sh "bash ./build.sh"
 /*    stage 'Run unit tests'
