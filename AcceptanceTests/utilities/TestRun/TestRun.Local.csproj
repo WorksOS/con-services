@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TestUtility\TestUtility.csproj" />
+    <ProjectReference Include="..\TestUtility\TestUtility.Local.csproj" />
   </ItemGroup>
 
 </Project>
