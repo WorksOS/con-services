@@ -425,17 +425,17 @@ namespace VSS.Productivity3D.Common.Proxies
       return client.GetCoordinateSystemHorizontalAdjustmentFile(csFileName, dataModelID, requestedUnits, out haFile);
     }
     /// <summary>
-    /// Gets the boundary of a surface as a DXF file.
+    /// Gets the boundary of a surface. The boundary return type is specified by the Design boundary arguments.
     /// </summary>
-    /// <param name="args">Design boundary arguments: The project ID, design surface file design descriptor, type of boundary (DXF),
+    /// <param name="args">Design boundary arguments: The project ID, design surface file design descriptor, type of boundary (List, DXF, JSon),
     /// units and interval to use</param>
-    /// <param name="dxfContents">The DXF file contents</param>
+    /// <param name="resultContents">The DXF file contents</param>
     /// <param name="designProfilerResult">The result code (0=success)</param>
     /// <returns></returns>
-    public bool GetDesignBoundaryAsDXFFile(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args args,
-      out MemoryStream dxfContents, out TDesignProfilerRequestResult designProfilerResult)
+    public bool GetDesignBoundary(TDesignProfilerServiceRPCVerb_CalculateDesignBoundary_Args args,
+      out MemoryStream resultContents, out TDesignProfilerRequestResult designProfilerResult)
     {
-      return client.GetDesignBoundaryAsDXFFile(args, out dxfContents, out designProfilerResult);
+      return client.GetDesignBoundary(args, out resultContents, out designProfilerResult);
     }
     /// <summary>
     /// Gets a gridded CSV export of the production data from Raptor

@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.TCCFileAccess;
@@ -45,6 +46,11 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// For handling DXF tiles
     /// </summary>
     protected ITileGenerator tileGenerator;
+
+    /// <summary>
+    /// For handling imported files
+    /// </summary>
+    protected List<FileData> fileList;
 
     /// <summary>
     /// Generates the dynamic errorlist for instanciated executor.
@@ -175,6 +181,21 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.tileGenerator = tileGenerator;
     }
 
+    /// <summary>
+    /// Injected constructor for mocking.
+    /// </summary>
+    protected RequestExecutorContainer(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor, IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList) : this()
+    {
+      this.raptorClient = raptorClient;
+      this.tagProcessor = tagProcessor;
+      if (logger != null)
+        log = logger.CreateLogger<RequestExecutorContainer>();
+      this.configStore = configStore;
+      this.fileRepo = fileRepo;
+      this.tileGenerator = tileGenerator;
+      this.fileList = fileList;
+    }
+
     //TODO: Check if this works
     /// <summary>
     /// Default destructor which destroys all structures necessary for error handling.
@@ -189,12 +210,11 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
     /// <returns></returns>
-    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor = null, IConfigurationStore configStore = null, IFileRepository fileRepo = null, ITileGenerator tileGenerator = null)
+    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IASNodeClient raptorClient, ITagProcessor tagProcessor = null, IConfigurationStore configStore = null, IFileRepository fileRepo = null, ITileGenerator tileGenerator = null, List<FileData> fileList = null)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { raptorClient = raptorClient, tagProcessor = tagProcessor, log = logger.CreateLogger<TExecutor>(), configStore = configStore, fileRepo = fileRepo, tileGenerator = tileGenerator };
+      var executor = new TExecutor() { raptorClient = raptorClient, tagProcessor = tagProcessor, log = logger.CreateLogger<TExecutor>(), configStore = configStore, fileRepo = fileRepo, tileGenerator = tileGenerator, fileList = fileList};
       return executor;
     }
-
   }
 }

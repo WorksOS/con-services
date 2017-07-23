@@ -1,6 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VLPDDecls;
+using VSS.ConfigurationStore;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Validation;
 using VSS.Productivity3D.Common.Interfaces;
@@ -101,6 +105,26 @@ namespace VSS.Productivity3D.Common.Models
       return $"{fileName}: {filespaceId}, {path}";
     }
 
+    /// <summary>
+    /// Creates a Raptor design file descriptor
+    /// </summary>
+    /// <param name="configStore">Where to get environment variables, connection string etc. frome</param>
+    /// <param name="log">The Logger for logging</param>
+    /// <param name="designId">The id of the design file</param>
+    /// <param name="offset">The offset if the file is a reference surface</param>
+    /// <returns></returns>
+    public TVLPDDesignDescriptor DesignDescriptor(IConfigurationStore configStore, ILogger log, long designId, double offset)
+    {
+      string filespaceName = configStore.GetValueString("TCCFILESPACENAME");
+
+      if (string.IsNullOrEmpty(filespaceName))
+      {
+        var errorString = "Your application is missing an environment variable TCCFILESPACENAME";
+        log.LogError(errorString);
+        throw new InvalidOperationException(errorString);
+      }
+      return VLPDDecls.__Global.Construct_TVLPDDesignDescriptor(designId, filespaceName, filespaceId, path, fileName, offset);
+    }
 
     private const int MAX_FILE_NAME = 1024;
     private const int MAX_PATH = 2048;
