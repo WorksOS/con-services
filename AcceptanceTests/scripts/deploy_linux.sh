@@ -16,4 +16,4 @@ dotnet publish ExecutorTests/ExecutorTests.csproj -o ../../deploy/ExecutorTests 
 
 cd ..
 cd utilities
-dotnet publish TestRun -o ../../deploy/TestRun -f netcoreapp1.1
+dotnet publish TestRun/TestRun.csproj -o ../../deploy/TestRun -f netcoreapp1.1
