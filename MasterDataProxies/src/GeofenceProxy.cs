@@ -15,8 +15,6 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public class GeofenceProxy : BaseProxy, IGeofenceProxy
     {
-        private static readonly TimeSpan geofenceCacheLife = new TimeSpan(0, 15, 0); //TODO: how long to cache ?
-
         public GeofenceProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IMemoryCache cache) : base(
             configurationStore, logger, cache)
         {

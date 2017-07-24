@@ -161,25 +161,21 @@ namespace VSS.MasterData.Proxies
     /// <returns>Master data item</returns>
     protected async Task<T> GetItemWithList<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) where T : IData
     {
+      ClearCacheIfRequired(uid, customHeaders);
+      var cacheKey = GetCacheKey<T>(uid);
       T cacheData;
-      string caching = null;
-      customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
-      if (!string.IsNullOrEmpty(caching) && caching == "true")
-        cache.Remove(uid);
-
-      if (!cache.TryGetValue(uid, out cacheData))
+      if (!cache.TryGetValue(cacheKey, out cacheData))
       {
-        var opts = GetCacheOptions(cacheLifeKey);
-             
+        var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
+
         var list = await GetList<T>(urlKey, customHeaders, route);
         foreach (var item in list)
         {
           var data = item as IData;
-          cache.Set(data.CacheKey, item, opts);
+          cache.Set(GetCacheKey<T>(data.CacheKey), item, opts);
         }
                
- 
-        cache.TryGetValue(uid, out cacheData);
+        cache.TryGetValue(cacheKey, out cacheData);
       }
       return cacheData;
     }
@@ -195,18 +191,15 @@ namespace VSS.MasterData.Proxies
     /// <returns>Master data item</returns>
     protected async Task<T> GetItem<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) 
     {
+      ClearCacheIfRequired(uid, customHeaders);
+      var cacheKey = GetCacheKey<T>(uid);
       T cacheData;
-      string caching = null;
-      customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
-      if (!string.IsNullOrEmpty(caching) && caching == "true")
-        cache.Remove(uid);
-
-      if (!cache.TryGetValue(uid, out cacheData))
+      if (!cache.TryGetValue(cacheKey, out cacheData))
       {
-        var opts = GetCacheOptions(cacheLifeKey);
+        var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
         cacheData = await GetItem<T>(urlKey, customHeaders, null, route);
-        cache.Set(uid, cacheData, opts);
+        cache.Set(cacheKey, cacheData, opts);
         
       }
       return cacheData;
@@ -225,17 +218,15 @@ namespace VSS.MasterData.Proxies
     protected async Task<List<T>> GetList<T>(string customerUid, string cacheLifeKey, string urlKey,
                 IDictionary<string, string> customHeaders, string route = null) 
     {
+      ClearCacheIfRequired(customerUid, customHeaders);
+      var cacheKey = GetCacheKey<T>(customerUid);
       List<T> cacheData;
-      customHeaders.TryGetValue("X-VisionLink-ClearCache", out string caching);
-      if (!string.IsNullOrEmpty(caching) && caching == "true")
-        cache.Remove(customerUid);
-
-      if (!cache.TryGetValue(customerUid, out cacheData))
+      if (!cache.TryGetValue(cacheKey, out cacheData))
       {
-        var opts = GetCacheOptions(cacheLifeKey);
+        var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
         cacheData = await GetList<T>(urlKey, customHeaders, route);
-        cache.Set(customerUid, cacheData, opts);
+        cache.Set(cacheKey, cacheData, opts);
       }
       return cacheData;
     }
@@ -254,25 +245,22 @@ namespace VSS.MasterData.Proxies
     protected async Task<T> GetContainedList<T>(string uid, string cacheLifeKey, string urlKey,
                   IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
       {
+        ClearCacheIfRequired(uid, customHeaders);
+        var cacheKey = GetCacheKey<T>(uid);
         T cacheData;
-        string caching = null;
-        customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
-        if (!string.IsNullOrEmpty(caching) && caching == "true")
-          cache.Remove(uid);
-
-        if (!cache.TryGetValue(uid, out cacheData))
+        if (!cache.TryGetValue(cacheKey, out cacheData))
         {
-          var opts = GetCacheOptions(cacheLifeKey);
+          var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
-          cacheData = await GetItem<T>(urlKey, customHeaders, queryParams, route);
-          cache.Set(uid, cacheData, opts);
+        cacheData = await GetItem<T>(urlKey, customHeaders, queryParams, route);
+          cache.Set(cacheKey, cacheData, opts);
         }
         return cacheData;
       }
     /// <summary>
     /// Gets the requested base URL from the configuration and adds the route to get the full URL.
     /// </summary>
-    /// <param name="urlKey">THe configuration ket for the URL to get</param>
+    /// <param name="urlKey">The configuration key for the URL to get</param>
     /// <param name="route">Any additional routing</param>
     /// <returns></returns>
     private string ExtractUrl(string urlKey, string route)
@@ -293,30 +281,29 @@ namespace VSS.MasterData.Proxies
       return url;
     }
 
-    private MemoryCacheEntryOptions GetCacheOptions(string cacheLifeKey)
+    /// <summary>
+    /// Gets the cache key. MemoryCache is shared so we need to construct a unique cache key by uid and type of item. 
+    /// </summary>
+    /// <typeparam name="T">The type of item being cached</typeparam>
+    /// <param name="uid">The uid of the item being cached</param>
+    /// <returns>The cache key to use.</returns>
+    private string GetCacheKey<T>(string uid)
     {
-      const string DEFAULT_TIMESPAN_MESSAGE = "Using default 15 mins.";
+      var keyPrefix = typeof(T).Name;
+      return $"{keyPrefix} {uid}";
+    }
 
-      string cacheLife = configurationStore.GetValueString(cacheLifeKey);
-      log.LogInformation($"{cacheLifeKey}: {cacheLife}");
-
-      if (string.IsNullOrEmpty(cacheLife))
-      {
-        log.LogWarning($"Your application is missing an environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
-        cacheLife = "00:15:00";
-      }
-
-      TimeSpan result;
-      if (!TimeSpan.TryParse(cacheLife, out result))
-      {
-        log.LogWarning($"Invalid timespan for environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
-        result = new TimeSpan(0, 15, 0);
-      }
-
-      return new MemoryCacheEntryOptions()
-      {
-        SlidingExpiration = result
-      };
+    /// <summary>
+    /// Clears an item from the cache if requested in the headers.
+    /// </summary>
+    /// <param name="uid">The item to remove from the cache</param>
+    /// <param name="customHeaders">The request headers</param>
+    private void ClearCacheIfRequired(string uid, IDictionary<string, string> customHeaders)
+    {
+      string caching = null;
+      customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
+      if (!string.IsNullOrEmpty(caching) && caching == "true")
+        cache.Remove(uid);
     }
   }
 }
