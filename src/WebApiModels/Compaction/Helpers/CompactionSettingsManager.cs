@@ -35,8 +35,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
 
       //Note: Speed is cm/s for Raptor but km/h in project settings
       var speedOverrideRange = ps.useDefaultTargetRangeSpeed.HasValue && !ps.useDefaultTargetRangeSpeed.Value;
-      var speedMin = (ps.customTargetSpeedMinimum.HasValue ? ps.customTargetSpeedMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMinimum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
-      var speedMax = (ps.customTargetSpeedMaximum.HasValue ? ps.customTargetSpeedMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMaximum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
+      var speedMin = (speedOverrideRange && ps.customTargetSpeedMinimum.HasValue ? ps.customTargetSpeedMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMinimum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
+      var speedMax = (speedOverrideRange && ps.customTargetSpeedMaximum.HasValue ? ps.customTargetSpeedMaximum.Value : CompactionProjectSettings.DefaultSettings.customTargetSpeedMaximum.Value) * ConversionConstants.KM_HR_TO_CM_SEC;
 
       var passCountOverrideRange = ps.useMachineTargetPassCount.HasValue && !ps.useMachineTargetPassCount.Value;
       var passCountMin = ps.customTargetPassCountMinimum.HasValue ? ps.customTargetPassCountMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetPassCountMinimum.Value;
@@ -66,7 +66,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           : null,
         (bool?)null,
         null,
-        speedOverrideRange ? MachineSpeedTarget.CreateMachineSpeedTarget((ushort)speedMin, (ushort)speedMax) : null
+        MachineSpeedTarget.CreateMachineSpeedTarget((ushort)speedMin, (ushort)speedMax)
       );
       return liftBuildSettings;
     }
@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       //Note: CMVSettings documentation raw values are 10ths
       var overrideTarget = ps.useMachineTargetCmv.HasValue && !ps.useMachineTargetCmv.Value;
-      var targetValue = ps.customTargetCmv.HasValue ? ps.customTargetCmv.Value * 10 : 0;
+      var targetValue = ps.customTargetCmv.HasValue ? ps.customTargetCmv.Value * 10 : CompactionProjectSettings.DefaultSettings.customTargetCmv * 10;
 
       var overrideRange = ps.useDefaultTargetRangeCmvPercent.HasValue && !ps.useDefaultTargetRangeCmvPercent.Value;
       var minPercent = ps.customTargetCmvPercentMinimum.HasValue ? ps.customTargetCmvPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetCmvPercentMinimum.Value;
@@ -103,7 +103,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     {
       //Note: MDPSettings documentation raw values are 10ths
       var overrideTarget = ps.useMachineTargetMdp.HasValue && !ps.useMachineTargetMdp.Value;
-      var targetValue = ps.customTargetMdp.HasValue ? ps.customTargetMdp.Value * 10 : 0;
+      var targetValue = ps.customTargetMdp.HasValue ? ps.customTargetMdp.Value * 10 : CompactionProjectSettings.DefaultSettings.customTargetMdp * 10;
 
       var overrideRange = ps.useDefaultTargetRangeMdpPercent.HasValue && !ps.useDefaultTargetRangeMdpPercent.Value;
       var minPercent = ps.customTargetMdpPercentMinimum.HasValue ? ps.customTargetMdpPercentMinimum.Value : CompactionProjectSettings.DefaultSettings.customTargetMdpPercentMinimum.Value;
