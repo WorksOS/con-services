@@ -26,74 +26,71 @@ namespace VSS.VisionLink.Raptor.Client
 {
     class Program
     {
+        /// <summary>
+        /// The ProjectID to process the TAG files into
+        /// </summary>
+        public static Int64 projectID = 2;
+
         public static void TestTileRendering()
         {
-            int ID = 1;
             int gridCuts = 10; // eg: A 4x4 grid of tiles
 
-            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(ID, false);
+            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(projectID, false);
 
             // Get the project extent so we know where to render
-            BoundingWorldExtent3D extents = ProjectExtents.ProductionDataOnly(ID);
+            BoundingWorldExtent3D extents = ProjectExtents.ProductionDataOnly(projectID);
 
             if (extents.IsValidPlanExtent)
             {
-                try
+                // Modify extents to be a square area with the data to be rendered centered on it
+                if (extents.SizeX > extents.SizeY)
                 {
-                    // Modify extents to be a square area with the data to be rendered centered on it
-                    if (extents.SizeX > extents.SizeY)
-                    {
-                        double Delta = (extents.SizeX - extents.SizeY) / 2;
-                        extents.MinY -= Delta;
-                        extents.MaxY += Delta;
-                    }
-                    else
-                    {
-                        double Delta = (extents.SizeY - extents.SizeX) / 2;
-                        extents.MinX -= Delta;
-                        extents.MaxX += Delta;
-                    }
+                    double Delta = (extents.SizeX - extents.SizeY) / 2;
+                    extents.MinY -= Delta;
+                    extents.MaxY += Delta;
+                }
+                else
+                {
+                    double Delta = (extents.SizeY - extents.SizeX) / 2;
+                    extents.MinX -= Delta;
+                    extents.MaxX += Delta;
+                }
 
-                    double tileSize = extents.SizeX / gridCuts;
+                double tileSize = extents.SizeX / gridCuts;
 
-                    for (int I = 0; I < gridCuts; I++)
+                for (int I = 0; I < gridCuts; I++)
+                {
+                    for (int J = 0; J < gridCuts; J++)
                     {
-                        for (int J = 0; J < gridCuts; J++)
-                        {
-                            BoundingWorldExtent3D renderExtents = new BoundingWorldExtent3D
-                                (extents.MinX + I * tileSize, extents.MinY + J * tileSize,
-                                 extents.MinX + (I + 1) * tileSize, extents.MinY + (J + 1) * tileSize);
+                        BoundingWorldExtent3D renderExtents = new BoundingWorldExtent3D
+                            (extents.MinX + I * tileSize, extents.MinY + J * tileSize,
+                             extents.MinX + (I + 1) * tileSize, extents.MinY + (J + 1) * tileSize);
 
-                            Bitmap bmp = RaptorTileRenderingServer.NewInstance().RenderTile(new TileRenderRequestArgument
-                            (ID,
-                             DisplayMode.Height,
-                             renderExtents,
-                             true, // CoordsAreGrid
-                             500, // PixelsX
-                             500, // PixelsY
-                             new CombinedFilter(siteModel) // Filter1
+                        Bitmap bmp = RaptorTileRenderingServer.NewInstance().RenderTile(new TileRenderRequestArgument
+                        (projectID,
+                         DisplayMode.Height,
+                         renderExtents,
+                         true, // CoordsAreGrid
+                         500, // PixelsX
+                         500, // PixelsY
+                         new CombinedFilter(siteModel) // Filter1
                              {
-                                 SpatialFilter = new CellSpatialFilter()
-                                 {
-                                     CoordsAreGrid = true,
-                                     IsSpatial = true,
-                                     Fence = new Fence(renderExtents)
-                                 }
-                             },
-                             null // filter 2
-                            ));
+                             SpatialFilter = new CellSpatialFilter()
+                             {
+                                 CoordsAreGrid = true,
+                                 IsSpatial = true,
+                                 Fence = new Fence(renderExtents)
+                             }
+                         },
+                         null // filter 2
+                        ));
 
-                            if (bmp != null)
-                            {
-                                bmp.Save(String.Format("c:\\temp\\raptorignitedata\\bitmap{0}x{1}.bmp", I, J));
-                                bmp.Save(String.Format("c:\\temp\\raptorignitedata\\bitmap{0}x{1}.png", I, J), ImageFormat.Png);
-                            }
+                        if (bmp != null)
+                        {
+                            bmp.Save(String.Format("c:\\temp\\raptorignitedata\\bitmap{0}x{1}.bmp", I, J));
+                            bmp.Save(String.Format("c:\\temp\\raptorignitedata\\bitmap{0}x{1}.png", I, J), ImageFormat.Png);
                         }
                     }
-                }
-                catch (Exception E)
-                {
-                    throw;
                 }
             }
         }
@@ -101,22 +98,17 @@ namespace VSS.VisionLink.Raptor.Client
         public static void ProcessSingleTAGFile(string fileName)
         {
             // Create the site model and machine etc to aggregate the processed TAG file into
-            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(2, true);
+            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(projectID, true);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
             // Convert a TAG file using a TAGFileConverter into a mini-site model
             AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
             TAGFileConverter converter = new TAGFileConverter();
 
-            // converter.Execute(new FileStream(TAGTestConsts.TestDataFilePath() + "TAGFiles\\TestTAGFile.tag", FileMode.Open, FileAccess.Read));
             converter.Execute(new FileStream(fileName, FileMode.Open, FileAccess.Read));
 
             converter.SiteModel.ID = siteModel.ID;
             converter.Machine.ID = machine.ID;
-
-            // ISubGridFactory factory = new SubGridFactory<NodeSubGrid, ServerSubGridTreeLeaf>();
-            // ServerSubGridTree tree = new ServerSubGridTree(siteModel);
-            // ProductionEventChanges events = new ProductionEventChanges(siteModel, machine.ID);
 
             // Create the integrator and add the processed TAG file to its processing list
             integrator.AddTaskToProcessList(converter.SiteModel, converter.Machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
@@ -125,14 +117,7 @@ namespace VSS.VisionLink.Raptor.Client
             List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
             AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(/*StorageProxy.Instance(), */integrator.TasksToProcess);
 
-            try
-            {
-                worker.ProcessTask(ProcessedTasks);
-            }
-            catch (Exception E)
-            {
-                throw;
-            }
+            worker.ProcessTask(ProcessedTasks);
         }
 
         public static void ProcessTAGFilesInFolder(string folder)
@@ -145,7 +130,7 @@ namespace VSS.VisionLink.Raptor.Client
             AggregatedDataIntegratorWorker worker = new AggregatedDataIntegratorWorker(/*StorageProxy.Instance(), */integrator.TasksToProcess);
 
             // Create the site model and machine etc to aggregate the processed TAG file into
-            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(2, true);
+            SiteModel siteModel = SiteModels.SiteModels.Instance().GetSiteModel(projectID, true);
             Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, 0, false);
 
             string[] files = Directory.GetFiles(folder);
@@ -165,16 +150,9 @@ namespace VSS.VisionLink.Raptor.Client
                     converter.SiteModel.ID = siteModel.ID;
                     converter.Machine.ID = machine.ID;
 
-                    try
-                    {
-                        List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
-                        integrator.AddTaskToProcessList(converter.SiteModel, converter.Machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
-                        worker.ProcessTask(ProcessedTasks);
-                    }
-                    catch (Exception E)
-                    {
-                        throw;
-                    }
+                    List<AggregatedDataIntegratorTask> ProcessedTasks = new List<AggregatedDataIntegratorTask>();
+                    integrator.AddTaskToProcessList(converter.SiteModel, converter.Machine, converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
+                    worker.ProcessTask(ProcessedTasks);
 
                     stopcount--;
                     if (stopcount == 0)
@@ -202,8 +180,10 @@ namespace VSS.VisionLink.Raptor.Client
                 
             // ProcessMachine10101TAGFiles();
             // ProcessMachine333TAGFiles();
+
             //ProcessSingleTAGFile(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Machine10101\\2085J063SV--C01 XG 01 YANG--160804061209.tag");
             //ProcessSingleTAGFile();
+
             // Process all TAG files for project 4733:
             ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 1");
             //ProcessTAGFilesInFolder(TAGTestConsts.TestDataFilePath() + "TAGFiles\\Model 4733\\Machine 2");

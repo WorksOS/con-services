@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TAGFiles.Tests", "TAGFiles.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raptor.Common", "Raptor.Common\Raptor.Common.csproj", "{197081DD-40E6-42AF-8A77-A3A0445042EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorClient", "RaptorClient\RaptorClient.csproj", "{7DD49C6B-042D-40CE-8E8E-430146E3AF97}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorTAGFileProcessor", "RaptorClient\RaptorTAGFileProcessor.csproj", "{7DD49C6B-042D-40CE-8E8E-430146E3AF97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaptorIgniteTest", "WindowsFormsApplication1\RaptorIgniteTest.csproj", "{BEAD32E3-AB58-4A6D-9D6F-65BD623E760A}"
 EndProject

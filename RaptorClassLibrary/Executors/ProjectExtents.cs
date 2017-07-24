@@ -11,7 +11,7 @@ using VSS.VisionLink.Raptor.SiteModels;
 namespace VSS.VisionLink.Raptor.Executors
 {
     /// <summary>
-    /// Provides the ability to query a data model for it's 3D spatial extents in a number of wayws
+    /// Provides the ability to query a data model for its 3D spatial extents in a number of ways
     /// </summary>
     public static class ProjectExtents
     {
