@@ -72,7 +72,8 @@ namespace VSS.Productivity3D.WebApiModels.ProductionData.Executors
 
             MemoryStream memoryStream;
             TDesignProfilerRequestResult designProfilerResult;
-            FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor("", fileList[i].Path, fileList[i].Name);
+            string fileSpaceId = FileDescriptor.GetFileSpaceId(configStore, log);
+            FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, fileList[i].Path, fileList[i].Name);
 
             bool result = raptorClient.GetDesignBoundary(
               DesignProfiler.ComputeDesignBoundary.RPC.__Global.Construct_CalculateDesignBoundary_Args(

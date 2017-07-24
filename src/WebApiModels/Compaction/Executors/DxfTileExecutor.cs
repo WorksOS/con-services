@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       {
         DxfTileRequest request = item as DxfTileRequest;
 
-        string filespaceId = GetFilespaceId();
+        string filespaceId = FileDescriptor.GetFileSpaceId(configStore, log);
 
         //Calculate zoom level
         int zoomLevel = CalculateZoomLevel(request.bbox);
@@ -133,6 +133,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
 
     }
 
+    /*
     /// <summary>
     /// Gets the TCC filespaceId for the vldatastore filespace
     /// </summary>
@@ -148,7 +149,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
       }
       return filespaceId;
     }
-
+    */
     /// <summary>
     /// Calculates the zoom level from the bounding box
     /// </summary>

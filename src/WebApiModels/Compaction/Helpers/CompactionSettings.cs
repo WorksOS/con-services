@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
@@ -37,18 +38,18 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     }
 
     public static Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn, ElevationType? elevationType, 
-      int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds, long? designId = null)
+      int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds, DesignDescriptor designDescriptor = null)
     {
       bool haveFilter = 
         startUtc.HasValue || endUtc.HasValue || onMachineDesignId.HasValue || vibeStateOn.HasValue || elevationType.HasValue || 
         layerNumber.HasValue || (machines != null && machines.Count > 0) || (excludedSurveyedSurfaceIds != null && excludedSurveyedSurfaceIds.Count > 0) ||
-        designId.HasValue;
+        designDescriptor != null;
 
       var layerMethod = layerNumber.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None;
 
       return haveFilter ? 
         Filter.CreateFilter(null, null, null, startUtc, endUtc, onMachineDesignId, null, vibeStateOn, null, elevationType,
-         null, null, null, null, null, null, null, null, null, layerMethod, null, null, layerNumber, null, machines, 
+         null, null, null, null, null, null, null, null, null, layerMethod, designDescriptor, null, layerNumber, null, machines, 
          excludedSurveyedSurfaceIds, null, null, null, null, null, null) 
          : null;
     }

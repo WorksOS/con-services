@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using VLPDDecls;
+using VSS.ConfigurationStore;
 using VSS.MasterDataProxies;
 using VSS.MasterDataProxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
@@ -42,6 +44,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
+    /// Where to get environment variables, connection string etc. from
+    /// </summary>
+    private IConfigurationStore configStore;
+
+    /// <summary>
     /// For getting list of imported files for a project
     /// </summary>
     private readonly IFileListProxy fileListProxy;
@@ -52,11 +59,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="fileListProxy">File list proxy</param>
-    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy)
+    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionDataController>();
+      this.configStore = configStore;
       this.fileListProxy = fileListProxy;
     }
 
@@ -180,18 +188,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
 
-      var legacyDesignId = await this.GetLegacyFileId(fileListProxy, projectUid.Value, designUid.Value, Request.Headers.GetCustomHeaders());
+      var designFile = await this.GetFile(fileListProxy, projectUid.Value, designUid ?? new Guid(), Request.Headers.GetCustomHeaders());
+
+      DesignDescriptor designDescriptor = null;
+
+      if (designFile != null)
+      {
+        string fileSpaceId = FileDescriptor.GetFileSpaceId(configStore, log);
+        FileDescriptor fileDescriptor = FileDescriptor.CreateFileDescriptor(fileSpaceId, designFile.Path, designFile.Name);
+        designDescriptor = DesignDescriptor.CreateDesignDescriptor(designFile.LegacyFileId, fileDescriptor, 0.0);
+      }
 
       Filter filter = CompactionSettings.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
-        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds, legacyDesignId);
+        this.GetMachines(assetID, machineName, isJohnDoe), excludedIds, designDescriptor);
       MDPRequest request = MDPRequest.CreateMDPRequest(projectId.Value, null, mdpSettings, liftSettings, filter,
         -1,
         null, null, null);
       request.Validate();
       try
       {
-        var result = RequestExecutorContainer.Build<SummaryMDPExecutor>(logger, raptorClient, null)
+        var result = RequestExecutorContainer.Build<SummaryMDPExecutor>(logger, raptorClient, null, configStore)
           .Process(request) as MDPSummaryResult;
         var returnResult = CompactionMdpSummaryResult.CreateMdpSummaryResult(result, mdpSettings);
         log.LogInformation("GetMdpSummary result: " + JsonConvert.SerializeObject(returnResult));
