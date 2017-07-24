@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace VSS.VisionLink.Raptor.TAGFiles.Classes.ValueMatcher.Machine
 {
     /// <summary>
-    /// Handles the machien speed value reported from the machine ECM
+    /// Handles the machine speed value reported from the machine ECM
     /// </summary>
     public class TAGMachineSpeedValueMatcher : TAGValueMatcher
     {
