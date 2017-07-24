@@ -111,9 +111,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.store = store;
 
       ServiceExceptionHandler = serviceExceptionHandler;
-
-      kafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                       store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      kafkaTopicName = (store.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
+                       store.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
     }
 
     /// <summary>
