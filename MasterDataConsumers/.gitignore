@@ -32,8 +32,8 @@ _ReSharper*/
 deploy/
 
 # Track ToolsFolder
-!tools/OpenCover/tools/x64/
-!tools/OpenCover/tools/x86/
+!tools/x64/
+!tools/x86/
 
 
 # Roslyn cache directories

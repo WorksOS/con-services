@@ -124,16 +124,25 @@ node ('Jenkins-Win2016-Raptor')
   
            stage 'Checkout'
            checkout scm
-dir ("MasterDataConsumers")
-{
-
+		   dir ("MasterDataConsumers")
+		   {
            stage 'Build'
            bat "build47.bat"
-          
            archiveArtifacts artifacts: 'MasterdataConsumerNet47.zip', fingerprint: true 
-
-         }
-
-        }
-}
+           }
+          }
+	}
+	else 
+	{
+           currentBuild.displayName = versionNumber + suffix
+  
+           stage 'Checkout'
+           checkout scm
+		   dir ("MasterDataConsumers")
+		   {
+           stage 'Coverage'
+           bat "coverage.bat"
+// Not supported yet  step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
+           }
+	}
 }
