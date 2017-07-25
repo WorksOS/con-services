@@ -166,7 +166,7 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "DesignSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.DesignSurface,
-        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff",
         LegacyFileId = 15176,
         IsActivated = true
       },
@@ -176,7 +176,7 @@ namespace MockProjectWebApi.Controllers
         ProjectUid = GOLDEN_DATA_DIMENSIONS_PROJECT_UID_1,
         CustomerUid = "DesignSurfaceAcceptanceTest",
         ImportedFileType = ImportedFileType.DesignSurface,
-        ImportedFileUid = Guid.NewGuid().ToString(),
+        ImportedFileUid = "220e12e5-ce92-4645-8f01-1942a2d5a57f",
         LegacyFileId = 15175,
         IsActivated = true
       },
