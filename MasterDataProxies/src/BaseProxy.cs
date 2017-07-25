@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.MasterData.Proxies
 {
   /// <summary>
   /// Base class for proxies getting master data from services.
   /// </summary>
-  public class BaseProxy 
+  public class BaseProxy : ICacheProxy
   {
     protected readonly ILogger log;
     private readonly ILoggerFactory logger;
@@ -161,7 +162,11 @@ namespace VSS.MasterData.Proxies
     /// <returns>Master data item</returns>
     protected async Task<T> GetMasterDataItemWithList<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) where T : IData
     {
-      ClearCacheIfRequired(uid, customHeaders);
+      if (cache == null)
+      {
+        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
+      }
+      ClearCacheIfRequired<T>(uid, customHeaders);
       var cacheKey = GetCacheKey<T>(uid);
       T cacheData;
       if (!cache.TryGetValue(cacheKey, out cacheData))
@@ -191,7 +196,11 @@ namespace VSS.MasterData.Proxies
     /// <returns>Master data item</returns>
     protected async Task<T> GetMasterDataItem<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) 
     {
-      ClearCacheIfRequired(uid, customHeaders);
+      if (cache == null)
+      {
+        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
+      }
+      ClearCacheIfRequired<T>(uid, customHeaders);
       var cacheKey = GetCacheKey<T>(uid);
       T cacheData;
       if (!cache.TryGetValue(cacheKey, out cacheData))
@@ -218,7 +227,11 @@ namespace VSS.MasterData.Proxies
     protected async Task<List<T>> GetMasterDataList<T>(string customerUid, string cacheLifeKey, string urlKey,
                 IDictionary<string, string> customHeaders, string route = null) 
     {
-      ClearCacheIfRequired(customerUid, customHeaders);
+      if (cache == null)
+      {
+        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
+      }
+      ClearCacheIfRequired<T>(customerUid, customHeaders);
       var cacheKey = GetCacheKey<T>(customerUid);
       List<T> cacheData;
       if (!cache.TryGetValue(cacheKey, out cacheData))
@@ -245,7 +258,11 @@ namespace VSS.MasterData.Proxies
     protected async Task<T> GetContainedMasterDataList<T>(string uid, string cacheLifeKey, string urlKey,
                   IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
       {
-        ClearCacheIfRequired(uid, customHeaders);
+        if (cache == null)
+        {
+          throw new InvalidOperationException("This method requires a cache; use the correct constructor");
+        }
+        ClearCacheIfRequired<T>(uid, customHeaders);
         var cacheKey = GetCacheKey<T>(uid);
         T cacheData;
         if (!cache.TryGetValue(cacheKey, out cacheData))
@@ -296,14 +313,30 @@ namespace VSS.MasterData.Proxies
     /// <summary>
     /// Clears an item from the cache if requested in the headers.
     /// </summary>
+    /// <typeparam name="T">The type of item being cached</typeparam>
     /// <param name="uid">The item to remove from the cache</param>
     /// <param name="customHeaders">The request headers</param>
-    private void ClearCacheIfRequired(string uid, IDictionary<string, string> customHeaders)
+    private void ClearCacheIfRequired<T>(string uid, IDictionary<string, string> customHeaders)
     {
       string caching = null;
       customHeaders.TryGetValue("X-VisionLink-ClearCache", out caching);
       if (!string.IsNullOrEmpty(caching) && caching == "true")
-        cache.Remove(uid);
+        ClearCacheItem<T>(uid);
+    }
+
+    /// <summary>
+    /// Clears an item from the cache
+    /// </summary>
+    /// <typeparam name="T">The type of item being cached</typeparam>
+    /// <param name="uid">The uid of the item to remove from the cache</param>
+    public void ClearCacheItem<T>(string uid)
+    {
+      if (cache == null)
+      {
+        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
+      }
+      var cacheKey = GetCacheKey<T>(uid);
+      cache.Remove(cacheKey);
     }
   }
 }

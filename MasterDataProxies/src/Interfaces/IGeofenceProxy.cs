@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace VSS.MasterData.Proxies.Interfaces
 {
-    public interface IGeofenceProxy
+    public interface IGeofenceProxy :ICacheProxy
     {
         Task<string> GetGeofenceBoundary(string geofenceUid, IDictionary<string, string> customHeaders = null);
 
