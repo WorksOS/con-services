@@ -27,6 +27,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private Getter<TileResult> tileRequester;
     private Getter<CompactionColorPalettesResult> paletteRequester;
     private Getter<CompactionElevationPaletteResult> elevPaletteRequester;
+    private Getter<ProfileResult> profileRequester;
 
     private StatisticsParameters statsRequest;
     private string projectUid;
@@ -287,6 +288,31 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     public void ThenTheCMVDetailsResultShouldBe(string multilineText)
     {
       CompareIt<CompactionCmvDetailedResult>(multilineText, cmvDetailsRequester);
+    }
+
+    [Given(@"the ProfileSlicer service URI ""(.*)""")]
+    public void GivenTheProfileSlicerServiceURI(string url)
+    {
+      this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+    }
+
+    [Given(@"a startLatDegrees ""(.*)"" and a startLonDegrees ""(.*)"" and a endLatDegrees ""(.*)"" and a endLonDegrees ""(.*)""")]
+    public void GivenAStartLatDegreesAndAStartLonDegreesAndAEndLatDegreesAndAEndLonDegrees(Decimal startLatDegrees, Decimal startLonDegrees, Decimal endLatDegrees, Decimal endLonDegrees)
+    {
+      queryParameters =
+        $"&startLatDegrees={startLatDegrees}&startLonDegrees={startLonDegrees}&endLatDegrees={endLatDegrees}&endLonDegrees={endLonDegrees}";
+    }
+
+    [When(@"I request a ProductionData Slicer Profile")]
+    public void WhenIRequestAProductionDataSlicerProfile()
+    {
+      profileRequester = GetIt<ProfileResult>();
+    }
+
+    [Then(@"the Profile response should be")]
+    public void ThenTheProfileResponseShouldBe(string multilineText)
+    {
+      CompareIt<ProfileResult>(multilineText, profileRequester);
     }
 
     private Getter<T> GetIt<T>()

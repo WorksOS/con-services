@@ -296,6 +296,118 @@ Scenario: Compaction Get CMV Summary
   }  
   """
 
+  Scenario: Profile Slicer - Good Request
+ 	Given the ProfileSlicer service URI "/api/v2/profiles/productiondata"
+	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace" 
+  #And a startLatDegrees "50.0" and a startLonDegrees "122.979" and a endLatDegrees "60.0" and a endLonDegrees "132.979"
+  And a startLatDegrees "36.207310" and a startLonDegrees "-116.019584" and a endLatDegrees "36.207322" and a endLonDegrees "-115.019574"
+  When I request a ProductionData Slicer Profile
+	Then the Profile response should be
+  """
+  {
+  "cells": [
+    {
+      "station": 0,
+      "firstPassHeight": 622.509,
+      "highestPassHeight": 622.509,
+      "lastPassHeight": 622.47,
+      "lowestPassHeight": 622.399,
+      "firstCompositeHeight": 622.509,
+      "highestCompositeHeight": 622.509,
+      "lastCompositeHeight": 622.47,
+      "lowestCompositeHeight": 622.399,
+      "designHeight": "NaN",
+      "cmvPercent": 313.333344,
+      "cmvHeight": 622.47,
+      "previousCmvPercent": 100,
+      "mdpPercent": "NaN",
+      "mdpHeight": "NaN",
+      "temperature": 0,
+      "temperatureHeight": 622.47,
+      "temperatureLevel": 2,
+      "topLayerPassCount": 1,
+      "topLayerPassCountTargetRange": {
+        "min": 5,
+        "max": 5
+      },
+      "passCountIndex": 2,
+      "topLayerThickness": 0.07098389,
+      "minHeight": 622.399,
+      "maxHeight": 622.509
+    },
+    {
+      "station": 0.2782115027002874,
+      "firstPassHeight": 622.51,
+      "highestPassHeight": 622.51,
+      "lastPassHeight": 622.462,
+      "lowestPassHeight": 622.414,
+      "firstCompositeHeight": 622.51,
+      "highestCompositeHeight": 622.51,
+      "lastCompositeHeight": 622.462,
+      "lowestCompositeHeight": 622.414,
+      "designHeight": "NaN",
+      "cmvPercent": 813.3333,
+      "cmvHeight": 622.462,
+      "previousCmvPercent": 593.3333,
+      "mdpPercent": "NaN",
+      "mdpHeight": "NaN",
+      "temperature": 0,
+      "temperatureHeight": 622.462,
+      "temperatureLevel": 2,
+      "topLayerPassCount": 3,
+      "topLayerPassCountTargetRange": {
+        "min": 5,
+        "max": 5
+      },
+      "passCountIndex": 2,
+      "topLayerThickness": 0,
+      "minHeight": 622.414,
+      "maxHeight": 622.51
+    },
+    {
+      "station": 0.4466706003699983,
+      "firstPassHeight": 622.51,
+      "highestPassHeight": 622.51,
+      "lastPassHeight": 622.462,
+      "lowestPassHeight": 622.414,
+      "firstCompositeHeight": 622.51,
+      "highestCompositeHeight": 622.51,
+      "lastCompositeHeight": 622.462,
+      "lowestCompositeHeight": 622.414,
+      "designHeight": "NaN",
+      "cmvPercent": 813.3333,
+      "cmvHeight": 622.462,
+      "previousCmvPercent": 593.3333,
+      "mdpPercent": "NaN",
+      "mdpHeight": "NaN",
+      "temperature": 0,
+      "temperatureHeight": 622.462,
+      "temperatureLevel": 2,
+      "topLayerPassCount": 3,
+      "topLayerPassCountTargetRange": {
+        "min": 5,
+        "max": 5
+      },
+      "passCountIndex": 2,
+      "topLayerThickness": 0,
+      "minHeight": 622.414,
+      "maxHeight": 622.51
+    }
+  ],
+  "alignmentPoints": [],
+  "callId": "00000000-0000-0000-0000-000000000000",
+  "success": true,
+  "minStation": 0,
+  "maxStation": 0.4466706003699983,
+  "minHeight": 622.3989868164062,
+  "maxHeight": 622.510009765625,
+  "gridDistanceBetweenProfilePoints": 0.4466706003699983,
+  "Code": 0,
+  "Message": "success"
+}
+  """
+  
+
   Scenario: Compaction Get Elevation Palette When No Elevation Data
 	Given the Compaction Elevation Palette service URI "/api/v2/compaction/elevationpalette"
   And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
