@@ -22,7 +22,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private Getter<CompactionSpeedSummaryResult> speedSummaryRequester;
     private Getter<CompactionTemperatureSummaryResult> temperatureSummaryRequester;
     private Getter<CompactionCmvPercentChangeResult> cmvPercentChangeRequester;
-    private Poster<StatisticsParameters, ProjectStatistics> projectStatisticsPoster;
+    private Getter<ProjectStatistics> projectStatisticsRequester;
     private Getter<ElevationStatisticsResult> elevationRangeRequester;
     private Getter<TileResult> tileRequester;
     private Getter<CompactionColorPalettesResult> paletteRequester;
@@ -200,14 +200,13 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [When(@"I request Project Statistics")]
     public void WhenIRequestProjectStatistics()
     {
-      statsRequest = new StatisticsParameters { projectUid = this.projectUid };
-      projectStatisticsPoster = PostIt<StatisticsParameters, ProjectStatistics>(statsRequest);
+      projectStatisticsRequester = GetIt<ProjectStatistics>();
     }
 
     [Then(@"the Project Statistics result should be")]
     public void ThenTheProjectStatisticsResultShouldBe(string multilineText)
     {
-      CompareIt(multilineText, projectStatisticsPoster);
+      CompareIt<ProjectStatistics>(multilineText, projectStatisticsRequester);
     }
 
     [Given(@"the Compaction Tiles service URI ""(.*)""")]
