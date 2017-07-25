@@ -530,13 +530,13 @@ this.ScenarioSetup(scenarioInfo);
   testRunner.Given("the ProfileSlicer service URI \"/api/v2/profiles/productiondata/slicer\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 301
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 303
+#line 302
   testRunner.And("a startLatDegrees \"36.207310\" and a startLonDegrees \"-115.019584\" and a endLatDeg" +
                     "rees \"36.207322\" and a endLonDegrees \"-115.019574\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 304
+#line 303
   testRunner.When("I request a ProductionData Slicer Profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 305
+#line 304
  testRunner.Then("the Profile response should be", "{\r\n\"cells\": [\r\n  {\r\n    \"station\": 0.0,\r\n    \"firstPassHeight\": 597.294,\r\n    \"hi" +
                     "ghestPassHeight\": 597.629,\r\n    \"lastPassHeight\": 597.367,\r\n    \"lowestPassHeigh" +
                     "t\": 597.292,\r\n    \"firstCompositeHeight\": 597.294,\r\n    \"highestCompositeHeight\"" +
@@ -629,7 +629,7 @@ this.ScenarioSetup(scenarioInfo);
                     "unt\": 259,\r\n    \"topLayerPassCountTargetRange\": {\r\n      \"min\": 0,\r\n      \"max\":" +
                     " 0\r\n    },\r\n    \"passCountIndex\": 0,\r\n    \"topLayerThickness\": 0.08294678,\r\n    " +
                     "\"minHeight\": 597.281,\r\n    \"maxHeight\": 597.49\r\n  }\r\n],\r\n\"alignmentPoints\": [],\r" +
-                    "\n\"callId\": \"691bc354-0e8e-4837-9001-c2964e6d321a\",\r\n\"success\": true,\r\n\"minStatio" +
+                    "\n\"callId\": \"00000000-0000-0000-0000-000000000000\",\r\n\"success\": true,\r\n\"minStatio" +
                     "n\": 0.0,\r\n\"maxStation\": 1.6069349835344178,\r\n\"minHeight\": 597.2760009765625,\r\n\"m" +
                     "axHeight\": 597.6290283203125,\r\n\"gridDistanceBetweenProfilePoints\": 1.60693498353" +
                     "4418,\r\n\"Code\": 0,\r\n\"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -643,19 +643,19 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetElevationPaletteWhenNoElevationData()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette When No Elevation Data", ((string[])(null)));
-#line 585
+#line 584
   this.ScenarioSetup(scenarioInfo);
-#line 586
+#line 585
  testRunner.Given("the Compaction Elevation Palette service URI \"/api/v2/compaction/elevationpalette" +
                     "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 587
+#line 586
   testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 588
+#line 587
   testRunner.And("a startUtc \"2017-01-01\" and an EndUtc \"2017-01-01\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 589
+#line 588
  testRunner.When("I request Elevation Palette", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 590
+#line 589
  testRunner.Then("the Elevation Palette result should be", "{\r\n  \"palette\": null,\r\n   \"Code\": -4,\r\n  \"Message\": \"No elevation range\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -667,17 +667,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetElevationPalette()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette", ((string[])(null)));
-#line 599
+#line 598
   this.ScenarioSetup(scenarioInfo);
-#line 600
+#line 599
  testRunner.Given("the Compaction Elevation Palette service URI \"/api/v2/compaction/elevationpalette" +
                     "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 601
+#line 600
   testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 602
+#line 601
  testRunner.When("I request Elevation Palette", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 603
+#line 602
  testRunner.Then("the Elevation Palette result should be", "{\r\n  \"palette\": {\r\n    \"colorValues\": [\r\n      {\r\n        \"color\": 13107200,\r\n   " +
                     "     \"value\": 591.9539794921875\r\n      },\r\n      {\r\n        \"color\": 16711680,\r\n" +
                     "        \"value\": 593.02544759114585\r\n      },\r\n      {\r\n        \"color\": 1476096" +
@@ -722,16 +722,16 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetPalettes()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Palettes", ((string[])(null)));
-#line 741
+#line 740
   this.ScenarioSetup(scenarioInfo);
-#line 742
+#line 741
  testRunner.Given("the Compaction Palettes service URI \"/api/v2/compaction/colorpalettes\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 743
+#line 742
   testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 744
+#line 743
  testRunner.When("I request Palettes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 745
+#line 744
  testRunner.Then("the Palettes result should be", "{\r\n  \"cmvDetailPalette\": {\r\n    \"colorValues\": [\r\n      {\r\n      \"color\": 2971523" +
                     ",\r\n      \"value\": 0.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 4430812,\r\n\t\t\t\"value\": 10.0\r\n\t\t},\r\n" +
                     "\t\t{\r\n\t\t\t\"color\": 12509169,\r\n\t\t\t\"value\": 20.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 10341991,\r\n" +

@@ -299,7 +299,6 @@ Scenario: Compaction Get CMV Summary
   Scenario: Profile Slicer - Good Request
  	Given the ProfileSlicer service URI "/api/v2/profiles/productiondata/slicer"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace" 
-  #And a startLatDegrees "50.0" and a startLonDegrees "122.979" and a endLatDegrees "60.0" and a endLonDegrees "132.979"
   And a startLatDegrees "36.207310" and a startLonDegrees "-115.019584" and a endLatDegrees "36.207322" and a endLonDegrees "-115.019574"
   When I request a ProductionData Slicer Profile
 	Then the Profile response should be
@@ -569,7 +568,7 @@ Scenario: Compaction Get CMV Summary
     }
   ],
   "alignmentPoints": [],
-  "callId": "691bc354-0e8e-4837-9001-c2964e6d321a",
+  "callId": "00000000-0000-0000-0000-000000000000",
   "success": true,
   "minStation": 0.0,
   "maxStation": 1.6069349835344178,
