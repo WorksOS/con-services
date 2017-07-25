@@ -1,0 +1,25 @@
+{
+  "NoDesignFilter": {
+    "boundingExtents": {
+      "maxX": -115.01824137935459,
+      "maxY": 36.2077397408003,
+      "maxZ": 1e+308,
+      "minX": -115.02513694938636,
+      "minY": 36.206563325785218,
+      "minZ": 1e+308
+    },
+    "minElevation": 591.9539794921875,
+    "maxElevation": 624.0980224609375,
+    "totalCoverageArea": 10637.396400000001,
+    "Code": 0,
+    "Message": "success"
+  },
+  "NoData": {
+    "boundingExtents": null,
+    "minElevation": 0,
+    "maxElevation": 0,
+    "totalCoverageArea": 0,
+    "Code": -4,
+    "Message": "No elevation range"
+  }
+}

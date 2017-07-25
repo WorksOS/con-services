@@ -1,0 +1,17 @@
+{
+  "NoDesignFilter": {
+    "passCountSummaryData": {
+      "percentEqualsTarget": 3.3255301569815479,
+      "percentGreaterThanTarget": 45.311209033324154,
+      "percentLessThanTarget": 51.3632608096943,
+      "totalAreaCoveredSqMeters": 1678.9744000000003,
+      "passCountTarget": {
+        "minPassCountMachineTarget": 5,
+        "maxPassCountMachineTarget": 5,
+        "targetVaries": true
+      }
+    },
+    "Code": 0,
+    "Message": "success"
+  }
+}

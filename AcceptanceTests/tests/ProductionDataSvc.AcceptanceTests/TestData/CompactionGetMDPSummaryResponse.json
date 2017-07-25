@@ -1,0 +1,50 @@
+{
+  "NoDesignFilter": {
+    "mdpSummaryData": {
+      "percentEqualsTarget": 79.3533176153587,
+      "percentGreaterThanTarget": 0,
+      "percentLessThanTarget": 20.646682384641295,
+      "totalAreaCoveredSqMeters": 1029.6492000000003,
+      "mdpTarget": {
+        "mdpMachineTarget": 150.0,
+        "targetVaries": false
+      },
+      "minMDPPercent": 80,
+      "maxMDPPercent": 120
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignOutside": {
+    "mdpSummaryData": {
+      "percentEqualsTarget": 0,
+      "percentGreaterThanTarget": 0,
+      "percentLessThanTarget": 0,
+      "totalAreaCoveredSqMeters": 0,
+      "mdpTarget": {
+        "mdpMachineTarget": 3276,
+        "targetVaries": false
+      },
+      "minMDPPercent": 80,
+      "maxMDPPercent": 120
+    },
+    "Code": 0,
+    "Message": "success"
+  },
+  "DesignIntersepts": {
+    "mdpSummaryData": {
+      "percentEqualsTarget": 100,
+      "percentGreaterThanTarget": 0,
+      "percentLessThanTarget": 0,
+      "totalAreaCoveredSqMeters": 0.80920000000000014,
+      "mdpTarget": {
+        "mdpMachineTarget": 150,
+        "targetVaries": false
+      },
+      "minMDPPercent": 80,
+      "maxMDPPercent": 120
+    },
+    "Code": 0,
+    "Message": "success"
+  }
+}

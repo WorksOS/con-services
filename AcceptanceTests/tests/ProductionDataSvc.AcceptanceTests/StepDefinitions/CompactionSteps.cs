@@ -31,7 +31,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     private StatisticsParameters statsRequest;
     private string projectUid;
     private string queryParameters = string.Empty;
-
+    private string operation;
 
     [Given(@"the Compaction CMV Summary service URI ""(.*)""")]
     public void GivenTheCompactionCMVSummaryServiceURI(string url)
@@ -39,19 +39,22 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
     }
 
-    [Given(@"a projectUid ""(.*)""")]
-    public void GivenAProjectUid(string projectUid)
+    [Given(@"startUtc ""(.*)"" and endUtc ""(.*)""")]
+    public void GivenStartUtcAndEndUtc(string startUtc, string endUtc)
     {
-      this.projectUid = projectUid;
+      switch (operation)
+      {
+        case "ElevationRange":
+          elevationRangeRequester.QueryString.Add("startUtc", startUtc);
+          elevationRangeRequester.QueryString.Add("endUtc", endUtc);
+          break;
+        case "ElevationPalette":
+          elevPaletteRequester.QueryString.Add("startUtc", startUtc);
+          elevPaletteRequester.QueryString.Add("endUtc", endUtc);
+          break;
+      }
     }
-
-    [Given(@"a startUtc ""(.*)"" and an EndUtc ""(.*)""")]
-    public void GivenAStartUtcAndAnEndUtc(string startUtc, string endUtc)
-    {
-      queryParameters = string.Format("&startUtc={0}&endUtc={1}",
-        startUtc, endUtc);
-    }
-
+    
     [When(@"I request CMV summary")]
     public void WhenIRequestCMVSummary()
     {
@@ -64,16 +67,115 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       CompareIt<CompactionCmvSummaryResult>(multilineText, cmvSummaryRequester);
     }
 
-    [Given(@"the Compaction MDP Summary service URI ""(.*)""")]
-    public void GivenTheCompactionMDPSummaryServiceURI(string url)
+    [Given(@"the Compaction service URI ""(.*)"" for operation ""(.*)""")]
+    public void GivenTheCompactionServiceURIForOperation(string url, string operation)
     {
       this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
+      this.operation = operation;
+    }
+
+    [Given(@"the result file ""(.*)""")]
+    public void GivenTheResultFile(string resultFileName)
+    {
+      switch (operation)
+      {
+        case "CMVSummary": cmvSummaryRequester = new Getter<CompactionCmvSummaryResult>(url, resultFileName); break;
+        case "MDPSummary": mdpSummaryRequester = new Getter<CompactionMdpSummaryResult>(url, resultFileName); break;
+        case "PassCountSummary": passCountSummaryRequester = new Getter<CompactionPassCountSummaryResult>(url, resultFileName); break;
+        case "PassCountDetails": passCountDetailsRequester = new Getter<CompactionPassCountDetailedResult>(url, resultFileName); break;
+        case "TemperatureSummary": temperatureSummaryRequester = new Getter<CompactionTemperatureSummaryResult>(url, resultFileName); break;
+        case "SpeedSummary": speedSummaryRequester = new Getter<CompactionSpeedSummaryResult>(url, resultFileName); break;
+        case "CMVPercentChangeSummary": cmvPercentChangeRequester = new Getter<CompactionCmvPercentChangeResult>(url, resultFileName); break;
+        case "ElevationRange": elevationRangeRequester = new Getter<ElevationStatisticsResult>(url, resultFileName); break;
+        case "ProjectStatistics": projectStatisticsPoster = new Poster<StatisticsParameters, ProjectStatistics>(url, null, resultFileName); break;
+        case "ProductionDataTiles": tileRequester = new Getter<TileResult>(url, resultFileName); break;
+        case "ElevationPalette": elevPaletteRequester = new Getter<CompactionElevationPaletteResult>(url, resultFileName); break;
+        case "CompactionPalettes": paletteRequester = new Getter<CompactionColorPalettesResult>(url, resultFileName); break;
+      }
+    }
+
+    [Given(@"projectUid ""(.*)""")]
+    public void GivenProjectUid(string projectUid)
+    {
+      switch (operation)
+      {
+        case "CMVSummary": cmvSummaryRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "MDPSummary": mdpSummaryRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "PassCountSummary": passCountSummaryRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "PassCountDetails": passCountDetailsRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "TemperatureSummary": temperatureSummaryRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "SpeedSummary": speedSummaryRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "CMVPercentChangeSummary": cmvPercentChangeRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "ElevationRange": elevationRangeRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "ProjectStatistics": statsRequest = new StatisticsParameters { projectUid = projectUid }; break;
+        case "ProductionDataTiles": tileRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "ElevationPalette": elevPaletteRequester.QueryString.Add("ProjectUid", projectUid); break;
+        case "CompactionPalettes": paletteRequester.QueryString.Add("ProjectUid", projectUid); break;
+      }
+    }
+
+    [Given(@"designUid ""(.*)""")]
+    public void GivenDesignUid(string designUid)
+    {
+      switch (operation)
+      {
+        case "CMVSummary": cmvSummaryRequester.QueryString.Add("designUid", designUid); break;
+        case "MDPSummary": mdpSummaryRequester.QueryString.Add("designUid", designUid); break;
+        case "PassCountSummary": passCountSummaryRequester.QueryString.Add("designUid", designUid); break;
+        case "PassCountDetails": passCountDetailsRequester.QueryString.Add("designUid", designUid); break;
+        case "TemperatureSummary": temperatureSummaryRequester.QueryString.Add("designUid", designUid); break;
+        case "SpeedSummary": speedSummaryRequester.QueryString.Add("designUid", designUid); break;
+        case "CMVPercentChangeSummary": cmvPercentChangeRequester.QueryString.Add("designUid", designUid); break;
+        case "ElevationRange": elevationRangeRequester.QueryString.Add("designUid", designUid); break;
+        case "ProductionDataTiles": tileRequester.QueryString.Add("designUid", designUid); break;
+        case "ElevationPalette": elevPaletteRequester.QueryString.Add("designUid", designUid); break;
+      }
+    }
+
+    [Then(@"the result should match the ""(.*)"" from the repository")]
+    public void ThenTheResultShouldMatchTheFromTheRepository(string resultName)
+    {
+      switch (operation)
+      {
+        case "CMVSummary": Assert.AreEqual(cmvSummaryRequester.ResponseRepo[resultName], cmvSummaryRequester.CurrentResponse); break;
+        case "MDPSummary": Assert.AreEqual(mdpSummaryRequester.ResponseRepo[resultName], mdpSummaryRequester.CurrentResponse); break;
+        case "PassCountSummary": Assert.AreEqual(passCountSummaryRequester.ResponseRepo[resultName], passCountSummaryRequester.CurrentResponse); break;
+        case "PassCountDetails": Assert.AreEqual(passCountDetailsRequester.ResponseRepo[resultName], passCountDetailsRequester.CurrentResponse); break;
+        case "TemperatureSummary": Assert.AreEqual(temperatureSummaryRequester.ResponseRepo[resultName], temperatureSummaryRequester.CurrentResponse); break;
+        case "SpeedSummary": Assert.AreEqual(speedSummaryRequester.ResponseRepo[resultName], speedSummaryRequester.CurrentResponse); break;
+        case "CMVPercentChangeSummary": Assert.AreEqual(cmvPercentChangeRequester.ResponseRepo[resultName], cmvPercentChangeRequester.CurrentResponse); break;
+        case "ElevationRange": Assert.AreEqual(elevationRangeRequester.ResponseRepo[resultName], elevationRangeRequester.CurrentResponse); break;
+        case "ProjectStatistics": Assert.AreEqual(projectStatisticsPoster.ResponseRepo[resultName], projectStatisticsPoster.CurrentResponse); break;
+        case "ProductionDataTiles": Assert.AreEqual(tileRequester.ResponseRepo[resultName], tileRequester.CurrentResponse); break;
+        case "ElevationPalette": Assert.AreEqual(elevPaletteRequester.ResponseRepo[resultName], elevPaletteRequester.CurrentResponse); break;
+        case "CompactionPalettes": Assert.AreEqual(paletteRequester.ResponseRepo[resultName], paletteRequester.CurrentResponse); break;
+      }
     }
 
     [When(@"I request MDP summary")]
     public void WhenIRequestMDPSummary()
     {
-      mdpSummaryRequester = GetIt<CompactionMdpSummaryResult>();
+      mdpSummaryRequester.DoValidRequest(url);
+    }
+
+    [When(@"I request result")]
+    public void WhenIRequestResult()
+    {
+      switch (operation)
+      {
+        case "CMVSummary": cmvSummaryRequester.DoValidRequest(url); break;
+        case "MDPSummary": mdpSummaryRequester.DoValidRequest(url); break;
+        case "PassCountSummary": passCountSummaryRequester.DoValidRequest(url); break;
+        case "PassCountDetails": passCountDetailsRequester.DoValidRequest(url); break;
+        case "TemperatureSummary": temperatureSummaryRequester.DoValidRequest(url); break;
+        case "SpeedSummary": speedSummaryRequester.DoValidRequest(url); break;
+        case "CMVPercentChangeSummary": cmvPercentChangeRequester.DoValidRequest(url); break;
+        case "ElevationRange": elevationRangeRequester.DoValidRequest(url); break;
+        case "ProjectStatistics": projectStatisticsPoster.DoValidRequest(statsRequest); break;
+        case "ProductionDataTiles": tileRequester.DoValidRequest(url); break;
+        case "ElevationPalette": elevPaletteRequester.DoValidRequest(url); break;
+        case "CompactionPalettes": paletteRequester.DoValidRequest(url); break;
+      }
     }
 
     [Then(@"the MDP result should be")]
@@ -216,11 +318,19 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       this.url = RaptorClientConfig.CompactionSvcBaseUri + url;
     }
 
-    [Given(@"a displayMode ""(.*)"" and a bbox ""(.*)"" and a width ""(.*)"" and a height ""(.*)""")]
-    public void GivenADisplayModeAndABboxLLAndAWidthAndAHeight(int mode, string bbox, int width, int height)
+    [Given(@"displayMode ""(.*)"" and bbox ""(.*)"" and width ""(.*)"" and height ""(.*)""")]
+    public void GivenDisplayModeAndBboxLLAndWidthAndHeight(int mode, string bbox, int width, int height)
     {
-      queryParameters = string.Format("&mode={0}&BBOX={1}&WIDTH={2}&HEIGHT={3}", 
-        mode, bbox, width, height);
+      //queryParameters = string.Format("&mode={0}&BBOX={1}&WIDTH={2}&HEIGHT={3}", 
+      //  mode, bbox, width, height);
+
+      if (operation != "ProductionDataTiles")
+        return;
+
+      tileRequester.QueryString.Add("mode", mode.ToString());
+      tileRequester.QueryString.Add("bbox", bbox);
+      tileRequester.QueryString.Add("width", width.ToString());
+      tileRequester.QueryString.Add("height", height.ToString());
     }
 
     [When(@"I request a Tile")]

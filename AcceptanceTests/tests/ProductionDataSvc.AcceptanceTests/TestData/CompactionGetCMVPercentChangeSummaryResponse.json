@@ -1,0 +1,15 @@
+{
+  "NoDesignFilter": {
+    "cmvChangeData": {
+      "percents": [
+        4.9875827814569531,
+        12.603476821192054,
+        20.695364238410598,
+        61.7135761589404
+      ],
+      "totalAreaCoveredSqMeters": 558.57920000000013
+    },
+    "Code": 0,
+    "Message": "success"
+  }
+}

@@ -68,60 +68,86 @@ namespace ProductionDataSvc.AcceptanceTests
             testRunner.CollectScenarioErrors();
         }
         
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetCMVSummary()
+        public virtual void CompactionGetCMVSummary_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Summary", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Summary - No Design Filter", exampleTags);
 #line 5
 this.ScenarioSetup(scenarioInfo);
 #line 6
- testRunner.Given("the Compaction CMV Summary service URI \"/api/v2/compaction/cmv/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/summary\" for operation \"CMVSum" +
+                    "mary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 7
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("the result file \"CompactionGetCMVSummaryResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 8
- testRunner.When("I request CMV summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
- testRunner.Then("the CMV summary result should be", @"{
-  ""cmvSummaryData"": {
-  ""percentEqualsTarget"": 0.12620950778291964,
-  ""percentGreaterThanTarget"": 0,
-  ""percentLessThanTarget"": 99.873790492217083,
-  ""totalAreaCoveredSqMeters"": 549.56240000000014,
-  ""cmvTarget"": {
-    ""cmvMachineTarget"": 70.0,
-    ""targetVaries"": false
-  },
-  ""minCMVPercent"": 80,
-  ""maxCMVPercent"": 120
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 10
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Details")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV Summary - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetCMVDetails()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter")]
+        public virtual void CompactionGetCMVSummary_NoDesignFilter_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV Details", ((string[])(null)));
-#line 29
- this.ScenarioSetup(scenarioInfo);
-#line 30
-  testRunner.Given("the Compaction CMV Details service URI \"/api/v2/compaction/cmv/details\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 31
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 32
-  testRunner.When("I request CMV details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+            this.CompactionGetCMVSummary_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetMDPSummary_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get MDP Summary - No Design Filter", exampleTags);
+#line 16
+this.ScenarioSetup(scenarioInfo);
+#line 17
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/mdp/summary\" for operation \"MDPSum" +
+                    "mary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 18
+  testRunner.And("the result file \"CompactionGetMDPSummaryResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 19
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 20
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 21
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 33
-  testRunner.Then("the CMV details result should be", "{\r\n\t\"percents\": [\r\n     95.47749263777871,\r\n      4.5225073622212877,\r\n      0.0," +
-                    "\r\n      0.0,\r\n      0.0\r\n\t],\r\n\t\"Code\": 0,\r\n\t\"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get MDP Summary - No Design Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter")]
+        public virtual void CompactionGetMDPSummary_NoDesignFilter_()
+        {
+            this.CompactionGetMDPSummary_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetMDPSummary(string requetsName, string projectUID, string designUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get MDP Summary", exampleTags);
+#line 26
+this.ScenarioSetup(scenarioInfo);
+#line 27
+  testRunner.Given("the Compaction service URI \"/api/v2/compaction/mdp/summary\" for operation \"MDPSum" +
+                    "mary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 28
+  testRunner.And("the result file \"CompactionGetMDPSummaryResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 29
+  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 30
+ testRunner.And(string.Format("designUid \"{0}\"", designUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 31
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 32
+ testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -129,470 +155,431 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get MDP Summary")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetMDPSummary()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignOutside")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "DesignOutside")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUID", "220e12e5-ce92-4645-8f01-1942a2d5a57f")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignOutside")]
+        public virtual void CompactionGetMDPSummary_DesignOutside()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get MDP Summary", ((string[])(null)));
-#line 48
-  this.ScenarioSetup(scenarioInfo);
-#line 49
- testRunner.Given("the Compaction MDP Summary service URI \"/api/v2/compaction/mdp/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+            this.CompactionGetMDPSummary("DesignOutside", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "220e12e5-ce92-4645-8f01-1942a2d5a57f", "DesignOutside", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get MDP Summary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "DesignIntersepts")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "DesignIntersepts")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:DesignUID", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "DesignIntersepts")]
+        public virtual void CompactionGetMDPSummary_DesignIntersepts()
+        {
+            this.CompactionGetMDPSummary("DesignIntersepts", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", "DesignIntersepts", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetPasscountSummary_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Passcount Summary - No Design Filter", exampleTags);
+#line 39
+this.ScenarioSetup(scenarioInfo);
+#line 40
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/passcounts/summary\" for operation " +
+                    "\"PassCountSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 41
+  testRunner.And("the result file \"CompactionGetPassCountSummaryResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 42
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 43
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 44
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Passcount Summary - No Design Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter")]
+        public virtual void CompactionGetPasscountSummary_NoDesignFilter_()
+        {
+            this.CompactionGetPasscountSummary_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetPasscountDetails_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Passcount Details - No Design Filter", exampleTags);
 #line 50
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 51
- testRunner.When("I request MDP summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/passcounts/details\" for operation " +
+                    "\"PassCountDetails\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 52
- testRunner.Then("the MDP result should be", @"{
-  ""mdpSummaryData"": {
-    ""percentEqualsTarget"": 79.3533176153587,
-    ""percentGreaterThanTarget"": 0,
-    ""percentLessThanTarget"": 20.646682384641295,
-    ""totalAreaCoveredSqMeters"": 1029.6492000000003,
-    ""mdpTarget"": {
-      ""mdpMachineTarget"": 150.0,
-      ""targetVaries"": false
-    },
-    ""minMDPPercent"": 80,
-    ""maxMDPPercent"": 120
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.And("the result file \"CompactionGetPassCountDetailsResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 53
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 54
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 55
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Passcount Summary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Passcount Details - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetPasscountSummary()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter")]
+        public virtual void CompactionGetPasscountDetails_NoDesignFilter_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Passcount Summary", ((string[])(null)));
+            this.CompactionGetPasscountDetails_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetTemperatureSummary_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Temperature Summary - No Design Filter", exampleTags);
+#line 61
+this.ScenarioSetup(scenarioInfo);
+#line 62
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/temperature/summary\" for operation" +
+                    " \"TemperatureSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 63
+  testRunner.And("the result file \"CompactionGetTemperatureSummaryResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 64
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 65
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 66
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Temperature Summary - No Design Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter")]
+        public virtual void CompactionGetTemperatureSummary_NoDesignFilter_()
+        {
+            this.CompactionGetTemperatureSummary_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetSpeedSummary_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Speed Summary - No Design Filter", exampleTags);
 #line 72
-  this.ScenarioSetup(scenarioInfo);
+this.ScenarioSetup(scenarioInfo);
 #line 73
- testRunner.Given("the Compaction Passcount Summary service URI \"/api/v2/compaction/passcounts/summa" +
-                    "ry\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/speed/summary\" for operation \"Spee" +
+                    "dSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 74
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And("the result file \"CompactionGetSpeedSummaryResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 75
- testRunner.When("I request Passcount summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 76
- testRunner.Then("the Passcount summary result should be", @"{
-  ""passCountSummaryData"": {
-    ""percentEqualsTarget"": 3.3255301569815479,
-    ""percentGreaterThanTarget"": 45.311209033324154,
-    ""percentLessThanTarget"": 51.3632608096943,
-    ""totalAreaCoveredSqMeters"": 1678.9744000000003,
-    ""passCountTarget"": {
-      ""minPassCountMachineTarget"": 5,
-      ""maxPassCountMachineTarget"": 5,
-      ""targetVaries"": true
-    }
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 77
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Passcount Details")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Speed Summary - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetPasscountDetails()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter")]
+        public virtual void CompactionGetSpeedSummary_NoDesignFilter_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Passcount Details", ((string[])(null)));
+            this.CompactionGetSpeedSummary_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetCMVChangeSummary_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary - No Design Filter", exampleTags);
+#line 83
+this.ScenarioSetup(scenarioInfo);
+#line 84
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/cmv/percentchange\" for operation \"" +
+                    "CMVPercentChangeSummary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 85
+  testRunner.And("the result file \"CompactionGetCMVPercentChangeSummaryResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 86
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 87
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 88
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary - No Design Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter")]
+        public virtual void CompactionGetCMVChangeSummary_NoDesignFilter_()
+        {
+            this.CompactionGetCMVChangeSummary_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetElevationRange_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Range - No Design Filter", exampleTags);
+#line 94
+this.ScenarioSetup(scenarioInfo);
 #line 95
- this.ScenarioSetup(scenarioInfo);
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationrange\" for operation \"Ele" +
+                    "vationRange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 96
-  testRunner.Given("the Compaction Passcount Details service URI \"/api/v2/compaction/passcounts/detai" +
-                    "ls\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+  testRunner.And("the result file \"CompactionGetElevationRangeResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 97
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 98
-  testRunner.When("I request Passcount details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 99
-  testRunner.Then("the Passcount details result should be", @"{
-	""passCountDetailsData"": {
-		""percents"": [
-			19.632901900694421,
-			8.5406274791075756,
-			6.160684206522566,
-			5.132635651332877,
-			4.1589237005401056,
-			3.5981699431639118,
-			2.8341972853432442,
-			2.0126278268618436,
-			47.929232006433452
-		],
-		""totalCoverageArea"": 1678.9744000000003,
-		""passCountTarget"": {
-			""minPassCountMachineTarget"": 0,
-			""maxPassCountMachineTarget"": 0,
-			""targetVaries"": true
-		}
-	},
-	""Code"": 0,
-	""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Temperature Summary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Range - No Design Filter")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetTemperatureSummary()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter")]
+        public virtual void CompactionGetElevationRange_NoDesignFilter_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Temperature Summary", ((string[])(null)));
-#line 126
-  this.ScenarioSetup(scenarioInfo);
+            this.CompactionGetElevationRange_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetElevationRange_NoData(string requetsName, string projectUID, string startUTC, string endUTC, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Range - No Data", exampleTags);
+#line 104
+this.ScenarioSetup(scenarioInfo);
+#line 105
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationrange\" for operation \"Ele" +
+                    "vationRange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 106
+  testRunner.And("the result file \"CompactionGetElevationRangeResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 107
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 108
+  testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startUTC, endUTC), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 109
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 110
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Range - No Data")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartUTC", "2017-01-01")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndUTC", "2017-01-01")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoData")]
+        public virtual void CompactionGetElevationRange_NoData_()
+        {
+            this.CompactionGetElevationRange_NoData("", "ff91dd40-1569-4765-a2bc-014321f76ace", "2017-01-01", "2017-01-01", "NoData", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetProjectStatistics_GoodRequest(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Project Statistics - Good Request", exampleTags);
+#line 116
+this.ScenarioSetup(scenarioInfo);
+#line 117
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/projectstatistics\" for operation \"" +
+                    "ProjectStatistics\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 118
+  testRunner.And("the result file \"CompactionGetProjectStatisticsResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 119
+  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 120
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 121
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Project Statistics - Good Request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GoodRequest")]
+        public virtual void CompactionGetProjectStatistics_GoodRequest_()
+        {
+            this.CompactionGetProjectStatistics_GoodRequest("", "ff91dd40-1569-4765-a2bc-014321f76ace", "GoodRequest", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetTiles_NoDesignFilter_GoodRequest(string requetsName, string projectUID, string bBox, string width, string height, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Tiles - No Design Filter - Good Request", exampleTags);
 #line 127
- testRunner.Given("the Compaction Temperature Summary service URI \"/api/v2/compaction/temperature/su" +
-                    "mmary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 128
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/productiondatatiles\" for operation" +
+                    " \"ProductionDataTiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 129
- testRunner.When("I request Temperature summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+  testRunner.And("the result file \"CompactionGetProductionDataTilesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 130
- testRunner.Then("the Temperature result should be", @"{
-  ""temperatureSummaryData"": {
-    ""percentEqualsTarget"": 0,
-    ""percentGreaterThanTarget"": 0,
-    ""percentLessThanTarget"": 100,
-    ""totalAreaCoveredSqMeters"": 953.93120000000022,
-    ""temperatureTarget"": {
-      ""minTemperatureMachineTarget"": 90.0,
-      ""maxTemperatureMachineTarget"": 143.0,
-      ""targetVaries"": false
-    }
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 131
+ testRunner.And(string.Format("displayMode \"0\" and bbox \"{0}\" and width \"{1}\" and height \"{2}\"", bBox, width, height), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 132
+  testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 133
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Speed Summary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles - No Design Filter - Good Request")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetSpeedSummary()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BBox", "36.206964000089840283, -115.0203540002853231, 36.206956000089640213, -115.0203440" +
+            "0028509253")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Width", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GoodRequest")]
+        public virtual void CompactionGetTiles_NoDesignFilter_GoodRequest_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Speed Summary", ((string[])(null)));
-#line 149
-  this.ScenarioSetup(scenarioInfo);
-#line 150
- testRunner.Given("the Compaction Speed Summary service URI \"/api/v2/compaction/speed/summary\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+            this.CompactionGetTiles_NoDesignFilter_GoodRequest("", "ff91dd40-1569-4765-a2bc-014321f76ace", "36.206964000089840283, -115.0203540002853231, 36.206956000089640213, -115.0203440" +
+                    "0028509253", "256", "256", "GoodRequest", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles - No Design Filter - Good Request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SS Included")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "SS Included")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "7925f179-013d-4aaf-aff4-7b9833bb06d6")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BBox", "36.207437, -115.019999, 36.207473, -115.019959")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Width", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SSIncluded")]
+        public virtual void CompactionGetTiles_NoDesignFilter_GoodRequest_SSIncluded()
+        {
+            this.CompactionGetTiles_NoDesignFilter_GoodRequest("SS Included", "7925f179-013d-4aaf-aff4-7b9833bb06d6", "36.207437, -115.019999, 36.207473, -115.019959", "256", "256", "SSIncluded", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles - No Design Filter - Good Request")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "SS Excluded")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "SS Excluded")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "86a42bbf-9d0e-4079-850f-835496d715c5")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:BBox", "36.207437, -115.019999, 36.207473, -115.019959")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Width", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:Height", "256")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "SSExcluded")]
+        public virtual void CompactionGetTiles_NoDesignFilter_GoodRequest_SSExcluded()
+        {
+            this.CompactionGetTiles_NoDesignFilter_GoodRequest("SS Excluded", "86a42bbf-9d0e-4079-850f-835496d715c5", "36.207437, -115.019999, 36.207473, -115.019959", "256", "256", "SSExcluded", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetElevationPalette_NoDesignFilter(string requetsName, string projectUID, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette - No Design Filter", exampleTags);
+#line 141
+this.ScenarioSetup(scenarioInfo);
+#line 142
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationpalette\" for operation \"E" +
+                    "levationPalette\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 143
+  testRunner.And("the result file \"CompactionGetElevationPaletteResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 144
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 145
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 146
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Palette - No Design Filter")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoDesignFilter")]
+        public virtual void CompactionGetElevationPalette_NoDesignFilter_()
+        {
+            this.CompactionGetElevationPalette_NoDesignFilter("", "ff91dd40-1569-4765-a2bc-014321f76ace", "NoDesignFilter", ((string[])(null)));
+        }
+        
+        public virtual void CompactionGetElevationPalette_NoData(string requetsName, string projectUID, string startUTC, string endUTC, string resultName, string[] exampleTags)
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette - No Data", exampleTags);
 #line 151
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+this.ScenarioSetup(scenarioInfo);
 #line 152
- testRunner.When("I request Speed summary", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/elevationpalette\" for operation \"E" +
+                    "levationPalette\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 153
- testRunner.Then("the Speed result should be", @"{
-  ""speedSummaryData"": {
-    ""percentEqualsTarget"": 9.4,
-    ""percentGreaterThanTarget"": 21.5,
-    ""percentLessThanTarget"": 69.1,
-    ""totalAreaCoveredSqMeters"": 10636.7028,
-    ""minTarget"": 12.0,
-    ""maxTarget"": 15.0
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+  testRunner.And("the result file \"CompactionGetElevationPaletteResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 154
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 155
+  testRunner.And(string.Format("startUtc \"{0}\" and endUtc \"{1}\"", startUTC, endUTC), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 156
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 157
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get CMV % Change Summary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Palette - No Data")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetCMVChangeSummary()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:StartUTC", "2017-01-01")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:EndUTC", "2017-01-01")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "NoData")]
+        public virtual void CompactionGetElevationPalette_NoData_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get CMV % Change Summary", ((string[])(null)));
-#line 169
-  this.ScenarioSetup(scenarioInfo);
-#line 170
- testRunner.Given("the Compaction CMV % Change Summary service URI \"/api/v2/compaction/cmv/percentch" +
-                    "ange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 171
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 172
- testRunner.When("I request CMV % change", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 173
- testRunner.Then("the CMV % Change result should be", "{\r\n  \"cmvChangeData\": {\r\n    \"percents\": [\r\n      4.9875827814569531,\r\n      12.6" +
-                    "03476821192054,\r\n      20.695364238410598,\r\n      61.7135761589404\r\n    ],\r\n    " +
-                    "\"totalAreaCoveredSqMeters\": 558.57920000000013\r\n  },\r\n  \"Code\": 0,\r\n  \"Message\":" +
-                    " \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
+            this.CompactionGetElevationPalette_NoData("", "ff91dd40-1569-4765-a2bc-014321f76ace", "2017-01-01", "2017-01-01", "NoData", ((string[])(null)));
         }
         
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Range")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetElevationRange()
+        public virtual void CompactionGetPalettes(string requetsName, string projectUID, string resultName, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Range", ((string[])(null)));
-#line 190
-  this.ScenarioSetup(scenarioInfo);
-#line 191
- testRunner.Given("the Compaction Elevation Range service URI \"/api/v2/compaction/elevationrange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 192
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 193
- testRunner.When("I request Elevation Range", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 194
- testRunner.Then("the Elevation Range result should be", @"{
-  ""boundingExtents"": {
-    ""maxX"": -115.01824137935459,
-    ""maxY"": 36.2077397408003,
-    ""maxZ"": 1e+308,
-    ""minX"": -115.02513694938636,
-    ""minY"": 36.206563325785218,
-    ""minZ"": 1e+308
-  },
-  ""minElevation"": 591.9539794921875,
-  ""maxElevation"": 624.0980224609375,
-  ""totalCoverageArea"": 10637.396400000001,
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Range With No Data")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetElevationRangeWithNoData()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Range With No Data", ((string[])(null)));
-#line 213
-  this.ScenarioSetup(scenarioInfo);
-#line 214
- testRunner.Given("the Compaction Elevation Range service URI \"/api/v2/compaction/elevationrange\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 215
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 216
- testRunner.And("a startUtc \"2017-01-01\" and an EndUtc \"2017-01-01\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 217
- testRunner.When("I request Elevation Range", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 218
- testRunner.Then("the Elevation Range result should be", "{\r\n  \"boundingExtents\": null,\r\n  \"minElevation\": 0,\r\n  \"maxElevation\": 0,\r\n  \"tot" +
-                    "alCoverageArea\": 0,\r\n  \"Code\": -4,\r\n  \"Message\": \"No elevation range\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Project Statistics")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetProjectStatistics()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Project Statistics", ((string[])(null)));
-#line 230
-  this.ScenarioSetup(scenarioInfo);
-#line 231
- testRunner.Given("the Compaction Project Statistics service URI \"/api/v2/compaction/projectstatisti" +
-                    "cs\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 232
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 233
- testRunner.When("I request Project Statistics", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 234
- testRunner.Then("the Project Statistics result should be", @"{
-  ""startTime"": ""2012-10-30T00:12:09.109"",
-  ""endTime"": ""2012-11-08T01:00:08.756"",
-  ""cellSize"": 0.34,
-  ""indexOriginOffset"": 536870912,
-  ""extents"": {
-    ""maxX"": 2913.2900000000004,
-    ""maxY"": 1250.69,
-    ""maxZ"": 624.1365966796875,
-    ""minX"": 2306.05,
-    ""minY"": 1125.2300000000002,
-    ""minZ"": 591.953857421875
-  },
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Tiles")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetTiles()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Tiles", ((string[])(null)));
-#line 254
-  this.ScenarioSetup(scenarioInfo);
-#line 255
- testRunner.Given("the Compaction Tiles service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 256
- testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 257
-  testRunner.And("a displayMode \"0\" and a bbox \"36.206964000089840283, -115.0203540002853231, 36.20" +
-                    "6956000089640213, -115.02034400028509253\" and a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 258
- testRunner.When("I request a Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 259
- testRunner.Then("the Tile result should be", @"{
-  ""TileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAADjklEQVR42u3TQW1DARTEwH4iQVIkZV8kDYVeVtGTZxD44uf3+4uF1+vTBfzDY4ARA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnGCAFQOcYIAVA5xggBUDnPD8/Xw6AT7HAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIMwBpBiDNAKQZgDQDkGYA0gxAmgFIewP3SloQh/j9MQAAAABJRU5ErkJggg=="",
-  ""TileOutsideProjectExtents"": false,
-  ""Code"": 0,
-  ""Message"": ""success""
-}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Compaction Coverage Tiles With Surveyed Surfaces Included")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetCompactionCoverageTilesWithSurveyedSurfacesIncluded()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Compaction Coverage Tiles With Surveyed Surfaces Included", ((string[])(null)));
-#line 269
-  this.ScenarioSetup(scenarioInfo);
-#line 270
-  testRunner.Given("the Compaction Tiles service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 271
-  testRunner.And("a projectUid \"7925f179-013d-4aaf-aff4-7b9833bb06d6\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 272
-  testRunner.And("a displayMode \"0\" and a bbox \"36.207437, -115.019999, 36.207473, -115.019959\" and" +
-                    " a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 273
-  testRunner.When("I request a Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 274
-  testRunner.Then("the Tile result should be", @"{
-  ""tileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAACl0lEQVR42u3TAQEAAAiAoPo/uoYIH9gb6FoBKBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIE4A0AUgTgDQBSBOANAFIeyF3ABDkaLbCAAAAAElFTkSuQmCC"",
-  ""tileOutsideProjectExtents"": false,
-  ""Code"": 0,
-  ""Message"": ""success""
-}  ", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Compaction Coverage Tiles With Surveyed Surfaces Excluded")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetCompactionCoverageTilesWithSurveyedSurfacesExcluded()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Compaction Coverage Tiles With Surveyed Surfaces Excluded", ((string[])(null)));
-#line 284
-  this.ScenarioSetup(scenarioInfo);
-#line 285
-  testRunner.Given("the Compaction Tiles service URI \"/api/v2/compaction/productiondatatiles\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 286
-  testRunner.And("a projectUid \"86a42bbf-9d0e-4079-850f-835496d715c5\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 287
-  testRunner.And("a displayMode \"0\" and a bbox \"36.207437, -115.019999, 36.207473, -115.019959\" and" +
-                    " a width \"256\" and a height \"256\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 288
-  testRunner.When("I request a Tile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 289
-  testRunner.Then("the Tile result should be", @"{
-  ""tileData"": ""iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAABnRSTlMA/wD/AP83WBt9AAACzElEQVR42u3UQRGAQBADQc4ISnCPEpQcInhQW9OtIJ/J2nsfULUEQJkASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZC2nuvvCUx23rMPVAB8IgDSBECaAEgTAGkCIE0ApAmANAGQJgDSBECaAEgTAGkCIE0ApAmANAGQJgDSBECaAEgTAGkCgMEEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQJoASBMAaQIgTQCkCYA0AZAmANIEQNoLEuM3XwkCBu0AAAAASUVORK5CYII="",
-  ""tileOutsideProjectExtents"": false,
-  ""Code"": 0,
-  ""Message"": ""success""
-}  ", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Palette When No Elevation Data")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetElevationPaletteWhenNoElevationData()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette When No Elevation Data", ((string[])(null)));
-#line 299
-  this.ScenarioSetup(scenarioInfo);
-#line 300
- testRunner.Given("the Compaction Elevation Palette service URI \"/api/v2/compaction/elevationpalette" +
-                    "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 301
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 302
-  testRunner.And("a startUtc \"2017-01-01\" and an EndUtc \"2017-01-01\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 303
- testRunner.When("I request Elevation Palette", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 304
- testRunner.Then("the Elevation Palette result should be", "{\r\n  \"palette\": null,\r\n   \"Code\": -4,\r\n  \"Message\": \"No elevation range\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Elevation Palette")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetElevationPalette()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette", ((string[])(null)));
-#line 313
-  this.ScenarioSetup(scenarioInfo);
-#line 314
- testRunner.Given("the Compaction Elevation Palette service URI \"/api/v2/compaction/elevationpalette" +
-                    "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 315
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 316
- testRunner.When("I request Elevation Palette", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 317
- testRunner.Then("the Elevation Palette result should be", "{\r\n  \"palette\": {\r\n    \"colorValues\": [\r\n      {\r\n        \"color\": 13107200,\r\n   " +
-                    "     \"value\": 591.9539794921875\r\n      },\r\n      {\r\n        \"color\": 16711680,\r\n" +
-                    "        \"value\": 593.02544759114585\r\n      },\r\n      {\r\n        \"color\": 1476096" +
-                    "0,\r\n        \"value\": 594.0969156901042\r\n      },\r\n      {\r\n        \"color\": 1673" +
-                    "4720,\r\n        \"value\": 595.16838378906255\r\n      },\r\n      {\r\n        \"color\": " +
-                    "16744960,\r\n        \"value\": 596.23985188802078\r\n      },\r\n      {\r\n        \"colo" +
-                    "r\": 16755200,\r\n        \"value\": 597.31131998697913\r\n      },\r\n      {\r\n        \"" +
-                    "color\": 16762880,\r\n        \"value\": 598.38278808593748\r\n      },\r\n      {\r\n     " +
-                    "   \"color\": 16768000,\r\n        \"value\": 599.45425618489583\r\n      },\r\n      {\r\n " +
-                    "       \"color\": 16442880,\r\n        \"value\": 600.52572428385417\r\n      },\r\n      " +
-                    "{\r\n        \"color\": 14476800,\r\n        \"value\": 601.59719238281252\r\n      },\r\n  " +
-                    "    {\r\n        \"color\": 13821440,\r\n        \"value\": 602.66866048177087\r\n      }," +
-                    "\r\n      {\r\n        \"color\": 13166080,\r\n        \"value\": 603.74012858072922\r\n    " +
-                    "  },\r\n      {\r\n        \"color\": 11855360,\r\n        \"value\": 604.81159667968745\r\n" +
-                    "      },\r\n      {\r\n        \"color\": 9889280,\r\n        \"value\": 605.8830647786458" +
-                    "\r\n      },\r\n      {\r\n        \"color\": 8578560,\r\n        \"value\": 606.95453287760" +
-                    "415\r\n      },\r\n      {\r\n        \"color\": 6615040,\r\n        \"value\": 608.02600097" +
-                    "65625\r\n      },\r\n      {\r\n        \"color\": 65280,\r\n        \"value\": 609.09746907" +
-                    "552085\r\n      },\r\n      {\r\n        \"color\": 61540,\r\n        \"value\": 610.1689371" +
-                    "744792\r\n      },\r\n      {\r\n        \"color\": 59010,\r\n        \"value\": 611.2404052" +
-                    "7343755\r\n      },\r\n      {\r\n        \"color\": 59030,\r\n        \"value\": 612.311873" +
-                    "37239578\r\n      },\r\n      {\r\n        \"color\": 59060,\r\n        \"value\": 613.38334" +
-                    "147135413\r\n      },\r\n      {\r\n        \"color\": 59080,\r\n        \"value\": 614.4548" +
-                    "0957031248\r\n      },\r\n      {\r\n        \"color\": 59090,\r\n        \"value\": 615.526" +
-                    "27766927083\r\n      },\r\n      {\r\n        \"color\": 56540,\r\n        \"value\": 616.59" +
-                    "774576822917\r\n      },\r\n      {\r\n        \"color\": 51430,\r\n        \"value\": 617.6" +
-                    "6921386718752\r\n      },\r\n      {\r\n        \"color\": 46320,\r\n        \"value\": 618." +
-                    "74068196614587\r\n      },\r\n      {\r\n        \"color\": 38645,\r\n        \"value\": 619" +
-                    ".81215006510422\r\n      },\r\n      {\r\n        \"color\": 30970,\r\n        \"value\": 62" +
-                    "0.88361816406245\r\n      },\r\n      {\r\n        \"color\": 23295,\r\n        \"value\": 6" +
-                    "21.9550862630208\r\n      },\r\n      {\r\n        \"color\": 18175,\r\n        \"value\": 6" +
-                    "23.02655436197915\r\n      },\r\n      {\r\n        \"color\": 255,\r\n        \"value\": 62" +
-                    "4.0980224609375\r\n      }\r\n    ],\r\n    \"aboveLastColor\": 8388736,\r\n    \"belowFirs" +
-                    "tColor\": 16711935\r\n  },\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Palettes", exampleTags);
+#line 163
+this.ScenarioSetup(scenarioInfo);
+#line 164
+ testRunner.Given("the Compaction service URI \"/api/v2/compaction/colorpalettes\" for operation \"Comp" +
+                    "actionPalettes\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 165
+  testRunner.And("the result file \"CompactionGetCompactionPalettesResponse.json\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 166
+ testRunner.And(string.Format("projectUid \"{0}\"", projectUID), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 167
+ testRunner.When("I request result", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 168
+  testRunner.Then(string.Format("the result should match the \"{0}\" from the repository", resultName), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -600,72 +587,12 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Compaction Get Palettes")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Compaction")]
-        public virtual void CompactionGetPalettes()
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:RequetsName", "")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ProjectUID", "ff91dd40-1569-4765-a2bc-014321f76ace")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:ResultName", "GoodRequest")]
+        public virtual void CompactionGetPalettes_()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Palettes", ((string[])(null)));
-#line 455
-  this.ScenarioSetup(scenarioInfo);
-#line 456
- testRunner.Given("the Compaction Palettes service URI \"/api/v2/compaction/colorpalettes\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 457
-  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 458
- testRunner.When("I request Palettes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 459
- testRunner.Then("the Palettes result should be", "{\r\n  \"cmvDetailPalette\": {\r\n    \"colorValues\": [\r\n      {\r\n      \"color\": 2971523" +
-                    ",\r\n      \"value\": 0.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 4430812,\r\n\t\t\t\"value\": 10.0\r\n\t\t},\r\n" +
-                    "\t\t{\r\n\t\t\t\"color\": 12509169,\r\n\t\t\t\"value\": 20.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 10341991,\r\n" +
-                    "\t\t\t\"value\": 30.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 7053374,\r\n\t\t\t\"value\": 40.0\r\n\t\t},\r\n\t\t{\r\n" +
-                    "\t\t\t\"color\": 3828517,\r\n\t\t\t\"value\": 50.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 16174803,\r\n\t\t\t\"va" +
-                    "lue\": 60.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 13990524,\r\n\t\t\t\"value\": 70.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"c" +
-                    "olor\": 12660791,\r\n\t\t\t\"value\": 80.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 15105570,\r\n\t\t\t\"value\"" +
-                    ": 90.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 14785888,\r\n\t\t\t\"value\": 100.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"colo" +
-                    "r\": 15190446,\r\n\t\t\t\"value\": 110.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 5182823,\r\n\t\t\t\"value\": 1" +
-                    "20.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 9259433,\r\n\t\t\t\"value\": 130.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\":" +
-                    " 13740258,\r\n\t\t\t\"value\": 140.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 1971179,\r\n\t\t\t\"value\": 150." +
-                    "0\r\n\t\t}\r\n    ],\r\n    \"aboveLastColor\": null,\r\n    \"belowFirstColor\": null\r\n  },\r\n" +
-                    "  \"passCountDetailPalette\": {\r\n    \"colorValues\": [\r\n      {\r\n        \"color\": 2" +
-                    "971523,\r\n        \"value\": 1\r\n      },\r\n      {\r\n        \"color\": 4430812,\r\n     " +
-                    "   \"value\": 2\r\n      },\r\n      {\r\n        \"color\": 12509169,\r\n        \"value\": 3" +
-                    "\r\n      },\r\n      {\r\n        \"color\": 10341991,\r\n        \"value\": 4\r\n      },\r\n " +
-                    "     {\r\n        \"color\": 7053374,\r\n        \"value\": 5\r\n      },\r\n      {\r\n      " +
-                    "  \"color\": 3828517,\r\n        \"value\": 6\r\n      },\r\n      {\r\n        \"color\": 161" +
-                    "74803,\r\n        \"value\": 7\r\n      },\r\n      {\r\n        \"color\": 13990524,\r\n     " +
-                    "   \"value\": 8\r\n      }\r\n    ],\r\n    \"aboveLastColor\": 12660791,\r\n    \"belowFirst" +
-                    "Color\": null\r\n  },\r\n  \"passCountSummaryPalette\": {\r\n    \"aboveTargetColor\": 1395" +
-                    "9168,\r\n    \"onTargetColor\": 9159498,\r\n    \"belowTargetColor\": 87963\r\n  },\r\n  \"cu" +
-                    "tFillPalette\": {\r\n    \"colorValues\": [\r\n      {\r\n        \"color\": 11789820,\r\n   " +
-                    "     \"value\": -0.2\r\n      },\r\n      {\r\n        \"color\": 236517,\r\n        \"value\"" +
-                    ": -0.1\r\n      },\r\n      {\r\n        \"color\": 87963,\r\n        \"value\": -0.05\r\n    " +
-                    "  },\r\n      {\r\n        \"color\": 9159498,\r\n        \"value\": 0\r\n      },\r\n      {\r" +
-                    "\n        \"color\": 16764370,\r\n        \"value\": 0.05\r\n      },\r\n      {\r\n        \"" +
-                    "color\": 15037299,\r\n        \"value\": 0.1\r\n      },\r\n      {\r\n        \"color\": 139" +
-                    "59168,\r\n        \"value\": 0.2\r\n      }\r\n    ],\r\n    \"aboveLastColor\": null,\r\n    " +
-                    "\"belowFirstColor\": null\r\n  },\r\n  \"temperatureSummaryPalette\": {\r\n    \"aboveTarge" +
-                    "tColor\": 13959168,\r\n    \"onTargetColor\": 9159498,\r\n    \"belowTargetColor\": 87963" +
-                    "\r\n  },\r\n  \"cmvSummaryPalette\": {\r\n    \"aboveTargetColor\": 13959168,\r\n    \"onTarg" +
-                    "etColor\": 9159498,\r\n    \"belowTargetColor\": 87963\r\n  },\r\n  \"mdpSummaryPalette\": " +
-                    "{\r\n    \"aboveTargetColor\": 13959168,\r\n    \"onTargetColor\": 9159498,\r\n    \"belowT" +
-                    "argetColor\": 87963\r\n  },\r\n  \"cmvPercentChangePalette\": {\r\n    \"colorValues\": [\r\n" +
-                    "      {\r\n        \"color\": 9159498,\r\n        \"value\": 5\r\n      },\r\n      {\r\n     " +
-                    "   \"color\": 16764370,\r\n        \"value\": 20\r\n      },\r\n      {\r\n        \"color\": " +
-                    "15037299,\r\n        \"value\": 50\r\n      }\r\n    ],\r\n    \"aboveLastColor\": 13959168," +
-                    "\r\n    \"belowFirstColor\": 33554431\r\n  },\r\n  \"speedSummaryPalette\": {\r\n    \"aboveT" +
-                    "argetColor\": 13959168,\r\n    \"onTargetColor\": 9159498,\r\n    \"belowTargetColor\": 8" +
-                    "7963\r\n  },\r\n  \"temperatureDetailPalette\": {\r\n    \"colorValues\": [\r\n      {\r\n    " +
-                    "    \"color\": 2971523,\r\n        \"value\": 70\r\n      },\r\n      {\r\n        \"color\": " +
-                    "4430812,\r\n        \"value\": 80\r\n      },\r\n      {\r\n        \"color\": 12509169,\r\n  " +
-                    "      \"value\": 90\r\n      },\r\n      {\r\n        \"color\": 14479047,\r\n        \"value" +
-                    "\": 100\r\n      },\r\n      {\r\n        \"color\": 10341991,\r\n        \"value\": 110\r\n   " +
-                    "   },\r\n      {\r\n        \"color\": 7053374,\r\n        \"value\": 120\r\n      },\r\n     " +
-                    " {\r\n        \"color\": 3828517,\r\n        \"value\": 130\r\n      },\r\n      {\r\n        " +
-                    "\"color\": 16174803,\r\n        \"value\": 140\r\n      },\r\n      {\r\n        \"color\": 13" +
-                    "990524,\r\n        \"value\": 150\r\n      },\r\n      {\r\n        \"color\": 12660791,\r\n  " +
-                    "      \"value\": 160\r\n      }\r\n    ],\r\n    \"aboveLastColor\": null,\r\n    \"belowFirs" +
-                    "tColor\": null\r\n  },\r\n  \"Code\": 0,\r\n  \"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
+            this.CompactionGetPalettes("", "ff91dd40-1569-4765-a2bc-014321f76ace", "GoodRequest", ((string[])(null)));
         }
     }
 }
