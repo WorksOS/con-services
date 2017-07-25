@@ -160,47 +160,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     #endregion
-
-    //**** START TODO ****************************
-    //This is obsolete. Remove when compaction UI has changed to use the GET
-
-    // TEMP v2 copy of v1 until we have a simplified contract for Compaction
-    /// <summary>
-    /// Gets project statistics from Raptor.
-    /// </summary>
-    /// <param name="request">The request for statistics request to Raptor</param>
-    /// <returns></returns>
-    /// <executor>ProjectStatisticsExecutor</executor>
-    /// 
-    [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
-    [Route("api/v2/compaction/projectstatistics")]
-    [HttpPost]
-    public async Task<ProjectStatisticsResult> PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
-    {
-      log.LogInformation("PostProjectStatistics: " + JsonConvert.SerializeObject(request));
-      request.Validate();
-      try
-      {
-        var returnResult =
-          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null)
-            .Process(request) as ProjectStatisticsResult;
-        log.LogInformation("PostProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
-        return returnResult;
-      }
-      catch (ServiceException se)
-      {
-        //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
-        throw;
-      }
-      finally
-      {
-        log.LogInformation("PostProjectStatistics returned: " + Response.StatusCode);
-      }
-    }
-    //**** END TODO ****************************
+    #region Project Extents
 
     /// <summary>
     /// Gets project statistics from Raptor.
@@ -245,7 +205,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         log.LogInformation("GetProjectStatistics returned: " + Response.StatusCode);
       }
     }
-
+    #endregion
 
   }
 }
