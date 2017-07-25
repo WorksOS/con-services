@@ -297,10 +297,10 @@ Scenario: Compaction Get CMV Summary
   """
 
   Scenario: Profile Slicer - Good Request
- 	Given the ProfileSlicer service URI "/api/v2/profiles/productiondata"
+ 	Given the ProfileSlicer service URI "/api/v2/profiles/productiondata/slicer"
 	And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace" 
   #And a startLatDegrees "50.0" and a startLonDegrees "122.979" and a endLatDegrees "60.0" and a endLonDegrees "132.979"
-  And a startLatDegrees "36.207310" and a startLonDegrees "-116.019584" and a endLatDegrees "36.207322" and a endLonDegrees "-115.019574"
+  And a startLatDegrees "36.207310" and a startLonDegrees "-115.019584" and a endLatDegrees "36.207322" and a endLonDegrees "-115.019574"
   When I request a ProductionData Slicer Profile
 	Then the Profile response should be
   """

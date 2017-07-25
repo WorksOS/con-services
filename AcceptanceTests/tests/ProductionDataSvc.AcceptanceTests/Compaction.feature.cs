@@ -527,11 +527,11 @@ this.ScenarioSetup(scenarioInfo);
 #line 299
   this.ScenarioSetup(scenarioInfo);
 #line 300
-  testRunner.Given("the ProfileSlicer service URI \"/api/v2/profiles/productiondata\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+  testRunner.Given("the ProfileSlicer service URI \"/api/v2/profiles/productiondata/slicer\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 301
  testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 303
-  testRunner.And("a startLatDegrees \"36.207310\" and a startLonDegrees \"-116.019584\" and a endLatDeg" +
+  testRunner.And("a startLatDegrees \"36.207310\" and a startLonDegrees \"-115.019584\" and a endLatDeg" +
                     "rees \"36.207322\" and a endLonDegrees \"-115.019574\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 304
   testRunner.When("I request a ProductionData Slicer Profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");

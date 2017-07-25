@@ -126,13 +126,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </returns>
     /// <executor>ProfileProductionDataExecutor</executor>
     [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [NotLandFillProjectVerifier]
     [ProjectUidVerifier]
-    [NotLandFillProjectWithUIDVerifier]
-    [Route("api/v2/profiles/productiondata")]
+    [NotLandFillProjectWithUIDVerifier] 
+    [Route("api/v2/profiles/productiondata/slicer")]
     [HttpGet]
-    public async Task<ProfileResult> GetProfileProduction(
+    public async Task<ProfileResult> GetProfileProductionDataSlicer(
       [FromQuery] Guid projectUid,
       [FromQuery] double startLatDegrees,
       [FromQuery] double startLonDegrees,
@@ -141,11 +139,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       [FromQuery] DateTime? startUtc,
       [FromQuery] DateTime? endUtc,
       [FromQuery] Guid? cutfillDesignUid
-    // these are alignment and only doing slicer at this stage
-    // [FromQuery] bool alignmentProfile, 
-    // [FromQuery] long designID, 
-    // [FromQuery] double startStation, 
-    // [FromQuery] double endStation,
     )
     {
       log.LogInformation("GetProfileProduction: " + Request.QueryString);
@@ -171,6 +164,25 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         log.LogInformation("GetProfileProduction returned: " + Response.StatusCode);
       }
     }
+
+    /*
+     *  [Route("api/v2/profiles/productiondata/alignment")]
+    [HttpGet]
+    public async Task<ProfileResult> GetProfileProductionDataAlignment(
+      [FromQuery] Guid projectUid,
+      [FromQuery] double startLatDegrees,
+      [FromQuery] double startLonDegrees,
+      [FromQuery] double endLatDegrees,
+      [FromQuery] double endLonDegrees,
+      [FromQuery] DateTime? startUtc,
+      [FromQuery] DateTime? endUtc,
+      [FromQuery] Guid? cutfillDesignUid
+    // these are alignment and only doing slicer at this stage
+    // [FromQuery] bool alignmentProfile, 
+    // [FromQuery] long designID, 
+    // [FromQuery] double startStation, 
+    // [FromQuery] double endStation,
+    */
 
 
     #region privates
