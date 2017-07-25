@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Models;
@@ -28,13 +29,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
+    /// For getting project settings for a project
+    /// </summary>
+    private readonly IProjectSettingsProxy projectSettingsProxy;
+
+    /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="logger">Logger</param>
-    public CompactionSettingsController(ILoggerFactory logger)
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
+    public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy)
     {
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionSettingsController>();
+      this.projectSettingsProxy = projectSettingsProxy;
     }
 
     /// <summary>
@@ -57,6 +65,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         var compactionSettings = GetProjectSettings(projectSettings);
         compactionSettings.Validate();
+        //It is assumed that the settings are about to be saved.
+        //Clear the cache for these updated settings so we get the updated settings for compaction requests.
+        projectSettingsProxy.ClearCacheItem<string>(projectUid.ToString());
       }
 
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);
