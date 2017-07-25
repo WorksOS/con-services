@@ -8,9 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
-using VSS.TCCFileAccess;
 
-namespace UnitTests
+
+namespace VSS.TCCFileAccess.UnitTests
 {
   [TestClass]
   public class TCCFileAccessTests

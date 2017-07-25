@@ -30,7 +30,7 @@ namespace VSS.MasterData.Proxies
             IDictionary<string, string> customHeaders = null)
         {
             GeofenceData cacheData =
-                await GetItemWithList<GeofenceData>(geofenceUid, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders);
+                await GetMasterDataItemWithList<GeofenceData>(geofenceUid, "GEOFENCE_CACHE_LIFE", "GEOFENCE_API_URL", customHeaders);
             return cacheData?.GeometryWKT;
         }
 

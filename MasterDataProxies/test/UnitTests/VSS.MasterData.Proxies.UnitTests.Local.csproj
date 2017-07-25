@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <AssemblyName>VSS.TCCFileAccess.UnitTests</AssemblyName>
-    <PackageId>VSS.TCCFileAccess.UnitTests</PackageId>
+    <AssemblyName>VSS.MasterData.Proxies.UnitTests</AssemblyName>
+    <PackageId>VSS.MasterData.Proxies.UnitTests</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net45+win8</PackageTargetFallback>
     <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
@@ -21,20 +21,19 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.1" />
-    <PackageReference Include="log4net.netcore" Version="3.0.*" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
-    <PackageReference Include="VSS.ConfigurationStore.netcore" Version="2.0.0" />
-    <PackageReference Include="VSS.Log4NetExtensions.netcore" Version="2.0.0" />    
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
-    <None Update="appsettings.json;log4nettest.xml">
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\VSS.TCCFileAccess.csproj" />
+    <ProjectReference Include="..\..\..\ConfigurationStore\src\VSS.ConfigurationStore.Local.csproj" />
+    <ProjectReference Include="..\..\..\log4netExtensions\src\VSS.Log4NetExtensions.Local.csproj" />
+    <ProjectReference Include="..\..\src\VSS.MasterData.Proxies.Local.csproj" />
   </ItemGroup>
 
   <ItemGroup>

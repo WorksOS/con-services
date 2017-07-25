@@ -18,7 +18,7 @@ namespace VSS.MasterData.Proxies
      
       public async Task<List<FileData>> GetFiles(string projectUid, IDictionary<string, string> customHeaders = null)
       {
-        var result = await GetContainedList<FileDataResult>(projectUid, "IMPORTED_FILE_CACHE_LIFE", "IMPORTED_FILE_API_URL", customHeaders,
+        var result = await GetContainedMasterDataList<FileDataResult>(projectUid, "IMPORTED_FILE_CACHE_LIFE", "IMPORTED_FILE_API_URL", customHeaders,
           string.Format("?projectUid={0}", projectUid));
         if (result.Code == 0)
         {

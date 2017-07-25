@@ -31,7 +31,7 @@ namespace VSS.MasterData.Proxies
       string url = configurationStore.GetValueString(urlKey);
       log.LogDebug($"CustomerProxy.GetCustomersForMe: userUid:{userUid} urlKey: {urlKey}  url: {url} customHeaders: {JsonConvert.SerializeObject(customHeaders)}");
 
-      var response = await GetContainedList<CustomerDataResult>(userUid, "CUSTOMER_CACHE_LIFE", urlKey, customHeaders);
+      var response = await GetContainedMasterDataList<CustomerDataResult>(userUid, "CUSTOMER_CACHE_LIFE", urlKey, customHeaders);
       var message = string.Format("CustomerProxy.GetCustomersForMe: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       log.LogDebug(message);
       return response;

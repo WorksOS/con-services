@@ -17,17 +17,16 @@ namespace VSS.MasterData.Proxies
 
     public async Task<string> GetProjectSettings(string projectUid, IDictionary<string, string> customHeaders = null)
     {
-      var result = await GetItem<ProjectSettingsDataResult>(projectUid, "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, $"/{projectUid}");
+      var result = await GetMasterDataItem<ProjectSettingsDataResult>(projectUid, "PROJECT_SETTINGS_CACHE_LIFE", "PROJECT_SETTINGS_API_URL", customHeaders, $"/{projectUid}");
 
       if (result.Code == 0)
       {
         return result.Settings;
       }
-      else
-      {
-        log.LogDebug("Failed to get project settings: {0}, {1}", result.Code, result.Message);
-        return null;
-      }
+ 
+      log.LogWarning("Failed to get project settings, using default values: {0}, {1}", result.Code, result.Message);
+      return null;
+      
     }
   }
 }

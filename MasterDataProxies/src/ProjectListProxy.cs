@@ -18,7 +18,7 @@ namespace VSS.MasterData.Proxies
 
     public async Task<List<ProjectData>> GetProjectsV4(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      var result = await GetContainedList<ProjectDataResult>(customerUid, "PROJECT_CACHE_LIFE", "PROJECT_API_URL", customHeaders);
+      var result = await GetContainedMasterDataList<ProjectDataResult>(customerUid, "PROJECT_CACHE_LIFE", "PROJECT_API_URL", customHeaders);
       if (result.Code == 0)
       {
         return result.ProjectDescriptors;

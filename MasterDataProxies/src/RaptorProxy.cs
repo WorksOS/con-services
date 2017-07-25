@@ -113,7 +113,7 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"RaptorProxy.ProjectSettingsValidate: projectUid: {projectUid}");
       var queryParams = $"?projectUid={projectUid}&projectSettings={projectSettings}";
-      BaseDataResult response = await GetItem<BaseDataResult>("PROJECTSETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
+      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("PROJECTSETTINGS_API_URL", customHeaders, queryParams, "/validatesettings");
       log.LogDebug("RaptorProxy.ProjectSettingsValidate: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
 
       return response;
@@ -128,7 +128,7 @@ namespace VSS.MasterData.Proxies
     /// <returns></returns>
     private async Task<BaseDataResult> NotifyFile(string route, string queryParams, IDictionary<string, string> customHeaders)
     {
-      BaseDataResult response = await GetItem<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, route);
+      BaseDataResult response = await GetMasterDataItem<BaseDataResult>("RAPTOR_NOTIFICATION_API_URL", customHeaders, queryParams, route);
       var message = string.Format("RaptorProxy.NotifyFile: response: {0}", response == null ? null : JsonConvert.SerializeObject(response));
       log.LogDebug(message);
 

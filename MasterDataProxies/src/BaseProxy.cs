@@ -81,7 +81,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">The custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
-    private async Task<List<T>> GetList<T>(string urlKey, IDictionary<string, string> customHeaders, string route = null) 
+    private async Task<List<T>> GetMasterDataList<T>(string urlKey, IDictionary<string, string> customHeaders, string route = null) 
     {
       var url = ExtractUrl(urlKey, route);
 
@@ -117,7 +117,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams">Query parameters for the request (optional)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
-    protected async Task<T> GetItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams=null, string route=null)
+    protected async Task<T> GetMasterDataItem<T>(string urlKey, IDictionary<string, string> customHeaders, string queryParams=null, string route=null)
     {
       var url = ExtractUrl(urlKey, route);
       if (!string.IsNullOrEmpty(queryParams))
@@ -159,7 +159,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
-    protected async Task<T> GetItemWithList<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) where T : IData
+    protected async Task<T> GetMasterDataItemWithList<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) where T : IData
     {
       ClearCacheIfRequired(uid, customHeaders);
       var cacheKey = GetCacheKey<T>(uid);
@@ -168,7 +168,7 @@ namespace VSS.MasterData.Proxies
       {
         var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
-        var list = await GetList<T>(urlKey, customHeaders, route);
+        var list = await GetMasterDataList<T>(urlKey, customHeaders, route);
         foreach (var item in list)
         {
           var data = item as IData;
@@ -189,7 +189,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
-    protected async Task<T> GetItem<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) 
+    protected async Task<T> GetMasterDataItem<T>(string uid, string cacheLifeKey, string urlKey, IDictionary<string, string> customHeaders, string route = null) 
     {
       ClearCacheIfRequired(uid, customHeaders);
       var cacheKey = GetCacheKey<T>(uid);
@@ -198,7 +198,7 @@ namespace VSS.MasterData.Proxies
       {
         var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
-        cacheData = await GetItem<T>(urlKey, customHeaders, null, route);
+        cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, null, route);
         cache.Set(cacheKey, cacheData, opts);
         
       }
@@ -215,7 +215,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of Master data items</returns>
-    protected async Task<List<T>> GetList<T>(string customerUid, string cacheLifeKey, string urlKey,
+    protected async Task<List<T>> GetMasterDataList<T>(string customerUid, string cacheLifeKey, string urlKey,
                 IDictionary<string, string> customHeaders, string route = null) 
     {
       ClearCacheIfRequired(customerUid, customHeaders);
@@ -225,14 +225,14 @@ namespace VSS.MasterData.Proxies
       {
         var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
-        cacheData = await GetList<T>(urlKey, customHeaders, route);
+        cacheData = await GetMasterDataList<T>(urlKey, customHeaders, route);
         cache.Set(cacheKey, cacheData, opts);
       }
       return cacheData;
     }
 
     /// <summary>
-    /// Gets a list of master data items for a customer or project. 
+    /// Gets a list of master data items for a customer or project where the list is contained in (a property of) an object. 
     /// If the list is not in the cache then requests items from the relevant service and adds the list to the cache.
     /// </summary>
     /// <param name="uid">The UID for the list to retrieve (customerUid or projectUid). Also used for the cache key</param>
@@ -242,7 +242,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams">Query parameters for the request (optional)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of Master data items</returns>
-    protected async Task<T> GetContainedList<T>(string uid, string cacheLifeKey, string urlKey,
+    protected async Task<T> GetContainedMasterDataList<T>(string uid, string cacheLifeKey, string urlKey,
                   IDictionary<string, string> customHeaders, string queryParams = null, string route = null)
       {
         ClearCacheIfRequired(uid, customHeaders);
@@ -252,7 +252,7 @@ namespace VSS.MasterData.Proxies
         {
           var opts = MemoryCacheExtensions.GetCacheOptions(cacheLifeKey, configurationStore, log);
 
-        cacheData = await GetItem<T>(urlKey, customHeaders, queryParams, route);
+        cacheData = await GetMasterDataItem<T>(urlKey, customHeaders, queryParams, route);
           cache.Set(cacheKey, cacheData, opts);
         }
         return cacheData;
