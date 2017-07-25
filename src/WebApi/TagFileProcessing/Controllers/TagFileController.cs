@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// Constructor with injected raptor client and logger
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="tagProcessor">Tag processor client</param>

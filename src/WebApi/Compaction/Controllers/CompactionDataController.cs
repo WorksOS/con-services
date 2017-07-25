@@ -3,15 +3,15 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApiModels.Report.Executors;
 using VSS.Productivity3D.WebApiModels.Report.Models;
@@ -42,22 +42,38 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// For getting list of imported files for a project
+    /// For getting imported files for a project
     /// </summary>
     private readonly IFileListProxy fileListProxy;
-  
+
+
     /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
+    /// For getting project settings for a project
+    /// </summary>
+    private readonly IProjectSettingsProxy projectSettingsProxy;
+
+    /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="fileListProxy">File list proxy</param>
-    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy)
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="settingsManager">Compaction settings manager</param>
+    public CompactionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionDataController>();
       this.fileListProxy = fileListProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
+      this.settingsManager = settingsManager;
     }
 
  
@@ -83,7 +99,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>CMV summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -148,7 +164,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>MDP summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -172,11 +188,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      MDPSettings mdpSettings = CompactionSettings.CompactionMdpSettings;
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      MDPSettings mdpSettings = settingsManager.CompactionMdpSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
-      Filter filter = CompactionSettings.CompactionFilter(
+        headers);
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
       MDPRequest request = MDPRequest.CreateMDPRequest(projectId.Value, null, mdpSettings, liftSettings, filter,
@@ -223,7 +241,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Pass count summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -288,7 +306,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Temperature summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -312,11 +330,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      TemperatureSettings temperatureSettings = CompactionSettings.CompactionTemperatureSettings;
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
-      Filter filter = CompactionSettings.CompactionFilter(
+      //TODO: if projectuid is null get from raptorprincipal project
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      TemperatureSettings temperatureSettings = settingsManager.CompactionTemperatureSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
 
@@ -364,7 +384,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Speed summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -388,11 +408,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
       //Speed settings are in LiftBuildSettings
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
-      Filter filter = CompactionSettings.CompactionFilter(
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
 
@@ -440,7 +461,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>CMV % change</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -464,13 +485,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
-      Filter filter = CompactionSettings.CompactionFilter(
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      double[] cmvChangeSummarySettings = CompactionSettings.CompactionCmvPercentChangeSettings;
+      double[] cmvChangeSummarySettings = settingsManager.CompactionCmvPercentChangeSettings(projectSettings);
       CMVChangeSummaryRequest request = CMVChangeSummaryRequest.CreateCMVChangeSummaryRequest(
         projectId.Value, null, liftSettings, filter, -1, cmvChangeSummarySettings);
       request.Validate();
@@ -518,7 +540,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>CMV details</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -593,7 +615,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Pass count details</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -644,17 +666,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>
-    /// <param name="projectId"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="startUtc"></param>
-    /// <param name="endUtc"></param>
-    /// <param name="vibeStateOn"></param>
-    /// <param name="elevationType"></param>
-    /// <param name="layerNumber"></param>
-    /// <param name="onMachineDesignId"></param>
-    /// <param name="assetID"></param>
-    /// <param name="machineName"></param>
-    /// <param name="isJohnDoe"></param>
+    /// <param name="projectId">Legacy project id</param>
+    /// <param name="projectUid">Project Uid</param>
+    /// <param name="startUtc">Start date and time in UTC</param>
+    /// <param name="endUtc">End date and time in UTC</param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>An instance of the CMVRequest class.</returns>
     private async Task<CMVRequest> GetCMVRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
@@ -664,11 +693,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      CMVSettings cmvSettings = CompactionSettings.CompactionCmvSettings;
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
-      Filter filter = CompactionSettings.CompactionFilter(
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      CMVSettings cmvSettings = settingsManager.CompactionCmvSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
 
@@ -679,18 +709,25 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Creates an instance of the PassCounts class and populate it with data.
     /// </summary>
-    /// <param name="projectId"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="startUtc"></param>
-    /// <param name="endUtc"></param>
-    /// <param name="vibeStateOn"></param>
-    /// <param name="elevationType"></param>
-    /// <param name="layerNumber"></param>
-    /// <param name="onMachineDesignId"></param>
-    /// <param name="assetID"></param>
-    /// <param name="machineName"></param>
-    /// <param name="isJohnDoe"></param>
-    /// <param name="isSummary"></param>
+    /// <param name="projectId">Legacy project id</param>
+    /// <param name="projectUid">Project Uid</param>
+    /// <param name="startUtc">Start date and time in UTC</param>
+    /// <param name="endUtc">End date and time in UTC</param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetID</param>
+    /// <param name="isSummary">True for summary request, false for details request</param>
     /// <returns>An instance of the PassCounts class.</returns>
     private async Task<PassCounts> GetPassCountRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
@@ -700,11 +737,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
-      PassCountSettings passCountSettings = isSummary ? null : CompactionSettings.CompactionPassCountSettings;
-      LiftBuildSettings liftSettings = CompactionSettings.CompactionLiftBuildSettings;
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
-        Request.Headers.GetCustomHeaders());
-      Filter filter = CompactionSettings.CompactionFilter(
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+      PassCountSettings passCountSettings = isSummary ? null : settingsManager.CompactionPassCountSettings(projectSettings);
+      LiftBuildSettings liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
 

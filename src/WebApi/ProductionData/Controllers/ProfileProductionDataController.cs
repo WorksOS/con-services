@@ -13,16 +13,16 @@ using VSS.Productivity3D.WebApiModels.ProductionData.ResultHandling;
 using VSS.Productivity3D.Common.ResultHandling;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Utilities;
-using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApiModels.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -59,19 +59,32 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IFileListProxy fileListProxy;
 
     /// <summary>
-    /// Constructor with injected raptor client and logger
+    /// For getting project settings for a project
+    /// </summary>
+    private readonly IProjectSettingsProxy projectSettingsProxy;
+
+    /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="configStore"></param>
     /// <param name="fileListProxy"></param>
-    public ProfileProductionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
+    /// <param name="settingsManager"></param>
+    public ProfileProductionDataController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, 
+      IFileListProxy fileListProxy, IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<ProfileProductionDataController>();
       this.configStore = configStore;
       this.fileListProxy = fileListProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
+      this.settingsManager = settingsManager;
     }
 
 
@@ -204,13 +217,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       DateTime? startUtc, DateTime? endUtc, Guid? cutfillDesignUid)
     {
       long projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid, headers, log);
 
       ProfileLLPoints llPoints = ProfileLLPoints.CreateProfileLLPoints(startLatDegrees.latDegreesToRadians(), startLonDegrees.lonDegreesToRadians(), endLatDegrees.latDegreesToRadians(), endLonDegrees.lonDegreesToRadians()); 
       
       ProductionDataType profileType = ProductionDataType.Height;
 
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid, Request.Headers.GetCustomHeaders());
-      Filter filter = CompactionSettings.CompactionFilter(startUtc, endUtc, null, null, null, null, null, excludedIds);
+      Filter filter = settingsManager.CompactionFilter(startUtc, endUtc, null, null, null, null, null, excludedIds);
 
       DesignDescriptor designDescriptor = null;
       if (cutfillDesignUid.HasValue)
@@ -243,7 +258,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         }
       } 
 
-      LiftBuildSettings liftBuildSettings = CompactionSettings.CompactionLiftBuildSettings;
+      LiftBuildSettings liftBuildSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+
 
       return ProfileProductionDataRequest.CreateProfileProductionData(projectId, null, profileType, filter, -1,
         designDescriptor, null, llPoints, ValidationConstants.MIN_STATION, ValidationConstants.MIN_STATION, liftBuildSettings, false);

@@ -22,6 +22,12 @@
     <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+  </PropertyGroup>
+
+
   <ItemGroup>
     <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
     <PackageReference Include="Swashbuckle.SwaggerGen" Version="6.0.0-beta902" />

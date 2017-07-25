@@ -26,9 +26,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <summary>
     /// PassCountSummaryResult create instance
     /// </summary>
-    /// <param name="result"></param>
-    /// <param name="settings"></param>
-    /// <returns></returns>
+    /// <param name="result">The pass count results from Raptor</param>
+    /// <param name="settings">The pass count settings used by Raptor</param>
+    /// <returns>An instance of CompactionPassCountSummaryResult</returns>
     public static CompactionPassCountSummaryResult CreatePassCountSummaryResult(PassCountSummaryResult result)
     {
       var passCountResult = new CompactionPassCountSummaryResult

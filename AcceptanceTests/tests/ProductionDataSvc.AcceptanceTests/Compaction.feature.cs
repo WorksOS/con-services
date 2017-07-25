@@ -95,7 +95,7 @@ this.ScenarioSetup(scenarioInfo);
     ""targetVaries"": false
   },
   ""minCMVPercent"": 80,
-  ""maxCMVPercent"": 120
+  ""maxCMVPercent"": 130
   },
   ""Code"": 0,
   ""Message"": ""success""
@@ -153,7 +153,7 @@ this.ScenarioSetup(scenarioInfo);
       ""targetVaries"": false
     },
     ""minMDPPercent"": 80,
-    ""maxMDPPercent"": 120
+    ""maxMDPPercent"": 130
   },
   ""Code"": 0,
   ""Message"": ""success""
@@ -296,12 +296,12 @@ this.ScenarioSetup(scenarioInfo);
 #line 153
  testRunner.Then("the Speed result should be", @"{
   ""speedSummaryData"": {
-    ""percentEqualsTarget"": 9.4,
-    ""percentGreaterThanTarget"": 21.5,
-    ""percentLessThanTarget"": 69.1,
+    ""percentEqualsTarget"": 36.9,
+    ""percentGreaterThanTarget"": 39.3,
+    ""percentLessThanTarget"": 23.8,
     ""totalAreaCoveredSqMeters"": 10636.7028,
-    ""minTarget"": 12.0,
-    ""maxTarget"": 15.0
+    ""minTarget"": 5.0,
+    ""maxTarget"": 10.0
   },
   ""Code"": 0,
   ""Message"": ""success""

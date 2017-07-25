@@ -8,15 +8,14 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApiModels.Notification.Executors;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
@@ -64,17 +63,17 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     private ITileGenerator tileGenerator;
 
     /// <summary>
-    /// For getting list of imported files for a project
+    /// For getting imported files for a project
     /// </summary>
     private readonly IFileListProxy fileListProxy;
 
     /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="fileRepo">Imported file repository</param>
-    /// <param name="configStore"></param>
+    /// <param name="configStore">Configuration store</param>
     /// <param name="prefProxy">Proxy for user preferences</param>
     /// <param name="tileGenerator">DXF tile generator</param>
     /// <param name="fileListProxy">File list proxy</param>
@@ -100,7 +99,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>
     /// <param name="fileType">Type of the file</param>
     /// <param name="fileId">A unique file identifier</param>
-    /// <returns></returns>
+    /// <returns>A code and message to indicate the result</returns>
     /// <executor>AddFileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/notification/addfile")]
@@ -134,9 +133,10 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="fileUid">File UID</param>
-    /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param>    /// <returns></returns>
+    /// <param name="fileDescriptor">File descriptor in JSON format. Currently this is TCC filespaceId, path and filename</param> 
     /// <param name="fileType">Type of the file</param>
     /// <param name="fileId">A unique file identifier</param>
+    /// <returns>A code and message to indicate the result</returns>
     /// <executor>DeleteFileExecutor</executor> 
     [ProjectUidVerifier]
     [Route("api/v2/notification/deletefile")]
@@ -198,7 +198,7 @@ namespace VSS.Productivity3D.WebApi.Notification.Controllers
     /// <param name="projectUid">The project UID that the cached items belong to</param>
     /// <param name="fileUids">The file UIDs of files that have been activated/deactivated</param>
     /// <param name="customHeaders">The custom headers of the notification request</param>
-    /// <returns></returns>
+    /// <returns>The updated list of imported files</returns>
     private async Task<List<FileData>> ClearFilesCaches(Guid projectUid, IEnumerable<Guid> fileUids, IDictionary<string, string> customHeaders)
     {
       log.LogInformation("Clearing imported files cache for project {0}", projectUid);

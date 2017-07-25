@@ -26,9 +26,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <summary>
     /// CmvSummaryResult create instance
     /// </summary>
-    /// <param name="result"></param>
-    /// <param name="settings"></param>
-    /// <returns></returns>
+    /// <param name="result">The CMV results from Raptor</param>
+    /// <param name="settings">The CMV settings used by Raptor</param>
+    /// <returns>An instance of CompactionCmvSummaryResult</returns>
     public static CompactionCmvSummaryResult CreateCmvSummaryResult(CMVSummaryResult result, CMVSettings settings)
     {
       var cmvResult = new CompactionCmvSummaryResult

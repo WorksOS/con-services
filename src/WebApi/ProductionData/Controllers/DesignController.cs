@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Common.Contracts;
@@ -9,10 +8,9 @@ using VSS.Productivity3D.WebApiModels.ProductionData.Contracts;
 using VSS.Productivity3D.Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
-using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApiModels.ProductionData.Executors;
 using VSS.Productivity3D.WebApiModels.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Notification.Controllers;
@@ -53,10 +51,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     #endregion
 
     /// <summary>
-    /// Constructor with injected raptor client, logger and file list proxy
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
+    /// <param name="configStore">Configuration store</param>
     /// <param name="fileListProxy">File list proxy</param>
     public DesignController(IASNodeClient raptorClient, ILoggerFactory logger, IConfigurationStore configStore, IFileListProxy fileListProxy)
     {

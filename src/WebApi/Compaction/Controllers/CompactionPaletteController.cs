@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -40,9 +40,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
-    /// For getting list of imported files for a project
+    /// For getting imported files for a project
     /// </summary>
     private readonly IFileListProxy fileListProxy;
+
+
+    /// <summary>
+    /// For getting project settings for a project
+    /// </summary>
+    private readonly IProjectSettingsProxy projectSettingsProxy;
 
     /// <summary>
     /// Proxy for getting elevation statistics from Raptor
@@ -50,19 +56,30 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="fileListProxy">File list proxy</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
-    public CompactionPaletteController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, IElevationExtentsProxy elevProxy)
+    /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="settingsManager">Compaction settings manager</param>
+    public CompactionPaletteController(IASNodeClient raptorClient, ILoggerFactory logger, 
+      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       log = logger.CreateLogger<CompactionPaletteController>();
-      this.fileListProxy = fileListProxy;
       this.elevProxy = elevProxy;
+      this.fileListProxy = fileListProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
+      this.settingsManager = settingsManager;
     }
 
     /// <summary>
@@ -82,6 +99,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+
       //Note: elevation palette is a separate call as it requires a filter
       List<DisplayMode> modes = new List<DisplayMode>
       {
@@ -126,10 +146,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       foreach (var mode in modes)
       {
         List<ColorValue> colorValues;
-        ElevationStatisticsResult elevExtents = mode == DisplayMode.Height
-          ? elevProxy.GetElevationRange(raptorClient, projectId.Value, null)
-          : null;
-        var compactionPalette = CompactionSettings.CompactionPalette(mode, elevExtents);
+        var compactionPalette = settingsManager.CompactionPalette(mode, null, projectSettings);
         switch (mode)
         {
           case DisplayMode.CCV:
@@ -240,14 +257,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       {
         projectId = (User as RaptorPrincipal).GetProjectId(projectUid);
       }
+      var headers = Request.Headers.GetCustomHeaders();
+      var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
 
-      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
-        Request.Headers.GetCustomHeaders());
-      Filter filter = CompactionSettings.CompactionFilter(
+      var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+      Filter filter = settingsManager.CompactionFilter(
         startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
         this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-      ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(raptorClient, projectId.Value, filter);
-      var compactionPalette = CompactionSettings.CompactionPalette(DisplayMode.Height, elevExtents);
+      ElevationStatisticsResult elevExtents = elevProxy.GetElevationRange(projectId.Value, filter, projectSettings);
+      var compactionPalette = settingsManager.CompactionPalette(DisplayMode.Height, elevExtents, projectSettings);
 
       DetailPalette elevationPalette = null;
       if (compactionPalette != null)

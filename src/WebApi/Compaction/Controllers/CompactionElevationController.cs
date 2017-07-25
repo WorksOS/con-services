@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -46,25 +46,41 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
-    /// For getting list of imported files for a project
+    /// For getting imported files for a project
     /// </summary>
     private readonly IFileListProxy fileListProxy;
 
 
     /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
+    /// For getting project settings for a project
+    /// </summary>
+    private readonly IProjectSettingsProxy projectSettingsProxy;
+
+    /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="fileListProxy">File list proxy</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
-    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, IElevationExtentsProxy elevProxy)
+    /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="settingsManager">Compaction settings manager</param>
+    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, 
+      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionElevationController>();
-      this.fileListProxy = fileListProxy;
       this.elevProxy = elevProxy;
+      this.fileListProxy = fileListProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
+      this.settingsManager = settingsManager;
     }
 
 
@@ -116,12 +132,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       try
       {
-        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
-          Request.Headers.GetCustomHeaders());
-        Filter filter = CompactionSettings.CompactionFilter(
+        var headers = Request.Headers.GetCustomHeaders();
+        var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+        Filter filter = settingsManager.CompactionFilter(
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-        ElevationStatisticsResult result = elevProxy.GetElevationRange(raptorClient, projectId.Value, filter);
+        ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId.Value, filter, projectSettings);
         if (result == null)
         {
           //Ideally want to return an error code and message only here
@@ -143,47 +160,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     #endregion
-
-    //**** START TODO ****************************
-    //This is obsolete. Remove when compaction UI has changed to use the GET
-
-    // TEMP v2 copy of v1 until we have a simplified contract for Compaction
-    /// <summary>
-    /// Gets project statistics from Raptor.
-    /// </summary>
-    /// <param name="request">The request for statistics request to Raptor</param>
-    /// <returns></returns>
-    /// <executor>ProjectStatisticsExecutor</executor>
-    /// 
-    [PostRequestVerifier]
-    [ProjectIdVerifier]
-    [ProjectUidVerifier]
-    [Route("api/v2/compaction/projectstatistics")]
-    [HttpPost]
-    public async Task<ProjectStatisticsResult> PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
-    {
-      log.LogInformation("PostProjectStatistics: " + JsonConvert.SerializeObject(request));
-      request.Validate();
-      try
-      {
-        var returnResult =
-          RequestExecutorContainer.Build<ProjectStatisticsExecutor>(logger, raptorClient, null)
-            .Process(request) as ProjectStatisticsResult;
-        log.LogInformation("PostProjectStatistics result: " + JsonConvert.SerializeObject(returnResult));
-        return returnResult;
-      }
-      catch (ServiceException se)
-      {
-        //Change FailedToGetResults to 204
-        this.ProcessStatusCode(se);
-        throw;
-      }
-      finally
-      {
-        log.LogInformation("PostProjectStatistics returned: " + Response.StatusCode);
-      }
-    }
-    //**** END TODO ****************************
+    #region Project Extents
 
     /// <summary>
     /// Gets project statistics from Raptor.
@@ -228,7 +205,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         log.LogInformation("GetProjectStatistics returned: " + Response.StatusCode);
       }
     }
-
+    #endregion
 
   }
 }
