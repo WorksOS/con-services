@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
@@ -35,14 +37,21 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     private readonly IASNodeClient raptorClient;
 
     /// <summary>
-    /// How long to cache elevation extents
-    /// </summary>
-    private readonly TimeSpan elevationExtentsCacheLife = new TimeSpan(0, 15, 0); //TODO: how long to cache ?
-
-    /// <summary>
     /// For getting compaction settings for a project
     /// </summary>
     private readonly ICompactionSettingsManager settingsManager;
+
+    private readonly string elevationExtentsCacheLifeKey = "ELEVATION_EXTENTS_CACHE_LIFE";
+
+    /// <summary>
+    /// Logger for logging
+    /// </summary>
+    private readonly ILogger log;
+
+    /// <summary>
+    /// Where to get environment variables, connection string etc. from
+    /// </summary>
+    private IConfigurationStore configStore;
 
     /// <summary>
     /// Constructor with injection
@@ -51,12 +60,15 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
     /// <param name="logger">Logger</param>
     /// <param name="cache">Elevation extents cache</param>
     /// <param name="settingsManager">Compaction settings manager</param>
-    public ElevationExtentsProxy(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache, ICompactionSettingsManager settingsManager)
+    /// <param name="configStore">Configuration store</param>
+    public ElevationExtentsProxy(IASNodeClient raptorClient, ILoggerFactory logger, IMemoryCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
+      this.log = logger.CreateLogger<ElevationExtentsProxy>();
       elevationExtentsCache = cache;
       this.settingsManager = settingsManager;
+      this.configStore = configStore;
     }
 
     /// <summary>
@@ -94,10 +106,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
           result = null;
         }
 
-        var opts = new MemoryCacheEntryOptions
-        {
-          SlidingExpiration = elevationExtentsCacheLife
-        };
+        var opts = MemoryCacheExtensions.GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
         elevationExtentsCache.Set(cacheKey, result, opts);
       }
       return result;
