@@ -537,39 +537,102 @@ this.ScenarioSetup(scenarioInfo);
   testRunner.When("I request a ProductionData Slicer Profile", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 305
- testRunner.Then("the Profile response should be", "{\n\"cells\": [\n  {\n    \"station\": 0,\n    \"firstPassHeight\": 622.509,\n    \"highestPa" +
-                    "ssHeight\": 622.509,\n    \"lastPassHeight\": 622.47,\n    \"lowestPassHeight\": 622.39" +
-                    "9,\n    \"firstCompositeHeight\": 622.509,\n    \"highestCompositeHeight\": 622.509,\n " +
-                    "   \"lastCompositeHeight\": 622.47,\n    \"lowestCompositeHeight\": 622.399,\n    \"des" +
-                    "ignHeight\": \"NaN\",\n    \"cmvPercent\": 313.333344,\n    \"cmvHeight\": 622.47,\n    \"p" +
-                    "reviousCmvPercent\": 100,\n    \"mdpPercent\": \"NaN\",\n    \"mdpHeight\": \"NaN\",\n    \"t" +
-                    "emperature\": 0,\n    \"temperatureHeight\": 622.47,\n    \"temperatureLevel\": 2,\n    " +
-                    "\"topLayerPassCount\": 1,\n    \"topLayerPassCountTargetRange\": {\n      \"min\": 5,\n  " +
-                    "    \"max\": 5\n    },\n    \"passCountIndex\": 2,\n    \"topLayerThickness\": 0.07098389" +
-                    ",\n    \"minHeight\": 622.399,\n    \"maxHeight\": 622.509\n  },\n  {\n    \"station\": 0.2" +
-                    "782115027002874,\n    \"firstPassHeight\": 622.51,\n    \"highestPassHeight\": 622.51," +
-                    "\n    \"lastPassHeight\": 622.462,\n    \"lowestPassHeight\": 622.414,\n    \"firstCompo" +
-                    "siteHeight\": 622.51,\n    \"highestCompositeHeight\": 622.51,\n    \"lastCompositeHei" +
-                    "ght\": 622.462,\n    \"lowestCompositeHeight\": 622.414,\n    \"designHeight\": \"NaN\",\n" +
-                    "    \"cmvPercent\": 813.3333,\n    \"cmvHeight\": 622.462,\n    \"previousCmvPercent\": " +
-                    "593.3333,\n    \"mdpPercent\": \"NaN\",\n    \"mdpHeight\": \"NaN\",\n    \"temperature\": 0," +
-                    "\n    \"temperatureHeight\": 622.462,\n    \"temperatureLevel\": 2,\n    \"topLayerPassC" +
-                    "ount\": 3,\n    \"topLayerPassCountTargetRange\": {\n      \"min\": 5,\n      \"max\": 5\n " +
-                    "   },\n    \"passCountIndex\": 2,\n    \"topLayerThickness\": 0,\n    \"minHeight\": 622." +
-                    "414,\n    \"maxHeight\": 622.51\n  },\n  {\n    \"station\": 0.4466706003699983,\n    \"fi" +
-                    "rstPassHeight\": 622.51,\n    \"highestPassHeight\": 622.51,\n    \"lastPassHeight\": 6" +
-                    "22.462,\n    \"lowestPassHeight\": 622.414,\n    \"firstCompositeHeight\": 622.51,\n   " +
-                    " \"highestCompositeHeight\": 622.51,\n    \"lastCompositeHeight\": 622.462,\n    \"lowe" +
-                    "stCompositeHeight\": 622.414,\n    \"designHeight\": \"NaN\",\n    \"cmvPercent\": 813.33" +
-                    "33,\n    \"cmvHeight\": 622.462,\n    \"previousCmvPercent\": 593.3333,\n    \"mdpPercen" +
-                    "t\": \"NaN\",\n    \"mdpHeight\": \"NaN\",\n    \"temperature\": 0,\n    \"temperatureHeight\"" +
-                    ": 622.462,\n    \"temperatureLevel\": 2,\n    \"topLayerPassCount\": 3,\n    \"topLayerP" +
-                    "assCountTargetRange\": {\n      \"min\": 5,\n      \"max\": 5\n    },\n    \"passCountInde" +
-                    "x\": 2,\n    \"topLayerThickness\": 0,\n    \"minHeight\": 622.414,\n    \"maxHeight\": 62" +
-                    "2.51\n  }\n],\n\"alignmentPoints\": [],\n\"callId\": \"00000000-0000-0000-0000-0000000000" +
-                    "00\",\n\"success\": true,\n\"minStation\": 0,\n\"maxStation\": 0.4466706003699983,\n\"minHei" +
-                    "ght\": 622.3989868164062,\n\"maxHeight\": 622.510009765625,\n\"gridDistanceBetweenProf" +
-                    "ilePoints\": 0.4466706003699983,\n\"Code\": 0,\n\"Message\": \"success\"\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the Profile response should be", "{\r\n\"cells\": [\r\n  {\r\n    \"station\": 0.0,\r\n    \"firstPassHeight\": 597.294,\r\n    \"hi" +
+                    "ghestPassHeight\": 597.629,\r\n    \"lastPassHeight\": 597.367,\r\n    \"lowestPassHeigh" +
+                    "t\": 597.292,\r\n    \"firstCompositeHeight\": 597.294,\r\n    \"highestCompositeHeight\"" +
+                    ": 597.629,\r\n    \"lastCompositeHeight\": 597.367,\r\n    \"lowestCompositeHeight\": 59" +
+                    "7.292,\r\n    \"designHeight\": \"NaN\",\r\n    \"cmvPercent\": \"NaN\",\r\n    \"cmvHeight\": \"" +
+                    "NaN\",\r\n    \"previousCmvPercent\": \"NaN\",\r\n    \"mdpPercent\": \"NaN\",\r\n    \"mdpHeigh" +
+                    "t\": \"NaN\",\r\n    \"temperature\": \"NaN\",\r\n    \"temperatureHeight\": \"NaN\",\r\n    \"tem" +
+                    "peratureLevel\": -1,\r\n    \"topLayerPassCount\": 272,\r\n    \"topLayerPassCountTarget" +
+                    "Range\": {\r\n      \"min\": 0,\r\n      \"max\": 0\r\n    },\r\n    \"passCountIndex\": 0,\r\n  " +
+                    "  \"topLayerThickness\": 0.07299805,\r\n    \"minHeight\": 597.292,\r\n    \"maxHeight\": " +
+                    "597.629\r\n  },\r\n  {\r\n    \"station\": 0.08520580309242004,\r\n    \"firstPassHeight\": " +
+                    "597.303,\r\n    \"highestPassHeight\": 597.599,\r\n    \"lastPassHeight\": 597.369,\r\n   " +
+                    " \"lowestPassHeight\": 597.298,\r\n    \"firstCompositeHeight\": 597.303,\r\n    \"highes" +
+                    "tCompositeHeight\": 597.599,\r\n    \"lastCompositeHeight\": 597.369,\r\n    \"lowestCom" +
+                    "positeHeight\": 597.298,\r\n    \"designHeight\": \"NaN\",\r\n    \"cmvPercent\": \"NaN\",\r\n " +
+                    "   \"cmvHeight\": \"NaN\",\r\n    \"previousCmvPercent\": \"NaN\",\r\n    \"mdpPercent\": \"NaN" +
+                    "\",\r\n    \"mdpHeight\": \"NaN\",\r\n    \"temperature\": \"NaN\",\r\n    \"temperatureHeight\":" +
+                    " \"NaN\",\r\n    \"temperatureLevel\": -1,\r\n    \"topLayerPassCount\": 284,\r\n    \"topLay" +
+                    "erPassCountTargetRange\": {\r\n      \"min\": 0,\r\n      \"max\": 0\r\n    },\r\n    \"passCo" +
+                    "untIndex\": 0,\r\n    \"topLayerThickness\": 0.06604004,\r\n    \"minHeight\": 597.298,\r\n" +
+                    "    \"maxHeight\": 597.599\r\n  },\r\n  {\r\n    \"station\": 0.11482184657585545,\r\n    \"f" +
+                    "irstPassHeight\": 597.294,\r\n    \"highestPassHeight\": 597.49,\r\n    \"lastPassHeight" +
+                    "\": 597.367,\r\n    \"lowestPassHeight\": 597.276,\r\n    \"firstCompositeHeight\": 597.2" +
+                    "94,\r\n    \"highestCompositeHeight\": 597.49,\r\n    \"lastCompositeHeight\": 597.367,\r" +
+                    "\n    \"lowestCompositeHeight\": 597.276,\r\n    \"designHeight\": \"NaN\",\r\n    \"cmvPerc" +
+                    "ent\": \"NaN\",\r\n    \"cmvHeight\": \"NaN\",\r\n    \"previousCmvPercent\": \"NaN\",\r\n    \"md" +
+                    "pPercent\": \"NaN\",\r\n    \"mdpHeight\": \"NaN\",\r\n    \"temperature\": \"NaN\",\r\n    \"temp" +
+                    "eratureHeight\": \"NaN\",\r\n    \"temperatureLevel\": -1,\r\n    \"topLayerPassCount\": 27" +
+                    "5,\r\n    \"topLayerPassCountTargetRange\": {\r\n      \"min\": 0,\r\n      \"max\": 0\r\n    " +
+                    "},\r\n    \"passCountIndex\": 0,\r\n    \"topLayerThickness\": 0.07299805,\r\n    \"minHeig" +
+                    "ht\": 597.276,\r\n    \"maxHeight\": 597.49\r\n  },\r\n  {\r\n    \"station\": 0.525086976886" +
+                    "52883,\r\n    \"firstPassHeight\": 597.295,\r\n    \"highestPassHeight\": 597.486,\r\n    " +
+                    "\"lastPassHeight\": 597.364,\r\n    \"lowestPassHeight\": 597.289,\r\n    \"firstComposit" +
+                    "eHeight\": 597.295,\r\n    \"highestCompositeHeight\": 597.486,\r\n    \"lastCompositeHe" +
+                    "ight\": 597.364,\r\n    \"lowestCompositeHeight\": 597.289,\r\n    \"designHeight\": \"NaN" +
+                    "\",\r\n    \"cmvPercent\": \"NaN\",\r\n    \"cmvHeight\": \"NaN\",\r\n    \"previousCmvPercent\":" +
+                    " \"NaN\",\r\n    \"mdpPercent\": \"NaN\",\r\n    \"mdpHeight\": \"NaN\",\r\n    \"temperature\": \"" +
+                    "NaN\",\r\n    \"temperatureHeight\": \"NaN\",\r\n    \"temperatureLevel\": -1,\r\n    \"topLay" +
+                    "erPassCount\": 263,\r\n    \"topLayerPassCountTargetRange\": {\r\n      \"min\": 0,\r\n    " +
+                    "  \"max\": 0\r\n    },\r\n    \"passCountIndex\": 0,\r\n    \"topLayerThickness\": 0.0690307" +
+                    "6,\r\n    \"minHeight\": 597.289,\r\n    \"maxHeight\": 597.486\r\n  },\r\n  {\r\n    \"station" +
+                    "\": 0.69273368510662536,\r\n    \"firstPassHeight\": 597.294,\r\n    \"highestPassHeight" +
+                    "\": 597.492,\r\n    \"lastPassHeight\": 597.365,\r\n    \"lowestPassHeight\": 597.286,\r\n " +
+                    "   \"firstCompositeHeight\": 597.294,\r\n    \"highestCompositeHeight\": 597.492,\r\n   " +
+                    " \"lastCompositeHeight\": 597.365,\r\n    \"lowestCompositeHeight\": 597.286,\r\n    \"de" +
+                    "signHeight\": \"NaN\",\r\n    \"cmvPercent\": \"NaN\",\r\n    \"cmvHeight\": \"NaN\",\r\n    \"pre" +
+                    "viousCmvPercent\": \"NaN\",\r\n    \"mdpPercent\": \"NaN\",\r\n    \"mdpHeight\": \"NaN\",\r\n   " +
+                    " \"temperature\": \"NaN\",\r\n    \"temperatureHeight\": \"NaN\",\r\n    \"temperatureLevel\":" +
+                    " -1,\r\n    \"topLayerPassCount\": 261,\r\n    \"topLayerPassCountTargetRange\": {\r\n    " +
+                    "  \"min\": 0,\r\n      \"max\": 0\r\n    },\r\n    \"passCountIndex\": 0,\r\n    \"topLayerThic" +
+                    "kness\": 0.07098389,\r\n    \"minHeight\": 597.286,\r\n    \"maxHeight\": 597.492\r\n  },\r\n" +
+                    "  {\r\n    \"station\": 0.93535210719739081,\r\n    \"firstPassHeight\": 597.293,\r\n    \"" +
+                    "highestPassHeight\": 597.53,\r\n    \"lastPassHeight\": 597.377,\r\n    \"lowestPassHeig" +
+                    "ht\": 597.281,\r\n    \"firstCompositeHeight\": 597.293,\r\n    \"highestCompositeHeight" +
+                    "\": 597.53,\r\n    \"lastCompositeHeight\": 597.377,\r\n    \"lowestCompositeHeight\": 59" +
+                    "7.281,\r\n    \"designHeight\": \"NaN\",\r\n    \"cmvPercent\": \"NaN\",\r\n    \"cmvHeight\": \"" +
+                    "NaN\",\r\n    \"previousCmvPercent\": \"NaN\",\r\n    \"mdpPercent\": \"NaN\",\r\n    \"mdpHeigh" +
+                    "t\": \"NaN\",\r\n    \"temperature\": \"NaN\",\r\n    \"temperatureHeight\": \"NaN\",\r\n    \"tem" +
+                    "peratureLevel\": -1,\r\n    \"topLayerPassCount\": 269,\r\n    \"topLayerPassCountTarget" +
+                    "Range\": {\r\n      \"min\": 0,\r\n      \"max\": 0\r\n    },\r\n    \"passCountIndex\": 0,\r\n  " +
+                    "  \"topLayerThickness\": 0.083984375,\r\n    \"minHeight\": 597.281,\r\n    \"maxHeight\":" +
+                    " 597.53\r\n  },\r\n  {\r\n    \"station\": 1.3002615671214619,\r\n    \"firstPassHeight\": 5" +
+                    "97.295,\r\n    \"highestPassHeight\": 597.49,\r\n    \"lastPassHeight\": 597.377,\r\n    \"" +
+                    "lowestPassHeight\": 597.287,\r\n    \"firstCompositeHeight\": 597.295,\r\n    \"highestC" +
+                    "ompositeHeight\": 597.49,\r\n    \"lastCompositeHeight\": 597.377,\r\n    \"lowestCompos" +
+                    "iteHeight\": 597.287,\r\n    \"designHeight\": \"NaN\",\r\n    \"cmvPercent\": \"NaN\",\r\n    " +
+                    "\"cmvHeight\": \"NaN\",\r\n    \"previousCmvPercent\": \"NaN\",\r\n    \"mdpPercent\": \"NaN\",\r" +
+                    "\n    \"mdpHeight\": \"NaN\",\r\n    \"temperature\": \"NaN\",\r\n    \"temperatureHeight\": \"N" +
+                    "aN\",\r\n    \"temperatureLevel\": -1,\r\n    \"topLayerPassCount\": 266,\r\n    \"topLayerP" +
+                    "assCountTargetRange\": {\r\n      \"min\": 0,\r\n      \"max\": 0\r\n    },\r\n    \"passCount" +
+                    "Index\": 0,\r\n    \"topLayerThickness\": 0.08203125,\r\n    \"minHeight\": 597.287,\r\n   " +
+                    " \"maxHeight\": 597.49\r\n  },\r\n  {\r\n    \"station\": 1.3456172375080642,\r\n    \"firstP" +
+                    "assHeight\": 597.293,\r\n    \"highestPassHeight\": 597.49,\r\n    \"lastPassHeight\": 59" +
+                    "7.376,\r\n    \"lowestPassHeight\": 597.281,\r\n    \"firstCompositeHeight\": 597.293,\r\n" +
+                    "    \"highestCompositeHeight\": 597.49,\r\n    \"lastCompositeHeight\": 597.376,\r\n    " +
+                    "\"lowestCompositeHeight\": 597.281,\r\n    \"designHeight\": \"NaN\",\r\n    \"cmvPercent\":" +
+                    " \"NaN\",\r\n    \"cmvHeight\": \"NaN\",\r\n    \"previousCmvPercent\": \"NaN\",\r\n    \"mdpPerc" +
+                    "ent\": \"NaN\",\r\n    \"mdpHeight\": \"NaN\",\r\n    \"temperature\": \"NaN\",\r\n    \"temperatu" +
+                    "reHeight\": \"NaN\",\r\n    \"temperatureLevel\": -1,\r\n    \"topLayerPassCount\": 259,\r\n " +
+                    "   \"topLayerPassCountTargetRange\": {\r\n      \"min\": 0,\r\n      \"max\": 0\r\n    },\r\n " +
+                    "   \"passCountIndex\": 0,\r\n    \"topLayerThickness\": 0.08294678,\r\n    \"minHeight\": " +
+                    "597.281,\r\n    \"maxHeight\": 597.49\r\n  },\r\n  {\r\n    \"station\": 1.6069349835344178," +
+                    "\r\n    \"firstPassHeight\": 597.293,\r\n    \"highestPassHeight\": 597.49,\r\n    \"lastPa" +
+                    "ssHeight\": 597.376,\r\n    \"lowestPassHeight\": 597.281,\r\n    \"firstCompositeHeight" +
+                    "\": 597.293,\r\n    \"highestCompositeHeight\": 597.49,\r\n    \"lastCompositeHeight\": 5" +
+                    "97.376,\r\n    \"lowestCompositeHeight\": 597.281,\r\n    \"designHeight\": \"NaN\",\r\n    " +
+                    "\"cmvPercent\": \"NaN\",\r\n    \"cmvHeight\": \"NaN\",\r\n    \"previousCmvPercent\": \"NaN\",\r" +
+                    "\n    \"mdpPercent\": \"NaN\",\r\n    \"mdpHeight\": \"NaN\",\r\n    \"temperature\": \"NaN\",\r\n " +
+                    "   \"temperatureHeight\": \"NaN\",\r\n    \"temperatureLevel\": -1,\r\n    \"topLayerPassCo" +
+                    "unt\": 259,\r\n    \"topLayerPassCountTargetRange\": {\r\n      \"min\": 0,\r\n      \"max\":" +
+                    " 0\r\n    },\r\n    \"passCountIndex\": 0,\r\n    \"topLayerThickness\": 0.08294678,\r\n    " +
+                    "\"minHeight\": 597.281,\r\n    \"maxHeight\": 597.49\r\n  }\r\n],\r\n\"alignmentPoints\": [],\r" +
+                    "\n\"callId\": \"691bc354-0e8e-4837-9001-c2964e6d321a\",\r\n\"success\": true,\r\n\"minStatio" +
+                    "n\": 0.0,\r\n\"maxStation\": 1.6069349835344178,\r\n\"minHeight\": 597.2760009765625,\r\n\"m" +
+                    "axHeight\": 597.6290283203125,\r\n\"gridDistanceBetweenProfilePoints\": 1.60693498353" +
+                    "4418,\r\n\"Code\": 0,\r\n\"Message\": \"success\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -580,19 +643,19 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetElevationPaletteWhenNoElevationData()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette When No Elevation Data", ((string[])(null)));
-#line 411
+#line 585
   this.ScenarioSetup(scenarioInfo);
-#line 412
+#line 586
  testRunner.Given("the Compaction Elevation Palette service URI \"/api/v2/compaction/elevationpalette" +
                     "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 413
+#line 587
   testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 414
+#line 588
   testRunner.And("a startUtc \"2017-01-01\" and an EndUtc \"2017-01-01\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 415
+#line 589
  testRunner.When("I request Elevation Palette", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 416
+#line 590
  testRunner.Then("the Elevation Palette result should be", "{\r\n  \"palette\": null,\r\n   \"Code\": -4,\r\n  \"Message\": \"No elevation range\"\r\n}", ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -604,17 +667,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetElevationPalette()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Elevation Palette", ((string[])(null)));
-#line 425
+#line 599
   this.ScenarioSetup(scenarioInfo);
-#line 426
+#line 600
  testRunner.Given("the Compaction Elevation Palette service URI \"/api/v2/compaction/elevationpalette" +
                     "\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 427
+#line 601
   testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 428
+#line 602
  testRunner.When("I request Elevation Palette", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 429
+#line 603
  testRunner.Then("the Elevation Palette result should be", "{\r\n  \"palette\": {\r\n    \"colorValues\": [\r\n      {\r\n        \"color\": 13107200,\r\n   " +
                     "     \"value\": 591.9539794921875\r\n      },\r\n      {\r\n        \"color\": 16711680,\r\n" +
                     "        \"value\": 593.02544759114585\r\n      },\r\n      {\r\n        \"color\": 1476096" +
@@ -659,16 +722,16 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CompactionGetPalettes()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Compaction Get Palettes", ((string[])(null)));
-#line 567
+#line 741
   this.ScenarioSetup(scenarioInfo);
-#line 568
+#line 742
  testRunner.Given("the Compaction Palettes service URI \"/api/v2/compaction/colorpalettes\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 569
+#line 743
   testRunner.And("a projectUid \"ff91dd40-1569-4765-a2bc-014321f76ace\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 570
+#line 744
  testRunner.When("I request Palettes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 571
+#line 745
  testRunner.Then("the Palettes result should be", "{\r\n  \"cmvDetailPalette\": {\r\n    \"colorValues\": [\r\n      {\r\n      \"color\": 2971523" +
                     ",\r\n      \"value\": 0.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 4430812,\r\n\t\t\t\"value\": 10.0\r\n\t\t},\r\n" +
                     "\t\t{\r\n\t\t\t\"color\": 12509169,\r\n\t\t\t\"value\": 20.0\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"color\": 10341991,\r\n" +
