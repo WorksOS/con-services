@@ -10,7 +10,7 @@
         "targetVaries": false
       },
       "minCMVPercent": 80,
-      "maxCMVPercent": 120
+      "maxCMVPercent": 130
     },
     "Code": 0,
     "Message": "success"

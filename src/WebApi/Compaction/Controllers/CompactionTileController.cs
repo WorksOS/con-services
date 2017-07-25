@@ -58,6 +58,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ILoggerFactory logger;
 
     /// <summary>
+    /// For getting list of imported files for a project
+    /// </summary>
+    private readonly IFileListProxy fileListProxy;
+    /// <summary>
     /// Where to get environment variables, connection string etc. from
     /// </summary>
     private IConfigurationStore configStore;
@@ -72,12 +76,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
-    /// For getting imported files for a project
-    /// </summary>
-    private readonly IFileListProxy fileListProxy;
-
-
-    /// <summary>
     /// For getting project settings for a project
     /// </summary>
     private readonly IProjectSettingsProxy projectSettingsProxy;
@@ -88,28 +86,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly ICompactionSettingsManager settingsManager;
 
     /// <summary>
-    /// Constructor with injection
+    /// Constructor with injected raptor client, logger and authenticated projects
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
+    /// <param name="fileListProxy">File list proxy</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileRepo">Imported file repository</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
-    /// <param name="fileListProxy">File list proxy</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
     /// <param name="settingsManager">Compaction settings manager</param>
     public CompactionTileController(IASNodeClient raptorClient, ILoggerFactory logger,
-      IConfigurationStore configStore, IFileRepository fileRepo, 
-      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
+      IFileListProxy fileListProxy, IConfigurationStore configStore, IFileRepository fileRepo, IElevationExtentsProxy elevProxy,
       IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionTileController>();
+      this.fileListProxy = fileListProxy;
       this.configStore = configStore;
       this.fileRepo = fileRepo;
       this.elevProxy = elevProxy;
-      this.fileListProxy = fileListProxy;
       this.projectSettingsProxy = projectSettingsProxy;
       this.settingsManager = settingsManager;
     }
@@ -398,14 +395,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Validates the WMS parameters for the tile requests
     /// </summary>
-    /// <param name="SERVICE">WMS parameter - value WMS</param>
-    /// <param name="VERSION">WMS parameter - value 1.3.0</param>
-    /// <param name="REQUEST">WMS parameter - value GetMap</param>
-    /// <param name="FORMAT">WMS parameter - value image/png</param>
-    /// <param name="TRANSPARENT">WMS parameter - value true</param>
-    /// <param name="LAYERS">WMS parameter - value Layers</param>
-    /// <param name="CRS">WMS parameter - value EPSG:4326</param>
-    /// <param name="STYLES">WMS parameter - value null</param>
+    /// <param name="SERVICE"></param>
+    /// <param name="VERSION"></param>
+    /// <param name="REQUEST"></param>
+    /// <param name="FORMAT"></param>
+    /// <param name="TRANSPARENT"></param>
+    /// <param name="LAYERS"></param>
+    /// <param name="CRS"></param>
+    /// <param name="STYLES"></param>
     private void ValidateWmsParameters(
       string SERVICE,
       string VERSION,
@@ -436,8 +433,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Validates the tile width and height
     /// </summary>
-    /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
-    /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="WIDTH"></param>
+    /// <param name="HEIGHT"></param>
     private void ValidateTileDimensions(int WIDTH, int HEIGHT)
     {
       if (WIDTH != WebMercatorProjection.TILE_SIZE || HEIGHT != WebMercatorProjection.TILE_SIZE)
@@ -585,12 +582,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the requested tile from Raptor
     /// </summary>
     /// <param name="projectSettings">Project settings to use for Raptor</param>
-    /// <param name="filter">Filter to use for Raptor</param>
-    /// <param name="projectId">Legacy project ID</param>
-    /// <param name="mode">Display mode; type of data requested</param>
-    /// <param name="width">Width of the tile</param>
-    /// <param name="height">Height of the tile in pixels</param>
-    /// <param name="bbox">Bounding box in radians</param>
+    /// <param name="filter"></param>
+    /// <param name="projectId"></param>
+    /// <param name="mode"></param>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="bbox"></param>
     /// <returns>Tile result</returns>
     private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
       BoundingBox2DLatLon bbox)

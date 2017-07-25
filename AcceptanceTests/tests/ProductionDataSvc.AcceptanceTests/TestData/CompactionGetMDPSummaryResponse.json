@@ -10,7 +10,7 @@
         "targetVaries": false
       },
       "minMDPPercent": 80,
-      "maxMDPPercent": 120
+      "maxMDPPercent": 130
     },
     "Code": 0,
     "Message": "success"
@@ -26,7 +26,7 @@
         "targetVaries": false
       },
       "minMDPPercent": 80,
-      "maxMDPPercent": 120
+      "maxMDPPercent": 130
     },
     "Code": 0,
     "Message": "success"
@@ -42,7 +42,7 @@
         "targetVaries": false
       },
       "minMDPPercent": 80,
-      "maxMDPPercent": 120
+      "maxMDPPercent": 130
     },
     "Code": 0,
     "Message": "success"

@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Interfaces
 
     Filter CompactionFilter(DateTime? startUtc, DateTime? endUtc, long? onMachineDesignId, bool? vibeStateOn,
       ElevationType? elevationType,
-      int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds);
+      int? layerNumber, List<MachineDetails> machines, List<long> excludedSurveyedSurfaceIds, DesignDescriptor designDescriptor = null);
 
     CMVSettings CompactionCmvSettings(CompactionProjectSettings projectSettings);
 
