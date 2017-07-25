@@ -6,11 +6,13 @@ using System.Net;
 using System.Threading.Tasks;
 using VLPDDecls;
 using VSS.MasterData.Models.Models;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Contracts;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace VSS.Productivity3D.Common.Controllers
 {
@@ -23,7 +25,7 @@ namespace VSS.Productivity3D.Common.Controllers
     /// Gets the ids of the surveyed surfaces to exclude from Raptor calculations. 
     /// This is the deactivated ones.
     /// </summary>
-    /// <param name="controller"></param>
+    /// <param name="controller">The controller which received the request</param>
     /// <param name="fileListProxy">Proxy client to get list of imported files for the project</param>
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
     /// <param name="customHeaders">Http request custom headers</param>
@@ -60,9 +62,45 @@ namespace VSS.Productivity3D.Common.Controllers
     
 
     /// <summary>
+    /// Gets the project settings for the project.
+    /// </summary>
+    /// <param name="controller">The controller which received the request</param>
+    /// <param name="projectSettingsProxy">Proxy client to get project settings for the project</param>
+    /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
+    /// <param name="customHeaders">Http request custom headers</param>
+    /// <param name="log">log for logging</param>
+    /// <returns>The project settings</returns>
+    public static async Task<CompactionProjectSettings> GetProjectSettings(this Controller controller, IProjectSettingsProxy projectSettingsProxy, Guid projectUid, IDictionary<string, string> customHeaders, ILogger log)
+    {
+      CompactionProjectSettings ps = null;
+      var jsonSettings = await projectSettingsProxy.GetProjectSettings(projectUid.ToString(), customHeaders);
+      if (!string.IsNullOrEmpty(jsonSettings))
+      {
+        try
+        {
+          ps = JsonConvert.DeserializeObject<CompactionProjectSettings>(jsonSettings);
+          ps.Validate();
+        }
+        catch (Exception ex)
+        {
+          log.LogInformation(
+            $"Project Settings deserialization or validation failure for projectUid {projectUid}. Error is {ex.Message}");
+          ps = CompactionProjectSettings.DefaultSettings;
+        }
+      }
+      else
+      {
+        log.LogDebug($"No Project Settings for projectUid {projectUid}. Using defaults.");
+        ps = CompactionProjectSettings.DefaultSettings;
+      }
+      return ps;
+    }
+
+
+    /// <summary>
     /// Gets the list of contributing machines from the query parameters
     /// </summary>
-    /// <param name="controller"></param>
+    /// <param name="controller">The controller which received the reques</param>
     /// <param name="assetId">The asset ID</param>
     /// <param name="machineName">The machine name</param>
     /// <param name="isJohnDoe">The john doe flag</param>

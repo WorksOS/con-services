@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.Local.csproj" />
+    <ProjectReference Include="..\Common\VSS.Productivity3D.Common.Local.csproj" />
   </ItemGroup>
 
 </Project>

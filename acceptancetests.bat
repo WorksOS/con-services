@@ -1,2 +1,2 @@
 cd AcceptanceTests
-msbuild
+msbuild VSS.Productivity3D.Service.AcceptanceTests.sln

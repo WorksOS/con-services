@@ -27,8 +27,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <summary>
     /// CompactionCmvPercentChangeResult create instance
     /// </summary>
-    /// <param name="result"></param>
-    /// <returns></returns>
+    /// <param name="result">The CMV results from Raptor</param>
+    /// <returns>An instance of CompactionCmvPercentChangeResult</returns>
     public static CompactionCmvPercentChangeResult CreateCmvPercentChangeResult(CMVChangeSummaryResult result)
     {
       return new CompactionCmvPercentChangeResult

@@ -29,10 +29,10 @@ namespace VSS.Productivity3D.WebApiModels.Notification.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="raptorClient"></param>
-    /// <param name="fileRepository"></param>
-    /// <param name="tileGenerator"></param>
+    /// <param name="logger">Logger</param>
+    /// <param name="raptorClient">Raptor client</param>
+    /// <param name="fileRepository">Imported file repository</param>
+    /// <param name="tileGenerator">DXF tile generator</param>
     public AddFileExecutor(ILoggerFactory logger, IASNodeClient raptorClient, IFileRepository fileRepository, ITileGenerator tileGenerator) : 
       base(logger, raptorClient, null, null, fileRepository, tileGenerator)
     {

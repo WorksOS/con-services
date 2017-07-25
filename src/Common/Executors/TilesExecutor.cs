@@ -19,7 +19,8 @@ namespace VSS.Productivity3D.Common.Executors
     /// <summary>
     /// This constructor allows us to mock raptorClient
     /// </summary>
-    /// <param name="raptorClient"></param>
+    /// <param name="logger">Logger</param>
+    /// <param name="raptorClient">Raptor client</param>
     public TilesExecutor(ILoggerFactory logger, IASNodeClient raptorClient) : base(logger, raptorClient)
     {
       // ...

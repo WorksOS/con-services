@@ -16,6 +16,6 @@ copy src\WebApi\log4net.xml Artifacts\WebApi\
 
 mkdir Artifacts\Logs
 cd AcceptanceTests
-msbuild RaptorServices.AcceptanceTests.sln
+msbuild VSS.Productivity3D.Service.AcceptanceTests.sln
 
 
