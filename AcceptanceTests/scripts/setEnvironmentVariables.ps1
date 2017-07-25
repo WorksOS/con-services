@@ -21,6 +21,7 @@
 [Environment]::SetEnvironmentVariable("PROD_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("FILE_ACCESS_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", "172.17.180.238", "Machine")
+[Environment]::SetEnvironmentVariable("PROJECT_API_URL", ":80", "Machine")
 
 <#
 To run tests from within Visual Studio against Raptor Services running in local containers)
@@ -34,6 +35,7 @@ To run tests from within Visual Studio against Raptor Services running in local 
 [Environment]::SetEnvironmentVariable("PROD_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("FILE_ACCESS_SVC_BASE_URI", ":80", "Machine")
 [Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", "172.17.180.238", "Machine")
+[Environment]::SetEnvironmentVariable("PROJECT_API_URL", ":80", "Machine")
 #>
 
 
@@ -49,5 +51,6 @@ Here's the values for running tests from within Visual Studio against Raptor Ser
 [Environment]::SetEnvironmentVariable("PROD_SVC_BASE_URI", ":5000", "Machine")
 [Environment]::SetEnvironmentVariable("FILE_ACCESS_SVC_BASE_URI", ":5000", "Machine")
 [Environment]::SetEnvironmentVariable("RAPTOR_WEBSERVICES_HOST", "localhost", "Machine")
+[Environment]::SetEnvironmentVariable("PROJECT_API_URL", ":5000", "Machine")
 #>
 
