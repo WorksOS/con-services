@@ -398,14 +398,14 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Validates the WMS parameters for the tile requests
     /// </summary>
-    /// <param name="SERVICE"></param>
-    /// <param name="VERSION"></param>
-    /// <param name="REQUEST"></param>
-    /// <param name="FORMAT"></param>
-    /// <param name="TRANSPARENT"></param>
-    /// <param name="LAYERS"></param>
-    /// <param name="CRS"></param>
-    /// <param name="STYLES"></param>
+    /// <param name="SERVICE">WMS parameter - value WMS</param>
+    /// <param name="VERSION">WMS parameter - value 1.3.0</param>
+    /// <param name="REQUEST">WMS parameter - value GetMap</param>
+    /// <param name="FORMAT">WMS parameter - value image/png</param>
+    /// <param name="TRANSPARENT">WMS parameter - value true</param>
+    /// <param name="LAYERS">WMS parameter - value Layers</param>
+    /// <param name="CRS">WMS parameter - value EPSG:4326</param>
+    /// <param name="STYLES">WMS parameter - value null</param>
     private void ValidateWmsParameters(
       string SERVICE,
       string VERSION,
@@ -436,8 +436,8 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Validates the tile width and height
     /// </summary>
-    /// <param name="WIDTH"></param>
-    /// <param name="HEIGHT"></param>
+    /// <param name="WIDTH">The width, in pixels, of the image tile to be rendered, usually 256</param>
+    /// <param name="HEIGHT">The height, in pixels, of the image tile to be rendered, usually 256</param>
     private void ValidateTileDimensions(int WIDTH, int HEIGHT)
     {
       if (WIDTH != WebMercatorProjection.TILE_SIZE || HEIGHT != WebMercatorProjection.TILE_SIZE)
@@ -584,13 +584,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Gets the requested tile from Raptor
     /// </summary>
-    /// <param name="projectSettings"></param>
-    /// <param name="filter"></param>
-    /// <param name="projectId"></param>
-    /// <param name="mode"></param>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <param name="bbox"></param>
+    /// <param name="projectSettings">Project settings to use for Raptor</param>
+    /// <param name="filter">Filter to use for Raptor</param>
+    /// <param name="projectId">Legacy project ID</param>
+    /// <param name="mode">Display mode; type of data requested</param>
+    /// <param name="width">Width of the tile</param>
+    /// <param name="height">Height of the tile in pixels</param>
+    /// <param name="bbox">Bounding box in radians</param>
     /// <returns>Tile result</returns>
     private TileResult GetProductionDataTile(CompactionProjectSettings projectSettings, Filter filter, long projectId, DisplayMode mode, ushort width, ushort height,
       BoundingBox2DLatLon bbox)

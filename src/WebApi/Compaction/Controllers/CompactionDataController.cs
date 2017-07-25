@@ -100,7 +100,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>CMV summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -165,7 +165,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>MDP summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -242,7 +242,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Pass count summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -307,7 +307,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Temperature summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -385,7 +385,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Speed summary</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -462,7 +462,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>CMV % change</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -541,7 +541,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>CMV details</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -616,7 +616,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// All three parameters must be specified to specify a machine. 
     /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
     /// <param name="machineName">See assetID</param>
-    /// <param name="isJohnDoe">See assetIDL</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>Pass count details</returns>
     [ProjectIdVerifier]
     [ProjectUidVerifier]
@@ -667,17 +667,24 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Creates an instance of the CMVRequest class and populate it with data.
     /// </summary>
-    /// <param name="projectId"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="startUtc"></param>
-    /// <param name="endUtc"></param>
-    /// <param name="vibeStateOn"></param>
-    /// <param name="elevationType"></param>
-    /// <param name="layerNumber"></param>
-    /// <param name="onMachineDesignId"></param>
-    /// <param name="assetID"></param>
-    /// <param name="machineName"></param>
-    /// <param name="isJohnDoe"></param>
+    /// <param name="projectId">Legacy project id</param>
+    /// <param name="projectUid">Project Uid</param>
+    /// <param name="startUtc">Start date and time in UTC</param>
+    /// <param name="endUtc">End date and time in UTC</param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetID</param>
     /// <returns>An instance of the CMVRequest class.</returns>
     private async Task<CMVRequest> GetCMVRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,
@@ -703,18 +710,25 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <summary>
     /// Creates an instance of the PassCounts class and populate it with data.
     /// </summary>
-    /// <param name="projectId"></param>
-    /// <param name="projectUid"></param>
-    /// <param name="startUtc"></param>
-    /// <param name="endUtc"></param>
-    /// <param name="vibeStateOn"></param>
-    /// <param name="elevationType"></param>
-    /// <param name="layerNumber"></param>
-    /// <param name="onMachineDesignId"></param>
-    /// <param name="assetID"></param>
-    /// <param name="machineName"></param>
-    /// <param name="isJohnDoe"></param>
-    /// <param name="isSummary"></param>
+    /// <param name="projectId">Legacy project id</param>
+    /// <param name="projectUid">Project Uid</param>
+    /// <param name="startUtc">Start date and time in UTC</param>
+    /// <param name="endUtc">End date and time in UTC</param>
+    /// <param name="vibeStateOn">Only filter cell passes recorded when the vibratory drum was 'on'.  
+    /// If set to null, returns all cell passes. If true, returns only cell passes with the cell pass parameter and the drum was on.  
+    /// If false, returns only cell passes with the cell pass parameter and the drum was off.</param>
+    /// <param name="elevationType">Controls the cell pass from which to determine data based on its elevation.</param>
+    /// <param name="layerNumber"> The number of the 3D spatial layer (determined through bench elevation and layer thickness or the tag file)
+    ///  to be used as the layer type filter. Layer 3 is then the third layer from the
+    /// datum elevation where each layer has a thickness defined by the layerThickness member.</param>
+    /// <param name="onMachineDesignId">A machine reported design. Cell passes recorded when a machine did not have this design loaded at the time is not considered.
+    /// May be null/empty, which indicates no restriction.</param>
+    /// <param name="assetID">A machine is identified by its asset ID, machine name and john doe flag, indicating if the machine is known in VL.
+    /// All three parameters must be specified to specify a machine. 
+    /// Cell passes are only considered if the machine that recorded them is this machine. May be null/empty, which indicates no restriction.</param>
+    /// <param name="machineName">See assetID</param>
+    /// <param name="isJohnDoe">See assetID</param>
+    /// <param name="isSummary">True for summary request, false for details request</param>
     /// <returns>An instance of the PassCounts class.</returns>
     private async Task<PassCounts> GetPassCountRequest(long? projectId, Guid? projectUid, DateTime? startUtc, DateTime? endUtc,
       bool? vibeStateOn, ElevationType? elevationType, int? layerNumber, long? onMachineDesignId, long? assetID,

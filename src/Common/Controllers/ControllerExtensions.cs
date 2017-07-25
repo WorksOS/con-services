@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.Common.Controllers
     /// Gets the ids of the surveyed surfaces to exclude from Raptor calculations. 
     /// This is the deactivated ones.
     /// </summary>
-    /// <param name="controller"></param>
+    /// <param name="controller">The controller which received the request</param>
     /// <param name="fileListProxy">Proxy client to get list of imported files for the project</param>
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
     /// <param name="customHeaders">Http request custom headers</param>
@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.Common.Controllers
     /// <summary>
     /// Gets the project settings for the project.
     /// </summary>
-    /// <param name="controller"></param>
+    /// <param name="controller">The controller which received the request</param>
     /// <param name="projectSettingsProxy">Proxy client to get project settings for the project</param>
     /// <param name="projectUid">The UID of the project containing the surveyed surfaces</param>
     /// <param name="customHeaders">Http request custom headers</param>
@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.Common.Controllers
     /// <summary>
     /// Gets the list of contributing machines from the query parameters
     /// </summary>
-    /// <param name="controller"></param>
+    /// <param name="controller">The controller which received the reques</param>
     /// <param name="assetId">The asset ID</param>
     /// <param name="machineName">The machine name</param>
     /// <param name="isJohnDoe">The john doe flag</param>

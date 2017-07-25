@@ -27,8 +27,8 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <summary>
     /// SpeedSummaryResult create instance
     /// </summary>
-    /// <param name="result"></param>
-    /// <returns></returns>
+    /// <param name="result">The speed results from Raptor</param>
+    /// <returns>An instance of CompactionSpeedSummaryResult</returns>
     public static CompactionSpeedSummaryResult CreateSpeedSummaryResult(SummarySpeedResult result, MachineSpeedTarget speedTarget)
     {
       var speedResult = new CompactionSpeedSummaryResult

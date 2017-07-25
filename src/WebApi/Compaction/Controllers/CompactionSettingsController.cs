@@ -51,7 +51,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="projectUid">Project UID</param>
     /// <param name="projectSettings">Project settings to validate as a JSON object</param>
     /// <returns>ContractExecutionResult</returns>
-    /// <executor></executor>
     [ProjectUidVerifier]
     [Route("api/v2/compaction/validatesettings")]
     [HttpGet]
