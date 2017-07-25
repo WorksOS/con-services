@@ -61,6 +61,12 @@ node('Jenkins-Win2016-Raptor') {
  
     echo "Build result is ${currentBuild.result}"
     if (currentBuild.result=='SUCCESS') {
+
+           stage 'Coverage'
+           bat "./coverage.bat"
+	   step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
+	   publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
+
 		if (branch.contains("release"))
 		{
        stage 'Build Release Images'

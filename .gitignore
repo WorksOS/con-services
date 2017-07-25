@@ -27,6 +27,12 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+
+# Track ToolsFolder
+!tools/x64/
+!tools/x86/
+
+
 # Roslyn cache directories
 *.ide/
 
@@ -204,3 +210,5 @@ Deploy/
 
 #Container.txt use used during jenkins build to get the ip address of the just built container.
 container.txt
+
+/CoverageReport/
