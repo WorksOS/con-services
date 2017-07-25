@@ -25,9 +25,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <summary>
     ///TemperatureSummaryResult create instance
     /// </summary>
-    /// <param name="result"></param>
-    /// <param name="settings"></param>
-    /// <returns></returns>
+    /// <param name="result">The temperature results from Raptor</param>
+    /// <param name="settings">The temperature settings used by Raptor</param>
+    /// <returns>An instance of CompactionTemperatureSummaryResult</returns>
     public static CompactionTemperatureSummaryResult CreateTemperatureSummaryResult(TemperatureSummaryResult result)
     {
       var temperatureResult = new CompactionTemperatureSummaryResult

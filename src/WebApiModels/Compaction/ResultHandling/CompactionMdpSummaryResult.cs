@@ -26,9 +26,9 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.ResultHandling
     /// <summary>
     /// MdpSummaryResult create instance
     /// </summary>
-    /// <param name="result"></param>
-    /// <param name="settings"></param>
-    /// <returns></returns>
+    /// <param name="result">The MDP results from Raptor</param>
+    /// <param name="settings">The MDP settings used by Raptor</param>
+    /// <returns>An instance of CompactionMdpSummaryResult</returns>
     public static CompactionMdpSummaryResult CreateMdpSummaryResult(MDPSummaryResult result, MDPSettings settings)
     {
       var mdpResult = new CompactionMdpSummaryResult

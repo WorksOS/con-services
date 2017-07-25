@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

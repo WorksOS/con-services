@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
-using VSS.MasterDataProxies;
-using VSS.MasterDataProxies.Interfaces;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Controllers;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
@@ -46,25 +46,41 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private readonly IElevationExtentsProxy elevProxy;
 
     /// <summary>
-    /// For getting list of imported files for a project
+    /// For getting imported files for a project
     /// </summary>
     private readonly IFileListProxy fileListProxy;
 
 
     /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
+    /// For getting project settings for a project
+    /// </summary>
+    private readonly IProjectSettingsProxy projectSettingsProxy;
+
+    /// <summary>
+    /// For getting compaction settings for a project
+    /// </summary>
+    private readonly ICompactionSettingsManager settingsManager;
+
+    /// <summary>
+    /// Constructor with injection
     /// </summary>
     /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
-    /// <param name="fileListProxy">File list proxy</param>
     /// <param name="elevProxy">Elevation extents proxy</param>
-    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, IFileListProxy fileListProxy, IElevationExtentsProxy elevProxy)
+    /// <param name="fileListProxy">File list proxy</param>
+    /// <param name="projectSettingsProxy">Project settings proxy</param>
+    /// <param name="settingsManager">Compaction settings manager</param>
+    public CompactionElevationController(IASNodeClient raptorClient, ILoggerFactory logger, 
+      IElevationExtentsProxy elevProxy, IFileListProxy fileListProxy, 
+      IProjectSettingsProxy projectSettingsProxy, ICompactionSettingsManager settingsManager)
     {
       this.raptorClient = raptorClient;
       this.logger = logger;
       this.log = logger.CreateLogger<CompactionElevationController>();
-      this.fileListProxy = fileListProxy;
       this.elevProxy = elevProxy;
+      this.fileListProxy = fileListProxy;
+      this.projectSettingsProxy = projectSettingsProxy;
+      this.settingsManager = settingsManager;
     }
 
 
@@ -116,12 +132,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       try
       {
-        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, 
-          Request.Headers.GetCustomHeaders());
-        Filter filter = CompactionSettings.CompactionFilter(
+        var headers = Request.Headers.GetCustomHeaders();
+        var projectSettings = await this.GetProjectSettings(projectSettingsProxy, projectUid.Value, headers, log);
+        var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value, headers);
+        Filter filter = settingsManager.CompactionFilter(
           startUtc, endUtc, onMachineDesignId, vibeStateOn, elevationType, layerNumber,
           this.GetMachines(assetID, machineName, isJohnDoe), excludedIds);
-        ElevationStatisticsResult result = elevProxy.GetElevationRange(raptorClient, projectId.Value, filter);
+        ElevationStatisticsResult result = elevProxy.GetElevationRange(projectId.Value, filter, projectSettings);
         if (result == null)
         {
           //Ideally want to return an error code and message only here

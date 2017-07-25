@@ -26,12 +26,11 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
   public class DxfTileExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// This constructor allows us to mock raptorClient
+    /// This constructor allows us to mock 
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="raptorClient"></param>
-    /// <param name="fileRepository"></param>
-    /// <param name="tileGenerator"></param>
+    /// <param name="logger">Logger</param>
+    /// <param name="configStore">Configuration store</param>
+    /// <param name="fileRepository">Imported file repository</param>
     public DxfTileExecutor(ILoggerFactory logger, IConfigurationStore configStore, IFileRepository fileRepository) :
       base(logger, null, null, configStore, fileRepository, null)
     {
@@ -136,7 +135,7 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Executors
     /// <summary>
     /// Gets the TCC filespaceId for the vldatastore filespace
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The filespace ID</returns>
     private string GetFilespaceId()
     {
       string filespaceId = configStore.GetValueString("TCCFILESPACEID");
