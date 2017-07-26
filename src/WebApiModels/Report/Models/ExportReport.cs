@@ -143,7 +143,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
         Filter filter, long filterID, Guid? callid, bool cellSizeRq, string callerID, CoordTypes coordtype,
         DateTime DateFromUTC, DateTime DateToUTC, bool ZipFile, double Tolerance, bool TimeStampRequired,
         bool RestrictSize, bool RawData, T3DBoundingWorldExtent PrjExtents, bool PrecheckOnly, OutputTypes OutpuType,
-        TMachine[] MachineList, bool IncludeSrvSurface, string FileName, ExportTypes ExportType)
+        TMachine[] MachineList, bool IncludeSrvSurface, string FileName, ExportTypes ExportType, TASNodeUserPreferences UserPrefs)
     {
       return new ExportReport
              {
@@ -168,6 +168,7 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
                  restrictSize = RestrictSize,
                  timeStampRequired = TimeStampRequired,
                  tolerance = Tolerance,
+                 userPrefs = UserPrefs
              };
     }
 
@@ -270,8 +271,8 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       translations[5].ID = 5;
       translations[5].Translation = "Maxmium records reached";
  
-      userPrefs = 
-             ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences("NZ", "/", ":", ",", ".", 0.0, 0, 1, 0, 0, 1, 3); 
+//      userPrefs = 
+//             ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences("NZ", "/", ":", ",", ".", 0.0, 0, 1, 0, 0, 1, 3); 
 
 
     }

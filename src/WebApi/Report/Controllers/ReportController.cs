@@ -123,7 +123,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
       }
 
       var headers = Request.Headers.GetCustomHeaders();
-      var userPref = prefProxy.GetUserPreferences(headers);
+      var userPref = await prefProxy.GetUserPreferences(headers);
 
       if (userPref == null)
       {
@@ -168,6 +168,9 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         }
       }
 
+      // Set User Preferences' time zone to the project's one and retriev ...
+      var projectDescriptor = (User as RaptorPrincipal).GetProject(projectUid);
+      userPref.Timezone = projectDescriptor.projectTimeZone;
 
       return ExportReport.CreateExportReportRequest(
         projectId.Value,
@@ -191,7 +194,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
         machineList,
         false,
         fileName,
-        exportType);
+        exportType,
+        this.convertUserPreferences(userPref));
     }
     #endregion
 
