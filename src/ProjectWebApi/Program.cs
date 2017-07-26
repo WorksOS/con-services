@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 
 #if NET_4_7
 using Microsoft.AspNetCore.Hosting.WindowsServices;
+using System.Diagnostics;
 #endif
 
 namespace VSS.MasterData.Project.WebAPI

@@ -1,4 +1,4 @@
 RMDIR /S /Q artifacts
-dotnet restore --no-cache
-dotnet publish ./src/ProjectWebApi -o ../../artifacts/ProjectWebApiNet47 -f net47
+dotnet restore --no-cache VSS.Visionlink.Project.sln
+dotnet publish ./src/ProjectWebApi/VSS.Project.WebApi.csproj -o ../../artifacts/ProjectWebApiNet47 -f net47
 7z a ProjectWebApiNet47.zip -r ./artifacts/ProjectWebApiNet47/
