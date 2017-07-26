@@ -1,9 +1,11 @@
-﻿namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
+﻿using VSS.Common.ResultsHandling;
+
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
   /// <summary>
   /// The result of a request to get the legacyAssetID for a radioSerial
   /// </summary>
-  public class GetAssetIdResult : ContractExecutionResult
+  public class GetAssetIdResult : ContractExecutionResultWithResult
   {
     /// <summary>
     /// The id of the asset. -1 if unknown. 
@@ -20,7 +22,7 @@
     /// Create instance of GetAssetIdResult
     /// </summary>
     public static GetAssetIdResult CreateGetAssetIdResult(bool result, long assetId, int machineLevel,
-      ContractExecutionStatesEnum code = ContractExecutionStatesEnum.ExecutedSuccessfully,
+      int code = ContractExecutionStatesEnum.ExecutedSuccessfullyConst,
       string message = "success")
     {
       return new GetAssetIdResult

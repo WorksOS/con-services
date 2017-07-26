@@ -1,8 +1,6 @@
 properties([disableConcurrentBuilds(), pipelineTriggers([])])
 
-node('Ubuntu_Slave') {
-    //Apply version number
-    //We will later use it to tag images
+    def result = ''
 
     def branch = env.BRANCH_NAME
     def buildNumber = env.BUILD_NUMBER
@@ -25,6 +23,11 @@ node('Ubuntu_Slave') {
     def versionNumber = versionPrefix + buildNumber
     def fullVersion = versionNumber + suffix
     def workspacePath =""
+
+
+node('Ubuntu_Slave') {
+    //Apply version number
+    //We will later use it to tag images
     currentBuild.displayName = versionNumber + suffix
 
     stage 'Checkout'
@@ -51,6 +54,9 @@ node('Ubuntu_Slave') {
     currentBuild.result = 'SUCCESS'
     step([$class: 'JUnitResultArchiver', testResults: '**/testresults/*.xml'])
     publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './logs', reportFiles: 'logs.txt', reportName: 'Build logs'])
+
+    echo "Build result is ${currentBuild.result}"
+    result = currentBuild.result
  
     if (currentBuild.result=='SUCCESS') {
        //Rebuild Image, tag & push to AWS Docker Repo
@@ -86,4 +92,36 @@ node('Ubuntu_Slave') {
        sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest"
       }
     }
+}
+
+
+node ('Jenkins-Win2016-Raptor')
+{
+	if (branch.contains("master"))
+	{
+         if (result=='SUCCESS')
+          {
+           currentBuild.displayName = versionNumber + suffix
+  
+           stage 'Checkout'
+           checkout scm
+
+           stage 'Build'
+           bat "build47.bat"
+          
+           archiveArtifacts artifacts: 'TagFileAuthWebApiNet47.zip', fingerprint: true 
+
+         }
+        }
+	else 
+	{
+           currentBuild.displayName = versionNumber + suffix
+           stage 'Checkout'
+           checkout scm
+           stage 'Coverage'
+           bat "coverage.bat"
+	   step([$class: 'CoberturaPublisher', autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '**/outputCobertura.xml', failUnhealthy: true, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false])
+	   publishHTML(target:[allowMissing: false, alwaysLinkToLastBuild: true, keepAll: true, reportDir: './CoverageReport', reportFiles: '*', reportName: 'OpenCover Report'])
+	}
+
 }

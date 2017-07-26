@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
@@ -8,7 +9,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities
   public static class LoggingExtensions
   {
 
-    public static int LogResult(this ILogger log, string methodName, ContractRequest request, ContractExecutionResult result)
+    public static int LogResult(this ILogger log, string methodName, ContractRequest request, ContractExecutionResultWithResult result)
     {
       if (result.Result)
       {

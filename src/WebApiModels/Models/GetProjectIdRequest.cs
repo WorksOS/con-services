@@ -1,5 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models

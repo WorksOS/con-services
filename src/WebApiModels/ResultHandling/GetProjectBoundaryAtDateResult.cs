@@ -1,4 +1,5 @@
 ﻿
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
@@ -6,7 +7,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
   /// <summary>
   /// The result representation of a get project boundary request.
   /// </summary>
-  public class GetProjectBoundaryAtDateResult : ContractExecutionResult
+  public class GetProjectBoundaryAtDateResult : ContractExecutionResultWithResult
   {
     /// <summary>
     /// The boundary of the project. Empty if none.
@@ -18,7 +19,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
     /// </summary>
     public static GetProjectBoundaryAtDateResult CreateGetProjectBoundaryAtDateResult(bool result,
       TWGS84FenceContainer projectBoundary,
-      ContractExecutionStatesEnum code = ContractExecutionStatesEnum.ExecutedSuccessfully,
+      int code = ContractExecutionStatesEnum.ExecutedSuccessfullyConst,
       string message = "success")
     {
       return new GetProjectBoundaryAtDateResult
