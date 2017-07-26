@@ -68,7 +68,6 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
         string customerUid = "";
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
-
         customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
 
         // If no authorization header found, nothing to process further
@@ -106,12 +105,7 @@ namespace VSS.Productivity3D.Filter.WebApi.Filters
             "Authorization: Calling context is Application Context for Customer: {0} Application: {1} ApplicationName: {2}",
             customerUid, userUid, applicationName);
 
-          if (!requireCustomerUid)
-            await _next.Invoke(context);
-          else if (context.Request.Method == HttpMethod.Get.Method)
-            await _next.Invoke(context);
-          else
-            ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 60);
+          await _next.Invoke(context);
           return;
         }
 
