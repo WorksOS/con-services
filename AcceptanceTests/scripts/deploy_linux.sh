@@ -7,7 +7,7 @@ cp scripts/wait-for-it.sh deploy/
 cp scripts/rm_cr.sh deploy/
 mkdir deploy/testresults
 
-dotnet restore --no-cache
+dotnet restore --no-cache VSS.Visionlink.Project.AcceptanceTests.sln
 
 cd tests
 dotnet publish IntegrationTests/IntegrationTests.csproj -o ../../deploy/IntegrationTests -f netcoreapp1.1
