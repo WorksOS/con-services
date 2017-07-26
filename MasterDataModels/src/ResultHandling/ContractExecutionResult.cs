@@ -75,23 +75,28 @@ namespace VSS.Common.ResultsHandling
     /// <summary>
     ///   Service request executed successfully
     /// </summary>
-    public static readonly int ExecutedSuccessfully = 0;
+    public static readonly int ExecutedSuccessfully = ExecutedSuccessfullyConst;
+    public const int ExecutedSuccessfullyConst = 0;
 
 
     /// <summary>
     ///   Supplied data didn't pass validation
     /// </summary>
-    public static readonly int ValidationError = -1;
+    public static readonly int ValidationError = ValidationErrorConst;
+    public const int ValidationErrorConst = -1;
+
     
     /// <summary>
     ///   Serializing request erors
     /// </summary>
-    public static readonly int SerializationError = -2;
+    public static readonly int SerializationError = SerializationErrorConst;
+    public const int SerializationErrorConst = -2;
 
     /// <summary>
     ///   Internal processing error
     /// </summary>
-    public static readonly int InternalProcessingError = -3;
+    public static readonly int InternalProcessingError = InternalProcessingErrorConst;
+    public const int InternalProcessingErrorConst = -3;
 
 
     /// <summary>
