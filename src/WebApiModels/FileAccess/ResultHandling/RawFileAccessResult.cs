@@ -1,4 +1,4 @@
-﻿using VSS.MasterDataProxies.ResultHandling;
+﻿using VSS.Common.ResultsHandling;
 
 namespace VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling
 {

@@ -3,7 +3,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.IO;
 using System.Net;
-using VSS.MasterDataProxies.ResultHandling;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.FileAccess.Service.Common.Interfaces;
 using VSS.Productivity3D.FileAccess.Service.Common.Models;
 using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
@@ -67,7 +68,7 @@ namespace VSS.Productivity3D.FileAccess.Service.WebAPI.FileAccess.Controllers
         }
 
         throw new ServiceException(HttpStatusCode.NoContent,
-            new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
                 "Raptor failed to return a file"));
       }
       finally

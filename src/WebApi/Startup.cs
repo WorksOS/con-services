@@ -5,9 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger.Model;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.Log4Net.Extensions;
-using VSS.Productivity3D.FileAccess.Service.Common.Filters;
 using VSS.TCCFileAccess;
 
 namespace VSS.Productivity3D.FileAccess.Service.WebAPI

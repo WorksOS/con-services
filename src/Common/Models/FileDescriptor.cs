@@ -2,7 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Newtonsoft.Json;
-using VSS.MasterDataProxies.ResultHandling;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.Productivity3D.FileAccess.Service.Common.Interfaces;
 using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
 

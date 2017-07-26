@@ -29,8 +29,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="1.1.2" />
-    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.0.*" />
-    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.0.*" />
+    <PackageReference Include="VSS.MasterData.Proxies.netcore" Version="2.1.*" />
+    <PackageReference Include="VSS.TCCFileAccess.netcore" Version="2.1.*" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' ">
@@ -40,6 +40,10 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Filters\" />
   </ItemGroup>
 
 </Project>

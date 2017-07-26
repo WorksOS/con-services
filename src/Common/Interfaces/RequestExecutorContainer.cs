@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
-using VSS.MasterDataProxies.ResultHandling;
 using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
 using VSS.TCCFileAccess;
 

@@ -2,11 +2,11 @@
 using System;
 using System.IO;
 using System.Net;
+using VSS.Common.Exceptions;
+using VSS.Common.ResultsHandling;
 using VSS.ConfigurationStore;
-using VSS.MasterDataProxies.ResultHandling;
 using VSS.Productivity3D.FileAccess.Service.Common.Interfaces;
 using VSS.Productivity3D.FileAccess.Service.Common.Models;
-using VSS.Productivity3D.FileAccess.Service.Common.ResultHandling;
 using VSS.Productivity3D.FileAccess.Service.WebAPI.Models.FileAccess.ResultHandling;
 using VSS.TCCFileAccess;
 
