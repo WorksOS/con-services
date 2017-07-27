@@ -228,14 +228,16 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
             "Invalid output type for export report"));
       }
 
-      if (exportType == ExportTypes.kPassCountExport && outputType != OutputTypes.etPassCountLastPass && outputType != OutputTypes.etPassCountAllPasses)
+      if (exportType == ExportTypes.kPassCountExport && outputType != OutputTypes.etPassCountLastPass &&
+          outputType != OutputTypes.etPassCountAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Invalid output type for machine passes export report"));
       }
 
-      if (exportType == ExportTypes.kVedaExport && outputType != OutputTypes.etVedaFinalPass && outputType != OutputTypes.etVedaAllPasses)
+      if (exportType == ExportTypes.kVedaExport && outputType != OutputTypes.etVedaFinalPass &&
+          outputType != OutputTypes.etVedaAllPasses)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
@@ -243,19 +245,19 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       }
 
       if (machineList == null)
-        {
-          machineList = new TMachine[2];
+      {
+        machineList = new TMachine[2];
 
-          machineList[0] = new TMachine();
-          machineList[0].AssetID = 1;
-          machineList[0].MachineName = "Asset 1 Name";
-          machineList[0].SerialNo = "Asset 1 SN";
+        machineList[0] = new TMachine();
+        machineList[0].AssetID = 1;
+        machineList[0].MachineName = "Asset 1 Name";
+        machineList[0].SerialNo = "Asset 1 SN";
 
-          machineList[1] = new TMachine();
-          machineList[1].AssetID = 3517551388324974;
-          machineList[1].MachineName = "Asset 3517551388324974 Name";
-          machineList[1].SerialNo = "Asset 3517551388324974 SN";
-        }
+        machineList[1] = new TMachine();
+        machineList[1].AssetID = 3517551388324974;
+        machineList[1].MachineName = "Asset 3517551388324974 Name";
+        machineList[1].SerialNo = "Asset 3517551388324974 SN";
+      }
 
       translations = new TTranslation[6];
       translations[0].ID = 0;
@@ -271,17 +273,22 @@ namespace VSS.Productivity3D.WebApiModels.Report.Models
       translations[5].ID = 5;
       translations[5].Translation = "Maxmium records reached";
 
-      if (userPrefs.Equals(EmptyUserPreferences()))
+      if (userPrefs.Equals(Preferences.EmptyUserPreferences()))
       {
-        userPrefs = 
-          ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences("NZ", "/", ":", ",", ".", 0.0, 0, 1, 0, 0, 1, 3);
+        userPrefs = ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(
+          "NZ",
+          Preferences.DefaultDateSeparator,
+          Preferences.DefaultTimeSeparator,
+          Preferences.DefaultThousandsSeparator,
+          Preferences.DefaultDecimalSeparator,
+          0.0,
+          (int) LanguageEnum.enUS,
+          (int) UnitsTypeEnum.Metric,
+          Preferences.DefaultDateTimeFormat,
+          Preferences.DefaultNumberFormat,
+          Preferences.DefaultTemperatureUnit,
+          Preferences.DefaultAssetLabelTypeId);
       }
     }
-
-    private TASNodeUserPreferences EmptyUserPreferences()
-    {
-      return ASNode.UserPreferences.__Global.Construct_TASNodeUserPreferences(null, null, null, null, null, 0.0, 0, 0, 0, 0, 0, 0);
-    }
-
   }
 }
