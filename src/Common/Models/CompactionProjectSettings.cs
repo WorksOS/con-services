@@ -152,13 +152,13 @@ namespace VSS.Productivity3D.Common.Models
     /// <summary>
     /// Flag to determine if machine default pass count details settings or custom settings are used. Default is true.
     /// </summary>
-    [JsonProperty(PropertyName = "useDefaultCutFillTolerances", Required = Required.Default)]
+    [JsonProperty(PropertyName = "useDefaultPassCountTargets", Required = Required.Default)]
     public bool? useDefaultPassCountTargets { get; private set; }
     /// <summary>
     /// The collection of pass count targets when overriding the defaults. Values are in ascending order.
     /// There must be 8 values and the first value must be 1.
     /// </summary>
-    [JsonProperty(PropertyName = "customCutFillTolerances", Required = Required.Default)]
+    [JsonProperty(PropertyName = "customPassCountTargets", Required = Required.Default)]
     public List<int> customPassCountTargets { get; private set; }
 
     /// <summary>

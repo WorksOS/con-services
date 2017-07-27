@@ -56,7 +56,9 @@ Scenario:  Project Settings Validate Full Custom Settings
     customCutFillTolerances: [3,2,1,0,-1,-2,-3],
     useDefaultVolumeShrinkageBulking: false,
     customShrinkagePercent: 5,
-    customBulkingPercent: 7.5
+    customBulkingPercent: 7.5,
+    useDefaultPassCountTargets: false,
+    customPassCountTargets: [1,3,5,8,11,16,20,25]
   }
   """
 	When I request settings validation
