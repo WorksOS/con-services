@@ -184,7 +184,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       }
       var excludedIds = await this.GetExcludedSurveyedSurfaceIds(fileListProxy, projectUid.Value,
         Request.Headers.GetCustomHeaders());
-      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId.Value, excludedIds.ToArray());
+      ProjectStatisticsRequest request = ProjectStatisticsRequest.CreateStatisticsParameters(projectId.Value, excludedIds?.ToArray());
       request.Validate();
       try
       {
