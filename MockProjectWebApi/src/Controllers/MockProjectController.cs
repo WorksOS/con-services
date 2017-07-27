@@ -115,7 +115,7 @@ namespace MockProjectWebApi.Controllers
             customTargetSpeedMinimum: 8,
             customTargetSpeedMaximum: 12,
             useDefaultCutFillTolerances: false,
-            customCutFillTolerances: [0.22, 0.11, 0.55, 0, -0.055, -0.11, -0.22],
+            customCutFillTolerances: [0.22, 0.11, 0.055, 0, -0.055, -0.11, -0.22],
             useDefaultVolumeShrinkageBulking: false,
             customShrinkagePercent: 3,
             customBulkingPercent: 6,
