@@ -1,6 +1,6 @@
 ﻿Feature: DotOnTheMap
 	I should be able to track machines.
-@ignore
+
 Scenario: DotOnTheMap - Track a Machine
 	Given the Tag service URI "/api/v1/tagfiles", Tag request repo file "DotOnTheMapRequest.json"
 		And the Machine service URI "/api/v1/projects/1001210/machines/", Machine result repo file "DotOnTheMapResponse.json"
