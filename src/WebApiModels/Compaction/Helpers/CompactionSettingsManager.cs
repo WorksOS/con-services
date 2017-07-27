@@ -128,7 +128,12 @@ namespace VSS.Productivity3D.WebApiModels.Compaction.Helpers
       return new double[] { 5, 20, 50 };     
     }
 
-    public PassCountSettings CompactionPassCountSettings(CompactionProjectSettings ps) => PassCountSettings.CreatePassCountSettings(new int[] { 1, 2, 3, 4, 5, 6, 7, 8 });
+    public PassCountSettings CompactionPassCountSettings(CompactionProjectSettings ps)
+    {
+      var overridePassCounts = ps.useDefaultPassCountTargets.HasValue && !ps.useDefaultPassCountTargets.Value;
+      return PassCountSettings.CreatePassCountSettings(overridePassCounts && ps.customPassCountTargets != null && ps.customPassCountTargets.Count > 0 
+        ? ps.customPassCountTargets.ToArray() : CompactionProjectSettings.DefaultSettings.customPassCountTargets.ToArray());
+    }
 
     public List<ColorPalette> CompactionPalette(DisplayMode mode, ElevationStatisticsResult elevExtents, CompactionProjectSettings projectSettings)
     {
