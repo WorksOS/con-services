@@ -47,7 +47,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
             tagFilePoster.CurrentRequest.machineId = machineId;
 
             tagFilePoster.DoValidRequest();
-            Thread.Sleep(8000);
+            Thread.Sleep(15000);
         }
 
         [When(@"I get and save the machine detail in one place")]
